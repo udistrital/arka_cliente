@@ -32,7 +32,7 @@ export class ArbolComponent implements OnInit, OnChanges {
 
   data: TreeNode<CatalogoArbol>[];
   customColumn = 'Codigo';
-  defaultColumns = ['Nombre', 'Descripcion', 'Acciones'];
+  defaultColumns = ['Nombre', 'Descripcion', 'TipoBienId', 'Acciones'];
   allColumns = [this.customColumn, ...this.defaultColumns];
 
 
@@ -98,6 +98,7 @@ export class ArbolComponent implements OnInit, OnChanges {
     this.catalogoHelper.getArbolCatalogo(this.catalogoId).subscribe((res) => {
       if (res !== null) {
         this.data = res;
+        console.log(res)
         this.dataSource = this.dataSourceBuilder.create(this.data);
       }
     });

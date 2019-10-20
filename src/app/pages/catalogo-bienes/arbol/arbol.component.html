@@ -27,8 +27,9 @@
             <th nbTreeGridHeaderCell [nbSortHeader]="getSortDirection(column)" *nbTreeGridHeaderCellDef>
                 {{ column }}
             </th>
-            <td nbTreeGridCell *nbTreeGridCellDef="let row">
-                <span *ngIf="row.data[column] !== undefined"> {{ row.data[column] || '-' }}</span>
+            <td nbTreeGridCell *nbTreeGridCellDef="let row" class="text-uppercase">
+                <span *ngIf="row.data[column] !== undefined && row.data[column].Id === undefined"> {{ row.data[column] || '-' }}</span>
+                <span *ngIf="row.data[column] !== undefined && row.data[column].Id !== undefined"> {{ row.data[column].Nombre || '-' }}</span>
                 <span *ngIf="row.data[column] === undefined"> <i class="fas fa-eye fa-2x" title="Ver"
                         (click)="getDetalle(row.data)"></i></span>
             </td>
