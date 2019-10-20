@@ -2,6 +2,10 @@ import { Component, OnInit, Input, EventEmitter, Output, OnChanges } from '@angu
 import { CatalogoBienesHelper } from '../../../helpers/catalogo_bienes/catalogoBienesHelper';
 import { NbTreeGridDataSource, NbSortDirection, NbSortRequest, NbTreeGridDataSourceBuilder } from '@nebular/theme';
 import { Observable } from 'rxjs';
+import { CuentaContable } from '../../../@core/data/models/catalogo/cuenta_contable';
+import { PopUpManager } from '../../../managers/popUpManager';
+import { CuentasGrupoTransaccion } from '../../../@core/data/models/catalogo/cuentas_subgrupo';
+import { SubgrupoTransaccion, Subgrupo } from '../../../@core/data/models/catalogo/subgrupo';
 
 interface TreeNode<T> {
   data: T;
@@ -28,7 +32,7 @@ export class ArbolComponent implements OnInit, OnChanges {
 
   data: TreeNode<CatalogoArbol>[];
   customColumn = 'Codigo';
-  defaultColumns = ['Nombre', 'Descripcion'];
+  defaultColumns = ['Nombre', 'Descripcion', 'Acciones'];
   allColumns = [this.customColumn, ...this.defaultColumns];
 
 
@@ -38,16 +42,22 @@ export class ArbolComponent implements OnInit, OnChanges {
   sortDirection: NbSortDirection = NbSortDirection.NONE;
 
   catalogoSeleccionado: number;
+  detalle: boolean;
+  cuentasContables: Array<CuentasGrupoTransaccion>;
+  grupoSeleccionado: Subgrupo;
 
   @Input() catalogoId: number;
   @Input() updateSignal: Observable<string[]>;
   @Output() grupo = new EventEmitter<CatalogoArbol>();
   @Output() subgrupo = new EventEmitter<CatalogoArbol>();
 
-  constructor(private dataSourceBuilder: NbTreeGridDataSourceBuilder<CatalogoArbol>, private catalogoHelper: CatalogoBienesHelper) { }
+  constructor(private dataSourceBuilder: NbTreeGridDataSourceBuilder<CatalogoArbol>, private catalogoHelper: CatalogoBienesHelper,
+    private pUpManager: PopUpManager) { }
 
   ngOnInit() {
     this.catalogoSeleccionado = 0;
+    this.detalle = false;
+    this.cuentasContables = new Array<CuentasGrupoTransaccion>();
   }
 
   ngOnChanges(changes) {
@@ -60,7 +70,7 @@ export class ArbolComponent implements OnInit, OnChanges {
         this.loadTreeCatalogo();
       });
     }
-}
+  }
 
   updateSort(sortRequest: NbSortRequest): void {
     this.sortColumn = sortRequest.column;
@@ -95,6 +105,20 @@ export class ArbolComponent implements OnInit, OnChanges {
 
   getSelectedRow(selectedRow) {
     this.subgrupo.emit(selectedRow);
+  }
+
+  getDetalle(selectedRow) {
+    this.grupoSeleccionado = selectedRow;
+    this.catalogoHelper.getCuentasContables(selectedRow.Id).subscribe((res) => {
+      if (res !== null) {
+        this.cuentasContables = <Array<CuentasGrupoTransaccion>>res;
+        if (this.cuentasContables[0].CuentaCreditoId !== null) {
+          this.detalle = !this.detalle;
+        } else {
+          this.pUpManager.showAlert('info', 'No existen cuentas contables asociadas a este grupo');
+        }
+      }
+    });
   }
 
 }
