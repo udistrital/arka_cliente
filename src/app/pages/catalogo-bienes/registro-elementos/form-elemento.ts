@@ -31,7 +31,8 @@ export let FORM_ELEMENTO = {
             placeholder_i18n: 'fecha_inicio',
             requerido: true,
             tipo: 'date',
-        },{
+        },
+        {
             etiqueta: 'input',
             claseGrid: 'col-lg-12 col-md-12 col-sm-12 col-xs-12',
             nombre: 'FechaFin',

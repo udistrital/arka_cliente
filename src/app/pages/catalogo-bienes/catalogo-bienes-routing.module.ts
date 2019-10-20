@@ -16,7 +16,8 @@ const routes: Routes = [{
     {
       path: 'registro_catalogo',
       component: RegistroCatalogoComponent,
-    },{
+    },
+    {
       path: 'registro_elementos',
       component: RegistroElementosComponent,
     },

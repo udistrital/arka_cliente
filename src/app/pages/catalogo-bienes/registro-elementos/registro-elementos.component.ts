@@ -11,7 +11,7 @@ import { Subgrupo } from '../../../@core/data/models/catalogo/subgrupo';
 @Component({
   selector: 'ngx-registro-elementos',
   templateUrl: './registro-elementos.component.html',
-  styleUrls: ['./registro-elementos.component.scss']
+  styleUrls: ['./registro-elementos.component.scss'],
 })
 export class RegistroElementosComponent implements OnInit {
 
@@ -27,7 +27,7 @@ export class RegistroElementosComponent implements OnInit {
   constructor(private translate: TranslateService,
     private catalogoElementosService: CatalogoElementosHelper,
     private toasterService: ToasterService,
-    private pUpManager: PopUpManager, ) {
+    private pUpManager: PopUpManager) {
     this.formElemento = FORM_ELEMENTO;
     this.construirForm();
     this.catalogos = new Array<Catalogo>();
