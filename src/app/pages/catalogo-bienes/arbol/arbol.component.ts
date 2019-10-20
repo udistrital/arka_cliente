@@ -98,7 +98,6 @@ export class ArbolComponent implements OnInit, OnChanges {
     this.catalogoHelper.getArbolCatalogo(this.catalogoId).subscribe((res) => {
       if (res !== null) {
         this.data = res;
-        console.log(res)
         this.dataSource = this.dataSourceBuilder.create(this.data);
       }
     });
