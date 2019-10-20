@@ -118,6 +118,10 @@ export const MENU_ITEMS: NbMenuItem[] = [
         title: 'Construcción de Catálogo',
         link: '/pages/catalogo_bienes/registro_catalogo',
       },
+      {
+        title: 'Registro Elementos',
+        link: '/pages/catalogo_bienes/registro_elementos',
+      },
     ],
   },
 ];

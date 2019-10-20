@@ -1,0 +1,30 @@
+<nb-card>
+  <nb-card-header>
+    <h1>{{'GLOBAL.registro_elementos' | translate}}</h1>
+  </nb-card-header>
+  <nb-card-body>
+
+    <div class="row">
+
+      <div class="col">
+        <h5>{{'GLOBAL.catalogo' | translate}}</h5>
+        <select class="form-control mb-4" (change)="onChange($event.target.value)">
+          <option disabled selected>{{'GLOBAL.seleccionar' | translate}}...</option>
+          <option *ngFor="let item of catalogos" value="{{ item.Id }}">{{ item.Nombre }}</option>
+        </select>
+
+        <ngx-arbol *ngIf="catalogoId !== 0" [catalogoId]="catalogoId" (grupo)="receiveMessage($event)"
+          [updateSignal]="eventChange"></ngx-arbol>
+      </div>
+
+      <div class="col">
+        <toaster-container [toasterconfig]="config"></toaster-container>
+        <ngx-dinamicform [normalform]="formElemento" [modeloData]="info_elemento" (result)="validarForm($event)"
+          [clean]="clean">
+        </ngx-dinamicform>
+      </div>
+
+    </div>
+
+  </nb-card-body>
+</nb-card>
