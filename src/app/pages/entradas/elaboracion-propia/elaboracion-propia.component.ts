@@ -39,7 +39,7 @@ export class ElaboracionPropiaComponent implements OnInit {
 
   constructor(private router: Router, private entradasHelper: EntradaHelper, private pUpManager: PopUpManager, private fb: FormBuilder,
     private nuxeoService: NuxeoService, private sanitization: DomSanitizer, private documentoService: DocumentoService,
-    private translate: TranslateService, ) {
+    private translate: TranslateService) {
     this.ordenadores = new Array<OrdenadorGasto>();
     this.solicitanteSelect = false;
     this.ordenadorId = 0;
@@ -124,7 +124,7 @@ export class ElaboracionPropiaComponent implements OnInit {
       this.validar = true;
       this.soporteForm.markAsDirty();
     }
-  } number
+  }
 
   // MÉTODOS PARA CARGAR SOPORTES
   getSoporte(event) {
@@ -201,13 +201,13 @@ export class ElaboracionPropiaComponent implements OnInit {
 
       await this.postSoporteNuxeo([this.fileDocumento]);
 
-      var soporte = {
+      const soporte = {
         DocumentoId: this.idDocumento,
         Activo: true,
         EntradaElementoId: {
-          Id: 0
-        }
-      }
+          Id: 0,
+        },
+      };
 
       // ENVIA LA ENTRADA AL MID
       this.entradasHelper.postEntrada(entradaData).subscribe((res: any) => {

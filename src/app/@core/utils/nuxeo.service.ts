@@ -2,13 +2,13 @@ import * as Nuxeo from 'nuxeo';
 import { Injectable } from '@angular/core';
 import { environment } from './../../../environments/environment';
 import { Observable } from 'rxjs/Observable';
-import { Documento } from './../data/models/documento/documento'
-import { TipoDocumento } from './../data/models/documento/tipo_documento'
+import { Documento } from './../data/models/documento/documento';
+import { TipoDocumento } from './../data/models/documento/tipo_documento';
 import { Subject } from 'rxjs/Subject';
 
 @Injectable()
 export class NuxeoService {
-    static nuxeo: Nuxeo
+    static nuxeo: Nuxeo;
 
     private documentos$ = new Subject<Documento[]>();
     private documentos: object;
@@ -17,7 +17,7 @@ export class NuxeoService {
     private blobDocument: object;
 
     private updateDoc$ = new Subject<[object]>();
-    private updateDoc: object
+    private updateDoc: object;
 
     constructor() {
         this.documentos = {};
@@ -75,7 +75,7 @@ export class NuxeoService {
                                         NuxeoService.nuxeo.batchUpload()
                                             .upload(nuxeoBlob)
                                             .then(function (response) {
-                                                file.uid = doc.uid
+                                                file.uid = doc.uid;
                                                 NuxeoService.nuxeo.operation('Blob.AttachOnDocument')
                                                     .param('document', doc.uid)
                                                     .input(response.blob)
@@ -91,7 +91,7 @@ export class NuxeoService {
                                                                 nuxeoservice.documentos[file.key] = resuestaPost;
                                                                 // nuxeoservice.documentos[file.key] = resuestaPost.Body;
                                                                 nuxeoservice.documentos$.next(nuxeoservice.documentos);
-                                                            })
+                                                            });
 
                                                     });
                                             })
@@ -103,7 +103,7 @@ export class NuxeoService {
                                     .catch(function (error) {
                                         console.info(error);
                                         return error;
-                                    })
+                                    });
                             }
                         });
                 });
@@ -121,7 +121,7 @@ export class NuxeoService {
                         if (res !== null) {
                             const documento_temp = <any>res[0];
                             console.info(this.documentos);
-                            NuxeoService.nuxeo.connect()
+                            NuxeoService.nuxeo.connect();
                             NuxeoService.nuxeo.batchUpload()
                                 .upload(nuxeoBlob)
                                 .then(function (response) {
@@ -151,7 +151,7 @@ export class NuxeoService {
                     });
             }
         });
-    };
+    }
 
     getFile(files, documentoService, nuxeoservice) {
         this.blobDocument = {};
@@ -169,7 +169,7 @@ export class NuxeoService {
                                         .then(function (blob) {
                                             blob.blob()
                                                 .then(function (responseblob) {
-                                                    const url = URL.createObjectURL(responseblob)
+                                                    const url = URL.createObjectURL(responseblob);
                                                     nuxeoservice.blobDocument[file.key] = url;
                                                     nuxeoservice.blobDocument$.next(nuxeoservice.blobDocument);
                                                 });
