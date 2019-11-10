@@ -309,7 +309,7 @@
     "notificacion_estado_usuario": "notificacion_estado_usuario",
     "placeholder_notificacion_estado_usuario": "ej: notificacion_estado_usuario",
     "fecha": "fecha",
-    "placeholder_fecha": "Select Date",
+    "placeholder_fecha": "Seleccionar Fecha",
     "usuario": "usuario",
     "placeholder_usuario": "ej: usuario",
     "parametro": "parametro",

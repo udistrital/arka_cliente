@@ -82,7 +82,7 @@
     "ngx-currency": "^2.0.0",
     "ngx-echarts": "^4.0.1",
     "ngx-smart-table": "^2.0.3",
-    "node-sass": "^4.12.0",
+    "node-sass": "^4.13.0",
     "normalize.css": "6.0.0",
     "nuxeo": "^3.14.0",
     "oidc-auth": "^0.3.0",

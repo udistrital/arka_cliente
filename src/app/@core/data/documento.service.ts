@@ -11,7 +11,7 @@ const httpOptions = {
     }),
 };
 
-const path = environment;
+const path = environment.DOCUMENTO_SERVICE;
 
 @Injectable()
 export class DocumentoService {
