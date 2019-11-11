@@ -8,7 +8,7 @@ describe('InactivarGrupoComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ InactivarGrupoComponent ]
+      declarations: [ InactivarGrupoComponent ],
     })
     .compileComponents();
   }));

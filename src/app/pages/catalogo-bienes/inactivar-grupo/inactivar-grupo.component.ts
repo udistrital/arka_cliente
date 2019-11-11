@@ -10,9 +10,9 @@ import { PopUpManager } from '../../../managers/popUpManager';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'inactivar-grupo',
+  selector: 'ngx-inactivar-grupo',
   templateUrl: './inactivar-grupo.component.html',
-  styleUrls: ['./inactivar-grupo.component.scss']
+  styleUrls: ['./inactivar-grupo.component.scss'],
 })
 export class InactivarGrupoComponent implements OnInit {
 
@@ -111,7 +111,7 @@ export class InactivarGrupoComponent implements OnInit {
           }
         });
       }
-    })
+    });
   }
 
 }
