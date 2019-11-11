@@ -148,7 +148,29 @@ export class EntradaHelper {
      */
     public getEntrada(consecutivo) {
         this.rqManager.setPath('ENTRADAS_SERVICE');
-        return this.rqManager.get('entrada_elemento?query=Consecutivo:' + consecutivo).pipe(
+        // return this.rqManager.get('entrada_elemento?query=Consecutivo:' + consecutivo).pipe(
+        return this.rqManager.get('entrada_elemento?query=Id:' + consecutivo).pipe(
+            map(
+                (res) => {
+                    if (res === 'error') {
+                        this.pUpManager.showErrorAlert('No se pudo consultar el contrato contratos');
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
+
+    /**
+     * Entradas Get
+     * If the response has errors in the OAS API it should show a popup message with an error.
+     * If the response is successs, it returns the object's data.
+     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
+     */
+    public getSoportes(entradaId) {
+        this.rqManager.setPath('ENTRADAS_SERVICE');
+        return this.rqManager.get('soporte_entrada?query=EntradaElementoId.Id:' + entradaId + '&limit=-1').pipe(
             map(
                 (res) => {
                     if (res === 'error') {

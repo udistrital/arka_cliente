@@ -26,71 +26,79 @@
 
         <div class="row">
           <div class="col">
-            <p *ngIf="detalle">Entrada: {{ entradaEspecifica.Consecutivo }}</p>
+            <p *ngIf="detalle"><strong>Entrada</strong>: {{ entradaEspecifica.Consecutivo }}</p>
           </div>
           <div class="col">
-            <p *ngIf="detalle">Tipo de Entrada: {{ entradaEspecifica.TipoEntradaId.Nombre }}</p>
+            <p *ngIf="detalle"><strong>Tipo de Entrada:</strong> {{ entradaEspecifica.TipoEntradaId.Nombre }}</p>
           </div>
         </div>
 
         <div class="row">
           <div *ngIf="detalle && entradaEspecifica.TipoEntradaId.Id === 5" class="col">
-            <p *ngIf="detalle && entradaEspecifica.TipoEntradaId.Id === 5 && entradaEspecifica.Importacion">Entrada
-              por
-              Importación: Si</p>
-            <p *ngIf="detalle && entradaEspecifica.TipoEntradaId.Id === 5 && !entradaEspecifica.Importacion">Entrada
-              por
-              Importación: No</p>
+            <p *ngIf="detalle && entradaEspecifica.TipoEntradaId.Id === 5 && entradaEspecifica.Importacion">
+              <strong>Entrada por Importación:</strong> Si</p>
+            <p *ngIf="detalle && entradaEspecifica.TipoEntradaId.Id === 5 && !entradaEspecifica.Importacion">
+              <strong>Entrada por Importación:</strong> No</p>
           </div>
         </div>
 
         <div class="row">
           <div class="col">
-            <p *ngIf="detalle">Acta de Recibido N°: {{ entradaEspecifica.ActaRecibidoId }}</p>
+            <p *ngIf="detalle"><strong>Acta de Recibido N°:</strong> {{ entradaEspecifica.ActaRecibidoId }}</p>
           </div>
         </div>
 
         <div class="row">
           <div class="col">
-            <p *ngIf="detalle && entradaEspecifica.ContratoId !== 0">Contrato N°: {{ entradaEspecifica.ContratoId }}</p>
+            <p *ngIf="detalle && entradaEspecifica.ContratoId !== 0"><strong>Contrato N°:</strong>
+              {{ entradaEspecifica.ContratoId }}</p>
           </div>
           <div class="col">
-            <p *ngIf="detalle">Tipo Contrato: {{ contrato.TipoContrato }}</p>
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="col">
-            <p *ngIf="detalle && contrato.ContratoId !== 0">Ordenador de Gasto: {{ contrato.OrdenadorGasto.NombreOrdenador }}</p>
-          </div>
-          <div class="col">
-            <p *ngIf="detalle && contrato.ContratoId !== 0">Cargo: {{ contrato.OrdenadorGasto.RolOrdenadorGasto }}</p>
+            <p *ngIf="detalle"><strong>Tipo Contrato:</strong> {{ contrato.TipoContrato }}</p>
           </div>
         </div>
 
         <div class="row">
           <div class="col">
-            <p *ngIf="detalle && contrato.ContratoId !== 0">Supervisor: {{ contrato.Supervisor.Nombre }}</p>
+            <p *ngIf="detalle && contrato.ContratoId !== 0"><strong>Ordenador de Gasto:</strong>
+              {{ contrato.OrdenadorGasto.NombreOrdenador }}</p>
           </div>
           <div class="col">
-            <p *ngIf="detalle && contrato.ContratoId !== 0">Cargo: {{ contrato.Supervisor.Cargo }}</p>
+            <p *ngIf="detalle && contrato.ContratoId !== 0"><strong>Cargo:</strong>
+              {{ contrato.OrdenadorGasto.RolOrdenadorGasto }}</p>
           </div>
         </div>
 
         <div class="row">
           <div class="col">
-            <p *ngIf="detalle && entradaEspecifica.Solicitante !== 0">Solicitante: {{ entradaEspecifica.Solicitante }}
+            <p *ngIf="detalle && contrato.ContratoId !== 0"><strong>Supervisor:</strong>
+              {{ contrato.Supervisor.Nombre }}</p>
+          </div>
+          <div class="col">
+            <p *ngIf="detalle && contrato.ContratoId !== 0"><strong>Cargo:</strong> {{ contrato.Supervisor.Cargo }}</p>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col">
+            <p *ngIf="detalle && entradaEspecifica.Solicitante !== 0"><strong>Solicitante:</strong>
+              {{ entradaEspecifica.Solicitante }}
             </p>
           </div>
         </div>
 
         <div class="row">
           <div class="col">
-            <p *ngIf="detalle && entradaEspecifica.Observacion !== ''">Observaciones:
+            <p *ngIf="detalle && entradaEspecifica.Observacion !== ''"><strong>Observaciones:</strong>
               {{ entradaEspecifica.Observacion }}</p>
-            <p *ngIf="detalle && entradaEspecifica.Observacion === ''">Observaciones: N/A</p>
+            <p *ngIf="detalle && entradaEspecifica.Observacion === ''"><strong>Observaciones:</strong> N/A</p>
           </div>
         </div>
+
+        <label><strong>Soportes:</strong></label>
+        <button *ngIf="documentoId" mat-button type="button" (click)="loadSoporte()">
+          <mat-icon>cloud_download</mat-icon>
+        </button>
 
       </div>
 

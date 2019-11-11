@@ -6,7 +6,7 @@
 
   <!-- ORDENADOR DE GASTO -->
   <nb-step [stepControl]="ordenadorForm" label="Ordenador Gasto">
-    <h5>Ordenador de Gasto</h5>
+    <h5>{{'GLOBAL.ordenador_gasto' | translate}}</h5>
     <form [formGroup]="ordenadorForm" class="step-container">
       <div class="row">
         <div class="form-group col-sm">
@@ -37,7 +37,8 @@
           </div>
         </div>
       </div>
-      <button nbButton nbStepperNext>Siguiente</button>
+      <button type="button" (click)="onContratoSubmit()" nbButton
+        nbStepperNext>{{'GLOBAL.siguiente' | translate}}</button>
     </form>
   </nb-step>
 
@@ -71,8 +72,8 @@
           </div>
         </div>
       </div>
-      <button nbButton nbStepperPrevious>Anterior</button>
-      <button nbButton nbStepperNext>Siguiente</button>
+      <button nbButton nbStepperPrevious>{{'GLOBAL.anterior' | translate}}</button>
+    <button nbButton nbStepperNext>{{'GLOBAL.siguiente' | translate}}</button>
     </form>
   </nb-step>
 

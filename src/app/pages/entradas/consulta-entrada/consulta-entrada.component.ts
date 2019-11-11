@@ -8,6 +8,8 @@ import { Supervisor } from '../../../@core/data/models/entrada/supervisor';
 import { OrdenadorGasto } from '../../../@core/data/models/entrada/ordenador_gasto';
 import { TipoEntrada } from '../../../@core/data/models/entrada/tipo_entrada';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
+import { NuxeoService } from '../../../@core/utils/nuxeo.service';
+import { DocumentoService } from '../../../@core/data/documento.service';
 
 @Component({
   selector: 'ngx-consulta-entrada',
@@ -25,13 +27,16 @@ export class ConsultaEntradaComponent implements OnInit {
   entradaEspecifica: Entrada;
   contrato: Contrato;
   settings: any;
+  documentoId: boolean;
 
-  constructor(private router: Router, private entradasHelper: EntradaHelper, private translate: TranslateService) {
+  constructor(private router: Router, private entradasHelper: EntradaHelper, private translate: TranslateService,
+    private nuxeoService: NuxeoService, private documentoService: DocumentoService) {
     this.source = new LocalDataSource();
     this.entradas = new Array<Entrada>();
     this.detalle = false;
     this.entradaEspecifica = new Entrada;
     this.contrato = new Contrato;
+    this.documentoId = false;
     this.loadTablaSettings();
     this.iniciarParametros();
     this.loadEntradas();
@@ -55,6 +60,9 @@ export class ConsultaEntradaComponent implements OnInit {
         ],
       },
       columns: {
+        Id: {
+          title: 'ID',
+        },
         Consecutivo: {
           title: this.translate.instant('GLOBAL.consecutivo'),
         },
@@ -108,6 +116,7 @@ export class ConsultaEntradaComponent implements OnInit {
         for (const datos in Object.keys(data)) {
           if (data.hasOwnProperty(datos) && data[datos].ActaRecibidoId !== undefined) {
             const entrada = new Entrada;
+            entrada.Id = data[datos].Id;
             entrada.ActaRecibidoId = data[datos].ActaRecibidoId;
             entrada.ContratoId = data[datos].ContratoId;
             entrada.DocumentoContableId = data[datos].DocumentoContableId;
@@ -148,6 +157,13 @@ export class ConsultaEntradaComponent implements OnInit {
         if (this.entradaEspecifica.ContratoId !== 0) {
           this.loadContrato();
         }
+        if (this.entradaEspecifica.TipoEntradaId.Id === 1
+          || this.entradaEspecifica.TipoEntradaId.Id === 2
+          || this.entradaEspecifica.TipoEntradaId.Id === 3) {
+            this.documentoId = true;
+        } else {
+          this.documentoId = false;
+        }
       }
     });
   }
@@ -175,9 +191,45 @@ export class ConsultaEntradaComponent implements OnInit {
     });
   }
 
+  loadSoporte() {
+    this.entradasHelper.getSoportes(this.consecutivoEntrada).subscribe(res => {
+      if (res !== null) {
+        const data = <Array<any>>res;
+
+        const filesToGet = [
+          {
+            Id: data[0].DocumentoId,
+            key: data[0].DocumentoId,
+          },
+        ];
+
+        this.nuxeoService.getDocumentoById$(filesToGet, this.documentoService)
+          .subscribe(response => {
+            const filesResponse = <any>response;
+            // console.log(filesResponse)
+            if (Object.keys(filesResponse).length === filesToGet.length) {
+              console.log("files", filesResponse);
+              filesToGet.forEach((file: any) => {
+                const url = filesResponse[file.Id];
+                // let newWindow = window.open('','_blank')
+                const new_tab = window.open('', '_blank', 'toolbar=no,' +
+                  'location=no, directories=no, status=no, menubar=no,' +
+                  'scrollbars=no, resizable=no, copyhistory=no, height=400, width=400, top = 20, left=20');
+                new_tab.onload = () => {
+                  new_tab.location = url;
+                };
+                new_tab.focus();
+              });
+            }
+          });
+      }
+    });
+  }
+
   onCustom(event) {
     this.actaRecibidoId = +`${event.data.ActaRecibidoId}`;
-    this.consecutivoEntrada = `${event.data.Consecutivo}`;
+    // this.consecutivoEntrada = `${event.data.Consecutivo}`;
+    this.consecutivoEntrada = `${event.data.Id}`;
     this.detalle = true;
     this.loadEntradaEspecifica();
   }
