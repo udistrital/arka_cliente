@@ -13,6 +13,7 @@ import { ToasterModule } from 'angular2-toaster';
 import { CrudGrupoComponent } from './crud-grupo/crud-grupo.component';
 import { CrudSubgrupo1Component } from './crud-subgrupo_1/crud-subgrupo_1.component';
 import { RegistroElementosComponent } from './registro-elementos/registro-elementos.component';
+import { InactivarGrupoComponent } from './inactivar-grupo/inactivar-grupo.component';
 
 
 @NgModule({
@@ -26,6 +27,7 @@ import { RegistroElementosComponent } from './registro-elementos/registro-elemen
     CrudGrupoComponent,
     CrudSubgrupo1Component,
     RegistroElementosComponent,
+    InactivarGrupoComponent,
   ],
   imports: [
     CommonModule,

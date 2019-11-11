@@ -122,6 +122,10 @@ export const MENU_ITEMS: NbMenuItem[] = [
         title: 'Registro Elementos',
         link: '/pages/catalogo_bienes/registro_elementos',
       },
+      {
+        title: 'Inactivar Grupos y Subgrupos',
+        link: '/pages/catalogo_bienes/inactiva_grupos',
+      },
     ],
   },
 ];

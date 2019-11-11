@@ -4,6 +4,7 @@ import { ConsultaCatalogoComponent } from './consulta-catalogo/consulta-catalogo
 import { Routes, RouterModule } from '@angular/router';
 import { RegistroCatalogoComponent } from './registro-catalogo/registro-catalogo.component';
 import { RegistroElementosComponent } from './registro-elementos/registro-elementos.component';
+import { InactivarGrupoComponent } from './inactivar-grupo/inactivar-grupo.component';
 
 const routes: Routes = [{
   path: '',
@@ -20,6 +21,10 @@ const routes: Routes = [{
     {
       path: 'registro_elementos',
       component: RegistroElementosComponent,
+    },
+    {
+      path: 'inactiva_grupos',
+      component: InactivarGrupoComponent,
     },
   ],
 }];
