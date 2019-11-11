@@ -208,7 +208,7 @@ export class ConsultaEntradaComponent implements OnInit {
             const filesResponse = <any>response;
             // console.log(filesResponse)
             if (Object.keys(filesResponse).length === filesToGet.length) {
-              console.log("files", filesResponse);
+              // console.log("files", filesResponse);
               filesToGet.forEach((file: any) => {
                 const url = filesResponse[file.Id];
                 // let newWindow = window.open('','_blank')
