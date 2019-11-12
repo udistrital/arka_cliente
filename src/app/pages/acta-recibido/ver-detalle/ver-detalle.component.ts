@@ -278,7 +278,7 @@ export class VerDetalleComponent implements OnInit {
           .subscribe(response => {
             const filesResponse = <any>response;
             this.fileDocumento = filesResponse;
-            console.log(filesResponse)
+            // console.log(filesResponse);
             if (Object.keys(filesResponse).length === filesToGet.length) {
               // console.log("files", filesResponse);
               filesToGet.forEach((file: any) => {

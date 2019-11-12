@@ -405,7 +405,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
       Proveedor: ['', Validators.required],
       Consecutivo: ['', Validators.required],
       Fecha_Factura: ['', Validators.required],
-      Soporte: ['', Validators.required],
+      Soporte: [''],
     });
   }
   get Elementos(): FormGroup {
