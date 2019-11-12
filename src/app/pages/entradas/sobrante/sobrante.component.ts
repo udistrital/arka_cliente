@@ -6,6 +6,10 @@ import { OrdenadorGasto } from '../../../@core/data/models/entrada/ordenador_gas
 import { PopUpManager } from '../../../managers/popUpManager';
 import { Entrada } from '../../../@core/data/models/entrada/entrada';
 import { TipoEntrada } from '../../../@core/data/models/entrada/tipo_entrada';
+import { TranslateService } from '@ngx-translate/core';
+import { SafeResourceUrl, DomSanitizer } from '@angular/platform-browser';
+import { NuxeoService } from '../../../@core/utils/nuxeo.service';
+import { DocumentoService } from '../../../@core/data/documento.service';
 
 @Component({
   selector: 'ngx-sobrante',
@@ -24,10 +28,15 @@ export class SobranteComponent implements OnInit {
   cargoOrdenador: string;
   ordenadorId: number;
   validar: boolean;
+  fileDocumento: any;
+  uidDocumento: string;
+  idDocumento: number;
 
   @Input() actaRecibidoId: string;
 
-  constructor(private router: Router, private entradasHelper: EntradaHelper, private pUpManager: PopUpManager, private fb: FormBuilder) {
+  constructor(private router: Router, private entradasHelper: EntradaHelper, private pUpManager: PopUpManager, private fb: FormBuilder,
+    private nuxeoService: NuxeoService, private sanitization: DomSanitizer, private documentoService: DocumentoService,
+    private translate: TranslateService) {
     this.ordenadores = new Array<OrdenadorGasto>();
     this.solicitanteSelect = false;
     this.ordenadorId = 0;
@@ -101,6 +110,50 @@ export class SobranteComponent implements OnInit {
     }
   }
 
+  // MÉTODOS PARA CARGAR SOPORTES
+  getSoporte(event) {
+    if (event.target.files.length > 0) {
+      const file = event.target.files[0];
+      if (file.type === 'application/pdf') {
+        file.urlTemp = URL.createObjectURL(event.srcElement.files[0]);
+        file.url = this.cleanURL(file.urlTemp);
+        file.IdDocumento = 12;
+        file.file = event.target.files[0];
+        this.fileDocumento = file;
+      } else {
+        this.pUpManager.showToast('error', this.translate.instant('GLOBAL.error'), this.translate.instant('ERROR.formato_documento_pdf'));
+      }
+    }
+  }
+
+  cleanURL(oldURL: string): SafeResourceUrl {
+    return this.sanitization.bypassSecurityTrustUrl(oldURL);
+  }
+
+  postSoporteNuxeo(files) {
+    return new Promise((resolve, reject) => {
+      files.forEach((file) => {
+        file.Id = file.nombre;
+        file.nombre = 'soporte_' + file.IdDocumento + '_entradas';
+        // file.key = file.Id;
+        file.key = 'soporte_' + file.IdDocumento;
+      });
+      this.nuxeoService.getDocumentos$(files, this.documentoService)
+        .subscribe(response => {
+          if (Object.keys(response).length === files.length) {
+            // console.log("response", response);
+            files.forEach((file) => {
+              this.uidDocumento = file.uid;
+              this.idDocumento = response[file.key].Id;
+            });
+            resolve(true);
+          }
+        }, error => {
+          reject(error);
+        });
+    });
+  }
+
   /**
    * Método para obtener el año en curso
    */
@@ -111,7 +164,7 @@ export class SobranteComponent implements OnInit {
   /**
    * Método para enviar registro
    */
-  onSubmit() {
+  async onSubmit() {
     if (this.validar) {
       const entradaData = new Entrada;
       const tipoEntrada = new TipoEntrada;
@@ -125,25 +178,60 @@ export class SobranteComponent implements OnInit {
       entradaData.TipoEntradaId = tipoEntrada;
       entradaData.Vigencia = this.vigencia.toString(); // REVISAR
       entradaData.Observacion = this.observacionForm.value.observacionCtrl;
+
       // CAMPOS REQUERIDOS PARA ADQUISICIÓN
       entradaData.Solicitante = +this.ordenadorId;
-      // // ENVIA LA ENTRADA AL MID
-      this.entradasHelper.postEntrada(entradaData).subscribe(res => {
-        if (res !== null) {
-          this.pUpManager.showSuccesToast('Registro Exitoso');
-          this.pUpManager.showSuccessAlert('Entrada registrada satisfactoriamente!' +
-            '\n ENTRADA N°: ' + entradaData.Consecutivo);
 
-          const navigationExtras: NavigationExtras = { state: { consecutivo: entradaData.Consecutivo } };
-          this.router.navigate(['/pages/reportes/registro-entradas'], navigationExtras);
+      await this.postSoporteNuxeo([this.fileDocumento]);
+
+      const soporte = {
+        DocumentoId: this.idDocumento,
+        Activo: true,
+        EntradaElementoId: {
+          Id: 0,
+        },
+      };
+
+      // ENVIA LA ENTRADA AL MID
+      this.entradasHelper.postEntrada(entradaData).subscribe((res: any) => {
+        if (res !== null) {
+          // CONSULTA ACTAS (DEBE IRSE)
+          this.entradasHelper.getEntradas().subscribe(resEntrada => {
+            if (resEntrada !== null) {
+              const data = <Array<any>>resEntrada;
+              soporte.EntradaElementoId.Id = data[0].Id;
+
+              // POST SOPORTE (DEBE IRSE)
+              this.entradasHelper.postSoporteEntrada(soporte).subscribe(resSoporte => {
+                if (resSoporte !== null) {
+                  this.pUpManager.showSuccesToast('Registro Exitoso');
+                  this.pUpManager.showSuccessAlert('Entrada registrada satisfactoriamente!' +
+                    '\n ENTRADA N°: ' + entradaData.Consecutivo);
+
+                  const navigationExtras: NavigationExtras = { state: { consecutivo: entradaData.Consecutivo } };
+                  this.router.navigate(['/pages/reportes/registro-entradas'], navigationExtras);
+                } else {
+                  this.pUpManager.showErrorAlert('No es posible subir el soporte.');
+                }
+              });
+            }
+          });
+
+          // this.pUpManager.showSuccesToast('Registro Exitoso');
+          // this.pUpManager.showSuccessAlert('Entrada registrada satisfactoriamente!' +
+          //  '\n ENTRADA N°: ' + entradaData.Consecutivo);
+
+          // const navigationExtras: NavigationExtras = { state: { consecutivo: entradaData.Consecutivo } };
+          // this.router.navigate(['/pages/reportes/registro-entradas'], navigationExtras);
         } else {
           this.pUpManager.showErrorAlert('No es posible hacer el registro.');
         }
       });
+
     } else {
       this.pUpManager.showErrorAlert('No ha llenado todos los campos! No es posible hacer el registro.');
     }
-  }
 
+  }
 
 }

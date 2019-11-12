@@ -86,9 +86,6 @@ export class DonacionComponent implements OnInit {
     this.observacionForm = this.fb.group({
       observacionCtrl: ['', Validators.nullValidator],
     });
-    this.solicitanteForm = this.fb.group({
-      solicitanteCtrl: ['', Validators.nullValidator],
-    });
     this.getVigencia();
   }
 

@@ -324,11 +324,33 @@ export class CatalogoElementosHelper {
     }
 
     /**
-     * Tipo de Bien Acta Get
+
+     * Transaccion Elemento Post
      * If the response has errors in the OAS API it should show a popup message with an error.
      * If the response is successs, it returns the object's data.
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
      */
+
+    public postElemento(Transaccion) {
+        this.rqManager.setPath('CATALOGO_ELEMENTOS_SERVICE');
+        return this.rqManager.post('elemento', Transaccion).pipe(
+            map(
+                (res) => {
+                    if (res['Type'] === 'error') {
+                        this.pUpManager.showErrorAlert('No se pudo regitrar el elemento');
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
+    /**
+         * Tipo de Bien Acta Get
+         * If the response has errors in the OAS API it should show a popup message with an error.
+         * If the response is successs, it returns the object's data.
+         * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
+         */
     public getTipoBien() {
         this.rqManager.setPath('CATALOGO_ELEMENTOS_SERVICE');
         return this.rqManager.get('tipo_bien?limit=-1').pipe(
@@ -353,17 +375,17 @@ export class CatalogoElementosHelper {
     public getPlanCuentas(naturaleza) {
         this.rqManager.setPath('FINANCIERA_SERVICE');
         return this.rqManager.get('cuenta_contable?query=Naturaleza:' + naturaleza +
-        ',NivelClasificacion.Id:5&fields=Id,Nombre,Naturaleza,Descripcion,Codigo').pipe(
-            map(
-                (res) => {
-                    if (res === 'error') {
-                        this.pUpManager.showErrorAlert('No se pudo consultar los tipos de bien');
-                        return undefined;
-                    }
-                    return res;
-                },
-            ),
-        );
+            ',NivelClasificacion.Id:5&fields=Id,Nombre,Naturaleza,Descripcion,Codigo').pipe(
+                map(
+                    (res) => {
+                        if (res === 'error') {
+                            this.pUpManager.showErrorAlert('No se pudo consultar los tipos de bien');
+                            return undefined;
+                        }
+                        return res;
+                    },
+                ),
+            );
     }
 
     /**

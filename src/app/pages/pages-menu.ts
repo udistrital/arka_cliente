@@ -92,6 +92,14 @@ export const MENU_ITEMS: NbMenuItem[] = [
         link: '/pages/catalogo_bienes/registro_catalogo',
       },
       {
+        title: 'Registro Elementos',
+        link: '/pages/catalogo_bienes/registro_elementos',
+      },
+      {
+        title: 'Inactivar Grupos y Subgrupos',
+        link: '/pages/catalogo_bienes/inactiva_grupos',
+      },
+      {
         title: 'Asignacion de Cuentas',
         link: '/pages/catalogo_bienes/registro_cuentas_catalogo',
       },
