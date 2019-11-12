@@ -28,6 +28,7 @@ import { IAppState } from '../../../@core/store/app.state';
 import { ListService } from '../../../@core/store/services/list.service';
 import { PopUpManager } from '../../../managers/popUpManager';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { DocumentoService } from '../../../@core/data/documento.service';
 
 
 
@@ -85,6 +86,8 @@ export class RegistroActaRecibidoComponent implements OnInit {
   dataService3: CompleterData;
   Tarifas_Iva: Impuesto[];
   fileDocumento: any;
+  uidDocumento: any;
+  idDocumento: number;
 
   constructor(
     private translate: TranslateService,
@@ -94,10 +97,12 @@ export class RegistroActaRecibidoComponent implements OnInit {
     private Actas_Recibido: ActaRecibidoHelper,
     private toasterService: ToasterService,
     private completerService: CompleterService,
-    private store: Store < IAppState > ,
+    private store: Store<IAppState>,
     private listService: ListService,
     private pUpManager: PopUpManager,
     private sanitization: DomSanitizer,
+    private nuxeoService: NuxeoService,
+    private documentoService: DocumentoService,
 
 
   ) {
@@ -187,9 +192,11 @@ export class RegistroActaRecibidoComponent implements OnInit {
     );
   }
   download(url, title, w, h) {
-    const left = (screen.width / 2) - (w / 2);
-    const top = (screen.height / 2) - (h / 2);
-    window.open(url, title, '_blank');
+    const new_tab = window.open(url, title, '_blank');
+    new_tab.onload = () => {
+      new_tab.location = url;
+    };
+    new_tab.focus();
   }
 
   onInputFileDocumento(event) {
@@ -442,7 +449,32 @@ export class RegistroActaRecibidoComponent implements OnInit {
     this.selected.setValue(i - 1);
 
   }
-  onFirstSubmit() {
+  postSoporteNuxeo(files) {
+    return new Promise((resolve, reject) => {
+      files.forEach((file) => {
+        file.Id = file.nombre;
+        file.nombre = 'soporte_' + file.IdDocumento + '_entradas';
+        // file.key = file.Id;
+        file.key = 'soporte_' + file.IdDocumento;
+      });
+      this.nuxeoService.getDocumentos$(files, this.documentoService)
+        .subscribe(response => {
+          if (Object.keys(response).length === files.length) {
+            // console.log("response", response);
+            files.forEach((file) => {
+              this.uidDocumento = file.uid;
+              this.idDocumento = response[file.key].Id;
+            });
+            resolve(true);
+          }
+        }, error => {
+          reject(error);
+        });
+    });
+  }
+  async onFirstSubmit() {
+    await this.postSoporteNuxeo([this.fileDocumento]);
+    console.log(this.fileDocumento);
     this.Datos = this.firstForm.value;
     const Transaccion_Acta = new TransaccionActaRecibido();
     Transaccion_Acta.ActaRecibido = this.Registrar_Acta(this.Datos.Formulario1, this.Datos.Formulario3);
