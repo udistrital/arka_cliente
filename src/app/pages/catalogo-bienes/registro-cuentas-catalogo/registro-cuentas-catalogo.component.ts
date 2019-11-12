@@ -90,7 +90,7 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
     this.uid_4 = undefined;
   }
   receiveMessage(event) {
-    this.catalogoElementosService.getSubgrupoById(event.Id).subscribe(
+    this.catalogoElementosService.getGrupoById(event.Id).subscribe(
       res => {
         // console.log(res[0]);
         if (Object.keys(res[0]).length !== 0) {

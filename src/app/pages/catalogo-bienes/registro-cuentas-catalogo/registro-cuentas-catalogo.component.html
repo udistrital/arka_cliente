@@ -15,43 +15,67 @@
     </nb-card-body>
   </nb-card>
   <div class="col-md-6 col-lg-6 col-xxxl-6" *ngIf="uid_1">
-    <mat-tab-group [selectedIndex]="selected.value" (selectedIndexChange)="selected.setValue($event)">
-      <mat-tab>
-        <ng-template mat-tab-label>
+    <mat-vertical-stepper #stepper>
+      <mat-step>
+        <ng-template matStepLabel>
           {{'GLOBAL.Entradas' | translate}}
         </ng-template>
         <div *ngFor="let tab of movimiento">
           <ngx-crud-movimiento [subgrupo_id]="uid_1" [movimiento_id]="tab" (eventChange)="recargarCatalogo($event)">
           </ngx-crud-movimiento>
         </div>
-      </mat-tab>
-      <mat-tab>
-        <ng-template mat-tab-label>
+        <div class="justify-content-center">
+          <button nbButton
+            matStepperPrevious>{{'GLOBAL.Acta_Recibido.RegistroActa.AnteriorButton' | translate}}</button>
+          <button nbButton matStepperNext
+            class="float-right">{{'GLOBAL.Acta_Recibido.RegistroActa.SiguienteButton' | translate}}</button>
+        </div>
+      </mat-step>
+      <mat-step>
+        <ng-template matStepLabel>
           {{'GLOBAL.Salidas' | translate}}
         </ng-template>
         <div *ngFor="let tab of [7]">
           <ngx-crud-movimiento [subgrupo_id]="uid_1" [movimiento_id]="tab" (eventChange)="recargarCatalogo($event)">
           </ngx-crud-movimiento>
+          <div class="justify-content-center">
+            <button nbButton
+              matStepperPrevious>{{'GLOBAL.Acta_Recibido.RegistroActa.AnteriorButton' | translate}}</button>
+            <button nbButton matStepperNext
+              class="float-right">{{'GLOBAL.Acta_Recibido.RegistroActa.SiguienteButton' | translate}}</button>
+          </div>
         </div>
-      </mat-tab>
-      <mat-tab>
-        <ng-template mat-tab-label>
+      </mat-step>
+      <mat-step>
+        <ng-template matStepLabel>
           {{'GLOBAL.Depreciacion' | translate}}
         </ng-template>
         <div *ngFor="let tab of [8]">
           <ngx-crud-movimiento [subgrupo_id]="uid_1" [movimiento_id]="tab" (eventChange)="recargarCatalogo($event)">
           </ngx-crud-movimiento>
         </div>
-      </mat-tab>
-      <mat-tab>
-          <ng-template mat-tab-label>
-            {{'GLOBAL.Valorizacion' | translate}}
-          </ng-template>
-          <div *ngFor="let tab of [9]">
-            <ngx-crud-movimiento [subgrupo_id]="uid_1" [movimiento_id]="tab" (eventChange)="recargarCatalogo($event)">
-            </ngx-crud-movimiento>
-          </div>
-        </mat-tab>
-    </mat-tab-group>
+        <div class="justify-content-center">
+          <button nbButton
+            matStepperPrevious>{{'GLOBAL.Acta_Recibido.RegistroActa.AnteriorButton' | translate}}</button>
+          <button nbButton matStepperNext
+            class="float-right">{{'GLOBAL.Acta_Recibido.RegistroActa.SiguienteButton' | translate}}</button>
+        </div>
+      </mat-step>
+      <mat-step>
+        <ng-template matStepLabel>
+          {{'GLOBAL.Valorizacion' | translate}}
+        </ng-template>
+        <div *ngFor="let tab of [9]">
+          <ngx-crud-movimiento [subgrupo_id]="uid_1" [movimiento_id]="tab" (eventChange)="recargarCatalogo($event)">
+          </ngx-crud-movimiento>
+        </div>
+        <div class="justify-content-center">
+          <button nbButton
+            matStepperPrevious>{{'GLOBAL.Acta_Recibido.RegistroActa.AnteriorButton' | translate}}</button>
+          <button nbButton matStepperNext
+            class="float-right">{{'GLOBAL.Acta_Recibido.RegistroActa.GuardarCambiosButton' | translate}}</button>
+        </div>
+      </mat-step>
+    </mat-vertical-stepper>
   </div>
 </div>
