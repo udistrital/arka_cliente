@@ -1,4 +1,5 @@
 import { Catalogo } from '../catalogo';
+import { TipoBien } from '../acta_recibido/tipo_bien';
 
 export class Grupo {
   Id: number;
@@ -7,6 +8,7 @@ export class Grupo {
   Descripcion: string;
   Activo: boolean;
   Catalogo: Catalogo;
+  // TipoBienId: TipoBien;
 }
 
 export class GrupoTransaccion {

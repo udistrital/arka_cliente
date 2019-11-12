@@ -91,7 +91,7 @@ export class CrudCatalogoComponent implements OnInit {
       dangerMode: true,
       showCancelButton: true,
     };
-    (Swal as any)(opt)
+    (Swal as any).fire(opt)
     .then((willDelete) => {
       if (willDelete.value) {
         this.info_catalogo = <Catalogo>catalogo;
@@ -114,7 +114,7 @@ export class CrudCatalogoComponent implements OnInit {
       dangerMode: true,
       showCancelButton: true,
     };
-    (Swal as any)(opt)
+    (Swal as any).fire(opt)
     .then((willDelete) => {
       if (willDelete.value) {
         this.info_catalogo = <Catalogo>catalogo;

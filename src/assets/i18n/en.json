@@ -259,6 +259,7 @@
 
     },
     
+    "placeholder":"This field is mandatory",
     "search": "Search",
     "catalogo": "Catalogue",
     "inactivar_grupos_subgrupos": "Inactivate groups and subgroups",
@@ -275,6 +276,7 @@
     "placeholder_id": "ej: id",
     "nombre": "nombre",
     "placeholder_nombre": "ej: nombre",
+    "codigo": "Code",
     "codigo_abreviacion": "codigo_abreviacion",
     "placeholder_codigo_abreviacion": "ej: codigo_abreviacion",
     "descripcion": "Description",

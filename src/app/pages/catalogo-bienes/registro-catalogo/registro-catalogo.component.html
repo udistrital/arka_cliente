@@ -23,7 +23,7 @@
       <nb-card-header>
         Modificar Grupo
       </nb-card-header>
-      <ngx-crud-grupo [grupo_id]="uid_1" (eventChange)="eventChange = $event"></ngx-crud-grupo>
+      <ngx-crud-grupo [grupo_id]="uid_1" (eventChange)="recargarCatalogo($event)"></ngx-crud-grupo>
       <nb-card-footer>
         <div>
             <button nbButton (click)="QuitarVista()">Deshacer</button>
@@ -36,7 +36,7 @@
       <nb-card-header>
         Modificar Subgrupo
       </nb-card-header>
-      <ngx-crud-subgrupo-1 [subgrupo_1_id]="uid_2" (eventChange)="eventChange = $event"></ngx-crud-subgrupo-1>
+      <ngx-crud-subgrupo-1 [subgrupo_1_id]="uid_2" (eventChange)="recargarCatalogo($event)"></ngx-crud-subgrupo-1>
       <nb-card-footer>
         <div>
             <button nbButton (click)="QuitarVista()">Deshacer</button>
@@ -49,7 +49,7 @@
       <nb-card-header>
         Crear Grupo
       </nb-card-header>
-      <ngx-crud-grupo [catalogo_id]="catalogoId" (eventChange)="eventChange = $event"></ngx-crud-grupo>
+      <ngx-crud-grupo [catalogo_id]="catalogoId" (eventChange)="recargarCatalogo($event)"></ngx-crud-grupo>
       <nb-card-footer>
           <div>
               <button nbButton (click)="QuitarVista()">Deshacer</button>
@@ -61,7 +61,7 @@
       <nb-card-header>
         Crear Subgrupo
       </nb-card-header>
-      <ngx-crud-subgrupo-1 [subgrupo_Padre]="subgrupoPadre" (eventChange)="eventChange = $event"></ngx-crud-subgrupo-1>
+      <ngx-crud-subgrupo-1 [subgrupo_Padre]="subgrupoPadre" (eventChange)="recargarCatalogo($event)"></ngx-crud-subgrupo-1>
       <nb-card-footer>
           <div>
               <button nbButton (click)="QuitarVista()">Deshacer</button>

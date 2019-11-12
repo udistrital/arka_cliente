@@ -294,8 +294,11 @@ export class VerificacionActaRecibidoComponent implements OnInit {
             `${res.ActaRecibido.Id}` + this.translate.instant('GLOBAL.Acta_Recibido.VerificacionActa.VerificadaTitle'),
           text: this.translate.instant('GLOBAL.Acta_Recibido.VerificacionActa.Acta') +
             `${res.ActaRecibido.Id}` + this.translate.instant('GLOBAL.Acta_Recibido.VerificacionActa.Verificada'),
+        }).then((willDelete) => {
+          if (willDelete.value) {
+            window.location.reload();
+          }
         });
-        window.location.reload();
       } else {
         (Swal as any).fire({
           type: 'error',
@@ -325,8 +328,11 @@ export class VerificacionActaRecibidoComponent implements OnInit {
             `${res.ActaRecibido.Id}` + this.translate.instant('GLOBAL.Acta_Recibido.VerificacionActa.RechazadaTitle'),
           text: this.translate.instant('GLOBAL.Acta_Recibido.VerificacionActa.Acta') +
             `${res.ActaRecibido.Id}` + this.translate.instant('GLOBAL.Acta_Recibido.VerificacionActa.Rechazada'),
+        }).then((willDelete) => {
+          if (willDelete.value) {
+            window.location.reload();
+          }
         });
-        window.location.reload();
       } else {
         (Swal as any).fire({
           type: 'error',

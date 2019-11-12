@@ -1,6 +1,7 @@
 import { Catalogo } from '../../../@core/data/models/catalogo/catalogo';
 import { Grupo, GrupoTransaccion } from '../../../@core/data/models/catalogo/grupo';
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { TipoBien } from '../../../@core/data/models/acta_recibido/tipo_bien';
 import { FORM_GRUPO } from './form-grupo';
 import { ToasterService, ToasterConfig, Toast, BodyOutputType } from 'angular2-toaster';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
@@ -48,7 +49,7 @@ export class CrudGrupoComponent implements OnInit {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
       this.construirForm();
     });
-    this.loadOptionsCatalogo();
+    // this.loadOptionsCatalogo();
   }
 
   construirForm() {
@@ -65,13 +66,13 @@ export class CrudGrupoComponent implements OnInit {
   }
 
   loadOptionsCatalogo(): void {
-    let catalogo: Array<any> = [];
-    this.catalogoElementosService.getCatalogo()
+    let Tipo_Bien: Array<any> = [];
+    this.catalogoElementosService.getTipoBien()
       .subscribe(res => {
         if (res !== null) {
-          catalogo = <Array<Catalogo>>res;
+          Tipo_Bien = <Array<TipoBien>>res;
         }
-        this.formGrupo.campos[this.getIndexForm('Catalogo')].opciones = catalogo;
+        this.formGrupo.campos[this.getIndexForm('TipoBienId')].opciones = Tipo_Bien;
       });
   }
 

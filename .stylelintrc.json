@@ -4,7 +4,7 @@
     "color-no-invalid-hex": true,
     "function-calc-no-unspaced-operator": true,
     "function-comma-space-after": "always-single-line",
-    "function-comma-space-before": "never",
+    "function-comma-space-before": "never-single-line",
     "function-name-case": "lower",
     "function-url-quotes": "always",
     "function-whitespace-after": "always",

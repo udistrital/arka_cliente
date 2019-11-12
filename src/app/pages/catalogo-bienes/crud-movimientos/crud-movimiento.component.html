@@ -1,0 +1,9 @@
+<!-- <code *ngIf="catalogoid">
+       
+    </code> -->
+<div *ngIf="movimiento_id">
+    <toaster-container [toasterconfig]="config"></toaster-container>
+    <ngx-dinamicform  [normalform]="formMovimiento" [modeloData]="info_movimiento"
+        (result)="validarForm($event)" [clean]="clean">
+    </ngx-dinamicform>
+</div>

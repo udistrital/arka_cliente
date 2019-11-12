@@ -6,7 +6,9 @@ import { AnalyticsService } from '../../../@core/utils';
 import { LayoutService } from '../../../@core/utils';
 import { ImplicitAutenticationService } from '../../../@core/utils/implicit_autentication.service';
 import { NotificacionesService } from '../../../@core/utils/notificaciones.service';
-import { Subscription } from 'rxjs';
+import { Subscription, Observable } from 'rxjs';
+import { CatalogoComponent } from '../../../pages/catalogo/catalogo.component';
+import { CatalogoService } from '../../../@core/data/catalogo.service';
 
 @Component({
   selector: 'ngx-header',
@@ -27,6 +29,8 @@ export class HeaderComponent implements OnInit {
   public noNotify: any = '0';
   private autenticacion = new ImplicitAutenticationService;
   public activeLang = 'es';
+  toggle: boolean;
+  clientes$: Observable<boolean>;
 
 
   constructor(private sidebarService: NbSidebarService,
@@ -35,9 +39,11 @@ export class HeaderComponent implements OnInit {
     private analyticsService: AnalyticsService,
     private layoutService: LayoutService,
     public notificacionService: NotificacionesService,
+    // private catalogoService: CatalogoService,
     public translate: TranslateService) {
 
     this.translate = translate;
+    this.toggle = false;
     this.itemClick = this.menuService.onItemClick()
       .subscribe((event) => {
         this.onContecxtItemSelection(event.item.title);
@@ -57,6 +63,8 @@ export class HeaderComponent implements OnInit {
   ngOnInit() {
     // this.userService.getUsers()
     //   .subscribe((users: any) => this.user = users.nick);
+    // this.clientes$ = this.catalogoService.getEstado$();
+    // this.clientes$.subscribe(cliente => this.toggle = cliente);
   }
 
   useLanguage(language: string) {
@@ -89,8 +97,8 @@ export class HeaderComponent implements OnInit {
   }
   toggleSidebar(): boolean {
     this.sidebarService.toggle(true, 'menu-sidebar');
+    // this.catalogoService.CambiarEstado()
     this.layoutService.changeLayoutSize();
-
     return false;
   }
   toggleNotifications(): boolean {

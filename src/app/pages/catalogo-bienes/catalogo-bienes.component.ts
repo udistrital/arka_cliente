@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 
 @Component({
   selector: 'ngx-catalogo-bienes',
@@ -6,7 +7,10 @@ import { Component, OnInit } from '@angular/core';
 })
 export class CatalogoBienesComponent implements OnInit {
 
-  constructor() { }
+  constructor(private translate: TranslateService) {
+    this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
+    });
+  }
 
   ngOnInit() {
   }

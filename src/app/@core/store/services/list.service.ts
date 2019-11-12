@@ -5,11 +5,13 @@ import { REDUCER_LIST } from '../reducer.constants';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
 import { Proveedor } from '../../../@core/data/models/acta_recibido/Proveedor';
 import { Observable } from 'rxjs';
+import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/catalogoElementosHelper';
 @Injectable()
 export class ListService {
 
   constructor(
     private ActaRecibido: ActaRecibidoHelper,
+    private CatalogoElementos: CatalogoElementosHelper,
     private store: Store<IAppState>) {
   }
 
@@ -27,12 +29,49 @@ export class ListService {
                     res[index].compuesto = res[index].NumDocumento + ' - ' + res[index].NomProveedor;
                   }
                 }
-                // console.log('ok');
                 this.addList(REDUCER_LIST.Proveedores, res);
 
               },
               error => {
                 this.addList(REDUCER_LIST.Proveedores, []);
+              },
+            );
+        }
+      },
+    );
+  }
+  public findPlanCuentasCredito() {
+
+    this.store.select(REDUCER_LIST.PlanCuentasCredito).subscribe(
+      (list: any) => {
+        if (!list || list.length === 0) {
+          this.CatalogoElementos.getPlanCuentas('Credito')
+            .subscribe(
+              (res: any[]) => {
+
+                this.addList(REDUCER_LIST.PlanCuentasCredito, res);
+              },
+              error => {
+                this.addList(REDUCER_LIST.PlanCuentasCredito, []);
+              },
+            );
+        }
+      },
+    );
+  }
+  public findPlanCuentasDebito() {
+
+    this.store.select(REDUCER_LIST.PlanCuentasDebito).subscribe(
+      (list: any) => {
+        if (!list || list.length === 0) {
+          this.CatalogoElementos.getPlanCuentas('Debito')
+            .subscribe(
+              (res: any[]) => {
+
+                this.addList(REDUCER_LIST.PlanCuentasDebito, res);
+              },
+              error => {
+                this.addList(REDUCER_LIST.PlanCuentasDebito, []);
               },
             );
         }

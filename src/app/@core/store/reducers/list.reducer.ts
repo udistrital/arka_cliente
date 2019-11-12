@@ -12,4 +12,21 @@ export class ListReducer {
     }
   }
 
+  static ListReducerPlanCuentasDebito(state: Array<any> = new Array, action) {
+    switch (action.type) {
+      case REDUCER_LIST.PlanCuentasDebito:
+        return [...state, action.payload];
+      default:
+        return state;
+    }
+  }
+  static ListReducerPlanCuentasCredito(state: Array<any> = new Array, action) {
+    switch (action.type) {
+      case REDUCER_LIST.PlanCuentasCredito:
+        return [...state, action.payload];
+      default:
+        return state;
+    }
+  }
+
 }

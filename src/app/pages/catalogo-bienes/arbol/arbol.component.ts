@@ -96,9 +96,12 @@ export class ArbolComponent implements OnInit, OnChanges {
 
   loadTreeCatalogo() {
     this.catalogoHelper.getArbolCatalogo(this.catalogoId).subscribe((res) => {
+
       if (res !== null) {
-        this.data = res;
-        this.dataSource = this.dataSourceBuilder.create(this.data);
+        if (res[0].hasOwnProperty('data') ) {
+          this.data = res;
+          this.dataSource = this.dataSourceBuilder.create(this.data);
+        }
       }
     });
   }

@@ -14,11 +14,12 @@ import { CrudGrupoComponent } from './crud-grupo/crud-grupo.component';
 import { CrudSubgrupo1Component } from './crud-subgrupo_1/crud-subgrupo_1.component';
 import { RegistroElementosComponent } from './registro-elementos/registro-elementos.component';
 import { InactivarGrupoComponent } from './inactivar-grupo/inactivar-grupo.component';
+import { RegistroCuentasCatalogoComponent } from './registro-cuentas-catalogo/registro-cuentas-catalogo.component';
+import { CrudMovimientoComponent } from './crud-movimientos/crud-movimiento.component';
 
 
 @NgModule({
   declarations: [
-    ...routedComponents,
     CatalogoBienesComponent,
     ConsultaCatalogoComponent,
     ArbolComponent,
@@ -28,6 +29,8 @@ import { InactivarGrupoComponent } from './inactivar-grupo/inactivar-grupo.compo
     CrudSubgrupo1Component,
     RegistroElementosComponent,
     InactivarGrupoComponent,
+    CrudMovimientoComponent,
+    RegistroCuentasCatalogoComponent,
   ],
   imports: [
     CommonModule,

@@ -431,7 +431,6 @@ export class RegistroActaRecibidoComponent implements OnInit {
           text: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.Acta') +
             `${res.ActaRecibido.Id}` + this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.Registrada'),
         });
-        window.location.reload();
       } else {
         (Swal as any).fire({
           type: 'error',

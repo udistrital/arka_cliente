@@ -1,4 +1,5 @@
 import { Grupo } from './grupo';
+import { TipoBien } from '../acta_recibido/tipo_bien';
 
 export class Subgrupo {
   Id: number;
@@ -8,7 +9,7 @@ export class Subgrupo {
   FechaCreacion: Date;
   FechaModificacion: Date;
   Activo: boolean;
-  // Grupo: Grupo;
+  TipoBienId: TipoBien;
 }
 
 export class SubgrupoTransaccion {

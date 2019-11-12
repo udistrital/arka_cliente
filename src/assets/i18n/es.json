@@ -261,6 +261,7 @@
 
     },
 
+    "placeholder":"Este Campo es Obligatorio",
     "search": "Buscar",
     "catalogo": "Catálogo",
     "inactivar_grupos_subgrupos": "Inactivar grupos y subgrupos",
@@ -277,6 +278,7 @@
     "placeholder_id": "ej: id",
     "nombre": "nombre",
     "placeholder_nombre": "ej: nombre",
+    "codigo": "Código",
     "codigo_abreviacion": "codigo_abreviacion",
     "placeholder_codigo_abreviacion": "ej: codigo_abreviacion",
     "descripcion": "Descripción",

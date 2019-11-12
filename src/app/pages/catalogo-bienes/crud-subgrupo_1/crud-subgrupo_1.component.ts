@@ -47,7 +47,6 @@ export class CrudSubgrupo1Component implements OnInit {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
       this.construirForm();
     });
-    this.loadOptionsGrupo();
   }
 
   construirForm() {
@@ -109,7 +108,7 @@ export class CrudSubgrupo1Component implements OnInit {
 
     const opt: any = {
       title: 'Update?',
-      text: 'Update Subgrupo1!',
+      text: 'Update Subgrupo!',
       type: 'warning',
       showCancelButton: true,
     };
@@ -139,6 +138,7 @@ export class CrudSubgrupo1Component implements OnInit {
         if (willDelete.value) {
           const subgrupoPost = new SubgrupoTransaccion;
           const subgrupoHijo = new Array<Subgrupo>();
+          subgrupo.TipoBienId = this.subgrupoPadre.TipoBienId;
           subgrupoHijo.push(subgrupo);
           subgrupoPost.SubgrupoPadre = this.subgrupoPadre;
           subgrupoPost.SubgrupoHijo = subgrupoHijo;
@@ -157,11 +157,12 @@ export class CrudSubgrupo1Component implements OnInit {
   }
 
   validarForm(event) {
+    // console.log(event);
     if (event.valid) {
       if (this.info_subgrupo_1 === undefined) {
-        this.createSubgrupo1(event.data.Subgrupo1);
+        this.createSubgrupo1(event.data.Subgrupo);
       } else {
-        this.updateSubgrupo1(event.data.Subgrupo1);
+        this.updateSubgrupo1(event.data.Subgrupo);
       }
     }
   }

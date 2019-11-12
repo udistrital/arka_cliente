@@ -1,0 +1,115 @@
+<!-- <div class="footer-g row">
+
+    <div class="row">
+        <div class="logo-container">
+            <div class="logo">
+                <img class="logo-ud" src="../../../../assets/images/logo_universidad_acreditacion.png">
+            </div>
+        </div>
+        <div class="col">
+            <strong><span class="limit_2">Oficina Asesora de Sistemas</span></strong>
+        </div>
+    </div>
+
+    <span class="created-by limit">Creado con ♥ by <b>Oficina Asesora de Sistemas</b></span> 
+    <div class="row">
+
+        <div class="col">
+            <div class="widgets_div">
+                <div class="icon_div">
+                    <mat-icon class="mat-icon" svgIcon="clock-outline" inline="true"></mat-icon>
+                </div>
+                <div class="text_div">
+                    <span>Lunes a Viernes</span>
+                    <span>8am a 5pm</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="widgets_div">
+                <div class="icon_div">
+                    <mat-icon class="mat-icon" svgIcon="globe-outline" inline="true"></mat-icon>
+                </div>
+                <div class="text_div">
+                    <span>Sistema Integrado</span>
+                    <span> de Informática y </span>
+                    <span>Telecomunicaciones</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="widgets_div">
+                <div class="icon_div">
+                    <mat-icon class="mat-icon" svgIcon="phone-outline" inline="true"></mat-icon>
+                </div>
+                <div class="text_div">
+                    <span class="limit">3239300</span>
+                    <span class="limit">Ext. 1112</span>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col">
+            <div class="widgets_div">
+                <div class="icon_div">
+                    <mat-icon class="mat-icon" svgIcon="pin-outline" inline="true"></mat-icon>
+                </div>
+                <div class="text_div">
+                    <span class="limit">Cra 8 #40-7B</span>
+                    <span class="limit">Piso 1</span>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col">
+            <div class="widgets_div">
+                <div class="icon_div">
+                    <mat-icon class="mat-icon" svgIcon="at-outline" inline="true"></mat-icon>
+                </div>
+                <div class="text_div">
+                    <span class="limit_2">computo@udistrital.edu.co</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> -->
+<!-- <link href="https://unpkg.com/ionicons@4.5.10-0/dist/css/ionicons.min.css" rel="stylesheet"> -->
+
+<div class="footer-div">
+    <figure class="card-imageContainer">
+        <img src="../../../../assets/images/logo_universidad_acreditacion.png" class="card-image" alt="logo-udistrital">
+    </figure>
+    <div class="footer-column">
+        <div class="footer-title">
+            <h5>Oficina Asesora de Sistemas</h5>
+        </div>
+    </div>
+
+    <div class="footer-logos">
+        <div class="social" *ngFor="let lista of social.list">
+            <i class="icon {{lista.class}}"></i>
+            <div class="text-container">
+                <p *ngFor="let value of lista.value">
+                    {{value}}
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- <span class="created-by">Creado con ♥ por la
+  <b>
+    <a href="https://www.udistrital.edu.co" target="_blank">Oficina Asesora de Sistemas Universidad Distrital</a>
+  </b> 2019
+</span>
+<div class="socials">
+  <a href="https://github.com/udistrital" target="_blank" class="ion ion-social-github"></a>
+  <a href="https://www.facebook.com/UniversidadDistrital/" target="_blank" class="ion ion-social-facebook"></a>
+  <a href="https://twitter.com/udistrital" target="_blank" class="ion ion-social-twitter"></a>
+  <a href="#" target="_blank" class="ion ion-social-linkedin"></a>
+</div> -->

@@ -324,11 +324,13 @@ export class CatalogoElementosHelper {
     }
 
     /**
+
      * Transaccion Elemento Post
      * If the response has errors in the OAS API it should show a popup message with an error.
      * If the response is successs, it returns the object's data.
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
      */
+
     public postElemento(Transaccion) {
         this.rqManager.setPath('CATALOGO_ELEMENTOS_SERVICE');
         return this.rqManager.post('elemento', Transaccion).pipe(
@@ -336,6 +338,154 @@ export class CatalogoElementosHelper {
                 (res) => {
                     if (res['Type'] === 'error') {
                         this.pUpManager.showErrorAlert('No se pudo regitrar el elemento');
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
+    /**
+    
+         * Tipo de Bien Acta Get
+         * If the response has errors in the OAS API it should show a popup message with an error.
+         * If the response is successs, it returns the object's data.
+         * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
+         */
+    public getTipoBien() {
+        this.rqManager.setPath('CATALOGO_ELEMENTOS_SERVICE');
+        return this.rqManager.get('tipo_bien?limit=-1').pipe(
+            map(
+                (res) => {
+                    if (res === 'error') {
+                        this.pUpManager.showErrorAlert('No se pudo consultar los tipos de bien');
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
+
+    /**
+     * Tipo de Bien Acta Get
+     * If the response has errors in the OAS API it should show a popup message with an error.
+     * If the response is successs, it returns the object's data.
+     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
+     */
+    public getPlanCuentas(naturaleza) {
+        this.rqManager.setPath('FINANCIERA_SERVICE');
+        return this.rqManager.get('cuenta_contable?query=Naturaleza:' + naturaleza +
+            ',NivelClasificacion.Id:5&fields=Id,Nombre,Naturaleza,Descripcion,Codigo').pipe(
+                map(
+                    (res) => {
+                        if (res === 'error') {
+                            this.pUpManager.showErrorAlert('No se pudo consultar los tipos de bien');
+                            return undefined;
+                        }
+                        return res;
+                    },
+                ),
+            );
+    }
+
+    /**
+     * Tipo de Bien Acta Get
+     * If the response has errors in the OAS API it should show a popup message with an error.
+     * If the response is successs, it returns the object's data.
+     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
+     */
+    public getPlanCuentas2() {
+        this.rqManager.setPath('FINANCIERA_SERVICE');
+        return this.rqManager.get('cuenta_contable?fields=Id,Nombre,Naturaleza,Descripcion,Codigo&limit=-1').pipe(
+            map(
+                (res) => {
+                    if (res === 'error') {
+                        this.pUpManager.showErrorAlert('No se pudo consultar los tipos de bien');
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
+
+    /**
+     * Tipo de Bien Acta Get
+     * If the response has errors in the OAS API it should show a popup message with an error.
+     * If the response is successs, it returns the object's data.
+     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
+     */
+    public getMovimiento(id_Subgrupo, idmovimiento) {
+        this.rqManager.setPath('CATALOGO_ELEMENTOS_SERVICE');
+        return this.rqManager.get('cuentas_subgrupo?query=SubgrupoId.Id:' + id_Subgrupo + ',SubtipoMovimientoId:' + idmovimiento + '').pipe(
+            map(
+                (res) => {
+                    if (res === 'error') {
+                        this.pUpManager.showErrorAlert('No se pudo consultar los tipos de bien');
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
+
+    /**
+     * Tipo de Bien Acta Get
+     * If the response has errors in the OAS API it should show a popup message with an error.
+     * If the response is successs, it returns the object's data.
+     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
+     */
+    public postMovimiento(Movimiento) {
+        this.rqManager.setPath('CATALOGO_ELEMENTOS_SERVICE');
+        return this.rqManager.post('cuentas_subgrupo', Movimiento).pipe(
+            map(
+                (res) => {
+                    if (res['Type'] === 'error') {
+                        this.pUpManager.showErrorAlert('No se pudo consultar el acta solicitada');
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
+
+    /**
+     * Tipo de Bien Acta Get
+     * If the response has errors in the OAS API it should show a popup message with an error.
+     * If the response is successs, it returns the object's data.
+     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
+     */
+    public putMovimiento(Movimiento, id_movimiento) {
+        this.rqManager.setPath('CATALOGO_ELEMENTOS_SERVICE');
+        return this.rqManager.put2('cuentas_subgrupo', Movimiento, id_movimiento).pipe(
+            map(
+                (res) => {
+                    if (res['Type'] === 'error') {
+                        this.pUpManager.showErrorAlert('No se pudo consultar el acta solicitada');
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
+
+    /**
+     * Tipo de Bien Acta Get
+     * If the response has errors in the OAS API it should show a popup message with an error.
+     * If the response is successs, it returns the object's data.
+     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
+     */
+    public deleteMovimiento(Movimiento) {
+        this.rqManager.setPath('CATALOGO_ELEMENTOS_SERVICE');
+        return this.rqManager.delete('cuentas_subgrupo', Movimiento).pipe(
+            map(
+                (res) => {
+                    if (res['Type'] === 'error') {
+                        this.pUpManager.showErrorAlert('No se pudo consultar el acta solicitada');
                         return undefined;
                     }
                     return res;
