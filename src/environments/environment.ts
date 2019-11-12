@@ -28,7 +28,7 @@ export const environment = {
   // ARKA_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/arka_mid/v1/',
   CATALOGO_BIENES_SERVICE: 'http://10.20.2.134:8087/v1/',
   FINANCIERA_SERVICE: 'http://10.20.2.143:8089/v1/',
-  //ARKA_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/arka_mid/v1/',
+  // ARKA_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/arka_mid/v1/',
   UNIDADES_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/administrativa_amazon_api/v1/',
   // CATALOGO_BIENES_SERVICE: 'http://localhost:8087/v1/',
   // CATALOGO_ELEMENTOS_SERVICE: 'http://localhost:8087/v1/',

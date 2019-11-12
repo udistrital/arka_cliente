@@ -346,7 +346,6 @@ export class CatalogoElementosHelper {
         );
     }
     /**
-    
          * Tipo de Bien Acta Get
          * If the response has errors in the OAS API it should show a popup message with an error.
          * If the response is successs, it returns the object's data.
