@@ -26,6 +26,8 @@ import { analyzeAndValidateNgModules } from '@angular/compiler';
 import { Store } from '@ngrx/store';
 import { IAppState } from '../../../@core/store/app.state';
 import { ListService } from '../../../@core/store/services/list.service';
+import { PopUpManager } from '../../../managers/popUpManager';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
 
 
@@ -82,6 +84,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
   Totales: Array<any>;
   dataService3: CompleterData;
   Tarifas_Iva: Impuesto[];
+  fileDocumento: any;
 
   constructor(
     private translate: TranslateService,
@@ -93,6 +96,8 @@ export class RegistroActaRecibidoComponent implements OnInit {
     private completerService: CompleterService,
     private store: Store < IAppState > ,
     private listService: ListService,
+    private pUpManager: PopUpManager,
+    private sanitization: DomSanitizer,
 
 
   ) {
@@ -181,6 +186,32 @@ export class RegistroActaRecibidoComponent implements OnInit {
       },
     );
   }
+  download(url, title, w, h) {
+    const left = (screen.width / 2) - (w / 2);
+    const top = (screen.height / 2) - (h / 2);
+    window.open(url, title, '_blank');
+  }
+
+  onInputFileDocumento(event) {
+    // console.log(event.target.files);
+    // console.log(event.srcElement.files);
+    if (event.target.files.length > 0) {
+      const file = event.target.files[0];
+      if (file.type === 'application/pdf') {
+        file.urlTemp = URL.createObjectURL(event.srcElement.files[0]);
+        file.url = this.cleanURL(file.urlTemp);
+        file.IdDocumento = 9;
+        file.file = event.target.files[0];
+        this.fileDocumento = file;
+      } else {
+        this.pUpManager.showErrorAlert('error' + this.translate.instant('GLOBAL.error'));
+      }
+    }
+  }
+  cleanURL(oldURL: string): SafeResourceUrl {
+    return this.sanitization.bypassSecurityTrustUrl(oldURL);
+  }
+
   Traer_Dependencias(res: any) {
     this.Dependencias = new Array<Dependencia>();
     for (const index in res) {

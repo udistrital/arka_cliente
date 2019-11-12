@@ -71,6 +71,5 @@ export let FORM_GRUPO = {
     //     requerido: true,
     //     tipo: 'checkbox',
     // },
-    
     ],
 };
