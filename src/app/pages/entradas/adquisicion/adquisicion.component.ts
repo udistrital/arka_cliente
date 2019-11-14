@@ -46,6 +46,8 @@ export class AdquisicionComponent implements OnInit {
   // Selects
   opcionTipoContrato: string;
   opcionvigencia: string;
+  tipoEntrada: any;
+  formatoTipoMovimiento: any;
 
   @Input() actaRecibidoId: string;
 
@@ -61,6 +63,8 @@ export class AdquisicionComponent implements OnInit {
     this.fechaFactura = '';
     this.validar = false;
     this.iniciarContrato();
+    this.getTipoEntrada();
+    this.getFormatoEntrada();
   }
 
   ngOnInit() {
@@ -219,6 +223,22 @@ export class AdquisicionComponent implements OnInit {
     this.contratoEspecifico.Supervisor = supervisorAux;
   }
 
+  getTipoEntrada() {
+    this.entradasHelper.getTipoEntradaByAcronimo("e_arka_adq").subscribe(res => {
+      if (res !== null) {
+        this.tipoEntrada = res;
+      }
+    });
+  }
+
+  getFormatoEntrada() {
+    this.entradasHelper.getFormatoEntradaByName("Adquisición").subscribe(res => {
+      if (res !== null) {
+        this.formatoTipoMovimiento = res;
+      }
+    });
+  }
+
   /**
    * Método para obtener el año en curso
    */
@@ -231,28 +251,35 @@ export class AdquisicionComponent implements OnInit {
    */
   onSubmit() {
     if (this.validar) {
-      const entradaData = new Entrada;
-      const tipoEntrada = new TipoEntrada;
-      // CAMPOS OBLIGATORIOS
-      entradaData.ActaRecibidoId = +this.actaRecibidoId;
-      entradaData.Activo = true;
-      entradaData.Consecutivo = 'P8-1-2019'; // REVISAR
-      entradaData.DocumentoContableId = 1; // REVISAR
-      tipoEntrada.Id = 5;
-      entradaData.TipoEntradaId = tipoEntrada;
-      entradaData.Vigencia = this.contratoForm.value.vigenciaCtrl;
-      entradaData.Observacion = this.observacionForm.value.observacionCtrl;
-      // CAMPOS REQUERIDOS PARA ADQUISICIÓN
-      entradaData.ContratoId = +this.contratoEspecifico.NumeroContratoSuscrito;
-      entradaData.Importacion = this.checked;
-      // ENVIA LA ENTRADA AL MID
-      this.entradasHelper.postEntrada(entradaData).subscribe(res => {
+      const detalle = {
+        acta_recibido_id: +this.actaRecibidoId,
+        consecutivo: 'P8-1-2019', // REVISAR
+        documento_contable_id: 1, // REVISAR
+        contrato_id: +this.contratoEspecifico.NumeroContratoSuscrito,
+        vigencia_contrato: this.contratoForm.value.vigenciaCtrl,
+        importacion: this.checked
+      }
+      const movimientoAdquisicion = {
+        Observacion: this.observacionForm.value.observacionCtrl,
+        Detalle: JSON.stringify(detalle),
+        Activo: true,
+        FormatoTipoMovimientoId: {
+          Id: this.formatoTipoMovimiento[0].Id,
+        },
+        EstadoMovimientoId: {
+          Id: 2 // REVISAR
+        },
+        SoporteMovimientoId: 0,
+        IdTipoMovimiento: this.tipoEntrada[0].Id
+      };
+
+      this.entradasHelper.postEntrada(movimientoAdquisicion).subscribe((res: any) => {
         if (res !== null) {
           this.pUpManager.showSuccesToast('Registro Exitoso');
           this.pUpManager.showSuccessAlert('Entrada registrada satisfactoriamente!' +
-            '\n ENTRADA N°: ' + entradaData.Consecutivo);
+            '\n ENTRADA N°: P8-1-2019'); // SE DEBE MOSTRAR EL CONSECUTIVO REAL
 
-          const navigationExtras: NavigationExtras = { state: { consecutivo: entradaData.Consecutivo } };
+          const navigationExtras: NavigationExtras = { state: { consecutivo: res.Id } }; // REVISAR POR QUÉ RES LLEGA 0
           this.router.navigate(['/pages/reportes/registro-entradas'], navigationExtras);
         } else {
           this.pUpManager.showErrorAlert('No es posible hacer el registro.');
@@ -261,6 +288,7 @@ export class AdquisicionComponent implements OnInit {
     } else {
       this.pUpManager.showErrorAlert('No ha llenado todos los campos! No es posible hacer el registro.');
     }
+
   }
 
 }
