@@ -224,7 +224,7 @@ export class AdquisicionComponent implements OnInit {
   }
 
   getTipoEntrada() {
-    this.entradasHelper.getTipoEntradaByAcronimo("e_arka_adq").subscribe(res => {
+    this.entradasHelper.getTipoEntradaByAcronimo('e_arka_adq').subscribe(res => {
       if (res !== null) {
         this.tipoEntrada = res;
       }
@@ -232,7 +232,7 @@ export class AdquisicionComponent implements OnInit {
   }
 
   getFormatoEntrada() {
-    this.entradasHelper.getFormatoEntradaByName("Adquisición").subscribe(res => {
+    this.entradasHelper.getFormatoEntradaByName('Adquisición').subscribe(res => {
       if (res !== null) {
         this.formatoTipoMovimiento = res;
       }
@@ -257,8 +257,8 @@ export class AdquisicionComponent implements OnInit {
         documento_contable_id: 1, // REVISAR
         contrato_id: +this.contratoEspecifico.NumeroContratoSuscrito,
         vigencia_contrato: this.contratoForm.value.vigenciaCtrl,
-        importacion: this.checked
-      }
+        importacion: this.checked,
+      };
       const movimientoAdquisicion = {
         Observacion: this.observacionForm.value.observacionCtrl,
         Detalle: JSON.stringify(detalle),
@@ -267,10 +267,10 @@ export class AdquisicionComponent implements OnInit {
           Id: this.formatoTipoMovimiento[0].Id,
         },
         EstadoMovimientoId: {
-          Id: 2 // REVISAR
+          Id: 2, // REVISAR
         },
         SoporteMovimientoId: 0,
-        IdTipoMovimiento: this.tipoEntrada[0].Id
+        IdTipoMovimiento: this.tipoEntrada[0].Id,
       };
 
       this.entradasHelper.postEntrada(movimientoAdquisicion).subscribe((res: any) => {
