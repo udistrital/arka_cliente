@@ -46,6 +46,7 @@ export class AdquisicionComponent implements OnInit {
   // Selects
   opcionTipoContrato: string;
   opcionvigencia: string;
+  
   tipoEntrada: any;
   formatoTipoMovimiento: any;
 

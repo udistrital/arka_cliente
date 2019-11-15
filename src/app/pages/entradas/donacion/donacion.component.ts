@@ -50,6 +50,9 @@ export class DonacionComponent implements OnInit {
   fechaSolicitante: string;
   ordenadores: Array<OrdenadorGasto>;
 
+  tipoEntrada: any;
+  formatoTipoMovimiento: any;
+
   @Input() actaRecibidoId: string;
 
   constructor(private router: Router, private entradasHelper: EntradaHelper, private actaRecibidoHelper: ActaRecibidoHelper,
@@ -66,6 +69,8 @@ export class DonacionComponent implements OnInit {
     this.validar = false;
     this.ordenadorId = 0;
     this.iniciarContrato();
+    this.getTipoEntrada();
+    this.getFormatoEntrada();
   }
 
   ngOnInit() {
@@ -272,34 +277,57 @@ export class DonacionComponent implements OnInit {
     this.vigencia = new Date().getFullYear();
   }
 
+  getTipoEntrada() {
+    this.entradasHelper.getTipoEntradaByAcronimo('e_arka_don').subscribe(res => {
+      if (res !== null) {
+        this.tipoEntrada = res;
+      }
+    });
+  }
+
+  getFormatoEntrada() {
+    this.entradasHelper.getFormatoEntradaByName('Donación').subscribe(res => {
+      if (res !== null) {
+        this.formatoTipoMovimiento = res;
+      }
+    });
+  }
+
   /**
    * Método para enviar registro
    */
   onSubmit() {
     if (this.validar) {
-      const entradaData = new Entrada;
-      const tipoEntrada = new TipoEntrada;
+      const detalle = {
+        acta_recibido_id: +this.actaRecibidoId,
+        consecutivo: 'P8-1-2019', // REVISAR
+        documento_contable_id: 1, // REVISAR
+        contrato_id: +this.contratoEspecifico.NumeroContratoSuscrito,
+        vigencia_contrato: this.contratoForm.value.vigenciaCtrl,
+        vigencia_solicitante: this.solicitanteForm.value.fechaCtrl,
+        ordenador_gasto_id: +this.ordenadorId,
+      };
+      const movimientoAdquisicion = {
+        Observacion: this.observacionForm.value.observacionCtrl,
+        Detalle: JSON.stringify(detalle),
+        Activo: true,
+        FormatoTipoMovimientoId: {
+          Id: this.formatoTipoMovimiento[0].Id,
+        },
+        EstadoMovimientoId: {
+          Id: 2, // REVISAR
+        },
+        SoporteMovimientoId: 0,
+        IdTipoMovimiento: this.tipoEntrada[0].Id,
+      };
 
-      // CAMPOS OBLIGATORIOS
-      entradaData.ActaRecibidoId = +this.actaRecibidoId;
-      entradaData.Activo = true;
-      entradaData.Consecutivo = 'P8-4-2019'; // REVISAR
-      entradaData.DocumentoContableId = 1; // REVISAR
-      tipoEntrada.Id = 4;
-      entradaData.TipoEntradaId = tipoEntrada;
-      entradaData.Vigencia = this.contratoForm.value.vigenciaCtrl;
-      entradaData.Observacion = this.observacionForm.value.observacionCtrl;
-      // CAMPOS REQUERIDOS PARA ADQUISICIÓN
-      entradaData.ContratoId = +this.contratoEspecifico.NumeroContratoSuscrito;
-      entradaData.Solicitante = +this.ordenadorId;
-      // // ENVIA LA ENTRADA AL MID
-      this.entradasHelper.postEntrada(entradaData).subscribe(res => {
+      this.entradasHelper.postEntrada(movimientoAdquisicion).subscribe((res: any) => {
         if (res !== null) {
           this.pUpManager.showSuccesToast('Registro Exitoso');
           this.pUpManager.showSuccessAlert('Entrada registrada satisfactoriamente!' +
-            '\n ENTRADA N°: ' + entradaData.Consecutivo);
+            '\n ENTRADA N°: P8-3-2019'); // SE DEBE MOSTRAR EL CONSECUTIVO REAL
 
-          const navigationExtras: NavigationExtras = { state: { consecutivo: entradaData.Consecutivo } };
+          const navigationExtras: NavigationExtras = { state: { consecutivo: res.Id } }; // REVISAR POR QUÉ RES LLEGA 0
           this.router.navigate(['/pages/reportes/registro-entradas'], navigationExtras);
         } else {
           this.pUpManager.showErrorAlert('No es posible hacer el registro.');
@@ -308,6 +336,7 @@ export class DonacionComponent implements OnInit {
     } else {
       this.pUpManager.showErrorAlert('No ha llenado todos los campos! No es posible hacer el registro.');
     }
+
   }
 
 }

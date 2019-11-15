@@ -35,6 +35,9 @@ export class ElaboracionPropiaComponent implements OnInit {
   uidDocumento: string;
   idDocumento: number;
 
+  tipoEntrada: any;
+  formatoTipoMovimiento: any;
+
   @Input() actaRecibidoId: string;
 
   constructor(private router: Router, private entradasHelper: EntradaHelper, private pUpManager: PopUpManager, private fb: FormBuilder,
@@ -63,6 +66,8 @@ export class ElaboracionPropiaComponent implements OnInit {
       supervisorCtrl: ['', Validators.required],
     });
     this.getVigencia();
+    this.getTipoEntrada();
+    this.getFormatoEntrada();
   }
 
   // Métodos para validar campos requeridos en el formulario
@@ -177,74 +182,63 @@ export class ElaboracionPropiaComponent implements OnInit {
     this.vigencia = new Date().getFullYear();
   }
 
+  getTipoEntrada() {
+    this.entradasHelper.getTipoEntradaByAcronimo('e_arka_ep').subscribe(res => {
+      if (res !== null) {
+        this.tipoEntrada = res;
+      }
+    });
+  }
+
+  getFormatoEntrada() {
+    this.entradasHelper.getFormatoEntradaByName('Elaboración Propia').subscribe(res => {
+      if (res !== null) {
+        this.formatoTipoMovimiento = res;
+      }
+    });
+  }
+
   /**
    * Método para enviar registro
    */
   async onSubmit() {
     if (this.validar) {
-      const entradaData = new Entrada;
-      const tipoEntrada = new TipoEntrada;
-
-      // CAMPOS OBLIGATORIOS
-      entradaData.ActaRecibidoId = +this.actaRecibidoId;
-      entradaData.Activo = true;
-      entradaData.Consecutivo = 'P8-15-2019'; // REVISAR
-      entradaData.DocumentoContableId = 1; // REVISAR
-      tipoEntrada.Id = 2;
-      entradaData.TipoEntradaId = tipoEntrada;
-      entradaData.Vigencia = this.vigencia.toString(); // REVISAR
-      entradaData.Observacion = this.observacionForm.value.observacionCtrl;
-
-      // CAMPOS REQUERIDOS PARA ADQUISICIÓN
-      entradaData.OrdenadorId = +this.ordenadorId;
-      entradaData.Solicitante = +this.supervisorId;
-
       await this.postSoporteNuxeo([this.fileDocumento]);
 
-      const soporte = {
-        DocumentoId: this.idDocumento,
+      const detalle = {
+        acta_recibido_id: +this.actaRecibidoId,
+        consecutivo: 'P8-2-2019', // REVISAR
+        documento_contable_id: 1, // REVISAR
+        vigencia_ordenador: this.fechaSolicitante,
+        ordenador_gasto_id: +this.ordenadorId,
+        solicitante_id: +this.supervisorId,
+      };
+      const movimientoAdquisicion = {
+        Observacion: this.observacionForm.value.observacionCtrl,
+        Detalle: JSON.stringify(detalle),
         Activo: true,
-        EntradaElementoId: {
-          Id: 0,
+        FormatoTipoMovimientoId: {
+          Id: this.formatoTipoMovimiento[0].Id,
         },
+        EstadoMovimientoId: {
+          Id: 2, // REVISAR
+        },
+        SoporteMovimientoId: this.idDocumento,
+        IdTipoMovimiento: this.tipoEntrada[0].Id,
       };
 
-      // ENVIA LA ENTRADA AL MID
-      this.entradasHelper.postEntrada(entradaData).subscribe((res: any) => {
+      this.entradasHelper.postEntrada(movimientoAdquisicion).subscribe((res: any) => {
         if (res !== null) {
-          // CONSULTA ACTAS (DEBE IRSE)
-          this.entradasHelper.getEntradas().subscribe(resEntrada => {
-            if (resEntrada !== null) {
-              const data = <Array<any>>resEntrada;
-              soporte.EntradaElementoId.Id = data[0].Id;
+          this.pUpManager.showSuccesToast('Registro Exitoso');
+          this.pUpManager.showSuccessAlert('Entrada registrada satisfactoriamente!' +
+            '\n ENTRADA N°: P8-1-2019'); // SE DEBE MOSTRAR EL CONSECUTIVO REAL
 
-              // POST SOPORTE (DEBE IRSE)
-              this.entradasHelper.postSoporteEntrada(soporte).subscribe(resSoporte => {
-                if (resSoporte !== null) {
-                  this.pUpManager.showSuccesToast('Registro Exitoso');
-                  this.pUpManager.showSuccessAlert('Entrada registrada satisfactoriamente!' +
-                    '\n ENTRADA N°: ' + entradaData.Consecutivo);
-
-                  const navigationExtras: NavigationExtras = { state: { consecutivo: entradaData.Consecutivo } };
-                  this.router.navigate(['/pages/reportes/registro-entradas'], navigationExtras);
-                } else {
-                  this.pUpManager.showErrorAlert('No es posible subir el soporte.');
-                }
-              });
-            }
-          });
-
-          // this.pUpManager.showSuccesToast('Registro Exitoso');
-          // this.pUpManager.showSuccessAlert('Entrada registrada satisfactoriamente!' +
-          //  '\n ENTRADA N°: ' + entradaData.Consecutivo);
-
-          // const navigationExtras: NavigationExtras = { state: { consecutivo: entradaData.Consecutivo } };
-          // this.router.navigate(['/pages/reportes/registro-entradas'], navigationExtras);
+          const navigationExtras: NavigationExtras = { state: { consecutivo: res.Id } }; // REVISAR POR QUÉ RES LLEGA 0
+          this.router.navigate(['/pages/reportes/registro-entradas'], navigationExtras);
         } else {
           this.pUpManager.showErrorAlert('No es posible hacer el registro.');
         }
       });
-
     } else {
       this.pUpManager.showErrorAlert('No ha llenado todos los campos! No es posible hacer el registro.');
     }
