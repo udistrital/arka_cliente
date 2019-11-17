@@ -110,10 +110,14 @@ export class SobranteComponent implements OnInit {
 
   onSoporteSubmit() {
     if (this.ordenadorId !== 0) {
-      this.validar = true;
       this.soporteForm.markAsDirty();
     }
   }
+
+  onObservacionSubmit() {
+    this.validar = true;
+  }
+
 
   // MÉTODOS PARA CARGAR SOPORTES
   getSoporte(event) {
@@ -167,9 +171,14 @@ export class SobranteComponent implements OnInit {
   }
 
   getTipoEntrada() {
-    this.entradasHelper.getTipoEntradaByAcronimo('e_arka_sob').subscribe(res => {
+    this.entradasHelper.getTipoEntradaByAcronimo('e_arka').subscribe(res => {
       if (res !== null) {
-        this.tipoEntrada = res;
+        const data = <Array<any>>res;
+        for (const datos in Object.keys(data)) {
+          if (data.hasOwnProperty(datos) && data[datos].Nombre !== undefined && data[datos].Nombre === 'Adquisición') {
+            this.tipoEntrada = data[datos].Nombre;
+          }
+        }
       }
     });
   }

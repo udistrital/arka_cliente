@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, ViewChild } from '@angular/core';
 import { Validators, FormBuilder, FormGroup, AbstractControl, ValidatorFn } from '@angular/forms';
 import { PopUpManager } from '../../../managers/popUpManager';
 import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
@@ -10,6 +10,7 @@ import { SoporteActaProveedor } from '../../../@core/data/models/acta_recibido/s
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
 import { TipoEntrada } from '../../../@core/data/models/entrada/tipo_entrada';
 import { Router, NavigationExtras } from '@angular/router';
+import { NbStepperComponent } from '@nebular/theme';
 
 @Component({
   selector: 'ngx-adquisicion',
@@ -49,6 +50,8 @@ export class AdquisicionComponent implements OnInit {
 
   tipoEntrada: any;
   formatoTipoMovimiento: any;
+
+  @ViewChild('stepper') stepper: NbStepperComponent;
 
   @Input() actaRecibidoId: string;
 
@@ -155,9 +158,9 @@ export class AdquisicionComponent implements OnInit {
    * Métodos para validar campos requeridos en el formulario.
    */
   onContratoSubmit() {
+    let existe = false;
     if (this.contratos.length > 0) {
       const aux = this.contratoForm.value.contratoCtrl;
-      let existe = false;
       if (aux !== '') {
         for (const i in this.contratos) {
           if (this.contratos[i].NumeroContratoSuscrito.toString() === aux) {
@@ -169,6 +172,7 @@ export class AdquisicionComponent implements OnInit {
           this.loadContratoEspecifico();
           this.loadSoporte();
         } else {
+          this.stepper.previous();
           this.iniciarContrato();
           this.pUpManager.showErrorAlert('El contrato seleccionado no existe!');
         }
@@ -176,7 +180,7 @@ export class AdquisicionComponent implements OnInit {
     }
   }
 
-  onFacturaSubmit() {
+  onObservacionSubmit() {
     this.validar = true;
   }
 
@@ -225,9 +229,14 @@ export class AdquisicionComponent implements OnInit {
   }
 
   getTipoEntrada() {
-    this.entradasHelper.getTipoEntradaByAcronimo('e_arka_adq').subscribe(res => {
+    this.entradasHelper.getTipoEntradaByAcronimo('e_arka').subscribe(res => {
       if (res !== null) {
-        this.tipoEntrada = res;
+        const data = <Array<any>>res;
+        for (const datos in Object.keys(data)) {
+          if (data.hasOwnProperty(datos) && data[datos].Nombre !== undefined && data[datos].Nombre === 'Adquisición') {
+            this.tipoEntrada = data[datos].Nombre;
+          }
+        }
       }
     });
   }

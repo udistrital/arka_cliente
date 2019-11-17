@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, ViewChild } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Contrato } from '../../../@core/data/models/entrada/contrato';
 import { SoporteActaProveedor } from '../../../@core/data/models/acta_recibido/soporte_acta';
@@ -10,6 +10,7 @@ import { Supervisor } from '../../../@core/data/models/entrada/supervisor';
 import { Entrada } from '../../../@core/data/models/entrada/entrada';
 import { TipoEntrada } from '../../../@core/data/models/entrada/tipo_entrada';
 import { NavigationExtras, Router } from '@angular/router';
+import { NbStepperComponent } from '@nebular/theme';
 
 @Component({
   selector: 'ngx-donacion',
@@ -52,6 +53,8 @@ export class DonacionComponent implements OnInit {
 
   tipoEntrada: any;
   formatoTipoMovimiento: any;
+
+  @ViewChild('stepper') stepper: NbStepperComponent;
 
   @Input() actaRecibidoId: string;
 
@@ -187,6 +190,7 @@ export class DonacionComponent implements OnInit {
           this.loadContratoEspecifico();
           this.loadSoporte();
         } else {
+          this.stepper.previous();
           this.iniciarContrato();
           this.pUpManager.showErrorAlert('El contrato seleccionado no existe!');
         }
@@ -195,13 +199,7 @@ export class DonacionComponent implements OnInit {
     this.contratoForm.markAsDirty();
   }
 
-  onSolicitanteSubmit() {
-    if (this.ordenadorId !== 0) {
-      this.validar = true;
-    }
-  }
-
-  onFacturaSubmit() {
+  onObservacionSubmit() {
     this.validar = true;
   }
 
@@ -278,9 +276,14 @@ export class DonacionComponent implements OnInit {
   }
 
   getTipoEntrada() {
-    this.entradasHelper.getTipoEntradaByAcronimo('e_arka_don').subscribe(res => {
+    this.entradasHelper.getTipoEntradaByAcronimo('e_arka').subscribe(res => {
       if (res !== null) {
-        this.tipoEntrada = res;
+        const data = <Array<any>>res;
+        for (const datos in Object.keys(data)) {
+          if (data.hasOwnProperty(datos) && data[datos].Nombre !== undefined && data[datos].Nombre === 'Adquisición') {
+            this.tipoEntrada = data[datos].Nombre;
+          }
+        }
       }
     });
   }

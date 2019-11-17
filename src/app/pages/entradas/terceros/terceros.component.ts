@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, ViewChild } from '@angular/core';
 import { Validators, FormBuilder, FormGroup } from '@angular/forms';
 import { Contrato } from '../../../@core/data/models/entrada/contrato';
 import { SoporteActa, SoporteActaProveedor } from '../../../@core/data/models/acta_recibido/soporte_acta';
@@ -10,6 +10,7 @@ import { Supervisor } from '../../../@core/data/models/entrada/supervisor';
 import { Entrada } from '../../../@core/data/models/entrada/entrada';
 import { TipoEntrada } from '../../../@core/data/models/entrada/tipo_entrada';
 import { NavigationExtras, Router } from '@angular/router';
+import { NbStepperComponent } from '@nebular/theme';
 
 @Component({
   selector: 'ngx-terceros',
@@ -46,6 +47,8 @@ export class TercerosComponent implements OnInit {
   opcionvigencia: string;
   tipoEntrada: any;
   formatoTipoMovimiento: any;
+
+  @ViewChild('stepper') stepper: NbStepperComponent;
 
   @Input() actaRecibidoId: string;
 
@@ -165,6 +168,7 @@ export class TercerosComponent implements OnInit {
           this.loadContratoEspecifico();
           this.loadSoporte();
         } else {
+          this.stepper.previous();
           this.iniciarContrato();
           this.pUpManager.showErrorAlert('El contrato seleccionado no existe!');
         }
@@ -173,7 +177,7 @@ export class TercerosComponent implements OnInit {
     this.contratoForm.markAsDirty();
   }
 
-  onFacturaSubmit() {
+  onObservacionSubmit() {
     this.validar = true;
     this.facturaForm.markAsDirty();
   }
@@ -219,9 +223,14 @@ export class TercerosComponent implements OnInit {
   }
 
   getTipoEntrada() {
-    this.entradasHelper.getTipoEntradaByAcronimo('e_arka_adq').subscribe(res => {
+    this.entradasHelper.getTipoEntradaByAcronimo('e_arka').subscribe(res => {
       if (res !== null) {
-        this.tipoEntrada = res;
+        const data = <Array<any>>res;
+        for (const datos in Object.keys(data)) {
+          if (data.hasOwnProperty(datos) && data[datos].Nombre !== undefined && data[datos].Nombre === 'Adquisición') {
+            this.tipoEntrada = data[datos].Nombre;
+          }
+        }
       }
     });
   }
