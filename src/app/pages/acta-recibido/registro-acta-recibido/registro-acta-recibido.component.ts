@@ -474,7 +474,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
   }
   async onFirstSubmit() {
     await this.postSoporteNuxeo([this.fileDocumento]);
-    console.log(this.fileDocumento);
+    // console.log(this.fileDocumento);
     this.Datos = this.firstForm.value;
     const Transaccion_Acta = new TransaccionActaRecibido();
     Transaccion_Acta.ActaRecibido = this.Registrar_Acta(this.Datos.Formulario1, this.Datos.Formulario3);
@@ -665,6 +665,9 @@ export class RegistroActaRecibidoComponent implements OnInit {
         this.onFirstSubmit();
         sessionStorage.removeItem('Formulario_Registro');
         sessionStorage.removeItem('Elementos_Formulario_Registro');
+        this.router.navigateByUrl('/RefreshComponent', { skipLocationChange: true }).then(() => {
+          this.router.navigate(['/pages/acta_recibido/consulta_acta_recibido']);
+        });
       }
     });
   }

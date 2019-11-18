@@ -89,6 +89,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
   Totales: Array<any>;
   dataService3: CompleterData;
   Tarifas_Iva: Impuesto[];
+  verificar: boolean = true;
 
   constructor(
     private translate: TranslateService,
@@ -411,7 +412,8 @@ export class EdicionActaRecibidoComponent implements OnInit {
             `${res.ActaRecibido.Id}` + this.translate.instant('GLOBAL.Acta_Recibido.EdicionActa.Modificada'),
         }).then((willDelete) => {
           if (willDelete.value) {
-            window.location.reload();
+            // window.location.reload();
+            this.verificar = false;
           }
         });
       } else {
@@ -617,6 +619,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
       cancelButtonText: 'No',
     }).then((result) => {
       if (result.value) {
+
         this.onFirstSubmit();
       }
     });
