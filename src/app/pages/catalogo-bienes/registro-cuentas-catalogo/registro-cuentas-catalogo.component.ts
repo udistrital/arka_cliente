@@ -34,7 +34,10 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
   uid_3: Subgrupo;
   uid_4: Subgrupo;
   Movimiento: number;
-  movimiento: any = [1, 2, 3, 4];
+  Movimientos_Entradas;
+  Movimientos_Salidas;
+  Movimientos_Depreciacion;
+  Movimientos_Valorizacion;
   selected = new FormControl(0);
 
 
@@ -51,11 +54,25 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
     this.loadCatalogos();
     this.listService.findPlanCuentasDebito();
     this.listService.findPlanCuentasCredito();
+    this.catalogoElementosService.getTiposMovimientoKronos().subscribe((res: any[]) => {
+      this.Movimientos_Entradas = res.filter((x: any) => x.Descripcion.indexOf('Entrada') != -1 )
+      console.log(this.Movimientos_Entradas);
+      this.Movimientos_Salidas = res.filter((x: any) => x.Descripcion.indexOf('Salida') != -1 )
+      console.log(this.Movimientos_Salidas);
+      this.Movimientos_Depreciacion = res.filter((x: any) => x.Descripcion.indexOf('Depreciacion') != -1 )
+      console.log(this.Movimientos_Depreciacion);
+      this.Movimientos_Valorizacion = res.filter((x: any) => x.Descripcion.indexOf('Valorizacion') != -1 )
+      console.log(this.Movimientos_Valorizacion);
+    });
   }
 
   ngOnInit() {
   }
 
+  ver3(event, mov_id){
+    console.log(mov_id);
+    console.log(event);
+  }
   useLanguage(language: string) {
     this.translate.use(language);
   }

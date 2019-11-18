@@ -27,7 +27,7 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
 
   config: ToasterConfig;
   subgrupo_id: Subgrupo;
-  movimiento_id: number;
+  movimiento_id: any;
   respuesta: CuentaGrupo;
   Subgrupo: Subgrupo;
 
@@ -41,11 +41,12 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
   }
 
   @Input('movimiento_id')
-  set name2(movimiento_id: number) {
+  set name2(movimiento_id: any) {
     this.movimiento_id = movimiento_id;
   }
 
   @Output() eventChange = new EventEmitter();
+  @Output() formulario = new EventEmitter();
 
   info_movimiento: CuentasFormulario;
   formMovimiento: any;
@@ -116,7 +117,7 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
     if (this.movimiento_id !== undefined) {
 
       // this.formulario.normalform = {...this.formulario.normalform, ...{ titulo: this.translate.instant('GLOBAL.' + this.movimiento_id)}} ;
-      this.formMovimiento.titulo = this.translate.instant('GLOBAL.' + this.movimiento_id);
+      this.formMovimiento.titulo = this.translate.instant('GLOBAL.' + this.movimiento_id.Nombre);
       // this.formMovimiento.btn = this.translate.instant('GLOBAL.guardar');
       for (let i = 0; i < this.formMovimiento.campos.length; i++) {
         this.formMovimiento.campos[i].label = this.translate.instant('GLOBAL.' + this.formMovimiento.campos[i].label_i18n);
@@ -143,7 +144,7 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
   public loadCuentaGrupo(): void {
     if (this.subgrupo_id.Id !== undefined && this.subgrupo_id.Id !== 0) {
       // console.log(this.movimiento_id);
-      this.catalogoElementosService.getMovimiento(this.subgrupo_id.Id, this.movimiento_id)
+      this.catalogoElementosService.getMovimiento(this.subgrupo_id.Id, this.movimiento_id.Id)
         .subscribe(res => {
           // console.log(res[0].CuentaCreditoId);
           if (Object.keys(res[0]).length !== 0) {
@@ -210,7 +211,7 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
           Movimiento.CuentaDebitoId = Cuentas.CuentaDebitoId.Id;
           Movimiento.Activo = true;
           Movimiento.SubgrupoId = this.subgrupo_id;
-          Movimiento.SubtipoMovimientoId = this.movimiento_id;
+          Movimiento.SubtipoMovimientoId = this.movimiento_id.Id;
           this.catalogoElementosService.postMovimiento(Movimiento)
             .subscribe(res => {
               const Movimiento2 = <CuentaGrupo><unknown>res;
@@ -223,6 +224,12 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
 
 
 
+  validarForm2(event) {
+    if (event.valid) {
+      this.formulario.emit(event.data);
+    }
+    
+  }
   validarForm(event) {
     if (event.valid) {
       if (this.info_movimiento === undefined) {

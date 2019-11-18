@@ -1,6 +1,5 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { Catalogo } from '../../../@core/data/models/catalogo';
-import { CatalogoBienesHelper } from '../../../helpers/catalogo_bienes/catalogoBienesHelper';
 import { FORM_INACTIVAR } from './form-inactivar';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { Grupo } from '../../../@core/data/models/grupo';
@@ -19,13 +18,14 @@ export class InactivarGrupoComponent implements OnInit {
   formGrupo: any;
   info_grupo: Grupo;
   clean: boolean;
+  ver_formulario: boolean;
 
   catalogos: Array<Catalogo>;
   catalogoId: number;
 
   @Output() eventChange = new EventEmitter();
 
-  constructor(private catalogoHelper: CatalogoBienesHelper, private catalogoBienesHelper: CatalogoElementosHelper,
+  constructor(private catalogoBienesHelper: CatalogoElementosHelper,
     private translate: TranslateService, private pUpManager: PopUpManager, private router: Router) { }
 
   ngOnInit() {
@@ -54,7 +54,7 @@ export class InactivarGrupoComponent implements OnInit {
   }
 
   loadCatalogos() {
-    this.catalogoHelper.getCatalogos().subscribe((res) => {
+    this.catalogoBienesHelper.getCatalogos().subscribe((res) => {
       if (res !== null) {
         const data = <Array<Catalogo>>res;
         for (const datos in Object.keys(data)) {
@@ -76,7 +76,19 @@ export class InactivarGrupoComponent implements OnInit {
   }
 
   receiveMessage(event) {
+    
     this.info_grupo = event;
+    this.catalogoBienesHelper.getGrupoById(event.Id).subscribe(
+      res => {
+        // console.log(res[0]);
+        if (Object.keys(res[0]).length !== 0) {
+          this.formGrupo.titulo = this.translate.instant('GLOBAL.grupo');
+          this.ver_formulario = true;
+        } else {
+          this.formGrupo.titulo = this.translate.instant('GLOBAL.subgrupo');
+          this.ver_formulario = true;
+        }
+      });
   }
 
   validarForm(event) {

@@ -6,7 +6,7 @@ import { CatalogoBienesRoutingModule, routedComponents } from './catalogo-bienes
 import { CatalogoBienesComponent } from './catalogo-bienes.component';
 import { ConsultaCatalogoComponent } from './consulta-catalogo/consulta-catalogo.component';
 import { NbTreeGridModule } from '@nebular/theme';
-import { ArbolComponent, FsIconAComponent} from './arbol/arbol.component';
+import { ArbolComponent, FsIconAComponent } from './arbol/arbol.component';
 import { TreeModule } from 'angular-tree-component';
 import { RegistroCatalogoComponent } from './registro-catalogo/registro-catalogo.component';
 import { ToasterModule } from 'angular2-toaster';
@@ -38,6 +38,9 @@ import { CrudMovimientoComponent } from './crud-movimientos/crud-movimiento.comp
     CatalogoBienesRoutingModule,
     NbTreeGridModule,
     ThemeModule,
+  ],
+  exports: [
+    ConsultaCatalogoComponent,
   ],
 })
 export class CatalogoBienesModule { }
