@@ -49,7 +49,7 @@ export class CrudGrupoComponent implements OnInit {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
       this.construirForm();
     });
-    // this.loadOptionsCatalogo();
+    this.loadOptionsCatalogo();
   }
 
   construirForm() {
