@@ -139,6 +139,7 @@ export class CrudSubgrupo1Component implements OnInit {
           const subgrupoPost = new SubgrupoTransaccion;
           const subgrupoHijo = new Array<Subgrupo>();
           subgrupo.TipoBienId = this.subgrupoPadre.TipoBienId;
+          subgrupo.Activo = true;
           subgrupoHijo.push(subgrupo);
           subgrupoPost.SubgrupoPadre = this.subgrupoPadre;
           subgrupoPost.SubgrupoHijo = subgrupoHijo;

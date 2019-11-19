@@ -12,8 +12,8 @@
         <div class="form-group col-sm">
           <label>{{'GLOBAL.vigencia' | translate}}</label>
           <div class="input-group">
-            <input nbInput shape="semi-round" placeholder="{{'GLOBAL.placeholder_fecha' | translate}}" formControlName="fechaCtrl"
-              class="form-control" [nbDatepicker]="formpicker" required>
+            <input nbInput shape="semi-round" placeholder="{{'GLOBAL.placeholder_fecha' | translate}}"
+              formControlName="fechaCtrl" class="form-control" [nbDatepicker]="formpicker" required>
             <nb-datepicker (dateChange)="changeSolicitante($event)" #formpicker></nb-datepicker>
           </div>
         </div>
@@ -21,8 +21,8 @@
           <label>{{'GLOBAL.ordenador_gasto' | translate}}</label>
           <div class="input-group">
             <input nbInput (change)="changeOrdenador()" type="text" shape="semi-round"
-              placeholder="{{'GLOBAL.ordenador_gasto' | translate}}" class="form-control" [readonly]="!solicitanteSelect"
-              list="solicitanteList" formControlName="solicitanteCtrl"
+              placeholder="{{'GLOBAL.ordenador_gasto' | translate}}" class="form-control"
+              [readonly]="!solicitanteSelect" list="solicitanteList" formControlName="solicitanteCtrl"
               [ngClass]="{'form-control-danger': solicitanteForm.invalid && (solicitanteForm.dirty || solicitanteForm.touched)}" />
           </div>
         </div>
@@ -32,11 +32,13 @@
         <div class="form-group col-sm">
           <label>{{'GLOBAL.asignacion' | translate}}</label>
           <div class="input-group">
-            <input nbInput shape="semi-round" type="text" placeholder="{{'GLOBAL.asignacion' | translate}}" value="{{ cargoOrdenador }}" class="form-control" [readonly]="true" />
+            <input nbInput shape="semi-round" type="text" placeholder="{{'GLOBAL.asignacion' | translate}}"
+              value="{{ cargoOrdenador }}" class="form-control" [readonly]="true" />
           </div>
         </div>
       </div>
-      <button type="button" (click)="onSolicitanteSubmit()" nbButton nbStepperNext>{{'GLOBAL.siguiente' | translate}}</button>
+      <button type="button" (click)="onSolicitanteSubmit()" nbButton
+        nbStepperNext>{{'GLOBAL.siguiente' | translate}}</button>
     </form>
   </nb-step>
 
@@ -47,10 +49,12 @@
       <div class="pb-3">
         <label>{{'GLOBAL.acta_produccion' | translate}}</label>
         <input nbInput type="file" class="form-control-file" id="soporte" formControlName="soporteCtrl"
-          [ngClass]="{'form-control-danger': soporteForm.invalid && (soporteForm.dirty || soporteForm.touched)}">
+          [ngClass]="{'form-control-danger': soporteForm.invalid && (soporteForm.dirty || soporteForm.touched)}"
+          (change)="getSoporte($event)" accept="application/pdf" data-max-size="5120">
       </div>
       <button nbButton nbStepperPrevious>{{'GLOBAL.anterior' | translate}}</button>
-      <button type="button" (click)="onSoporteSubmit()" nbButton nbStepperNext>{{'GLOBAL.siguiente' | translate}}</button>
+      <button type="button" (click)="onSoporteSubmit()" nbButton
+        nbStepperNext>{{'GLOBAL.siguiente' | translate}}</button>
     </form>
   </nb-step>
 
@@ -61,13 +65,14 @@
       <div class="row">
         <div class="form-group  col-lg-12">
           <div class="input-group">
-            <textarea rows="5" shape="semi-round" placeholder="{{'GLOBAL.observaciones' | translate}}" class="form-control"
-              formControlName="observacionCtrl"></textarea>
+            <textarea rows="5" shape="semi-round" placeholder="{{'GLOBAL.observaciones' | translate}}"
+              class="form-control" formControlName="observacionCtrl"></textarea>
           </div>
         </div>
       </div>
       <button nbButton nbStepperPrevious>{{'GLOBAL.anterior' | translate}}</button>
-      <button type="button" nbButton nbStepperNext>{{'GLOBAL.siguiente' | translate}}</button>
+      <button type="button" (click)="onObservacionSubmit()" nbButton
+        nbStepperNext>{{'GLOBAL.siguiente' | translate}}</button>
     </form>
   </nb-step>
 
@@ -88,7 +93,7 @@
 
 <div class="justify-content-center float-right pt-4">
   <button type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off"
-    (click)="onSubmit()">
+    [disabled]="!validar" (click)="onSubmit()">
     {{'GLOBAL.registrar_entrada' | translate}}
   </button>
 </div>

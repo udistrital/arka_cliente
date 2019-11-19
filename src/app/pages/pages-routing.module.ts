@@ -25,6 +25,14 @@ const routes: Routes = [{
       loadChildren: './grupo/grupo.module#GrupoModule',
     },
     {
+      path: 'subgrupo_1',
+      loadChildren: './subgrupo_1/subgrupo_1.module#Subgrupo1Module',
+    },
+    {
+      path: 'subgrupo_2',
+      loadChildren: './subgrupo_2/subgrupo_2.module#Subgrupo2Module',
+    },
+    {
       path: 'movimientos',
       loadChildren: './movimientos/movimientos.module#MovimientosModule',
     },

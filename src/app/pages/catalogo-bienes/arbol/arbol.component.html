@@ -1,30 +1,91 @@
-<label class="search-label" for="search">{{'GLOBAL.search' | translate}}:</label>
-<input nbInput [nbFilterInput]="dataSource" id="search" class="search-input">
+<div *ngIf="!detalle">
 
-<table [nbTreeGrid]="dataSource" [nbSort]="dataSource" (sort)="updateSort($event)">
+    <label class="search-label" for="search">{{'GLOBAL.search' | translate}}:</label>
+    <input nbInput [nbFilterInput]="dataSource" id="search" class="search-input">
 
-  <tr nbTreeGridHeaderRow *nbTreeGridHeaderRowDef="allColumns"></tr>
-  <tr nbTreeGridRow *nbTreeGridRowDef="let row; columns: allColumns" (click)="getSelectedRow2(row.data)" ngxSelectDirective></tr>
+    <table [nbTreeGrid]="dataSource" [nbSort]="dataSource" (sort)="updateSort($event)">
 
-  <ng-container [nbTreeGridColumnDef]="customColumn">
-    <th nbTreeGridHeaderCell [nbSortHeader]="getSortDirection(customColumn)" *nbTreeGridHeaderCellDef>
-      {{ customColumn }}
-    </th>
-    <td nbTreeGridCell *nbTreeGridCellDef="let row">
-      <span [ngClass]="{
+        <tr nbTreeGridHeaderRow *nbTreeGridHeaderRowDef="allColumns"></tr>
+        <tr nbTreeGridRow *nbTreeGridRowDef="let row; columns: allColumns" (click)="getSelectedRow2(row.data)"
+            ngxSelectDirective></tr>
+
+        <ng-container [nbTreeGridColumnDef]="customColumn">
+            <th nbTreeGridHeaderCell [nbSortHeader]="getSortDirection(customColumn)" *nbTreeGridHeaderCellDef>
+                {{ customColumn }}
+            </th>
+            <td nbTreeGridCell *nbTreeGridCellDef="let row">
+                <span [ngClass]="{
               'nb-chevron-down': row.expanded,
               'nb-chevron-right': !row.expanded
             }" aria-hidden="true">
-      </span>{{ row.data[customColumn] }}
-    </td>
-  </ng-container>
+                </span>{{ row.data[customColumn] }}
+            </td>
+        </ng-container>
 
-  <ng-container *ngFor="let column of defaultColumns; let index = index" [nbTreeGridColumnDef]="column"
-    [showOn]="getShowOn(index)">
-    <th nbTreeGridHeaderCell [nbSortHeader]="getSortDirection(column)" *nbTreeGridHeaderCellDef>
-      {{ column }}
-    </th>
-    <td nbTreeGridCell *nbTreeGridCellDef="let row">{{ row.data[column] || '-' }}</td>
-  </ng-container>
+        <ng-container *ngFor="let column of defaultColumns; let index = index" [nbTreeGridColumnDef]="column"
+            [showOn]="getShowOn(index)">
+            <th nbTreeGridHeaderCell [nbSortHeader]="getSortDirection(column)" *nbTreeGridHeaderCellDef>
+                {{ column }}
+            </th>
+            <td nbTreeGridCell *nbTreeGridCellDef="let row" class="text-uppercase">
+                <span *ngIf="row.data[column] !== undefined && row.data[column].Id === undefined">
+                    {{ row.data[column] || '-' }}</span>
+                <span *ngIf="row.data[column] !== undefined && row.data[column].Id !== undefined">
+                    {{ row.data[column].Nombre || '-' }}</span>
+                <span *ngIf="row.data[column] === undefined"> <i class="fas fa-eye fa-2x" title="Ver"
+                        (click)="getDetalle(row.data)"></i></span>
+            </td>
+        </ng-container>
 
-</table>
+    </table>
+
+</div>
+
+<div *ngIf="detalle">
+
+    <h2>Detalle</h2>
+    <p class="font-weight-bold text-uppercase pt-4 pb-4">Grupo:
+        <span class="font-weight-normal">{{ grupoSeleccionado.Nombre }}</span></p>
+
+    <div *ngIf="tipos_de_bien">
+        <p class="font-weight-bold text-uppercase">Tipo de Bien:</p>
+        <span class="font-weight-normal">{{ tipos_de_bien.Nombre }}</span>
+    </div>
+
+    <div *ngIf="cuentasContables">
+        <div *ngFor="let cuenta of cuentasContables" class="row">
+            <div class="col">
+                <p class="font-weight-bold text-uppercase">Tipo de movimiento:</p>
+                <span class="font-weight-normal">{{ cuenta.SubtipoMovimientoId }}</span>
+                <p class="font-weight-bold text-uppercase"></p>
+            </div>
+            <div class="col">
+                <p class="font-weight-bold text-uppercase">Cuenta Crédito:</p>
+                <span class="font-weight-normal">{{ cuenta.CuentaCreditoId.Codigo }}</span>
+                <p class="font-weight-bold text-uppercase"></p>
+            </div>
+            <div class="col">
+                <p class="font-weight-bold text-uppercase">Cuenta Débito:</p>
+                <span class="font-weight-normal">{{ cuenta.CuentaDebitoId.Codigo }}</span>
+                <p class="font-weight-bold text-uppercase"></p>
+            </div>
+        </div>
+    </div>
+
+    <div *ngIf="elementosSubgrupo">
+        <p class="font-weight-bold text-uppercase">Elementos Asociados:</p>
+        <div *ngFor="let elemento of elementosSubgrupo; let i = index" class="row">
+            <div class="col">
+                <span class="font-weight-normal">{{i + 1}}: {{ elemento.Nombre }}</span>
+                <p class="font-weight-bold text-uppercase"></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="pt-4">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="volver()"
+            *ngIf="detalle">{{'GLOBAL.volver' | translate}}
+        </button>
+    </div>
+
+</div>

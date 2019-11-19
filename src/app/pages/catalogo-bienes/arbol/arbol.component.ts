@@ -1,7 +1,12 @@
 import { Component, OnInit, Input, EventEmitter, Output, OnChanges } from '@angular/core';
-import { CatalogoBienesHelper } from '../../../helpers/catalogo_bienes/catalogoBienesHelper';
 import { NbTreeGridDataSource, NbSortDirection, NbSortRequest, NbTreeGridDataSourceBuilder } from '@nebular/theme';
-import { Observable } from 'rxjs';
+import { Observable, combineLatest } from 'rxjs';
+import { CuentaContable } from '../../../@core/data/models/catalogo/cuenta_contable';
+import { PopUpManager } from '../../../managers/popUpManager';
+import { CuentasGrupoTransaccion } from '../../../@core/data/models/catalogo/cuentas_subgrupo';
+import { SubgrupoTransaccion, Subgrupo } from '../../../@core/data/models/catalogo/subgrupo';
+import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/catalogoElementosHelper';
+import { TipoBien } from '../../../@core/data/models/acta_recibido/tipo_bien';
 
 interface TreeNode<T> {
   data: T;
@@ -28,7 +33,7 @@ export class ArbolComponent implements OnInit, OnChanges {
 
   data: TreeNode<CatalogoArbol>[];
   customColumn = 'Codigo';
-  defaultColumns = ['Nombre', 'Descripcion'];
+  defaultColumns = ['Nombre', 'Descripcion', 'Acciones'];
   allColumns = [this.customColumn, ...this.defaultColumns];
 
 
@@ -38,16 +43,24 @@ export class ArbolComponent implements OnInit, OnChanges {
   sortDirection: NbSortDirection = NbSortDirection.NONE;
 
   catalogoSeleccionado: number;
+  detalle: boolean;
+  cuentasContables: Array<CuentasGrupoTransaccion>;
+  grupoSeleccionado: Subgrupo;
 
   @Input() catalogoId: number;
   @Input() updateSignal: Observable<string[]>;
   @Output() grupo = new EventEmitter<CatalogoArbol>();
   @Output() subgrupo = new EventEmitter<CatalogoArbol>();
+  tipos_de_bien: TipoBien;
+  elementosSubgrupo: TipoBien;
 
-  constructor(private dataSourceBuilder: NbTreeGridDataSourceBuilder<CatalogoArbol>, private catalogoHelper: CatalogoBienesHelper) { }
+  constructor(private dataSourceBuilder: NbTreeGridDataSourceBuilder<CatalogoArbol>, private catalogoHelper: CatalogoElementosHelper,
+    private pUpManager: PopUpManager) { }
 
   ngOnInit() {
     this.catalogoSeleccionado = 0;
+    this.detalle = false;
+    this.cuentasContables = new Array<CuentasGrupoTransaccion>();
   }
 
   ngOnChanges(changes) {
@@ -60,7 +73,7 @@ export class ArbolComponent implements OnInit, OnChanges {
         this.loadTreeCatalogo();
       });
     }
-}
+  }
 
   updateSort(sortRequest: NbSortRequest): void {
     this.sortColumn = sortRequest.column;
@@ -88,7 +101,7 @@ export class ArbolComponent implements OnInit, OnChanges {
     this.catalogoHelper.getArbolCatalogo(this.catalogoId).subscribe((res) => {
 
       if (res !== null) {
-        if (res[0].hasOwnProperty('data') ) {
+        if (res[0].hasOwnProperty('data')) {
           this.data = res;
           this.dataSource = this.dataSourceBuilder.create(this.data);
         }
@@ -100,8 +113,41 @@ export class ArbolComponent implements OnInit, OnChanges {
     this.subgrupo.emit(selectedRow);
   }
 
-}
+  volver(){
+    this.detalle = false;
+    this.cuentasContables = undefined;
+    this.tipos_de_bien = undefined;
+    this.elementosSubgrupo = undefined;
 
+  }
+  getDetalle(selectedRow) {
+    console.log(selectedRow);
+    this.grupoSeleccionado = selectedRow;
+    const observable = combineLatest([
+      this.catalogoHelper.getCuentasContables(selectedRow.Id),
+      this.catalogoHelper.getDetalleSubgrupo(selectedRow.Id),
+      this.catalogoHelper.getElementosSubgrupo(selectedRow.Id),
+    ])
+
+    observable.subscribe(([cuentas, detalle, elementos]) => {
+      console.log([cuentas, detalle, elementos]);
+      console.log(Object.keys(detalle).length);
+      console.log(Object.keys(elementos).length);
+      console.log(Object.keys(cuentas).length);
+      if (Object.keys(cuentas[0]).length !== 0) {
+        this.cuentasContables = <Array<CuentasGrupoTransaccion>>cuentas;
+      }
+      if (Object.keys(detalle[0]).length !== 0) {
+        this.tipos_de_bien = <TipoBien>detalle.TipoBienId;
+      }
+      if (Object.keys(elementos[0]).length !== 0) {
+        this.elementosSubgrupo = elementos;
+      }
+      // this.pUpManager.showErrorAlert('no existen cuentas asociadas a este grupo');
+      this.detalle = true;
+    });
+  }
+}
 @Component({
   selector: 'ngx-nb-fs-icon',
   template: `

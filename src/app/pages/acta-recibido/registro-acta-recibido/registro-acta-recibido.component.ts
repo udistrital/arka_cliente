@@ -26,6 +26,9 @@ import { analyzeAndValidateNgModules } from '@angular/compiler';
 import { Store } from '@ngrx/store';
 import { IAppState } from '../../../@core/store/app.state';
 import { ListService } from '../../../@core/store/services/list.service';
+import { PopUpManager } from '../../../managers/popUpManager';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { DocumentoService } from '../../../@core/data/documento.service';
 
 
 
@@ -82,6 +85,9 @@ export class RegistroActaRecibidoComponent implements OnInit {
   Totales: Array<any>;
   dataService3: CompleterData;
   Tarifas_Iva: Impuesto[];
+  fileDocumento: any;
+  uidDocumento: any;
+  idDocumento: number;
 
   constructor(
     private translate: TranslateService,
@@ -91,8 +97,12 @@ export class RegistroActaRecibidoComponent implements OnInit {
     private Actas_Recibido: ActaRecibidoHelper,
     private toasterService: ToasterService,
     private completerService: CompleterService,
-    private store: Store < IAppState > ,
+    private store: Store<IAppState>,
     private listService: ListService,
+    private pUpManager: PopUpManager,
+    private sanitization: DomSanitizer,
+    private nuxeoService: NuxeoService,
+    private documentoService: DocumentoService,
 
 
   ) {
@@ -181,6 +191,34 @@ export class RegistroActaRecibidoComponent implements OnInit {
       },
     );
   }
+  download(url, title, w, h) {
+    const new_tab = window.open(url, title, '_blank');
+    new_tab.onload = () => {
+      new_tab.location = url;
+    };
+    new_tab.focus();
+  }
+
+  onInputFileDocumento(event) {
+    // console.log(event.target.files);
+    // console.log(event.srcElement.files);
+    if (event.target.files.length > 0) {
+      const file = event.target.files[0];
+      if (file.type === 'application/pdf') {
+        file.urlTemp = URL.createObjectURL(event.srcElement.files[0]);
+        file.url = this.cleanURL(file.urlTemp);
+        file.IdDocumento = 9;
+        file.file = event.target.files[0];
+        this.fileDocumento = file;
+      } else {
+        this.pUpManager.showErrorAlert('error' + this.translate.instant('GLOBAL.error'));
+      }
+    }
+  }
+  cleanURL(oldURL: string): SafeResourceUrl {
+    return this.sanitization.bypassSecurityTrustUrl(oldURL);
+  }
+
   Traer_Dependencias(res: any) {
     this.Dependencias = new Array<Dependencia>();
     for (const index in res) {
@@ -367,7 +405,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
       Proveedor: ['', Validators.required],
       Consecutivo: ['', Validators.required],
       Fecha_Factura: ['', Validators.required],
-      Soporte: ['', Validators.required],
+      Soporte: [''],
     });
   }
   get Elementos(): FormGroup {
@@ -411,7 +449,32 @@ export class RegistroActaRecibidoComponent implements OnInit {
     this.selected.setValue(i - 1);
 
   }
-  onFirstSubmit() {
+  postSoporteNuxeo(files) {
+    return new Promise((resolve, reject) => {
+      files.forEach((file) => {
+        file.Id = file.nombre;
+        file.nombre = 'soporte_' + file.IdDocumento + '_entradas';
+        // file.key = file.Id;
+        file.key = 'soporte_' + file.IdDocumento;
+      });
+      this.nuxeoService.getDocumentos$(files, this.documentoService)
+        .subscribe(response => {
+          if (Object.keys(response).length === files.length) {
+            // console.log("response", response);
+            files.forEach((file) => {
+              this.uidDocumento = file.uid;
+              this.idDocumento = response[file.key].Id;
+            });
+            resolve(true);
+          }
+        }, error => {
+          reject(error);
+        });
+    });
+  }
+  async onFirstSubmit() {
+    await this.postSoporteNuxeo([this.fileDocumento]);
+    // console.log(this.fileDocumento);
     this.Datos = this.firstForm.value;
     const Transaccion_Acta = new TransaccionActaRecibido();
     Transaccion_Acta.ActaRecibido = this.Registrar_Acta(this.Datos.Formulario1, this.Datos.Formulario3);
@@ -602,6 +665,9 @@ export class RegistroActaRecibidoComponent implements OnInit {
         this.onFirstSubmit();
         sessionStorage.removeItem('Formulario_Registro');
         sessionStorage.removeItem('Elementos_Formulario_Registro');
+        this.router.navigateByUrl('/RefreshComponent', { skipLocationChange: true }).then(() => {
+          this.router.navigate(['/pages/acta_recibido/consulta_acta_recibido']);
+        });
       }
     });
   }
