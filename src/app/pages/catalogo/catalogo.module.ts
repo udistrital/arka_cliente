@@ -8,6 +8,7 @@ import { CrudCatalogoComponent } from './crud-catalogo/crud-catalogo.component';
 import { ToasterService} from 'angular2-toaster';
 import { CatalogoElementosHelper } from '../../helpers/catalogo-elementos/catalogoElementosHelper';
 import { MatDatepickerModule } from '@angular/material';
+import { CatalogoBienesModule } from '../catalogo-bienes/catalogo-bienes.module';
 
 @NgModule({
   imports: [
@@ -17,6 +18,7 @@ import { MatDatepickerModule } from '@angular/material';
     MatDatepickerModule,
     ToasterModule,
     SharedModule,
+    CatalogoBienesModule,
   ],
   declarations: [
     ...routedComponents,

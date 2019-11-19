@@ -83,13 +83,21 @@ export const MENU_ITEMS: NbMenuItem[] = [
         title: 'Lista de Catalogos',
         link: '/pages/catalogo/list-catalogo',
       },
-      {
-        title: 'Detalle de Catálogo',
-        link: '/pages/catalogo_bienes/consulta_catalogo',
-      },
+      // {
+      //   title: 'Detalle de Catálogo',
+      //   link: '/pages/catalogo_bienes/consulta_catalogo',
+      // },
       {
         title: 'Construcción de Catálogo',
         link: '/pages/catalogo_bienes/registro_catalogo',
+      },
+      {
+        title: 'Registro Elementos',
+        link: '/pages/catalogo_bienes/registro_elementos',
+      },
+      {
+        title: 'Inactivar Grupos y Subgrupos',
+        link: '/pages/catalogo_bienes/inactiva_grupos',
       },
       {
         title: 'Asignacion de Cuentas',

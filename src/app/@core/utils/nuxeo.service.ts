@@ -1,9 +1,9 @@
 import * as Nuxeo from 'nuxeo';
 import { Injectable } from '@angular/core';
-import { environment } from '../../../environments/environment';
+import { environment } from './../../../environments/environment';
 import { Observable } from 'rxjs/Observable';
-import { Documento } from '../data/models/documento/documento';
-import { TipoDocumento } from '../data/models/documento/tipo_documento';
+import { Documento } from './../data/models/documento/documento';
+import { TipoDocumento } from './../data/models/documento/tipo_documento';
 import { Subject } from 'rxjs/Subject';
 
 @Injectable()
@@ -30,8 +30,8 @@ export class NuxeoService {
             baseURL: environment.NUXEO.PATH,
             auth: {
                 method: 'basic',
-                username: 'campus_virtual',
-                password: 'c4mpus',
+                username: environment.NUXEO.CREDENTIALS.USERNAME,
+                password: environment.NUXEO.CREDENTIALS.PASS,
             },
         });
     }
@@ -85,9 +85,11 @@ export class NuxeoService {
                                                         documentoPost.Enlace = file.uid;
                                                         documentoPost.Nombre = file.nombre;
                                                         documentoPost.TipoDocumento = tipoDocumento;
+                                                        documentoPost.Activo = true;
                                                         documentoService.post('documento', documentoPost)
                                                             .subscribe(resuestaPost => {
-                                                                nuxeoservice.documentos[file.key] = resuestaPost.Body;
+                                                                nuxeoservice.documentos[file.key] = resuestaPost;
+                                                                // nuxeoservice.documentos[file.key] = resuestaPost.Body;
                                                                 nuxeoservice.documentos$.next(nuxeoservice.documentos);
                                                             });
 

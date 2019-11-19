@@ -30,6 +30,7 @@ export class RegistroCatalogoComponent implements OnInit {
   uid_2: number;
   uid_3: number;
   uid_4: number;
+  ver_formulario: boolean;
 
 
   constructor(
@@ -67,6 +68,7 @@ export class RegistroCatalogoComponent implements OnInit {
   recargarCatalogo(event) {
     // console.log(event);
     this.eventChange.emit(true);
+    this.ver_formulario = false;
   }
 
   onChange(catalogo) {
@@ -78,6 +80,7 @@ export class RegistroCatalogoComponent implements OnInit {
     this.uid_2 = undefined;
     this.uid_3 = id;
     this.uid_4 = undefined;
+    this.ver_formulario = true;
   }
 
   AgregarSubgrupo(id: number) {
@@ -85,12 +88,14 @@ export class RegistroCatalogoComponent implements OnInit {
     this.uid_2 = undefined;
     this.uid_3 = undefined;
     this.uid_4 = id;
+    this.ver_formulario = true;
   }
   QuitarVista() {
     this.uid_1 = undefined;
     this.uid_2 = undefined;
     this.uid_3 = undefined;
     this.uid_4 = undefined;
+    this.ver_formulario = false;
   }
   receiveMessage(event) {
     this.subgrupoPadre = event;
@@ -102,11 +107,13 @@ export class RegistroCatalogoComponent implements OnInit {
           this.uid_2 = undefined;
           this.uid_3 = undefined;
           this.uid_4 = undefined;
+          this.ver_formulario = true;
         } else {
           this.uid_1 = undefined;
           this.uid_2 = event.Id;
           this.uid_3 = undefined;
           this.uid_4 = undefined;
+          this.ver_formulario = true;
         }
       });
   }

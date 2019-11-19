@@ -193,7 +193,7 @@
             </nb-card>
             <div class="justify-content-center">
               <button nbButton (click)="Revisar_Totales3()"
-                [disabled]="!firstForm.get('Formulario3').valid || !firstForm.get('Formulario2').valid || !firstForm.get('Formulario3').valid"
+                [disabled]="!firstForm.get('Formulario3').valid || !firstForm.get('Formulario2').valid || !firstForm.get('Formulario3').valid || verificar"
                 class="float-right">{{'GLOBAL.Acta_Recibido.EdicionActa.VerificacionButton' | translate}}</button>
             </div>
           </mat-step>

@@ -41,6 +41,7 @@ export class CapturarElementosComponent implements OnInit {
   Tipos_Bien: Array<TipoBien>;
   Unidades: Unidad[];
   Tarifas_Iva: Impuesto[];
+  nombreArchivo: any;
 
   constructor(private fb: FormBuilder,
     private translate: TranslateService,
@@ -149,17 +150,31 @@ export class CapturarElementosComponent implements OnInit {
   }
   onFileChange(event) {
 
+    console.log(event.target.files);
+    const max_size = 1;
+    
     let nombre = '';
     if (event.target.files.length > 0) {
       nombre = event.target.files[0].name;
+      this.nombreArchivo = event.target.files[0].name;
       const [_, extension] = nombre.split('.');
       const file = event.target.files[0];
       if (extension !== 'xlsx') {
         this.Validador = false;
       } else {
-        this.form.get('archivo').setValue(file);
-        this.Validador = true;
+        if (file.size < max_size * 1024000) {
+          this.form.get('archivo').setValue(file);
+          this.Validador = true;
+        } else {
+          (Swal as any).fire({
+            title: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.Tamaño_title'),
+            text: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.Tamaño_placeholder'),
+            type: 'warning',
+          });
+          this.Validador = false;
+        }
       }
+
     } else {
       this.Validador = false;
     }
@@ -176,18 +191,28 @@ export class CapturarElementosComponent implements OnInit {
     this.actaRecibidoHelper.postArchivo(formModel).subscribe(res => {
 
       if (res !== null) {
-
-        this.respuesta = res;
-        this.dataSource.data = this.respuesta[0].Elementos;
-        this.ver();
-        this.dataSource.paginator = this.paginator;
-        this.dataSource.sort = this.sort;
-
-        (Swal as any).fire({
-          type: 'success',
-          title: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.ElementosCargadosTitleOK'),
-          text: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.ElementosCargadosTextOK'),
-        });
+        if (res[0].Mensaje !== undefined){
+          (Swal as any).fire({
+            type: 'success',
+            title: res[0].Mensaje,
+            text: res[0].Mensaje,
+          });
+          this.clearFile();
+        } else {
+          console.log(res);
+          this.respuesta = res;
+          this.dataSource.data = this.respuesta[0].Elementos;
+          this.ver();
+          this.dataSource.paginator = this.paginator;
+          this.dataSource.sort = this.sort;
+  
+          (Swal as any).fire({
+            type: 'success',
+            title: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.ElementosCargadosTitleOK'),
+            text: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.ElementosCargadosTextOK'),
+          });
+          this.clearFile();
+        }
 
       } else {
         (Swal as any).fire({
@@ -195,6 +220,7 @@ export class CapturarElementosComponent implements OnInit {
           title: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.ElementosCargadosTitleNO'),
           text: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.ElementosCargadosTextNO'),
         });
+        this.clearFile();
       }
     });
   }
@@ -287,7 +313,7 @@ export class CapturarElementosComponent implements OnInit {
 
   addElemento() {
     const data = this.dataSource.data;
-    data.push({
+    data.unshift({
       Cantidad: '1',
       Nombre: '',
       Descuento: '0',
@@ -335,11 +361,11 @@ export class CapturarElementosComponent implements OnInit {
 
   valortotal(subtotal: string, descuento: string, iva: string) {
     const total = (parseFloat(subtotal) - parseFloat(descuento) + parseFloat(iva));
-      if (total >= 0.00) {
-        return total;
-      } else {
-        return 0;
-      }
+    if (total >= 0.00) {
+      return total;
+    } else {
+      return 0;
+    }
   }
   valorXcantidad(valor_unitario: string, cantidad: string) {
     const total = (parseFloat(valor_unitario) * parseFloat(cantidad));

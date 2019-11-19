@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { LocalDataSource } from 'ngx-smart-table';
-import { Router } from '@angular/router';
+import { NavigationEnd, Router } from '@angular/router';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
 import { PopUpManager } from '../../../managers/popUpManager';
 import { ActaRecibido } from '../../../@core/data/models/acta_recibido/acta_recibido';
@@ -22,6 +22,7 @@ export class ConsultaActaRecibidoComponent implements OnInit {
   source: LocalDataSource;
   actas: Array<ConsultaActaRecibido>;
   Ubicaciones: Array<Ubicacion>;
+  navigationSubscription;
 
   settings: any;
   accion: string;
@@ -31,6 +32,12 @@ export class ConsultaActaRecibidoComponent implements OnInit {
     private router: Router,
     private actaRecibidoHelper: ActaRecibidoHelper,
     private pUpManager: PopUpManager) {
+    this.navigationSubscription = this.router.events.subscribe((e: any) => {
+      // If it is a NavigationEnd event re-initalise the component
+      if (e instanceof NavigationEnd) {
+        this.initialiseInvites();
+      }
+    });
 
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
       this.cargarCampos();
@@ -38,6 +45,14 @@ export class ConsultaActaRecibidoComponent implements OnInit {
     this.cargarCampos();
     this.source = new LocalDataSource(); // create the source
     this.actas = new Array<ConsultaActaRecibido>();
+  }
+  initialiseInvites() {
+    // Set default values and re-fetch any data you need.
+    // this.ngOnInit();
+    this.actaSeleccionada = '';
+    this.estadoActaSeleccionada = '';
+    this.accion = '';
+
   }
   ngOnInit() {
     const observable = combineLatest([

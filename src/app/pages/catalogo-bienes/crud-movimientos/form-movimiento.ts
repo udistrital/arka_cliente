@@ -1,7 +1,7 @@
 export let FORM_MOVIMIENTO = {
     titulo: 'Movimiento',
     tipo_formulario: 'mini',
-    btn: 'Guardar',
+    // btn: 'Guardar',
     alertas: true,
     modelo: 'CuentasFormulario',
     campos: [

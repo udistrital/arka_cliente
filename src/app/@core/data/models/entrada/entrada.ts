@@ -15,4 +15,5 @@ export class Entrada {
     DocumentoContableId: number; // REVISAR
     Consecutivo: string;
     Vigencia: string;
+    OrdenadorId: number;
 }

@@ -67,6 +67,7 @@ import { NbToastrModule } from '@nebular/theme';
 import { ListService } from './@core/store/services/list.service';
 import { Store, StoreModule } from '@ngrx/store';
 import { rootReducer } from './@core/store/rootReducer';
+import { NuxeoService } from './@core/utils/nuxeo.service';
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
 }
@@ -156,7 +157,7 @@ export class MaterialModule {}
   ],
   bootstrap: [AppComponent],
   providers: [ImplicitAutenticationService,
-    ListService,
+    ListService, NuxeoService,
     { provide: APP_BASE_HREF, useValue: '/' },
   ],
 })
