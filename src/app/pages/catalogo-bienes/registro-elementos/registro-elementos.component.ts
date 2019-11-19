@@ -23,6 +23,7 @@ export class RegistroElementosComponent implements OnInit {
   catalogos: Array<Catalogo>;
   catalogoId: number;
   subgrupo: Subgrupo;
+  ver_formulario: boolean;
 
   constructor(private translate: TranslateService,
     private catalogoElementosService: CatalogoElementosHelper,
@@ -70,6 +71,7 @@ export class RegistroElementosComponent implements OnInit {
 
   receiveMessage(event) {
     this.subgrupo = event;
+    this.ver_formulario = true;
   }
 
   validarForm(event) {
@@ -80,6 +82,7 @@ export class RegistroElementosComponent implements OnInit {
         elemento.Descripcion = event.data.Grupo.Descripcion;
         elemento.FechaInicio = new Date(event.data.Grupo.FechaInicio);
         elemento.FechaFin = new Date(event.data.Grupo.FechaFin);
+        elemento.Activo = true;
         elemento.SubgrupoId = this.subgrupo;
         this.catalogoElementosService.postElemento(elemento).subscribe(res => {
           if (res !== null) {

@@ -38,7 +38,7 @@
       "CapturarElementos":{
         "CargaMasivaTitle":"Masive Load",
         "ValidadorPlaceholder":"The file have xlsx extension (*.xlsx)",
-        "LimpiarEspacioButton":"Clean Space",
+        "LimpiarEspacioButton":"Discard File",
         "CargarElementosButton":"Load Items",
         "ArticulosRelacionadosTitle":"Related Articles",
         "TipoBienHeader":"Possession's Type",
@@ -110,7 +110,7 @@
         "ValorIva":"Grans IVA:",
         "Total":"Grand Total:",
         "Observaciones2":"Provide additional information that cannot be expressed in the form (required)",
-        "DatosVeridicos":"Are you sure the data is true?",
+        "DatosVeridicos":"Are you sure of the registered info?",
         "DatosVeridicosTitle":"Are You Sure?",
         "CargaElementosTitle":"Elements Load",
         "CargaElementos":"Please verify the load of elements, values ​​and totals associated with the support before generating the record",
@@ -258,7 +258,7 @@
       }
 
     },
-    
+    "Detalle":"detail",
     "placeholder":"This field is mandatory",
     "search": "Search",
     "catalogo": "Catalogue",

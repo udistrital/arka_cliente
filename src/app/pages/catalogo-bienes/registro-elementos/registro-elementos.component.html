@@ -17,7 +17,12 @@
           [updateSignal]="eventChange"></ngx-arbol>
       </div>
 
-      <div class="col">
+      <div class="col" *ngIf="ver_formulario">
+          <div>
+              <h2>Detalle</h2>
+              <p class="font-weight-bold text-uppercase pt-4 pb-4">Grupo:
+                  <span class="font-weight-normal">{{ subgrupo.Consecutivo }}: {{ subgrupo.Nombre }}</span></p>
+          </div>          
         <toaster-container [toasterconfig]="config"></toaster-container>
         <ngx-dinamicform [normalform]="formElemento" [modeloData]="info_elemento" (result)="validarForm($event)"
           [clean]="clean">

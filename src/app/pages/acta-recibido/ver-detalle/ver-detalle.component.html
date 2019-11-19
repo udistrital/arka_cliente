@@ -70,8 +70,11 @@
                         </div>
                         <div class="form-group col-sm">
                           <label>{{'GLOBAL.Acta_Recibido.DetalleActa.Soporte' | translate}}</label>
-                          <input nbInput type="file" class="form-control-file" id="factura" formControlName="Soporte"
-                          readonly disabled>
+                          <div class="soporte">
+                            <button nbButton type="button" (click)="loadSoporte()">
+                              <i class="fas fa-file-download fa-2x"></i>
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </nb-card-body>

@@ -141,6 +141,7 @@ export class CrudGrupoComponent implements OnInit {
           const grupoPost = new GrupoTransaccion;
           const catalogo = new Catalogo;
           catalogo.Id = parseFloat(this.catalogoid);
+          grupo.Activo = true;
           grupoPost.Catalogo = catalogo;
           grupoPost.Subgrupo = grupo;
           this.catalogoElementosService.postGrupo(grupoPost)

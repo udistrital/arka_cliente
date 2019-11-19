@@ -10,10 +10,10 @@ import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/cat
   selector: 'ngx-list-catalogo',
   templateUrl: './list-catalogo.component.html',
   styleUrls: ['./list-catalogo.component.scss'],
-  })
+})
 export class ListCatalogoComponent implements OnInit {
   uid: number;
-  cambiotab: boolean = false;
+  cambiotab: boolean[] = [true, false, false];
   config: ToasterConfig;
   settings: any;
 
@@ -23,7 +23,7 @@ export class ListCatalogoComponent implements OnInit {
     private translate: TranslateService,
     private catalogoElementosService: CatalogoElementosHelper,
     private toasterService: ToasterService,
-    ) {
+  ) {
     this.loadData();
     this.cargarCampos();
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
@@ -105,7 +105,7 @@ export class ListCatalogoComponent implements OnInit {
         const data = <Array<any>>res;
         // console.log(data);
         this.source.load(data);
-          }
+      }
     });
   }
 
@@ -114,12 +114,12 @@ export class ListCatalogoComponent implements OnInit {
 
   onEdit(event): void {
     this.uid = event.data.Id;
-    this.activetab();
+    this.cambiotab = [false,true,false];
   }
 
   onCreate(event): void {
     this.uid = 0;
-    this.activetab();
+    this.cambiotab = [false,true,false];
   }
 
   onDelete(event): void {
@@ -132,35 +132,52 @@ export class ListCatalogoComponent implements OnInit {
       showCancelButton: true,
     };
     (Swal as any)(opt)
-    .then((willDelete) => {
+      .then((willDelete) => {
 
-      if (willDelete.value) {
-        this.catalogoElementosService.deleteCatalogo(event.data).subscribe(res => {
-          if (res !== null) {
-            this.loadData();
-            this.showToast('info', 'deleted', 'Catalogo deleted');
+        if (willDelete.value) {
+          this.catalogoElementosService.deleteCatalogo(event.data).subscribe(res => {
+            if (res !== null) {
+              this.loadData();
+              this.showToast('info', 'deleted', 'Catalogo deleted');
             }
-         });
-      }
-    });
+          });
+        }
+      });
   }
 
   activetab(): void {
-    this.cambiotab = !this.cambiotab;
+    this.cambiotab = [true,false,false];
   }
 
   selectTab(event): void {
-    if (event.tabTitle === this.translate.instant('GLOBAL.lista')) {
-      this.cambiotab = false;
-    } else {
-      this.cambiotab = true;
+    switch(event.tabTitle){
+      case this.translate.instant('GLOBAL.lista'):
+      {
+        this.cambiotab = [true,false,false];
+        break;
+      }
+      case this.translate.instant('GLOBAL.formulario'):
+      {
+        this.cambiotab = [false,true,false];
+        break;
+      }
+      case this.translate.instant('GLOBAL.Detalle'):
+      {
+        this.cambiotab = [false,false,true];
+        break;
+      }
+      default :
+      {
+        this.cambiotab = [false,false,false];
+        break;
+      }
     }
   }
 
   onChange(event) {
     if (event) {
       this.loadData();
-      this.cambiotab = !this.cambiotab;
+      this.cambiotab = [true,false,false];
     }
   }
 

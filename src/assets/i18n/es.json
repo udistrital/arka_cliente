@@ -38,7 +38,7 @@
       "CapturarElementos":{
         "CargaMasivaTitle":"Carga Masiva",
         "ValidadorPlaceholder":"El archivo debe tener extension (*.xlsx)",
-        "LimpiarEspacioButton":"Limpiar Espacio",
+        "LimpiarEspacioButton":"Descartar Archivo",
         "CargarElementosButton":"Cargar Elementos",
         "ArticulosRelacionadosTitle":"Articulos Relacionados",
         "TipoBienHeader":"Tipo de Bien",
@@ -110,7 +110,7 @@
         "ValorIva":"Gran IVA:",
         "Total":"Gran Total:",
         "Observaciones2":"Proporciona datos adicionales que no se pueden expresar en el formulario (Obligatorio)",
-        "DatosVeridicos":"Esta Seguro que los Datos son Veridicos?",
+        "DatosVeridicos":"¿Esta seguro de la información registrada?",
         "DatosVeridicosTitle":"Esta Seguro?",
         "CargaElementosTitle":"Carga de Elementos",
         "CargaElementos":"Por favor verificar la carga de elementos, valores y totales asociados al soporte antes de generar el registro",
@@ -260,7 +260,7 @@
       }
 
     },
-
+    "Detalle":"detalle",
     "placeholder":"Este Campo es Obligatorio",
     "search": "Buscar",
     "catalogo": "Catálogo",
