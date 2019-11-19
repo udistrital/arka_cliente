@@ -584,7 +584,7 @@ export class CatalogoElementosHelper {
      */
     public getDetalleSubgrupo(subgrupo) {
         this.rqManager.setPath('CATALOGO_ELEMENTOS_SERVICE');
-        return this.rqManager.get('detalle_subgrupo?query=SubgrupoId.Id:' + subgrupo + ",Activo:true&limit=-1").pipe(
+        return this.rqManager.get('detalle_subgrupo?query=SubgrupoId.Id:' + subgrupo + ',Activo:true&limit=-1').pipe(
             map(
                 (res) => {
                     if (res === 'error') {
@@ -605,7 +605,7 @@ export class CatalogoElementosHelper {
      */
     public getElementosSubgrupo(subgrupo) {
         this.rqManager.setPath('CATALOGO_ELEMENTOS_SERVICE');
-        return this.rqManager.get('elemento?query=SubgrupoId.Id:' + subgrupo + ",Activo:true&limit=-1").pipe(
+        return this.rqManager.get('elemento?query=SubgrupoId.Id:' + subgrupo + ',Activo:true&limit=-1').pipe(
             map(
                 (res) => {
                     if (res === 'error') {

@@ -76,7 +76,7 @@ export class InactivarGrupoComponent implements OnInit {
   }
 
   receiveMessage(event) {
-    
+
     this.info_grupo = event;
     this.catalogoBienesHelper.getGrupoById(event.Id).subscribe(
       res => {

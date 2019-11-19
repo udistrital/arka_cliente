@@ -90,6 +90,8 @@ export class TercerosComponent implements OnInit {
     this.getVigencia();
   }
 
+  onFacturaSubmit() {}
+
   /**
    * Métodos para cargar los contratos.
    */
