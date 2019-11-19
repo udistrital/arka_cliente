@@ -113,7 +113,7 @@ export class ArbolComponent implements OnInit, OnChanges {
     this.subgrupo.emit(selectedRow);
   }
 
-  volver(){
+  volver() {
     this.detalle = false;
     this.cuentasContables = undefined;
     this.tipos_de_bien = undefined;
@@ -121,19 +121,19 @@ export class ArbolComponent implements OnInit, OnChanges {
 
   }
   getDetalle(selectedRow) {
-    console.log(selectedRow);
+    // console.log(selectedRow);
     this.grupoSeleccionado = selectedRow;
     const observable = combineLatest([
       this.catalogoHelper.getCuentasContables(selectedRow.Id),
       this.catalogoHelper.getDetalleSubgrupo(selectedRow.Id),
       this.catalogoHelper.getElementosSubgrupo(selectedRow.Id),
-    ])
+    ]);
 
     observable.subscribe(([cuentas, detalle, elementos]) => {
-      console.log([cuentas, detalle, elementos]);
-      console.log(Object.keys(detalle).length);
-      console.log(Object.keys(elementos).length);
-      console.log(Object.keys(cuentas).length);
+      // console.log([cuentas, detalle, elementos]);
+      // console.log(Object.keys(detalle).length);
+      // console.log(Object.keys(elementos).length);
+      // console.log(Object.keys(cuentas).length);
       if (Object.keys(cuentas[0]).length !== 0) {
         this.cuentasContables = <Array<CuentasGrupoTransaccion>>cuentas;
       }

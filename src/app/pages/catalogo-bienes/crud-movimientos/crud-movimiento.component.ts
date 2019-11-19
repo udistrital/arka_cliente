@@ -228,7 +228,7 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
     if (event.valid) {
       this.formulario.emit(event.data);
     }
-    
+
   }
   validarForm(event) {
     if (event.valid) {

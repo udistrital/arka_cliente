@@ -114,12 +114,12 @@ export class ListCatalogoComponent implements OnInit {
 
   onEdit(event): void {
     this.uid = event.data.Id;
-    this.cambiotab = [false,true,false];
+    this.cambiotab = [false, true, false];
   }
 
   onCreate(event): void {
     this.uid = 0;
-    this.cambiotab = [false,true,false];
+    this.cambiotab = [false, true, false];
   }
 
   onDelete(event): void {
@@ -146,29 +146,29 @@ export class ListCatalogoComponent implements OnInit {
   }
 
   activetab(): void {
-    this.cambiotab = [true,false,false];
+    this.cambiotab = [true, false, false];
   }
 
   selectTab(event): void {
-    switch(event.tabTitle){
+    switch (event.tabTitle) {
       case this.translate.instant('GLOBAL.lista'):
       {
-        this.cambiotab = [true,false,false];
+        this.cambiotab = [true, false, false];
         break;
       }
       case this.translate.instant('GLOBAL.formulario'):
       {
-        this.cambiotab = [false,true,false];
+        this.cambiotab = [false, true, false];
         break;
       }
       case this.translate.instant('GLOBAL.Detalle'):
       {
-        this.cambiotab = [false,false,true];
+        this.cambiotab = [false, false, true];
         break;
       }
       default :
       {
-        this.cambiotab = [false,false,false];
+        this.cambiotab = [false, false, false];
         break;
       }
     }
@@ -177,7 +177,7 @@ export class ListCatalogoComponent implements OnInit {
   onChange(event) {
     if (event) {
       this.loadData();
-      this.cambiotab = [true,false,false];
+      this.cambiotab = [true, false, false];
     }
   }
 

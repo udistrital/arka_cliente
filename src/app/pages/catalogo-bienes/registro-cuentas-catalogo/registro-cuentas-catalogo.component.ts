@@ -55,23 +55,23 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
     this.listService.findPlanCuentasDebito();
     this.listService.findPlanCuentasCredito();
     this.catalogoElementosService.getTiposMovimientoKronos().subscribe((res: any[]) => {
-      this.Movimientos_Entradas = res.filter((x: any) => x.Descripcion.indexOf('Entrada') != -1 )
-      console.log(this.Movimientos_Entradas);
-      this.Movimientos_Salidas = res.filter((x: any) => x.Descripcion.indexOf('Salida') != -1 )
-      console.log(this.Movimientos_Salidas);
-      this.Movimientos_Depreciacion = res.filter((x: any) => x.Descripcion.indexOf('Depreciacion') != -1 )
-      console.log(this.Movimientos_Depreciacion);
-      this.Movimientos_Valorizacion = res.filter((x: any) => x.Descripcion.indexOf('Valorizacion') != -1 )
-      console.log(this.Movimientos_Valorizacion);
+      this.Movimientos_Entradas = res.filter((x: any) => x.Descripcion.indexOf('Entrada') !== -1 );
+      // console.log(this.Movimientos_Entradas);
+      this.Movimientos_Salidas = res.filter((x: any) => x.Descripcion.indexOf('Salida') !== -1 );
+      // console.log(this.Movimientos_Salidas);
+      this.Movimientos_Depreciacion = res.filter((x: any) => x.Descripcion.indexOf('Depreciacion') !== -1 );
+      // console.log(this.Movimientos_Depreciacion);
+      this.Movimientos_Valorizacion = res.filter((x: any) => x.Descripcion.indexOf('Valorizacion') !== -1 );
+      // console.log(this.Movimientos_Valorizacion);
     });
   }
 
   ngOnInit() {
   }
 
-  ver3(event, mov_id){
-    console.log(mov_id);
-    console.log(event);
+  ver3(event, mov_id) {
+    // console.log(mov_id);
+    // console.log(event);
   }
   useLanguage(language: string) {
     this.translate.use(language);
