@@ -19,7 +19,7 @@
 
       </div>
 
-      <div class="col">
+      <div class="col" *ngIf="ver_formulario">
 
         <toaster-container [toasterconfig]="config"></toaster-container>
         <ngx-dinamicform [normalform]="formGrupo" [modeloData]="info_grupo" (result)="validarForm($event)"

@@ -21,6 +21,7 @@ import { ToasterService, ToasterConfig, Toast, BodyOutputType } from 'angular2-t
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { CurrencyPipe } from '@angular/common';
 import { Unidad } from '../../../@core/data/models/acta_recibido/unidades';
+import { DocumentoService } from '../../../@core/data/documento.service';
 
 
 @Component({
@@ -68,6 +69,7 @@ export class VerDetalleComponent implements OnInit {
   Proveedores: Proveedor[];
   Totales: any;
   Acta: TransaccionActaRecibido;
+  fileDocumento: any;
 
   constructor(
     private translate: TranslateService,
@@ -76,6 +78,8 @@ export class VerDetalleComponent implements OnInit {
     private fb: FormBuilder,
     private Actas_Recibido: ActaRecibidoHelper,
     private cp: CurrencyPipe,
+    private nuxeoService: NuxeoService,
+    private documentoService: DocumentoService,
 
   ) {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
@@ -257,6 +261,40 @@ export class VerDetalleComponent implements OnInit {
     'ValorIva',
     'ValorTotal',
   ];
+
+  loadSoporte() {
+    this.Actas_Recibido.getSoporte(this._ActaId).subscribe(res => {
+      if (res !== null) {
+        const data = <Array<any>>res;
+
+        const filesToGet = [
+          {
+            Id: data[0].DocumentoId,
+            key: data[0].DocumentoId,
+          },
+        ];
+
+        this.nuxeoService.getDocumentoById$(filesToGet, this.documentoService)
+          .subscribe(response => {
+            const filesResponse = <any>response;
+            this.fileDocumento = filesResponse;
+            // console.log(filesResponse);
+            if (Object.keys(filesResponse).length === filesToGet.length) {
+              // console.log("files", filesResponse);
+              filesToGet.forEach((file: any) => {
+                const url = filesResponse[file.Id];
+                // let newWindow = window.open('','_blank')
+                const new_tab = window.open(url);
+                new_tab.onload = () => {
+                  new_tab.location = url;
+                };
+                new_tab.focus();
+              });
+            }
+          });
+      }
+    });
+  }
 
   Pipe2Number(any: String) {
     if (any !== null) {

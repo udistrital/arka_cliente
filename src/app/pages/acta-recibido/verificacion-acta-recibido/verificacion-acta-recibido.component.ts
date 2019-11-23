@@ -486,7 +486,24 @@ export class VerificacionActaRecibidoComponent implements OnInit {
       cancelButtonText: 'No',
     }).then((result) => {
       if (result.value) {
-        this.onFirstSubmit2();
+        (Swal as any).mixin({
+          input: 'text',
+          confirmButtonText: 'Rechazar',
+          showCancelButton: true,
+          progressSteps: ['1']
+        }).queue([
+          {
+            title: 'Observaciones',
+            text: 'Inserte la razon de rechazo'
+          },
+        ]).then((result) => {
+          if (result.value) {
+            const obs = this.firstForm.value;
+            this.firstForm.get("Formulario3").get("Datos_Adicionales").setValue(obs.Formulario3.Datos_Adicionales + " // Razon de rechazo: " + result.value);
+            this.onFirstSubmit2();
+          }
+        })
+        
       }
     });
   }

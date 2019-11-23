@@ -1,5 +1,5 @@
 <div class="row">
-  <nb-card class="col-md-6 col-lg-6 col-xxxl-6">
+  <nb-card class="col">
     <nb-card-header>
       {{'GLOBAL.catalogo' | translate}}
     </nb-card-header>
@@ -18,7 +18,7 @@
       </div>
     </nb-card-footer>
   </nb-card>
-  <div class="col-md-6 col-lg-6 col-xxxl-6">
+  <div class="col" *ngIf="ver_formulario">
     <nb-card *ngIf="uid_1">
       <nb-card-header>
         Modificar Grupo
