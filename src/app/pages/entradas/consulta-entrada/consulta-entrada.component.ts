@@ -117,7 +117,7 @@ export class ConsultaEntradaComponent implements OnInit {
           if (data.hasOwnProperty(datos) && data[datos].Movimiento.Id !== undefined) {
             const entrada = new Entrada;
             const tipoEntradaAux = new TipoEntrada;
-            const detalle = JSON.parse((data[datos].Movimiento.Detalle))
+            const detalle = JSON.parse((data[datos].Movimiento.Detalle));
             entrada.Id = data[datos].Movimiento.Id;
             entrada.ActaRecibidoId = detalle.acta_recibido_id;
             entrada.FechaCreacion = data[datos].Movimiento.FechaCreacion;
@@ -141,11 +141,11 @@ export class ConsultaEntradaComponent implements OnInit {
             break;
           }
           case 'Elaboración Propia': {
-            this.loadDetalleElaboracion(res);            
+            this.loadDetalleElaboracion(res);
             break;
           }
           case 'Donación': {
-            this.loadDetalleDonacion(res);            
+            this.loadDetalleDonacion(res);
             break;
           }
           case 'Sobrante': {
