@@ -45,7 +45,7 @@ export class ListService {
     this.store.select(REDUCER_LIST.PlanCuentasCredito).subscribe(
       (list: any) => {
         if (!list || list.length === 0) {
-          this.CatalogoElementos.getPlanCuentas('Credito')
+          this.CatalogoElementos.getPlanCuentas('credito')
             .subscribe(
               (res: any[]) => {
 
@@ -64,7 +64,7 @@ export class ListService {
     this.store.select(REDUCER_LIST.PlanCuentasDebito).subscribe(
       (list: any) => {
         if (!list || list.length === 0) {
-          this.CatalogoElementos.getPlanCuentas('Debito')
+          this.CatalogoElementos.getPlanCuentas('debito')
             .subscribe(
               (res: any[]) => {
 
@@ -72,6 +72,62 @@ export class ListService {
               },
               error => {
                 this.addList(REDUCER_LIST.PlanCuentasDebito, []);
+              },
+            );
+        }
+      },
+    );
+  }
+  public findSedes() {
+
+    this.store.select(REDUCER_LIST.Sedes).subscribe(
+      (list: any) => {
+        if (!list || list.length === 0) {
+          this.ActaRecibido.getParametrosSoporte()
+            .subscribe(
+              (res: any[]) => {
+                this.addList(REDUCER_LIST.Sedes, res[0].Sedes);
+              },
+              error => {
+                this.addList(REDUCER_LIST.Sedes, []);
+              },
+            );
+        }
+      },
+    );
+  }
+  public findDependencias() {
+
+    this.store.select(REDUCER_LIST.Dependencias).subscribe(
+      (list: any) => {
+        if (!list || list.length === 0) {
+          this.ActaRecibido.getParametrosSoporte()
+            .subscribe(
+              (res: any[]) => {
+
+                this.addList(REDUCER_LIST.Dependencias, res[0].Dependencias);
+              },
+              error => {
+                this.addList(REDUCER_LIST.Dependencias, []);
+              },
+            );
+        }
+      },
+    );
+  }
+  public findUbicaciones() {
+
+    this.store.select(REDUCER_LIST.Ubicaciones).subscribe(
+      (list: any) => {
+        if (!list || list.length === 0) {
+          this.ActaRecibido.getParametrosSoporte()
+            .subscribe(
+              (res: any[]) => {
+
+                this.addList(REDUCER_LIST.Ubicaciones, res[0].Ubicaciones);
+              },
+              error => {
+                this.addList(REDUCER_LIST.Ubicaciones, []);
               },
             );
         }

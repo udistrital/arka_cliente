@@ -49,6 +49,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
   searchStr3: string;
   protected dataService: CompleterData;
   protected dataService2: CompleterData;
+  protected dataService3: CompleterData;
 
   // Mensajes de error
   errMess: any;
@@ -83,11 +84,13 @@ export class RegistroActaRecibidoComponent implements OnInit {
   Dependencias: Dependencia[];
   DatosTotales: any;
   Totales: Array<any>;
-  dataService3: CompleterData;
   Tarifas_Iva: Impuesto[];
   fileDocumento: any;
   uidDocumento: any;
   idDocumento: number;
+  validador: boolean;
+  validador_soporte: number;
+
 
   constructor(
     private translate: TranslateService,
@@ -460,7 +463,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
       this.nuxeoService.getDocumentos$(files, this.documentoService)
         .subscribe(response => {
           if (Object.keys(response).length === files.length) {
-            // console.log("response", response);
+            // console.log('response', response);
             files.forEach((file) => {
               this.uidDocumento = file.uid;
               this.idDocumento = response[file.key].Id;
@@ -485,23 +488,33 @@ export class RegistroActaRecibidoComponent implements OnInit {
 
     });
     Transaccion_Acta.SoportesActa = Soportes;
-    this.Actas_Recibido.postTransaccionActa(Transaccion_Acta).subscribe((res: any) => {
-      if (res !== null) {
-        (Swal as any).fire({
-          type: 'success',
-          title: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.Acta') +
-            `${res.ActaRecibido.Id}` + this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.RegistradaTitle'),
-          text: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.Acta') +
-            `${res.ActaRecibido.Id}` + this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.Registrada'),
-        });
-      } else {
-        (Swal as any).fire({
-          type: 'error',
-          title: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.RegistradaTitleNO'),
-          text: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.RegistradaNO'),
-        });
-      }
-    });
+    if (this.validador === false) {
+      this.Actas_Recibido.postTransaccionActa(Transaccion_Acta).subscribe((res: any) => {
+        if (res !== null) {
+          (Swal as any).fire({
+            type: 'success',
+            title: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.Acta') +
+              `${res.ActaRecibido.Id}` + this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.RegistradaTitle'),
+            text: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.Acta') +
+              `${res.ActaRecibido.Id}` + this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.Registrada'),
+          });
+        } else {
+          (Swal as any).fire({
+            type: 'error',
+            title: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.RegistradaTitleNO'),
+            text: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.RegistradaNO'),
+          });
+        }
+      });
+    } else {
+      (Swal as any).fire({
+        type: 'error',
+        title: 'Datos Incompletos',
+        text: 'Existen datos de elementos incompletos en el soporte del proveedor :' +
+              this.Proveedores.find(x => x.Id === this.validador_soporte),
+      });
+    }
+
   }
   Registrar_Acta(Datos: any, Datos2: any): ActaRecibido {
 
@@ -550,35 +563,54 @@ export class RegistroActaRecibidoComponent implements OnInit {
   }
   Registrar_Elementos(Datos: any, Soporte: SoporteActa): Array<Elemento> {
     const Elementos_Soporte = new Array<Elemento>();
-    for (const datos of Datos) {
-      const Elemento__ = new Elemento;
-      const valorTotal = (parseFloat(this.Pipe2Number(datos.Subtotal)) - parseFloat(this.Pipe2Number(datos.Descuento)));
-      // console.log(this.Unidades);
-      // console.log(Datos);
-      // console.log(this.Unidades.find(unidad => unidad.Id === parseInt(datos.UnidadMedida)))
-      Elemento__.Id = null;
-      Elemento__.Nombre = datos.Nombre;
-      Elemento__.Cantidad = parseFloat(this.Pipe2Number(datos.Cantidad));
-      Elemento__.Marca = datos.Marca;
-      Elemento__.Serie = datos.Serie;
-      Elemento__.UnidadMedida = this.Unidades.find(unidad => unidad.Id === parseFloat(datos.UnidadMedida)).Id;
-      Elemento__.ValorUnitario = parseFloat(this.Pipe2Number(datos.ValorUnitario));
-      Elemento__.Subtotal = parseFloat(this.Pipe2Number(datos.Subtotal));
-      Elemento__.Descuento = parseFloat(this.Pipe2Number(datos.Descuento));
-      Elemento__.ValorTotal = valorTotal;
-      Elemento__.PorcentajeIvaId = parseFloat(datos.PorcentajeIvaId);
-      Elemento__.ValorIva = parseFloat(this.Pipe2Number(datos.ValorIva));
-      Elemento__.ValorFinal = parseFloat(this.Pipe2Number(datos.ValorTotal));
-      Elemento__.SubgrupoCatalogoId = parseFloat(datos.SubgrupoCatalogoId);
-      Elemento__.Verificado = false;
-      Elemento__.TipoBienId = this.Tipos_Bien.find(bien => bien.Id === parseFloat(datos.TipoBienId));
-      Elemento__.EstadoElementoId = this.Estados_Acta.find(estado => estado.Id === 1);
-      Elemento__.SoporteActaId = Soporte;
-      Elemento__.Activo = true;
-      Elemento__.FechaCreacion = new Date();
-      Elemento__.FechaModificacion = new Date();
-      Elementos_Soporte.push(Elemento__);
-
+    if ((Object.keys(Datos).length === 0)) {
+      // console.log(this.validador);
+      this.validador = true;
+      this.validador_soporte = Soporte.ProveedorId;
+      // console.log(this.validador);
+    } else {
+      for (const datos of Datos) {
+        const Elemento__ = new Elemento;
+        const valorTotal = (parseFloat(this.Pipe2Number(datos.Subtotal)) - parseFloat(this.Pipe2Number(datos.Descuento)));
+        // console.log(this.Unidades);
+        // console.log(Datos);
+        // console.log(this.Unidades.find(unidad => unidad.Id === parseInt(datos.UnidadMedida)))
+        Elemento__.Id = null;
+        Elemento__.Nombre = datos.Nombre;
+        Elemento__.Cantidad = parseFloat(this.Pipe2Number(datos.Cantidad));
+        Elemento__.Marca = datos.Marca;
+        Elemento__.Serie = datos.Serie;
+        Elemento__.UnidadMedida = this.Unidades.find(unidad => unidad.Id === parseFloat(datos.UnidadMedida)).Id;
+        Elemento__.ValorUnitario = parseFloat(this.Pipe2Number(datos.ValorUnitario));
+        Elemento__.Subtotal = parseFloat(this.Pipe2Number(datos.Subtotal));
+        Elemento__.Descuento = parseFloat(this.Pipe2Number(datos.Descuento));
+        Elemento__.ValorTotal = valorTotal;
+        Elemento__.PorcentajeIvaId = parseFloat(datos.PorcentajeIvaId);
+        Elemento__.ValorIva = parseFloat(this.Pipe2Number(datos.ValorIva));
+        Elemento__.ValorFinal = parseFloat(this.Pipe2Number(datos.ValorTotal));
+        Elemento__.SubgrupoCatalogoId = parseFloat(datos.SubgrupoCatalogoId);
+        Elemento__.Verificado = false;
+        Elemento__.TipoBienId = this.Tipos_Bien.find(bien => bien.Id === parseFloat(datos.TipoBienId));
+        Elemento__.EstadoElementoId = this.Estados_Acta.find(estado => estado.Id === 1);
+        Elemento__.SoporteActaId = Soporte;
+        Elemento__.Activo = true;
+        Elemento__.FechaCreacion = new Date();
+        Elemento__.FechaModificacion = new Date();
+        this.validador = false;
+        if ((Elemento__.Nombre === '') || (Elemento__.Marca === '') || (Elemento__.Serie === '')) {
+          // console.log(this.validador);
+          this.validador = true;
+          this.validador_soporte = Soporte.ProveedorId;
+          // console.log(this.validador);
+        }
+        if ((Elemento__.ValorUnitario === 0.00) || (Elemento__.Cantidad === 0.00)) {
+          // console.log(this.validador);
+          this.validador = true;
+          this.validador_soporte = Soporte.ProveedorId;
+          // console.log(this.validador);
+        }
+        Elementos_Soporte.push(Elemento__);
+      }
     }
     return Elementos_Soporte;
   }
@@ -663,11 +695,14 @@ export class RegistroActaRecibidoComponent implements OnInit {
     }).then((result) => {
       if (result.value) {
         this.onFirstSubmit();
-        sessionStorage.removeItem('Formulario_Registro');
-        sessionStorage.removeItem('Elementos_Formulario_Registro');
-        this.router.navigateByUrl('/RefreshComponent', { skipLocationChange: true }).then(() => {
-          this.router.navigate(['/pages/acta_recibido/consulta_acta_recibido']);
-        });
+        if (!this.validador) {
+          sessionStorage.removeItem('Formulario_Registro');
+          sessionStorage.removeItem('Elementos_Formulario_Registro');
+          this.router.navigateByUrl('/RefreshComponent', { skipLocationChange: true }).then(() => {
+            this.router.navigate(['/pages/acta_recibido/consulta_acta_recibido']);
+          });
+        }
+
       }
     });
   }

@@ -1,0 +1,117 @@
+<div class="col-lg-12">
+  <nb-card>
+    <nb-card-header>
+      <h1>{{'GLOBAL.consultar_entrada' | translate}}</h1>
+    </nb-card-header>
+    <nb-card-body>
+
+      <!-- CARD PARA MOSTRAR LAS SOLICITUDES *ngIf="!detalle" -->
+      <p class="h4 pb-4" *ngIf="!detalle">{{'GLOBAL.mensaje_consulta_entrada' | translate}}</p>
+
+      <ng2-smart-table [settings]="settings" [source]="source" (custom)="onCustom($event)" *ngIf="!detalle">
+      </ng2-smart-table>
+
+      <div class="justify-content-center float-right pt-4" *ngIf="!detalle">
+        <button type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off"
+          (click)="onRegister()">
+          {{'GLOBAL.registrar_nueva_entrada' | translate}}
+        </button>
+      </div>
+
+      <!-- CARD PARA MOSTRAR LOS DETALLES DE LAS SOLICITUDES -->
+
+      <h5 class="pb-4" *ngIf="detalle">{{'GLOBAL.detalle_entrada' | translate}}</h5>
+
+      <div class="container">
+
+        <div class="row">
+          <div class="col">
+            <p *ngIf="detalle"><strong>Entrada</strong>: {{ entradaEspecifica.Consecutivo }}</p>
+          </div>
+          <div class="col">
+            <p *ngIf="detalle"><strong>Tipo de Entrada:</strong> {{ entradaEspecifica.TipoEntradaId.Nombre }}</p>
+          </div>
+        </div>
+
+        <div class="row">
+          <div *ngIf="detalle && entradaEspecifica.TipoEntradaId.Id === 5" class="col">
+            <p *ngIf="detalle && entradaEspecifica.TipoEntradaId.Id === 5 && entradaEspecifica.Importacion">
+              <strong>Entrada por Importación:</strong> Si</p>
+            <p *ngIf="detalle && entradaEspecifica.TipoEntradaId.Id === 5 && !entradaEspecifica.Importacion">
+              <strong>Entrada por Importación:</strong> No</p>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col">
+            <p *ngIf="detalle"><strong>Acta de Recibido N°:</strong> {{ entradaEspecifica.ActaRecibidoId }}</p>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col">
+            <p *ngIf="detalle && entradaEspecifica.ContratoId !== 0"><strong>Contrato N°:</strong>
+              {{ entradaEspecifica.ContratoId }}</p>
+          </div>
+          <div class="col">
+            <p *ngIf="detalle"><strong>Tipo Contrato:</strong> {{ contrato.TipoContrato }}</p>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col">
+            <p *ngIf="detalle && contrato.ContratoId !== 0"><strong>Ordenador de Gasto:</strong>
+              {{ contrato.OrdenadorGasto.NombreOrdenador }}</p>
+          </div>
+          <div class="col">
+            <p *ngIf="detalle && contrato.ContratoId !== 0"><strong>Cargo:</strong>
+              {{ contrato.OrdenadorGasto.RolOrdenadorGasto }}</p>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col">
+            <p *ngIf="detalle && contrato.ContratoId !== 0"><strong>Supervisor:</strong>
+              {{ contrato.Supervisor.Nombre }}</p>
+          </div>
+          <div class="col">
+            <p *ngIf="detalle && contrato.ContratoId !== 0"><strong>Cargo:</strong> {{ contrato.Supervisor.Cargo }}</p>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col">
+            <p *ngIf="detalle && entradaEspecifica.Solicitante !== 0"><strong>Solicitante:</strong>
+              {{ entradaEspecifica.Solicitante }}
+            </p>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col">
+            <p *ngIf="detalle && entradaEspecifica.Observacion !== ''"><strong>Observaciones:</strong>
+              {{ entradaEspecifica.Observacion }}</p>
+            <p *ngIf="detalle && entradaEspecifica.Observacion === ''"><strong>Observaciones:</strong> N/A</p>
+          </div>
+        </div>
+
+        <label><strong>Soportes:</strong></label>
+        <button *ngIf="documentoId" mat-button type="button" (click)="loadSoporte()">
+          <mat-icon>cloud_download</mat-icon>
+        </button>
+
+      </div>
+
+      <h5 class="pt-4 pb-4" *ngIf="detalle">{{'GLOBAL.elementos_entrada' | translate}}</h5>
+
+      <!-- <ngx-tabla-entradas [actaRecibidoId]="actaRecibidoId" *ngIf="detalle"></ngx-tabla-entradas> -->
+
+      <div class="pt-4">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="detalle = !detalle"
+          *ngIf="detalle">{{'GLOBAL.volver' | translate}}
+        </button>
+      </div>
+
+    </nb-card-body>
+  </nb-card>
+</div>

@@ -499,8 +499,9 @@ export class VerificacionActaRecibidoComponent implements OnInit {
         ]).then((result2) => {
           if (result2.value) {
             const obs = this.firstForm.value;
-            this.firstForm.get('Formulario3').get('Datos_Adicionales').setValue(obs.Formulario3.Datos_Adicionales
-              + ' // Razon de rechazo: ' + result2.value);
+            this.firstForm.get('Formulario3').get('Datos_Adicionales').setValue(
+              obs.Formulario3.Datos_Adicionales + ' // Razon de rechazo: ' + result2.value,
+              );
             this.onFirstSubmit2();
           }
         });
