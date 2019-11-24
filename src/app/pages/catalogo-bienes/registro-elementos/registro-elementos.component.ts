@@ -70,8 +70,16 @@ export class RegistroElementosComponent implements OnInit {
   }
 
   receiveMessage(event) {
-    this.subgrupo = event;
-    this.ver_formulario = true;
+    this.catalogoElementosService.getSubgrupoById(event.Id).subscribe(
+      res => {
+        // console.log(res[0]);
+        if (Object.keys(res[0]).length !== 0) {
+          this.subgrupo = event;
+          this.ver_formulario = true;
+        } else {
+          this.ver_formulario = false;
+        }
+      });
   }
 
   validarForm(event) {

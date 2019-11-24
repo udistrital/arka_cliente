@@ -150,9 +150,9 @@ export class CapturarElementosComponent implements OnInit {
   }
   onFileChange(event) {
 
-    console.log(event.target.files);
+    // console.log(event.target.files);
     const max_size = 1;
-    
+
     let nombre = '';
     if (event.target.files.length > 0) {
       nombre = event.target.files[0].name;
@@ -191,7 +191,7 @@ export class CapturarElementosComponent implements OnInit {
     this.actaRecibidoHelper.postArchivo(formModel).subscribe(res => {
 
       if (res !== null) {
-        if (res[0].Mensaje !== undefined){
+        if (res[0].Mensaje !== undefined) {
           (Swal as any).fire({
             type: 'success',
             title: res[0].Mensaje,
@@ -199,13 +199,13 @@ export class CapturarElementosComponent implements OnInit {
           });
           this.clearFile();
         } else {
-          console.log(res);
+          // console.log(res);
           this.respuesta = res;
           this.dataSource.data = this.respuesta[0].Elementos;
           this.ver();
           this.dataSource.paginator = this.paginator;
           this.dataSource.sort = this.sort;
-  
+
           (Swal as any).fire({
             type: 'success',
             title: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.ElementosCargadosTitleOK'),

@@ -155,6 +155,27 @@ export class CatalogoElementosHelper {
             ),
         );
     }
+    /**
+     * Elementos Acta Get
+     * If the response has errors in the OAS API it should show a popup message with an error.
+     * If the response is successs, it returns the object's data.
+     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
+     */
+    public getGrupoTransaccionById(grupoId) {
+        this.rqManager.setPath('CATALOGO_ELEMENTOS_SERVICE');
+        return this.rqManager.get('tr_grupo/' + grupoId + '').pipe(
+            map(
+                (res) => {
+                    if (res === 'error') {
+                        this.pUpManager.showErrorAlert('No se pudo consultar los elementos');
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
+    
 
     /**
      * Transaccion Acta Post
@@ -185,7 +206,7 @@ export class CatalogoElementosHelper {
      */
     public putGrupo(Transaccion, Id) {
         this.rqManager.setPath('CATALOGO_ELEMENTOS_SERVICE');
-        return this.rqManager.put2('subgrupo', Transaccion, Id).pipe(
+        return this.rqManager.put2('tr_grupo', Transaccion, Id).pipe(
             map(
                 (res) => {
                     if (res['Type'] === 'error') {
@@ -584,7 +605,7 @@ export class CatalogoElementosHelper {
      */
     public getDetalleSubgrupo(subgrupo) {
         this.rqManager.setPath('CATALOGO_ELEMENTOS_SERVICE');
-        return this.rqManager.get('detalle_subgrupo?query=SubgrupoId.Id:' + subgrupo + ",Activo:true&limit=-1").pipe(
+        return this.rqManager.get('detalle_subgrupo?query=SubgrupoId.Id:' + subgrupo + ',Activo:true&limit=-1').pipe(
             map(
                 (res) => {
                     if (res === 'error') {
@@ -605,7 +626,7 @@ export class CatalogoElementosHelper {
      */
     public getElementosSubgrupo(subgrupo) {
         this.rqManager.setPath('CATALOGO_ELEMENTOS_SERVICE');
-        return this.rqManager.get('elemento?query=SubgrupoId.Id:' + subgrupo + ",Activo:true&limit=-1").pipe(
+        return this.rqManager.get('elemento?query=SubgrupoId.Id:' + subgrupo + ',Activo:true&limit=-1').pipe(
             map(
                 (res) => {
                     if (res === 'error') {
@@ -618,5 +639,45 @@ export class CatalogoElementosHelper {
         );
     }
 
+    /**
+     * Transaccion Acta Post
+     * If the response has errors in the OAS API it should show a popup message with an error.
+     * If the response is successs, it returns the object's data.
+     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
+     */
+    public postTransaccionCuentasSubgrupo(Transaccion) {
+        this.rqManager.setPath('CATALOGO_ELEMENTOS_SERVICE');
+        return this.rqManager.post('tr_cuentas_subgrupo', Transaccion).pipe(
+            map(
+                (res) => {
+                    if (res['Type'] === 'error') {
+                        this.pUpManager.showErrorAlert('No se pudo consultar el acta solicitada');
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
 
+    /**
+     * Tipo de Bien Acta Get
+     * If the response has errors in the OAS API it should show a popup message with an error.
+     * If the response is successs, it returns the object's data.
+     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
+     */
+    public putTransaccionCuentasSubgrupo(Transaccion, Id) {
+        this.rqManager.setPath('CATALOGO_ELEMENTOS_SERVICE');
+        return this.rqManager.put2('tr_cuentas_subgrupo', Transaccion, Id).pipe(
+            map(
+                (res) => {
+                    if (res['Type'] === 'error') {
+                        this.pUpManager.showErrorAlert('No se pudo consultar el acta solicitada');
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
 }

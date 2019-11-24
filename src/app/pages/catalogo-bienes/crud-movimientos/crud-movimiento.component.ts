@@ -30,11 +30,13 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
   movimiento_id: any;
   respuesta: CuentaGrupo;
   Subgrupo: Subgrupo;
+  respuesta2: any;
 
 
   @Input('subgrupo_id')
   set name(subgrupo_id: Subgrupo) {
     this.subgrupo_id = subgrupo_id;
+    console.log(this.subgrupo_id);
     if (this.movimiento_id !== undefined) {
       this.loadCuentaGrupo();
     }
@@ -158,10 +160,14 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
             cuentasAsociadas.CuentaDebitoId = cuentaDebito;
             this.info_movimiento = cuentasAsociadas;
             // console.log(this.info_movimiento);
+            
           } else {
             this.info_movimiento = undefined;
             this.clean = !this.clean;
+            this.respuesta = undefined;
           }
+          console.log(this.respuesta)
+            console.log(res[0]);
         });
     } else {
       this.info_movimiento = undefined;
@@ -169,96 +175,28 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
     }
   }
 
-  updateGrupo(grupo: any): void {
-
-    const opt: any = {
-      title: 'Update?',
-      text: 'Update Grupo!',
-      type: 'warning',
-      showCancelButton: true,
-    };
-    (Swal as any).fire(opt)
-      .then((willDelete) => {
-        if (willDelete.value) {
-          // console.log(grupo);
-          const Cuentas = <CuentasFormulario>grupo;
-          this.respuesta.CuentaCreditoId = Cuentas.CuentaCreditoId.Id;
-          this.respuesta.CuentaDebitoId = Cuentas.CuentaDebitoId.Id;
-          this.catalogoElementosService.putMovimiento(this.respuesta, this.respuesta.Id)
-            .subscribe(res => {
-              this.loadCuentaGrupo();
-              this.eventChange.emit(true);
-              this.showToast('info', 'updated', 'Grupo updated');
-            });
-        }
-      });
-  }
-
-  createGrupo(grupo: any): void {
-    const opt: any = {
-      title: 'Create?',
-      text: 'Create Grupo!',
-      type: 'warning',
-      showCancelButton: true,
-    };
-    (Swal as any).fire(opt)
-      .then((willDelete) => {
-        if (willDelete.value) {
-          // console.log(grupo);
-          const Cuentas = <CuentasFormulario>grupo;
-          const Movimiento = new CuentaGrupo();
-          Movimiento.CuentaCreditoId = Cuentas.CuentaCreditoId.Id;
-          Movimiento.CuentaDebitoId = Cuentas.CuentaDebitoId.Id;
-          Movimiento.Activo = true;
-          Movimiento.SubgrupoId = this.subgrupo_id;
-          Movimiento.SubtipoMovimientoId = this.movimiento_id.Id;
-          this.catalogoElementosService.postMovimiento(Movimiento)
-            .subscribe(res => {
-              const Movimiento2 = <CuentaGrupo><unknown>res;
-              this.eventChange.emit(true);
-              this.showToast('info', 'created', 'Grupo created');
-            });
-        }
-      });
-  }
-
-
-
-  validarForm2(event) {
-    if (event.valid) {
-      this.formulario.emit(event.data);
-    }
-    
-  }
   validarForm(event) {
+    console.log(this.respuesta)
     if (event.valid) {
-      if (this.info_movimiento === undefined) {
-        this.createGrupo(event.data.CuentasFormulario);
+      if (this.respuesta !== undefined) {
+      const cuentaDebito = event.data.CuentasFormulario.CuentaDebitoId;
+      const cuentaCredito = event.data.CuentasFormulario.CuentaCreditoId;
+      this.respuesta.CuentaCreditoId = cuentaCredito.Id;
+      this.respuesta.CuentaDebitoId = cuentaDebito.Id;
+      this.formulario.emit(this.respuesta);
       } else {
-        this.updateGrupo(event.data.CuentasFormulario);
+      const cuentaDebito = event.data.CuentasFormulario.CuentaDebitoId;
+      const cuentaCredito = event.data.CuentasFormulario.CuentaCreditoId;
+      this.respuesta2 = {}
+      this.respuesta2['Id'] = null;
+      this.respuesta2.SubgrupoId = this.subgrupo_id;
+      this.respuesta2.CuentaCreditoId = cuentaCredito.Id;
+      this.respuesta2.CuentaDebitoId = cuentaDebito.Id;
+      this.respuesta2.SubtipoMovimientoId = this.movimiento_id.Id;
+      this.formulario.emit(<CuentaGrupo>this.respuesta2);
+      console.log(this.respuesta2);
       }
     }
-  }
 
-  private showToast(type: string, title: string, body: string) {
-    this.config = new ToasterConfig({
-      // 'toast-top-full-width', 'toast-bottom-full-width', 'toast-top-left', 'toast-top-center'
-      positionClass: 'toast-top-center',
-      timeout: 5000,  // ms
-      newestOnTop: true,
-      tapToDismiss: false, // hide on click
-      preventDuplicates: true,
-      animation: 'slideDown', // 'fade', 'flyLeft', 'flyRight', 'slideDown', 'slideUp'
-      limit: 5,
-    });
-    const toast: Toast = {
-      type: type, // 'default', 'info', 'success', 'warning', 'error'
-      title: title,
-      body: body,
-      showCloseButton: true,
-      bodyOutputType: BodyOutputType.TrustedHtml,
-    };
-    this.toasterService.popAsync(toast);
   }
-
 }

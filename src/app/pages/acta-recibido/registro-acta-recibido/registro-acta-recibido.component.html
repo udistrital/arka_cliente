@@ -123,7 +123,7 @@
                                 <button nbButton type="button" 
                                   (click)="fileInputDocumento.click()">
                                   <i class="fas fa-file-upload fa-2x"></i>
-                                  <input #fileInputDocumento type="file" (change)="onInputFileDocumento($event)"
+                                  <input #fileInputDocumento formControlName="Soporte" type="file" (change)="onInputFileDocumento($event)"
                                     style="display:none;" accept="application/pdf" data-max-size="5120" />
                                 </button>
                                 <button nbButton type="button" *ngIf="fileDocumento"

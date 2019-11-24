@@ -28,5 +28,29 @@ export class ListReducer {
         return state;
     }
   }
+  static ListReducerSedes(state: Array<any> = new Array, action) {
+    switch (action.type) {
+      case REDUCER_LIST.Sedes:
+        return [...state, action.payload];
+      default:
+        return state;
+    }
+  }
+  static ListReducerDependencias(state: Array<any> = new Array, action) {
+    switch (action.type) {
+      case REDUCER_LIST.Dependencias:
+        return [...state, action.payload];
+      default:
+        return state;
+    }
+  }
+  static ListReducerUbicaciones(state: Array<any> = new Array, action) {
+    switch (action.type) {
+      case REDUCER_LIST.Ubicaciones:
+        return [...state, action.payload];
+      default:
+        return state;
+    }
+  }
 
 }

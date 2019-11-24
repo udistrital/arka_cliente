@@ -76,7 +76,7 @@ export class InactivarGrupoComponent implements OnInit {
   }
 
   receiveMessage(event) {
-    
+
     this.info_grupo = event;
     this.catalogoBienesHelper.getGrupoById(event.Id).subscribe(
       res => {
@@ -112,7 +112,7 @@ export class InactivarGrupoComponent implements OnInit {
     }).then((result) => {
       if (result.value) {
         this.info_grupo.Activo = false;
-        this.catalogoBienesHelper.putGrupo(this.info_grupo, this.info_grupo.Id).subscribe(res => {
+        this.catalogoBienesHelper.putSubgrupo(this.info_grupo, this.info_grupo.Id).subscribe(res => {
           if (res !== null) {
             this.pUpManager.showSuccessAlert(this.translate.instant('GLOBAL.inactivar_exito'));
             this.router.navigateByUrl('/RefreshComponent', { skipLocationChange: true }).then(() => {

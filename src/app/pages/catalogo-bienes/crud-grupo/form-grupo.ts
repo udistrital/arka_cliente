@@ -50,8 +50,8 @@ export let FORM_GRUPO = {
         nombre: 'Depreciacion',
         label_i18n: 'depreciacion',
         placeholder_i18n: 'depreciacion',
-        requerido: true,
-        tipo: 'checkbox',
+        requerido: false,
+        tipo: 'boolean',
     },
     {
         etiqueta: 'checkbox',
@@ -59,8 +59,8 @@ export let FORM_GRUPO = {
         nombre: 'Valorizacion',
         label_i18n: 'valorizacion',
         placeholder_i18n: 'valorizacion',
-        requerido: true,
-        tipo: 'checkbox',
+        requerido: false,
+        tipo: 'boolean',
     },
     // {
     //     etiqueta: 'checkbox',
