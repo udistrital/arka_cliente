@@ -8,7 +8,7 @@ describe('FormElementosSeleccionadosComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ FormElementosSeleccionadosComponent ]
+      declarations: [ FormElementosSeleccionadosComponent ],
     })
     .compileComponents();
   }));

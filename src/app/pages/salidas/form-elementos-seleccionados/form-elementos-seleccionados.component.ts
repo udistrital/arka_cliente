@@ -33,9 +33,9 @@ import { DocumentoService } from '../../../@core/data/documento.service';
 
 
 @Component({
-  selector: 'form-elementos-seleccionados',
+  selector: 'ngx-form-elementos-seleccionados',
   templateUrl: './form-elementos-seleccionados.component.html',
-  styleUrls: ['./form-elementos-seleccionados.component.scss']
+  styleUrls: ['./form-elementos-seleccionados.component.scss'],
 })
 export class FormElementosSeleccionadosComponent implements OnInit {
 
@@ -96,7 +96,7 @@ export class FormElementosSeleccionadosComponent implements OnInit {
   }
   get Formulario(): FormGroup {
     return this.fb.group({
-      Proveedor: ['',Validators.required],
+      Proveedor: ['', Validators.required],
       Sede: [''],
       Dependencia: [''],
       Ubicacion: ['', Validators.required],

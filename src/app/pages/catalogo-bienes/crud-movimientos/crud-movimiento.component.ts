@@ -36,7 +36,7 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
   @Input('subgrupo_id')
   set name(subgrupo_id: Subgrupo) {
     this.subgrupo_id = subgrupo_id;
-    console.log(this.subgrupo_id);
+    // console.log(this.subgrupo_id);
     if (this.movimiento_id !== undefined) {
       this.loadCuentaGrupo();
     }
@@ -160,14 +160,14 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
             cuentasAsociadas.CuentaDebitoId = cuentaDebito;
             this.info_movimiento = cuentasAsociadas;
             // console.log(this.info_movimiento);
-            
+
           } else {
             this.info_movimiento = undefined;
             this.clean = !this.clean;
             this.respuesta = undefined;
           }
-          console.log(this.respuesta)
-            console.log(res[0]);
+          // console.log(this.respuesta)
+            // console.log(res[0]);
         });
     } else {
       this.info_movimiento = undefined;
@@ -176,7 +176,7 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
   }
 
   validarForm(event) {
-    console.log(this.respuesta)
+    // console.log(this.respuesta)
     if (event.valid) {
       if (this.respuesta !== undefined) {
       const cuentaDebito = event.data.CuentasFormulario.CuentaDebitoId;
@@ -187,14 +187,14 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
       } else {
       const cuentaDebito = event.data.CuentasFormulario.CuentaDebitoId;
       const cuentaCredito = event.data.CuentasFormulario.CuentaCreditoId;
-      this.respuesta2 = {}
+      this.respuesta2 = {};
       this.respuesta2['Id'] = null;
       this.respuesta2.SubgrupoId = this.subgrupo_id;
       this.respuesta2.CuentaCreditoId = cuentaCredito.Id;
       this.respuesta2.CuentaDebitoId = cuentaDebito.Id;
       this.respuesta2.SubtipoMovimientoId = this.movimiento_id.Id;
       this.formulario.emit(<CuentaGrupo>this.respuesta2);
-      console.log(this.respuesta2);
+      // console.log(this.respuesta2);
       }
     }
 

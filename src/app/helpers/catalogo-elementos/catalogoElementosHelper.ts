@@ -175,7 +175,7 @@ export class CatalogoElementosHelper {
             ),
         );
     }
-    
+
 
     /**
      * Transaccion Acta Post

@@ -95,8 +95,8 @@ export class CrudGrupoComponent implements OnInit {
           if (Object.keys(res[0]).length !== 0) {
             const detalle = <Detalle>res[0].Detalle;
             const subgrupo = <Grupo>res[0].Subgrupo;
-            console.log(detalle);
-            console.log(subgrupo);
+            // console.log(detalle);
+            // console.log(subgrupo);
             const info__grupo = new Grupo2;
             info__grupo.Descripcion = subgrupo.Descripcion;
             info__grupo.Nombre = subgrupo.Nombre;
@@ -145,10 +145,10 @@ export class CrudGrupoComponent implements OnInit {
           grupoPut.Catalogo = catalogo;
           grupoPut.Subgrupo = grupo;
           grupoPut.DetalleSubgrupo = detalle;
-          console.log(grupoPut);
+          // console.log(grupoPut);
           this.catalogoElementosService.putGrupo(grupoPut, grupo.Id)
             .subscribe(res => {
-              console.log(res);
+              // console.log(res);
               this.info_grupo = <Grupo2><unknown>res;
               this.showToast('info', 'updated', 'Grupo updated');
               // this.loadGrupo();
@@ -176,10 +176,10 @@ export class CrudGrupoComponent implements OnInit {
           catalogo.Id = parseFloat(this.catalogoid);
           grupo.Activo = true;
 
-          if (grupo.Depreciacion === ""){
+          if (grupo.Depreciacion === '') {
             grupo.Depreciacion = false;
           }
-          if (grupo.Valorizacion === ""){
+          if (grupo.Valorizacion === '') {
             grupo.Valorizacion = false;
           }
 
@@ -190,10 +190,10 @@ export class CrudGrupoComponent implements OnInit {
           grupoPost.Catalogo = catalogo;
           grupoPost.Subgrupo = grupo;
           grupoPost.DetalleSubgrupo = detalle;
-          console.log(grupoPost)
+          // console.log(grupoPost)
           this.catalogoElementosService.postGrupo(grupoPost)
             .subscribe(res => {
-              console.log(res);
+              // console.log(res);
               this.info_grupo = <Grupo2><unknown>res;
               this.eventChange.emit(true);
               this.showToast('info', 'created', 'Grupo created');

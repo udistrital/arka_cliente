@@ -463,7 +463,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
       this.nuxeoService.getDocumentos$(files, this.documentoService)
         .subscribe(response => {
           if (Object.keys(response).length === files.length) {
-            // console.log("response", response);
+            // console.log('response', response);
             files.forEach((file) => {
               this.uidDocumento = file.uid;
               this.idDocumento = response[file.key].Id;
@@ -510,7 +510,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
       (Swal as any).fire({
         type: 'error',
         title: 'Datos Incompletos',
-        text: 'Existen datos de elementos incompletos en el soporte del proveedor :' + 
+        text: 'Existen datos de elementos incompletos en el soporte del proveedor :' +
               this.Proveedores.find(x => x.Id === this.validador_soporte),
       });
     }
@@ -564,10 +564,10 @@ export class RegistroActaRecibidoComponent implements OnInit {
   Registrar_Elementos(Datos: any, Soporte: SoporteActa): Array<Elemento> {
     const Elementos_Soporte = new Array<Elemento>();
     if ((Object.keys(Datos).length === 0)) {
-      console.log(this.validador);
+      // console.log(this.validador);
       this.validador = true;
       this.validador_soporte = Soporte.ProveedorId;
-      console.log(this.validador);
+      // console.log(this.validador);
     } else {
       for (const datos of Datos) {
         const Elemento__ = new Elemento;
@@ -597,17 +597,17 @@ export class RegistroActaRecibidoComponent implements OnInit {
         Elemento__.FechaCreacion = new Date();
         Elemento__.FechaModificacion = new Date();
         this.validador = false;
-        if ((Elemento__.Nombre === "") || (Elemento__.Marca === "") || (Elemento__.Serie === "")) {
-          console.log(this.validador);
+        if ((Elemento__.Nombre === '') || (Elemento__.Marca === '') || (Elemento__.Serie === '')) {
+          // console.log(this.validador);
           this.validador = true;
           this.validador_soporte = Soporte.ProveedorId;
-          console.log(this.validador);
+          // console.log(this.validador);
         }
         if ((Elemento__.ValorUnitario === 0.00) || (Elemento__.Cantidad === 0.00)) {
-          console.log(this.validador);
+          // console.log(this.validador);
           this.validador = true;
           this.validador_soporte = Soporte.ProveedorId;
-          console.log(this.validador);
+          // console.log(this.validador);
         }
         Elementos_Soporte.push(Elemento__);
       }
@@ -702,7 +702,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
             this.router.navigate(['/pages/acta_recibido/consulta_acta_recibido']);
           });
         }
-        
+
       }
     });
   }

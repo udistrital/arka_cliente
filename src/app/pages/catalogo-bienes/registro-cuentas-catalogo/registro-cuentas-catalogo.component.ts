@@ -78,35 +78,35 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
   }
 
   ver3(event) {
-    var mov_existente = new Boolean();
-    if (event.Id === null){
-      this.Movimientos.forEach((element: CuentaGrupo) => {
-        if (element.SubtipoMovimientoId === event.SubtipoMovimientoId){
+    let mov_existente: boolean;
+    if (event.Id === null) {
+      this.Movimientos.forEach((element1: CuentaGrupo) => {
+        if (element1.SubtipoMovimientoId === event.SubtipoMovimientoId) {
           mov_existente = true;
-          element.CuentaCreditoId = event.CuentaCreditoId;
-          element.CuentaDebitoId = event.CuentaDebitoId;
+          element1.CuentaCreditoId = event.CuentaCreditoId;
+          element1.CuentaDebitoId = event.CuentaDebitoId;
         }
       });
-      if (mov_existente !== true){
+      if (mov_existente !== true) {
         this.Movimientos.push(<CuentaGrupo>event);
       }
-      
+
     } else {
-      this.Movimientos.forEach((element: CuentaGrupo) => {
-        if (element.Id === event.Id){
-          element.CuentaCreditoId = event.CuentaCreditoId;
-          element.CuentaDebitoId = event.CuentaDebitoId;
+      this.Movimientos.forEach((element2: CuentaGrupo) => {
+        if (element2.Id === event.Id) {
+          element2.CuentaCreditoId = event.CuentaCreditoId;
+          element2.CuentaDebitoId = event.CuentaDebitoId;
           mov_existente = true;
         }
       });
-      if (mov_existente !== true){
+      if (mov_existente !== true) {
         this.Movimientos.push(<CuentaGrupo>event);
       }
     }
-    if (this.Movimientos.length === this.all_mov){
+    if (this.Movimientos.length === this.all_mov) {
       this.all_mov_ok = true;
     }
-    console.log(this.Movimientos);
+    // console.log(this.Movimientos);
   }
 
   useLanguage(language: string) {
@@ -157,15 +157,15 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
       });
     // console.log(event);
   }
-  onSubmit(){
-    var mov_existente = new Boolean();
-    this.Movimientos.forEach((element: CuentaGrupo) => {
-      if (element.Id !== null){
+  onSubmit() {
+    let mov_existente: boolean;
+    this.Movimientos.forEach((element3: CuentaGrupo) => {
+      if (element3.Id !== null) {
         mov_existente = true;
       }
     });
 
-   if (mov_existente !== true){
+   if (mov_existente !== true) {
       this.createMovimientos(this.Movimientos);
     } else {
       this.updateMovimientos(this.Movimientos);
@@ -182,12 +182,12 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
     (Swal as any).fire(opt)
       .then((willDelete) => {
         if (willDelete.value) {
-          const mov: any = {}
-          mov["Cuentas"] = subgrupo;
-          console.log(mov)
+          const mov: any = {};
+          mov['Cuentas'] = subgrupo;
+          // console.log(mov)
           this.catalogoElementosService.putTransaccionCuentasSubgrupo(mov, this.uid_1.Id)
             .subscribe(res => {
-              console.log(res);
+              // console.log(res);
               this.eventChange.emit(true);
               this.Movimientos = [];
               this.showToast('info', 'created', 'Subgrupo1 created');
@@ -206,12 +206,12 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
     (Swal as any).fire(opt)
       .then((willDelete) => {
         if (willDelete.value) {
-          const mov: any = {}
-          mov["Cuentas"] = subgrupo;
-          console.log(mov)
+          const mov: any = {};
+          mov['Cuentas'] = subgrupo;
+          // console.log(mov)
           this.catalogoElementosService.postTransaccionCuentasSubgrupo(mov)
             .subscribe(res => {
-              console.log(res);
+              // console.log(res);
               this.eventChange.emit(true);
               this.Movimientos = [];
               this.showToast('info', 'created', 'Subgrupo1 created');

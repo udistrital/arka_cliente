@@ -12,9 +12,9 @@ import { NuxeoService } from '../../../@core/utils/nuxeo.service';
 import { DocumentoService } from '../../../@core/data/documento.service';
 
 @Component({
-  selector: 'tabla-entrada-aprobada',
+  selector: 'ngx-tabla-entrada-aprobada',
   templateUrl: './tabla-entrada-aprobada.component.html',
-  styleUrls: ['./tabla-entrada-aprobada.component.scss']
+  styleUrls: ['./tabla-entrada-aprobada.component.scss'],
 })
 export class TablaEntradaAprobadaComponent implements OnInit {
 
