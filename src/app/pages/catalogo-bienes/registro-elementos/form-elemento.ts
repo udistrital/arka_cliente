@@ -24,7 +24,7 @@ export let FORM_ELEMENTO = {
             tipo: 'text',
         },
         {
-            etiqueta: 'input',
+            etiqueta: 'mat-date',
             claseGrid: 'col-lg-12 col-md-12 col-sm-12 col-xs-12',
             nombre: 'FechaInicio',
             label_i18n: 'fecha_inicio',
@@ -33,7 +33,7 @@ export let FORM_ELEMENTO = {
             tipo: 'date',
         },
         {
-            etiqueta: 'input',
+            etiqueta: 'mat-date',
             claseGrid: 'col-lg-12 col-md-12 col-sm-12 col-xs-12',
             nombre: 'FechaFin',
             label_i18n: 'fecha_fin',

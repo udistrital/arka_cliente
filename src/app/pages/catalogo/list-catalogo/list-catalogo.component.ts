@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { LocalDataSource } from 'ng2-smart-table';
+import { LocalDataSource } from 'ngx-smart-table';
 import { ToasterService, ToasterConfig, Toast, BodyOutputType } from 'angular2-toaster';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import Swal from 'sweetalert2';
@@ -49,13 +49,13 @@ export class ListCatalogoComponent implements OnInit {
       },
       mode: 'external',
       columns: {
-        Id: {
-          title: this.translate.instant('GLOBAL.id'),
-          // type: 'number;',
-          valuePrepareFunction: (value) => {
-            return value;
-          },
-        },
+        // Id: {
+        //   title: this.translate.instant('GLOBAL.id'),
+        //   // type: 'number;',
+        //   valuePrepareFunction: (value) => {
+        //     return value;
+        //   },
+        // },
         Nombre: {
           title: this.translate.instant('GLOBAL.nombre'),
           // type: 'string;',
@@ -73,15 +73,33 @@ export class ListCatalogoComponent implements OnInit {
         FechaInicio: {
           title: this.translate.instant('GLOBAL.fechainicio'),
           // type: 'Date;',
-          valuePrepareFunction: (value) => {
-            return value;
+          valuePrepareFunction: (value: any) => {
+            const date = value.split('T');
+            return date[0];
+          },
+          filter: {
+            type: 'daterange',
+            config: {
+              daterange: {
+                format: 'yyyy/mm/dd',
+              },
+            },
           },
         },
         FechaFin: {
           title: this.translate.instant('GLOBAL.fechafin'),
           // type: 'Date;',
-          valuePrepareFunction: (value) => {
-            return value;
+          valuePrepareFunction: (value: any) => {
+            const date = value.split('T');
+            return date[0];
+          },
+          filter: {
+            type: 'daterange',
+            config: {
+              daterange: {
+                format: 'yyyy/mm/dd',
+              },
+            },
           },
         },
         Activo: {
@@ -152,25 +170,25 @@ export class ListCatalogoComponent implements OnInit {
   selectTab(event): void {
     switch (event.tabTitle) {
       case this.translate.instant('GLOBAL.lista'):
-      {
-        this.cambiotab = [true, false, false];
-        break;
-      }
+        {
+          this.cambiotab = [true, false, false];
+          break;
+        }
       case this.translate.instant('GLOBAL.formulario'):
-      {
-        this.cambiotab = [false, true, false];
-        break;
-      }
+        {
+          this.cambiotab = [false, true, false];
+          break;
+        }
       case this.translate.instant('GLOBAL.Detalle'):
-      {
-        this.cambiotab = [false, false, true];
-        break;
-      }
-      default :
-      {
-        this.cambiotab = [false, false, false];
-        break;
-      }
+        {
+          this.cambiotab = [false, false, true];
+          break;
+        }
+      default:
+        {
+          this.cambiotab = [false, false, false];
+          break;
+        }
     }
   }
 
