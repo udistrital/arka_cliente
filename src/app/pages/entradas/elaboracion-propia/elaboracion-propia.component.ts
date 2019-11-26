@@ -142,7 +142,7 @@ export class ElaboracionPropiaComponent implements OnInit {
       if (file.type === 'application/pdf') {
         file.urlTemp = URL.createObjectURL(event.srcElement.files[0]);
         file.url = this.cleanURL(file.urlTemp);
-        file.IdDocumento = 11;
+        file.IdDocumento = 12; // tipo de documento (API documentos_crud)
         file.file = event.target.files[0];
         this.fileDocumento = file;
       } else {
