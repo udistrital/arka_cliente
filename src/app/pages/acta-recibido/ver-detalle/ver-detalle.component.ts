@@ -269,8 +269,8 @@ export class VerDetalleComponent implements OnInit {
 
         const filesToGet = [
           {
-            Id: data[0].Id,
-            key: data[0].Id,
+            Id: data[0].DocumentoId,
+            key: data[0].DocumentoId,
           },
         ];
 
