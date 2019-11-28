@@ -123,12 +123,12 @@
                                 <button nbButton type="button" 
                                   (click)="fileInputDocumento.click()">
                                   <i class="fas fa-file-upload fa-2x"></i>
-                                  <input #fileInputDocumento formControlName="Soporte" type="file" (change)="onInputFileDocumento($event)"
+                                  <input #fileInputDocumento formControlName="Soporte" type="file" (change)="onInputFileDocumento($event, i)"
                                     style="display:none;" accept="application/pdf" data-max-size="5120" />
                                 </button>
-                                <button nbButton type="button" *ngIf="fileDocumento"
+                                <button nbButton type="button" *ngIf="fileDocumento.length !== 0"
                                   target="_blank"
-                                  (click)="download(fileDocumento.urlTemp,fileDocumento.nombre,500,500)">
+                                  (click)="download(i)">
                                   <i class="fas fa-file-download fa-2x"></i>
                                 </button>
                               </div>
