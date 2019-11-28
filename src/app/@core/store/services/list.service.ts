@@ -64,7 +64,7 @@ export class ListService {
     this.store.select(REDUCER_LIST.PlanCuentasDebito).subscribe(
       (list: any) => {
         if (!list || list.length === 0) {
-          this.CatalogoElementos.getPlanCuentas('debito')
+          this.CatalogoElementos.getPlanCuentas('credito') // tema de base financiera desplegada debito
             .subscribe(
               (res: any[]) => {
 

@@ -6,6 +6,36 @@ export const MENU_ITEMS: NbMenuItem[] = [
   //   group: true,
   // },
   {
+    title: 'Catalogo de Elementos',
+    icon: 'nb-compose',
+    children: [
+      {
+        title: 'Lista de Catalogos',
+        link: '/pages/catalogo/list-catalogo',
+      },
+      // {
+      //   title: 'Detalle de Catálogo',
+      //   link: '/pages/catalogo_bienes/consulta_catalogo',
+      // },
+      {
+        title: 'Construcción de Catálogo',
+        link: '/pages/catalogo_bienes/registro_catalogo',
+      },
+      {
+        title: 'Registro Elementos',
+        link: '/pages/catalogo_bienes/registro_elementos',
+      },
+      {
+        title: 'Inactivar Grupos y Subgrupos',
+        link: '/pages/catalogo_bienes/inactiva_grupos',
+      },
+      {
+        title: 'Asignacion de Cuentas',
+        link: '/pages/catalogo_bienes/registro_cuentas_catalogo',
+      },
+    ],
+  },
+  {
     title: 'Acta de Recibido',
     icon: 'nb-compose',
     children: [
@@ -75,34 +105,5 @@ export const MENU_ITEMS: NbMenuItem[] = [
       },
     ],
   },
-  {
-    title: 'Catalogo de Elementos',
-    icon: 'nb-compose',
-    children: [
-      {
-        title: 'Lista de Catalogos',
-        link: '/pages/catalogo/list-catalogo',
-      },
-      // {
-      //   title: 'Detalle de Catálogo',
-      //   link: '/pages/catalogo_bienes/consulta_catalogo',
-      // },
-      {
-        title: 'Construcción de Catálogo',
-        link: '/pages/catalogo_bienes/registro_catalogo',
-      },
-      {
-        title: 'Registro Elementos',
-        link: '/pages/catalogo_bienes/registro_elementos',
-      },
-      {
-        title: 'Inactivar Grupos y Subgrupos',
-        link: '/pages/catalogo_bienes/inactiva_grupos',
-      },
-      {
-        title: 'Asignacion de Cuentas',
-        link: '/pages/catalogo_bienes/registro_cuentas_catalogo',
-      },
-    ],
-  },
+  
 ];
