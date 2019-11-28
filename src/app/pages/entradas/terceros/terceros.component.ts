@@ -238,7 +238,7 @@ export class TercerosComponent implements OnInit {
   }
 
   getFormatoEntrada() {
-    this.entradasHelper.getFormatoEntradaByName('Adquisición').subscribe(res => {
+    this.entradasHelper.getFormatoEntradaByName('Terceros').subscribe(res => {
       if (res !== null) {
         this.formatoTipoMovimiento = res;
       }
