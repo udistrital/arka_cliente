@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, ViewChild } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, ɵConsole } from '@angular/core';
 import { Validators, FormBuilder, FormGroup, AbstractControl, ValidatorFn } from '@angular/forms';
 import { PopUpManager } from '../../../managers/popUpManager';
 import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
@@ -234,7 +234,7 @@ export class AdquisicionComponent implements OnInit {
         const data = <Array<any>>res;
         for (const datos in Object.keys(data)) {
           if (data.hasOwnProperty(datos) && data[datos].Nombre !== undefined && data[datos].Nombre === 'Adquisición') {
-            this.tipoEntrada = data[datos].Nombre;
+            this.tipoEntrada = data[datos];
           }
         }
       }
@@ -280,7 +280,7 @@ export class AdquisicionComponent implements OnInit {
           Id: 2, // REVISAR
         },
         SoporteMovimientoId: 0,
-        IdTipoMovimiento: this.tipoEntrada[0].Id,
+        IdTipoMovimiento: this.tipoEntrada.Id,
       };
 
       this.entradasHelper.postEntrada(movimientoAdquisicion).subscribe((res: any) => {
