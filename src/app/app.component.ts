@@ -19,6 +19,7 @@ export class AppComponent implements OnInit {
     this.analytics.trackPageViews();
     this.translateService.addLangs(['es', 'en']);
     this.translateService.setDefaultLang('es');
-    this.translateService.use(this.translateService.getBrowserLang());
+    // this.translateService.use(this.translateService.getBrowserLang());
+    this.translateService.use('es');
   }
 }

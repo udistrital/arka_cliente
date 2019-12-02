@@ -5,19 +5,6 @@ export let FORM_MOVIMIENTO = {
     alertas: true,
     modelo: 'CuentasFormulario',
     campos: [
-
-        {
-            etiqueta: 'autocomplete',
-            claseGrid: 'col-6',
-            nombre: 'CuentaCreditoId',
-            label_i18n: 'cuenta_credito',
-            placeholder_i18n: 'cuenta_credito',
-            requerido: true,
-            id: 0,
-            tipo: 'Cuenta',
-            key: 'Codigo',
-            opciones: [],
-        },
         {
             etiqueta: 'autocomplete',
             claseGrid: 'col-6',
@@ -26,6 +13,18 @@ export let FORM_MOVIMIENTO = {
             placeholder_i18n: 'cuenta_debito',
             requerido: true,
             id: 1,
+            tipo: 'Cuenta',
+            key: 'Codigo',
+            opciones: [],
+        },
+        {
+            etiqueta: 'autocomplete',
+            claseGrid: 'col-6',
+            nombre: 'CuentaCreditoId',
+            label_i18n: 'cuenta_credito',
+            placeholder_i18n: 'cuenta_credito',
+            requerido: true,
+            id: 0,
             tipo: 'Cuenta',
             key: 'Codigo',
             opciones: [],
