@@ -68,23 +68,23 @@ export class RegistroActaRecibidoComponent implements OnInit {
   selected = new FormControl(0);
   // Tablas parametricas
 
-  Estados_Acta: Array<EstadoActa>;
-  Tipos_Bien: Array<TipoBien>;
-  Estados_Elemento: Array<EstadoElemento>;
+  Estados_Acta: any;
+  Tipos_Bien: any;
+  Estados_Elemento: any;
 
   // Modelos
   Acta: ActaRecibido;
   Elementos__Soporte: Array<any>;
   Soportes_Acta: Array<SoporteActa>;
   Historico_Acta: HistoricoActa;
-  Unidades: Unidad[];
+  Unidades: any;
   Proveedores: any;
   Ubicaciones: any;
   Sedes: any;
   Dependencias: any;
   DatosTotales: any;
   Totales: Array<any>;
-  Tarifas_Iva: Impuesto[];
+  Tarifas_Iva: any;
   fileDocumento: any[];
   uidDocumento: any;
   idDocumento: number[];
@@ -184,6 +184,11 @@ export class RegistroActaRecibidoComponent implements OnInit {
   public loadLists() {
     this.store.select((state) => state).subscribe(
       (list) => {
+        this.Estados_Acta = list.listEstadosActa[0];
+        this.Estados_Elemento = list.listEstadosElemento[0];
+        this.Tipos_Bien = list.listTipoBien[0];
+        this.Unidades = list.listUnidades[0];
+        this.Tarifas_Iva = list.listIVA[0];
         this.Proveedores = list.listProveedores[0];
         this.Dependencias = list.listDependencias[0];
         // this.Ubicaciones = list.listUbicaciones[0];
@@ -417,7 +422,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
     Acta_de_Recibido.FechaCreacion = new Date();
     Acta_de_Recibido.FechaModificacion = new Date();
     Acta_de_Recibido.RevisorId = 123;
-    Acta_de_Recibido.UbicacionId = this.Ubicaciones.find(ubicacion => ubicacion.Nombre === Datos.Ubicacion).Id;
+    Acta_de_Recibido.UbicacionId = parseFloat(Datos.Ubicacion);
     Acta_de_Recibido.Observaciones = Datos2.Datos_Adicionales;
 
     return Acta_de_Recibido;
