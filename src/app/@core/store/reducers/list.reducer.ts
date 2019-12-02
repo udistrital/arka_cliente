@@ -52,5 +52,45 @@ export class ListReducer {
         return state;
     }
   }
+  static ListReducerEstadosActa(state: Array<any> = new Array, action) {
+    switch (action.type) {
+      case REDUCER_LIST.EstadosActa:
+        return [...state, action.payload];
+      default:
+        return state;
+    }
+  }
+  static ListReducerEstadosElemento(state: Array<any> = new Array, action) {
+    switch (action.type) {
+      case REDUCER_LIST.EstadosElemento:
+        return [...state, action.payload];
+      default:
+        return state;
+    }
+  }
+  static ListReducerTipoBien(state: Array<any> = new Array, action) {
+    switch (action.type) {
+      case REDUCER_LIST.TipoBien:
+        return [...state, action.payload];
+      default:
+        return state;
+    }
+  }
+  static ListReducerIVA(state: Array<any> = new Array, action) {
+    switch (action.type) {
+      case REDUCER_LIST.IVA:
+        return [...state, action.payload];
+      default:
+        return state;
+    }
+  }
+  static ListReducerUnidades(state: Array<any> = new Array, action) {
+    switch (action.type) {
+      case REDUCER_LIST.Unidades:
+        return [...state, action.payload];
+      default:
+        return state;
+    }
+  }
 
 }

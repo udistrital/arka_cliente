@@ -9,4 +9,9 @@ export const rootReducer: ActionReducerMap<IAppState> = {
   listSedes: ListReducer.ListReducerSedes,
   listDependencias: ListReducer.ListReducerDependencias,
   listUbicaciones: ListReducer.ListReducerUbicaciones,
+  listEstadosActa: ListReducer.ListReducerEstadosActa,
+  listEstadosElemento: ListReducer.ListReducerEstadosElemento,
+  listTipoBien: ListReducer.ListReducerTipoBien,
+  listIVA: ListReducer.ListReducerIVA,
+  listUnidades: ListReducer.ListReducerUnidades,
 };

@@ -79,9 +79,9 @@ export class RegistroActaRecibidoComponent implements OnInit {
   Historico_Acta: HistoricoActa;
   Unidades: Unidad[];
   Proveedores: any;
-  Ubicaciones: Ubicacion[];
-  Sedes: Ubicacion[];
-  Dependencias: Dependencia[];
+  Ubicaciones: any;
+  Sedes: any;
+  Dependencias: any;
   DatosTotales: any;
   Totales: Array<any>;
   Tarifas_Iva: Impuesto[];
@@ -90,6 +90,8 @@ export class RegistroActaRecibidoComponent implements OnInit {
   idDocumento: number[];
   validador: boolean;
   validador_soporte: number;
+  Nombre: any;
+
 
 
   constructor(
@@ -112,6 +114,14 @@ export class RegistroActaRecibidoComponent implements OnInit {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
     });
     this.listService.findProveedores();
+    this.listService.findDependencias();
+    this.listService.findSedes();
+    this.listService.findUbicaciones();
+    this.listService.findEstadosActa();
+    this.listService.findEstadosElemento();
+    this.listService.findTipoBien();
+    this.listService.findUnidades();
+    this.listService.findImpuestoIVA();
     this.loadLists();
     this.fileDocumento = [];
     this.uidDocumento = [];
@@ -121,79 +131,66 @@ export class RegistroActaRecibidoComponent implements OnInit {
     this.searchStr2 = new Array<string>();
     this.DatosElementos = new Array<any>();
     this.Elementos__Soporte = new Array<any>();
-    // Observable.of(this.listService.findProveedores());
 
-
-    const observable = combineLatest([
-      this.Actas_Recibido.getParametros(),
-      this.Actas_Recibido.getParametrosSoporte(),
-      // this.Actas_Recibido.getProveedores(),
-    ]);
-    observable.subscribe(([ParametrosActa, ParametrosSoporte]) => {
-      // console.log([ParametrosActa, ParametrosSoporte, Proveedores]);
-      this.Traer_Estados_Acta(ParametrosActa[0].EstadoActa);
-      this.Traer_Estados_Elemento(ParametrosActa[0].EstadoElemento);
-      this.Traer_Tipo_Bien(ParametrosActa[0].TipoBien);
-      this.Traer_Unidades(ParametrosActa[0].Unidades);
-      this.Traer_IVA(ParametrosActa[0].IVA);
-      this.Traer_Dependencias(ParametrosSoporte[0].Dependencias);
-      this.Traer_Ubicaciones(ParametrosSoporte[0].Ubicaciones);
-      this.Traer_Sedes(ParametrosSoporte[0].Sedes);
-
-      if (sessionStorage.Formulario_Registro == null) {
-        this.Cargar_Formularios();
+    if (sessionStorage.Formulario_Registro == null) {
+      this.Cargar_Formularios();
+    } else {
+      const formulario = JSON.parse(sessionStorage.Formulario_Registro);
+      // console.log(sessionStorage.Formulario_Registro);
+      // console.log(sessionStorage.Elementos_Formulario_Registro);
+      let elementos;
+      if (sessionStorage.Elementos_Formulario_Registro === []) {
+        elementos = [];
       } else {
-        const formulario = JSON.parse(sessionStorage.Formulario_Registro);
-        // console.log(sessionStorage.Formulario_Registro);
-        // console.log(sessionStorage.Elementos_Formulario_Registro);
-        let elementos;
-        if (sessionStorage.Elementos_Formulario_Registro === []) {
-          elementos = [];
-        } else {
-          elementos = JSON.parse(sessionStorage.getItem('Elementos_Formulario_Registro'));
-          // console.log(elementos);
-        }
-        (Swal as any).fire({
-          type: 'warning',
-          title: 'Registro sin completar',
-          text: 'Existe un registro nuevo sin terminar, que desea hacer?',
-          showCancelButton: true,
-          confirmButtonColor: '#3085d6',
-          cancelButtonColor: '#3085d6',
-          confirmButtonText: 'Seguir con anterior',
-          cancelButtonText: 'Nuevo Registro, se eliminara el registro anterior',
-        }).then((result) => {
-          if (result.value) {
-            this.Cargar_Formularios2(formulario, elementos);
-          } else {
-            (Swal as any).fire({
-              type: 'warning',
-              title: 'Ultima Palabra?',
-              showCancelButton: true,
-              confirmButtonColor: '#3085d6',
-              cancelButtonColor: '#3085d6',
-              confirmButtonText: 'Si, Nuevo Registro',
-              cancelButtonText: 'No, Usar Anterior',
-            }).then((result2) => {
-              if (result2.value) {
-                sessionStorage.removeItem('Formulario_Registro');
-                sessionStorage.removeItem('Elementos_Formulario_Registro');
-                this.Cargar_Formularios();
-              } else {
-                this.Cargar_Formularios2(formulario, elementos);
-              }
-            });
-          }
-        });
+        elementos = JSON.parse(sessionStorage.getItem('Elementos_Formulario_Registro'));
+        // console.log(elementos);
       }
-    });
+      (Swal as any).fire({
+        type: 'warning',
+        title: 'Registro sin completar',
+        text: 'Existe un registro nuevo sin terminar, que desea hacer?',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Seguir con anterior',
+        cancelButtonText: 'Nuevo Registro, se eliminara el registro anterior',
+      }).then((result) => {
+        if (result.value) {
+          this.Cargar_Formularios2(formulario, elementos);
+        } else {
+          (Swal as any).fire({
+            type: 'warning',
+            title: 'Ultima Palabra?',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Si, Nuevo Registro',
+            cancelButtonText: 'No, Usar Anterior',
+          }).then((result2) => {
+            if (result2.value) {
+              sessionStorage.removeItem('Formulario_Registro');
+              sessionStorage.removeItem('Elementos_Formulario_Registro');
+              this.Cargar_Formularios();
+            } else {
+              this.Cargar_Formularios2(formulario, elementos);
+            }
+          });
+        }
+      });
+    }
+
   }
 
   public loadLists() {
     this.store.select((state) => state).subscribe(
       (list) => {
         this.Proveedores = list.listProveedores[0];
+        this.Dependencias = list.listDependencias[0];
+        // this.Ubicaciones = list.listUbicaciones[0];
+        this.Sedes = list.listSedes[0];
         this.dataService2 = this.completerService.local(this.Proveedores, 'compuesto', 'compuesto');
+        this.dataService3 = this.completerService.local(this.Dependencias, 'Nombre', 'Nombre');
+        // this.dataService = this.completerService.local(this.Ubicaciones, 'Nombre', 'Nombre');
       },
     );
   }
@@ -228,140 +225,6 @@ export class RegistroActaRecibidoComponent implements OnInit {
     return this.sanitization.bypassSecurityTrustUrl(oldURL);
   }
 
-  Traer_Dependencias(res: any) {
-    this.Dependencias = new Array<Dependencia>();
-    for (const index in res) {
-      if (res.hasOwnProperty(index)) {
-        const dependencia = new Dependencia;
-        dependencia.Id = res[index].Id;
-        dependencia.TelefonoDependencia = res[index].TelefonoDependencia;
-        dependencia.CorreoElectronico = res[index].Correo;
-        dependencia.Nombre = res[index].Nombre;
-        this.Dependencias.push(dependencia);
-      }
-    }
-    this.dataService3 = this.completerService.local(this.Dependencias, 'Nombre', 'Nombre');
-  }
-  Traer_Proveedores_() {
-    // this.Proveedores = new Array<Proveedor>();
-    // for (const index in res) {
-    //   if (res.hasOwnProperty(index)) {
-    //     const proveedor = new Proveedor;
-    //     proveedor.Id = res[index].Id;
-    //     proveedor.NomProveedor = res[index].NomProveedor;
-    //     proveedor.NumDocumento = res[index].NumDocumento;
-    //     proveedor.compuesto = res[index].NumDocumento + ' - ' + res[index].NomProveedor;
-    //     this.Proveedores.push(proveedor);
-    //   }
-    // }
-
-  }
-  Traer_Ubicaciones(res: any) {
-    this.Ubicaciones = new Array<Ubicacion>();
-    for (const index in res) {
-      if (res.hasOwnProperty(index)) {
-        const ubicacion = new Ubicacion;
-        ubicacion.Id = res[index].Id;
-        ubicacion.Codigo = res[index].Codigo;
-        ubicacion.Estado = res[index].Estado;
-        ubicacion.Nombre = res[index].Nombre;
-        this.Ubicaciones.push(ubicacion);
-      }
-    }
-    this.dataService = this.completerService.local(this.Ubicaciones, 'Nombre', 'Nombre');
-  }
-  Traer_Sedes(res: any) {
-    this.Sedes = new Array<Ubicacion>();
-    for (const index in res) {
-      if (res.hasOwnProperty(index)) {
-        const ubicacion = new Ubicacion;
-        ubicacion.Id = res[index].Id;
-        ubicacion.Codigo = res[index].Codigo;
-        ubicacion.Estado = res[index].Estado;
-        ubicacion.Nombre = res[index].Nombre;
-        this.Sedes.push(ubicacion);
-      }
-    }
-  }
-  Traer_IVA(res: any) {
-    this.Tarifas_Iva = new Array<Impuesto>();
-    for (const index in res) {
-      if (res.hasOwnProperty(index)) {
-        const tarifas = new Impuesto;
-        tarifas.Id = res[index].Id;
-        tarifas.Activo = res[index].Activo;
-        tarifas.Tarifa = res[index].Tarifa;
-        tarifas.Decreto = res[index].Decreto;
-        tarifas.FechaCreacion = res[index].FechaCreacion;
-        tarifas.FechaModificacion = res[index].FechaModificacion;
-        tarifas.ImpuestoId = res[index].ImpuestoId.Id;
-        tarifas.Nombre = res[index].Tarifa.toString() + '% ' + res[index].ImpuestoId.CodigoAbreviacion;
-        this.Tarifas_Iva.push(tarifas);
-      }
-    }
-  }
-  Traer_Estados_Acta(res: any) {
-    this.Estados_Acta = new Array<EstadoActa>();
-    for (const index in res) {
-      if (res.hasOwnProperty(index)) {
-        const estados_acta = new EstadoActa;
-        estados_acta.Id = res[index].Id;
-        estados_acta.Nombre = res[index].Nombre;
-        estados_acta.CodigoAbreviacion = res[index].CodigoAbreviacion;
-        estados_acta.Descripcion = res[index].Descripcion;
-        estados_acta.FechaCreacion = res[index].FechaCreacion;
-        estados_acta.FechaModificacion = res[index].FechaModificacion;
-        estados_acta.NumeroOrden = res[index].NumeroOrden;
-        this.Estados_Acta.push(estados_acta);
-      }
-    }
-  }
-  Traer_Tipo_Bien(res: any) {
-    this.Tipos_Bien = new Array<TipoBien>();
-    for (const index in res) {
-      if (res.hasOwnProperty(index)) {
-        const tipo_bien = new TipoBien;
-        tipo_bien.Id = res[index].Id;
-        tipo_bien.Nombre = res[index].Nombre;
-        tipo_bien.CodigoAbreviacion = res[index].CodigoAbreviacion;
-        tipo_bien.Descripcion = res[index].Descripcion;
-        tipo_bien.FechaCreacion = res[index].FechaCreacion;
-        tipo_bien.FechaModificacion = res[index].FechaModificacion;
-        tipo_bien.NumeroOrden = res[index].NumeroOrden;
-        this.Tipos_Bien.push(tipo_bien);
-      }
-    }
-  }
-  Traer_Estados_Elemento(res: any) {
-    this.Estados_Elemento = new Array<EstadoElemento>();
-    for (const index in res) {
-      if (res.hasOwnProperty(index)) {
-        const estados_elemento = new EstadoElemento;
-        estados_elemento.Id = res[index].Id;
-        estados_elemento.Nombre = res[index].Nombre;
-        estados_elemento.CodigoAbreviacion = res[index].CodigoAbreviacion;
-        estados_elemento.Descripcion = res[index].Descripcion;
-        estados_elemento.FechaCreacion = res[index].FechaCreacion;
-        estados_elemento.FechaModificacion = res[index].FechaModificacion;
-        estados_elemento.NumeroOrden = res[index].NumeroOrden;
-        this.Estados_Elemento.push(estados_elemento);
-      }
-    }
-  }
-  Traer_Unidades(res: any) {
-    this.Unidades = new Array<Unidad>();
-    for (const index in res) {
-      if (res.hasOwnProperty(index)) {
-        const unidad = new Unidad;
-        unidad.Id = res[index].Id;
-        unidad.Unidad = res[index].Unidad;
-        unidad.Tipo = res[index].Tipo;
-        unidad.Descripcion = res[index].Descripcion;
-        unidad.Estado = res[index].Estado;
-        this.Unidades.push(unidad);
-      }
-    }
-  }
   Cargar_Formularios() {
 
     this.firstForm = this.fb.group({
@@ -401,6 +264,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
       }),
     });
     this.carga_agregada = true;
+    this.Traer_Relacion_Ubicaciones();
   }
   get Formulario_1(): FormGroup {
     return this.fb.group({
@@ -776,5 +640,27 @@ export class RegistroActaRecibidoComponent implements OnInit {
       sessionStorage.setItem('Formulario_Registro', JSON.stringify(this.firstForm.value));
       sessionStorage.setItem('Elementos_Formulario_Registro', JSON.stringify(this.Elementos__Soporte));
     }
+  }
+
+  Traer_Relacion_Ubicaciones() {
+    const sede = this.firstForm.get('Formulario1').get('Sede').value;
+    const dependencia = this.firstForm.get('Formulario1').get('Dependencia').value;
+  
+    if (this.firstForm.get('Formulario1').get('Sede').valid || this.firstForm.get('Formulario1').get('Dependencia').valid) {
+      var transaccion: any = {}
+      transaccion.Sede = this.Sedes.find((x) => x.Id === parseFloat(sede));
+      transaccion.Dependencia = this.Dependencias.find((x) => x.Nombre === dependencia)
+      console.log(this.Sedes);
+      if (transaccion.Sede !== undefined && transaccion.Dependencia !== undefined) {
+        this.Actas_Recibido.postRelacionSedeDependencia(transaccion).subscribe((res: any) => {
+          console.log(res)
+          if(Object.keys(res[0]).length !== 0 ){
+            this.Ubicaciones = res[0].Relaciones;
+          } else {
+            this.Ubicaciones = undefined;
+          }
+        })
+      } 
+    } 
   }
 }

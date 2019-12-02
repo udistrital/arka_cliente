@@ -86,6 +86,7 @@ export class ListService {
           this.ActaRecibido.getParametrosSoporte()
             .subscribe(
               (res: any[]) => {
+                console.log(res)
                 this.addList(REDUCER_LIST.Sedes, res[0].Sedes);
               },
               error => {
@@ -128,6 +129,106 @@ export class ListService {
               },
               error => {
                 this.addList(REDUCER_LIST.Ubicaciones, []);
+              },
+            );
+        }
+      },
+    );
+  }
+
+  public findEstadosActa() {
+
+    this.store.select(REDUCER_LIST.EstadosActa).subscribe(
+      (list: any) => {
+        if (!list || list.length === 0) {
+          this.ActaRecibido.getParametros()
+            .subscribe(
+              (res: any[]) => {
+
+                this.addList(REDUCER_LIST.EstadosActa, res[0].EstadoActa);
+              },
+              error => {
+                this.addList(REDUCER_LIST.EstadosActa, []);
+              },
+            );
+        }
+      },
+    );
+  }
+
+  public findEstadosElemento() {
+
+    this.store.select(REDUCER_LIST.EstadosElemento).subscribe(
+      (list: any) => {
+        if (!list || list.length === 0) {
+          this.ActaRecibido.getParametros()
+            .subscribe(
+              (res: any[]) => {
+
+                this.addList(REDUCER_LIST.EstadosElemento, res[0].EstadoElemento);
+              },
+              error => {
+                this.addList(REDUCER_LIST.EstadosElemento, []);
+              },
+            );
+        }
+      },
+    );
+  }
+
+  public findTipoBien() {
+
+    this.store.select(REDUCER_LIST.TipoBien).subscribe(
+      (list: any) => {
+        if (!list || list.length === 0) {
+          this.ActaRecibido.getParametros()
+            .subscribe(
+              (res: any[]) => {
+
+                this.addList(REDUCER_LIST.TipoBien, res[0].TipoBien);
+              },
+              error => {
+                this.addList(REDUCER_LIST.TipoBien, []);
+              },
+            );
+        }
+      },
+    );
+  }
+
+  public findUnidades() {
+
+    this.store.select(REDUCER_LIST.Unidades).subscribe(
+      (list: any) => {
+        if (!list || list.length === 0) {
+          this.ActaRecibido.getParametros()
+            .subscribe(
+              (res: any[]) => {
+
+                this.addList(REDUCER_LIST.Unidades, res[0].Unidades);
+              },
+              error => {
+                this.addList(REDUCER_LIST.Unidades, []);
+              },
+            );
+        }
+      },
+    );
+  }
+
+  public findImpuestoIVA() {
+
+    this.store.select(REDUCER_LIST.IVA).subscribe(
+      (list: any) => {
+        if (!list || list.length === 0) {
+          this.ActaRecibido.getParametros()
+            .subscribe(
+              (res: any[]) => {
+
+                this.addList(REDUCER_LIST.IVA, res[0].IVA);
+              },
+              error => {
+                this.addList(REDUCER_LIST.IVA, []);
               },
             );
         }
