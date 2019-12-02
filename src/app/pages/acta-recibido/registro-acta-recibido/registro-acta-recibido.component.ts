@@ -219,8 +219,8 @@ export class RegistroActaRecibidoComponent implements OnInit {
         file.IdDocumento = 13;
         file.file = event.target.files[0];
         this.fileDocumento[index] = file;
-        console.log(file);
-        console.log(this.fileDocumento);
+        // console.log(file);
+        // console.log(this.fileDocumento);
       } else {
         this.pUpManager.showErrorAlert('error' + this.translate.instant('GLOBAL.error'));
       }
@@ -328,21 +328,21 @@ export class RegistroActaRecibidoComponent implements OnInit {
 
   }
   postSoporteNuxeo(files: any) {
-    console.log(files);
+    // console.log(files);
     return new Promise((resolve, reject) => {
       files.forEach((file) => {
-        console.log(file);
+        // console.log(file);
         file.Id = file.nombre;
         file.nombre = 'soporte_' + file.IdDocumento + '_acta_recibido';
         // file.key = file.Id;
         file.key = 'soporte_' + file.IdDocumento;
       });
-      console.log(files);
+      // console.log(files);
       this.nuxeoService.getDocumentos$(files, this.documentoService)
         .subscribe(response => {
-          console.log('response', response);
+          // console.log('response', response);
           if (Object.keys(response).length === files.length) {
-            console.log('response', response);
+            // console.log('response', response);
             files.forEach((file) => {
               this.uidDocumento.push(file.uid);
               this.idDocumento.push(response[file.key].Id);
@@ -366,13 +366,13 @@ export class RegistroActaRecibidoComponent implements OnInit {
     const start = async () => {
       await this.asyncForEach(this.fileDocumento, async (file) => {
         await this.postSoporteNuxeo([file]);
-        console.log(file);
+        // console.log(file);
       });
-      console.log('Done');
-    }
+      // console.log('Done');
+    };
     await start();
-    console.log(this.uidDocumento);
-    console.log(this.idDocumento);
+    // console.log(this.uidDocumento);
+    // console.log(this.idDocumento);
     this.Datos = this.firstForm.value;
     const Transaccion_Acta = new TransaccionActaRecibido();
     Transaccion_Acta.ActaRecibido = this.Registrar_Acta(this.Datos.Formulario1, this.Datos.Formulario3);
@@ -383,12 +383,12 @@ export class RegistroActaRecibidoComponent implements OnInit {
 
     });
     Transaccion_Acta.SoportesActa = Soportes;
-    console.log('ok');
-    console.log(Transaccion_Acta)
+    // console.log('ok');
+    // console.log(Transaccion_Acta)
     if (this.validador === false) {
       this.Actas_Recibido.postTransaccionActa(Transaccion_Acta).subscribe((res: any) => {
         if (res !== null) {
-          console.log(res);
+          // console.log(res);
           (Swal as any).fire({
             type: 'success',
             title: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.Acta') +
@@ -497,16 +497,16 @@ export class RegistroActaRecibidoComponent implements OnInit {
         Elemento__.FechaModificacion = new Date();
         this.validador = false;
         if ((Elemento__.Nombre === '') || (Elemento__.Marca === '') || (Elemento__.Serie === '')) {
-          console.log(this.validador);
+          // console.log(this.validador);
           this.validador = true;
           this.validador_soporte = Soporte.ProveedorId;
-          console.log(this.validador);
+          // console.log(this.validador);
         }
         if ((Elemento__.ValorUnitario === 0.00) || (Elemento__.Cantidad === 0.00)) {
-          console.log(this.validador);
+          // console.log(this.validador);
           this.validador = true;
           this.validador_soporte = Soporte.ProveedorId;
-          console.log(this.validador);
+          // console.log(this.validador);
         }
         Elementos_Soporte.push(Elemento__);
       }
@@ -650,22 +650,22 @@ export class RegistroActaRecibidoComponent implements OnInit {
   Traer_Relacion_Ubicaciones() {
     const sede = this.firstForm.get('Formulario1').get('Sede').value;
     const dependencia = this.firstForm.get('Formulario1').get('Dependencia').value;
-  
+
     if (this.firstForm.get('Formulario1').get('Sede').valid || this.firstForm.get('Formulario1').get('Dependencia').valid) {
-      var transaccion: any = {}
+      const transaccion: any = {};
       transaccion.Sede = this.Sedes.find((x) => x.Id === parseFloat(sede));
-      transaccion.Dependencia = this.Dependencias.find((x) => x.Nombre === dependencia)
-      console.log(this.Sedes);
+      transaccion.Dependencia = this.Dependencias.find((x) => x.Nombre === dependencia);
+      // console.log(this.Sedes);
       if (transaccion.Sede !== undefined && transaccion.Dependencia !== undefined) {
         this.Actas_Recibido.postRelacionSedeDependencia(transaccion).subscribe((res: any) => {
-          console.log(res)
-          if(Object.keys(res[0]).length !== 0 ){
+          // console.log(res)
+          if (Object.keys(res[0]).length !== 0 ) {
             this.Ubicaciones = res[0].Relaciones;
           } else {
             this.Ubicaciones = undefined;
           }
-        })
-      } 
-    } 
+        });
+      }
+    }
   }
 }

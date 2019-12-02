@@ -9,5 +9,5 @@ export const REDUCER_LIST = {
     EstadosElemento: 'listEstadosElemento',
     TipoBien: 'listTipoBien',
     IVA: 'listIVA',
-    Unidades: 'listUnidades'
+    Unidades: 'listUnidades',
 };

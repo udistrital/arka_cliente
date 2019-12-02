@@ -14,9 +14,9 @@ export interface IAppState {
   listSedes: Ubicacion[];
   listDependencias: Dependencia[];
   listUbicaciones: Ubicacion[];
-  listEstadosActa: EstadoActa[],
-  listEstadosElemento: EstadoElemento[],
-  listTipoBien: TipoBien[],
-  listIVA: Impuesto[],
-  listUnidades: Unidad[],
+  listEstadosActa: EstadoActa[];
+  listEstadosElemento: EstadoElemento[];
+  listTipoBien: TipoBien[];
+  listIVA: Impuesto[];
+  listUnidades: Unidad[];
 }

@@ -93,7 +93,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
           this.dataSource.paginator = this.paginator;
           this.dataSource.sort = this.sort;
           this.respuesta = this.DatosRecibidos;
-          console.log(this.elementos);
+          // console.log(this.elementos);
         }
       });
     } else {

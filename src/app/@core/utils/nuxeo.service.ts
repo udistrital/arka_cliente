@@ -57,7 +57,7 @@ export class NuxeoService {
         NuxeoService.nuxeo.connect()
             .then(function (client) {
                 files.forEach(file => {
-                    console.log(file);
+                    // console.log(file);
                     documentoService.get('tipo_documento/' + file.IdDocumento)
                         .subscribe(res => {
                             if (res !== null) {

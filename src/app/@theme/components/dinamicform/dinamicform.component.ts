@@ -63,7 +63,7 @@ export class DinamicformComponent implements OnInit, OnChanges {
                       break;
                       case 'autocomplete':
                       if (element.hasOwnProperty('opciones')) {
-                        this.dataService[element.id] = this.completerService.local(element.opciones, element.key, element.key)
+                        this.dataService[element.id] = this.completerService.local(element.opciones, element.key, element.key);
                         element.opciones.forEach((e1) => {
                           if (this.modeloData[i].Id !== null) {
                             if (e1.Id === this.modeloData[i].Id) {
@@ -331,7 +331,7 @@ export class DinamicformComponent implements OnInit, OnChanges {
           } else if (d.etiqueta === 'select') {
             result[d.nombre] = d.relacion ? d.valor : d.valor.Id;
           } else if (d.etiqueta === 'autocomplete') {
-            if(d.opciones.find(x => x[d.key] === d.valor) !== undefined){
+            if (d.opciones.find(x => x[d.key] === d.valor) !== undefined) {
               result[d.nombre] = d.opciones.find(x => x[d.key] === d.valor);
             }
           } else {

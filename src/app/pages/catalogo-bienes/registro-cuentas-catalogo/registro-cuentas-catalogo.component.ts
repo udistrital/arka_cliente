@@ -106,7 +106,7 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
     if (this.Movimientos.length === this.all_mov) {
       this.all_mov_ok = true;
     }
-    console.log(this.Movimientos);
+    // console.log(this.Movimientos);
   }
 
   useLanguage(language: string) {
@@ -185,7 +185,7 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
           const mov: any = {};
           mov['Cuentas'] = subgrupo;
           // console.log(mov)
-          console.log(this.uid_1.Id);
+          // console.log(this.uid_1.Id);
           this.catalogoElementosService.putTransaccionCuentasSubgrupo(mov, this.uid_1.Id)
             .subscribe(res => {
               // console.log(res);
