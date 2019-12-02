@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, ViewChild } from '@angular/core';
 import { Validators, FormBuilder, FormGroup } from '@angular/forms';
 import { Contrato } from '../../../@core/data/models/entrada/contrato';
 import { SoporteActa, SoporteActaProveedor } from '../../../@core/data/models/acta_recibido/soporte_acta';
@@ -10,6 +10,7 @@ import { Supervisor } from '../../../@core/data/models/entrada/supervisor';
 import { Entrada } from '../../../@core/data/models/entrada/entrada';
 import { TipoEntrada } from '../../../@core/data/models/entrada/tipo_entrada';
 import { NavigationExtras, Router } from '@angular/router';
+import { NbStepperComponent } from '@nebular/theme';
 
 @Component({
   selector: 'ngx-terceros',
@@ -44,6 +45,10 @@ export class TercerosComponent implements OnInit {
   // Selects
   opcionTipoContrato: string;
   opcionvigencia: string;
+  tipoEntrada: any;
+  formatoTipoMovimiento: any;
+
+  @ViewChild('stepper') stepper: NbStepperComponent;
 
   @Input() actaRecibidoId: string;
 
@@ -58,6 +63,8 @@ export class TercerosComponent implements OnInit {
     this.fechaFactura = '';
     this.validar = false;
     this.iniciarContrato();
+    this.getTipoEntrada();
+    this.getFormatoEntrada();
   }
 
   ngOnInit() {
@@ -82,6 +89,8 @@ export class TercerosComponent implements OnInit {
     });
     this.getVigencia();
   }
+
+  onFacturaSubmit() {}
 
   /**
    * Métodos para cargar los contratos.
@@ -161,6 +170,7 @@ export class TercerosComponent implements OnInit {
           this.loadContratoEspecifico();
           this.loadSoporte();
         } else {
+          this.stepper.previous();
           this.iniciarContrato();
           this.pUpManager.showErrorAlert('El contrato seleccionado no existe!');
         }
@@ -169,7 +179,7 @@ export class TercerosComponent implements OnInit {
     this.contratoForm.markAsDirty();
   }
 
-  onFacturaSubmit() {
+  onObservacionSubmit() {
     this.validar = true;
     this.facturaForm.markAsDirty();
   }
@@ -214,6 +224,27 @@ export class TercerosComponent implements OnInit {
     this.contratoEspecifico.Supervisor = supervisorAux;
   }
 
+  getTipoEntrada() {
+    this.entradasHelper.getTipoEntradaByAcronimo('e_arka').subscribe(res => {
+      if (res !== null) {
+        const data = <Array<any>>res;
+        for (const datos in Object.keys(data)) {
+          if (data.hasOwnProperty(datos) && data[datos].Nombre !== undefined && data[datos].Nombre === 'Adquisición') {
+            this.tipoEntrada = data[datos].Nombre;
+          }
+        }
+      }
+    });
+  }
+
+  getFormatoEntrada() {
+    this.entradasHelper.getFormatoEntradaByName('Adquisición').subscribe(res => {
+      if (res !== null) {
+        this.formatoTipoMovimiento = res;
+      }
+    });
+  }
+
   /**
    * Método para obtener el año en curso
    */
@@ -226,28 +257,35 @@ export class TercerosComponent implements OnInit {
    */
   onSubmit() {
     if (this.validar) {
-      const entradaData = new Entrada;
-      const tipoEntrada = new TipoEntrada;
-      // CAMPOS OBLIGATORIOS
-      entradaData.ActaRecibidoId = +this.actaRecibidoId;
-      entradaData.Activo = true;
-      entradaData.Consecutivo = 'P8-7-2019'; // REVISAR
-      entradaData.DocumentoContableId = 1; // REVISAR
-      tipoEntrada.Id = 6;
-      entradaData.TipoEntradaId = tipoEntrada;
-      entradaData.Vigencia = this.contratoForm.value.vigenciaCtrl;
-      entradaData.Observacion = this.observacionForm.value.observacionCtrl;
-      // CAMPOS REQUERIDOS PARA ADQUISICIÓN
-      entradaData.ContratoId = +this.contratoEspecifico.NumeroContratoSuscrito;
-      // entradaData.TerceroId = ?  REVISAR
-      // ENVIA LA ENTRADA AL MID
-      this.entradasHelper.postEntrada(entradaData).subscribe(res => {
+      const detalle = {
+        acta_recibido_id: +this.actaRecibidoId,
+        consecutivo: 'P8-1-2019', // REVISAR
+        documento_contable_id: 1, // REVISAR
+        contrato_id: +this.contratoEspecifico.NumeroContratoSuscrito,
+        vigencia_contrato: this.contratoForm.value.vigenciaCtrl,
+        tercero_id: 0, // REVISAR
+      };
+      const movimientoAdquisicion = {
+        Observacion: this.observacionForm.value.observacionCtrl,
+        Detalle: JSON.stringify(detalle),
+        Activo: true,
+        FormatoTipoMovimientoId: {
+          Id: this.formatoTipoMovimiento[0].Id,
+        },
+        EstadoMovimientoId: {
+          Id: 2, // REVISAR
+        },
+        SoporteMovimientoId: 0,
+        IdTipoMovimiento: this.tipoEntrada[0].Id,
+      };
+
+      this.entradasHelper.postEntrada(movimientoAdquisicion).subscribe((res: any) => {
         if (res !== null) {
           this.pUpManager.showSuccesToast('Registro Exitoso');
           this.pUpManager.showSuccessAlert('Entrada registrada satisfactoriamente!' +
-            '\n ENTRADA N°: ' + entradaData.Consecutivo);
+            '\n ENTRADA N°: P8-1-2019'); // SE DEBE MOSTRAR EL CONSECUTIVO REAL
 
-          const navigationExtras: NavigationExtras = { state: { consecutivo: entradaData.Consecutivo } };
+          const navigationExtras: NavigationExtras = { state: { consecutivo: res.Id } }; // REVISAR POR QUÉ RES LLEGA 0
           this.router.navigate(['/pages/reportes/registro-entradas'], navigationExtras);
         } else {
           this.pUpManager.showErrorAlert('No es posible hacer el registro.');
@@ -256,6 +294,7 @@ export class TercerosComponent implements OnInit {
     } else {
       this.pUpManager.showErrorAlert('No ha llenado todos los campos! No es posible hacer el registro.');
     }
+
   }
 
 }

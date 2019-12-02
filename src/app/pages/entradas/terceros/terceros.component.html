@@ -154,7 +154,8 @@
         </div>
       </div>
       <button nbButton nbStepperPrevious>{{'GLOBAL.anterior' | translate}}</button>
-      <button type="button" nbButton nbStepperNext>{{'GLOBAL.siguiente' | translate}}</button>
+      <button type="button" (click)="onObservacionSubmit()" nbButton
+        nbStepperNext>{{'GLOBAL.siguiente' | translate}}</button>
     </form>
   </nb-step>
 
@@ -175,7 +176,7 @@
 
 <div class="justify-content-center float-right pt-4">
   <button type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off"
-    (click)="onSubmit()">
+    [disabled]="!validar" (click)="onSubmit()">
     {{'GLOBAL.registrar_entrada' | translate}}
   </button>
 </div>
