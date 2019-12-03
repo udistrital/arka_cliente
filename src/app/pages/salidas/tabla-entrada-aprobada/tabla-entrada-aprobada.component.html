@@ -11,13 +11,6 @@
       <ng2-smart-table [settings]="settings" [source]="source" (custom)="onCustom($event)" *ngIf="!detalle">
       </ng2-smart-table>
 
-      <div class="justify-content-center float-right pt-4" *ngIf="!detalle">
-        <button type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off"
-          (click)="onRegister()">
-          {{'GLOBAL.registrar_nueva_entrada' | translate}}
-        </button>
-      </div>
-
       <!-- CARD PARA MOSTRAR LOS DETALLES DE LAS SOLICITUDES -->
 
       <h5 class="pb-4" *ngIf="detalle">{{'GLOBAL.detalle_entrada' | translate}}</h5>
@@ -95,7 +88,7 @@
           </div>
         </div>
 
-        <label><strong>Soportes:</strong></label>
+        <label *ngIf="detalle"><strong>Soportes:</strong></label>
         <button *ngIf="documentoId" mat-button type="button" (click)="loadSoporte()">
           <mat-icon>cloud_download</mat-icon>
         </button>
@@ -104,7 +97,7 @@
 
       <h5 class="pt-4 pb-4" *ngIf="detalle">{{'GLOBAL.elementos_entrada' | translate}}</h5>
 
-      <!-- <ngx-tabla-entradas [actaRecibidoId]="actaRecibidoId" *ngIf="detalle"></ngx-tabla-entradas> -->
+      <ngx-tabla-elementos-asignados [actaRecibidoId]="actaRecibidoId" *ngIf="detalle"></ngx-tabla-elementos-asignados>
 
       <div class="pt-4">
         <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="detalle = !detalle"

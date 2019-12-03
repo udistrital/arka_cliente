@@ -20,6 +20,7 @@ export class CrudGrupoComponent implements OnInit {
   config: ToasterConfig;
   grupo_id: number;
   catalogoid: any;
+  detalle_id: number;
 
   @Input('grupo_id')
   set name(grupo_id: number) {
@@ -98,6 +99,7 @@ export class CrudGrupoComponent implements OnInit {
             // console.log(detalle);
             // console.log(subgrupo);
             const info__grupo = new Grupo2;
+            this.detalle_id = detalle.Id;
             info__grupo.Descripcion = subgrupo.Descripcion;
             info__grupo.Nombre = subgrupo.Nombre;
             info__grupo.Codigo = subgrupo.Codigo;
@@ -105,6 +107,7 @@ export class CrudGrupoComponent implements OnInit {
             info__grupo.Depreciacion = detalle.Depreciacion;
             info__grupo.Valorizacion = detalle.Valorizacion;
             this.info_grupo = info__grupo;
+            // console.log(res)
             this.mostrar.emit(true);
           } else {
             this.info_grupo = undefined;
@@ -135,16 +138,21 @@ export class CrudGrupoComponent implements OnInit {
           const catalogo = new Catalogo;
           const detalle = new Detalle;
 
-          catalogo.Id = parseFloat(this.catalogoid);
+          catalogo.Id = parseFloat(this.catalogoid as string);
           grupo.Activo = true;
+          grupo.Id = this.grupo_id;
 
           detalle.Depreciacion = grupo.Depreciacion;
           detalle.Valorizacion = grupo.Valorizacion;
           detalle.TipoBienId = grupo.TipoBienId;
+          detalle.SubgrupoId = grupo;
+          detalle.Activo = true;
+          detalle.Id = this.detalle_id;
 
           grupoPut.Catalogo = catalogo;
           grupoPut.Subgrupo = grupo;
           grupoPut.DetalleSubgrupo = detalle;
+          // console.log(this.grupo_id);
           // console.log(grupoPut);
           this.catalogoElementosService.putGrupo(grupoPut, grupo.Id)
             .subscribe(res => {

@@ -396,7 +396,7 @@ export class CatalogoElementosHelper {
     public getPlanCuentas(naturaleza) {
         this.rqManager.setPath('FINANCIERA_SERVICE');
         return this.rqManager.get('cuenta_contable?query=Naturaleza:' + naturaleza +
-            ',NivelClasificacion.Id:5&fields=Id,Nombre,Naturaleza,Descripcion,Codigo').pipe(
+            ',NivelClasificacion.Id:5&fields=Id,Nombre,Naturaleza,Descripcion,Codigo&limit=-1').pipe(
                 map(
                     (res) => {
                         if (res === 'error') {
@@ -438,7 +438,8 @@ export class CatalogoElementosHelper {
      */
     public getMovimiento(id_Subgrupo, idmovimiento) {
         this.rqManager.setPath('CATALOGO_ELEMENTOS_SERVICE');
-        return this.rqManager.get('cuentas_subgrupo?query=SubgrupoId.Id:' + id_Subgrupo + ',SubtipoMovimientoId:' + idmovimiento + '').pipe(
+        return this.rqManager.get('cuentas_subgrupo?query=SubgrupoId.Id:'
+            + id_Subgrupo + ',Activo:true,SubtipoMovimientoId:' + idmovimiento + '').pipe(
             map(
                 (res) => {
                     if (res === 'error') {

@@ -1,6 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter, OnChanges, ViewChild } from '@angular/core';
 import { MatDatepicker } from '@angular/material/datepicker';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+import { CompleterService, CompleterData } from 'ng2-completer';
 
 @Component({
   selector: 'ngx-dinamicform',
@@ -19,16 +20,20 @@ export class DinamicformComponent implements OnInit, OnChanges {
   @Output() resultSmart: EventEmitter<any> = new EventEmitter();
   @Output() interlaced: EventEmitter<any> = new EventEmitter();
   @Output() percentage: EventEmitter<any> = new EventEmitter();
+  protected dataService: CompleterData[];
   data: any;
   @ViewChild(MatDatepicker) datepicker: MatDatepicker<Date>;
 
-  constructor(private sanitization: DomSanitizer) {
+  constructor(private sanitization: DomSanitizer,
+    private completerService: CompleterService,
+    ) {
     this.data = {
       valid: true,
       data: {},
       percentage: 0,
       files: [],
     };
+    this.dataService = [];
   }
 
   ngOnChanges(changes) {
@@ -54,6 +59,18 @@ export class DinamicformComponent implements OnInit, OnChanges {
                             element.valor.push(e2);
                           }
                         }));
+                      }
+                      break;
+                      case 'autocomplete':
+                      if (element.hasOwnProperty('opciones')) {
+                        this.dataService[element.id] = this.completerService.local(element.opciones, element.key, element.key);
+                        element.opciones.forEach((e1) => {
+                          if (this.modeloData[i].Id !== null) {
+                            if (e1.Id === this.modeloData[i].Id) {
+                              element.valor = e1[element.key];
+                            }
+                          }
+                        });
                       }
                       break;
                     case 'select':
@@ -179,6 +196,13 @@ export class DinamicformComponent implements OnInit, OnChanges {
         return false;
       }
     }
+    if (c.etiqueta === 'autocomplete') {
+      if (c.valor == null) {
+        c.clase = 'form-control form-control-danger';
+        c.alerta = 'Seleccione el campo';
+        return false;
+      }
+    }
     if (c.etiqueta === 'file' && c.valor !== null && c.valor !== undefined && c.valor !== '') {
       if (c.valor.size > c.tamanoMaximo * 1024000) {
         c.clase = 'form-control form-control-danger';
@@ -238,6 +262,13 @@ export class DinamicformComponent implements OnInit, OnChanges {
         return false;
       }
     }
+    if (c.etiqueta === 'autocomplete') {
+      if (c.valor == null) {
+        c.clase = 'form-control form-control-danger';
+        c.alerta = 'Seleccione el campo';
+        return false;
+      }
+    }
     if (c.etiqueta === 'file' && c.valor !== null && c.valor !== undefined && c.valor !== '') {
       if (c.valor.size > c.tamanoMaximo * 1024000) {
         c.clase = 'form-control form-control-danger';
@@ -282,6 +313,8 @@ export class DinamicformComponent implements OnInit, OnChanges {
             // result[d.nombre].push({ nombre: d.name, file: d.valor });
           } else if (d.etiqueta === 'select') {
             result[d.nombre] = d.relacion ? d.valor : d.valor.Id;
+          } else if (d.etiqueta === 'autocomplete') {
+            result[d.nombre] = d.relacion ? d.valor : d.valor.Id;
           } else {
             result[d.nombre] = d.valor;
           }
@@ -297,6 +330,10 @@ export class DinamicformComponent implements OnInit, OnChanges {
             // result[d.nombre].push({ nombre: d.name, file: d.valor });
           } else if (d.etiqueta === 'select') {
             result[d.nombre] = d.relacion ? d.valor : d.valor.Id;
+          } else if (d.etiqueta === 'autocomplete') {
+            if (d.opciones.find(x => x[d.key] === d.valor) !== undefined) {
+              result[d.nombre] = d.opciones.find(x => x[d.key] === d.valor);
+            }
           } else {
             result[d.nombre] = d.valor;
           }

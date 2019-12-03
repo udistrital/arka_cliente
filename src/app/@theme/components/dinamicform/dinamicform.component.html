@@ -374,6 +374,18 @@
                             <mat-hint class="text-danger">{{c.alerta}}</mat-hint>
                         </mat-form-field>
 
+                        <!-- autocomplete -->
+                        <div *ngSwitchCase="'autocomplete'" style="width: 100%;" floatLabel="always">
+                                <mat-label>{{c.requerido?'* '+c.label:c.label}}:</mat-label>
+                                <ng2-completer style="border: 0rem" [clearUnselected]="true" nbInput inputClass="form-control"
+                                [datasource]="dataService[c.id]" [(ngModel)]="c.valor" (ngModelChange)="validCampo(c)"
+                                [ngModelOptions]="{standalone: true}" [disabled]="c.deshabilitar"
+                                [minSearchLength]="4"
+                                [placeholder]="c.valor?(c.key?c.valor[c.key]:c.valor|json):c.placeholder">
+                                </ng2-completer>
+                                <p class="text-danger">{{c.alerta}}</p>
+                        </div>
+
                         <!-- select multiple-->
                         <mat-form-field *ngSwitchCase="'selectmultiple'" style="width: 100%;" floatLabel="always">
                             <mat-label>{{c.requerido?'* '+c.label:c.label}}:</mat-label>

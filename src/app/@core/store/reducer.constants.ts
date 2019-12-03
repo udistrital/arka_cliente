@@ -5,4 +5,9 @@ export const REDUCER_LIST = {
     Sedes: 'listSedes',
     Dependencias: 'listDependencias',
     Ubicaciones: 'listUbicaciones',
+    EstadosActa: 'listEstadosActa',
+    EstadosElemento: 'listEstadosElemento',
+    TipoBien: 'listTipoBien',
+    IVA: 'listIVA',
+    Unidades: 'listUnidades',
 };

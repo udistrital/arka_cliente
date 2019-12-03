@@ -185,12 +185,13 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
           const mov: any = {};
           mov['Cuentas'] = subgrupo;
           // console.log(mov)
+          // console.log(this.uid_1.Id);
           this.catalogoElementosService.putTransaccionCuentasSubgrupo(mov, this.uid_1.Id)
             .subscribe(res => {
               // console.log(res);
               this.eventChange.emit(true);
               this.Movimientos = [];
-              this.showToast('info', 'created', 'Subgrupo1 created');
+              this.showToast('info', 'updated', 'Subgrupo1 updatedd');
             });
         }
       });

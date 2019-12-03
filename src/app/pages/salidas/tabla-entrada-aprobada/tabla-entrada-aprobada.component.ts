@@ -54,7 +54,7 @@ export class TablaEntradaAprobadaComponent implements OnInit {
         custom: [
           {
             name: this.translate.instant('GLOBAL.detalle'),
-            title: '<i class="fas fa-eye" title="Ver"></i>',
+            title: '<i class="fas fa-check" title="Ver"></i>',
           },
         ],
       },
