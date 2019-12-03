@@ -43,9 +43,9 @@ export class FormElementosSeleccionadosComponent implements OnInit {
   searchStr: string;
   searchStr2: Array<string>;
   searchStr3: string;
-  protected dataService: CompleterData;
-  protected dataService2: CompleterData;
-  protected dataService3: CompleterData;
+  dataService: CompleterData;
+  dataService2: CompleterData;
+  dataService3: CompleterData;
   Proveedores: any;
   Dependencias: any;
   Ubicaciones: any;
@@ -102,4 +102,6 @@ export class FormElementosSeleccionadosComponent implements OnInit {
       Ubicacion: ['', Validators.required],
     });
   }
+
+  usarLocalStorage() {}
 }
