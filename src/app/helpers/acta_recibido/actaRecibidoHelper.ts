@@ -346,4 +346,25 @@ export class ActaRecibidoHelper {
             ),
         );
     }
+
+    /**
+     * Conversion Archivo Post
+     * If the response has errors in the OAS API it should show a popup message with an error.
+     * If the response is successs, it returns the object's data.
+     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
+     */
+    public postRelacionSedeDependencia(Transaccion) {
+        this.rqManager.setPath('ARKA_SERVICE');
+        return this.rqManager.post2('parametros_soporte/post_asignacion_espacio_fisico_dependencia', Transaccion).pipe(
+            map(
+                (res) => {
+                    if (res['Type'] === 'error') {
+                        this.pUpManager.showErrorAlert('No se pudieron cargar los elementos');
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
 }

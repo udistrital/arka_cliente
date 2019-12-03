@@ -66,6 +66,7 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
     this.formMovimiento = form;
     this.listService.findPlanCuentasDebito();
     this.listService.findPlanCuentasCredito();
+    this.loadLists();
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
       this.construirForm();
     });
