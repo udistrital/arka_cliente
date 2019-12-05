@@ -56,7 +56,7 @@ export class DinamicformComponent implements OnInit, OnChanges {
     });
   }
   ngOnChanges(changes) {
-    
+
 
     if (changes.normalform !== undefined) {
       if (changes.normalform.currentValue !== undefined) {
@@ -155,7 +155,7 @@ export class DinamicformComponent implements OnInit, OnChanges {
     return this.sanitization.bypassSecurityTrustUrl(oldURL);
   }
 
-  
+
 
   onChangeDate(event, c) {
     c.valor = event.value;

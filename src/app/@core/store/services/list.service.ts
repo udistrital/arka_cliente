@@ -245,7 +245,7 @@ export class ListService {
           this.CatalogoElementos.getSubgrupoTipoBien(1)
             .subscribe(
               (res: any[]) => {
-                console.log(res)
+                // console.log(res)
                 this.addList(REDUCER_LIST.Consumo, res);
               },
               error => {
@@ -264,7 +264,7 @@ export class ListService {
           this.CatalogoElementos.getSubgrupoTipoBien(2)
             .subscribe(
               (res: any[]) => {
-                console.log(res)
+                // console.log(res)
                 this.addList(REDUCER_LIST.ConsumoControlado, res);
               },
               error => {
@@ -283,7 +283,7 @@ export class ListService {
           this.CatalogoElementos.getSubgrupoTipoBien(3)
             .subscribe(
               (res: any[]) => {
-                console.log(res)
+                // console.log(res)
 
                 this.addList(REDUCER_LIST.Devolutivo, res);
               },

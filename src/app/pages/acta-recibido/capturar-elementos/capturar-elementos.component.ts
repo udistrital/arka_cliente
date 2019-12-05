@@ -109,7 +109,7 @@ export class CapturarElementosComponent implements OnInit {
     this.DatosEnviados.emit(this.dataSource.data);
     this.DatosTotales.emit(this.Totales);
   }
-  
+
 
   applyFilter(filterValue: string) {
     this.dataSource.filter = filterValue.trim().toLowerCase();
