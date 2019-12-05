@@ -46,6 +46,9 @@ export class CapturarElementosComponent implements OnInit {
   Unidades: any;
   Tarifas_Iva: any;
   nombreArchivo: any;
+  Consumo: any;
+  ConsumoControlado: any;
+  Devolutivo: any;
 
   constructor(private fb: FormBuilder,
     private translate: TranslateService,
@@ -69,6 +72,9 @@ export class CapturarElementosComponent implements OnInit {
   public loadLists() {
     this.store.select((state) => state).subscribe(
       (list) => {
+        this.Consumo = list.listConsumo[0];
+        this.ConsumoControlado = list.listConsumoControlado[0];
+        this.Devolutivo = list.listDevolutivo[0];
         this.Tipos_Bien = list.listTipoBien[0];
         this.Unidades = list.listUnidades[0];
         this.Tarifas_Iva = list.listIVA[0];
