@@ -36,7 +36,28 @@ export class DinamicformComponent implements OnInit, OnChanges {
     this.dataService = [];
   }
 
+  ngOnInit() {
+    if (!this.normalform.tipo_formulario) {
+      this.normalform.tipo_formulario = 'grid';
+    }
+
+    this.normalform.campos = this.normalform.campos.map(d => {
+      d.clase = 'form-control';
+      if (d.relacion === undefined) {
+        d.relacion = true;
+      }
+      if (!d.valor) {
+        d.valor = '';
+      }
+      if (!d.deshabilitar) {
+        d.deshabilitar = false;
+      }
+      return d;
+    });
+  }
   ngOnChanges(changes) {
+    
+
     if (changes.normalform !== undefined) {
       if (changes.normalform.currentValue !== undefined) {
         this.normalform = changes.normalform.currentValue;
@@ -134,26 +155,7 @@ export class DinamicformComponent implements OnInit, OnChanges {
     return this.sanitization.bypassSecurityTrustUrl(oldURL);
   }
 
-  ngOnInit() {
-
-    if (!this.normalform.tipo_formulario) {
-      this.normalform.tipo_formulario = 'grid';
-    }
-
-    this.normalform.campos = this.normalform.campos.map(d => {
-      d.clase = 'form-control';
-      if (d.relacion === undefined) {
-        d.relacion = true;
-      }
-      if (!d.valor) {
-        d.valor = '';
-      }
-      if (!d.deshabilitar) {
-        d.deshabilitar = false;
-      }
-      return d;
-    });
-  }
+  
 
   onChangeDate(event, c) {
     c.valor = event.value;
