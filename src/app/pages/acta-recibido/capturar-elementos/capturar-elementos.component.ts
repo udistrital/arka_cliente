@@ -11,6 +11,10 @@ import { TipoBien } from '../../../@core/data/models/acta_recibido/tipo_bien';
 import { DatosLocales, DatosLocales2 } from './datos_locales';
 import { Unidad } from '../../../@core/data/models/acta_recibido/unidades';
 import { Impuesto } from '../../../@core/data/models/acta_recibido/elemento';
+import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/catalogoElementosHelper';
+import { Store } from '@ngrx/store';
+import { IAppState } from '../../../@core/store/app.state';
+import { ListService } from '../../../@core/store/services/list.service';
 
 @Component({
   selector: 'ngx-capturar-elementos',
@@ -38,16 +42,38 @@ export class CapturarElementosComponent implements OnInit {
   @Output() DatosTotales = new EventEmitter();
 
   respuesta: any;
-  Tipos_Bien: Array<TipoBien>;
-  Unidades: Unidad[];
-  Tarifas_Iva: Impuesto[];
+  Tipos_Bien: any;
+  Unidades: any;
+  Tarifas_Iva: any;
   nombreArchivo: any;
 
   constructor(private fb: FormBuilder,
     private translate: TranslateService,
-    private actaRecibidoHelper: ActaRecibidoHelper) {
+    private actaRecibidoHelper: ActaRecibidoHelper,
+    private store: Store<IAppState>,
+    private listService: ListService,
+    private catalogoHelper: CatalogoElementosHelper) {
+
+    this.listService.findSubgruposConsumo();
+    this.listService.findSubgruposConsumoControlado();
+    this.listService.findSubgruposDevolutivo();
+    this.listService.findEstadosElemento();
+    this.listService.findTipoBien();
+    this.listService.findUnidades();
+    this.listService.findImpuestoIVA();
+    this.loadLists();
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
     });
+  }
+
+  public loadLists() {
+    this.store.select((state) => state).subscribe(
+      (list) => {
+        this.Tipos_Bien = list.listTipoBien[0];
+        this.Unidades = list.listUnidades[0];
+        this.Tarifas_Iva = list.listIVA[0];
+      },
+    );
   }
   useLanguage(language: string) {
     this.translate.use(language);
@@ -56,7 +82,6 @@ export class CapturarElementosComponent implements OnInit {
   ngOnInit() {
     this.createForm();
     this.Totales = new DatosLocales();
-    this.Traer_Parametros_Elementos();
     if (this.DatosRecibidos !== undefined) {
       this.dataSource = new MatTableDataSource(this.DatosRecibidos);
       this.dataSource.paginator = this.paginator;
@@ -78,62 +103,7 @@ export class CapturarElementosComponent implements OnInit {
     this.DatosEnviados.emit(this.dataSource.data);
     this.DatosTotales.emit(this.Totales);
   }
-  Traer_Parametros_Elementos() {
-    this.actaRecibidoHelper.getParametros().subscribe(res => {
-      if (res !== null) {
-        this.Traer_Tipo_Bien(res[0].TipoBien);
-        this.Traer_Unidades(res[0].Unidades);
-        this.Traer_IVA(res[0].IVA);
-      }
-    });
-  }
-  Traer_IVA(res: any) {
-    this.Tarifas_Iva = new Array<Impuesto>();
-    for (const index in res) {
-      if (res.hasOwnProperty(index)) {
-        const tarifas = new Impuesto;
-        tarifas.Id = res[index].Id;
-        tarifas.Activo = res[index].Activo;
-        tarifas.Tarifa = res[index].Tarifa;
-        tarifas.Decreto = res[index].Decreto;
-        tarifas.FechaCreacion = res[index].FechaCreacion;
-        tarifas.FechaModificacion = res[index].FechaModificacion;
-        tarifas.ImpuestoId = res[index].ImpuestoId.Id;
-        tarifas.Nombre = res[index].Tarifa.toString() + '% ' + res[index].ImpuestoId.CodigoAbreviacion;
-        this.Tarifas_Iva.push(tarifas);
-      }
-    }
-  }
-  Traer_Tipo_Bien(res: any) {
-    this.Tipos_Bien = new Array<TipoBien>();
-    for (const index in res) {
-      if (res.hasOwnProperty(index)) {
-        const tipo_bien = new TipoBien;
-        tipo_bien.Id = res[index].Id;
-        tipo_bien.Nombre = res[index].Nombre;
-        tipo_bien.CodigoAbreviacion = res[index].CodigoAbreviacion;
-        tipo_bien.Descripcion = res[index].Descripcion;
-        tipo_bien.FechaCreacion = res[index].FechaCreacion;
-        tipo_bien.FechaModificacion = res[index].FechaModificacion;
-        tipo_bien.NumeroOrden = res[index].NumeroOrden;
-        this.Tipos_Bien.push(tipo_bien);
-      }
-    }
-  }
-  Traer_Unidades(res: any) {
-    this.Unidades = new Array<Unidad>();
-    for (const index in res) {
-      if (res.hasOwnProperty(index)) {
-        const unidad = new Unidad;
-        unidad.Id = res[index].Id;
-        unidad.Unidad = res[index].Unidad;
-        unidad.Tipo = res[index].Tipo;
-        unidad.Descripcion = res[index].Descripcion;
-        unidad.Estado = res[index].Estado;
-        this.Unidades.push(unidad);
-      }
-    }
-  }
+  
 
   applyFilter(filterValue: string) {
     this.dataSource.filter = filterValue.trim().toLowerCase();
