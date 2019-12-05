@@ -280,8 +280,8 @@ export class DonacionComponent implements OnInit {
       if (res !== null) {
         const data = <Array<any>>res;
         for (const datos in Object.keys(data)) {
-          if (data.hasOwnProperty(datos) && data[datos].Nombre !== undefined && data[datos].Nombre === 'Adquisición') {
-            this.tipoEntrada = data[datos].Nombre;
+          if (data.hasOwnProperty(datos) && data[datos].Nombre !== undefined && data[datos].Nombre === 'Donación') {
+            this.tipoEntrada = data[datos];
           }
         }
       }
@@ -321,7 +321,7 @@ export class DonacionComponent implements OnInit {
           Id: 2, // REVISAR
         },
         SoporteMovimientoId: 0,
-        IdTipoMovimiento: this.tipoEntrada[0].Id,
+        IdTipoMovimiento: this.tipoEntrada.Id,
       };
 
       this.entradasHelper.postEntrada(movimientoAdquisicion).subscribe((res: any) => {

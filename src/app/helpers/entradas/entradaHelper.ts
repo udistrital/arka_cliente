@@ -126,8 +126,8 @@ export class EntradaHelper {
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
      */
     public getEntradas() {
-        this.rqManager.setPath('ENTRADAS_SERVICE');
-        return this.rqManager.get('entrada_elemento?limit=-1').pipe(
+        this.rqManager.setPath('ARKA_SERVICE');
+        return this.rqManager.get('entrada').pipe(
             map(
                 (res) => {
                     if (res === 'error') {
@@ -147,9 +147,9 @@ export class EntradaHelper {
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
      */
     public getEntrada(consecutivo) {
-        this.rqManager.setPath('ENTRADAS_SERVICE');
+        this.rqManager.setPath('ARKA_SERVICE');
         // return this.rqManager.get('entrada_elemento?query=Consecutivo:' + consecutivo).pipe(
-        return this.rqManager.get('entrada_elemento?query=Id:' + consecutivo).pipe(
+        return this.rqManager.get('entrada/' + consecutivo).pipe(
             map(
                 (res) => {
                     if (res === 'error') {
@@ -169,8 +169,8 @@ export class EntradaHelper {
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
      */
     public getSoportes(entradaId) {
-        this.rqManager.setPath('ENTRADAS_SERVICE');
-        return this.rqManager.get('soporte_entrada?query=EntradaElementoId.Id:' + entradaId + '&limit=-1').pipe(
+        this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
+        return this.rqManager.get('soporte_movimiento?query=MovimientoId.Id:' + entradaId + '&limit=-1').pipe(
             map(
                 (res) => {
                     if (res === 'error') {
