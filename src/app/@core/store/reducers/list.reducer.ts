@@ -92,5 +92,29 @@ export class ListReducer {
         return state;
     }
   }
+  static ListReducerConsumo(state: Array<any> = new Array, action) {
+    switch (action.type) {
+      case REDUCER_LIST.Consumo:
+        return [...state, action.payload];
+      default:
+        return state;
+    }
+  }
+  static ListReducerConsumoControlado(state: Array<any> = new Array, action) {
+    switch (action.type) {
+      case REDUCER_LIST.ConsumoControlado:
+        return [...state, action.payload];
+      default:
+        return state;
+    }
+  }
+  static ListReducerDevolutivo(state: Array<any> = new Array, action) {
+    switch (action.type) {
+      case REDUCER_LIST.Devolutivo:
+        return [...state, action.payload];
+      default:
+        return state;
+    }
+  }
 
 }

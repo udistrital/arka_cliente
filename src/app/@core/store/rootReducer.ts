@@ -14,4 +14,7 @@ export const rootReducer: ActionReducerMap<IAppState> = {
   listTipoBien: ListReducer.ListReducerTipoBien,
   listIVA: ListReducer.ListReducerIVA,
   listUnidades: ListReducer.ListReducerUnidades,
+  listConsumo: ListReducer.ListReducerConsumo,
+  listConsumoControlado: ListReducer.ListReducerConsumoControlado,
+  listDevolutivo: ListReducer.ListReducerDevolutivo,
 };
