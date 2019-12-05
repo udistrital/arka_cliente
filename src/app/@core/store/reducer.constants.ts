@@ -10,4 +10,7 @@ export const REDUCER_LIST = {
     TipoBien: 'listTipoBien',
     IVA: 'listIVA',
     Unidades: 'listUnidades',
+    Consumo: 'listConsumo',
+    ConsumoControlado: 'listConsumoControlado',
+    Devolutivo: 'listDevolutivo',
 };

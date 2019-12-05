@@ -307,7 +307,7 @@
                         <mat-form-field *ngSwitchCase="'input'" style="width: 100%;" class="form-group"
                             floatLabel="always">
                             <mat-label>{{c.requerido?'* '+c.label:c.label}}:</mat-label>
-                            <input matInput [(ngModel)]="c.valor" (ngModelChange)="validCampo(c)"
+                            <input min="1" matInput [(ngModel)]="c.valor" (ngModelChange)="validCampo(c)"
                                 [ngModelOptions]="{standalone: true}" type="{{c.tipo}}" id="{{c.nombre}}"
                                 [placeholder]="c.placeholder" [disabled]="c.deshabilitar" />
                             <mat-hint class="text-danger">{{c.alerta}}</mat-hint>

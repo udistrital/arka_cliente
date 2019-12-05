@@ -236,6 +236,67 @@ export class ListService {
     );
   }
 
+
+  public findSubgruposConsumo() {
+
+    this.store.select(REDUCER_LIST.Consumo).subscribe(
+      (list: any) => {
+        if (!list || list.length === 0) {
+          this.CatalogoElementos.getSubgrupoTipoBien(1)
+            .subscribe(
+              (res: any[]) => {
+                // console.log(res)
+                this.addList(REDUCER_LIST.Consumo, res);
+              },
+              error => {
+                this.addList(REDUCER_LIST.Consumo, []);
+              },
+            );
+        }
+      },
+    );
+  }
+  public findSubgruposConsumoControlado() {
+
+    this.store.select(REDUCER_LIST.ConsumoControlado).subscribe(
+      (list: any) => {
+        if (!list || list.length === 0) {
+          this.CatalogoElementos.getSubgrupoTipoBien(2)
+            .subscribe(
+              (res: any[]) => {
+                // console.log(res)
+                this.addList(REDUCER_LIST.ConsumoControlado, res);
+              },
+              error => {
+                this.addList(REDUCER_LIST.ConsumoControlado, []);
+              },
+            );
+        }
+      },
+    );
+  }
+  public findSubgruposDevolutivo() {
+
+    this.store.select(REDUCER_LIST.Devolutivo).subscribe(
+      (list: any) => {
+        if (!list || list.length === 0) {
+          this.CatalogoElementos.getSubgrupoTipoBien(3)
+            .subscribe(
+              (res: any[]) => {
+                // console.log(res)
+
+                this.addList(REDUCER_LIST.Devolutivo, res);
+              },
+              error => {
+                this.addList(REDUCER_LIST.Devolutivo, []);
+              },
+            );
+        }
+      },
+    );
+  }
+
+
   private addList(type: string, object: Array<any>) {
     this.store.dispatch({
       type: type,
