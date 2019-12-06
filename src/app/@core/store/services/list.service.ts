@@ -6,6 +6,7 @@ import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoH
 import { Proveedor } from '../../../@core/data/models/acta_recibido/Proveedor';
 import { Observable } from 'rxjs';
 import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/catalogoElementosHelper';
+import { Impuesto } from '../../data/models/acta_recibido/elemento';
 @Injectable()
 export class ListService {
 
@@ -225,6 +226,15 @@ export class ListService {
             .subscribe(
               (res: any[]) => {
 
+                for (const index in res) {
+                  if (res.hasOwnProperty(index)) {
+                    for (const index2 in res[index].IVA) {
+                      
+                        res[index].IVA[index2].Nombre = res[index].IVA[index2].Tarifa.toString() + '% ' + res[index].IVA[index2].ImpuestoId.CodigoAbreviacion;
+                    }
+                    console.log(res[index].IVA)
+                  }
+                }
                 this.addList(REDUCER_LIST.IVA, res[0].IVA);
               },
               error => {
