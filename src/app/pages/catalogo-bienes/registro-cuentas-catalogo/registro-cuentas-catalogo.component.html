@@ -57,7 +57,7 @@
               </div>
             </div>
           </mat-step>
-          <mat-step>
+          <mat-step *ngIf="depreciacion_ok">
             <ng-template matStepLabel>
               {{'GLOBAL.Depreciacion' | translate}}
             </ng-template>
@@ -73,7 +73,7 @@
                 class="float-right">{{'GLOBAL.Acta_Recibido.RegistroActa.SiguienteButton' | translate}}</button>
             </div>
           </mat-step>
-          <mat-step>
+          <mat-step *ngIf="valorizacion_ok">
             <ng-template matStepLabel>
               {{'GLOBAL.Valorizacion' | translate}}
             </ng-template>
@@ -85,11 +85,11 @@
             <div class="justify-content-center">
               <button nbButton
                 matStepperPrevious>{{'GLOBAL.Acta_Recibido.RegistroActa.AnteriorButton' | translate}}</button>
-              <button nbButton (click)="onSubmit()" [disabled]="!all_mov_ok"
-                class="float-right">{{'GLOBAL.Acta_Recibido.RegistroActa.GuardarCambiosButton' | translate}}</button>
             </div>
           </mat-step>
         </mat-vertical-stepper>
+        <button nbButton (click)="onSubmit()" [disabled]="!all_mov_ok"
+          class="float-right">{{'GLOBAL.Acta_Recibido.RegistroActa.GuardarCambiosButton' | translate}}</button>
       </nb-card-body>
     </nb-card>
   </div>

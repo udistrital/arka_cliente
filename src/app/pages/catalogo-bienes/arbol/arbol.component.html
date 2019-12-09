@@ -11,7 +11,7 @@
 
         <ng-container [nbTreeGridColumnDef]="customColumn">
             <th nbTreeGridHeaderCell [nbSortHeader]="getSortDirection(customColumn)" *nbTreeGridHeaderCellDef>
-                {{ customColumn }}
+                {{ customColumn2 }}
             </th>
             <td nbTreeGridCell *nbTreeGridCellDef="let row">
                 <span [ngClass]="{
@@ -25,7 +25,7 @@
         <ng-container *ngFor="let column of defaultColumns; let index = index" [nbTreeGridColumnDef]="column"
             [showOn]="getShowOn(index)">
             <th nbTreeGridHeaderCell [nbSortHeader]="getSortDirection(column)" *nbTreeGridHeaderCellDef>
-                {{ column }}
+                {{ defaultColumns2[index] }}
             </th>
             <td nbTreeGridCell *nbTreeGridCellDef="let row" class="text-uppercase">
                 <span *ngIf="row.data[column] !== undefined && row.data[column].Id === undefined">

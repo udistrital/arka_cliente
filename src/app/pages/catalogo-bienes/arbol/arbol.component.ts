@@ -7,6 +7,7 @@ import { CuentasGrupoTransaccion } from '../../../@core/data/models/catalogo/cue
 import { SubgrupoTransaccion, Subgrupo } from '../../../@core/data/models/catalogo/subgrupo';
 import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/catalogoElementosHelper';
 import { TipoBien } from '../../../@core/data/models/acta_recibido/tipo_bien';
+import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 
 interface TreeNode<T> {
   data: T;
@@ -53,10 +54,30 @@ export class ArbolComponent implements OnInit, OnChanges {
   @Output() subgrupo = new EventEmitter<CatalogoArbol>();
   tipos_de_bien: TipoBien;
   elementosSubgrupo: TipoBien;
+  customColumn2: any;
+  defaultColumns2: any[];
+  allColumns2: string[];
 
-  constructor(private dataSourceBuilder: NbTreeGridDataSourceBuilder<CatalogoArbol>, private catalogoHelper: CatalogoElementosHelper,
-    private pUpManager: PopUpManager) { }
+  constructor(
+    private dataSourceBuilder: NbTreeGridDataSourceBuilder<CatalogoArbol>,
+    private catalogoHelper: CatalogoElementosHelper,
+    private translate: TranslateService,
+    private pUpManager: PopUpManager) {
+      this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
+        this.construirForm();
+      });
+      this.construirForm();
+    }
 
+    construirForm() {
+      this.customColumn2 = this.translate.instant('GLOBAL.Codigo');
+      this.defaultColumns2 = [
+        this.translate.instant('GLOBAL.Nombre'),
+        this.translate.instant('GLOBAL.Descripcion'),
+        this.translate.instant('GLOBAL.Acciones'),
+      ];
+      this.allColumns2 = [this.customColumn, ...this.defaultColumns];
+    }
   ngOnInit() {
     this.catalogoSeleccionado = 0;
     this.detalle = false;

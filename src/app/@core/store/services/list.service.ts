@@ -229,10 +229,12 @@ export class ListService {
                 for (const index in res) {
                   if (res.hasOwnProperty(index)) {
                     for (const index2 in res[index].IVA) {
-                      
-                        res[index].IVA[index2].Nombre = res[index].IVA[index2].Tarifa.toString() + '% ' + res[index].IVA[index2].ImpuestoId.CodigoAbreviacion;
+                      if (true) {
+                        res[index].IVA[index2].Nombre = res[index].IVA[index2].Tarifa.toString() + '% ' +
+                        res[index].IVA[index2].ImpuestoId.CodigoAbreviacion;
+                      }
                     }
-                    console.log(res[index].IVA)
+                    // console.log(res[index].IVA)
                   }
                 }
                 this.addList(REDUCER_LIST.IVA, res[0].IVA);
