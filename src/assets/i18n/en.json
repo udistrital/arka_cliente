@@ -38,6 +38,7 @@
       "CapturarElementos":{
         "CargaMasivaTitle":"Masive Load",
         "ValidadorPlaceholder":"The file have xlsx extension (*.xlsx)",
+        "ValidadorPlaceholder2":"The file have xlsx extension (*.pdf)",
         "LimpiarEspacioButton":"Discard File",
         "CargarElementosButton":"Load Items",
         "ArticulosRelacionadosTitle":"Related Articles",

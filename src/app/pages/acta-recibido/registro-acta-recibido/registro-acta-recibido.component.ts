@@ -91,6 +91,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
   validador: boolean;
   validador_soporte: number;
   Nombre: any;
+  Validador: any;
 
 
 
@@ -124,6 +125,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
     this.listService.findImpuestoIVA();
     this.loadLists();
     this.fileDocumento = [];
+    this.Validador = [];
     this.uidDocumento = [];
     this.idDocumento = [];
   }
@@ -211,6 +213,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
   onInputFileDocumento(event, index) {
     // console.log(event.target.files);
     // console.log(event.srcElement.files);
+
     if (event.target.files.length > 0) {
       const file = event.target.files[0];
       if (file.type === 'application/pdf') {
@@ -219,12 +222,19 @@ export class RegistroActaRecibidoComponent implements OnInit {
         file.IdDocumento = 13; // tipo de documento (API documentos_crud)
         file.file = event.target.files[0];
         this.fileDocumento[index] = file;
+        this.Validador[index] = true;
         // console.log(file);
         // console.log(this.fileDocumento);
       } else {
+        this.Validador[index] = false;
         this.pUpManager.showErrorAlert('error' + this.translate.instant('GLOBAL.error'));
       }
     }
+  }
+  clearFile(index) {
+    (this.firstForm.get('Formulario2') as FormArray).at(index).get('Soporte').setValue('')
+    this.fileDocumento[index] = undefined;
+    this.Validador[index] = undefined;
   }
   cleanURL(oldURL: string): SafeResourceUrl {
     return this.sanitization.bypassSecurityTrustUrl(oldURL);
@@ -659,7 +669,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
       if (transaccion.Sede !== undefined && transaccion.Dependencia !== undefined) {
         this.Actas_Recibido.postRelacionSedeDependencia(transaccion).subscribe((res: any) => {
           // console.log(res)
-          if (Object.keys(res[0]).length !== 0 ) {
+          if (Object.keys(res[0]).length !== 0) {
             this.Ubicaciones = res[0].Relaciones;
           } else {
             this.Ubicaciones = undefined;
