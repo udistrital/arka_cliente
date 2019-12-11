@@ -84,8 +84,8 @@ export class CrudCatalogoComponent implements OnInit {
   updateCatalogo(catalogo: any): void {
 
     const opt: any = {
-      title: 'Update?',
-      text: 'Update Catalogo!',
+      title: this.translate.instant('GLOBAL.Actualizar'),
+      text: this.translate.instant('GLOBAL.Actualizar_Catalogo_placeholder'),
       icon: 'warning',
       buttons: true,
       dangerMode: true,
@@ -99,7 +99,7 @@ export class CrudCatalogoComponent implements OnInit {
           .subscribe(res => {
             this.loadCatalogo();
             this.eventChange.emit(true);
-            this.showToast('info', 'updated', 'Catalogo updated');
+            this.showToast('info', this.translate.instant('GLOBAL.Actualizado'), this.translate.instant('GLOBAL.Actualizado_Catalogo_placeholder'));
           });
       }
     });
@@ -107,8 +107,8 @@ export class CrudCatalogoComponent implements OnInit {
 
   createCatalogo(catalogo: any): void {
     const opt: any = {
-      title: 'Create?',
-      text: 'Create Catalogo!',
+      title: this.translate.instant('GLOBAL.Crear'),
+      text: this.translate.instant('GLOBAL.Crear_Catalogo_placeholder'),
       icon: 'warning',
       buttons: true,
       dangerMode: true,
@@ -123,7 +123,7 @@ export class CrudCatalogoComponent implements OnInit {
           .subscribe(res => {
             this.info_catalogo = <Catalogo><unknown>res;
             this.eventChange.emit(true);
-            this.showToast('info', 'created', 'Catalogo created');
+            this.showToast('info', this.translate.instant('GLOBAL.Creado'), this.translate.instant('GLOBAL.Creado_Catalogo_placeholder'));
           });
       }
     });

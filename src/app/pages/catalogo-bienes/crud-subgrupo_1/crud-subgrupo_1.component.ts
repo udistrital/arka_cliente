@@ -107,8 +107,8 @@ export class CrudSubgrupo1Component implements OnInit {
   updateSubgrupo1(subgrupo1: any): void {
 
     const opt: any = {
-      title: 'Update?',
-      text: 'Update Subgrupo!',
+      title: this.translate.instant('GLOBAL.Actualizar'),
+      text: this.translate.instant('GLOBAL.Actualizar_Subgrupo_placeholder'),
       type: 'warning',
       showCancelButton: true,
     };
@@ -120,7 +120,11 @@ export class CrudSubgrupo1Component implements OnInit {
             .subscribe(res => {
               this.loadSubgrupo1();
               this.eventChange.emit(true);
-              this.showToast('info', 'updated', 'Subgrupo1 updated');
+              this.showToast(
+                'info',
+                this.translate.instant('GLOBAL.Actualizado'),
+                this.translate.instant('GLOBAL.Actualizado_Subgrupo_placeholder'),
+              );
             });
         }
       });
@@ -128,8 +132,8 @@ export class CrudSubgrupo1Component implements OnInit {
 
   createSubgrupo1(subgrupo: any): void {
     const opt: any = {
-      title: 'Create?',
-      text: 'Create Subgrupo!',
+      title: this.translate.instant('GLOBAL.Crear'),
+      text: this.translate.instant('GLOBAL.Crear_Subgrupo_placeholder'),
       type: 'warning',
       showCancelButton: true,
     };
@@ -147,7 +151,7 @@ export class CrudSubgrupo1Component implements OnInit {
             .subscribe(res => {
               this.info_subgrupo_1 = <Subgrupo><unknown>res;
               this.eventChange.emit(true);
-              this.showToast('info', 'created', 'Subgrupo1 created');
+              this.showToast('info', this.translate.instant('GLOBAL.Creado'), this.translate.instant('GLOBAL.Creado_Subgrupo_placeholder') );
             });
         }
       });

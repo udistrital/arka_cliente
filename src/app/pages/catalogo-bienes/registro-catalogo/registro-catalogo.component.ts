@@ -68,6 +68,10 @@ export class RegistroCatalogoComponent implements OnInit {
   recargarCatalogo(event) {
     // console.log(event);
     this.eventChange.emit(true);
+    setTimeout(() => {
+      this.QuitarVista();
+    }, 2000);
+
     // this.ver_formulario = false;
   }
 
