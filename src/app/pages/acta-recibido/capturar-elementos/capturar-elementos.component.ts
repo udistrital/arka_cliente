@@ -78,6 +78,7 @@ export class CapturarElementosComponent implements OnInit {
         this.Tipos_Bien = list.listTipoBien[0];
         this.Unidades = list.listUnidades[0];
         this.Tarifas_Iva = list.listIVA[0];
+        // console.log(this.Tarifas_Iva)
       },
     );
   }

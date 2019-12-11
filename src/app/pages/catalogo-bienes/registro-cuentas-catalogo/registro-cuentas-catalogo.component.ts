@@ -47,6 +47,8 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
   config: ToasterConfig;
   all_mov: number;
   all_mov_ok: boolean;
+  depreciacion_ok: boolean;
+  valorizacion_ok: boolean;
 
 
   constructor(
@@ -64,10 +66,10 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
     this.listService.findPlanCuentasDebito();
     this.listService.findPlanCuentasCredito();
     this.catalogoElementosService.getTiposMovimientoKronos().subscribe((res: any[]) => {
-      this.Movimientos_Entradas = res.filter((x: any) => x.Descripcion.indexOf('Entrada') !== -1 );
-      this.Movimientos_Salidas = res.filter((x: any) => x.Descripcion.indexOf('Salida') !== -1 );
-      this.Movimientos_Depreciacion = res.filter((x: any) => x.Descripcion.indexOf('Depreciacion') !== -1 );
-      this.Movimientos_Valorizacion = res.filter((x: any) => x.Descripcion.indexOf('Valorizacion') !== -1 );
+      this.Movimientos_Entradas = res.filter((x: any) => x.Descripcion.indexOf('Entrada') !== -1);
+      this.Movimientos_Salidas = res.filter((x: any) => x.Descripcion.indexOf('Salida') !== -1);
+      this.Movimientos_Depreciacion = res.filter((x: any) => x.Descripcion.indexOf('Depreciacion') !== -1);
+      this.Movimientos_Valorizacion = res.filter((x: any) => x.Descripcion.indexOf('Valorizacion') !== -1);
       this.all_mov = res.length - 1;
 
     });
@@ -130,6 +132,8 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
   recargarCatalogo(event) {
     // console.log(event);
     this.eventChange.emit(true);
+
+
   }
 
   onChange(catalogo) {
@@ -141,18 +145,42 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
     this.uid_2 = undefined;
   }
   receiveMessage(event) {
+    const opt: any = {
+      title: this.translate.instant('No hay detalle asociado'),
+      text: this.translate.instant('Revisar las caracteristicas del catalogo'),
+      type: 'warning',
+    };
     this.catalogoElementosService.getGrupoById(event.Id).subscribe(
       res => {
         // console.log(res[0]);
         if (Object.keys(res[0]).length !== 0) {
-          this.Movimientos = [];
-          this.uid_1 = event;
-          this.uid_2 = undefined;
-
+          this.catalogoElementosService.getDetalleSubgrupo(event.Id).subscribe(res2 => {
+            if (Object.keys(res2[0]).length !== 0) {
+              this.Movimientos = [];
+              this.depreciacion_ok = res2[0].Depreciacion;
+              this.valorizacion_ok = res2[0].Valorizacion;
+              this.Total_Movimientos();
+              // console.log(this.all_mov);
+              this.uid_1 = event;
+              this.uid_2 = undefined;
+            } else {
+              this.Movimientos = [];
+              this.depreciacion_ok = false;
+              this.valorizacion_ok = false;
+              this.Total_Movimientos();
+              this.uid_1 = event;
+              this.uid_2 = undefined;
+              (Swal as any).fire(opt);
+            }
+          });
         } else {
           this.Movimientos = [];
+          this.depreciacion_ok = false;
+          this.valorizacion_ok = false;
+          this.Total_Movimientos();
           this.uid_1 = undefined;
           this.uid_2 = event;
+          (Swal as any).fire(opt);
         }
       });
     // console.log(event);
@@ -165,7 +193,7 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
       }
     });
 
-   if (mov_existente !== true) {
+    if (mov_existente !== true) {
       this.createMovimientos(this.Movimientos);
     } else {
       this.updateMovimientos(this.Movimientos);
@@ -174,8 +202,8 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
   updateMovimientos(subgrupo: any): void {
 
     const opt: any = {
-      title: 'Update?',
-      text: 'Update Movimientos!',
+      title: this.translate.instant('GLOBAL.Actualizar'),
+      text: this.translate.instant('GLOBAL.Actualizar_Movimientos_placeholder'),
       type: 'warning',
       showCancelButton: true,
     };
@@ -191,7 +219,14 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
               // console.log(res);
               this.eventChange.emit(true);
               this.Movimientos = [];
-              this.showToast('info', 'updated', 'Subgrupo1 updatedd');
+              this.showToast(
+                'info',
+                this.translate.instant('GLOBAL.Actualizado'),
+                this.translate.instant('GLOBAL.Actualizado_Movimientos_placeholder'),
+              );
+              setTimeout(() => {
+                this.QuitarVista();
+              }, 2000);
             });
         }
       });
@@ -199,8 +234,8 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
 
   createMovimientos(subgrupo: any): void {
     const opt: any = {
-      title: 'Create?',
-      text: 'Create Movimientos!',
+      title: this.translate.instant('GLOBAL.Crear'),
+      text: this.translate.instant('GLOBAL.Crear_Movimientos_placeholder'),
       type: 'warning',
       showCancelButton: true,
     };
@@ -215,7 +250,10 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
               // console.log(res);
               this.eventChange.emit(true);
               this.Movimientos = [];
-              this.showToast('info', 'created', 'Subgrupo1 created');
+              this.showToast('info', this.translate.instant('GLOBAL.Creado'), this.translate.instant('GLOBAL.Creado_Movimientos_placeholder'));
+              setTimeout(() => {
+                this.QuitarVista();
+              }, 2000);
             });
         }
       });
@@ -239,5 +277,18 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
       bodyOutputType: BodyOutputType.TrustedHtml,
     };
     this.toasterService.popAsync(toast);
+  }
+  Bool2Number(bool: boolean, num: number) {
+    if (bool === true) {
+      return num;
+    } else {
+      return 0;
+    }
+  }
+
+  Total_Movimientos() {
+    this.all_mov = this.Movimientos_Entradas.length + this.Movimientos_Salidas.length +
+      this.Bool2Number(this.valorizacion_ok, this.Movimientos_Valorizacion.length) +
+      this.Bool2Number(this.depreciacion_ok, this.Movimientos_Depreciacion.length);
   }
 }

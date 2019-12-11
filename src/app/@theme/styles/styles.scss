@@ -6,6 +6,7 @@
 @import '~@nebular/auth/styles/all';
 @import '~@nebular/bootstrap/styles/globals';
 // ...
+@import url('https://pruebasassets.portaloas.udistrital.edu.co/gaia-style.css');
 
 // Import library functions for theme creation.
 @import '~@angular/material/theming';
@@ -14,20 +15,20 @@
 @include mat-core();
 
 $my-blue: (
-  50: #9b2725,
-  100: #9b2725,
-  200: #9b2725,
-  300: #9b2725,
-  400: #9b2725,
-  500: #9b2725,
-  600: #9b2725,
-  700: #9b2725,
-  800: #9b2725,
-  900: #9b2725,
-  A100: #a61e1c,
-  A200: #a61e1c,
-  A400: #a61e1c,
-  A700: #a61e1c,
+  50: var(--color5),
+  100: var(--color5),
+  200: var(--color4),
+  300: var(--color4),
+  400: var(--color3),
+  500: var(--color3),
+  600: var(--color2),
+  700: var(--color2),
+  800: var(--color1),
+  900: var(--color1),
+  A100: var(--color5),
+  A200: var(--color4),
+  A400: var(--color3),
+  A700: var(--color2),
   contrast: (
     50: white,
     100: white,

@@ -14,57 +14,57 @@
     </nb-card-body>
     <nb-card-footer *ngIf="catalogoId !== 0">
       <div>
-        <button nbButton class="float-right" (click)="AgregarGrupo(1)">Agregar Grupo</button>
+        <button nbButton class="float-right" (click)="AgregarGrupo(1)">{{'GLOBAL.Agregar_Grupo' | translate}}</button>
       </div>
     </nb-card-footer>
   </nb-card>
   <div class="col" *ngIf="ver_formulario">
     <nb-card *ngIf="uid_1">
       <nb-card-header>
-        Modificar Grupo
+        {{'GLOBAL.Modificar_Grupo' | translate}}
       </nb-card-header>
       <ngx-crud-grupo [grupo_id]="uid_1" (eventChange)="recargarCatalogo($event)"></ngx-crud-grupo>
       <nb-card-footer>
         <div>
-            <button nbButton (click)="QuitarVista()">Deshacer</button>
-          <button nbButton class="float-right" (click)="AgregarSubgrupo(1)">Agregar Subgrupo</button>
+            <button nbButton (click)="QuitarVista()">{{'GLOBAL.Deshacer' | translate}}</button>
+          <button nbButton class="float-right" (click)="AgregarSubgrupo(1)">{{'GLOBAL.Agregar_Subgrupo' | translate}}</button>
         </div>
       </nb-card-footer>
     </nb-card>
 
     <nb-card *ngIf="uid_2">
       <nb-card-header>
-        Modificar Subgrupo
+        {{'GLOBAL.Modificar_Subgrupo' | translate}}
       </nb-card-header>
       <ngx-crud-subgrupo-1 [subgrupo_1_id]="uid_2" (eventChange)="recargarCatalogo($event)"></ngx-crud-subgrupo-1>
       <nb-card-footer>
         <div>
-            <button nbButton (click)="QuitarVista()">Deshacer</button>
-          <button nbButton class="float-right" (click)="AgregarSubgrupo(1)">Agregar Subgrupo</button>
+            <button nbButton (click)="QuitarVista()">{{'GLOBAL.Deshacer' | translate}}</button>
+          <button nbButton class="float-right" (click)="AgregarSubgrupo(1)">{{'GLOBAL.Agregar_Subgrupo' | translate}}</button>
         </div>
       </nb-card-footer>
     </nb-card>
 
     <nb-card *ngIf="uid_3">
       <nb-card-header>
-        Crear Grupo
+        {{'GLOBAL.Agregar_Grupo' | translate}}
       </nb-card-header>
       <ngx-crud-grupo [catalogo_id]="catalogoId" (eventChange)="recargarCatalogo($event)"></ngx-crud-grupo>
       <nb-card-footer>
           <div>
-              <button nbButton (click)="QuitarVista()">Deshacer</button>
+              <button nbButton (click)="QuitarVista()">{{'GLOBAL.Deshacer' | translate}}</button>
           </div>
         </nb-card-footer>
     </nb-card>
 
     <nb-card *ngIf="uid_4">
       <nb-card-header>
-        Crear Subgrupo
+        {{'GLOBAL.Agregar_Subgrupo' | translate}}
       </nb-card-header>
       <ngx-crud-subgrupo-1 [subgrupo_Padre]="subgrupoPadre" (eventChange)="recargarCatalogo($event)"></ngx-crud-subgrupo-1>
       <nb-card-footer>
           <div>
-              <button nbButton (click)="QuitarVista()">Deshacer</button>
+              <button nbButton (click)="QuitarVista()">{{'GLOBAL.Deshacer' | translate}}</button>
           </div>
         </nb-card-footer>
     </nb-card>

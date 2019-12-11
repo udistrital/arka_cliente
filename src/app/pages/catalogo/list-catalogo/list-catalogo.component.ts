@@ -35,6 +35,7 @@ export class ListCatalogoComponent implements OnInit {
     this.settings = {
       actions: {
         position: 'right',
+        columnTitle: this.translate.instant('GLOBAL.Acciones'),
       },
       add: {
         addButtonContent: '<i class="nb-plus"></i>',
