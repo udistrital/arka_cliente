@@ -28,6 +28,7 @@ import { ListService } from '../../../@core/store/services/list.service';
 import { PopUpManager } from '../../../managers/popUpManager';
 import { DomSanitizer } from '@angular/platform-browser';
 import { CompleterData, CompleterService } from 'ng2-completer';
+import { HttpErrorResponse } from '@angular/common/http';
 
 
 
@@ -230,6 +231,36 @@ export class VerificacionActaRecibidoComponent implements OnInit {
         }
       });
     }
+  }
+  downloadFile(index: any) {
+
+    const id_documento = (this.firstForm.get('Formulario2') as FormArray).at(index).get('Soporte').value
+    
+    const filesToGet = [
+      {
+        Id: id_documento,
+        key: id_documento,
+      },
+    ];
+    this.nuxeoService.getDocumentoById$(filesToGet, this.documentoService)
+      .subscribe(response => {
+        const filesResponse = <any>response;
+        if (Object.keys(filesResponse).length === filesToGet.length) {
+          // console.log("files", filesResponse);
+          filesToGet.forEach((file: any) => {
+            const url = filesResponse[file.Id];
+            window.open(url);
+          });
+        }
+      },
+        (error: HttpErrorResponse) => {
+          Swal({
+            type: 'error',
+            title: error.status + '',
+            text: this.translate.instant('ERROR.' + error.status),
+            confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
+          });
+        });
   }
 
   onFirstSubmit() {
