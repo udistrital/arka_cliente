@@ -22,6 +22,12 @@ import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { CurrencyPipe } from '@angular/common';
 import { Unidad } from '../../../@core/data/models/acta_recibido/unidades';
 import { DocumentoService } from '../../../@core/data/documento.service';
+import { Store } from '@ngrx/store';
+import { IAppState } from '../../../@core/store/app.state';
+import { ListService } from '../../../@core/store/services/list.service';
+import { PopUpManager } from '../../../managers/popUpManager';
+import { DomSanitizer } from '@angular/platform-browser';
+import { CompleterData, CompleterService } from 'ng2-completer';
 
 
 @Component({
@@ -52,9 +58,9 @@ export class VerDetalleComponent implements OnInit {
   // Tablas parametricas
 
   @Input('Id_Acta') _ActaId: number;
-  Estados_Acta: Array<EstadoActa>;
-  Tipos_Bien: Array<TipoBien>;
-  Estados_Elemento: Array<EstadoElemento>;
+  Estados_Acta: any;
+  Tipos_Bien: any;
+  Estados_Elemento: any;
 
   // Modelos
 
@@ -63,13 +69,15 @@ export class VerDetalleComponent implements OnInit {
   Soportes_Acta: Array<SoporteActa>;
   Historico_Acta: HistoricoActa;
   Transaccion__: TransaccionActaRecibido;
-  Unidades: Unidad[];
-  Tarifas_Iva: Impuesto[];
-  Ubicaciones: Ubicacion[];
-  Proveedores: Proveedor[];
+  Unidades: any;
+  Tarifas_Iva: any;
+  Ubicaciones: any;
+  Proveedores: any;
   Totales: any;
   Acta: TransaccionActaRecibido;
   fileDocumento: any;
+  Dependencias: any;
+  Sedes: any;
 
   constructor(
     private translate: TranslateService,
@@ -79,126 +87,86 @@ export class VerDetalleComponent implements OnInit {
     private Actas_Recibido: ActaRecibidoHelper,
     private cp: CurrencyPipe,
     private nuxeoService: NuxeoService,
+    private completerService: CompleterService,
     private documentoService: DocumentoService,
+    private store: Store<IAppState>,
+    private listService: ListService,
+    private pUpManager: PopUpManager,
+    private sanitization: DomSanitizer,
+
 
   ) {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
     });
+    this.listService.findProveedores();
+    this.listService.findDependencias();
+    this.listService.findSedes();
+    // this.listService.findUbicaciones();
+    this.listService.findEstadosActa();
+    this.listService.findEstadosElemento();
+    this.listService.findTipoBien();
+    this.listService.findUnidades();
+    this.listService.findImpuestoIVA();
   }
   ngOnInit() {
-    const observable = combineLatest([
-      this.Actas_Recibido.getParametros(),
-      this.Actas_Recibido.getParametrosSoporte(),
-      this.Actas_Recibido.getProveedores(),
-      this.Actas_Recibido.getTransaccionActa(this._ActaId),
-    ]);
-    observable.subscribe(([ParametrosActa, ParametrosSoporte, Proveedores, Acta]) => {
-      // console.log([ParametrosActa, ParametrosSoporte, Proveedores, Acta]);
-      this.Traer_Tipo_Bien(ParametrosActa[0].TipoBien);
-      this.Traer_Unidades(ParametrosActa[0].Unidades);
-      this.Traer_IVA(ParametrosActa[0].IVA);
-      this.Traer_Proveedores_(Proveedores);
-      this.Traer_Ubicaciones(ParametrosSoporte[0].Ubicaciones);
-      this.Cargar_Formularios(Acta[0]);
-    });
+    this.loadLists();
   }
-  Traer_Proveedores_(res: any) {
-    this.Proveedores = new Array<Proveedor>();
 
-    for (const index in res) {
-      if (res.hasOwnProperty(index)) {
-        const proveedor = new Proveedor;
-        proveedor.Id = res[index].Id;
-        proveedor.NomProveedor = res[index].NomProveedor;
-        proveedor.NumDocumento = res[index].NumDocumento;
-        proveedor.compuesto = res[index].NumDocumento + ' - ' + res[index].NomProveedor;
-        this.Proveedores.push(proveedor);
-      }
-    }
+  public loadLists() {
+    this.store.select((state) => state).subscribe(
+      (list) => {
+
+        this.Estados_Acta = list.listEstadosActa[0];
+        this.Estados_Elemento = list.listEstadosElemento[0];
+        this.Tipos_Bien = list.listTipoBien[0];
+        this.Unidades = list.listUnidades[0];
+        this.Tarifas_Iva = list.listIVA[0];
+        this.Proveedores = list.listProveedores[0];
+        this.Dependencias = list.listDependencias[0];
+        // this.Ubicaciones = list.listUbicaciones[0];
+        this.Sedes = list.listSedes[0];
+        console.log(this.Proveedores)
+        // this.dataService = this.completerService.local(this.Ubicaciones, 'Nombre', 'Nombre');
+        if (this.Estados_Acta !== undefined && this.Estados_Elemento !== undefined &&
+          this.Tipos_Bien !== undefined && this.Unidades !== undefined &&
+          this.Tarifas_Iva !== undefined && this.Proveedores !== undefined &&
+          this.Dependencias !== undefined && this.Sedes !== undefined &&
+          this._ActaId !== undefined) {
+          console.log(this._ActaId);
+          this.Actas_Recibido.getTransaccionActa(this._ActaId).subscribe(Acta => {
+            console.log(Acta);
+            this.Cargar_Formularios(Acta[0]);
+            console.log('ok');
+          })
+        }
+      },
+    );
   }
-  Traer_Ubicaciones(res: any) {
-    this.Ubicaciones = new Array<Ubicacion>();
-    for (const index in res) {
-      if (res.hasOwnProperty(index)) {
-        const ubicacion = new Ubicacion;
-        ubicacion.Id = res[index].Id;
-        ubicacion.Codigo = res[index].Codigo;
-        ubicacion.Estado = res[index].Estado;
-        ubicacion.Nombre = res[index].Nombre;
-        this.Ubicaciones.push(ubicacion);
-      }
-    }
-  }
-  Traer_IVA(res: any) {
-    this.Tarifas_Iva = new Array<Impuesto>();
-    for (const index in res) {
-      if (res.hasOwnProperty(index)) {
-        const tarifas = new Impuesto;
-        tarifas.Id = res[index].Id;
-        tarifas.Activo = res[index].Activo;
-        tarifas.Tarifa = res[index].Tarifa;
-        tarifas.Decreto = res[index].Decreto;
-        tarifas.FechaCreacion = res[index].FechaCreacion;
-        tarifas.FechaModificacion = res[index].FechaModificacion;
-        tarifas.ImpuestoId = res[index].ImpuestoId.Id;
-        tarifas.Nombre = res[index].Tarifa.toString() + '% ' + res[index].ImpuestoId.CodigoAbreviacion;
-        this.Tarifas_Iva.push(tarifas);
-      }
-    }
-  }
-  Traer_Tipo_Bien(res: any) {
-    this.Tipos_Bien = new Array<TipoBien>();
-    for (const index in res) {
-      if (res.hasOwnProperty(index)) {
-        const tipo_bien = new TipoBien;
-        tipo_bien.Id = res[index].Id;
-        tipo_bien.Nombre = res[index].Nombre;
-        tipo_bien.CodigoAbreviacion = res[index].CodigoAbreviacion;
-        tipo_bien.Descripcion = res[index].Descripcion;
-        tipo_bien.FechaCreacion = res[index].FechaCreacion;
-        tipo_bien.FechaModificacion = res[index].FechaModificacion;
-        tipo_bien.NumeroOrden = res[index].NumeroOrden;
-        this.Tipos_Bien.push(tipo_bien);
-      }
-    }
-  }
-  Traer_Unidades(res: any) {
-    this.Unidades = new Array<Unidad>();
-    for (const index in res) {
-      if (res.hasOwnProperty(index)) {
-        const unidad = new Unidad;
-        unidad.Id = res[index].Id;
-        unidad.Unidad = res[index].Unidad;
-        unidad.Tipo = res[index].Tipo;
-        unidad.Descripcion = res[index].Descripcion;
-        unidad.Estado = res[index].Estado;
-        this.Unidades.push(unidad);
-      }
-    }
-  }
+
   T_V(valor: string): string {
     return this.cp.transform(valor);
   }
   Cargar_Formularios(transaccion_: TransaccionActaRecibido) {
-    this.Acta = transaccion_;
-    this.firstForm = new FormGroup({});
-    // console.log(this.Acta);
 
-    const Form2 = this.fb.array([]);
+    this.Actas_Recibido.getSedeDependencia(transaccion_.ActaRecibido.UbicacionId).subscribe(res => {
+      const valor = res[0].EspacioFisicoId.Codigo.substring(0, 4);
+      this.Acta = transaccion_;
 
-    for (const Soporte of transaccion_.SoportesActa) {
+      console.log(this.Proveedores);
 
-      const Formulario__2 = this.fb.group({
-        Id: [Soporte.SoporteActa.Id],
-        Proveedor: [
-          this.Proveedores.find(proveedor => proveedor.Id.toString() === Soporte.SoporteActa.ProveedorId.toString()).compuesto,
-        ],
-        Consecutivo: [Soporte.SoporteActa.Consecutivo],
-        Fecha_Factura: [Soporte.SoporteActa.FechaSoporte],
-        Soporte: [''],
-        Elementos: this.fb.array([]),
-      });
-        for (const _Elemento of Soporte.Elementos ) {
+      const Form2 = this.fb.array([]);
+
+      for (const Soporte of transaccion_.SoportesActa) {
+
+        const Formulario__2 = this.fb.group({
+          Id: [Soporte.SoporteActa.Id],
+          Proveedor: [this.Proveedores.find(proveedor => proveedor.Id === Soporte.SoporteActa.ProveedorId).compuesto],
+          Consecutivo: [Soporte.SoporteActa.Consecutivo],
+          Fecha_Factura: [Soporte.SoporteActa.FechaSoporte],
+          Soporte: [Soporte.SoporteActa.DocumentoId],
+          Elementos: this.fb.array([]),
+        });
+        for (const _Elemento of Soporte.Elementos) {
 
           const Elemento___ = this.fb.group({
             Id: [_Elemento.Id],
@@ -217,34 +185,57 @@ export class VerDetalleComponent implements OnInit {
             Subtotal: [this.T_V(_Elemento.ValorTotal.toString())],
             Descuento: [this.T_V(_Elemento.Descuento.toString())],
             PorcentajeIvaId: [
-              this.Tarifas_Iva.find( iva => iva.Id.toString() === _Elemento.PorcentajeIvaId.toString()).Nombre,
+              this.Tarifas_Iva.find(iva => iva.Id.toString() === _Elemento.PorcentajeIvaId.toString()).Nombre,
             ],
             ValorIva: [this.T_V(_Elemento.ValorIva.toString())],
             ValorTotal: [this.T_V(_Elemento.ValorFinal.toString())],
             Verificado: [false],
           });
 
-        (Formulario__2.get('Elementos') as FormArray).push(Elemento___);
+          (Formulario__2.get('Elementos') as FormArray).push(Elemento___);
         }
 
-      Form2.push(Formulario__2);
-    }
+        Form2.push(Formulario__2);
+      }
 
-    this.firstForm = this.fb.group({
-      Formulario1: this.fb.group({
-        Id: [transaccion_.ActaRecibido.Id],
-        Sede: [''],
-        Dependencia: [''],
-        Ubicacion: [ this.Ubicaciones.find(ubicacion => ubicacion.Id.toString() === transaccion_.ActaRecibido.UbicacionId.toString()).Nombre],
-      }),
-      Formulario2: Form2,
-      Formulario3: this.fb.group({
-        Datos_Adicionales: [transaccion_.ActaRecibido.Observaciones, Validators.required],
-      }),
+      this.firstForm = this.fb.group({
+        Formulario1: this.fb.group({
+          Id: [transaccion_.ActaRecibido.Id],
+          Sede: [this.Sedes.find(x => x.Codigo === valor.toString()).Nombre],
+          Dependencia: [this.Dependencias.find(x => x.Id === res[0].DependenciaId.Id).Nombre],
+          Ubicacion: [transaccion_.ActaRecibido.UbicacionId],
+        }),
+        Formulario2: Form2,
+        Formulario3: this.fb.group({
+          Datos_Adicionales: [transaccion_.ActaRecibido.Observaciones],
+        }),
+      });
+      this.Traer_Relacion_Ubicaciones(valor, res[0].DependenciaId.Id,transaccion_.ActaRecibido.UbicacionId);
+      this.carga_agregada = true;
+
     });
-
-    this.carga_agregada = true;
   }
+
+  Traer_Relacion_Ubicaciones(sede_, dependencia_, ubicacion_) {
+
+    const transaccion: any = {};
+    transaccion.Sede = this.Sedes.find((x) => x.Codigo === sede_.toString());
+    transaccion.Dependencia = this.Dependencias.find((x) => x.Id === dependencia_);
+    console.log(this.Sedes);
+    if (transaccion.Sede !== undefined && transaccion.Dependencia !== undefined) {
+      this.Actas_Recibido.postRelacionSedeDependencia(transaccion).subscribe((res: any) => {
+        console.log(res)
+        if (Object.keys(res[0]).length !== 0) {
+          this.Ubicaciones = res[0].Relaciones;
+          this.firstForm.get('Formulario1').get('Ubicacion').setValue(
+            this.Ubicaciones.find(x => x.Id === ubicacion_).Nombre);
+        } else {
+          this.Ubicaciones = undefined;
+        }
+      });
+    }
+  }
+
 
   displayedColumns = [
     'TipoBienId',

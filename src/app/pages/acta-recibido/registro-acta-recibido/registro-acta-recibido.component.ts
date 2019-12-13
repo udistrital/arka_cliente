@@ -29,10 +29,7 @@ import { ListService } from '../../../@core/store/services/list.service';
 import { PopUpManager } from '../../../managers/popUpManager';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { DocumentoService } from '../../../@core/data/documento.service';
-
-
-
-
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'ngx-registro-acta-recibido',
@@ -93,8 +90,6 @@ export class RegistroActaRecibidoComponent implements OnInit {
   Nombre: any;
   Validador: any;
 
-
-
   constructor(
     private translate: TranslateService,
     private router: Router,
@@ -109,7 +104,6 @@ export class RegistroActaRecibidoComponent implements OnInit {
     private sanitization: DomSanitizer,
     private nuxeoService: NuxeoService,
     private documentoService: DocumentoService,
-
 
   ) {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
@@ -213,16 +207,28 @@ export class RegistroActaRecibidoComponent implements OnInit {
   onInputFileDocumento(event, index) {
     // console.log(event.target.files);
     // console.log(event.srcElement.files);
-
+    const max_size = 1;
     if (event.target.files.length > 0) {
       const file = event.target.files[0];
       if (file.type === 'application/pdf') {
-        file.urlTemp = URL.createObjectURL(event.srcElement.files[0]);
+
+        if (file.size < max_size * 1024000) {
+
+          file.urlTemp = URL.createObjectURL(event.srcElement.files[0]);
         file.url = this.cleanURL(file.urlTemp);
         file.IdDocumento = 13; // tipo de documento (API documentos_crud)
         file.file = event.target.files[0];
         this.fileDocumento[index] = file;
         this.Validador[index] = true;
+
+        } else {
+          (Swal as any).fire({
+            title: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.Tamaño_title'),
+            text: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.Tamaño_placeholder'),
+            type: 'warning',
+          });
+          this.Validador[index] = false;
+        }
         // console.log(file);
         // console.log(this.fileDocumento);
       } else {
@@ -260,7 +266,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
         Proveedor: [Soporte.Proveedor, Validators.required],
         Consecutivo: [Soporte.Consecutivo, Validators.required],
         Fecha_Factura: [Soporte.Fecha_Factura, Validators.required],
-        Soporte: ['', Validators.required],
+        Soporte: [Soporte.Soporte, Validators.required],
       });
       Form2.push(Formulario__2);
     }
@@ -337,9 +343,9 @@ export class RegistroActaRecibidoComponent implements OnInit {
     this.selected.setValue(i - 1);
 
   }
-  postSoporteNuxeo(files: any) {
+  async postSoporteNuxeo(files: any) {
     // console.log(files);
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
       files.forEach((file) => {
         // console.log(file);
         file.Id = file.nombre;
@@ -348,16 +354,17 @@ export class RegistroActaRecibidoComponent implements OnInit {
         file.key = 'soporte_' + file.IdDocumento;
       });
       // console.log(files);
-      this.nuxeoService.getDocumentos$(files, this.documentoService)
+      await this.nuxeoService.getDocumentos$(files, this.documentoService)
         .subscribe(response => {
           // console.log('response', response);
           if (Object.keys(response).length === files.length) {
             // console.log('response', response);
-            files.forEach((file) => {
-              this.uidDocumento.push(file.uid);
-              this.idDocumento.push(response[file.key].Id);
+            files.forEach((file, index) => {
+              this.uidDocumento[index] = file.uid;
+              this.idDocumento[index] = response[file.key].Id;
+              console.log(this.idDocumento);
+              resolve(response[file.key].Id);
             });
-            resolve(true);
           }
         }, error => {
           reject(error);
@@ -389,7 +396,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
     Transaccion_Acta.UltimoEstado = this.Registrar_Estado_Acta(Transaccion_Acta.ActaRecibido, 2);
     const Soportes = new Array<TransaccionSoporteActa>();
     this.Datos.Formulario2.forEach((soporte, index) => {
-      Soportes.push(this.Registrar_Soporte(soporte, this.Elementos__Soporte[index], Transaccion_Acta.ActaRecibido, this.idDocumento[index]));
+      Soportes.push(this.Registrar_Soporte(soporte, this.Elementos__Soporte[index], Transaccion_Acta.ActaRecibido, index));
 
     });
     Transaccion_Acta.SoportesActa = Soportes;
@@ -406,6 +413,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
             text: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.Acta') +
               `${res.ActaRecibido.Id}` + this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.Registrada'),
           });
+          this.router.navigate(['/pages/acta_recibido/consulta_acta_recibido']);
         } else {
           (Swal as any).fire({
             type: 'error',
@@ -450,7 +458,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
 
     return Historico_;
   }
-  Registrar_Soporte(Datos: any, Elementos_: any, Acta: ActaRecibido, Documento: number): TransaccionSoporteActa {
+  Registrar_Soporte(Datos: any, Elementos_: any, Acta: ActaRecibido, index: number): TransaccionSoporteActa {
 
     const Soporte_Acta = new SoporteActa();
     const Transaccion = new TransaccionSoporteActa();
@@ -459,13 +467,15 @@ export class RegistroActaRecibidoComponent implements OnInit {
     Soporte_Acta.Id = null;
     Soporte_Acta.ActaRecibidoId = Acta;
     Soporte_Acta.Activo = true;
-    Soporte_Acta.DocumentoId = Documento;
     Soporte_Acta.Consecutivo = Datos.Consecutivo;
     Soporte_Acta.FechaCreacion = new Date();
     Soporte_Acta.FechaModificacion = new Date();
     Soporte_Acta.FechaSoporte = Datos.Fecha_Factura;
     Soporte_Acta.ProveedorId = this.Proveedores.find(proveedor => proveedor.NumDocumento.toString() === proveedor___[0].toString()).Id;
+    
+    Soporte_Acta.DocumentoId = this.idDocumento[index];
 
+    console.log(Soporte_Acta.DocumentoId);
     Transaccion.SoporteActa = Soporte_Acta;
     Transaccion.Elementos = this.Registrar_Elementos(Elementos_, Soporte_Acta);
     return Transaccion;
@@ -607,9 +617,9 @@ export class RegistroActaRecibidoComponent implements OnInit {
         if (!this.validador) {
           sessionStorage.removeItem('Formulario_Registro');
           sessionStorage.removeItem('Elementos_Formulario_Registro');
-          this.router.navigateByUrl('/RefreshComponent', { skipLocationChange: true }).then(() => {
-            // this.router.navigate(['/pages/acta_recibido/consulta_acta_recibido']);
-          });
+          // this.router.navigateByUrl('/RefreshComponent', { skipLocationChange: true }).then(() => {
+          //   this.router.navigate(['/pages/acta_recibido/consulta_acta_recibido']);
+          // });
         }
 
       }

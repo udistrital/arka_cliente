@@ -50,9 +50,11 @@ export class ConsultaActaRecibidoComponent implements OnInit {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
       this.cargarCampos();
     });
+
     this.cargarCampos();
     this.source = new LocalDataSource(); // create the source
     this.actas = new Array<ConsultaActaRecibido>();
+    this.loadLists();
 
   }
   initialiseInvites() {
@@ -61,9 +63,9 @@ export class ConsultaActaRecibidoComponent implements OnInit {
     this.actaSeleccionada = '';
     this.estadoActaSeleccionada = '';
     this.accion = '';
+    console.log('1')
   }
   ngOnInit() {
-    this.loadLists();
   }
 
   public loadLists() {
@@ -77,6 +79,7 @@ export class ConsultaActaRecibidoComponent implements OnInit {
         }
       },
     );
+
   }
 
   cargarCampos() {
@@ -251,12 +254,14 @@ export class ConsultaActaRecibidoComponent implements OnInit {
     this.actaSeleccionada = `${event.data.Id}`;
     this.estadoActaSeleccionada = "Ver";
     this.accion = "Ver";
+    console.log('1')
   }
 
   onBack() {
     this.actaSeleccionada = '';
     this.estadoActaSeleccionada = '';
     this.accion = '';
+    console.log('1')
   }
 
   loadActas(res: any): void {
@@ -284,10 +289,10 @@ export class ConsultaActaRecibidoComponent implements OnInit {
         }
       }
       this.source.load(this.actas);
-      this.actaSeleccionada = '';
+      console.log('1')
     } else {
       this.source.load([]);
-      this.actaSeleccionada = '';
+      console.log('1')
     }
   }
 }
