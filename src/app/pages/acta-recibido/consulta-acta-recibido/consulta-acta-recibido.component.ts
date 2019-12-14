@@ -63,7 +63,7 @@ export class ConsultaActaRecibidoComponent implements OnInit {
     this.actaSeleccionada = '';
     this.estadoActaSeleccionada = '';
     this.accion = '';
-    console.log('1')
+    // console.log('1')
   }
   ngOnInit() {
   }
@@ -204,31 +204,31 @@ export class ConsultaActaRecibidoComponent implements OnInit {
   }
 
   onEdit(event): void {
-    console.log(event.data)
+    // console.log(event.data)
     switch (event.data.Estado.toString()) {
       case 'Registrada': {
 
         this.actaSeleccionada = `${event.data.Id}`;
         this.estadoActaSeleccionada = `${event.data.Estado}`;
-        this.accion = "";
+        this.accion = '';
         break;
       }
       case 'En Elaboracion': {
         this.actaSeleccionada = `${event.data.Id}`;
         this.estadoActaSeleccionada = `${event.data.Estado}`;
-        this.accion = "";
+        this.accion = '';
         break;
       }
       case 'En Modificacion': {
         this.actaSeleccionada = `${event.data.Id}`;
         this.estadoActaSeleccionada = `${event.data.Estado}`;
-        this.accion = "";
+        this.accion = '';
         break;
       }
       case 'En verificacion': {
         this.actaSeleccionada = `${event.data.Id}`;
         this.estadoActaSeleccionada = `${event.data.Estado}`;
-        this.accion = "";
+        this.accion = '';
         break;
       }
 
@@ -243,25 +243,25 @@ export class ConsultaActaRecibidoComponent implements OnInit {
     }
   }
   itemselec(event): void {
-    // console.log("afssaf");
+    // console.log('afssaf');
   }
   onCreate(event): void {
     this.router.navigate(['/pages/acta_recibido/registro_acta_recibido']);
   }
 
   onDelete(event): void {
-    console.log(event.data.Estado)
+    // console.log(event.data.Estado)
     this.actaSeleccionada = `${event.data.Id}`;
-    this.estadoActaSeleccionada = "Ver";
-    this.accion = "Ver";
-    console.log('1')
+    this.estadoActaSeleccionada = 'Ver';
+    this.accion = 'Ver';
+    // console.log('1')
   }
 
   onBack() {
     this.actaSeleccionada = '';
     this.estadoActaSeleccionada = '';
     this.accion = '';
-    console.log('1')
+    // console.log('1')
   }
 
   loadActas(res: any): void {
@@ -289,10 +289,10 @@ export class ConsultaActaRecibidoComponent implements OnInit {
         }
       }
       this.source.load(this.actas);
-      console.log('1')
+      // console.log('1')
     } else {
       this.source.load([]);
-      console.log('1')
+      // console.log('1')
     }
   }
 }

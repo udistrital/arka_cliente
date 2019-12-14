@@ -71,10 +71,10 @@ export class EdicionActaRecibidoComponent implements OnInit {
   set name2(id: any) {
     if (id !== '') {
       this._Acta_Id = id;
-      console.log('ok');
+      // console.log('ok');
       this.loadLists();
     }
-    console.log(this._Acta_Id);
+    // console.log(this._Acta_Id);
 
   }
   Estados_Acta: any;
@@ -215,12 +215,12 @@ export class EdicionActaRecibidoComponent implements OnInit {
           this.Tarifas_Iva !== undefined && this.Proveedores !== undefined &&
           this.Dependencias !== undefined && this.Sedes !== undefined &&
           this._Acta_Id !== undefined) {
-          console.log(this._Acta_Id);
+          // console.log(this._Acta_Id);
           this.Actas_Recibido.getTransaccionActa(this._Acta_Id).subscribe(Acta => {
-            console.log(Acta);
+            // console.log(Acta);
             this.Cargar_Formularios(Acta[0]);
-            console.log('ok');
-          })
+            // console.log('ok');
+          });
         }
       },
     );
@@ -332,13 +332,13 @@ export class EdicionActaRecibidoComponent implements OnInit {
 
   async Traer_Sede_Dependencia(id) {
     await this.Actas_Recibido.getSedeDependencia(id).subscribe(res => {
-      console.log(res);
+      // console.log(res);
       const valor = res[0].EspacioFisicoId.Codigo.substring(0, 4);
-      console.log(valor);
-      const Sede = this.Sedes.find(x => x.Codigo === valor.toString()).Id
-      const Dependencia = res[0].DependenciaId.Id;
-      console.log(Sede, Dependencia);
-      return [Sede, Dependencia];
+      // console.log(valor);
+      const Sede = this.Sedes.find(x => x.Codigo === valor.toString()).Id;
+      const _Dependencia = res[0].DependenciaId.Id;
+      // console.log(Sede, Dependencia);
+      return [Sede, _Dependencia];
     });
   }
   Traer_Relacion_Ubicaciones() {
@@ -458,7 +458,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
           file.url = this.cleanURL(file.urlTemp);
           file.IdDocumento = 13; // tipo de documento (API documentos_crud)
           file.file = event.target.files[0];
-          (this.firstForm.get('Formulario2') as FormArray).at(index).get('Soporte').setValue(file.name)
+          (this.firstForm.get('Formulario2') as FormArray).at(index).get('Soporte').setValue(file.name);
           this.fileDocumento[index] = file;
           this.Validador[index] = true;
           this.uidDocumento[index] = undefined;
@@ -481,7 +481,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
     }
   }
   clearFile(index) {
-    (this.firstForm.get('Formulario2') as FormArray).at(index).get('Soporte').setValue('')
+    (this.firstForm.get('Formulario2') as FormArray).at(index).get('Soporte').setValue('');
     this.fileDocumento[index] = undefined;
     this.Validador[index] = undefined;
     this.uidDocumento[index] = undefined;
@@ -525,7 +525,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
               if (file !== undefined) {
                 this.uidDocumento[index] = file.uid;
                 this.idDocumento[index] = response[file.key].Id;
-                console.log(this.idDocumento);
+                // console.log(this.idDocumento);
                 resolve(response[file.key].Id);
               } else {
                 resolve(this.idDocumento[index]);

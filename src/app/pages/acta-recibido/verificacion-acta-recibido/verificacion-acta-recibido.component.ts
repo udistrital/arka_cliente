@@ -123,24 +123,24 @@ export class VerificacionActaRecibidoComponent implements OnInit {
         this.Dependencias = list.listDependencias[0];
         // this.Ubicaciones = list.listUbicaciones[0];
         this.Sedes = list.listSedes[0];
-        console.log(this.Proveedores)
+        // console.log(this.Proveedores)
         // this.dataService = this.completerService.local(this.Ubicaciones, 'Nombre', 'Nombre');
         if (this.Estados_Acta !== undefined && this.Estados_Elemento !== undefined &&
           this.Tipos_Bien !== undefined && this.Unidades !== undefined &&
           this.Tarifas_Iva !== undefined && this.Proveedores !== undefined &&
           this.Dependencias !== undefined && this.Sedes !== undefined &&
           this._ActaId !== undefined) {
-          console.log(this._ActaId);
+          // console.log(this._ActaId);
           this.Actas_Recibido.getTransaccionActa(this._ActaId).subscribe(Acta => {
-            console.log(Acta);
+            // console.log(Acta);
             this.Cargar_Formularios(Acta[0]);
-            console.log('ok');
-          })
+            // console.log('ok');
+          });
         }
       },
     );
   }
-  
+
   T_V(valor: string): string {
     return this.cp.transform(valor);
   }
@@ -149,7 +149,7 @@ export class VerificacionActaRecibidoComponent implements OnInit {
       const valor = res[0].EspacioFisicoId.Codigo.substring(0, 4);
       this.Acta = transaccion_;
 
-      console.log(this.Proveedores);
+      // console.log(this.Proveedores);
 
       const Form2 = this.fb.array([]);
 
@@ -207,7 +207,7 @@ export class VerificacionActaRecibidoComponent implements OnInit {
           Datos_Adicionales: [transaccion_.ActaRecibido.Observaciones],
         }),
       });
-      this.Traer_Relacion_Ubicaciones(valor, res[0].DependenciaId.Id,transaccion_.ActaRecibido.UbicacionId);
+      this.Traer_Relacion_Ubicaciones(valor, res[0].DependenciaId.Id, transaccion_.ActaRecibido.UbicacionId);
       this.carga_agregada = true;
 
     });
@@ -218,10 +218,10 @@ export class VerificacionActaRecibidoComponent implements OnInit {
     const transaccion: any = {};
     transaccion.Sede = this.Sedes.find((x) => x.Codigo === sede_.toString());
     transaccion.Dependencia = this.Dependencias.find((x) => x.Id === dependencia_);
-    console.log(this.Sedes);
+    // console.log(this.Sedes);
     if (transaccion.Sede !== undefined && transaccion.Dependencia !== undefined) {
       this.Actas_Recibido.postRelacionSedeDependencia(transaccion).subscribe((res: any) => {
-        console.log(res)
+        // console.log(res)
         if (Object.keys(res[0]).length !== 0) {
           this.Ubicaciones = res[0].Relaciones;
           this.firstForm.get('Formulario1').get('Ubicacion').setValue(
@@ -234,8 +234,8 @@ export class VerificacionActaRecibidoComponent implements OnInit {
   }
   downloadFile(index: any) {
 
-    const id_documento = (this.firstForm.get('Formulario2') as FormArray).at(index).get('Soporte').value
-    
+    const id_documento = (this.firstForm.get('Formulario2') as FormArray).at(index).get('Soporte').value;
+
     const filesToGet = [
       {
         Id: id_documento,

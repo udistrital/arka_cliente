@@ -238,7 +238,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
     }
   }
   clearFile(index) {
-    (this.firstForm.get('Formulario2') as FormArray).at(index).get('Soporte').setValue('')
+    (this.firstForm.get('Formulario2') as FormArray).at(index).get('Soporte').setValue('');
     this.fileDocumento[index] = undefined;
     this.Validador[index] = undefined;
   }
@@ -362,7 +362,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
             files.forEach((file, index) => {
               this.uidDocumento[index] = file.uid;
               this.idDocumento[index] = response[file.key].Id;
-              console.log(this.idDocumento);
+              // console.log(this.idDocumento);
               resolve(response[file.key].Id);
             });
           }
@@ -472,10 +472,10 @@ export class RegistroActaRecibidoComponent implements OnInit {
     Soporte_Acta.FechaModificacion = new Date();
     Soporte_Acta.FechaSoporte = Datos.Fecha_Factura;
     Soporte_Acta.ProveedorId = this.Proveedores.find(proveedor => proveedor.NumDocumento.toString() === proveedor___[0].toString()).Id;
-    
+
     Soporte_Acta.DocumentoId = this.idDocumento[index];
 
-    console.log(Soporte_Acta.DocumentoId);
+    // console.log(Soporte_Acta.DocumentoId);
     Transaccion.SoporteActa = Soporte_Acta;
     Transaccion.Elementos = this.Registrar_Elementos(Elementos_, Soporte_Acta);
     return Transaccion;
