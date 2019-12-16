@@ -6,6 +6,7 @@ import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoH
 import { Proveedor } from '../../../@core/data/models/acta_recibido/Proveedor';
 import { Observable } from 'rxjs';
 import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/catalogoElementosHelper';
+import { Impuesto } from '../../data/models/acta_recibido/elemento';
 @Injectable()
 export class ListService {
 
@@ -225,6 +226,17 @@ export class ListService {
             .subscribe(
               (res: any[]) => {
 
+                for (const index in res) {
+                  if (res.hasOwnProperty(index)) {
+                    for (const index2 in res[index].IVA) {
+                      if (true) {
+                        res[index].IVA[index2].Nombre = res[index].IVA[index2].Tarifa.toString() + '% ' +
+                        res[index].IVA[index2].ImpuestoId.CodigoAbreviacion;
+                      }
+                    }
+                    // console.log(res[index].IVA)
+                  }
+                }
                 this.addList(REDUCER_LIST.IVA, res[0].IVA);
               },
               error => {
@@ -235,6 +247,67 @@ export class ListService {
       },
     );
   }
+
+
+  public findSubgruposConsumo() {
+
+    this.store.select(REDUCER_LIST.Consumo).subscribe(
+      (list: any) => {
+        if (!list || list.length === 0) {
+          this.CatalogoElementos.getSubgrupoTipoBien(1)
+            .subscribe(
+              (res: any[]) => {
+                // console.log(res)
+                this.addList(REDUCER_LIST.Consumo, res);
+              },
+              error => {
+                this.addList(REDUCER_LIST.Consumo, []);
+              },
+            );
+        }
+      },
+    );
+  }
+  public findSubgruposConsumoControlado() {
+
+    this.store.select(REDUCER_LIST.ConsumoControlado).subscribe(
+      (list: any) => {
+        if (!list || list.length === 0) {
+          this.CatalogoElementos.getSubgrupoTipoBien(2)
+            .subscribe(
+              (res: any[]) => {
+                // console.log(res)
+                this.addList(REDUCER_LIST.ConsumoControlado, res);
+              },
+              error => {
+                this.addList(REDUCER_LIST.ConsumoControlado, []);
+              },
+            );
+        }
+      },
+    );
+  }
+  public findSubgruposDevolutivo() {
+
+    this.store.select(REDUCER_LIST.Devolutivo).subscribe(
+      (list: any) => {
+        if (!list || list.length === 0) {
+          this.CatalogoElementos.getSubgrupoTipoBien(3)
+            .subscribe(
+              (res: any[]) => {
+                // console.log(res)
+
+                this.addList(REDUCER_LIST.Devolutivo, res);
+              },
+              error => {
+                this.addList(REDUCER_LIST.Devolutivo, []);
+              },
+            );
+        }
+      },
+    );
+  }
+
 
   private addList(type: string, object: Array<any>) {
     this.store.dispatch({

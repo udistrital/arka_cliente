@@ -33,6 +33,10 @@ export class ListCatalogoComponent implements OnInit {
 
   cargarCampos() {
     this.settings = {
+      actions: {
+        position: 'right',
+        columnTitle: this.translate.instant('GLOBAL.Acciones'),
+      },
       add: {
         addButtonContent: '<i class="nb-plus"></i>',
         createButtonContent: '<i class="nb-checkmark"></i>',

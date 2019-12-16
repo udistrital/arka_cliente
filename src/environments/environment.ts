@@ -30,8 +30,10 @@ export const environment = {
   // ARKA_SERVICE: 'http://localhost:8084/v1/',
   UNIDADES_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/administrativa_amazon_api/v1/',
   MOVIMIENTOS_ARKA_SERVICE: 'http://10.20.2.134:8090/v1/',
-  CATALOGO_BIENES_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/catalogo_elementos_crud/v1/',
-  CATALOGO_ELEMENTOS_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/catalogo_elementos_crud/v1/',
+  // CATALOGO_BIENES_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/catalogo_elementos_crud/v1/',
+  // CATALOGO_ELEMENTOS_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/catalogo_elementos_crud/v1/',
+  CATALOGO_BIENES_SERVICE: 'http://10.20.2.143:8087/v1/',
+  CATALOGO_ELEMENTOS_SERVICE: 'http://10.20.2.143:8087/v1/',
   SPAGOBI: {
     PROTOCOL: 'https',
     HOST: 'intelligentia.udistrital.edu.co',
