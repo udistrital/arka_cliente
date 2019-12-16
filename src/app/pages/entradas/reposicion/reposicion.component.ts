@@ -17,10 +17,10 @@ export class ReposicionComponent implements OnInit {
    // elementos
    elementos: Array<Elemento>;
    placa: string;
-   placas: Array<string>
+   placas: Array<string>;
 
    @Input() actaRecibidoId: string;
-   
+
   constructor(private fb: FormBuilder, private  actashelper: ActaRecibidoHelper) { 
     this.elementos = new Array<Elemento>();
 
@@ -50,18 +50,18 @@ export class ReposicionComponent implements OnInit {
   }
 
   loadPlacasElementos(): void {
-    if (this.placa.length >3) {
-      console.log("exito")
+    if (this.placa.length > 3) {
+
       this.actashelper.getElementos().subscribe(res => {
         if (res !== null) {
-          console.log(res)
+          // console.log(res)
           while (this.elementos.length > 0) {
             this.elementos.pop();
-          }          
-          for (const index of Object.keys(res)) {            
-            if (res[index].Placa.includes(this.placa)){
-              console.log(" placa ", res[index].Placa)
-              this.elementos.push(res[index].Placa)
+          }
+          for (const index of Object.keys(res)) {
+            if (res[index].Placa.includes(this.placa)) {
+             // console.log(" placa ", res[index].Placa)
+              this.elementos.push(res[index].Placa);
             }
           }
         }
@@ -71,12 +71,12 @@ export class ReposicionComponent implements OnInit {
   }
 
   changePlacaElemento(event) {
- 
+
     this.placa = event.target.value;
-    console.log(this.placa);
-    console.log(this.placa.length );
+    // console.log(this.placa);
+    // console.log(this.placa.length );
     this.loadPlacasElementos();
-    
+
   }
 
 }

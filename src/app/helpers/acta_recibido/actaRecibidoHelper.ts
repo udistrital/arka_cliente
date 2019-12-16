@@ -368,7 +368,7 @@ export class ActaRecibidoHelper {
         );
     }
 
-    /** 
+    /**
      * Elementos get
      * Conversion Archivo Post
      * If the response has errors in the OAS API it should show a popup message with an error.
@@ -389,7 +389,7 @@ export class ActaRecibidoHelper {
         ),
     );
 }
-  
+
 
 
 

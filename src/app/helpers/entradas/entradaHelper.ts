@@ -226,5 +226,5 @@ export class EntradaHelper {
     }
 
 
-  
+
 }
