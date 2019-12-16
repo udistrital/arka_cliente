@@ -21,7 +21,7 @@ export class ReposicionComponent implements OnInit {
 
    @Input() actaRecibidoId: string;
 
-  constructor(private fb: FormBuilder, private  actashelper: ActaRecibidoHelper) { 
+  constructor(private fb: FormBuilder, private  actashelper: ActaRecibidoHelper) {
     this.elementos = new Array<Elemento>();
 
   }
