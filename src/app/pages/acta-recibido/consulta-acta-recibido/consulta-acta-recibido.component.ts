@@ -10,6 +10,10 @@ import { stringify } from '@angular/compiler/src/util';
 import { Ubicacion } from '../../../@core/data/models/acta_recibido/soporte_acta';
 import { Subscription, combineLatest, empty } from 'rxjs';
 import Swal from 'sweetalert2';
+import { Store } from '@ngrx/store';
+import { IAppState } from '../../../@core/store/app.state';
+import { ListService } from '../../../@core/store/services/list.service';
+
 @Component({
   selector: 'ngx-consulta-acta-recibido',
   templateUrl: './consulta-acta-recibido.component.html',
@@ -21,7 +25,7 @@ export class ConsultaActaRecibidoComponent implements OnInit {
   estadoActaSeleccionada: string;
   source: LocalDataSource;
   actas: Array<ConsultaActaRecibido>;
-  Ubicaciones: Array<Ubicacion>;
+  Ubicaciones: any;
   navigationSubscription;
 
   settings: any;
@@ -31,7 +35,11 @@ export class ConsultaActaRecibidoComponent implements OnInit {
   constructor(private translate: TranslateService,
     private router: Router,
     private actaRecibidoHelper: ActaRecibidoHelper,
+    private store: Store<IAppState>,
+    private listService: ListService,
     private pUpManager: PopUpManager) {
+    this.listService.findUbicaciones();
+    this.Ubicaciones = {};
     this.navigationSubscription = this.router.events.subscribe((e: any) => {
       // If it is a NavigationEnd event re-initalise the component
       if (e instanceof NavigationEnd) {
@@ -42,9 +50,12 @@ export class ConsultaActaRecibidoComponent implements OnInit {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
       this.cargarCampos();
     });
+
     this.cargarCampos();
     this.source = new LocalDataSource(); // create the source
     this.actas = new Array<ConsultaActaRecibido>();
+    this.loadLists();
+
   }
   initialiseInvites() {
     // Set default values and re-fetch any data you need.
@@ -52,58 +63,47 @@ export class ConsultaActaRecibidoComponent implements OnInit {
     this.actaSeleccionada = '';
     this.estadoActaSeleccionada = '';
     this.accion = '';
-
+    // console.log('1')
   }
   ngOnInit() {
-    const observable = combineLatest([
-      this.actaRecibidoHelper.getParametrosSoporte(),
-      this.actaRecibidoHelper.getActasRecibido2(),
-    ]);
-    observable.subscribe(([parametros, actas]) => {
-      this.Traer_Ubicaciones(parametros[0].Ubicaciones);
-      this.loadActas(actas);
-    });
+  }
 
+  public loadLists() {
+    this.store.select((state) => state).subscribe(
+      (list) => {
+        this.Ubicaciones = list.listUbicaciones[0];
+        if (this.Ubicaciones !== undefined) {
+          this.actaRecibidoHelper.getActasRecibido2().subscribe(res => {
+            this.loadActas(res);
+          });
+        }
+      },
+    );
 
   }
-  Traer_Ubicaciones(res: any) {
-    this.Ubicaciones = new Array<Ubicacion>();
-    for (const index in res) {
-      if (res.hasOwnProperty(index)) {
-        const ubicacion = new Ubicacion;
-        ubicacion.Id = res[index].Id;
-        ubicacion.Codigo = res[index].Codigo;
-        ubicacion.Estado = res[index].Estado;
-        ubicacion.Nombre = res[index].Nombre;
-        this.Ubicaciones.push(ubicacion);
-      }
-    }
-  }
+
   cargarCampos() {
 
     this.settings = {
       noDataMessage: 'No se encontraron elementos asociados.',
       actions: {
         columnTitle: 'Acciones',
-        custom: [
-          {
-            name: 'Ver',
-            title: '<i class="fas fa-eye"></i>',
-          },
-          {
-            name: 'Editar',
-            title: '<i class="fas fa-pencil-alt"></i>',
-          },
-          {
-            name: 'Verificar',
-            title: '<i class="fas fa-play"></i>',
-          },
-        ],
         position: 'right',
-        add: false,
-        edit: false,
-        delete: false,
       },
+      add: {
+        addButtonContent: '<i class="nb-plus"></i>',
+        createButtonContent: '<i class="nb-checkmark"></i>',
+        cancelButtonContent: '<i class="nb-close"></i>',
+      },
+      edit: {
+        editButtonContent: '<i class="fas fa-pencil-alt"></i>',
+        saveButtonContent: '<i class="nb-checkmark"></i>',
+        cancelButtonContent: '<i class="nb-close"></i>',
+      },
+      delete: {
+        deleteButtonContent: '<i class="fas fa-eye"></i>',
+      },
+      mode: 'external',
       columns: {
         Id: {
           title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.ConsecutivoHeader'),
@@ -202,268 +202,36 @@ export class ConsultaActaRecibidoComponent implements OnInit {
       },
     };
   }
-  onCustom(event: any) {
-    // // console.log(event.data);
+
+  onEdit(event): void {
+    // console.log(event.data)
     switch (event.data.Estado.toString()) {
       case 'Registrada': {
-        switch (event.action.toString()) {
-          case 'Ver': {
-            this.actaSeleccionada = `${event.data.Id}`;
-            this.estadoActaSeleccionada = `${event.data.Estado}`;
-            this.accion = `${event.action}`;
-            // // console.log(this.accion);
-            // // console.log(this.actaSeleccionada);
-            break;
-          }
-          case 'Editar': {
-            this.actaSeleccionada = `${event.data.Id}`;
-            this.estadoActaSeleccionada = `${event.data.Estado}`;
-            this.accion = `${event.action}`;
-            // console.log(this.accion);
-            // console.log(this.actaSeleccionada);
-            break;
-          }
-          case 'Verificar': {
-            this.actaSeleccionada = `${event.data.Id}`;
-            this.estadoActaSeleccionada = `${event.data.Estado}`;
-            this.accion = `${event.action}`;
-            // console.log(this.accion);
-            // console.log(this.actaSeleccionada);
-            break;
-          }
-          default: {
-            (Swal as any).fire({
-              type: 'warning',
-              title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.OpcionNoValida'),
-              text: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.OpcionNoValida2'),
-            });
-            // console.log('default');
-            break;
-          }
-        }
+
+        this.actaSeleccionada = `${event.data.Id}`;
+        this.estadoActaSeleccionada = `${event.data.Estado}`;
+        this.accion = '';
         break;
       }
       case 'En Elaboracion': {
-        switch (event.action.toString()) {
-          case 'Ver': {
-            this.actaSeleccionada = `${event.data.Id}`;
-            this.estadoActaSeleccionada = `${event.data.Estado}`;
-            this.accion = `${event.action}`;
-            // console.log(this.accion);
-            // console.log(this.actaSeleccionada);
-            break;
-          }
-          case 'Editar': {
-            this.actaSeleccionada = `${event.data.Id}`;
-            this.estadoActaSeleccionada = `${event.data.Estado}`;
-            this.accion = `${event.action}`;
-            // console.log(this.accion);
-            // console.log(this.actaSeleccionada);
-            break;
-          }
-          case 'Verificar': {
-            this.actaSeleccionada = `${event.data.Id}`;
-            this.estadoActaSeleccionada = `${event.data.Estado}`;
-            this.accion = `${event.action}`;
-            // console.log(this.accion);
-            // console.log(this.actaSeleccionada);
-            break;
-          }
-          default: {
-            (Swal as any).fire({
-              type: 'warning',
-              title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.OpcionNoValida'),
-              text: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.OpcionNoValida2'),
-            });
-            // console.log('default');
-            break;
-          }
-        }
+        this.actaSeleccionada = `${event.data.Id}`;
+        this.estadoActaSeleccionada = `${event.data.Estado}`;
+        this.accion = '';
         break;
       }
       case 'En Modificacion': {
-        switch (event.action.toString()) {
-          case 'Ver': {
-            this.actaSeleccionada = `${event.data.Id}`;
-            this.estadoActaSeleccionada = `${event.data.Estado}`;
-            this.accion = `${event.action}`;
-            // console.log(this.accion);
-            // console.log(this.actaSeleccionada);
-            break;
-          }
-          case 'Editar': {
-            this.actaSeleccionada = `${event.data.Id}`;
-            this.estadoActaSeleccionada = `${event.data.Estado}`;
-            this.accion = `${event.action}`;
-            // console.log(this.accion);
-            // console.log(this.actaSeleccionada);
-            break;
-          }
-          case 'Verificar': {
-            this.actaSeleccionada = `${event.data.Id}`;
-            this.estadoActaSeleccionada = `${event.data.Estado}`;
-            this.accion = `${event.action}`;
-            // console.log(this.accion);
-            // console.log(this.actaSeleccionada);
-            break;
-          }
-          default: {
-            (Swal as any).fire({
-              type: 'warning',
-              title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.OpcionNoValida'),
-              text: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.OpcionNoValida2'),
-            });
-            // console.log('default');
-            break;
-          }
-        }
-        break;
-      }
-      case 'Aceptada': {
-        switch (event.action.toString()) {
-          case 'Ver': {
-            this.actaSeleccionada = `${event.data.Id}`;
-            this.estadoActaSeleccionada = `${event.data.Estado}`;
-            this.accion = `${event.action}`;
-            // console.log(this.accion);
-            // console.log(this.actaSeleccionada);
-            break;
-          }
-          case 'Editar': {
-            (Swal as any).fire({
-              type: 'warning',
-              title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.OpcionNoValida'),
-              text: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.OpcionNoValida2'),
-            });
-            break;
-          }
-          case 'Verificar': {
-            (Swal as any).fire({
-              type: 'warning',
-              title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.OpcionNoValida'),
-              text: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.OpcionNoValida2'),
-            });
-            break;
-          }
-          default: {
-            (Swal as any).fire({
-              type: 'warning',
-              title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.OpcionNoValida'),
-              text: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.OpcionNoValida2'),
-            });
-            break;
-          }
-        }
-        break;
-      }
-      case 'Asociada a Entrada': {
-        switch (event.action.toString()) {
-          case 'Ver': {
-            this.actaSeleccionada = `${event.data.Id}`;
-            this.estadoActaSeleccionada = `${event.data.Estado}`;
-            this.accion = `${event.action}`;
-            // console.log(this.accion);
-            // console.log(this.actaSeleccionada);
-            break;
-          }
-          case 'Editar': {
-            (Swal as any).fire({
-              type: 'warning',
-              title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.OpcionNoValida'),
-              text: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.OpcionNoValida2'),
-            });
-            break;
-          }
-          case 'Verificar': {
-            (Swal as any).fire({
-              type: 'warning',
-              title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.OpcionNoValida'),
-              text: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.OpcionNoValida2'),
-            });
-            break;
-          }
-          default: {
-            (Swal as any).fire({
-              type: 'warning',
-              title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.OpcionNoValida'),
-              text: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.OpcionNoValida2'),
-            });
-            break;
-          }
-        }
+        this.actaSeleccionada = `${event.data.Id}`;
+        this.estadoActaSeleccionada = `${event.data.Estado}`;
+        this.accion = '';
         break;
       }
       case 'En verificacion': {
-        switch (event.action.toString()) {
-          case 'Ver': {
-            this.actaSeleccionada = `${event.data.Id}`;
-            this.estadoActaSeleccionada = `${event.data.Estado}`;
-            this.accion = `${event.action}`;
-            // console.log(this.accion);
-            // console.log(this.actaSeleccionada);
-            break;
-          }
-          case 'Editar': {
-            (Swal as any).fire({
-              type: 'warning',
-              title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.OpcionNoValida'),
-              text: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.OpcionNoValida2'),
-            });
-            break;
-          }
-          case 'Verificar': {
-            this.actaSeleccionada = `${event.data.Id}`;
-            this.estadoActaSeleccionada = `${event.data.Estado}`;
-            this.accion = `${event.action}`;
-            break;
-          }
-          default: {
-            (Swal as any).fire({
-              type: 'warning',
-              title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.OpcionNoValida'),
-              text: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.OpcionNoValida2'),
-            });
-            break;
-          }
-        }
+        this.actaSeleccionada = `${event.data.Id}`;
+        this.estadoActaSeleccionada = `${event.data.Estado}`;
+        this.accion = '';
         break;
       }
-      case 'Anulada': {
-        switch (event.action.toString()) {
-          case 'Ver': {
-            this.actaSeleccionada = `${event.data.Id}`;
-            this.estadoActaSeleccionada = `${event.data.Estado}`;
-            this.accion = `${event.action}`;
-            // console.log(this.accion);
-            break;
-          }
-          case 'Editar': {
-            (Swal as any).fire({
-              type: 'warning',
-              title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.OpcionNoValida'),
-              text: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.OpcionNoValida2'),
-            });
-            break;
-          }
-          case 'Verificar': {
-            (Swal as any).fire({
-              type: 'warning',
-              title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.OpcionNoValida'),
-              text: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.OpcionNoValida2'),
-            });
-            break;
-          }
-          default: {
-            (Swal as any).fire({
-              type: 'warning',
-              title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.OpcionNoValida'),
-              text: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.OpcionNoValida2'),
-            });
-            break;
-          }
-        }
-        break;
-      }
+
       default: {
         (Swal as any).fire({
           type: 'warning',
@@ -474,16 +242,30 @@ export class ConsultaActaRecibidoComponent implements OnInit {
       }
     }
   }
+  itemselec(event): void {
+    // console.log('afssaf');
+  }
+  onCreate(event): void {
+    this.router.navigate(['/pages/acta_recibido/registro_acta_recibido']);
+  }
+
+  onDelete(event): void {
+    // console.log(event.data.Estado)
+    this.actaSeleccionada = `${event.data.Id}`;
+    this.estadoActaSeleccionada = 'Ver';
+    this.accion = 'Ver';
+    // console.log('1')
+  }
+
   onBack() {
     this.actaSeleccionada = '';
     this.estadoActaSeleccionada = '';
     this.accion = '';
-  }
-  onRegister() {
-    this.router.navigate(['/pages/acta_recibido/registro_acta_recibido']);
+    // console.log('1')
   }
 
   loadActas(res: any): void {
+    this.actas = new Array<ConsultaActaRecibido>();
     this.mostrar = true;
     if (res !== undefined && res !== []) {
       for (const index in res) {
@@ -493,7 +275,7 @@ export class ConsultaActaRecibidoComponent implements OnInit {
           if (ubicacion == null) {
             acta.UbicacionId = 'Ubicacion no Especificada';
           } else {
-            acta.UbicacionId = ubicacion.Nombre;
+            acta.UbicacionId = ubicacion.EspacioFisicoId.Nombre;
           }
           acta.Activo = res[index].ActaRecibidoId.Activo;
           acta.FechaCreacion = res[index].ActaRecibidoId.FechaCreacion;
@@ -507,10 +289,10 @@ export class ConsultaActaRecibidoComponent implements OnInit {
         }
       }
       this.source.load(this.actas);
-      this.actaSeleccionada = '';
+      // console.log('1')
     } else {
       this.source.load([]);
-      this.actaSeleccionada = '';
+      // console.log('1')
     }
   }
 }
