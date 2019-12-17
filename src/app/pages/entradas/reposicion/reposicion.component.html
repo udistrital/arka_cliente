@@ -1,4 +1,5 @@
-<h3 class="pt-4 pb-4">Entrada por Reposición</h3>
+<h3 class="pt-4 pb-2">{{'GLOBAL.entrada_reposicion' | translate}}</h3>
+<p class="font-weight-bold font-italic pb-2">{{'GLOBAL.acta_recibido' | translate}} # {{ actaRecibidoId }}</p>
 
 <!-- FORMULARIO -->
 <nb-stepper #stepper orientation="horizontal">
@@ -11,9 +12,12 @@
         <div class="form-group col-sm">
           <label>Placa Hurtada</label>
           <div class="input-group">
-            <input type="text" placeholder="Placa Elemento Hurtado" class="form-control" formControlName="elementoCtrl"
-              [ngClass]="{'form-control-danger': elementoForm.invalid && (elementoForm.dirty || elementoForm.touched)}" />
+            <input type="text" placeholder="Placa Elemento Hurtado" class="form-control" formControlName="elementoCtrl" (input)="changePlacaElemento($event)"
+              [ngClass]="{'form-control-danger': elementoForm.invalid && (elementoForm.dirty || elementoForm.touched)}" list="elementosList" />
           </div>
+          <datalist id="elementosList">
+            <option *ngFor="let item of elementos" value='{{ item }}'></option>
+          </datalist>
         </div>
         <div class="form-group col-sm">
           <label>Encargado</label>
@@ -57,11 +61,12 @@
 
 </nb-stepper>
 
-<h5 class="pt-4">Elementos de Entrada</h5>
-<ngx-tabla-entradas></ngx-tabla-entradas>
+<h5 class="pt-4">{{'GLOBAL.elementos_entrada' | translate}}</h5>
+<ngx-tabla-entradas [actaRecibidoId]="actaRecibidoId"></ngx-tabla-entradas>
 
 <div class="justify-content-center float-right pt-4">
-  <button type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off">
-    Registrar Entrada
+  <button type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off"
+    [disabled]="!validar" (click)="onSubmit()">
+    {{'GLOBAL.registrar_entrada' | translate}}
   </button>
 </div>
