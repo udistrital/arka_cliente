@@ -18,6 +18,7 @@ export class ReposicionComponent implements OnInit {
    elementos: Array<Elemento>;
    placa: string;
    placas: Array<string>;
+   validar: boolean;
 
    @Input() actaRecibidoId: string;
 
@@ -48,6 +49,11 @@ export class ReposicionComponent implements OnInit {
   onSoporteSubmit() {
     this.soporteForm.markAsDirty();
   }
+
+  /**
+   * Método para enviar registro
+   */
+  onSubmit() {}
 
   loadPlacasElementos(): void {
     if (this.placa.length > 3) {
