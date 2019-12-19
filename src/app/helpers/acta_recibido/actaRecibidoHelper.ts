@@ -375,13 +375,13 @@ export class ActaRecibidoHelper {
      * If the response is successs, it returns the object's data.
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
     */
-   public getElementos() {
+   public getElementos(placa) {
     this.rqManager.setPath('ACTA_RECIBIDO_SERVICE');
-    return this.rqManager.get('elemento/?query=Activo:true&fields=Placa').pipe(
+    return this.rqManager.get('elemento/?query=Placa__contains:'+placa+',Activo:true&fields=Placa&limit=-1').pipe(
         map(
             (res) => {
                 if (res === 'error') {
-                    this.pUpManager.showErrorAlert('No se pudo consultar los contratos');
+                    this.pUpManager.showErrorAlert('No se pudo consultar los el elemento de esta placa');
                     return undefined;
                 }
                 return res;

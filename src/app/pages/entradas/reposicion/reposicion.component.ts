@@ -2,6 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Elemento } from '../../../@core/data/models/acta_recibido/elemento';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
+import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
 
 
 @Component({
@@ -15,14 +16,15 @@ export class ReposicionComponent implements OnInit {
   soporteForm: FormGroup;
   observacionForm: FormGroup;
    // elementos
-   elementos: Array<Elemento>;
+   elementos: any;
    placa: string;
+   encargado: string;
    placas: Array<string>;
 
    @Input() actaRecibidoId: string;
 
-  constructor(private fb: FormBuilder, private  actashelper: ActaRecibidoHelper) {
-    this.elementos = new Array<Elemento>();
+  constructor(private fb: FormBuilder, private  actashelper: ActaRecibidoHelper, private  entradashelper: EntradaHelper) {
+    this.elementos = [];
 
   }
 
@@ -30,6 +32,10 @@ export class ReposicionComponent implements OnInit {
     this.elementoForm = this.fb.group({
       elementoCtrl: ['', Validators.required],
       encargadoCtrl: ['', Validators.required],
+      placaHurtadaCtrl: ['', [
+        Validators.required,
+        Validators.pattern('^[0-9]{2,4}$')],
+      ],
     });
 
     this.soporteForm = this.fb.group({
@@ -51,32 +57,45 @@ export class ReposicionComponent implements OnInit {
 
   loadPlacasElementos(): void {
     if (this.placa.length > 3) {
-
-      this.actashelper.getElementos().subscribe(res => {
-        if (res !== null) {
-          // console.log(res)
+      this.actashelper.getElementos(this.placa).subscribe(res => {
+        if (res != null ) {
           while (this.elementos.length > 0) {
-            this.elementos.pop();
+            this.elementos.pop();            
           }
+          this.encargado=""
           for (const index of Object.keys(res)) {
-            if (res[index].Placa.includes(this.placa)) {
-             // console.log(" placa ", res[index].Placa)
-              this.elementos.push(res[index].Placa);
-            }
+            if(res[index].Placa != null){         
+              console.log(res)     
+              this.elementos.push(res[index].Placa);               
+            }            
           }
         }
       });
-
+      if(this.placa.length == 13){
+        this.loadEncargadoElementos(this.placa)
+      }
+      
     }
   }
 
   changePlacaElemento(event) {
-
     this.placa = event.target.value;
-    // console.log(this.placa);
-    // console.log(this.placa.length );
     this.loadPlacasElementos();
 
   }
+ 
+  loadEncargadoElementos(placa): void {  
+    console.log("entra a buscar encargado")    
+      this.entradashelper.getEncargadoElementoByPlaca(placa).subscribe(res => {
+        if (res != null && res!=undefined) {
+          console.log("entra aca ",res)
+          //encargado      
+          this.encargado= res.funcionario          
+        }else{
+          this.encargado= ""
+        }
+      });
 
+    
+  }
 }
