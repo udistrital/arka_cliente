@@ -1,4 +1,16 @@
-<nb-card *ngIf="dataSource">
+<nb-card>
+  <nb-card-header>
+    Registrar Elementos
+  </nb-card-header>
+  <ng2-smart-table [settings]="settings" [source]="source" (delete)="onDelete($event)" (rowSelect)="itemselec($event)"
+  (edit)="onEdit($event)" (create)="onCreate($event)">
+</ng2-smart-table>
+</nb-card>
+
+
+<ngx-form-elementos-seleccionados></ngx-form-elementos-seleccionados>
+
+<!-- <nb-card *ngIf="dataSource">
   <nb-card-header>{{'GLOBAL.Acta_Recibido.CapturarElementos.ArticulosRelacionadosTitle' | translate }}</nb-card-header>
   <nb-card-body>
 
@@ -7,7 +19,7 @@
     <div>
       <table mat-table #table [dataSource]="dataSource" matSort>
 
-        <!-- Tipo de Bien -->
+
         <ng-container matColumnDef="TipoBienId">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>
             {{'GLOBAL.Acta_Recibido.CapturarElementos.TipoBienHeader' | translate }} </th>
@@ -19,7 +31,6 @@
           
         </ng-container>
 
-        <!-- Subgrupo Catalogo -->
         <ng-container matColumnDef="SubgrupoCatalogoId">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>
             {{'GLOBAL.Acta_Recibido.CapturarElementos.SubgrupoHeader' | translate }} </th>
@@ -32,7 +43,7 @@
           
         </ng-container>
 
-        <!-- UnidadMedida Column -->
+
         <ng-container matColumnDef="SoporteActaId">
             <th mat-header-cell *matHeaderCellDef mat-sort-header>
                Soporte </th>
@@ -44,7 +55,6 @@
           
         </ng-container>
 
-        <!-- Nombre Catalogo -->
         <ng-container matColumnDef="Nombre">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>
             {{'GLOBAL.Acta_Recibido.CapturarElementos.DescripcionHeader' | translate }} </th>
@@ -56,7 +66,7 @@
           
         </ng-container>
 
-        <!-- UnidadMedida Column -->
+
         <ng-container matColumnDef="UnidadMedida">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>
             {{'GLOBAL.Acta_Recibido.CapturarElementos.UnidadMedidaHeader' | translate }} </th>
@@ -68,7 +78,7 @@
           
         </ng-container>
 
-        <!-- Cantidad Column -->
+
         <ng-container matColumnDef="Cantidad">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>
             {{'GLOBAL.Acta_Recibido.CapturarElementos.CantidadHeader' | translate }} </th>
@@ -80,7 +90,7 @@
           
         </ng-container>
 
-        <!-- Marca Column -->
+
         <ng-container matColumnDef="Marca">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>
             {{'GLOBAL.Acta_Recibido.CapturarElementos.MarcaHeader' | translate }}
@@ -93,7 +103,7 @@
           
         </ng-container>
 
-        <!-- Serie Column -->
+
         <ng-container matColumnDef="Serie">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>
             {{'GLOBAL.Acta_Recibido.CapturarElementos.SerieHeader' | translate }}
@@ -107,8 +117,6 @@
         </ng-container>
 
         
-
-        <!-- Acciones Column -->
         <ng-container matColumnDef="Acciones">
           <th mat-header-cell *matHeaderCellDef>
             <i class="fas fa-plus-square fa-2x" (click)="addElemento()"
@@ -129,4 +137,4 @@
     </div>
     <mat-paginator [pageSizeOptions]="[10, 20, 30, 40, 50]"></mat-paginator>
   </nb-card-body>
-</nb-card>
+</nb-card> -->
