@@ -141,11 +141,11 @@
                                     <div>
                                       <button nbButton type="button" *ngIf="fileDocumento[i]" target="_blank"
                                         (click)="download(i)">
-                                        Ver1
+                                        Ver
                                       </button>
-                                      <button nbButton type="button" *ngIf="!fileDocumento[i]" target="_blank"
+                                      <button nbButton type="button" *ngIf="fileDocumento[i] === undefined" target="_blank"
                                         (click)="downloadFile(uidDocumento[i])">
-                                        Ver2
+                                        Ver
                                       </button>
                                     </div>
                                     <p></p>
