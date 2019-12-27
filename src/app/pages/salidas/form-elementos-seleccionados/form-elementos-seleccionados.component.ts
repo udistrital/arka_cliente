@@ -135,8 +135,8 @@ export class FormElementosSeleccionadosComponent implements OnInit {
     const proveedor___ = form.Proveedor.split(' ');
 
     if (Object.keys(this.Datos.selected).length !== 0) {
-      var seleccionados = this.Datos.selected;
-      var datos = this.Datos.source.data;
+      const seleccionados = this.Datos.selected;
+      const datos = this.Datos.source.data;
 
       seleccionados.forEach((elemento) => {
         elemento.Funcionario = this.Proveedores.find(z => z.compuesto === form.Proveedor);
@@ -146,9 +146,9 @@ export class FormElementosSeleccionadosComponent implements OnInit {
 
         datos.find(element => {
           if (element.Id === elemento.Id) {
-            element = elemento
+            element = elemento;
           }
-          console.log(element);
+          // console.log(element);
         });
       });
       this.DatosEnviados.emit(datos);

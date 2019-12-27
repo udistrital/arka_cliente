@@ -93,7 +93,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
           this.ConsumoControlado !== undefined && this.Devolutivo !== undefined &&
           this.respuesta === undefined) {
           this.actaRecibidoHelper.getElementosActa(this.actaRecibidoId).subscribe((res: any) => {
-            console.log(res)
+            // console.log(res)
             this.respuesta = res;
             this.AjustarDatos(res);
           });
@@ -103,7 +103,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
 
   }
   onRowSelect(event) {
-    console.log(event);
+    // console.log(event);
     this.DatosSeleccionados = event;
     if (Object.keys(this.DatosSeleccionados.selected).length !== 0) {
       this.formulario = true;
@@ -158,10 +158,10 @@ export class TablaElementosAsignadosComponent implements OnInit {
             return value.Nombre;
           },
           filterFunction: (cell?: any, search?: string): boolean => {
-            console.log(cell);
-            console.log(search);
-            if (Object.keys(cell).length !== 0){
-              if(cell.Nombre.indexOf(search) > -1){
+            // console.log(cell);
+            // console.log(search);
+            if (Object.keys(cell).length !== 0) {
+              if (cell.Nombre.indexOf(search) > -1) {
                 return true;
               } else {
                 return false;
@@ -169,7 +169,6 @@ export class TablaElementosAsignadosComponent implements OnInit {
             } else {
               return false;
             }
-            
           },
         },
         SubgrupoCatalogoId: {
@@ -178,10 +177,10 @@ export class TablaElementosAsignadosComponent implements OnInit {
             return value.Nombre;
           },
           filterFunction: (cell?: any, search?: string): boolean => {
-            console.log(cell);
-            console.log(search);
-            if (Object.keys(cell).length !== 0){
-              if(cell.Nombre.indexOf(search) > -1){
+            // console.log(cell);
+            // console.log(search);
+            if (Object.keys(cell).length !== 0) {
+              if (cell.Nombre.indexOf(search) > -1) {
                 return true;
               } else {
                 return false;
@@ -189,7 +188,6 @@ export class TablaElementosAsignadosComponent implements OnInit {
             } else {
               return false;
             }
-            
           },
         },
         Marca: {
@@ -215,10 +213,10 @@ export class TablaElementosAsignadosComponent implements OnInit {
             }
           },
           filterFunction: (cell?: any, search?: string): boolean => {
-            console.log(cell);
-            console.log(search);
-            if (Object.keys(cell).length !== 0){
-              if(cell.compuesto.indexOf(search) > -1){
+            // console.log(cell);
+            // console.log(search);
+            if (Object.keys(cell).length !== 0) {
+              if (cell.compuesto.indexOf(search) > -1) {
                 return true;
               } else {
                 return false;
@@ -226,7 +224,6 @@ export class TablaElementosAsignadosComponent implements OnInit {
             } else {
               return false;
             }
-            
           },
         },
         Sede: {
@@ -239,10 +236,10 @@ export class TablaElementosAsignadosComponent implements OnInit {
             }
           },
           filterFunction: (cell?: any, search?: string): boolean => {
-            console.log(cell);
-            console.log(search);
-            if (Object.keys(cell).length !== 0){
-              if(cell.Nombre.indexOf(search) > -1){
+            // console.log(cell);
+            // console.log(search);
+            if (Object.keys(cell).length !== 0) {
+              if (cell.Nombre.indexOf(search) > -1) {
                 return true;
               } else {
                 return false;
@@ -250,10 +247,8 @@ export class TablaElementosAsignadosComponent implements OnInit {
             } else {
               return false;
             }
-            
           },
         },
-        
         Dependencia: {
           title: 'Dependencia',
           valuePrepareFunction: (value: any) => {
@@ -264,10 +259,10 @@ export class TablaElementosAsignadosComponent implements OnInit {
             }
           },
           filterFunction: (cell?: any, search?: string): boolean => {
-            console.log(cell);
-            console.log(search);
-            if (Object.keys(cell).length !== 0){
-              if(cell.Nombre.indexOf(search) > -1){
+            // console.log(cell);
+            // console.log(search);
+            if (Object.keys(cell).length !== 0) {
+              if (cell.Nombre.indexOf(search) > -1) {
                 return true;
               } else {
                 return false;
@@ -275,9 +270,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
             } else {
               return false;
             }
-            
           },
-          
         },
         Ubicacion: {
           title: 'Ubicacion',
@@ -289,10 +282,10 @@ export class TablaElementosAsignadosComponent implements OnInit {
             }
           },
           filterFunction: (cell?: any, search?: string): boolean => {
-            console.log(cell);
-            console.log(search);
-            if (Object.keys(cell).length !== 0){
-              if(cell.Nombre.indexOf(search) > -1){
+            // console.log(cell);
+            // console.log(search);
+            if (Object.keys(cell).length !== 0) {
+              if (cell.Nombre.indexOf(search) > -1) {
                 return true;
               } else {
                 return false;
@@ -300,7 +293,6 @@ export class TablaElementosAsignadosComponent implements OnInit {
             } else {
               return false;
             }
-            
           },
         },
       },
@@ -328,7 +320,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
           elemento.SubgrupoCatalogoId = this.Consumo.find(x => x.Id === datos[index].SubgrupoCatalogoId);
         }
         if (datos[index].TipoBienId.Id === 2 && Object.keys(this.ConsumoControlado[0]).length !== 0) {
-          elemento.SubgrupoCatalogoId = this.ConsumoControlado.find(x => x.Id === datos[index].SubgrupoCatalogoId)
+          elemento.SubgrupoCatalogoId = this.ConsumoControlado.find(x => x.Id === datos[index].SubgrupoCatalogoId);
         }
         if (datos[index].TipoBienId.Id === 3 && Object.keys(this.Devolutivo[0]).length !== 0) {
           elemento.SubgrupoCatalogoId = this.Devolutivo.find(x => x.Id === datos[index].SubgrupoCatalogoId);
@@ -344,10 +336,10 @@ export class TablaElementosAsignadosComponent implements OnInit {
   }
   AjustarDatos2(datos: any[]) {
     this.Datos2 = new Array<ElementoSalida>();
-    var datos2 = new Array<any>();
+    const datos2 = new Array<any>();
     for (const index in datos) {
       if (true) {
-        console.log(datos[index])
+        // console.log(datos[index])
         const elemento = new ElementoSalida();
         elemento.Id = datos[index].Id;
         elemento.Nombre = datos[index].Nombre;
@@ -357,7 +349,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
         elemento.TipoBienId = datos[index].TipoBienId;
         if (datos[index].Funcionario !== null) {
           if (datos[index].Funcionario !== undefined) {
-            elemento.Funcionario = datos[index].Funcionario
+            elemento.Funcionario = datos[index].Funcionario;
           }
         }
         if (datos[index].Sede !== null) {
@@ -384,7 +376,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
         if (datos[index].TipoBienId.Id === 3 && Object.keys(this.Devolutivo[0]).length !== 0) {
           elemento.SubgrupoCatalogoId = this.Devolutivo.find(x => x.Id === datos[index].SubgrupoCatalogoId);
         }
-        elemento.SubgrupoCatalogoId = datos[index].SubgrupoCatalogoId
+        elemento.SubgrupoCatalogoId = datos[index].SubgrupoCatalogoId;
         datos2.push(elemento);
       }
     }

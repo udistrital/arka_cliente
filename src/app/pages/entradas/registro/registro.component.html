@@ -24,7 +24,7 @@
       </select>
 
       <ngx-adquisicion *ngIf="opcionEntrada === 'Adquisición'" [actaRecibidoId]="actaSeleccionada"></ngx-adquisicion>
-      <ngx-reposicion *ngIf="opcionEntrada === 'Reposición'"></ngx-reposicion>
+      <ngx-reposicion *ngIf="opcionEntrada === 'Reposición'" [actaRecibidoId]="actaSeleccionada"></ngx-reposicion>
       <ngx-elaboracion-propia *ngIf="opcionEntrada === 'Elaboración Propia'" [actaRecibidoId]="actaSeleccionada">
       </ngx-elaboracion-propia>
       <ngx-donacion *ngIf="opcionEntrada === 'Donación'" [actaRecibidoId]="actaSeleccionada"></ngx-donacion>
