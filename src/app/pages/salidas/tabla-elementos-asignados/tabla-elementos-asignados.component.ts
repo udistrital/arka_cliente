@@ -18,7 +18,7 @@ import { PopUpManager } from '../../../managers/popUpManager';
 import { IAppState } from '../../../@core/store/app.state';
 import { Router, NavigationEnd } from '@angular/router';
 import { LocalDataSource } from 'ngx-smart-table';
-import { ElementoSalida } from '../../../@core/data/models/salidas/salida_elementos'
+import { ElementoSalida } from '../../../@core/data/models/salidas/salida_elementos';
 
 @Component({
   selector: 'ngx-tabla-elementos-asignados',
@@ -35,9 +35,9 @@ export class TablaElementosAsignadosComponent implements OnInit {
   Consumo: any;
   ConsumoControlado: any;
   Devolutivo: any;
-
-  @Input()
-
+  DatosSeleccionados: any;
+  formulario: boolean;
+  Datos2: ElementoSalida[];
 
   @Input('actaRecibidoId')
   set name(acta_id: number) {
@@ -67,6 +67,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
     });
     this.source = new LocalDataSource(); // create the source
     this.elementos = new Array<Elemento>();
+    this.Datos2 = new Array<any>();
     this.cargarCampos();
     this.loadLists();
 
@@ -84,10 +85,10 @@ export class TablaElementosAsignadosComponent implements OnInit {
         this.Consumo = list.listConsumo[0];
         this.ConsumoControlado = list.listConsumoControlado[0];
         this.Devolutivo = list.listDevolutivo[0];
-        console.log(this.actaRecibidoId);
-        console.log(this.Consumo);
-        console.log(this.Devolutivo);
-        console.log(this.ConsumoControlado);
+        // console.log(this.actaRecibidoId);
+        // console.log(this.Consumo);
+        // console.log(this.Devolutivo);
+        // console.log(this.ConsumoControlado);
         if (this.actaRecibidoId !== undefined && this.Consumo !== undefined &&
           this.ConsumoControlado !== undefined && this.Devolutivo !== undefined &&
           this.respuesta === undefined) {
@@ -101,14 +102,28 @@ export class TablaElementosAsignadosComponent implements OnInit {
     );
 
   }
+  onRowSelect(event) {
+    console.log(event);
+    this.DatosSeleccionados = event;
+    if (Object.keys(this.DatosSeleccionados.selected).length !== 0) {
+      this.formulario = true;
+    } else {
+      this.formulario = false;
+    }
+
+  }
   cargarCampos() {
 
     this.settings = {
+      hideSubHeader: false,
+      selectMode: 'multi',
       noDataMessage: 'No se encontraron elementos asociados.',
       actions: {
         columnTitle: 'Acciones',
         position: 'right',
         add: false,
+        delete: false,
+        edit: false,
       },
       add: {
         addButtonContent: '<i class="nb-plus"></i>',
@@ -140,13 +155,41 @@ export class TablaElementosAsignadosComponent implements OnInit {
         TipoBienId: {
           title: 'Tipo de Bien',
           valuePrepareFunction: (value: any) => {
-            return value;
+            return value.Nombre;
+          },
+          filterFunction: (cell?: any, search?: string): boolean => {
+            console.log(cell);
+            console.log(search);
+            if (Object.keys(cell).length !== 0){
+              if(cell.Nombre.indexOf(search) > -1){
+                return true;
+              } else {
+                return false;
+              }
+            } else {
+              return false;
+            }
+            
           },
         },
         SubgrupoCatalogoId: {
           title: 'Subgrupo',
           valuePrepareFunction: (value: any) => {
-            return value;
+            return value.Nombre;
+          },
+          filterFunction: (cell?: any, search?: string): boolean => {
+            console.log(cell);
+            console.log(search);
+            if (Object.keys(cell).length !== 0){
+              if(cell.Nombre.indexOf(search) > -1){
+                return true;
+              } else {
+                return false;
+              }
+            } else {
+              return false;
+            }
+            
           },
         },
         Marca: {
@@ -165,25 +208,99 @@ export class TablaElementosAsignadosComponent implements OnInit {
         Funcionario: {
           title: 'Funcionario',
           valuePrepareFunction: (value: any) => {
-            return value;
+            if (value !== null) {
+              return value.compuesto;
+            } else {
+              return '';
+            }
+          },
+          filterFunction: (cell?: any, search?: string): boolean => {
+            console.log(cell);
+            console.log(search);
+            if (Object.keys(cell).length !== 0){
+              if(cell.compuesto.indexOf(search) > -1){
+                return true;
+              } else {
+                return false;
+              }
+            } else {
+              return false;
+            }
+            
           },
         },
         Sede: {
           title: 'Sede',
           valuePrepareFunction: (value: any) => {
-            return value;
+            if (value !== null) {
+              return value.Nombre;
+            } else {
+              return '';
+            }
+          },
+          filterFunction: (cell?: any, search?: string): boolean => {
+            console.log(cell);
+            console.log(search);
+            if (Object.keys(cell).length !== 0){
+              if(cell.Nombre.indexOf(search) > -1){
+                return true;
+              } else {
+                return false;
+              }
+            } else {
+              return false;
+            }
+            
           },
         },
+        
         Dependencia: {
           title: 'Dependencia',
           valuePrepareFunction: (value: any) => {
-            return value;
+            if (value !== null) {
+              return value.Nombre;
+            } else {
+              return '';
+            }
           },
+          filterFunction: (cell?: any, search?: string): boolean => {
+            console.log(cell);
+            console.log(search);
+            if (Object.keys(cell).length !== 0){
+              if(cell.Nombre.indexOf(search) > -1){
+                return true;
+              } else {
+                return false;
+              }
+            } else {
+              return false;
+            }
+            
+          },
+          
         },
         Ubicacion: {
           title: 'Ubicacion',
           valuePrepareFunction: (value: any) => {
-            return value;
+            if (value !== null) {
+              return value.Nombre;
+            } else {
+              return '';
+            }
+          },
+          filterFunction: (cell?: any, search?: string): boolean => {
+            console.log(cell);
+            console.log(search);
+            if (Object.keys(cell).length !== 0){
+              if(cell.Nombre.indexOf(search) > -1){
+                return true;
+              } else {
+                return false;
+              }
+            } else {
+              return false;
+            }
+            
           },
         },
       },
@@ -191,36 +308,89 @@ export class TablaElementosAsignadosComponent implements OnInit {
   }
 
   AjustarDatos(datos: any[]) {
-    console.log(datos);
-    this.Datos = new Array<ElementoSalida>()
+    // console.log(datos);
+    this.Datos = new Array<ElementoSalida>();
     for (const index in datos) {
-      console.log(datos[index])
-      const elemento = new ElementoSalida()
-      elemento.Id = datos[index].Id;
-      elemento.Nombre = datos[index].Nombre;
-      elemento.Cantidad = datos[index].Cantidad;
-      elemento.Marca = datos[index].Marca;
-      elemento.Serie = datos[index].Serie;
-      elemento.TipoBienId = datos[index].TipoBienId.Nombre;
-      elemento.Funcionario = null;
-      elemento.Sede = null;
-      elemento.Dependencia = null;
-      elemento.Ubicacion = null;
-      if (datos[index].TipoBienId.Id == 1 && Object.keys(this.Consumo[0]).length !== 0) {
-        elemento.SubgrupoCatalogoId = this.Consumo.find(x => x.Id === datos[index].SubgrupoCatalogoId).Nombre;
-      } 
-      if (datos[index].TipoBienId.Id == 2 && Object.keys(this.ConsumoControlado[0]).length !== 0) {
-        elemento.SubgrupoCatalogoId = this.ConsumoControlado.find(x => x.Id === datos[index].SubgrupoCatalogoId).Nombre;
-      } 
-      if (datos[index].TipoBienId.Id == 3 && Object.keys(this.Devolutivo[0]).length !== 0) {
-        elemento.SubgrupoCatalogoId = this.Devolutivo.find(x => x.Id === datos[index].SubgrupoCatalogoId).Nombre;
-      } 
-      console.log(elemento);
-      this.Datos.push(elemento);
+      if (true) {
+        // console.log(datos[index])
+        const elemento = new ElementoSalida();
+        elemento.Id = datos[index].Id;
+        elemento.Nombre = datos[index].Nombre;
+        elemento.Cantidad = datos[index].Cantidad;
+        elemento.Marca = datos[index].Marca;
+        elemento.Serie = datos[index].Serie;
+        elemento.TipoBienId = datos[index].TipoBienId;
+        elemento.Funcionario = null;
+        elemento.Sede = null;
+        elemento.Dependencia = null;
+        elemento.Ubicacion = null;
+        if (datos[index].TipoBienId.Id === 1 && Object.keys(this.Consumo[0]).length !== 0) {
+          elemento.SubgrupoCatalogoId = this.Consumo.find(x => x.Id === datos[index].SubgrupoCatalogoId);
+        }
+        if (datos[index].TipoBienId.Id === 2 && Object.keys(this.ConsumoControlado[0]).length !== 0) {
+          elemento.SubgrupoCatalogoId = this.ConsumoControlado.find(x => x.Id === datos[index].SubgrupoCatalogoId)
+        }
+        if (datos[index].TipoBienId.Id === 3 && Object.keys(this.Devolutivo[0]).length !== 0) {
+          elemento.SubgrupoCatalogoId = this.Devolutivo.find(x => x.Id === datos[index].SubgrupoCatalogoId);
+        }
+        // console.log(elemento);
+        this.Datos.push(elemento);
+      }
     }
 
     if (this.Datos !== undefined) {
       this.source.load(this.Datos);
+    }
+  }
+  AjustarDatos2(datos: any[]) {
+    this.Datos2 = new Array<ElementoSalida>();
+    var datos2 = new Array<any>();
+    for (const index in datos) {
+      if (true) {
+        console.log(datos[index])
+        const elemento = new ElementoSalida();
+        elemento.Id = datos[index].Id;
+        elemento.Nombre = datos[index].Nombre;
+        elemento.Cantidad = datos[index].Cantidad;
+        elemento.Marca = datos[index].Marca;
+        elemento.Serie = datos[index].Serie;
+        elemento.TipoBienId = datos[index].TipoBienId;
+        if (datos[index].Funcionario !== null) {
+          if (datos[index].Funcionario !== undefined) {
+            elemento.Funcionario = datos[index].Funcionario
+          }
+        }
+        if (datos[index].Sede !== null) {
+          if (datos[index].Sede !== undefined) {
+            elemento.Sede = datos[index].Sede;
+          }
+        }
+        if (datos[index].Dependencia !== null) {
+          if (datos[index].Dependencia !== undefined) {
+            elemento.Dependencia = datos[index].Dependencia;
+          }
+        }
+        if (datos[index].Ubicacion !== null) {
+          if (datos[index].Ubicacion !== undefined) {
+            elemento.Ubicacion = datos[index].Ubicacion;
+          }
+        }
+        if (datos[index].TipoBienId.Id === 1 && Object.keys(this.Consumo[0]).length !== 0) {
+          elemento.SubgrupoCatalogoId = this.Consumo.find(x => x.Id === datos[index].SubgrupoCatalogoId);
+        }
+        if (datos[index].TipoBienId.Id === 2 && Object.keys(this.ConsumoControlado[0]).length !== 0) {
+          elemento.SubgrupoCatalogoId = this.ConsumoControlado.find(x => x.Id === datos[index].SubgrupoCatalogoId);
+        }
+        if (datos[index].TipoBienId.Id === 3 && Object.keys(this.Devolutivo[0]).length !== 0) {
+          elemento.SubgrupoCatalogoId = this.Devolutivo.find(x => x.Id === datos[index].SubgrupoCatalogoId);
+        }
+        elemento.SubgrupoCatalogoId = datos[index].SubgrupoCatalogoId
+        datos2.push(elemento);
+      }
+    }
+    if (datos2 !== undefined) {
+      this.source.load(datos2);
+      this.formulario = false;
     }
   }
 

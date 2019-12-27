@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ViewChildren, QueryList } from '@angular/core';
+import { Component, OnInit, ViewChild, ViewChildren, QueryList, Input, Output, EventEmitter } from '@angular/core';
 import { Subscription, combineLatest, Observable } from 'rxjs';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, FormControl, FormArray } from '@angular/forms';
@@ -51,6 +51,12 @@ export class FormElementosSeleccionadosComponent implements OnInit {
   Ubicaciones: any;
   Sedes: any;
   form_salida: FormGroup;
+  Datos: any;
+  @Input('Datos')
+  set name(datos_seleccionados: any) {
+    this.Datos = datos_seleccionados;
+  }
+  @Output() DatosEnviados = new EventEmitter();
 
   constructor(
     private translate: TranslateService,
@@ -86,22 +92,68 @@ export class FormElementosSeleccionadosComponent implements OnInit {
       (list) => {
         this.Proveedores = list.listProveedores[0];
         this.Dependencias = list.listDependencias[0];
-        this.Ubicaciones = list.listUbicaciones[0];
+        // this.Ubicaciones = list.listUbicaciones[0];
         this.Sedes = list.listSedes[0];
         this.dataService2 = this.completerService.local(this.Proveedores, 'compuesto', 'compuesto');
         this.dataService3 = this.completerService.local(this.Dependencias, 'Nombre', 'Nombre');
-        this.dataService = this.completerService.local(this.Ubicaciones, 'Nombre', 'Nombre');
+        // this.dataService = this.completerService.local(this.Ubicaciones, 'Nombre', 'Nombre');
       },
     );
   }
   get Formulario(): FormGroup {
     return this.fb.group({
       Proveedor: ['', Validators.required],
-      Sede: [''],
-      Dependencia: [''],
+      Sede: ['', Validators.required],
+      Dependencia: ['', Validators.required],
       Ubicacion: ['', Validators.required],
     });
   }
+  Traer_Relacion_Ubicaciones() {
+    const sede = this.form_salida.get('Sede').value;
+    const dependencia = this.form_salida.get('Dependencia').value;
 
-  usarLocalStorage() {}
+    if (this.form_salida.get('Sede').valid || this.form_salida.get('Dependencia').valid) {
+      const transaccion: any = {};
+      transaccion.Sede = this.Sedes.find((x) => x.Id === parseFloat(sede));
+      transaccion.Dependencia = this.Dependencias.find((x) => x.Nombre === dependencia);
+      // console.log(this.Sedes);
+      if (transaccion.Sede !== undefined && transaccion.Dependencia !== undefined) {
+        this.Actas_Recibido.postRelacionSedeDependencia(transaccion).subscribe((res: any) => {
+          // console.log(res)
+          if (Object.keys(res[0]).length !== 0) {
+            this.Ubicaciones = res[0].Relaciones;
+          } else {
+            this.Ubicaciones = undefined;
+          }
+        });
+      }
+    }
+  }
+
+  onSubmit() {
+    const form = this.form_salida.value;
+    const proveedor___ = form.Proveedor.split(' ');
+
+    if (Object.keys(this.Datos.selected).length !== 0) {
+      var seleccionados = this.Datos.selected;
+      var datos = this.Datos.source.data;
+
+      seleccionados.forEach((elemento) => {
+        elemento.Funcionario = this.Proveedores.find(z => z.compuesto === form.Proveedor);
+        elemento.Sede = this.Sedes.find(y => y.Id === parseFloat(form.Sede));
+        elemento.Dependencia = this.Dependencias.find(y => y.Nombre === form.Dependencia);
+        elemento.Ubicacion = this.Ubicaciones.find(w => w.Id === parseFloat(form.Ubicacion));
+
+        datos.find(element => {
+          if (element.Id === elemento.Id) {
+            element = elemento
+          }
+          console.log(element);
+        });
+      });
+      this.DatosEnviados.emit(datos);
+    }
+
+  }
+  usarLocalStorage() { }
 }
