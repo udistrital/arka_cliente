@@ -53,6 +53,10 @@ const routes: Routes = [{
       loadChildren: './catalogo-bienes/catalogo-bienes.module#CatalogoBienesModule',
     },
     {
+      path: 'bodega_consumo',
+      loadChildren: './bodega-consumo/bodega-consumo.module#BodegaConsumoModule',
+    },
+    {
       path: '',
       redirectTo: 'dashboard',
       pathMatch: 'full',

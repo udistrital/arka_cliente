@@ -51,13 +51,13 @@ export class SalidaHelper {
             ),
         );
     }
-     /**
-     * Entrada Post
-     * If the response has errors in the OAS API it should show a popup message with an error.
-     * If the response suceed, it returns the data of the updated object.
-     * @param entradaData object to save in the DB
-     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
-     */
+    /**
+    * Entrada Post
+    * If the response has errors in the OAS API it should show a popup message with an error.
+    * If the response suceed, it returns the data of the updated object.
+    * @param entradaData object to save in the DB
+    * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
+    */
     public postSalidas(salidasData) {
         this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
         return this.rqManager.post(`tr_salida/`, salidasData).pipe(
@@ -74,5 +74,25 @@ export class SalidaHelper {
     }
 
 
+    /**
+     * Entradas Get
+     * If the response has errors in the OAS API it should show a popup message with an error.
+     * If the response is successs, it returns the object's data.
+     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
+     */
+    public getElementos() {
+        this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
+        return this.rqManager.get('elementos_movimiento/').pipe(
+            map(
+                (res) => {
+                    if (res === 'error') {
+                        this.pUpManager.showErrorAlert('No se pudo consultar el contrato contratos');
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
 
 }
