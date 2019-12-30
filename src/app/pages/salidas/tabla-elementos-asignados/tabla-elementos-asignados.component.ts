@@ -28,6 +28,7 @@ import { ElementoSalida } from '../../../@core/data/models/salidas/salida_elemen
 export class TablaElementosAsignadosComponent implements OnInit {
 
   settings: any;
+  bandera: boolean;
   navigationSubscription;
   actaRecibidoId: number;
   respuesta: any;
@@ -38,6 +39,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
   DatosSeleccionados: any;
   formulario: boolean;
   Datos2: ElementoSalida[];
+  bandera2: boolean;
 
   @Input('actaRecibidoId')
   set name(acta_id: number) {
@@ -314,6 +316,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
         elemento.TipoBienId = datos[index].TipoBienId;
         elemento.Funcionario = null;
         elemento.Sede = null;
+        elemento.Asignado = false;
         elemento.Dependencia = null;
         elemento.Ubicacion = null;
         if (datos[index].TipoBienId.Id === 1 && Object.keys(this.Consumo[0]).length !== 0) {
@@ -346,6 +349,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
         elemento.Cantidad = datos[index].Cantidad;
         elemento.Marca = datos[index].Marca;
         elemento.Serie = datos[index].Serie;
+        elemento.Asignado = datos[index].Asignado;
         elemento.TipoBienId = datos[index].TipoBienId;
         if (datos[index].Funcionario !== null) {
           if (datos[index].Funcionario !== undefined) {
@@ -383,9 +387,27 @@ export class TablaElementosAsignadosComponent implements OnInit {
     if (datos2 !== undefined) {
       this.source.load(datos2);
       this.formulario = false;
+      console.log(this.source);
+      this.checkElementosAsignados();
     }
   }
 
+  checkElementosAsignados() {
+    this.bandera = false;
+    console.log(this.source);
+    for (const datos of this.source.data) {
+      if (datos.Asignado !== true) {
+        this.bandera = true;
+        break;
+      }
+    }
+    if (this.bandera === false) {
+      this.bandera2 = true;
+    } else {
+      this.bandera = false;
+      this.bandera2 = false;
+    }
+  }
   onEdit(event): void {
   }
 
@@ -398,6 +420,25 @@ export class TablaElementosAsignadosComponent implements OnInit {
 
   onDelete(event): void {
 
+  }
+  funcion_Reduccion(data: any, param: string) {
+
+  }
+  onSubmit() {
+    var datos_agrupados = this.source.data.reduce((accumulator, currentValue) => {
+      var val = currentValue.Funcionario.Id + '-' + currentValue.Ubicacion.Id;
+      accumulator[val] = accumulator[val] || {Ubicacion: 0 ,Funcionario: 0,Elementos: []}
+      accumulator[val].Ubicacion = currentValue.Ubicacion.Id;
+      accumulator[val].Funcionario = currentValue.Funcionario.Id;
+      accumulator[val].Elementos.push(currentValue.Id);
+      
+      console.log(currentValue);
+      return accumulator;
+      
+    },{});
+    console.log(datos_agrupados);
+
+    console.log(Object.keys(datos_agrupados));
   }
 
   onBack() {

@@ -143,7 +143,7 @@ export class FormElementosSeleccionadosComponent implements OnInit {
         elemento.Sede = this.Sedes.find(y => y.Id === parseFloat(form.Sede));
         elemento.Dependencia = this.Dependencias.find(y => y.Nombre === form.Dependencia);
         elemento.Ubicacion = this.Ubicaciones.find(w => w.Id === parseFloat(form.Ubicacion));
-
+        elemento.Asignado = true;
         datos.find(element => {
           if (element.Id === elemento.Id) {
             element = elemento;
