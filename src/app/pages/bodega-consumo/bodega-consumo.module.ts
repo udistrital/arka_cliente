@@ -9,7 +9,7 @@ import { AgregarElementosComponent } from './agregar-elementos/agregar-elementos
   declarations: [BodegaConsumoComponent, AgregarElementosComponent],
   imports: [
     CommonModule,
-    BodegaConsumoRoutingModule
-  ]
+    BodegaConsumoRoutingModule,
+  ],
 })
 export class BodegaConsumoModule { }

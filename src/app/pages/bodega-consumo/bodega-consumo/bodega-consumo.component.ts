@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'bodega-consumo',
+  selector: 'ngx-bodega-consumo',
   template: `
     <p>
       bodega-consumo works!
     </p>
   `,
-  styles: []
+  styles: [],
 })
 export class BodegaConsumoComponent implements OnInit {
 

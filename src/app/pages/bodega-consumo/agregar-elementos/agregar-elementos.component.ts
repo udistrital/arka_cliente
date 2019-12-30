@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'agregar-elementos',
+  selector: 'ngx-agregar-elementos',
   templateUrl: './agregar-elementos.component.html',
-  styleUrls: ['./agregar-elementos.component.scss']
+  styleUrls: ['./agregar-elementos.component.scss'],
 })
 export class AgregarElementosComponent implements OnInit {
 

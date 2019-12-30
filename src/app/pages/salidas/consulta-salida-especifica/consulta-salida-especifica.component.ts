@@ -16,7 +16,7 @@ import { SalidaHelper } from '../../../helpers/salidas/salidasHelper';
 @Component({
   selector: 'ngx-consulta-salida-especifica',
   templateUrl: './consulta-salida-especifica.component.html',
-  styleUrls: ['./consulta-salida-especifica.component.scss']
+  styleUrls: ['./consulta-salida-especifica.component.scss'],
 })
 export class ConsultaSalidaEspecificaComponent implements OnInit {
   salida_id: number;
@@ -56,15 +56,15 @@ export class ConsultaSalidaEspecificaComponent implements OnInit {
     this.salidasHelper.getSalida(this.salida_id).subscribe(res => {
       if (Object.keys(res[0]).length !== 0) {
 
-        var detalle = JSON.parse(res[0].Salida.Detalle);
-        console.log(detalle)
+        const detalle = JSON.parse(res[0].Salida.Detalle);
+        // console.log(detalle)
         res[0].Salida.Funcionario = detalle.funcionario;
         res[0].Salida.Ubicacion = detalle.ubicacion;
         this.salida = res[0];
-        console.log(this.salida);
+        // console.log(this.salida);
       }
 
-    })
+    });
   }
 
 }

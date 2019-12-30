@@ -39,7 +39,7 @@ export class SalidaHelper {
      */
     public getSalida(id) {
         this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
-        return this.rqManager.get('tr_salida/'+ id + '').pipe(
+        return this.rqManager.get('tr_salida/' + id + '').pipe(
             map(
                 (res) => {
                     if (res === 'error') {

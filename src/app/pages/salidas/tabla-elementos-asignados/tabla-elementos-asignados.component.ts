@@ -387,14 +387,14 @@ export class TablaElementosAsignadosComponent implements OnInit {
     if (datos2 !== undefined) {
       this.source.load(datos2);
       this.formulario = false;
-      console.log(this.source);
+      // console.log(this.source);
       this.checkElementosAsignados();
     }
   }
 
   checkElementosAsignados() {
     this.bandera = false;
-    console.log(this.source);
+    // console.log(this.source);
     for (const datos of this.source.data) {
       if (datos.Asignado !== true) {
         this.bandera = true;
@@ -425,20 +425,20 @@ export class TablaElementosAsignadosComponent implements OnInit {
 
   }
   onSubmit() {
-    var datos_agrupados = this.source.data.reduce((accumulator, currentValue) => {
-      var val = currentValue.Funcionario.Id + '-' + currentValue.Ubicacion.Id;
-      accumulator[val] = accumulator[val] || {Ubicacion: 0 ,Funcionario: 0,Elementos: []}
+    const datos_agrupados = this.source.data.reduce((accumulator, currentValue) => {
+      const val = currentValue.Funcionario.Id + '-' + currentValue.Ubicacion.Id;
+      accumulator[val] = accumulator[val] || { Ubicacion: 0, Funcionario: 0, Elementos: [] };
       accumulator[val].Ubicacion = currentValue.Ubicacion.Id;
       accumulator[val].Funcionario = currentValue.Funcionario.Id;
       accumulator[val].Elementos.push(currentValue.Id);
-      
-      console.log(currentValue);
-      return accumulator;
-      
-    },{});
-    console.log(datos_agrupados);
 
-    console.log(Object.keys(datos_agrupados));
+      // console.log(currentValue);
+      return accumulator;
+
+    }, {});
+    // console.log(datos_agrupados);
+
+    // console.log(Object.keys(datos_agrupados));
   }
 
   onBack() {

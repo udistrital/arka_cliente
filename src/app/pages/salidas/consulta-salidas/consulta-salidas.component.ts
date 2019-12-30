@@ -130,29 +130,29 @@ export class ConsultaSalidasComponent implements OnInit {
               return '';
             }
           },
-        }
+        },
       },
     };
   }
   loadSalidas(): void {
     this.salidasHelper.getSalidas().subscribe(res => {
-      console.log(res);
+      // console.log(res);
       if (res !== null) {
         const datos = res;
         datos.forEach(element => {
-          var detalle = JSON.parse(element.Detalle);
-          console.log(detalle)
+          const detalle = JSON.parse(element.Detalle);
+          // console.log(detalle)
           element.Funcionario = detalle.funcionario;
           element.Ubicacion = detalle.ubicacion;
         });
-        console.log(datos);
+        // console.log(datos);
         this.source.load(datos);
       }
     });
   }
   onCustom(event) {
     this.salidaId = `${event.data.Id}`;
-    this.detalle = true
+    this.detalle = true;
   }
    onVolver() {
     this.detalle = !this.detalle;
