@@ -1,0 +1,35 @@
+<div *ngIf="!salida" [nbSpinner]="!salida">
+  <nb-card>
+    <nb-card-header>
+
+    </nb-card-header>
+    <nb-card-body>
+
+    </nb-card-body>
+  </nb-card>
+</div>
+<div *ngIf="salida">
+  <nb-card>
+    <nb-card-body>
+      <div class="row">
+        <div class="col">
+          <p class="text-uppercase"><strong>Salida</strong>: {{ salida.Salida.Id }}</p>
+        </div>
+        <div class="col">
+          <p class="text-uppercase"><strong>Funcionario:</strong>
+            {{ salida.Salida.Funcionario}}</p>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <p class="text-uppercase"><strong>Ubicacion</strong>: {{ salida.Salida.Ubicacion }}</p>
+        </div>
+        <div class="col">
+          <p class="text-uppercase"><strong>Fecha de Creacion:</strong>
+            {{ salida.Salida.FechaCreacion}}</p>
+        </div>
+      </div>
+
+    </nb-card-body>
+  </nb-card>
+</div>
