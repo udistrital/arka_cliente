@@ -66,7 +66,7 @@ export class AgregarElementosComponent implements OnInit {
         ElementoActaId: {
           title: 'Elemento',
         },
-        MovimientoId:{
+        MovimientoId: {
           title: 'Movimiento',
           valuePrepareFunction: (value: any) => {
             return value.Id;
@@ -118,10 +118,10 @@ export class AgregarElementosComponent implements OnInit {
           },
         },
         SaldoCantidad: {
-          title:  'Saldo Cantidad'
+          title:  'Saldo Cantidad',
         },
         SaldoValor: {
-          title: 'Saldo Valor'
+          title: 'Saldo Valor',
         },
         Unidad: {
           title: 'Unidad',
@@ -136,7 +136,7 @@ export class AgregarElementosComponent implements OnInit {
   loadEntradas(): void {
     this.salidasHelper.getElementos().subscribe(res => {
       if (Object.keys(res).length !== 0) {
-        console.log(res);
+        // console.log(res);
         this.source.load(res);
       }
     });
