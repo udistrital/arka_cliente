@@ -5,11 +5,11 @@ import { spagoBIService } from '../../../@core/utils/spagoBIAPI/spagoBIService';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'ngx-registro-entradas',
-  templateUrl: './registro-entradas.component.html',
-  styleUrls: ['./registro-entradas.component.scss'],
+  selector: 'registro-salidas',
+  templateUrl: './registro-salidas.component.html',
+  styleUrls: ['./registro-salidas.component.scss']
 })
-export class RegistroEntradasComponent implements OnInit {
+export class RegistroSalidasComponent implements OnInit {
 
   config: ToasterConfig;
   consecutivo: string;
@@ -29,13 +29,14 @@ export class RegistroEntradasComponent implements OnInit {
     if (navigation.extras.state) {
       const state = navigation.extras.state as { consecutivo: number };
       this.consecutivo = (state.consecutivo).toString();
+      
     }
   }
 
   initReportConfig() {
     if (this.consecutivo === '') {
       this.reportConfig = {
-        documentLabel: 'prueba_arka',
+        documentLabel: 'arka_salida',
         executionRole: '/spagobi/user/admin',
         displayToolbar: true,
         displaySliders: true,
@@ -48,7 +49,7 @@ export class RegistroEntradasComponent implements OnInit {
     } else {
       const parametros = 'consecutivo=' + this.consecutivo + '&outputType=PDF';
       this.reportConfig = {
-        documentLabel: 'prueba_arka',
+        documentLabel: 'arka_salida',
         executionRole: '/spagobi/user/admin',
         // parameters: {'PARAMETERS': 'param_1=1&param_2=2'},
         parameters: { 'PARAMETERS': parametros },
@@ -105,8 +106,9 @@ export class RegistroEntradasComponent implements OnInit {
   }
 
   onRegister() {
-    this.router.navigate(['/pages/entradas/registro']);
+    this.router.navigate(['/pages/salidas/registro_salidas']);
   }
+
 
 
 }
