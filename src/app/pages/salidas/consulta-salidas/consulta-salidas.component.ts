@@ -11,6 +11,12 @@ import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { NuxeoService } from '../../../@core/utils/nuxeo.service';
 import { DocumentoService } from '../../../@core/data/documento.service';
 import { SalidaHelper } from '../../../helpers/salidas/salidasHelper';
+import { Store } from '@ngrx/store';
+import { IAppState } from '../../../@core/store/app.state';
+import { ListService } from '../../../@core/store/services/list.service';
+import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
+import { parse } from 'path';
+
 @Component({
   selector: 'ngx-consulta-salidas',
   templateUrl: './consulta-salidas.component.html',
@@ -28,15 +34,48 @@ export class ConsultaSalidasComponent implements OnInit {
   settings: any;
   documentoId: boolean;
   salidaId: string;
+  Proveedores: any;
+  Dependencias: any;
+  Sedes: any;
 
-  constructor(private router: Router, private salidasHelper: SalidaHelper, private translate: TranslateService,
-    private nuxeoService: NuxeoService, private documentoService: DocumentoService) {
+  constructor(
+    private router: Router,
+    private salidasHelper: SalidaHelper,
+    private translate: TranslateService,
+    private nuxeoService: NuxeoService,
+    private documentoService: DocumentoService,
+    private store: Store<IAppState>,
+    private Actas_Recibido: ActaRecibidoHelper,
+    private listService: ListService,
+  ) {
     this.source = new LocalDataSource();
     this.detalle = false;
     this.loadTablaSettings();
-    this.loadSalidas();
+    this.listService.findDependencias();
+    this.listService.findSedes();
+    this.listService.findProveedores();
+    this.loadLists();
   }
 
+  public loadLists() {
+    this.store.select((state) => state).subscribe(
+      (list) => {
+        this.Proveedores = list.listProveedores[0];
+        this.Dependencias = list.listDependencias[0];
+        // this.Ubicaciones = list.listUbicaciones[0];
+        this.Sedes = list.listSedes[0];
+        // this.dataService = this.completerService.local(this.Ubicaciones, 'Nombre', 'Nombre');
+        // console.log(this.Proveedores);
+        // console.log(this.Dependencias);
+        // console.log(this.Sedes);
+        // console.log(list);
+        if (this.Dependencias !== undefined && this.Sedes !== undefined && this.Proveedores !== undefined) {
+          // console.log('ok');
+          this.loadSalidas();
+        }
+      },
+    );
+  }
 
   ngOnInit() {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
@@ -115,9 +154,68 @@ export class ConsultaSalidasComponent implements OnInit {
           title: 'Funcionario',
           valuePrepareFunction: (value: any) => {
             if (value !== null) {
-              return value;
+              return value.NomProveedor;
             } else {
               return '';
+            }
+          },
+          filterFunction: (cell?: any, search?: string): boolean => {
+            // console.log(cell);
+            // console.log(search);
+            if (Object.keys(cell).length !== 0) {
+              if (cell.NomProveedor.indexOf(search) > -1) {
+                return true;
+              } else {
+                return false;
+              }
+            } else {
+              return false;
+            }
+          },
+        },
+        Sede: {
+          title: 'Sede',
+          valuePrepareFunction: (value: any) => {
+            if (value !== null) {
+              return value.Nombre;
+            } else {
+              return '';
+            }
+          },
+          filterFunction: (cell?: any, search?: string): boolean => {
+            // console.log(cell);
+            // console.log(search);
+            if (Object.keys(cell).length !== 0) {
+              if (cell.Nombre.indexOf(search) > -1) {
+                return true;
+              } else {
+                return false;
+              }
+            } else {
+              return false;
+            }
+          },
+        },
+        Dependencia: {
+          title: 'Dependencia',
+          valuePrepareFunction: (value: any) => {
+            if (value !== null) {
+              return value.Nombre;
+            } else {
+              return '';
+            }
+          },
+          filterFunction: (cell?: any, search?: string): boolean => {
+            // console.log(cell);
+            // console.log(search);
+            if (Object.keys(cell).length !== 0) {
+              if (cell.Nombre.indexOf(search) > -1) {
+                return true;
+              } else {
+                return false;
+              }
+            } else {
+              return false;
             }
           },
         },
@@ -125,9 +223,22 @@ export class ConsultaSalidasComponent implements OnInit {
           title: 'Ubicacion',
           valuePrepareFunction: (value: any) => {
             if (value !== null) {
-              return value;
+              return value.EspacioFisicoId.Nombre;
             } else {
               return '';
+            }
+          },
+          filterFunction: (cell?: any, search?: string): boolean => {
+            // console.log(cell);
+            // console.log(search);
+            if (Object.keys(cell).length !== 0) {
+              if (cell.EspacioFisicoId.Nombre.indexOf(search) > -1) {
+                return true;
+              } else {
+                return false;
+              }
+            } else {
+              return false;
             }
           },
         },
@@ -135,18 +246,25 @@ export class ConsultaSalidasComponent implements OnInit {
     };
   }
   loadSalidas(): void {
-    this.salidasHelper.getSalidas().subscribe(res => {
-      // console.log(res);
-      if (res !== null) {
-        const datos = res;
+    this.salidasHelper.getSalidas().subscribe(res1 => {
+      // console.log(res1);
+      if (res1 !== null) {
+        const datos = res1;
         datos.forEach(element => {
           const detalle = JSON.parse(element.Detalle);
           // console.log(detalle)
-          element.Funcionario = detalle.funcionario;
-          element.Ubicacion = detalle.ubicacion;
+          this.Actas_Recibido.getSedeDependencia(detalle.ubicacion).subscribe(res => {
+            const valor = res[0].EspacioFisicoId.Codigo.substring(0, 4);
+            // console.log(res)
+            element.Funcionario = this.Proveedores.find(x => x.Id === parseFloat(detalle.funcionario));
+            element.Ubicacion = res[0];
+            element.Sede = this.Sedes.find(y => y.Codigo === valor);
+            element.Dependencia = res[0].DependenciaId;
+            this.source.append(element);
+          });
         });
         // console.log(datos);
-        this.source.load(datos);
+        // this.source.load(datos);
       }
     });
   }
@@ -154,7 +272,7 @@ export class ConsultaSalidasComponent implements OnInit {
     this.salidaId = `${event.data.Id}`;
     this.detalle = true;
   }
-   onVolver() {
+  onVolver() {
     this.detalle = !this.detalle;
   }
 }
