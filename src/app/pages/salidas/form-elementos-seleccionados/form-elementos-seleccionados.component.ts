@@ -80,7 +80,7 @@ export class FormElementosSeleccionadosComponent implements OnInit {
     this.listService.findProveedores();
     this.listService.findDependencias();
     this.listService.findSedes();
-    this.listService.findUbicaciones();
+    // this.listService.findUbicaciones();
     this.loadLists();
   }
 

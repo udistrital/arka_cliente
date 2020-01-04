@@ -288,6 +288,7 @@ export class TablaEntradaAprobadaComponent implements OnInit {
   }
 
   onCustom(event) {
+    // console.log(event.data);
     this.actaRecibidoId = +`${event.data.ActaRecibidoId}`;
     // this.consecutivoEntrada = `${event.data.Consecutivo}`;
     this.consecutivoEntrada = `${event.data.Id}`;

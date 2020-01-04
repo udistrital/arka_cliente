@@ -19,6 +19,7 @@ import { IAppState } from '../../../@core/store/app.state';
 import { Router, NavigationEnd } from '@angular/router';
 import { LocalDataSource } from 'ngx-smart-table';
 import { ElementoSalida } from '../../../@core/data/models/salidas/salida_elementos';
+import { SalidaHelper } from '../../../helpers/salidas/salidasHelper';
 
 @Component({
   selector: 'ngx-tabla-elementos-asignados',
@@ -40,10 +41,16 @@ export class TablaElementosAsignadosComponent implements OnInit {
   formulario: boolean;
   Datos2: ElementoSalida[];
   bandera2: boolean;
+  Observaciones: string;
+  entradaId: string;
 
   @Input('actaRecibidoId')
   set name(acta_id: number) {
     this.actaRecibidoId = acta_id;
+  }
+  @Input('entradaId')
+  set name2(entrada_id: string) {
+    this.entradaId = entrada_id;
   }
   source: any;
   elementos: Elemento[];
@@ -51,6 +58,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
   constructor(private translate: TranslateService,
     private router: Router,
     private actaRecibidoHelper: ActaRecibidoHelper,
+    private salidasHelper: SalidaHelper,
     private store: Store<IAppState>,
     private listService: ListService,
     private pUpManager: PopUpManager) {
@@ -308,6 +316,8 @@ export class TablaElementosAsignadosComponent implements OnInit {
       if (true) {
         // console.log(datos[index])
         const elemento = new ElementoSalida();
+        elemento.ValorUnitario = datos[index].ValorUnitario;
+        elemento.ValorTotal = datos[index].ValorTotal;
         elemento.Id = datos[index].Id;
         elemento.Nombre = datos[index].Nombre;
         elemento.Cantidad = datos[index].Cantidad;
@@ -344,6 +354,8 @@ export class TablaElementosAsignadosComponent implements OnInit {
       if (true) {
         // console.log(datos[index])
         const elemento = new ElementoSalida();
+        elemento.ValorUnitario = datos[index].ValorUnitario;
+        elemento.ValorTotal = datos[index].ValorTotal;
         elemento.Id = datos[index].Id;
         elemento.Nombre = datos[index].Nombre;
         elemento.Cantidad = datos[index].Cantidad;
@@ -425,20 +437,76 @@ export class TablaElementosAsignadosComponent implements OnInit {
 
   }
   onSubmit() {
-    const datos_agrupados = this.source.data.reduce((accumulator, currentValue) => {
-      const val = currentValue.Funcionario.Id + '-' + currentValue.Ubicacion.Id;
-      accumulator[val] = accumulator[val] || { Ubicacion: 0, Funcionario: 0, Elementos: [] };
-      accumulator[val].Ubicacion = currentValue.Ubicacion.Id;
-      accumulator[val].Funcionario = currentValue.Funcionario.Id;
-      accumulator[val].Elementos.push(currentValue.Id);
 
+    const datos_agrupados = this.source.data.reduce((accumulator, currentValue) => {
+      const detalle = {
+        funcionario: currentValue.Funcionario.Id,
+        ubicacion: currentValue.Ubicacion.Id,
+      };
+      const val = currentValue.Funcionario.Id + '-' + currentValue.Ubicacion.Id;
+      accumulator[val] = accumulator[val] || {
+        Salida: {
+          Observacion: this.Observaciones,
+          Detalle: JSON.stringify(detalle),
+          Activo: true,
+          MovimientoPadreId: null, // parseFloat(this.entradaId),
+          FormatoTipoMovimientoId: {
+            Id: 7,
+          },
+          EstadoMovimientoId: {
+            Id: 3,
+          },
+        },
+        Elementos: [],
+      };
+      // accumulator[val].Ubicacion = currentValue.Ubicacion.Id;
+      // accumulator[val].Funcionario = currentValue.Funcionario.Id;
+      const elemento = {};
+      elemento['Activo'] = true;
+      elemento['ElementoActaId'] = currentValue.Id;
+      elemento['SaldoCantidad'] = currentValue.Cantidad;
+      elemento['SaldoValor'] = currentValue.ValorTotal;
+      elemento['Unidad'] = currentValue.Cantidad;
+      elemento['ValorUnitario'] = currentValue.ValorUnitario;
+      elemento['ValorTotal'] = currentValue.ValorTotal;
+
+      accumulator[val].Elementos.push(elemento);
       // console.log(currentValue);
       return accumulator;
 
     }, {});
-    // console.log(datos_agrupados);
 
+    // console.log(datos_agrupados);
     // console.log(Object.keys(datos_agrupados));
+    const Salidas = {
+      Salidas: [],
+    };
+    for (const salida of Object.keys(datos_agrupados)) {
+      Salidas.Salidas.push(datos_agrupados[salida]);
+    }
+    // console.log(Salidas);
+
+    (Swal as any).fire({
+      title: 'Desea Registrar Salida?',
+      text: 'Esta seguro de registrar los datos suministrados',
+      type: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Si',
+      cancelButtonText: 'No',
+    }).then((result) => {
+      if (result.value) {
+        this.salidasHelper.postSalidas(Salidas).subscribe(res => {
+          // console.log(res);
+          (Swal as any).fire({
+            title: 'Salida Registrada',
+            text: 'Ok',
+          });
+        });
+
+      }
+    });
   }
 
   onBack() {

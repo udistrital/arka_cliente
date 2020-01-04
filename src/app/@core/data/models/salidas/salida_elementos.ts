@@ -11,4 +11,6 @@ export class ElementoSalida {
     Dependencia: any;
     Ubicacion: any;
     Asignado: boolean;
+    ValorUnitario: number;
+    ValorTotal: number;
 }

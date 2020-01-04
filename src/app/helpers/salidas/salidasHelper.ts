@@ -60,7 +60,7 @@ export class SalidaHelper {
     */
     public postSalidas(salidasData) {
         this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
-        return this.rqManager.post(`tr_salida/`, salidasData).pipe(
+        return this.rqManager.post(`tr_salida`, salidasData).pipe(
             map(
                 (res) => {
                     if (res['Type'] === 'error') {
