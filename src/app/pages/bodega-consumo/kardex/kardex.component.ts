@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'kardex',
+  selector: 'ngx-kardex',
   templateUrl: './kardex.component.html',
-  styleUrls: ['./kardex.component.scss']
+  styleUrls: ['./kardex.component.scss'],
 })
 export class KardexComponent implements OnInit {
 

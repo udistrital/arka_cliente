@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'bodega-consumo',
+  selector: 'ngx-bodega-consumo',
   templateUrl: './bodega-consumo.component.html',
-  styleUrls: ['./bodega-consumo.component.scss']
+  styleUrls: ['./bodega-consumo.component.scss'],
 })
 export class BodegaConsumoComponent implements OnInit {
 

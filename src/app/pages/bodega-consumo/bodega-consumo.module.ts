@@ -9,7 +9,7 @@ import { KardexComponent } from './kardex/kardex.component';
   declarations: [BodegaConsumoComponent, KardexComponent],
   imports: [
     CommonModule,
-    BodegaConsumoRoutingModule
-  ]
+    BodegaConsumoRoutingModule,
+  ],
 })
 export class BodegaConsumoModule { }
