@@ -8,7 +8,7 @@ describe('RegistroSalidasComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ RegistroSalidasComponent ]
+      declarations: [ RegistroSalidasComponent ],
     })
     .compileComponents();
   }));

@@ -5,9 +5,9 @@ import { spagoBIService } from '../../../@core/utils/spagoBIAPI/spagoBIService';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'registro-salidas',
+  selector: 'ngx-registro-salidas',
   templateUrl: './registro-salidas.component.html',
-  styleUrls: ['./registro-salidas.component.scss']
+  styleUrls: ['./registro-salidas.component.scss'],
 })
 export class RegistroSalidasComponent implements OnInit {
 
@@ -29,7 +29,6 @@ export class RegistroSalidasComponent implements OnInit {
     if (navigation.extras.state) {
       const state = navigation.extras.state as { consecutivo: number };
       this.consecutivo = (state.consecutivo).toString();
-      
     }
   }
 
