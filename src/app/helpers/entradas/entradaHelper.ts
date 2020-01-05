@@ -241,7 +241,6 @@ export class EntradaHelper {
                         this.pUpManager.showErrorAlert('No se pudo consultar el encargado del elemento');
                         return undefined;
                     }
-                    
                     return res;
                 },
             ),

@@ -377,7 +377,7 @@ export class ActaRecibidoHelper {
     */
    public getElementos(placa) {
     this.rqManager.setPath('ACTA_RECIBIDO_SERVICE');
-    return this.rqManager.get('elemento/?query=Placa__contains:'+placa+',Activo:true&fields=Placa&limit=-1').pipe(
+    return this.rqManager.get('elemento/?query=Placa__contains:' + placa + ',Activo:true&fields=Placa&limit=-1').pipe(
         map(
             (res) => {
                 if (res === 'error') {
