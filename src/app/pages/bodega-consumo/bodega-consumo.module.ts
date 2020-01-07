@@ -6,13 +6,17 @@ import { AgregarElementosComponent } from './agregar-elementos/agregar-elementos
 import { ThemeModule } from '../../@theme/theme.module';
 import { Ng2SmartTableModule } from 'ngx-smart-table';
 import { OwlDateTimeModule, OwlNativeDateTimeModule } from 'ng-pick-datetime';
+import { FormElementosSeleccionadosComponent } from './form-elementos-seleccionados/form-elementos-seleccionados.component';
+import { NgxCurrencyModule } from 'ngx-currency';
 
 @NgModule({
   declarations: [
     BodegaConsumoComponent,
     AgregarElementosComponent,
+    FormElementosSeleccionadosComponent,
   ],
   imports: [
+    NgxCurrencyModule,
     CommonModule,
     BodegaConsumoRoutingModule,
     ThemeModule,

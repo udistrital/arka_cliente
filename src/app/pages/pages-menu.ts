@@ -82,7 +82,7 @@ export const MENU_ITEMS: NbMenuItem[] = [
     icon: 'nb-shuffle',
     children: [
       {
-        title: 'Agregar Elementos',
+        title: 'Solicitar Elementos',
         link: '/pages/bodega_consumo/agregar_elementos',
       },
     ],

@@ -11,6 +11,7 @@ import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { NuxeoService } from '../../../@core/utils/nuxeo.service';
 import { DocumentoService } from '../../../@core/data/documento.service';
 import { SalidaHelper } from '../../../helpers/salidas/salidasHelper';
+import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
 
 @Component({
   selector: 'ngx-agregar-elementos',
@@ -20,6 +21,7 @@ import { SalidaHelper } from '../../../helpers/salidas/salidasHelper';
 export class AgregarElementosComponent implements OnInit {
 
   source: LocalDataSource;
+  source2: LocalDataSource;
   entradas: Array<Entrada>;
   detalle: boolean;
   actaRecibidoId: number;
@@ -28,17 +30,21 @@ export class AgregarElementosComponent implements OnInit {
   contrato: Contrato;
   settings: any;
   documentoId: boolean;
+  DatosEnviados: any;
+  settings2: any;
 
-  constructor(private router: Router, private salidasHelper: SalidaHelper, private translate: TranslateService,
-    private nuxeoService: NuxeoService, private documentoService: DocumentoService) {
+  constructor(private router: Router,
+    private salidasHelper: SalidaHelper,
+    private translate: TranslateService,
+    private nuxeoService: NuxeoService,
+    private documentoService: DocumentoService,
+    private actaRecibidoHelper: ActaRecibidoHelper,
+  ) {
     this.source = new LocalDataSource();
+    
     this.entradas = new Array<Entrada>();
     this.detalle = false;
-    this.entradaEspecifica = new Entrada;
-    this.contrato = new Contrato;
-    this.documentoId = false;
     this.loadTablaSettings();
-    this.iniciarParametros();
     this.loadEntradas();
   }
 
@@ -47,35 +53,70 @@ export class AgregarElementosComponent implements OnInit {
       hideSubHeader: false,
       noDataMessage: this.translate.instant('GLOBAL.no_data_entradas'),
       actions: {
-        columnTitle: this.translate.instant('GLOBAL.detalle'),
+        columnTitle: 'Solicitar',
         position: 'right',
         add: false,
         edit: false,
         delete: false,
         custom: [
           {
-            name: this.translate.instant('GLOBAL.detalle'),
-            title: '<i class="fas fa-eye" title="Ver"></i>',
+            name: 'Solicitar',
+            title: '<i class="fas fa-pencil-alt" title="Ver"></i>',
           },
         ],
       },
       columns: {
-        Id: {
-          title: 'Id',
+        Descripcion: {
+          title: 'Nombre',
         },
-        ElementoActaId: {
-          title: 'Elemento',
+        SaldoCantidad: {
+          title: 'Saldo',
         },
-        MovimientoId: {
-          title: 'Movimiento',
+      },
+    };
+    this.settings2 = {
+
+      noDataMessage: 'No se encontraron elementos asociados.',
+      actions: {
+        columnTitle: 'Acciones',
+        position: 'right',
+        add: false,
+      },
+      add: {
+        addButtonContent: '<i class="nb-plus"></i>',
+        createButtonContent: '<i class="nb-checkmark"></i>',
+        cancelButtonContent: '<i class="nb-close"></i>',
+      },
+      edit: {
+        editButtonContent: '<i class="fas fa-pencil-alt"></i>',
+        saveButtonContent: '<i class="nb-checkmark"></i>',
+        cancelButtonContent: '<i class="nb-close"></i>',
+      },
+      delete: {
+        deleteButtonContent: '<i class="fas fa-times"></i>',
+      },
+      mode: 'external',
+      columns: {
+        Descripcion: {
+          title: 'Nombre',
+        },
+        Cantidad: {
+          title: 'Cantidad',
+        },
+        Funcionario: {
+          title: 'Funcionario',
           valuePrepareFunction: (value: any) => {
-            return value.Id;
+            if (value !== null) {
+              return value.NomProveedor;
+            } else {
+              return '';
+            }
           },
           filterFunction: (cell?: any, search?: string): boolean => {
             // console.log(cell);
             // console.log(search);
             if (Object.keys(cell).length !== 0) {
-              if (cell.Id.indexOf(search) > -1) {
+              if (cell.NomProveedor.indexOf(search) > -1) {
                 return true;
               } else {
                 return false;
@@ -85,68 +126,100 @@ export class AgregarElementosComponent implements OnInit {
             }
           },
         },
-        FechaCreacion: {
-          title: 'Fecha de Creacion',
-          width: '70px',
+        Sede: {
+          title: 'Sede',
           valuePrepareFunction: (value: any) => {
-            const date = value.split('T');
-            return date[0];
+            if (value !== null) {
+              return value.Nombre;
+            } else {
+              return '';
+            }
           },
-          filter: {
-            type: 'daterange',
-            config: {
-              daterange: {
-                format: 'yyyy/mm/dd',
-              },
-            },
+          filterFunction: (cell?: any, search?: string): boolean => {
+            // console.log(cell);
+            // console.log(search);
+            if (Object.keys(cell).length !== 0) {
+              if (cell.Nombre.indexOf(search) > -1) {
+                return true;
+              } else {
+                return false;
+              }
+            } else {
+              return false;
+            }
           },
         },
-        FechaModificacion: {
-          title: 'Fecha de Modificacion',
-          width: '70px',
+        Dependencia: {
+          title: 'Dependencia',
           valuePrepareFunction: (value: any) => {
-            const date = value.split('T');
-            return date[0];
+            if (value !== null) {
+              return value.Nombre;
+            } else {
+              return '';
+            }
           },
-          filter: {
-            type: 'daterange',
-            config: {
-              daterange: {
-                format: 'yyyy/mm/dd',
-              },
-            },
+          filterFunction: (cell?: any, search?: string): boolean => {
+            // console.log(cell);
+            // console.log(search);
+            if (Object.keys(cell).length !== 0) {
+              if (cell.Nombre.indexOf(search) > -1) {
+                return true;
+              } else {
+                return false;
+              }
+            } else {
+              return false;
+            }
           },
         },
-        SaldoCantidad: {
-          title:  'Saldo Cantidad',
-        },
-        SaldoValor: {
-          title: 'Saldo Valor',
-        },
-        Unidad: {
-          title: 'Unidad',
-        },
-        ValorUnitario: {
-          title: 'Valor Unitario',
+        Ubicacion: {
+          title: 'Ubicacion',
+          valuePrepareFunction: (value: any) => {
+            if (value !== null) {
+              return value.EspacioFisicoId.Nombre;
+            } else {
+              return '';
+            }
+          },
+          filterFunction: (cell?: any, search?: string): boolean => {
+            // console.log(cell);
+            // console.log(search);
+            if (Object.keys(cell).length !== 0) {
+              if (cell.EspacioFisicoId.Nombre.indexOf(search) > -1) {
+                return true;
+              } else {
+                return false;
+              }
+            } else {
+              return false;
+            }
+          },
         },
       },
     };
   }
 
+
   loadEntradas(): void {
-    this.salidasHelper.getElementos().subscribe(res => {
+    this.salidasHelper.getElementos().subscribe((res: any) => {
       if (Object.keys(res).length !== 0) {
         // console.log(res);
-        this.source.load(res);
+        //this.source.load(res);
+        res.forEach(element => {
+          this.actaRecibidoHelper.getElemento(element.Id).subscribe((res2: any) => {
+            console.log(res2);
+            element.Descripcion = res2.Nombre + ' ' + res2.Marca + ' ' + res2.Serie;
+            this.source.append(element);
+          })
+        });
       }
     });
   }
 
   onCustom(event) {
-    // this.actaRecibidoId = +`${event.data.ActaRecibidoId}`;
-    // // this.consecutivoEntrada = `${event.data.Consecutivo}`;
-    // this.consecutivoEntrada = `${event.data.Id}`;
-    // this.detalle = true;
+
+    this.DatosEnviados = event.data
+    this.detalle = true;
   }
 
   onVolver() {
@@ -155,13 +228,9 @@ export class AgregarElementosComponent implements OnInit {
   }
 
   iniciarParametros() {
-    const tipoEntrada = new TipoEntrada;
-    const supervisor = new Supervisor;
-    const ordenadorGasto = new OrdenadorGasto;
-    this.entradaEspecifica.TipoEntradaId = tipoEntrada;
-    this.contrato.Supervisor = supervisor;
-    this.contrato.OrdenadorGasto = ordenadorGasto;
+
   }
+
 
   onRegister() {
     this.router.navigate(['/pages/entradas/registro']);
