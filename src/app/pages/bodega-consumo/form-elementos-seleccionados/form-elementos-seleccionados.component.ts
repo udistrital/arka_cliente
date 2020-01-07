@@ -29,6 +29,7 @@ import { ListService } from '../../../@core/store/services/list.service';
 import { PopUpManager } from '../../../managers/popUpManager';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { DocumentoService } from '../../../@core/data/documento.service';
+import { LocalDataSource } from 'ngx-smart-table';
 
 
 
@@ -52,6 +53,10 @@ export class FormElementosSeleccionadosComponent implements OnInit {
   Sedes: any;
   form_salida: FormGroup;
   Datos: any;
+  settings2: any;
+  source2: LocalDataSource;
+  detalle2: boolean;
+
   @Input('Datos')
   set name(datos_seleccionados: any) {
     this.Datos = datos_seleccionados;
@@ -77,11 +82,14 @@ export class FormElementosSeleccionadosComponent implements OnInit {
   ) {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
     });
+    this.source2 = new LocalDataSource();
     this.listService.findProveedores();
     this.listService.findDependencias();
     this.listService.findSedes();
+    this.loadTablaSettings();
     // this.listService.findUbicaciones();
     this.loadLists();
+
   }
 
   ngOnInit() {
@@ -102,6 +110,8 @@ export class FormElementosSeleccionadosComponent implements OnInit {
   }
   get Formulario(): FormGroup {
     return this.fb.group({
+
+      Cantidad: ['', Validators.required],
       Proveedor: ['', Validators.required],
       Sede: ['', Validators.required],
       Dependencia: ['', Validators.required],
@@ -132,28 +142,176 @@ export class FormElementosSeleccionadosComponent implements OnInit {
 
   onSubmit() {
     const form = this.form_salida.value;
-    const proveedor___ = form.Proveedor.split(' ');
 
-    if (Object.keys(this.Datos.selected).length !== 0) {
-      const seleccionados = this.Datos.selected;
-      const datos = this.Datos.source.data;
-
-      seleccionados.forEach((elemento) => {
-        elemento.Funcionario = this.Proveedores.find(z => z.compuesto === form.Proveedor);
-        elemento.Sede = this.Sedes.find(y => y.Id === parseFloat(form.Sede));
-        elemento.Dependencia = this.Dependencias.find(y => y.Nombre === form.Dependencia);
-        elemento.Ubicacion = this.Ubicaciones.find(w => w.Id === parseFloat(form.Ubicacion));
-        elemento.Asignado = true;
-        datos.find(element => {
-          if (element.Id === elemento.Id) {
-            element = elemento;
-          }
-          // console.log(element);
-        });
+    if ((parseFloat(form.Cantidad) >>> parseFloat(this.Datos.SaldoCantidad)) || (parseFloat(form.Cantidad) === 0.00)) {
+      // console.log('valor excede limite')
+      (Swal as any).fire({
+        title: 'Cantidad No Valida',
+        text: 'Ca cantidad no debe ser nula ni exceder la cantidad maxima disponible',
+        type: 'warning',
       });
-      this.DatosEnviados.emit(datos);
+    } else {
+
+      const elemento = this.Datos;
+
+      elemento.Funcionario = this.Proveedores.find(z => z.compuesto === form.Proveedor);
+      elemento.Sede = this.Sedes.find(y => y.Id === parseFloat(form.Sede));
+      elemento.Dependencia = this.Dependencias.find(y => y.Nombre === form.Dependencia);
+      elemento.Ubicacion = this.Ubicaciones.find(w => w.Id === parseFloat(form.Ubicacion));
+      elemento.Cantidad = form.Cantidad;
+      // this.DatosEnviados.emit(elemento);
+      this.AgregarElementos(elemento);
     }
 
   }
-  usarLocalStorage() { }
+  onSubmit2() {
+    this.source2.getElements().then((res: any) => {
+      // console.log(res);
+    });
+  }
+  usarLocalStorage() {
+  }
+  loadTablaSettings() {
+
+    this.settings2 = {
+
+      noDataMessage: 'No se encontraron elementos asociados.',
+      actions: {
+        columnTitle: 'Acciones',
+        position: 'right',
+        add: false,
+        edit: false,
+        delete: false,
+        custom: [
+          {
+            name: 'Eliminar',
+            title: '<i class="fas fa-times" title="Ver"></i>',
+          },
+        ],
+      },
+      columns: {
+        Descripcion: {
+          title: 'Nombre',
+        },
+        Cantidad: {
+          title: 'Cantidad',
+        },
+        Funcionario: {
+          title: 'Funcionario',
+          valuePrepareFunction: (value: any) => {
+            if (value !== null) {
+              return value.NomProveedor;
+            } else {
+              return '';
+            }
+          },
+          filterFunction: (cell?: any, search?: string): boolean => {
+            // console.log(cell);
+            // console.log(search);
+            if (Object.keys(cell).length !== 0) {
+              if (cell.NomProveedor.indexOf(search) > -1) {
+                return true;
+              } else {
+                return false;
+              }
+            } else {
+              return false;
+            }
+          },
+        },
+        Sede: {
+          title: 'Sede',
+          valuePrepareFunction: (value: any) => {
+            if (value !== null) {
+              return value.Nombre;
+            } else {
+              return '';
+            }
+          },
+          filterFunction: (cell?: any, search?: string): boolean => {
+            // console.log(cell);
+            // console.log(search);
+            if (Object.keys(cell).length !== 0) {
+              if (cell.Nombre.indexOf(search) > -1) {
+                return true;
+              } else {
+                return false;
+              }
+            } else {
+              return false;
+            }
+          },
+        },
+        Dependencia: {
+          title: 'Dependencia',
+          valuePrepareFunction: (value: any) => {
+            if (value !== null) {
+              return value.Nombre;
+            } else {
+              return '';
+            }
+          },
+          filterFunction: (cell?: any, search?: string): boolean => {
+            // console.log(cell);
+            // console.log(search);
+            if (Object.keys(cell).length !== 0) {
+              if (cell.Nombre.indexOf(search) > -1) {
+                return true;
+              } else {
+                return false;
+              }
+            } else {
+              return false;
+            }
+          },
+        },
+        Ubicacion: {
+          title: 'Ubicacion',
+          valuePrepareFunction: (value: any) => {
+            if (value !== null) {
+              return value.EspacioFisicoId.Nombre;
+            } else {
+              return '';
+            }
+          },
+          filterFunction: (cell?: any, search?: string): boolean => {
+            // console.log(cell);
+            // console.log(search);
+            if (Object.keys(cell).length !== 0) {
+              if (cell.EspacioFisicoId.Nombre.indexOf(search) > -1) {
+                return true;
+              } else {
+                return false;
+              }
+            } else {
+              return false;
+            }
+          },
+        },
+      },
+    };
+  }
+
+  onCustom(event) {
+    // console.log(event);
+    this.source2.remove(event.data).then((res) => {
+      if (res.data === []) {
+        this.detalle2 = false;
+      }
+    });
+    this.source2.refresh();
+  }
+
+  AgregarElementos(elemento: any) {
+
+    this.source2.find(elemento).then((res) => {
+      this.source2.update(res, elemento);
+
+    }).catch(() => {
+      this.source2.add(elemento);
+      this.source2.refresh();
+    });
+    this.source2.refresh();
+    this.detalle2 = true;
+  }
 }

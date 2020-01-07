@@ -4,10 +4,13 @@ export class ElementoSalida {
     Cantidad: number;
     Marca: string;
     Serie: string;
-    SubgrupoCatalogoId: string; // Remplazar por modelo cuando este disponoble
-    TipoBienId: string;
-    Funcionario: string;
-    Sede: string; 
-    Dependencia: string;
-    Ubicacion: string;
+    SubgrupoCatalogoId: any; // Remplazar por modelo cuando este disponoble
+    TipoBienId: any;
+    Funcionario: any;
+    Sede: any;
+    Dependencia: any;
+    Ubicacion: any;
+    Asignado: boolean;
+    ValorUnitario: number;
+    ValorTotal: number;
 }
