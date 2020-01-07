@@ -149,7 +149,6 @@ export class FormElementosSeleccionadosComponent implements OnInit {
         title: 'Cantidad No Valida',
         text: 'Ca cantidad no debe ser nula ni exceder la cantidad maxima disponible',
         type: 'warning',
-        
       });
     } else {
 
