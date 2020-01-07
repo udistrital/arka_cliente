@@ -41,7 +41,6 @@ export class AgregarElementosComponent implements OnInit {
     private actaRecibidoHelper: ActaRecibidoHelper,
   ) {
     this.source = new LocalDataSource();
-    
     this.entradas = new Array<Entrada>();
     this.detalle = false;
     this.loadTablaSettings();
@@ -204,13 +203,13 @@ export class AgregarElementosComponent implements OnInit {
     this.salidasHelper.getElementos().subscribe((res: any) => {
       if (Object.keys(res).length !== 0) {
         // console.log(res);
-        //this.source.load(res);
+        // this.source.load(res);
         res.forEach(element => {
           this.actaRecibidoHelper.getElemento(element.Id).subscribe((res2: any) => {
-            console.log(res2);
+            // console.log(res2);
             element.Descripcion = res2.Nombre + ' ' + res2.Marca + ' ' + res2.Serie;
             this.source.append(element);
-          })
+          });
         });
       }
     });
@@ -218,7 +217,7 @@ export class AgregarElementosComponent implements OnInit {
 
   onCustom(event) {
 
-    this.DatosEnviados = event.data
+    this.DatosEnviados = event.data;
     this.detalle = true;
   }
 

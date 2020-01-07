@@ -143,8 +143,14 @@ export class FormElementosSeleccionadosComponent implements OnInit {
   onSubmit() {
     const form = this.form_salida.value;
 
-    if (parseFloat(form.Cantidad) >>> parseFloat(this.Datos.SaldoCantidad)) {
-      console.log('valor excede limite')
+    if ((parseFloat(form.Cantidad) >>> parseFloat(this.Datos.SaldoCantidad)) || (parseFloat(form.Cantidad) === 0.00)) {
+      // console.log('valor excede limite')
+      (Swal as any).fire({
+        title: 'Cantidad No Valida',
+        text: 'Ca cantidad no debe ser nula ni exceder la cantidad maxima disponible',
+        type: 'warning',
+        
+      });
     } else {
 
       const elemento = this.Datos;
@@ -153,16 +159,16 @@ export class FormElementosSeleccionadosComponent implements OnInit {
       elemento.Sede = this.Sedes.find(y => y.Id === parseFloat(form.Sede));
       elemento.Dependencia = this.Dependencias.find(y => y.Nombre === form.Dependencia);
       elemento.Ubicacion = this.Ubicaciones.find(w => w.Id === parseFloat(form.Ubicacion));
-      elemento.Cantidad = form.Cantidad
-      //this.DatosEnviados.emit(elemento);
+      elemento.Cantidad = form.Cantidad;
+      // this.DatosEnviados.emit(elemento);
       this.AgregarElementos(elemento);
     }
 
   }
   onSubmit2() {
     this.source2.getElements().then((res: any) => {
-      console.log(res);
-    })
+      // console.log(res);
+    });
   }
   usarLocalStorage() {
   }
@@ -288,9 +294,9 @@ export class FormElementosSeleccionadosComponent implements OnInit {
   }
 
   onCustom(event) {
-    console.log(event);
+    // console.log(event);
     this.source2.remove(event.data).then((res) => {
-      if (res.data === []){
+      if (res.data === []) {
         this.detalle2 = false;
       }
     });
