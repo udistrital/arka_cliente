@@ -11,20 +11,17 @@ import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { NuxeoService } from '../../../@core/utils/nuxeo.service';
 import { DocumentoService } from '../../../@core/data/documento.service';
 import { SalidaHelper } from '../../../helpers/salidas/salidasHelper';
-import { Store } from '@ngrx/store';
-import { IAppState } from '../../../@core/store/app.state';
-import { ListService } from '../../../@core/store/services/list.service';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
-import { parse } from 'path';
 
 @Component({
-  selector: 'ngx-consulta-salidas',
-  templateUrl: './consulta-salidas.component.html',
-  styleUrls: ['./consulta-salidas.component.scss'],
+  selector: 'ngx-agregar-elementos',
+  templateUrl: './agregar-elementos.component.html',
+  styleUrls: ['./agregar-elementos.component.scss'],
 })
-export class ConsultaSalidasComponent implements OnInit {
+export class AgregarElementosComponent implements OnInit {
 
   source: LocalDataSource;
+  source2: LocalDataSource;
   entradas: Array<Entrada>;
   detalle: boolean;
   actaRecibidoId: number;
@@ -33,54 +30,21 @@ export class ConsultaSalidasComponent implements OnInit {
   contrato: Contrato;
   settings: any;
   documentoId: boolean;
-  salidaId: string;
-  Proveedores: any;
-  Dependencias: any;
-  Sedes: any;
+  DatosEnviados: any;
+  settings2: any;
 
-  constructor(
-    private router: Router,
+  constructor(private router: Router,
     private salidasHelper: SalidaHelper,
     private translate: TranslateService,
     private nuxeoService: NuxeoService,
     private documentoService: DocumentoService,
-    private store: Store<IAppState>,
-    private Actas_Recibido: ActaRecibidoHelper,
-    private listService: ListService,
+    private actaRecibidoHelper: ActaRecibidoHelper,
   ) {
     this.source = new LocalDataSource();
+    this.entradas = new Array<Entrada>();
     this.detalle = false;
     this.loadTablaSettings();
-    this.listService.findDependencias();
-    this.listService.findSedes();
-    this.listService.findProveedores();
-    this.loadLists();
-  }
-
-  public loadLists() {
-    this.store.select((state) => state).subscribe(
-      (list) => {
-        this.Proveedores = list.listProveedores[0];
-        this.Dependencias = list.listDependencias[0];
-        // this.Ubicaciones = list.listUbicaciones[0];
-        this.Sedes = list.listSedes[0];
-        // this.dataService = this.completerService.local(this.Ubicaciones, 'Nombre', 'Nombre');
-        // console.log(this.Proveedores);
-        // console.log(this.Dependencias);
-        // console.log(this.Sedes);
-        // console.log(list);
-        if (this.Dependencias !== undefined && this.Sedes !== undefined && this.Proveedores !== undefined) {
-          // console.log('ok');
-          this.loadSalidas();
-        }
-      },
-    );
-  }
-
-  ngOnInit() {
-    this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
-      this.loadTablaSettings();
-    });
+    this.loadEntradas();
   }
 
   loadTablaSettings() {
@@ -88,67 +52,55 @@ export class ConsultaSalidasComponent implements OnInit {
       hideSubHeader: false,
       noDataMessage: this.translate.instant('GLOBAL.no_data_entradas'),
       actions: {
-        columnTitle: this.translate.instant('GLOBAL.detalle'),
+        columnTitle: 'Solicitar',
         position: 'right',
         add: false,
         edit: false,
         delete: false,
         custom: [
           {
-            // name: this.translate.instant('GLOBAL.detalle'),
-            name: 'Seleccionar',
-            title: '<i class="fas fa-eye"></i>',
+            name: 'Solicitar',
+            title: '<i class="fas fa-pencil-alt" title="Ver"></i>',
           },
         ],
       },
       columns: {
-        Id: {
-          title: 'Consecutivo',
+        Descripcion: {
+          title: 'Nombre',
         },
-        Observacion: {
-          title: 'Observaciones',
+        SaldoCantidad: {
+          title: 'Saldo',
         },
-        FechaCreacion: {
-          title: this.translate.instant('GLOBAL.fecha_entrada'),
-          width: '70px',
-          valuePrepareFunction: (value: any) => {
-            const date = value.split('T');
-            return date[0];
-          },
-          filter: {
-            type: 'daterange',
-            config: {
-              daterange: {
-                format: 'yyyy/mm/dd',
-              },
-            },
-          },
+      },
+    };
+    this.settings2 = {
+
+      noDataMessage: 'No se encontraron elementos asociados.',
+      actions: {
+        columnTitle: 'Acciones',
+        position: 'right',
+        add: false,
+      },
+      add: {
+        addButtonContent: '<i class="nb-plus"></i>',
+        createButtonContent: '<i class="nb-checkmark"></i>',
+        cancelButtonContent: '<i class="nb-close"></i>',
+      },
+      edit: {
+        editButtonContent: '<i class="fas fa-pencil-alt"></i>',
+        saveButtonContent: '<i class="nb-checkmark"></i>',
+        cancelButtonContent: '<i class="nb-close"></i>',
+      },
+      delete: {
+        deleteButtonContent: '<i class="fas fa-times"></i>',
+      },
+      mode: 'external',
+      columns: {
+        Descripcion: {
+          title: 'Nombre',
         },
-        FechaModificacion: {
-          title: this.translate.instant('GLOBAL.fecha_entrada'),
-          width: '70px',
-          valuePrepareFunction: (value: any) => {
-            const date = value.split('T');
-            return date[0];
-          },
-          filter: {
-            type: 'daterange',
-            config: {
-              daterange: {
-                format: 'yyyy/mm/dd',
-              },
-            },
-          },
-        },
-        MovimientoPadreId: {
-          title: 'Entrada Asociada',
-          valuePrepareFunction: (value: any) => {
-            if (value !== null) {
-              return value;
-            } else {
-              return '';
-            }
-          },
+        Cantidad: {
+          title: 'Cantidad',
         },
         Funcionario: {
           title: 'Funcionario',
@@ -245,34 +197,48 @@ export class ConsultaSalidasComponent implements OnInit {
       },
     };
   }
-  loadSalidas(): void {
-    this.salidasHelper.getSalidas().subscribe(res1 => {
-      // console.log(res1);
-      if (res1 !== null) {
-        const datos = res1;
-        datos.forEach(element => {
-          const detalle = JSON.parse(element.Detalle);
-          // console.log(detalle)
-          this.Actas_Recibido.getSedeDependencia(detalle.ubicacion).subscribe(res => {
-            const valor = res[0].EspacioFisicoId.Codigo.substring(0, 4);
-            // console.log(res)
-            element.Funcionario = this.Proveedores.find(x => x.Id === parseFloat(detalle.funcionario));
-            element.Ubicacion = res[0];
-            element.Sede = this.Sedes.find(y => y.Codigo === valor);
-            element.Dependencia = res[0].DependenciaId;
+
+
+  loadEntradas(): void {
+    this.salidasHelper.getElementos().subscribe((res: any) => {
+      if (Object.keys(res).length !== 0) {
+        // console.log(res);
+        // this.source.load(res);
+        res.forEach(element => {
+          this.actaRecibidoHelper.getElemento(element.Id).subscribe((res2: any) => {
+            // console.log(res2);
+            element.Descripcion = res2.Nombre + ' ' + res2.Marca + ' ' + res2.Serie;
             this.source.append(element);
           });
         });
-        // console.log(datos);
-        // this.source.load(datos);
       }
     });
   }
+
   onCustom(event) {
-    this.salidaId = `${event.data.Id}`;
+
+    this.DatosEnviados = event.data;
     this.detalle = true;
   }
+
   onVolver() {
     this.detalle = !this.detalle;
+    this.iniciarParametros();
   }
+
+  iniciarParametros() {
+
+  }
+
+
+  onRegister() {
+    this.router.navigate(['/pages/entradas/registro']);
+  }
+
+  ngOnInit() {
+    this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
+      this.loadTablaSettings();
+    });
+  }
+
 }

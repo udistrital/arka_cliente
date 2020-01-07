@@ -1,0 +1,22 @@
+<div class="col-lg-12">
+  <nb-card>
+    <nb-card-header>
+      <h1>Solicitud de Elementos de Bodega de Consumo</h1>
+    </nb-card-header>
+    <nb-card-body>
+
+      <!-- CARD PARA MOSTRAR LAS SOLICITUDES *ngIf="!detalle" -->
+      <p class="h4 pb-4">Para iniciar la solicitud de elementos, por favor seleccione cualquier
+        elemento, los elementos solicitados seran listados conforme se van seleccionando.</p>
+
+      <ng2-smart-table [settings]="settings" [source]="source" (custom)="onCustom($event)">
+      </ng2-smart-table>
+      <p></p>
+      <ngx-form-elementos-seleccionados *ngIf="detalle" [Datos]="DatosEnviados">
+      </ngx-form-elementos-seleccionados>
+
+    </nb-card-body>
+    <nb-card-footer>
+    </nb-card-footer>
+  </nb-card>
+</div>

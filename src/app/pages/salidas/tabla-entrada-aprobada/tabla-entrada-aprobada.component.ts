@@ -54,8 +54,8 @@ export class TablaEntradaAprobadaComponent implements OnInit {
         custom: [
           {
             // name: this.translate.instant('GLOBAL.detalle'),
-            name: 'Detalle',
-            title: '<i class="fas fa-pencil" title="Ver"></i>',
+            name: 'Seleccionar',
+            title: '<i class="fas fa-pencil-alt" title="Ver"></i>',
           },
         ],
       },
@@ -288,6 +288,7 @@ export class TablaEntradaAprobadaComponent implements OnInit {
   }
 
   onCustom(event) {
+    // console.log(event.data);
     this.actaRecibidoId = +`${event.data.ActaRecibidoId}`;
     // this.consecutivoEntrada = `${event.data.Consecutivo}`;
     this.consecutivoEntrada = `${event.data.Id}`;
