@@ -77,7 +77,6 @@ export class ConsultaSalidasComponent implements OnInit {
               this.loadSalidas();
             }
           });
-          
         }
       },
     );
