@@ -114,23 +114,7 @@ export class ConsultaSalidasComponent implements OnInit {
           title: 'Observaciones',
         },
         FechaCreacion: {
-          title: this.translate.instant('GLOBAL.fecha_entrada'),
-          width: '70px',
-          valuePrepareFunction: (value: any) => {
-            const date = value.split('T');
-            return date[0];
-          },
-          filter: {
-            type: 'daterange',
-            config: {
-              daterange: {
-                format: 'yyyy/mm/dd',
-              },
-            },
-          },
-        },
-        FechaModificacion: {
-          title: this.translate.instant('GLOBAL.fecha_entrada'),
+          title: 'Fecha de Creacion',
           width: '70px',
           valuePrepareFunction: (value: any) => {
             const date = value.split('T');
