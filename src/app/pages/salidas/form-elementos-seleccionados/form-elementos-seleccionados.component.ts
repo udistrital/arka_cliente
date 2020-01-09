@@ -53,6 +53,7 @@ export class FormElementosSeleccionadosComponent implements OnInit {
   Datos: any;
   proveedorfiltro: string;
   elementos: any;
+  elementos2: any;
 
   @Input('Datos')
   set name(datos_seleccionados: any) {
@@ -141,7 +142,7 @@ export class FormElementosSeleccionadosComponent implements OnInit {
       const datos = this.Datos.source.data;
 
       seleccionados.forEach((elemento) => {
-        elemento.Funcionario = this.proveedorfiltro;
+        elemento.Funcionario = this.elementos2;
         // elemento.Funcionario = this.Proveedores.find(z => z.compuesto === form.Proveedor);
         elemento.Sede = this.Sedes.find(y => y.Id === parseFloat(form.Sede));
         elemento.Dependencia = this.Dependencias.find(y => y.Nombre === form.Dependencia);
@@ -168,9 +169,11 @@ export class FormElementosSeleccionadosComponent implements OnInit {
           while (this.elementos.length > 0) {
             this.elementos.pop();
           }
+          if (Object.keys(res).length === 1) {
+            this.elementos2 = res[0];
+          }
           for (const index of Object.keys(res)) {
             if (res[index].NombreCompleto != null) {
-              // console.log('change nombre: ', res[index].NombreCompleto)
               this.elementos.push(res[index].NombreCompleto);
             }
           }

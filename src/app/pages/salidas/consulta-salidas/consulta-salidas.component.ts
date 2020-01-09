@@ -243,15 +243,24 @@ export class ConsultaSalidasComponent implements OnInit {
           datos.forEach(element => {
             const detalle = JSON.parse(element.Detalle);
             // console.log(detalle)
-            this.Actas_Recibido.getSedeDependencia(detalle.ubicacion).subscribe(res => {
-              const valor = res[0].EspacioFisicoId.Codigo.substring(0, 4);
-              // console.log(res)
-              element.Funcionario = this.Proveedores.find(x => x.Id === parseFloat(detalle.funcionario));
-              element.Ubicacion = res[0];
-              element.Sede = this.Sedes.find(y => y.Codigo === valor);
-              element.Dependencia = res[0].DependenciaId;
-              this.source.append(element);
-            });
+            // if (detalle.funcionario !== null) {
+              this.Actas_Recibido.getSedeDependencia(detalle.ubicacion).subscribe(res => {
+                const valor = res[0].EspacioFisicoId.Codigo.substring(0, 4);
+                console.log(detalle.funcionario);
+                if (detalle.funcionario !== undefined) {
+                  element.Funcionario = this.Proveedores.find(x => x.Id === parseFloat(detalle.funcionario));
+                } else {
+                  element.Funcionario = {
+                    NomProveedor: 'NO APLICA'
+                  }
+                }
+                
+                element.Ubicacion = res[0];
+                element.Sede = this.Sedes.find(y => y.Codigo === valor);
+                element.Dependencia = res[0].DependenciaId;
+                this.source.append(element);
+              });
+            // }
           });
           // console.log(datos);
           // this.source.load(datos);

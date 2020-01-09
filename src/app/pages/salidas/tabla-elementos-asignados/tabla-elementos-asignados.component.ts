@@ -34,7 +34,10 @@ export class TablaElementosAsignadosComponent implements OnInit {
   actaRecibidoId: number;
   respuesta: any;
   Datos: ElementoSalida[];
+  DatosConsumo: ElementoSalida[];
   Consumo: any;
+  Sedes: any;
+  Dependencias: any;
   ConsumoControlado: any;
   Devolutivo: any;
   DatosSeleccionados: any;
@@ -43,6 +46,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
   bandera2: boolean;
   Observaciones: string;
   entradaId: string;
+  Datos_Salida_Consumo: any;
 
   @Input('actaRecibidoId')
   set name(acta_id: number) {
@@ -65,6 +69,8 @@ export class TablaElementosAsignadosComponent implements OnInit {
     this.listService.findSubgruposConsumo();
     this.listService.findSubgruposConsumoControlado();
     this.listService.findSubgruposDevolutivo();
+    this.listService.findDependencias();
+    this.listService.findSedes();
     this.navigationSubscription = this.router.events.subscribe((e: any) => {
       // If it is a NavigationEnd event re-initalise the component
       if (e instanceof NavigationEnd) {
@@ -95,13 +101,15 @@ export class TablaElementosAsignadosComponent implements OnInit {
         this.Consumo = list.listConsumo[0];
         this.ConsumoControlado = list.listConsumoControlado[0];
         this.Devolutivo = list.listDevolutivo[0];
+        this.Sedes = list.listSedes[0];
+        this.Dependencias = list.listDependencias[0];
         // console.log(this.actaRecibidoId);
         // console.log(this.Consumo);
         // console.log(this.Devolutivo);
         // console.log(this.ConsumoControlado);
         if (this.actaRecibidoId !== undefined && this.Consumo !== undefined &&
           this.ConsumoControlado !== undefined && this.Devolutivo !== undefined &&
-          this.respuesta === undefined) {
+          this.respuesta === undefined && this.Sedes !== undefined && this.Dependencias !== undefined) {
           this.actaRecibidoHelper.getElementosActa(this.actaRecibidoId).subscribe((res: any) => {
             // console.log(res)
             this.respuesta = res;
@@ -217,7 +225,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
           title: 'Funcionario',
           valuePrepareFunction: (value: any) => {
             if (value !== null) {
-              return value.compuesto;
+              return value.NombreCompleto;
             } else {
               return '';
             }
@@ -312,6 +320,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
   AjustarDatos(datos: any[]) {
     // console.log(datos);
     this.Datos = new Array<ElementoSalida>();
+    this.DatosConsumo = new Array<ElementoSalida>();
     for (const index in datos) {
       if (true) {
         // console.log(datos[index])
@@ -339,10 +348,17 @@ export class TablaElementosAsignadosComponent implements OnInit {
           elemento.SubgrupoCatalogoId = this.Devolutivo.find(x => x.Id === datos[index].SubgrupoCatalogoId);
         }
         // console.log(elemento);
-        this.Datos.push(elemento);
+        if (datos[index].TipoBienId.Id === 1) {
+          this.DatosConsumo.push(elemento);
+        } else {
+          this.Datos.push(elemento);
+        }
       }
     }
 
+    if (this.DatosConsumo !== undefined) {
+      this.Salida_Consumo();
+    }
     if (this.Datos !== undefined) {
       this.source.load(this.Datos);
     }
@@ -433,12 +449,58 @@ export class TablaElementosAsignadosComponent implements OnInit {
   onDelete(event): void {
 
   }
-  funcion_Reduccion(data: any, param: string) {
+  Traer_Relacion_Ubicaciones() {
 
   }
-  onSubmit() {
+  Salida_Consumo() {
 
-    const datos_agrupados = this.source.data.reduce((accumulator, currentValue) => {
+    const sede = "FICC"
+    const dependencia = "ALMACEN GENERAL E INVENTARIOS";
+
+    const transaccion: any = {};
+    transaccion.Sede = this.Sedes.find((x) => x.Codigo === sede);
+    transaccion.Dependencia = this.Dependencias.find((x) => x.Nombre === dependencia);
+    console.log(transaccion);
+    this.actaRecibidoHelper.postRelacionSedeDependencia(transaccion).subscribe((res: any) => {
+      console.log(res)
+      const detalle = {
+        ubicacion: res[0].Relaciones[0].Id
+      };
+      const Salida = {
+        Salida: {
+          Observacion: 'Salida Automatica para Bodega de Consumo',
+          Detalle: JSON.stringify(detalle),
+          Activo: true,
+          MovimientoPadreId: null, // parseFloat(this.entradaId),
+          FormatoTipoMovimientoId: {
+            Id: 7,
+          },
+          EstadoMovimientoId: {
+            Id: 3,
+          },
+        },
+        Elementos: [],
+      };
+
+      for (const currentValue of this.DatosConsumo) {
+        const elemento = {};
+        elemento['Activo'] = true;
+        elemento['ElementoActaId'] = currentValue.Id;
+        elemento['SaldoCantidad'] = currentValue.Cantidad;
+        elemento['SaldoValor'] = currentValue.ValorTotal;
+        elemento['Unidad'] = currentValue.Cantidad;
+        elemento['ValorUnitario'] = currentValue.ValorUnitario;
+        elemento['ValorTotal'] = currentValue.ValorTotal;
+
+        Salida.Elementos.push(elemento);
+        console.log(Salida)
+      }
+      this.Datos_Salida_Consumo = Salida;
+    });
+  }
+  Salida_General() {
+
+    const datos_agrupados2 = this.source.data.reduce((accumulator, currentValue) => {
       const detalle = {
         funcionario: currentValue.Funcionario.Id,
         ubicacion: currentValue.Ubicacion.Id,
@@ -476,15 +538,22 @@ export class TablaElementosAsignadosComponent implements OnInit {
 
     }, {});
 
+    return datos_agrupados2;
+  }
+  onSubmit() {
+
+    const datos_agrupados = this.Salida_General();
     // console.log(datos_agrupados);
     // console.log(Object.keys(datos_agrupados));
     const Salidas = {
       Salidas: [],
     };
+    Salidas.Salidas.push(this.Datos_Salida_Consumo);
     for (const salida of Object.keys(datos_agrupados)) {
       Salidas.Salidas.push(datos_agrupados[salida]);
     }
-    // console.log(Salidas);
+
+    console.log(Salidas);
 
     (Swal as any).fire({
       title: 'Desea Registrar Salida?',
@@ -498,7 +567,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
     }).then((result) => {
       if (result.value) {
         this.salidasHelper.postSalidas(Salidas).subscribe(res => {
-          // console.log(res);
+          console.log(res);
           (Swal as any).fire({
             title: 'Salida Registrada',
             text: 'Ok',
@@ -508,6 +577,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
       }
     });
   }
+
 
   onBack() {
 
