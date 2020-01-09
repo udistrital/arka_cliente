@@ -246,15 +246,15 @@ export class ConsultaSalidasComponent implements OnInit {
             // if (detalle.funcionario !== null) {
               this.Actas_Recibido.getSedeDependencia(detalle.ubicacion).subscribe(res => {
                 const valor = res[0].EspacioFisicoId.Codigo.substring(0, 4);
-                console.log(detalle.funcionario);
+                // console.log(detalle.funcionario);
                 if (detalle.funcionario !== undefined) {
                   element.Funcionario = this.Proveedores.find(x => x.Id === parseFloat(detalle.funcionario));
                 } else {
                   element.Funcionario = {
-                    NomProveedor: 'NO APLICA'
-                  }
+                    NomProveedor: 'NO APLICA',
+                  };
                 }
-                
+
                 element.Ubicacion = res[0];
                 element.Sede = this.Sedes.find(y => y.Codigo === valor);
                 element.Dependencia = res[0].DependenciaId;

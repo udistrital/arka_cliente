@@ -454,17 +454,17 @@ export class TablaElementosAsignadosComponent implements OnInit {
   }
   Salida_Consumo() {
 
-    const sede = "FICC"
-    const dependencia = "ALMACEN GENERAL E INVENTARIOS";
+    const sede = 'FICC';
+    const dependencia = 'ALMACEN GENERAL E INVENTARIOS';
 
     const transaccion: any = {};
     transaccion.Sede = this.Sedes.find((x) => x.Codigo === sede);
     transaccion.Dependencia = this.Dependencias.find((x) => x.Nombre === dependencia);
-    console.log(transaccion);
+    // console.log(transaccion);
     this.actaRecibidoHelper.postRelacionSedeDependencia(transaccion).subscribe((res: any) => {
-      console.log(res)
+      // console.log(res)
       const detalle = {
-        ubicacion: res[0].Relaciones[0].Id
+        ubicacion: res[0].Relaciones[0].Id,
       };
       const Salida = {
         Salida: {
@@ -493,7 +493,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
         elemento['ValorTotal'] = currentValue.ValorTotal;
 
         Salida.Elementos.push(elemento);
-        console.log(Salida)
+        // console.log(Salida)
       }
       this.Datos_Salida_Consumo = Salida;
     });
@@ -553,7 +553,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
       Salidas.Salidas.push(datos_agrupados[salida]);
     }
 
-    console.log(Salidas);
+    // console.log(Salidas);
 
     (Swal as any).fire({
       title: 'Desea Registrar Salida?',
@@ -567,7 +567,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
     }).then((result) => {
       if (result.value) {
         this.salidasHelper.postSalidas(Salidas).subscribe(res => {
-          console.log(res);
+          // console.log(res);
           (Swal as any).fire({
             title: 'Salida Registrada',
             text: 'Ok',
