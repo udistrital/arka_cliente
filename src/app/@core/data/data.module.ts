@@ -3,10 +3,12 @@ import { CommonModule } from '@angular/common';
 import { StateService } from './state.service';
 import { ConfiguracionService } from './configuracion.service';
 import { MenuService } from './menu.service';
+import { UserService } from './users.service';
 
 const SERVICES = [
   StateService,
   ConfiguracionService,
+  UserService,
   MenuService,
 ];
 
