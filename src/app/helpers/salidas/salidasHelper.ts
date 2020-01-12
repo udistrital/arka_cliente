@@ -19,7 +19,7 @@ export class SalidaHelper {
      */
     public getSalidas() {
         this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
-        return this.rqManager.get('movimiento?query=FormatoTipoMovimientoId.Nombre:Salida').pipe(
+        return this.rqManager.get('movimiento?query=FormatoTipoMovimientoId.CodigoAbreviacion__contains:SAL').pipe(
             map(
                 (res) => {
                     if (res === 'error') {
@@ -82,7 +82,7 @@ export class SalidaHelper {
      */
     public getElementos() {
         this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
-        return this.rqManager.get('elementos_movimiento/').pipe(
+        return this.rqManager.get('elementos_movimiento?query=MovimientoId.FormatoTipoMovimientoId.Id:9&limit=-1').pipe(
             map(
                 (res) => {
                     if (res === 'error') {

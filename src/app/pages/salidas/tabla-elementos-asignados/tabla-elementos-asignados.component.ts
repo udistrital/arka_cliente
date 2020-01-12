@@ -29,12 +29,16 @@ import { SalidaHelper } from '../../../helpers/salidas/salidasHelper';
 export class TablaElementosAsignadosComponent implements OnInit {
 
   settings: any;
+  settings2: any;
   bandera: boolean;
   navigationSubscription;
   actaRecibidoId: number;
   respuesta: any;
   Datos: ElementoSalida[];
+  DatosConsumo: ElementoSalida[];
   Consumo: any;
+  Sedes: any;
+  Dependencias: any;
   ConsumoControlado: any;
   Devolutivo: any;
   DatosSeleccionados: any;
@@ -43,6 +47,8 @@ export class TablaElementosAsignadosComponent implements OnInit {
   bandera2: boolean;
   Observaciones: string;
   entradaId: string;
+  Datos_Salida_Consumo: any;
+  selected = new FormControl(0);
 
   @Input('actaRecibidoId')
   set name(acta_id: number) {
@@ -51,8 +57,10 @@ export class TablaElementosAsignadosComponent implements OnInit {
   @Input('entradaId')
   set name2(entrada_id: string) {
     this.entradaId = entrada_id;
+    console.log(this.entradaId);
   }
   source: any;
+  source2: any;
   elementos: Elemento[];
 
   constructor(private translate: TranslateService,
@@ -65,6 +73,8 @@ export class TablaElementosAsignadosComponent implements OnInit {
     this.listService.findSubgruposConsumo();
     this.listService.findSubgruposConsumoControlado();
     this.listService.findSubgruposDevolutivo();
+    this.listService.findDependencias();
+    this.listService.findSedes();
     this.navigationSubscription = this.router.events.subscribe((e: any) => {
       // If it is a NavigationEnd event re-initalise the component
       if (e instanceof NavigationEnd) {
@@ -76,6 +86,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
       this.cargarCampos();
     });
     this.source = new LocalDataSource(); // create the source
+    this.source2 = new LocalDataSource();
     this.elementos = new Array<Elemento>();
     this.Datos2 = new Array<any>();
     this.cargarCampos();
@@ -95,13 +106,15 @@ export class TablaElementosAsignadosComponent implements OnInit {
         this.Consumo = list.listConsumo[0];
         this.ConsumoControlado = list.listConsumoControlado[0];
         this.Devolutivo = list.listDevolutivo[0];
+        this.Sedes = list.listSedes[0];
+        this.Dependencias = list.listDependencias[0];
         // console.log(this.actaRecibidoId);
         // console.log(this.Consumo);
         // console.log(this.Devolutivo);
         // console.log(this.ConsumoControlado);
         if (this.actaRecibidoId !== undefined && this.Consumo !== undefined &&
           this.ConsumoControlado !== undefined && this.Devolutivo !== undefined &&
-          this.respuesta === undefined) {
+          this.respuesta === undefined && this.Sedes !== undefined && this.Dependencias !== undefined) {
           this.actaRecibidoHelper.getElementosActa(this.actaRecibidoId).subscribe((res: any) => {
             // console.log(res)
             this.respuesta = res;
@@ -217,7 +230,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
           title: 'Funcionario',
           valuePrepareFunction: (value: any) => {
             if (value !== null) {
-              return value.compuesto;
+              return value.NombreCompleto;
             } else {
               return '';
             }
@@ -307,11 +320,103 @@ export class TablaElementosAsignadosComponent implements OnInit {
         },
       },
     };
+
+    this.settings2 = {
+      hideSubHeader: false,
+      noDataMessage: 'No se encontraron elementos asociados.',
+      actions: {
+        columnTitle: 'Acciones',
+        position: 'right',
+        add: false,
+        delete: false,
+        edit: false,
+      },
+      add: {
+        addButtonContent: '<i class="nb-plus"></i>',
+        createButtonContent: '<i class="nb-checkmark"></i>',
+        cancelButtonContent: '<i class="nb-close"></i>',
+      },
+      edit: {
+        editButtonContent: '<i class="fas fa-pencil-alt"></i>',
+        saveButtonContent: '<i class="nb-checkmark"></i>',
+        cancelButtonContent: '<i class="nb-close"></i>',
+      },
+      delete: {
+        deleteButtonContent: '<i class="fas fa-eye"></i>',
+      },
+      mode: 'external',
+      columns: {
+        Nombre: {
+          title: 'Elemento',
+          valuePrepareFunction: (value: any) => {
+            return value;
+          },
+        },
+        Cantidad: {
+          title: 'Cantidad',
+          valuePrepareFunction: (value: any) => {
+            return value;
+          },
+        },
+        TipoBienId: {
+          title: 'Tipo de Bien',
+          valuePrepareFunction: (value: any) => {
+            return value.Nombre;
+          },
+          filterFunction: (cell?: any, search?: string): boolean => {
+            // console.log(cell);
+            // console.log(search);
+            if (Object.keys(cell).length !== 0) {
+              if (cell.Nombre.indexOf(search) > -1) {
+                return true;
+              } else {
+                return false;
+              }
+            } else {
+              return false;
+            }
+          },
+        },
+        SubgrupoCatalogoId: {
+          title: 'Subgrupo',
+          valuePrepareFunction: (value: any) => {
+            return value.Nombre;
+          },
+          filterFunction: (cell?: any, search?: string): boolean => {
+            // console.log(cell);
+            // console.log(search);
+            if (Object.keys(cell).length !== 0) {
+              if (cell.Nombre.indexOf(search) > -1) {
+                return true;
+              } else {
+                return false;
+              }
+            } else {
+              return false;
+            }
+          },
+        },
+        Marca: {
+          title: 'Marca',
+          valuePrepareFunction: (value: any) => {
+            return value;
+          },
+        },
+        Serie: {
+          title: 'Serie',
+          valuePrepareFunction: (value: any) => {
+            return value;
+          },
+        },
+      },
+    };
+
   }
 
   AjustarDatos(datos: any[]) {
     // console.log(datos);
     this.Datos = new Array<ElementoSalida>();
+    this.DatosConsumo = new Array<ElementoSalida>();
     for (const index in datos) {
       if (true) {
         // console.log(datos[index])
@@ -339,13 +444,26 @@ export class TablaElementosAsignadosComponent implements OnInit {
           elemento.SubgrupoCatalogoId = this.Devolutivo.find(x => x.Id === datos[index].SubgrupoCatalogoId);
         }
         // console.log(elemento);
-        this.Datos.push(elemento);
+        if (datos[index].TipoBienId.Id === 1) {
+          this.DatosConsumo.push(elemento);
+        } else {
+          this.Datos.push(elemento);
+        }
       }
     }
 
-    if (this.Datos !== undefined) {
-      this.source.load(this.Datos);
+    if (this.DatosConsumo !== undefined) {
+      this.Salida_Consumo();
+      this.source2.load(this.DatosConsumo);
     }
+    if (this.Datos !== undefined) {
+      console.log(this.Datos)
+      if (Object.keys(this.Datos).length === 0) {
+        console.log('ok')
+        this.bandera2 = true;
+      }
+      this.source.load(this.Datos);
+    } 
   }
   AjustarDatos2(datos: any[]) {
     this.Datos2 = new Array<ElementoSalida>();
@@ -419,6 +537,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
       this.bandera = false;
       this.bandera2 = false;
     }
+    
   }
   onEdit(event): void {
   }
@@ -433,57 +552,123 @@ export class TablaElementosAsignadosComponent implements OnInit {
   onDelete(event): void {
 
   }
-  funcion_Reduccion(data: any, param: string) {
+  Traer_Relacion_Ubicaciones() {
 
+  }
+  Salida_Consumo() {
+
+    if (Object.keys(this.DatosConsumo).length !== 0) {
+      const sede = 'FICC';
+      const dependencia = 'ALMACEN GENERAL E INVENTARIOS';
+  
+      const transaccion: any = {};
+      transaccion.Sede = this.Sedes.find((x) => x.Codigo === sede);
+      transaccion.Dependencia = this.Dependencias.find((x) => x.Nombre === dependencia);
+      // console.log(transaccion);
+      this.actaRecibidoHelper.postRelacionSedeDependencia(transaccion).subscribe((res: any) => {
+        // console.log(res)
+        const detalle = {
+          ubicacion: res[0].Relaciones[0].Id,
+        };
+        const Salida = {
+          Salida: {
+            Observacion: 'Salida Automatica para Bodega de Consumo',
+            Detalle: JSON.stringify(detalle),
+            Activo: true,
+            MovimientoPadreId: null, // parseFloat(this.entradaId),
+            FormatoTipoMovimientoId: {
+              Id: 9,
+            },
+            EstadoMovimientoId: {
+              Id: 3,
+            },
+          },
+          Elementos: [],
+        };
+  
+        for (const currentValue of this.DatosConsumo) {
+          const elemento = {};
+          elemento['Activo'] = true;
+          elemento['ElementoActaId'] = currentValue.Id;
+          elemento['SaldoCantidad'] = currentValue.Cantidad;
+          elemento['SaldoValor'] = currentValue.ValorTotal;
+          elemento['Unidad'] = currentValue.Cantidad;
+          elemento['ValorUnitario'] = currentValue.ValorUnitario;
+          elemento['ValorTotal'] = currentValue.ValorTotal;
+  
+          Salida.Elementos.push(elemento);
+          // console.log(Salida)
+        }
+        this.Datos_Salida_Consumo = Salida;
+      });
+    }
+    
+  }
+  Salida_General() {
+    if (Object.keys(this.Datos).length !== 0) {
+      const datos_agrupados2 = this.source.data.reduce((accumulator, currentValue) => {
+        const detalle = {
+          funcionario: currentValue.Funcionario.Id,
+          ubicacion: currentValue.Ubicacion.Id,
+        };
+        const val = currentValue.Funcionario.Id + '-' + currentValue.Ubicacion.Id;
+        accumulator[val] = accumulator[val] || {
+          Salida: {
+            Observacion: this.Observaciones,
+            Detalle: JSON.stringify(detalle),
+            Activo: true,
+            MovimientoPadreId: null, // parseFloat(this.entradaId),
+            FormatoTipoMovimientoId: {
+              Id: 7,
+            },
+            EstadoMovimientoId: {
+              Id: 3,
+            },
+          },
+          Elementos: [],
+        };
+        // accumulator[val].Ubicacion = currentValue.Ubicacion.Id;
+        // accumulator[val].Funcionario = currentValue.Funcionario.Id;
+        const elemento = {};
+        elemento['Activo'] = true;
+        elemento['ElementoActaId'] = currentValue.Id;
+        elemento['SaldoCantidad'] = currentValue.Cantidad;
+        elemento['SaldoValor'] = currentValue.ValorTotal;
+        elemento['Unidad'] = currentValue.Cantidad;
+        elemento['ValorUnitario'] = currentValue.ValorUnitario;
+        elemento['ValorTotal'] = currentValue.ValorTotal;
+  
+        accumulator[val].Elementos.push(elemento);
+        // console.log(currentValue);
+        return accumulator;
+  
+      }, {});
+  
+      return datos_agrupados2;
+    } else {
+      return this.Datos;
+    }
+    
   }
   onSubmit() {
 
-    const datos_agrupados = this.source.data.reduce((accumulator, currentValue) => {
-      const detalle = {
-        funcionario: currentValue.Funcionario.Id,
-        ubicacion: currentValue.Ubicacion.Id,
-      };
-      const val = currentValue.Funcionario.Id + '-' + currentValue.Ubicacion.Id;
-      accumulator[val] = accumulator[val] || {
-        Salida: {
-          Observacion: this.Observaciones,
-          Detalle: JSON.stringify(detalle),
-          Activo: true,
-          MovimientoPadreId: null, // parseFloat(this.entradaId),
-          FormatoTipoMovimientoId: {
-            Id: 7,
-          },
-          EstadoMovimientoId: {
-            Id: 3,
-          },
-        },
-        Elementos: [],
-      };
-      // accumulator[val].Ubicacion = currentValue.Ubicacion.Id;
-      // accumulator[val].Funcionario = currentValue.Funcionario.Id;
-      const elemento = {};
-      elemento['Activo'] = true;
-      elemento['ElementoActaId'] = currentValue.Id;
-      elemento['SaldoCantidad'] = currentValue.Cantidad;
-      elemento['SaldoValor'] = currentValue.ValorTotal;
-      elemento['Unidad'] = currentValue.Cantidad;
-      elemento['ValorUnitario'] = currentValue.ValorUnitario;
-      elemento['ValorTotal'] = currentValue.ValorTotal;
-
-      accumulator[val].Elementos.push(elemento);
-      // console.log(currentValue);
-      return accumulator;
-
-    }, {});
-
+    const datos_agrupados = this.Salida_General();
     // console.log(datos_agrupados);
     // console.log(Object.keys(datos_agrupados));
     const Salidas = {
       Salidas: [],
     };
-    for (const salida of Object.keys(datos_agrupados)) {
-      Salidas.Salidas.push(datos_agrupados[salida]);
+    if (Object.keys(this.DatosConsumo).length !== 0) {
+      Salidas.Salidas.push(this.Datos_Salida_Consumo);
     }
+    
+    if (Object.keys(datos_agrupados).length !== 0) {
+      for (const salida of Object.keys(datos_agrupados)) {
+        Salidas.Salidas.push(datos_agrupados[salida]);
+      }
+    }
+    
+
     // console.log(Salidas);
 
     (Swal as any).fire({
@@ -508,6 +693,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
       }
     });
   }
+
 
   onBack() {
 
