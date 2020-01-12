@@ -35,7 +35,6 @@ export const environment = {
   CATALOGO_BIENES_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/catalogo_elementos_crud/v1/',
   CATALOGO_ELEMENTOS_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/catalogo_elementos_crud/v1/',
   TERCEROS_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/terceros_crud/v1/',
-  TERCEROS: 'http://pruebasapi.intranetoas.udistrital.edu.co:8121/v1/',
   SPAGOBI: {
     PROTOCOL: 'https',
     HOST: 'intelligentia.udistrital.edu.co',
