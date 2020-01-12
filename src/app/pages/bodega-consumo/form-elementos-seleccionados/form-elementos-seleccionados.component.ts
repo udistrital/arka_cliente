@@ -30,6 +30,7 @@ import { PopUpManager } from '../../../managers/popUpManager';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { DocumentoService } from '../../../@core/data/documento.service';
 import { LocalDataSource } from 'ngx-smart-table';
+import { BodegaConsumoHelper } from '../../../helpers/bodega_consumo/bodegaConsumoHelper';
 
 
 
@@ -77,6 +78,7 @@ export class FormElementosSeleccionadosComponent implements OnInit {
     private sanitization: DomSanitizer,
     private nuxeoService: NuxeoService,
     private documentoService: DocumentoService,
+    private bodegaConsumoHelper: BodegaConsumoHelper,
 
 
   ) {
@@ -112,7 +114,6 @@ export class FormElementosSeleccionadosComponent implements OnInit {
     return this.fb.group({
 
       Cantidad: ['', Validators.required],
-      Proveedor: ['', Validators.required],
       Sede: ['', Validators.required],
       Dependencia: ['', Validators.required],
       Ubicacion: ['', Validators.required],
@@ -142,8 +143,9 @@ export class FormElementosSeleccionadosComponent implements OnInit {
 
   onSubmit() {
     const form = this.form_salida.value;
-
-    if ((parseFloat(form.Cantidad) >>> parseFloat(this.Datos.SaldoCantidad)) || (parseFloat(form.Cantidad) === 0.00)) {
+    console.log(form);
+    console.log(this.Datos);
+    if ((form.Cantidad > this.Datos.SaldoCantidad) || (parseFloat(form.Cantidad) === 0.00)) {
       // console.log('valor excede limite')
       (Swal as any).fire({
         title: 'Cantidad No Valida',
@@ -166,7 +168,37 @@ export class FormElementosSeleccionadosComponent implements OnInit {
   }
   onSubmit2() {
     this.source2.getElements().then((res: any) => {
-      // console.log(res);
+      console.log(res);
+      const detalle_solicitud = [];
+      for (const elements of res) {
+
+        const elemento = {
+          Ubicacion: elements.Ubicacion.Id,
+          ElementoActa: elements.Id,
+          Cantidad: elements.Cantidad
+        }
+        detalle_solicitud.push(elemento);
+      }
+      const solicitud = {
+        Funcionario: parseInt(window.localStorage.getItem('persona_id'),10),
+        Elementos: detalle_solicitud
+      }
+      console.log(solicitud);
+      const movimiento = {
+        Observacion: 'Solicitud de elementos para Bodega de Consumo',
+        Detalle: JSON.stringify(solicitud),
+        Activo: true,
+        MovimientoPadreId: null, // parseFloat(this.entradaId),
+        FormatoTipoMovimientoId: {
+          Id: 8,
+        },
+        EstadoMovimientoId: {
+          Id: 3,
+        },
+      }
+      this.bodegaConsumoHelper.postSolicitud(movimiento).subscribe(res => {
+        console.log(res)
+      })
     });
   }
   usarLocalStorage() {
@@ -196,29 +228,29 @@ export class FormElementosSeleccionadosComponent implements OnInit {
         Cantidad: {
           title: 'Cantidad',
         },
-        Funcionario: {
-          title: 'Funcionario',
-          valuePrepareFunction: (value: any) => {
-            if (value !== null) {
-              return value.NomProveedor;
-            } else {
-              return '';
-            }
-          },
-          filterFunction: (cell?: any, search?: string): boolean => {
-            // console.log(cell);
-            // console.log(search);
-            if (Object.keys(cell).length !== 0) {
-              if (cell.NomProveedor.indexOf(search) > -1) {
-                return true;
-              } else {
-                return false;
-              }
-            } else {
-              return false;
-            }
-          },
-        },
+        // Funcionario: {
+        //   title: 'Funcionario',
+        //   valuePrepareFunction: (value: any) => {
+        //     if (value !== null) {
+        //       return value.NomProveedor;
+        //     } else {
+        //       return '';
+        //     }
+        //   },
+        //   filterFunction: (cell?: any, search?: string): boolean => {
+        //     // console.log(cell);
+        //     // console.log(search);
+        //     if (Object.keys(cell).length !== 0) {
+        //       if (cell.NomProveedor.indexOf(search) > -1) {
+        //         return true;
+        //       } else {
+        //         return false;
+        //       }
+        //     } else {
+        //       return false;
+        //     }
+        //   },
+        // },
         Sede: {
           title: 'Sede',
           valuePrepareFunction: (value: any) => {

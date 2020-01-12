@@ -12,6 +12,7 @@ import { NuxeoService } from '../../../@core/utils/nuxeo.service';
 import { DocumentoService } from '../../../@core/data/documento.service';
 import { SalidaHelper } from '../../../helpers/salidas/salidasHelper';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
+import { UserService } from '../../../@core/data/users.service';
 
 @Component({
   selector: 'ngx-agregar-elementos',
@@ -39,6 +40,7 @@ export class AgregarElementosComponent implements OnInit {
     private nuxeoService: NuxeoService,
     private documentoService: DocumentoService,
     private actaRecibidoHelper: ActaRecibidoHelper,
+    private userService: UserService,
   ) {
     this.source = new LocalDataSource();
     this.entradas = new Array<Entrada>();
@@ -205,9 +207,10 @@ export class AgregarElementosComponent implements OnInit {
         // console.log(res);
         // this.source.load(res);
         res.forEach(element => {
-          this.actaRecibidoHelper.getElemento(element.Id).subscribe((res2: any) => {
+          this.actaRecibidoHelper.getElemento(element.ElementoActaId).subscribe((res2: any) => {
             // console.log(res2);
-            element.Descripcion = res2.Nombre + ' ' + res2.Marca + ' ' + res2.Serie;
+            const descripcion = res2.Nombre + ' ' + res2.Marca + ' ' + res2.Serie;
+            element.Descripcion = descripcion;
             this.source.append(element);
           });
         });

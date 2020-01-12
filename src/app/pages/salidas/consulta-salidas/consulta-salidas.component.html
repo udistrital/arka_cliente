@@ -2,20 +2,18 @@
   <nb-card>
     <nb-card-header>
       <!-- <h1>{{'GLOBAL.consultar_entrada' | translate}}</h1> -->
-      Registrar Salida
+      Consultar Salidas
     </nb-card-header>
     <nb-card-body>
 
       <!-- CARD PARA MOSTRAR LAS SOLICITUDES *ngIf="!detalle" -->
       <!-- <p class="h4 pb-4" *ngIf="!detalle">{{'GLOBAL.mensaje_consulta_entrada' | translate}}</p> -->
       <p class="h4 pb-4" *ngIf="!detalle">
-        En la siguiente tabla seleccione la entrada para poder generar la salida correspondiente
-      </p>
+        En la siguiente tabla se muestran de forma general las salidas, seleccione una para ver la informacion asociada</p>
+        <ng2-smart-table [settings]="settings" [source]="source" (custom)="onCustom($event)" *ngIf="!detalle">
+        </ng2-smart-table>
 
-      <ng2-smart-table [settings]="settings" [source]="source" (custom)="onCustom($event)" *ngIf="!detalle">
-      </ng2-smart-table>
-
-      <ngx-consulta-salida-especifica [salida_id]="salidaId" *ngIf="detalle"></ngx-consulta-salida-especifica>
+        <ngx-consulta-salida-especifica [salida_id]="salidaId" *ngIf="detalle"></ngx-consulta-salida-especifica>
     </nb-card-body>
     <nb-card-footer>
       <div class="pt-4">
