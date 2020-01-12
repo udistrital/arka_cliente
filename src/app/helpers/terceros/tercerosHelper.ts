@@ -19,7 +19,7 @@ export class TercerosHelper {
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
     */
    public getProveedores(nombre) {
-    this.rqManager.setPath('TERCEROS');
+    this.rqManager.setPath('TERCEROS_SERVICE');
     return this.rqManager.get('tercero/?query=NombreCompleto__icontains:' + nombre + ',Activo:true&fields=NombreCompleto,Id&limit=-1').pipe(
         map(
             (res) => {

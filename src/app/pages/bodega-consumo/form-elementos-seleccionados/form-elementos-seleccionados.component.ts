@@ -143,8 +143,8 @@ export class FormElementosSeleccionadosComponent implements OnInit {
 
   onSubmit() {
     const form = this.form_salida.value;
-    console.log(form);
-    console.log(this.Datos);
+    // console.log(form);
+    // console.log(this.Datos);
     if ((form.Cantidad > this.Datos.SaldoCantidad) || (parseFloat(form.Cantidad) === 0.00)) {
       // console.log('valor excede limite')
       (Swal as any).fire({
@@ -168,22 +168,22 @@ export class FormElementosSeleccionadosComponent implements OnInit {
   }
   onSubmit2() {
     this.source2.getElements().then((res: any) => {
-      console.log(res);
+      // console.log(res);
       const detalle_solicitud = [];
       for (const elements of res) {
 
         const elemento = {
           Ubicacion: elements.Ubicacion.Id,
           ElementoActa: elements.Id,
-          Cantidad: elements.Cantidad
-        }
+          Cantidad: elements.Cantidad,
+        };
         detalle_solicitud.push(elemento);
       }
       const solicitud = {
-        Funcionario: parseInt(window.localStorage.getItem('persona_id'),10),
-        Elementos: detalle_solicitud
-      }
-      console.log(solicitud);
+        Funcionario: parseInt(window.localStorage.getItem('persona_id'), 10),
+        Elementos: detalle_solicitud,
+      };
+      // console.log(solicitud);
       const movimiento = {
         Observacion: 'Solicitud de elementos para Bodega de Consumo',
         Detalle: JSON.stringify(solicitud),
@@ -195,10 +195,10 @@ export class FormElementosSeleccionadosComponent implements OnInit {
         EstadoMovimientoId: {
           Id: 3,
         },
-      }
-      this.bodegaConsumoHelper.postSolicitud(movimiento).subscribe(res => {
-        console.log(res)
-      })
+      };
+      this.bodegaConsumoHelper.postSolicitud(movimiento).subscribe(respuesta => {
+        console.info(respuesta);
+      });
     });
   }
   usarLocalStorage() {
