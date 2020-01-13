@@ -34,7 +34,7 @@ export class BodegaConsumoHelper {
 
     public getSolicitudBodega(id: string) {
         this.rqManager.setPath('ARKA_SERVICE');
-        return this.rqManager.get('/bodega_consumo/solicitud/'+ id).pipe(
+        return this.rqManager.get('/bodega_consumo/solicitud/' + id).pipe(
             map(
                 (res) => {
                     if (res === 'error') {
@@ -46,10 +46,10 @@ export class BodegaConsumoHelper {
             ),
         );
     }
-// Elementos de bodega --actualmente no se ha definido y los traigo de movimientos.elementos
+    // Elementos de bodega --actualmente no se ha definido y los traigo de movimientos.elementos
     public getElementos(id: string) {
         this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
-        return this.rqManager.get('elementos_movimiento/?query=Id:'+ id).pipe(
+        return this.rqManager.get('elementos_movimiento/?query=Id:' + id).pipe(
             map(
                 (res) => {
                     if (res === 'error') {
@@ -61,7 +61,4 @@ export class BodegaConsumoHelper {
             ),
         );
     }
-
-    
-
 }

@@ -34,7 +34,7 @@ export class KardexComponent implements OnInit {
         salidaVUnitario: '$40.000', salidaVTotal: '$500.000', saldoCantidad: '10', saldoValor: '$70.000' },
         ];
   }
-  onSubmit(){
-    console.log('entrra')
+  onSubmit() {
+    // console.log('entrra')
   }
 }

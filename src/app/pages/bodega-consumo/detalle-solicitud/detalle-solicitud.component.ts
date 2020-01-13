@@ -1,7 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { LocalDataSource } from 'ngx-smart-table';
 import { TranslateService } from '@ngx-translate/core';
-import { BodegaConsumoHelper } from '../../../helpers/bodega-consumo/bodega-consumo-helper'
+import { BodegaConsumoHelper } from '../../../helpers/bodega-consumo/bodega-consumo-helper';
 import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
 import { PopUpManager } from '../../../managers/popUpManager';
@@ -10,7 +10,7 @@ import { PopUpManager } from '../../../managers/popUpManager';
 @Component({
   selector: 'ngx-detalle-solicitud',
   templateUrl: './detalle-solicitud.component.html',
-  styleUrls: ['./detalle-solicitud.component.scss']
+  styleUrls: ['./detalle-solicitud.component.scss'],
 })
 export class DetalleSolicitudComponent implements OnInit {
   salida_id: any;
@@ -33,7 +33,7 @@ export class DetalleSolicitudComponent implements OnInit {
   }
   constructor(private translate: TranslateService, private bodegaHelper: BodegaConsumoHelper,
     private tercerosHelper: TercerosHelper, private actasHelper: ActaRecibidoHelper,
-    private pUpManager: PopUpManager,) {
+    private pUpManager: PopUpManager ) {
     this.source = new LocalDataSource();
     this.observacion = '';
     this.fechaCreacion = '';
@@ -41,7 +41,7 @@ export class DetalleSolicitudComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log('salida id: ', this.salida_id)
+    // console.log('salida id: ', this.salida_id)
 
   }
   loadTablaSettings() {
@@ -86,9 +86,9 @@ export class DetalleSolicitudComponent implements OnInit {
       },
       edit: {
         editButtonContent: '<i class="fas fa-times"></i>',
-        
+
       },
-      
+
       mode: 'external',
       columns: this.listColumns,
     };
@@ -104,7 +104,6 @@ export class DetalleSolicitudComponent implements OnInit {
             this.informacionFuncionario(this.detalle.Funcionario);
             // bucle para llenar la tabla de elementos
             this.detalle.Elementos.forEach( elemento =>{
-  
               this.bodegaHelper.getElementos(elemento.ElementoActa).subscribe(res1 =>{
                 console.log(res1,' elemmmment: ', res1[0].ElementoActaId)
                 this.actasHelper.getElemento(res1[0].ElementoActaId).subscribe(res2 =>{
@@ -119,7 +118,7 @@ export class DetalleSolicitudComponent implements OnInit {
                     Observaciones:  'Pendiente'
                         // Elemento: '$20.000',
                         //Detalle: elemento.Observacion,
-                        //Cantidad: '50'    
+                        //Cantidad: '50'
                       });
                 })
               })
@@ -131,7 +130,6 @@ export class DetalleSolicitudComponent implements OnInit {
   loadSolicitud(): void {
     this.bodegaHelper.getSolicitudBodega(this.salida_id.Id).subscribe(res => {
       if (res !== null) {
-        console.log("mi api: ", res.Id)
         this.fechaCreacion = res.FechaCreacion;
         this.observacion = res.Observacion;
         res.Elementos.forEach(elemento => {
@@ -143,12 +141,12 @@ export class DetalleSolicitudComponent implements OnInit {
             Disponible: elemento.CantidadDisponible,
             VUnitario: elemento.ValorUnitario,
             Total: 'pendiente',
-            Observaciones: 'Pendiente'
+            Observaciones: 'Pendiente',
           });
 
-        })
+        });
       }
-    })
+    });
   }
 
 
@@ -162,7 +160,6 @@ export class DetalleSolicitudComponent implements OnInit {
 
 
   /*   loadSalidas(): void {
-  
       this.kardex = [
         {
           Id: '02/01/2020', FechaRegistro: 'Ocurrio la situación x', Solicitante: '20', Elemento: '$20.000',
@@ -179,18 +176,16 @@ export class DetalleSolicitudComponent implements OnInit {
       //this.source.append(this.kardex);
       //this.source.setFilter(this.kardex, false)
       this.source.load(this.kardex);
-  
     } */
-
-  onAprobado(event) {
+      onAprobado(event) {
     this.pUpManager.showSuccessAlert('Peticion de elemento aprobada');
     // this.salidaId = `${event.data.Id}`;
-    //this.detalle = true;
+    // this.detalle = true;
   }
   onRechazado(event) {
     this.pUpManager.showErrorAlert('Peticion de elemento rechazada');
     // this.salidaId = `${event.data.Id}`;
-    //this.detalle = true;
+    // this.detalle = true;
   }
 
 }

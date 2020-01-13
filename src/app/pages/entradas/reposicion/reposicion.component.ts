@@ -117,7 +117,7 @@ export class ReposicionComponent implements OnInit {
       this.entradasHelper.getEncargadoElementoByPlaca(placa).subscribe(res => {
         if (res != null && res !== undefined) {
           this.encargado = res.NombreCompleto;
-          this.encargadoId = res.Id
+          this.encargadoId = res.Id;
         }else {
           this.encargado = '';
         }
