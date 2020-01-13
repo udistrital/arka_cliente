@@ -3,6 +3,8 @@ import { Routes, RouterModule } from '@angular/router';
 import { BodegaConsumoComponent } from './bodega-consumo.component';
 import { AgregarElementosComponent } from './agregar-elementos/agregar-elementos.component';
 import {KardexComponent} from './kardex/kardex.component';
+import { ConsultaSolicitudComponent } from './consulta-solicitud/consulta-solicitud.component';
+import { DetalleSolicitudComponent } from './detalle-solicitud/detalle-solicitud.component'
 const routes: Routes = [{
   path: '',
   component: BodegaConsumoComponent,
@@ -14,6 +16,14 @@ const routes: Routes = [{
     {
       path: 'kardex',
       component: KardexComponent,
+    },
+    {
+      path: 'consulta_solicitud',
+      component: ConsultaSolicitudComponent,
+    },
+    {
+      path: 'detalle_solicitud',
+      component: DetalleSolicitudComponent,
     },
   ],
 }];

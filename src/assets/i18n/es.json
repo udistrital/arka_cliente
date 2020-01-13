@@ -492,6 +492,7 @@
     "acta_produccion": "Acta de Producción",
     "tercero_administracion": "Tercero en Administración",
     "error": "Error",
-    "mensaje_seleccionar_entrada": "Seleccione el tipo de entrada que desea realizar"
+    "mensaje_seleccionar_entrada": "Seleccione el tipo de entrada que desea realizar",
+    "documento": "Documento"
   }
 }

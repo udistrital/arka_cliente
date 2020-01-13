@@ -12,7 +12,7 @@
         En la siguiente tabla seleccione la entrada para poder generar la salida correspondiente
       </p>
 
-      <ng2-smart-table [settings]="settings" [source]="source" (custom)="onCustom($event)" *ngIf="!detalle">
+      <ng2-smart-table [settings]="settings" [source]="source" (custom)="onCustom($event)" >
       </ng2-smart-table>
 
       <ngx-consulta-salida-especifica [salida_id]="salidaId" *ngIf="detalle"></ngx-consulta-salida-especifica>

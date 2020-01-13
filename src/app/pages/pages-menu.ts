@@ -82,8 +82,16 @@ export const MENU_ITEMS: NbMenuItem[] = [
     icon: 'nb-shuffle',
     children: [
       {
+        title: 'Consultar Solicitudes',
+        link: '/pages/bodega_consumo/consulta_solicitud',
+      },
+      {
         title: 'Solicitar Elementos',
         link: '/pages/bodega_consumo/agregar_elementos',
+      },
+      {
+        title: 'kardex',
+        link: '/pages/bodega_consumo/kardex',
       },
     ],
   },
@@ -119,15 +127,4 @@ export const MENU_ITEMS: NbMenuItem[] = [
       },
     ],
   },
-  {
-    title: 'Bodega de Consumo',
-    icon: 'nb-compose',
-    children: [
-      {
-        title: 'kardex',
-        link: '/pages/bodega_consumo/kardex',
-      },
-    ],
-  },
-
 ];
