@@ -53,8 +53,9 @@ export class TablaEntradaAprobadaComponent implements OnInit {
         delete: false,
         custom: [
           {
-            name: this.translate.instant('GLOBAL.detalle'),
-            title: '<i class="fas fa-check" title="Ver"></i>',
+            // name: this.translate.instant('GLOBAL.detalle'),
+            name: 'Seleccionar',
+            title: '<i class="fas fa-pencil-alt" title="Ver"></i>',
           },
         ],
       },
@@ -113,22 +114,16 @@ export class TablaEntradaAprobadaComponent implements OnInit {
       if (res !== null) {
         const data = <Array<any>>res;
         for (const datos in Object.keys(data)) {
-          if (data.hasOwnProperty(datos) && data[datos].ActaRecibidoId !== undefined) {
+          if (data.hasOwnProperty(datos) && data[datos].Movimiento.Id !== undefined) {
             const entrada = new Entrada;
-            entrada.Id = data[datos].Id;
-            entrada.ActaRecibidoId = data[datos].ActaRecibidoId;
-            entrada.ContratoId = data[datos].ContratoId;
-            entrada.DocumentoContableId = data[datos].DocumentoContableId;
-            entrada.FechaCreacion = data[datos].FechaCreacion;
-            entrada.FechaModificacion = data[datos].FechaModificacion;
-            entrada.Importacion = data[datos].Importacion;
-            entrada.Observacion = data[datos].Observacion;
-            entrada.Solicitante = data[datos].Solicitante;
-            entrada.TipoEntradaId = data[datos].TipoEntradaId;
-            entrada.ElementoId = data[datos].ElementoId;
-            entrada.Consecutivo = data[datos].Consecutivo;
-            entrada.Vigencia = data[datos].Vigencia;
-            entrada.Activo = data[datos].Activo;
+            const tipoEntradaAux = new TipoEntrada;
+            const detalle = JSON.parse((data[datos].Movimiento.Detalle));
+            entrada.Id = data[datos].Movimiento.Id;
+            entrada.ActaRecibidoId = detalle.acta_recibido_id;
+            entrada.FechaCreacion = data[datos].Movimiento.FechaCreacion;
+            entrada.Consecutivo = detalle.consecutivo;
+            tipoEntradaAux.Nombre = data[datos].TipoMovimiento.Nombre;
+            entrada.TipoEntradaId = tipoEntradaAux;
             this.entradas.push(entrada);
           }
         }
@@ -140,28 +135,30 @@ export class TablaEntradaAprobadaComponent implements OnInit {
   loadEntradaEspecifica(): void {
     this.entradasHelper.getEntrada(this.consecutivoEntrada).subscribe(res => {
       if (res !== null) {
-        this.entradaEspecifica.ActaRecibidoId = res[0].ActaRecibidoId;
-        this.entradaEspecifica.ContratoId = res[0].ContratoId;
-        this.entradaEspecifica.DocumentoContableId = res[0].DocumentoContableId;
-        this.entradaEspecifica.FechaCreacion = res[0].FechaCreacion;
-        this.entradaEspecifica.FechaModificacion = res[0].FechaModificacion;
-        this.entradaEspecifica.Importacion = res[0].Importacion;
-        this.entradaEspecifica.Observacion = res[0].Observacion;
-        this.entradaEspecifica.Solicitante = res[0].Solicitante;
-        this.entradaEspecifica.TipoEntradaId = res[0].TipoEntradaId;
-        this.entradaEspecifica.ElementoId = res[0].ElementoId;
-        this.entradaEspecifica.Consecutivo = res[0].Consecutivo;
-        this.entradaEspecifica.Vigencia = res[0].Vigencia;
-        this.entradaEspecifica.Activo = res[0].Activo;
-        if (this.entradaEspecifica.ContratoId !== 0) {
-          this.loadContrato();
-        }
-        if (this.entradaEspecifica.TipoEntradaId.Id === 1
-          || this.entradaEspecifica.TipoEntradaId.Id === 2
-          || this.entradaEspecifica.TipoEntradaId.Id === 3) {
-            this.documentoId = true;
-        } else {
-          this.documentoId = false;
+        switch (res.TipoMovimiento.TipoMovimientoId.Nombre) {
+          case 'Adquisición': {
+            this.loadDetalleAdquisicion(res);
+            break;
+          }
+          case 'Elaboración Propia': {
+            this.loadDetalleElaboracion(res);
+            break;
+          }
+          case 'Donación': {
+            this.loadDetalleDonacion(res);
+            break;
+          }
+          case 'Sobrante': {
+            this.loadDetalleSobrante(res);
+            break;
+          }
+          case 'Terceros': {
+            this.loadDetalleTerceros(res);
+            break;
+          }
+          default: {
+            break;
+          }
         }
       }
     });
@@ -188,6 +185,10 @@ export class TablaEntradaAprobadaComponent implements OnInit {
         this.contrato.Supervisor = supervisorAux;
       }
     });
+  }
+
+  loadOrdenador() {
+
   }
 
   loadSoporte() {
@@ -223,12 +224,81 @@ export class TablaEntradaAprobadaComponent implements OnInit {
     });
   }
 
+  // CARGAR DETALLES DE ENTRADA
+  loadDetalleAdquisicion(info) {
+    const detalle = JSON.parse(info.Movimiento.Detalle);
+    this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id; // ACTA RECIBIDO
+    this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
+    this.entradaEspecifica.ContratoId = detalle.contrato_id; // CONTRATO
+    this.entradaEspecifica.Vigencia = detalle.vigencia_contrato; // VIGENCIA CONTRATO
+    this.loadContrato(); // CONTRATO
+    this.entradaEspecifica.Importacion = detalle.importacion; // IMPORTACIÓN
+    this.entradaEspecifica.TipoEntradaId.Nombre = info.TipoMovimiento.TipoMovimientoId.Nombre; // TIPO ENTRADA
+    this.entradaEspecifica.Observacion = info.Movimiento.Observacion; // OBSERVACIÓN
+    this.documentoId = false; // SOPORTE
+  }
+
+  loadDetalleElaboracion(info) {
+    const detalle = JSON.parse(info.Movimiento.Detalle);
+    this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id; // ACTA RECIBIDO
+    this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
+    this.entradaEspecifica.Vigencia = detalle.vigencia_ordenador; // VIGENCIA ORDENADOR
+    this.entradaEspecifica.OrdenadorId = detalle.ordenador_gasto_id; // ORDENADOR DE GASTO
+    this.entradaEspecifica.Solicitante = detalle.solicitante_id; // SOLICITANTE
+    this.entradaEspecifica.TipoEntradaId.Nombre = info.TipoMovimiento.TipoMovimientoId.Nombre; // TIPO ENTRADA
+    this.entradaEspecifica.Observacion = info.Movimiento.Observacion; // OBSERVACIÓN
+    this.documentoId = true; // SOPORTE
+  }
+
+  loadDetalleDonacion(info) {
+    const detalle = JSON.parse(info.Movimiento.Detalle);
+    this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id; // ACTA RECIBIDO
+    this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
+    this.entradaEspecifica.ContratoId = detalle.contrato_id; // CONTRATO
+    this.entradaEspecifica.Vigencia = detalle.vigencia_contrato; // VIGENCIA CONTRATO
+    this.loadContrato(); // CONTRATO
+    this.entradaEspecifica.Vigencia = detalle.vigencia_solicitante; // VIGENCIA SOLICITANTE
+    this.entradaEspecifica.OrdenadorId = detalle.ordenador_gasto_id; // ORDENADOR DE GASTO
+    this.entradaEspecifica.TipoEntradaId.Nombre = info.TipoMovimiento.TipoMovimientoId.Nombre; // TIPO ENTRADA
+    this.entradaEspecifica.Observacion = info.Movimiento.Observacion; // OBSERVACIÓN
+    this.documentoId = false; // SOPORTE
+  }
+
+  loadDetalleSobrante(info) {
+    const detalle = JSON.parse(info.Movimiento.Detalle);
+    this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id; // ACTA RECIBIDO
+    this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
+    this.entradaEspecifica.Vigencia = detalle.vigencia_ordenador; // VIGENCIA ORDENADOR
+    this.entradaEspecifica.OrdenadorId = detalle.ordenador_gasto_id; // ORDENADOR DE GASTO
+    this.entradaEspecifica.TipoEntradaId.Nombre = info.TipoMovimiento.TipoMovimientoId.Nombre; // TIPO ENTRADA
+    this.entradaEspecifica.Observacion = info.Movimiento.Observacion; // OBSERVACIÓN
+    this.documentoId = true;
+  }
+
+  loadDetalleTerceros(info) {
+    const detalle = JSON.parse(info.Movimiento.Detalle);
+    this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id; // ACTA RECIBIDO
+    this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
+    this.entradaEspecifica.ContratoId = detalle.contrato_id; // CONTRATO
+    this.entradaEspecifica.Vigencia = detalle.vigencia_contrato; // VIGENCIA CONTRATO
+    this.loadContrato(); // CONTRATO
+    this.entradaEspecifica.TipoEntradaId.Nombre = info.TipoMovimiento.TipoMovimientoId.Nombre; // TIPO ENTRADA
+    this.entradaEspecifica.Observacion = info.Movimiento.Observacion; // OBSERVACIÓN
+    this.documentoId = false; // SOPORTE
+  }
+
   onCustom(event) {
+    // console.log(event.data);
     this.actaRecibidoId = +`${event.data.ActaRecibidoId}`;
     // this.consecutivoEntrada = `${event.data.Consecutivo}`;
     this.consecutivoEntrada = `${event.data.Id}`;
     this.detalle = true;
     this.loadEntradaEspecifica();
+  }
+
+  onVolver() {
+    this.detalle = !this.detalle;
+    this.iniciarParametros();
   }
 
   iniciarParametros() {
@@ -249,6 +319,5 @@ export class TablaEntradaAprobadaComponent implements OnInit {
       this.loadTablaSettings();
     });
   }
-
 
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ViewChildren, QueryList } from '@angular/core';
+import { Component, OnInit, ViewChild, ViewChildren, QueryList, Input, Output, EventEmitter } from '@angular/core';
 import { Subscription, combineLatest, Observable } from 'rxjs';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, FormControl, FormArray } from '@angular/forms';
@@ -29,7 +29,8 @@ import { ListService } from '../../../@core/store/services/list.service';
 import { PopUpManager } from '../../../managers/popUpManager';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { DocumentoService } from '../../../@core/data/documento.service';
-
+import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
+import { NbStepperComponent } from '@nebular/theme';
 
 
 @Component({
@@ -38,8 +39,6 @@ import { DocumentoService } from '../../../@core/data/documento.service';
   styleUrls: ['./form-elementos-seleccionados.component.scss'],
 })
 export class FormElementosSeleccionadosComponent implements OnInit {
-
-
   searchStr: string;
   searchStr2: Array<string>;
   searchStr3: string;
@@ -51,6 +50,16 @@ export class FormElementosSeleccionadosComponent implements OnInit {
   Ubicaciones: any;
   Sedes: any;
   form_salida: FormGroup;
+  Datos: any;
+  proveedorfiltro: string;
+  elementos: any;
+  elementos2: any;
+
+  @Input('Datos')
+  set name(datos_seleccionados: any) {
+    this.Datos = datos_seleccionados;
+  }
+  @Output() DatosEnviados = new EventEmitter();
 
   constructor(
     private translate: TranslateService,
@@ -66,15 +75,17 @@ export class FormElementosSeleccionadosComponent implements OnInit {
     private sanitization: DomSanitizer,
     private nuxeoService: NuxeoService,
     private documentoService: DocumentoService,
+    private terceros: TercerosHelper,
 
 
   ) {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
     });
-    this.listService.findProveedores();
+    this.elementos = [];
+    // this.listService.findProveedores();
     this.listService.findDependencias();
     this.listService.findSedes();
-    this.listService.findUbicaciones();
+    // this.listService.findUbicaciones();
     this.loadLists();
   }
 
@@ -84,24 +95,112 @@ export class FormElementosSeleccionadosComponent implements OnInit {
   public loadLists() {
     this.store.select((state) => state).subscribe(
       (list) => {
-        this.Proveedores = list.listProveedores[0];
         this.Dependencias = list.listDependencias[0];
-        this.Ubicaciones = list.listUbicaciones[0];
+        // this.Ubicaciones = list.listUbicaciones[0];
         this.Sedes = list.listSedes[0];
-        this.dataService2 = this.completerService.local(this.Proveedores, 'compuesto', 'compuesto');
         this.dataService3 = this.completerService.local(this.Dependencias, 'Nombre', 'Nombre');
-        this.dataService = this.completerService.local(this.Ubicaciones, 'Nombre', 'Nombre');
+        // this.dataService = this.completerService.local(this.Ubicaciones, 'Nombre', 'Nombre');
       },
     );
   }
   get Formulario(): FormGroup {
     return this.fb.group({
       Proveedor: ['', Validators.required],
-      Sede: [''],
-      Dependencia: [''],
+      Sede: ['', Validators.required],
+      Dependencia: ['', Validators.required],
       Ubicacion: ['', Validators.required],
     });
   }
+  Traer_Relacion_Ubicaciones() {
+    const sede = this.form_salida.get('Sede').value;
+    const dependencia = this.form_salida.get('Dependencia').value;
 
-  usarLocalStorage() {}
+    if (this.form_salida.get('Sede').valid || this.form_salida.get('Dependencia').valid) {
+      const transaccion: any = {};
+      transaccion.Sede = this.Sedes.find((x) => x.Id === parseFloat(sede));
+      transaccion.Dependencia = this.Dependencias.find((x) => x.Nombre === dependencia);
+      // console.log(this.Sedes);
+      if (transaccion.Sede !== undefined && transaccion.Dependencia !== undefined) {
+        this.Actas_Recibido.postRelacionSedeDependencia(transaccion).subscribe((res: any) => {
+          // console.log(res)
+          if (Object.keys(res[0]).length !== 0) {
+            this.Ubicaciones = res[0].Relaciones;
+          } else {
+            this.Ubicaciones = undefined;
+          }
+        });
+      }
+    }
+  }
+
+  onSubmit() {
+    const form = this.form_salida.value;
+    const proveedor___ = form.Proveedor.split(' ');
+
+    if (Object.keys(this.Datos.selected).length !== 0) {
+      const seleccionados = this.Datos.selected;
+      const datos = this.Datos.source.data;
+
+      seleccionados.forEach((elemento) => {
+        elemento.Funcionario = this.elementos2;
+        // elemento.Funcionario = this.Proveedores.find(z => z.compuesto === form.Proveedor);
+        elemento.Sede = this.Sedes.find(y => y.Id === parseFloat(form.Sede));
+        elemento.Dependencia = this.Dependencias.find(y => y.Nombre === form.Dependencia);
+        elemento.Ubicacion = this.Ubicaciones.find(w => w.Id === parseFloat(form.Ubicacion));
+        elemento.Asignado = true;
+        datos.find(element => {
+          if (element.Id === elemento.Id) {
+            element = elemento;
+          }
+          // console.log(element);
+        });
+      });
+      this.DatosEnviados.emit(datos);
+    }
+
+  }
+  usarLocalStorage() { }
+
+  // MÉTODO PARA BUSCAR PROVEEDORES EXISTENTES
+  loadProveedoresElementos(): void {
+    if (this.proveedorfiltro.length > 3) {
+      this.terceros.getProveedores(this.proveedorfiltro).subscribe(res => {
+        if (res != null) {
+          while (this.elementos.length > 0) {
+            this.elementos.pop();
+          }
+          if (Object.keys(res).length === 1) {
+            this.elementos2 = res[0];
+          }
+          for (const index of Object.keys(res)) {
+            if (res[index].NombreCompleto != null) {
+              this.elementos.push(res[index].NombreCompleto);
+            }
+          }
+        }
+      });
+
+    }
+  }
+
+  // MÉTODO PARA FILTRAR PROVEEDORES
+  changeNombreProveedor(event) {
+    this.proveedorfiltro = event.target.value;
+    this.loadProveedoresElementos();
+
+  }
+// MÉTODO PARA VERIFICAR QUE EL DATO EN EL INPUT CORRESPONDA CON UNO EN LA LISTA
+  verfificarProveedor() {
+    if (this.elementos.length > 0) {
+
+      if (this.proveedorfiltro !== '') {
+        if (!this.elementos.find(element => element === this.proveedorfiltro)) {
+          this.proveedorfiltro = '';
+          this.pUpManager.showErrorAlert('El contrato seleccionado no existe!');
+        } else {
+          this.onSubmit();
+        }
+      }
+    }
+  }
 }

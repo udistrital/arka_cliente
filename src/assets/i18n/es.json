@@ -38,6 +38,7 @@
       "CapturarElementos":{
         "CargaMasivaTitle":"Carga Masiva",
         "ValidadorPlaceholder":"El archivo debe tener extension (*.xlsx)",
+        "ValidadorPlaceholder2":"El archivo debe tener extension (*.pdf)",
         "LimpiarEspacioButton":"Descartar Archivo",
         "CargarElementosButton":"Cargar Elementos",
         "ArticulosRelacionadosTitle":"Articulos Relacionados",

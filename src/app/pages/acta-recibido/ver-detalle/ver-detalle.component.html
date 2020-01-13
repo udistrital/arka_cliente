@@ -70,11 +70,15 @@
                         </div>
                         <div class="form-group col-sm">
                           <label>{{'GLOBAL.Acta_Recibido.DetalleActa.Soporte' | translate}}</label>
-                          <div class="soporte">
-                            <button nbButton type="button" (click)="loadSoporte()">
-                              <i class="fas fa-file-download fa-2x"></i>
-                            </button>
-                          </div>
+                          <nb-card>
+                            <nb-card-body>
+                              <div class="col-sm soporte">
+                                  <button nbButton type="button" (click)="downloadFile(i)">
+                                    <i class="fas fa-eye fa-2x"></i>
+                                  </button>
+                              </div>
+                            </nb-card-body>
+                          </nb-card>
                         </div>
                       </div>
                     </nb-card-body>
