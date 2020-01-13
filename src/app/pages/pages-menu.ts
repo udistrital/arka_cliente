@@ -113,6 +113,20 @@ export const MENU_ITEMS: NbMenuItem[] = [
         title: 'Entradas',
         link: '/pages/reportes/registro-entradas',
       },
+      {
+        title: 'Salidas',
+        link: '/pages/reportes/registro-salidas',
+      },
+    ],
+  },
+  {
+    title: 'Bodega de Consumo',
+    icon: 'nb-compose',
+    children: [
+      {
+        title: 'kardex',
+        link: '/pages/bodega_consumo/kardex',
+      },
     ],
   },
 

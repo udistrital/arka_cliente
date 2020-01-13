@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TranslateModule } from '@ngx-translate/core';
 import { BodegaConsumoRoutingModule } from './bodega-consumo-routing.module';
 import { BodegaConsumoComponent } from './bodega-consumo.component';
 import { AgregarElementosComponent } from './agregar-elementos/agregar-elementos.component';
@@ -8,14 +9,18 @@ import { Ng2SmartTableModule } from 'ngx-smart-table';
 import { OwlDateTimeModule, OwlNativeDateTimeModule } from 'ng-pick-datetime';
 import { FormElementosSeleccionadosComponent } from './form-elementos-seleccionados/form-elementos-seleccionados.component';
 import { NgxCurrencyModule } from 'ngx-currency';
+import { KardexComponent } from './kardex/kardex.component';
+import { TableModule } from 'primeng/table';
 
 @NgModule({
   declarations: [
     BodegaConsumoComponent,
     AgregarElementosComponent,
     FormElementosSeleccionadosComponent,
+    KardexComponent,
   ],
   imports: [
+    TranslateModule,
     NgxCurrencyModule,
     CommonModule,
     BodegaConsumoRoutingModule,
@@ -23,6 +28,7 @@ import { NgxCurrencyModule } from 'ngx-currency';
     OwlDateTimeModule,
     OwlNativeDateTimeModule,
     Ng2SmartTableModule,
+    TableModule,
   ],
 })
 export class BodegaConsumoModule { }
