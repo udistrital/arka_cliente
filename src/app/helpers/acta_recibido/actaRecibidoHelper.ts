@@ -430,7 +430,7 @@ export class ActaRecibidoHelper {
         ),
     );
 }
-  
+
     /**
      * Elementos get
      * Conversion Archivo Post
@@ -452,6 +452,6 @@ export class ActaRecibidoHelper {
         ),
     );
 }
-  
-  
+
+
 }
