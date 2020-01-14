@@ -14,6 +14,8 @@ export class KardexComponent implements OnInit {
 
   }
 
+  encargado: string;
+  elementos: any[];
   sales: any[];
   kardex: any[];
 

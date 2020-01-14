@@ -40,6 +40,7 @@ export class ReposicionComponent implements OnInit {
   tipoEntrada: any;
   proveedor: string;
   fechaFactura: string;
+  checked: boolean;
 
    @ViewChild('file') fileInput: ElementRef;
    @Input() actaRecibidoId: string;
@@ -72,6 +73,10 @@ export class ReposicionComponent implements OnInit {
     this.getFormatoEntrada();
     this.getTipoEntrada();
     this.loadSoporte();
+  }
+
+  changeCheck() {
+    this.checked = !this.checked;
   }
 
   // Métodos para validar campos requeridos en el formulario
