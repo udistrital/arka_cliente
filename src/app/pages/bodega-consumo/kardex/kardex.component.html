@@ -1,89 +1,40 @@
-<h3 class="pt-4 pb-2">Kardex bodega de consumo</h3>
-<h5 class="pt-4 pb-2">Consultar Elemento</h5>
+import { Component, OnInit } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
+import { Validators, FormBuilder, FormGroup, AbstractControl, ValidatorFn } from '@angular/forms';
 
 
-<form  class="step-container">
-  <div class="row">
-    <div class="form-group col-sm">
-      <label>Elemento</label>
-      <div class="input-group">
-        <input nbInput type="text" placeholder="Elemento a consultar" class="form-control"
-          />             
-      </div>
-      <datalist id="elementosList">  
-          <option value="sleccione un valor" selected disabled></option>          
-          <option *ngFor="let item of elementos" value='{{ item }}'></option>
-        </datalist>
-    </div>  
-  <div class="form-group col-sm">
-      <label>Detalle</label>
-      <div class="input-group">
-        <input nbInput type="text" placeholder="Detalle" class="form-control"
-          formControlName="encargadoCtrl"  [readonly]="true" value="{{ encargado }}"
-          />             
-      </div>
-    </div>    
-  </div>
-  <div class="justify-content-center float-left pt-4">        
-      <button type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off"
-      [disabled]="!validar" (click)="onSubmit()">
-      Consultar
-    </button>
-  </div>
-</form>
+@Component({
+  selector: 'ngx-kardex',
+  templateUrl: './kardex.component.html',
+  styleUrls: ['./kardex.component.scss'],
+})
+export class KardexComponent implements OnInit {
+  kardexForm: FormGroup;
+  constructor(private translate: TranslateService, private fb: FormBuilder) {
 
+  }
 
-<div class="table-responsive">
-    <p-table class="table table-striped table-bordered" [value]="kardex">
-        <ng-template pTemplate="header">
-            <tr>
-                <th class="align-middle" rowspan="2"><strong>Fecha</strong></th>
-                <th class="align-middle" rowspan="2"><strong>Detalle del movimiento</strong> </th>
-                <th class="align-middle" colspan="3"><strong>Saldos Iniciales</strong> </th>
-                <th class="align-middle" colspan="3"><strong>Entradas</strong> </th>
-                <th class="align-middle" colspan="3"><strong>Salidas</strong> </th>
-                <th class="align-middle" rowspan="2"><strong>Saldo en cantidad </strong></th>
-                <th class="align-middle" rowspan="2"><strong>Saldo en valor</strong></th>
+  sales: any[];
+  kardex: any[];
 
-            </tr>
-            <tr>
-                <th>Unidad</th>
-                <th>V. Unitario</th>
-                <th>V. Total</th>
+  ngOnInit() {
+    this.kardexForm = this.fb.group({
+      elementoCtrl: ['', Validators.required],
+    });
 
-                <th>Unidad</th>
-                <th>V. Unitario</th>
-                <th>V. Total</th>
-
-                <th>Unidad</th>
-                <th>V. Unitario</th>
-                <th>V. Total</th>
-            </tr>
-        </ng-template>
-        <ng-template pTemplate="body" let-kardex>
-            <tr>
-                <td class="align-middle">{{kardex.fecha}}</td>
-                <td class="align-middle">{{kardex.detalle}}</td>
-                <td class="align-middle">{{kardex.saldoInicialUnidad}}</td>
-                <td class="align-middle">{{kardex.saldoInicialVUnitario}}</td>
-                <td class="align-middle">{{kardex.saldoInicialVTotal}}</td>
-                <td class="align-middle">{{kardex.entradaUnidad}}</td>
-                <td class="align-middle">{{kardex.entradaVUnitario}}</td>
-                <td class="align-middle">{{kardex.entradaVTotal}}</td>
-                <td class="align-middle">{{kardex.salidaUnidad}}</td>
-                <td class="align-middle">{{kardex.salidaVUnitario}}</td>
-                <td class="align-middle">{{kardex.salidaVTotal}}</td>
-                <td class="align-middle">{{kardex.saldoCantidad}}</td>
-                <td class="align-middle">{{kardex.saldoValor}}</td>
-            </tr>
-        </ng-template>
-        <ng-template pTemplate="footer">
-            <tr>
-                <td><strong> 01/01/2020</strong></td>
-                <td class="text-center" colspan="10"><strong>Inventario Final</strong></td>                
-                <td><strong>$506,202</strong></td>
-                <td><strong>$531,020</strong></td>
-            </tr>
-        </ng-template>
-    </p-table>
-    </div>
+      this.kardex = [
+        { fecha: '02/01/2020', detalle: 'Ocurrio la situación x', saldoInicialUnidad: '20', saldoInicialVUnitario: '$20.000',
+        saldoInicialVTotal: '$200.000', entradaUnidad: '50', entradaVUnitario: '$30.000' , entradaVTotal: '$300.000', salidaUnidad: ' 60',
+        salidaVUnitario: '$40.000', salidaVTotal: '$500.000', saldoCantidad: '10', saldoValor: ' $70.000' },
+        { fecha: '02/01/2020', detalle: 'Ocurrio la situación x', saldoInicialUnidad: '20', saldoInicialVUnitario: '$20.000',
+        saldoInicialVTotal: '$200.000', entradaUnidad: '50', entradaVUnitario: '$30.000' , entradaVTotal: '$300.000', salidaUnidad: '60',
+        salidaVUnitario: '$40.000', salidaVTotal: '$500.000', saldoCantidad: '10', saldoValor: '$70.000' },
+        { fecha: '02/01/2020', detalle: 'Ocurrio la situación x', saldoInicialUnidad: '20', saldoInicialVUnitario: '$20.000',
+        saldoInicialVTotal: '$200.000', entradaUnidad: '50', entradaVUnitario: '$30.000' , entradaVTotal: '$300.000', salidaUnidad: '60',
+        salidaVUnitario: '$40.000', salidaVTotal: '$500.000', saldoCantidad: '10', saldoValor: '$70.000' },
+        ];
+  }
+  onSubmit() {
+    // console.log('entrra')
+  }
+}

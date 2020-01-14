@@ -32,5 +32,19 @@ export class TercerosHelper {
         ),
     );
 }
+public getTerceroById(id) {
+    this.rqManager.setPath('ARKA_SERVICE');
+    return this.rqManager.get('terceros/' + id ).pipe(
+        map(
+            (res) => {
+                if (res === 'error') {
+                    this.pUpManager.showErrorAlert('No se encontro ningun nombre de proovedor');
+                    return undefined;
+                }
+                return res;
+            },
+        ),
+    );
+}
 
 }

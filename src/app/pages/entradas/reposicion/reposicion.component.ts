@@ -26,11 +26,10 @@ export class ReposicionComponent implements OnInit {
   soporteForm: FormGroup;
   observacionForm: FormGroup;
   facturaForm: FormGroup;
-   // elementos
-
   elementos: any;
   placa: string;
   encargado: string;
+  encargadoId: string;
   placas: Array<string>;
   soportes: Array<SoporteActaProveedor>;
   uidDocumento: string;
@@ -87,7 +86,7 @@ export class ReposicionComponent implements OnInit {
   // MÉTODO PARA BUSCAR PLACAS EXISTENTES
   loadPlacasElementos(): void {
     if (this.placa.length > 3) {
-      this.actasHelper.getElementos(this.placa).subscribe(res => {
+      this.actasHelper.getElementosByPlaca(this.placa).subscribe(res => {
         if (res != null ) {
           while (this.elementos.length > 0) {
             this.elementos.pop();
@@ -116,7 +115,8 @@ export class ReposicionComponent implements OnInit {
     // falta filtrar las placas por las que son de elementos dados de baja
       this.entradasHelper.getEncargadoElementoByPlaca(placa).subscribe(res => {
         if (res != null && res !== undefined) {
-          this.encargado = res.funcionario;
+          this.encargado = res.NombreCompleto;
+          this.encargadoId = res.Id;
         }else {
           this.encargado = '';
         }
@@ -231,7 +231,7 @@ export class ReposicionComponent implements OnInit {
         consecutivo: 'P8-2-2019', // REVISAR
         documento_contable_id: 1, // REVISAR
         placa_id: this.placa,
-        encargado_id: this.encargado,
+        encargado_id: this.encargadoId,
       };
       const movimientoReposicion = {
         Observacion: this.observacionForm.value.observacionCtrl,

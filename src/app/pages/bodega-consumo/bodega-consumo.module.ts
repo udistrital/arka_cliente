@@ -11,6 +11,8 @@ import { FormElementosSeleccionadosComponent } from './form-elementos-selecciona
 import { NgxCurrencyModule } from 'ngx-currency';
 import { KardexComponent } from './kardex/kardex.component';
 import { TableModule } from 'primeng/table';
+import { ConsultaSolicitudComponent } from './consulta-solicitud/consulta-solicitud.component';
+import { DetalleSolicitudComponent } from './detalle-solicitud/detalle-solicitud.component';
 
 @NgModule({
   declarations: [
@@ -18,6 +20,8 @@ import { TableModule } from 'primeng/table';
     AgregarElementosComponent,
     FormElementosSeleccionadosComponent,
     KardexComponent,
+    ConsultaSolicitudComponent,
+    DetalleSolicitudComponent,
   ],
   imports: [
     TranslateModule,
@@ -28,6 +32,7 @@ import { TableModule } from 'primeng/table';
     OwlDateTimeModule,
     OwlNativeDateTimeModule,
     Ng2SmartTableModule,
+    TranslateModule,
     TableModule,
   ],
 })

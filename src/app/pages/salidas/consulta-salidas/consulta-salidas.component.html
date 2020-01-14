@@ -13,7 +13,11 @@
         <ng2-smart-table [settings]="settings" [source]="source" (custom)="onCustom($event)" *ngIf="!detalle">
         </ng2-smart-table>
 
-        <ngx-consulta-salida-especifica [salida_id]="salidaId" *ngIf="detalle"></ngx-consulta-salida-especifica>
+      <ng2-smart-table [settings]="settings" [source]="source" (custom)="onCustom($event)" >
+      </ng2-smart-table>
+
+      <ngx-consulta-salida-especifica [salida_id]="salidaId" *ngIf="detalle"></ngx-consulta-salida-especifica>
+
     </nb-card-body>
     <nb-card-footer>
       <div class="pt-4">

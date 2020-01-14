@@ -1,0 +1,40 @@
+<p class="h5 pb-4"></p>
+
+<!-- Detalle Solicitud -->
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <p class="text-uppercase"><strong>{{'GLOBAL.consecutivo' | translate}}:</strong>
+                {{salida_id.Id}} </p>
+        </div>
+        <div class="col">
+            <p class="text-uppercase"><strong>{{'GLOBAL.fecha_creacion' | translate}}:</strong>
+                {{fechaCreacion}}
+            </p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <p class="text-uppercase"><strong>{{'GLOBAL.solicitante' | translate}}:</strong>
+                {{salida_id.Funcionario}} </p>
+        </div>
+        <div class="col">
+            <p class="text-uppercase"><strong>{{'GLOBAL.documento' | translate}}:</strong>
+                {{salida_id.Cedula}}
+            </p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <p class="text-uppercase"><strong>{{'GLOBAL.observaciones' | translate}}:</strong>
+                {{observacion}} </p>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <ng2-smart-table [settings]="settings" [source]="source" (edit)="onRechazado($event)" 
+    (delete)="onAprobado($event)"
+    >
+    </ng2-smart-table>
+</div>
