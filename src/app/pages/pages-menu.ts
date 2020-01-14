@@ -127,4 +127,14 @@ export const MENU_ITEMS: NbMenuItem[] = [
       },
     ],
   },
+  {
+    title: 'Bodega de Consumo',
+    icon: 'nb-compose',
+    children: [
+      {
+        title: 'kardex',
+        link: '/pages/bodega_consumo/kardex',
+      },
+    ],
+  },
 ];

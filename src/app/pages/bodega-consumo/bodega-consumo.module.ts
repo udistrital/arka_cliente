@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { TranslateModule } from '@ngx-translate/core';
 import { BodegaConsumoRoutingModule } from './bodega-consumo-routing.module';
 import { BodegaConsumoComponent } from './bodega-consumo.component';
 import { AgregarElementosComponent } from './agregar-elementos/agregar-elementos.component';
@@ -9,8 +10,7 @@ import { OwlDateTimeModule, OwlNativeDateTimeModule } from 'ng-pick-datetime';
 import { FormElementosSeleccionadosComponent } from './form-elementos-seleccionados/form-elementos-seleccionados.component';
 import { NgxCurrencyModule } from 'ngx-currency';
 import { KardexComponent } from './kardex/kardex.component';
-import { TranslateModule } from '@ngx-translate/core';
-import {TableModule} from 'primeng/table';
+import { TableModule } from 'primeng/table';
 import { ConsultaSolicitudComponent } from './consulta-solicitud/consulta-solicitud.component';
 import { DetalleSolicitudComponent } from './detalle-solicitud/detalle-solicitud.component';
 
@@ -24,6 +24,7 @@ import { DetalleSolicitudComponent } from './detalle-solicitud/detalle-solicitud
     DetalleSolicitudComponent,
   ],
   imports: [
+    TranslateModule,
     NgxCurrencyModule,
     CommonModule,
     BodegaConsumoRoutingModule,

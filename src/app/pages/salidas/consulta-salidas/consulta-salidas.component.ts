@@ -71,7 +71,12 @@ export class ConsultaSalidasComponent implements OnInit {
         // console.log(list);
         if (this.Dependencias !== undefined && this.Sedes !== undefined && this.Proveedores !== undefined) {
           // console.log('ok');
-          this.loadSalidas();
+          this.source.getElements().then((res) => {
+            // console.log(Object.keys(res));
+            if (Object.keys(res).length === 0) {
+              this.loadSalidas();
+            }
+          });
         }
       },
     );
@@ -109,23 +114,7 @@ export class ConsultaSalidasComponent implements OnInit {
           title: 'Observaciones',
         },
         FechaCreacion: {
-          title: this.translate.instant('GLOBAL.fecha_entrada'),
-          width: '70px',
-          valuePrepareFunction: (value: any) => {
-            const date = value.split('T');
-            return date[0];
-          },
-          filter: {
-            type: 'daterange',
-            config: {
-              daterange: {
-                format: 'yyyy/mm/dd',
-              },
-            },
-          },
-        },
-        FechaModificacion: {
-          title: this.translate.instant('GLOBAL.fecha_entrada'),
+          title: 'Fecha de Creacion',
           width: '70px',
           valuePrepareFunction: (value: any) => {
             const date = value.split('T');
@@ -246,33 +235,49 @@ export class ConsultaSalidasComponent implements OnInit {
     };
   }
   loadSalidas(): void {
-    this.salidasHelper.getSalidas().subscribe(res1 => {
-      // console.log(res1);
-      if (res1 !== null) {
-        const datos = res1;
-        datos.forEach(element => {
-          const detalle = JSON.parse(element.Detalle);
-          // console.log(detalle)
-          this.Actas_Recibido.getSedeDependencia(detalle.ubicacion).subscribe(res => {
-            const valor = res[0].EspacioFisicoId.Codigo.substring(0, 4);
-            // console.log(res)
-            element.Funcionario = this.Proveedores.find(x => x.Id === parseFloat(detalle.funcionario));
-            element.Ubicacion = res[0];
-            element.Sede = this.Sedes.find(y => y.Codigo === valor);
-            element.Dependencia = res[0].DependenciaId;
-            this.source.append(element);
+
+      this.salidasHelper.getSalidas().subscribe(res1 => {
+        // console.log(res1);
+        if (res1 !== null) {
+          const datos = res1;
+          datos.forEach(element => {
+            const detalle = JSON.parse(element.Detalle);
+            // console.log(detalle)
+            // if (detalle.funcionario !== null) {
+              this.Actas_Recibido.getSedeDependencia(detalle.ubicacion).subscribe(res => {
+                const valor = res[0].EspacioFisicoId.Codigo.substring(0, 4);
+                // console.log(detalle.funcionario);
+                if (detalle.funcionario !== undefined) {
+                  element.Funcionario = this.Proveedores.find(x => x.Id === parseFloat(detalle.funcionario));
+                } else {
+                  element.Funcionario = {
+                    NomProveedor: 'NO APLICA',
+                  };
+                }
+
+                element.Ubicacion = res[0];
+                element.Sede = this.Sedes.find(y => y.Codigo === valor);
+                element.Dependencia = res[0].DependenciaId;
+                this.source.append(element);
+              });
+            // }
           });
-        });
-        // console.log(datos);
-        // this.source.load(datos);
-      }
-    });
+          // console.log(datos);
+          // this.source.load(datos);
+        }
+      });
   }
   onCustom(event) {
     this.salidaId = `${event.data.Id}`;
     this.detalle = true;
   }
   onVolver() {
-    this.detalle = !this.detalle;
+    // this.source.empty().then(() => {
+       this.detalle = !this.detalle;
+    //   if (this.Dependencias !== undefined && this.Sedes !== undefined && this.Proveedores !== undefined) {
+    //    // console.log('ok');
+    //     this.loadSalidas();
+    //  }
+    // });
   }
 }

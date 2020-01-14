@@ -26,7 +26,6 @@ export class ReposicionComponent implements OnInit {
   soporteForm: FormGroup;
   observacionForm: FormGroup;
   facturaForm: FormGroup;
-   // elementos
   elementos: any;
   placa: string;
   encargado: string;
