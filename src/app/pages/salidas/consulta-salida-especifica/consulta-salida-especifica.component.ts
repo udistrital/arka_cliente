@@ -63,8 +63,8 @@ export class ConsultaSalidaEspecificaComponent implements OnInit {
   ) {
     this.source = new LocalDataSource();
     this.detalle = false;
-    //this.listService.findProveedores();
-    //this.listService.findSedes();
+    // this.listService.findProveedores();
+    // this.listService.findSedes();
     this.cargarCampos();
   }
 
@@ -72,15 +72,15 @@ export class ConsultaSalidaEspecificaComponent implements OnInit {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
       // this.loadTablaSettings();
     });
-    
+
   }
-  
-  
+
+
   CargarSalida() {
 
     this.salidasHelper.getSalida(this.salida_id).subscribe(res1 => {
       if (Object.keys(res1).length !== 0) {
-        console.log(res1)
+        // console.log(res1)
         this.salida = res1.Salida;
         this.source.load(res1.Elementos);
       }

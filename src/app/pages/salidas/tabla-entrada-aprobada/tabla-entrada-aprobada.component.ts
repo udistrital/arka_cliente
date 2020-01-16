@@ -35,7 +35,7 @@ export class TablaEntradaAprobadaComponent implements OnInit {
     private salidasHelper: SalidaHelper,
     private translate: TranslateService,
     private nuxeoService: NuxeoService,
-    private documentoService: DocumentoService
+    private documentoService: DocumentoService,
   ) {
     this.source = new LocalDataSource();
     this.entradas = new Array<Entrada>();

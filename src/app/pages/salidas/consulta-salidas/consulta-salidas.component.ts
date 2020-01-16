@@ -56,7 +56,7 @@ export class ConsultaSalidasComponent implements OnInit {
     this.loadTablaSettings();
   }
 
-  
+
 
   ngOnInit() {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
@@ -214,7 +214,7 @@ export class ConsultaSalidasComponent implements OnInit {
   loadSalidas(): void {
 
     this.salidasHelper.getSalidas().subscribe(res1 => {
-      console.log(res1);
+      // console.log(res1);
       this.source.load(res1);
     });
   }

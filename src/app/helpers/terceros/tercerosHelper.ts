@@ -42,7 +42,7 @@ export class TercerosHelper {
  */
     public getProveedor(nombre) {
         this.rqManager.setPath('TERCEROS');
-        return this.rqManager.get('tercero/'+ nombre + '').pipe(
+        return this.rqManager.get('tercero/' + nombre + '').pipe(
             map(
                 (res) => {
                     if (res === 'error') {

@@ -95,7 +95,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
 
   }
   ngOnInit() {
-    
+
   }
   initialiseInvites() {
     // Set default values and re-fetch any data you need.
