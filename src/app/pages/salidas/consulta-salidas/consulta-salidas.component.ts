@@ -16,6 +16,8 @@ import { IAppState } from '../../../@core/store/app.state';
 import { ListService } from '../../../@core/store/services/list.service';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
 import { parse } from 'path';
+import { combineLatest } from 'rxjs';
+import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
 
 @Component({
   selector: 'ngx-consulta-salidas',
@@ -47,45 +49,20 @@ export class ConsultaSalidasComponent implements OnInit {
     private store: Store<IAppState>,
     private Actas_Recibido: ActaRecibidoHelper,
     private listService: ListService,
+    private terceros: TercerosHelper,
   ) {
     this.source = new LocalDataSource();
     this.detalle = false;
     this.loadTablaSettings();
-    this.listService.findDependencias();
-    this.listService.findSedes();
-    this.listService.findProveedores();
-    this.loadLists();
   }
 
-  public loadLists() {
-    this.store.select((state) => state).subscribe(
-      (list) => {
-        this.Proveedores = list.listProveedores[0];
-        this.Dependencias = list.listDependencias[0];
-        // this.Ubicaciones = list.listUbicaciones[0];
-        this.Sedes = list.listSedes[0];
-        // this.dataService = this.completerService.local(this.Ubicaciones, 'Nombre', 'Nombre');
-        // console.log(this.Proveedores);
-        // console.log(this.Dependencias);
-        // console.log(this.Sedes);
-        // console.log(list);
-        if (this.Dependencias !== undefined && this.Sedes !== undefined && this.Proveedores !== undefined) {
-          // console.log('ok');
-          this.source.getElements().then((res) => {
-            // console.log(Object.keys(res));
-            if (Object.keys(res).length === 0) {
-              this.loadSalidas();
-            }
-          });
-        }
-      },
-    );
-  }
+  
 
   ngOnInit() {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
       this.loadTablaSettings();
     });
+    this.loadSalidas();
   }
 
   loadTablaSettings() {
@@ -133,7 +110,7 @@ export class ConsultaSalidasComponent implements OnInit {
           title: 'Entrada Asociada',
           valuePrepareFunction: (value: any) => {
             if (value !== null) {
-              return value;
+              return value.Id;
             } else {
               return '';
             }
@@ -143,7 +120,7 @@ export class ConsultaSalidasComponent implements OnInit {
           title: 'Funcionario',
           valuePrepareFunction: (value: any) => {
             if (value !== null) {
-              return value.NomProveedor;
+              return value.NombreCompleto;
             } else {
               return '';
             }
@@ -152,7 +129,7 @@ export class ConsultaSalidasComponent implements OnInit {
             // console.log(cell);
             // console.log(search);
             if (Object.keys(cell).length !== 0) {
-              if (cell.NomProveedor.indexOf(search) > -1) {
+              if (cell.NombreCompleto.indexOf(search) > -1) {
                 return true;
               } else {
                 return false;
@@ -212,7 +189,7 @@ export class ConsultaSalidasComponent implements OnInit {
           title: 'Ubicacion',
           valuePrepareFunction: (value: any) => {
             if (value !== null) {
-              return value.EspacioFisicoId.Nombre;
+              return value.Nombre;
             } else {
               return '';
             }
@@ -221,7 +198,7 @@ export class ConsultaSalidasComponent implements OnInit {
             // console.log(cell);
             // console.log(search);
             if (Object.keys(cell).length !== 0) {
-              if (cell.EspacioFisicoId.Nombre.indexOf(search) > -1) {
+              if (cell.Nombre.indexOf(search) > -1) {
                 return true;
               } else {
                 return false;
@@ -236,36 +213,10 @@ export class ConsultaSalidasComponent implements OnInit {
   }
   loadSalidas(): void {
 
-      this.salidasHelper.getSalidas().subscribe(res1 => {
-        // console.log(res1);
-        if (res1 !== null) {
-          const datos = res1;
-          datos.forEach(element => {
-            const detalle = JSON.parse(element.Detalle);
-            // console.log(detalle)
-            // if (detalle.funcionario !== null) {
-              this.Actas_Recibido.getSedeDependencia(detalle.ubicacion).subscribe(res => {
-                const valor = res[0].EspacioFisicoId.Codigo.substring(0, 4);
-                // console.log(detalle.funcionario);
-                if (detalle.funcionario !== undefined) {
-                  element.Funcionario = this.Proveedores.find(x => x.Id === parseFloat(detalle.funcionario));
-                } else {
-                  element.Funcionario = {
-                    NomProveedor: 'NO APLICA',
-                  };
-                }
-
-                element.Ubicacion = res[0];
-                element.Sede = this.Sedes.find(y => y.Codigo === valor);
-                element.Dependencia = res[0].DependenciaId;
-                this.source.append(element);
-              });
-            // }
-          });
-          // console.log(datos);
-          // this.source.load(datos);
-        }
-      });
+    this.salidasHelper.getSalidas().subscribe(res1 => {
+      console.log(res1);
+      this.source.load(res1);
+    });
   }
   onCustom(event) {
     this.salidaId = `${event.data.Id}`;
@@ -273,7 +224,7 @@ export class ConsultaSalidasComponent implements OnInit {
   }
   onVolver() {
     // this.source.empty().then(() => {
-       this.detalle = !this.detalle;
+    this.detalle = !this.detalle;
     //   if (this.Dependencias !== undefined && this.Sedes !== undefined && this.Proveedores !== undefined) {
     //    // console.log('ok');
     //     this.loadSalidas();

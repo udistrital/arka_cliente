@@ -8,7 +8,7 @@ const httpOptions = {
     'Accept': 'application/json',
     'authorization': 'Bearer ' + window.localStorage.getItem('access_token'),
   }),
-}
+};
 
 // const path = environment.PERSONA_SERVICE;
 // const path = environment.TERCEROS_SERVICE;
@@ -30,8 +30,8 @@ export class UserService {
         .subscribe(res => {
           if (res !== null) {
             this.user = res[0];
-            console.info('User')
-            console.info(this.user)
+            // console.info('User')
+            // console.info(this.user)
             this.user$.next(this.user);
             // window.localStorage.setItem('ente', res[0].Ente);
             window.localStorage.setItem('persona_id', res[0].Id);

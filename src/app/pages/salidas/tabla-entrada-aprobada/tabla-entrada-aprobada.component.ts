@@ -10,6 +10,7 @@ import { TipoEntrada } from '../../../@core/data/models/entrada/tipo_entrada';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { NuxeoService } from '../../../@core/utils/nuxeo.service';
 import { DocumentoService } from '../../../@core/data/documento.service';
+import { SalidaHelper } from '../../../helpers/salidas/salidasHelper';
 
 @Component({
   selector: 'ngx-tabla-entrada-aprobada',
@@ -28,8 +29,14 @@ export class TablaEntradaAprobadaComponent implements OnInit {
   settings: any;
   documentoId: boolean;
 
-  constructor(private router: Router, private entradasHelper: EntradaHelper, private translate: TranslateService,
-    private nuxeoService: NuxeoService, private documentoService: DocumentoService) {
+  constructor(
+    private router: Router,
+    private entradasHelper: EntradaHelper,
+    private salidasHelper: SalidaHelper,
+    private translate: TranslateService,
+    private nuxeoService: NuxeoService,
+    private documentoService: DocumentoService
+  ) {
     this.source = new LocalDataSource();
     this.entradas = new Array<Entrada>();
     this.detalle = false;
@@ -110,22 +117,20 @@ export class TablaEntradaAprobadaComponent implements OnInit {
   }
 
   loadEntradas(): void {
-    this.entradasHelper.getEntradas().subscribe(res => {
+
+    this.salidasHelper.getEntradasSinSalida().subscribe(res => {
       if (res !== null) {
-        const data = <Array<any>>res;
-        for (const datos in Object.keys(data)) {
-          if (data.hasOwnProperty(datos) && data[datos].Movimiento.Id !== undefined) {
-            const entrada = new Entrada;
-            const tipoEntradaAux = new TipoEntrada;
-            const detalle = JSON.parse((data[datos].Movimiento.Detalle));
-            entrada.Id = data[datos].Movimiento.Id;
-            entrada.ActaRecibidoId = detalle.acta_recibido_id;
-            entrada.FechaCreacion = data[datos].Movimiento.FechaCreacion;
-            entrada.Consecutivo = detalle.consecutivo;
-            tipoEntradaAux.Nombre = data[datos].TipoMovimiento.Nombre;
-            entrada.TipoEntradaId = tipoEntradaAux;
-            this.entradas.push(entrada);
-          }
+        for (const datos of res) {
+          const entrada = new Entrada;
+          const tipoEntradaAux = new TipoEntrada;
+          const detalle = JSON.parse((datos.Detalle));
+          entrada.Id = datos.Id;
+          entrada.ActaRecibidoId = detalle.acta_recibido_id;
+          entrada.FechaCreacion = datos.FechaCreacion;
+          entrada.Consecutivo = detalle.consecutivo;
+          tipoEntradaAux.Nombre = datos.FormatoTipoMovimientoId.Nombre;
+          entrada.TipoEntradaId = tipoEntradaAux;
+          this.entradas.push(entrada);
         }
         this.source.load(this.entradas);
       }

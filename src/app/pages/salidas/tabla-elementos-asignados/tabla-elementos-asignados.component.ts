@@ -57,7 +57,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
   @Input('entradaId')
   set name2(entrada_id: string) {
     this.entradaId = entrada_id;
-    console.log(this.entradaId);
+    // console.log(this.entradaId);
   }
   source: any;
   source2: any;
@@ -85,6 +85,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
       this.cargarCampos();
     });
+    this.respuesta = undefined;
     this.source = new LocalDataSource(); // create the source
     this.source2 = new LocalDataSource();
     this.elementos = new Array<Elemento>();
@@ -94,6 +95,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
 
   }
   ngOnInit() {
+    
   }
   initialiseInvites() {
     // Set default values and re-fetch any data you need.
@@ -457,13 +459,13 @@ export class TablaElementosAsignadosComponent implements OnInit {
       this.source2.load(this.DatosConsumo);
     }
     if (this.Datos !== undefined) {
-      console.log(this.Datos)
+      // console.log(this.Datos)
       if (Object.keys(this.Datos).length === 0) {
-        console.log('ok')
+        // console.log('ok')
         this.bandera2 = true;
       }
       this.source.load(this.Datos);
-    } 
+    }
   }
   AjustarDatos2(datos: any[]) {
     this.Datos2 = new Array<ElementoSalida>();
@@ -537,7 +539,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
       this.bandera = false;
       this.bandera2 = false;
     }
-    
+
   }
   onEdit(event): void {
   }
@@ -560,7 +562,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
     if (Object.keys(this.DatosConsumo).length !== 0) {
       const sede = 'FICC';
       const dependencia = 'ALMACEN GENERAL E INVENTARIOS';
-  
+
       const transaccion: any = {};
       transaccion.Sede = this.Sedes.find((x) => x.Codigo === sede);
       transaccion.Dependencia = this.Dependencias.find((x) => x.Nombre === dependencia);
@@ -575,7 +577,9 @@ export class TablaElementosAsignadosComponent implements OnInit {
             Observacion: 'Salida Automatica para Bodega de Consumo',
             Detalle: JSON.stringify(detalle),
             Activo: true,
-            MovimientoPadreId: null, // parseFloat(this.entradaId),
+            MovimientoPadreId: {
+              Id: parseFloat(this.entradaId),
+            },
             FormatoTipoMovimientoId: {
               Id: 9,
             },
@@ -585,7 +589,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
           },
           Elementos: [],
         };
-  
+
         for (const currentValue of this.DatosConsumo) {
           const elemento = {};
           elemento['Activo'] = true;
@@ -595,14 +599,14 @@ export class TablaElementosAsignadosComponent implements OnInit {
           elemento['Unidad'] = currentValue.Cantidad;
           elemento['ValorUnitario'] = currentValue.ValorUnitario;
           elemento['ValorTotal'] = currentValue.ValorTotal;
-  
+
           Salida.Elementos.push(elemento);
           // console.log(Salida)
         }
         this.Datos_Salida_Consumo = Salida;
       });
     }
-    
+
   }
   Salida_General() {
     if (Object.keys(this.Datos).length !== 0) {
@@ -617,7 +621,9 @@ export class TablaElementosAsignadosComponent implements OnInit {
             Observacion: this.Observaciones,
             Detalle: JSON.stringify(detalle),
             Activo: true,
-            MovimientoPadreId: null, // parseFloat(this.entradaId),
+            MovimientoPadreId: {
+              Id: parseFloat(this.entradaId),
+            },
             FormatoTipoMovimientoId: {
               Id: 7,
             },
@@ -637,18 +643,18 @@ export class TablaElementosAsignadosComponent implements OnInit {
         elemento['Unidad'] = currentValue.Cantidad;
         elemento['ValorUnitario'] = currentValue.ValorUnitario;
         elemento['ValorTotal'] = currentValue.ValorTotal;
-  
+
         accumulator[val].Elementos.push(elemento);
         // console.log(currentValue);
         return accumulator;
-  
+
       }, {});
-  
+
       return datos_agrupados2;
     } else {
       return this.Datos;
     }
-    
+
   }
   onSubmit() {
 
@@ -661,13 +667,13 @@ export class TablaElementosAsignadosComponent implements OnInit {
     if (Object.keys(this.DatosConsumo).length !== 0) {
       Salidas.Salidas.push(this.Datos_Salida_Consumo);
     }
-    
+
     if (Object.keys(datos_agrupados).length !== 0) {
       for (const salida of Object.keys(datos_agrupados)) {
         Salidas.Salidas.push(datos_agrupados[salida]);
       }
     }
-    
+
 
     // console.log(Salidas);
 
