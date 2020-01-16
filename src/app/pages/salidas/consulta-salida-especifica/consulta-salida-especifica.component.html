@@ -16,26 +16,26 @@
     <nb-card-body>
       <div class="row">
         <div class="col">
-          <p class="text-uppercase"><strong>Consecutivo</strong>: {{ salida.Salida.Id }}</p>
+          <p class="text-uppercase"><strong>Consecutivo</strong>: {{ salida.Id }}</p>
         </div>
         <div class="col">
             <p class="text-uppercase"><strong>Fecha de Creacion:</strong>
-              {{ salida.Salida.FechaCreacion | date }}</p>
+              {{ salida.FechaCreacion | date }}</p>
           </div>
-        <div class="col">
+        <div class="col" *ngIf="salida.Funcionario">
           <p class="text-uppercase"><strong>Funcionario:</strong>
-            {{ salida.Salida.Funcionario.NomProveedor}}</p>
+            {{ salida.Funcionario.NombreCompleto}}</p>
         </div>
       </div>
       <div class="row">
         <div class="col">
-          <p class="text-uppercase"><strong>Sede</strong>: {{ salida.Salida.Sede.Nombre }}</p>
+          <p class="text-uppercase"><strong>Sede</strong>: {{ salida.Sede.Nombre }}</p>
         </div>
         <div class="col">
-          <p class="text-uppercase"><strong>Dependencia</strong>: {{ salida.Salida.Dependencia.Nombre }}</p>
+          <p class="text-uppercase"><strong>Dependencia</strong>: {{ salida.Dependencia.Nombre }}</p>
         </div>
         <div class="col">
-          <p class="text-uppercase"><strong>Ubicacion</strong>: {{ salida.Salida.Ubicacion.Nombre }}</p>
+          <p class="text-uppercase"><strong>Ubicacion</strong>: {{ salida.Ubicacion.Nombre }}</p>
         </div>
         
       </div>

@@ -85,7 +85,7 @@ export class FormElementosSeleccionadosComponent implements OnInit {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
     });
     this.source2 = new LocalDataSource();
-    this.listService.findProveedores();
+    // this.listService.findProveedores();
     this.listService.findDependencias();
     this.listService.findSedes();
     this.loadTablaSettings();
@@ -100,11 +100,11 @@ export class FormElementosSeleccionadosComponent implements OnInit {
   public loadLists() {
     this.store.select((state) => state).subscribe(
       (list) => {
-        this.Proveedores = list.listProveedores[0];
+        // this.Proveedores = list.listProveedores[0];
         this.Dependencias = list.listDependencias[0];
         // this.Ubicaciones = list.listUbicaciones[0];
         this.Sedes = list.listSedes[0];
-        this.dataService2 = this.completerService.local(this.Proveedores, 'compuesto', 'compuesto');
+        // this.dataService2 = this.completerService.local(this.Proveedores, 'compuesto', 'compuesto');
         this.dataService3 = this.completerService.local(this.Dependencias, 'Nombre', 'Nombre');
         // this.dataService = this.completerService.local(this.Ubicaciones, 'Nombre', 'Nombre');
       },
@@ -196,9 +196,7 @@ export class FormElementosSeleccionadosComponent implements OnInit {
           Id: 3,
         },
       };
-      this.bodegaConsumoHelper.postSolicitud(movimiento).subscribe(respuesta => {
-        console.info(respuesta);
-      });
+      this.bodegaConsumoHelper.postSolicitud(movimiento);
     });
   }
   usarLocalStorage() {

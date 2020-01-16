@@ -3,7 +3,7 @@
     Registrar Elementos
   </nb-card-header>
   <nb-card-body>
-    <mat-tab-group [selectedIndex]="selected.value" (selectedIndexChange)="selected.setValue($event)">
+    <mat-tab-group mat-stretch-tabs [selectedIndex]="selected.value" (selectedIndexChange)="selected.setValue($event)">
       <mat-tab>
         <ng-template mat-tab-label>
           Elementos Devolutivos y de Consumo Controlado

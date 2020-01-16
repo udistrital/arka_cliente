@@ -85,6 +85,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
       this.cargarCampos();
     });
+    this.respuesta = undefined;
     this.source = new LocalDataSource(); // create the source
     this.source2 = new LocalDataSource();
     this.elementos = new Array<Elemento>();
@@ -94,6 +95,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
 
   }
   ngOnInit() {
+
   }
   initialiseInvites() {
     // Set default values and re-fetch any data you need.
@@ -457,9 +459,11 @@ export class TablaElementosAsignadosComponent implements OnInit {
       this.source2.load(this.DatosConsumo);
     }
     if (this.Datos !== undefined) {
-      // console.log(this.Datos);
+
+      // console.log(this.Datos)
       if (Object.keys(this.Datos).length === 0) {
-        // console.log('ok');
+        // console.log('ok')
+
         this.bandera2 = true;
       }
       this.source.load(this.Datos);
@@ -575,7 +579,9 @@ export class TablaElementosAsignadosComponent implements OnInit {
             Observacion: 'Salida Automatica para Bodega de Consumo',
             Detalle: JSON.stringify(detalle),
             Activo: true,
-            MovimientoPadreId: null, // parseFloat(this.entradaId),
+            MovimientoPadreId: {
+              Id: parseFloat(this.entradaId),
+            },
             FormatoTipoMovimientoId: {
               Id: 9,
             },
@@ -617,7 +623,9 @@ export class TablaElementosAsignadosComponent implements OnInit {
             Observacion: this.Observaciones,
             Detalle: JSON.stringify(detalle),
             Activo: true,
-            MovimientoPadreId: null, // parseFloat(this.entradaId),
+            MovimientoPadreId: {
+              Id: parseFloat(this.entradaId),
+            },
             FormatoTipoMovimientoId: {
               Id: 7,
             },
