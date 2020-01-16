@@ -1,0 +1,96 @@
+<h3 class="pt-4 pb-2">Kardex bodega de consumo</h3>
+<h5 class="pt-4 pb-2">Consultar Elemento</h5>
+
+
+<form class="step-container" [formGroup]="kardexForm">
+  <div class="row">
+    <div class="form-group col-sm">
+      <label>Elemento</label>
+      <div class="input-group">
+        <input nbInput type="text" placeholder="Elemento a consultar" class="form-control"
+          formControlName="elementoCtrl" />
+      </div>
+      <datalist id="elementosList">
+        <option value="sleccione un valor" selected disabled></option>
+        <option *ngFor="let item of elementos" value='{{ item }}'></option>
+      </datalist>
+    </div>
+    <div class="form-group col-sm">
+      <label>Detalle</label>
+      <div class="input-group">
+        <input nbInput type="text" placeholder="Detalle" class="form-control" [readonly]="true"
+          value="{{ encargado }}" />
+      </div>
+    </div>
+  </div>
+  <div class="justify-content-center float-left pt-4">
+    <button type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off"
+      [disabled]="kardexForm.pristine || kardexForm.invalid" (click)="onSubmit()">
+      Consultar
+    </button>
+  </div>
+</form>
+
+
+<div class="table-responsive">
+  <nb-card>
+    <nb-card-header>
+      <!-- <h1>{{'GLOBAL.consultar_entrada' | translate}}</h1> -->
+      Historial de elemento
+    </nb-card-header>
+    <nb-card-body >
+      <p-table class="table table-striped table-bordered row d-flex justify-content-center" [value]="kardex">
+        <ng-template pTemplate="header">
+          <tr>
+            <th class="align-middle" rowspan="2"><strong>Fecha</strong></th>
+            <th class="align-middle" rowspan="2"><strong>Detalle del movimiento</strong> </th>
+            <th class="align-middle" colspan="3"><strong>Saldos Iniciales</strong> </th>
+            <th class="align-middle" colspan="3"><strong>Entradas</strong> </th>
+            <th class="align-middle" colspan="3"><strong>Salidas</strong> </th>
+            <th class="align-middle" rowspan="2"><strong>Saldo en cantidad </strong></th>
+            <th class="align-middle" rowspan="2"><strong>Saldo en valor</strong></th>
+
+          </tr>
+          <tr>
+            <th>Unidad</th>
+            <th>V. Unitario</th>
+            <th>V. Total</th>
+
+            <th>Unidad</th>
+            <th>V. Unitario</th>
+            <th>V. Total</th>
+
+            <th>Unidad</th>
+            <th>V. Unitario</th>
+            <th>V. Total</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-kardex>
+          <tr>
+            <td class="align-middle">{{kardex.fecha}}</td>
+            <td class="align-middle">{{kardex.detalle}}</td>
+            <td class="align-middle">{{kardex.saldoInicialUnidad}}</td>
+            <td class="align-middle">{{kardex.saldoInicialVUnitario}}</td>
+            <td class="align-middle">{{kardex.saldoInicialVTotal}}</td>
+            <td class="align-middle">{{kardex.entradaUnidad}}</td>
+            <td class="align-middle">{{kardex.entradaVUnitario}}</td>
+            <td class="align-middle">{{kardex.entradaVTotal}}</td>
+            <td class="align-middle">{{kardex.salidaUnidad}}</td>
+            <td class="align-middle">{{kardex.salidaVUnitario}}</td>
+            <td class="align-middle">{{kardex.salidaVTotal}}</td>
+            <td class="align-middle">{{kardex.saldoCantidad}}</td>
+            <td class="align-middle">{{kardex.saldoValor}}</td>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="footer">
+          <tr>
+            <td><strong> 01/01/2020</strong></td>
+            <td class="text-center" colspan="10"><strong>Inventario Final</strong></td>
+            <td><strong>$506,202</strong></td>
+            <td><strong>$531,020</strong></td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </nb-card-body>
+  </nb-card>
+</div>

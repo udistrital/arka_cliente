@@ -459,9 +459,11 @@ export class TablaElementosAsignadosComponent implements OnInit {
       this.source2.load(this.DatosConsumo);
     }
     if (this.Datos !== undefined) {
+
       // console.log(this.Datos)
       if (Object.keys(this.Datos).length === 0) {
         // console.log('ok')
+
         this.bandera2 = true;
       }
       this.source.load(this.Datos);
