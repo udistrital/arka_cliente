@@ -79,6 +79,7 @@ export class FormElementosSeleccionadosComponent implements OnInit {
     private nuxeoService: NuxeoService,
     private documentoService: DocumentoService,
     private bodegaConsumoHelper: BodegaConsumoHelper,
+    
 
 
   ) {
@@ -156,7 +157,7 @@ export class FormElementosSeleccionadosComponent implements OnInit {
 
       const elemento = this.Datos;
 
-      elemento.Funcionario = this.Proveedores.find(z => z.compuesto === form.Proveedor);
+      // elemento.Funcionario = this.Proveedores.find(z => z.compuesto === form.Proveedor);
       elemento.Sede = this.Sedes.find(y => y.Id === parseFloat(form.Sede));
       elemento.Dependencia = this.Dependencias.find(y => y.Nombre === form.Dependencia);
       elemento.Ubicacion = this.Ubicaciones.find(w => w.Id === parseFloat(form.Ubicacion));
@@ -196,7 +197,14 @@ export class FormElementosSeleccionadosComponent implements OnInit {
           Id: 3,
         },
       };
-      this.bodegaConsumoHelper.postSolicitud(movimiento);
+      this.bodegaConsumoHelper.postSolicitud(movimiento).subscribe(res => {
+        const opt: any = {
+          title: 'Solicitud Ok',
+          text: 'Re ha registrado la solicitud de los elementos relacionados',
+          type: 'success',
+        };
+        (Swal as any).fire(opt)
+      });
     });
   }
   usarLocalStorage() {
