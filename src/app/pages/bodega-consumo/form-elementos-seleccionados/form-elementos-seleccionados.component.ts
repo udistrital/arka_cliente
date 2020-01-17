@@ -79,7 +79,7 @@ export class FormElementosSeleccionadosComponent implements OnInit {
     private nuxeoService: NuxeoService,
     private documentoService: DocumentoService,
     private bodegaConsumoHelper: BodegaConsumoHelper,
-    
+
 
 
   ) {
@@ -197,13 +197,13 @@ export class FormElementosSeleccionadosComponent implements OnInit {
           Id: 3,
         },
       };
-      this.bodegaConsumoHelper.postSolicitud(movimiento).subscribe(res => {
+      this.bodegaConsumoHelper.postSolicitud(movimiento).subscribe(() => {
         const opt: any = {
           title: 'Solicitud Ok',
           text: 'Re ha registrado la solicitud de los elementos relacionados',
           type: 'success',
         };
-        (Swal as any).fire(opt)
+        (Swal as any).fire(opt);
       });
     });
   }

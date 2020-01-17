@@ -204,7 +204,7 @@ export class AgregarElementosComponent implements OnInit {
   loadEntradas(): void {
     this.salidasHelper.getElementos().subscribe((res: any) => {
       if (Object.keys(res).length !== 0) {
-        console.log(res);
+        // console.log(res);
         // this.source.load(res);
         res.forEach(element => {
           this.actaRecibidoHelper.getElemento(element.ElementoActaId).subscribe((res2: any) => {

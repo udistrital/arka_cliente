@@ -89,7 +89,7 @@ export class ConsultaSolicitudComponent implements OnInit {
   loadSalidas(): void {
     this.bodegaHelper.getSolicitudesBodega().subscribe(res => {
       if (res !== null) {
-        console.log(res)
+        // console.log(res)
         let detalle: any;
         res.forEach(elemento => {
           detalle = JSON.parse(elemento.Detalle);

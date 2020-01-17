@@ -32,7 +32,7 @@ export class TercerosHelper {
             ),
         );
     }
-        
+
   /**
      * Elementos get
      * Conversion Archivo Post
