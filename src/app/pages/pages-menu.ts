@@ -90,6 +90,10 @@ export const MENU_ITEMS: NbMenuItem[] = [
         link: '/pages/bodega_consumo/agregar_elementos',
       },
       {
+        title: 'Asignacion a Kardex',
+        link: '/pages/bodega_consumo/asignacion_kardex',
+      },
+      {
         title: 'kardex',
         link: '/pages/bodega_consumo/kardex',
       },
@@ -124,16 +128,6 @@ export const MENU_ITEMS: NbMenuItem[] = [
       {
         title: 'Salidas',
         link: '/pages/reportes/registro-salidas',
-      },
-    ],
-  },
-  {
-    title: 'Bodega de Consumo',
-    icon: 'nb-compose',
-    children: [
-      {
-        title: 'kardex',
-        link: '/pages/bodega_consumo/kardex',
       },
     ],
   },

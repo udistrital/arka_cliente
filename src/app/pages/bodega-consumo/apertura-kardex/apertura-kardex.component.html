@@ -1,0 +1,66 @@
+<div class="col-lg-12" *ngIf="form_apertura">
+  <form [formGroup]="form_apertura" #fform="ngForm">
+    <div class="col-lg-12">
+      <nb-card>
+        <nb-card-header>
+          <h1>Asignacion de elementos a Kardex</h1>
+        </nb-card-header>
+        <nb-card-body>
+
+          <!-- CARD PARA MOSTRAR LAS SOLICITUDES *ngIf="!detalle" -->
+          <p class="h4 pb-4">Datos Generales</p>
+          <code *ngIf="elemento_catalogo">
+            <pre>
+              {{elemento_catalogo.Nombre | json}}
+            </pre>
+          </code>
+          <code *ngIf="elemento_bodega">
+            <pre>
+              {{elemento_bodega.Nombre | json}}
+            </pre>
+          </code>
+
+          <div class="form-group col-sm">
+            <div class="form-group col-sm">
+              <label>Metodo de Valoracion</label>
+              <select nbInput type="text" class="form-control" formControlName="Metodo_Valoracion">
+                <option *ngFor="let metodo of Metodos" [(value)]="metodo.Id">{{metodo.Nombre}}
+                </option>
+              </select>
+            </div>
+            <div class="row-sm">
+              <div class="form-group col-sm">
+                <label>Cantidad Minima</label>
+                <div class="input-group">
+                  <input currencyMask [options]="{allowNegative: false, prefix: '',align: 'left', precision: 0}" nbInput
+                    type="text" placeholder="{{'GLOBAL.Acta_Recibido.CapturarElementos.CantidadHeader' | translate }}"
+                    formControlName="Cantidad_Minima" class="form-control">
+                </div>
+              </div>
+              <div class="form-group col-sm">
+                <label>Cantidad Maxima</label>
+                <div class="input-group">
+                  <input currencyMask [options]="{allowNegative: false, prefix: '',align: 'left', precision: 0}" nbInput
+                    type="text" placeholder="{{'GLOBAL.Acta_Recibido.CapturarElementos.CantidadHeader' | translate }}"
+                    formControlName="Cantidad_Maxima" class="form-control">
+                </div>
+              </div>
+            </div>
+            <div class="form-group  col-lg-12">
+              <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Observaciones' | translate}}</label>
+              <div class="input-group">
+                <textarea rows="5" placeholder="{{'GLOBAL.Acta_Recibido.RegistroActa.Observaciones2' | translate}}"
+                  class="form-control" formControlName="Observaciones" required></textarea>
+              </div>
+  
+            </div>
+          </div>
+          
+
+        </nb-card-body>
+        <nb-card-footer>
+        </nb-card-footer>
+      </nb-card>
+    </div>
+  </form>
+</div>
