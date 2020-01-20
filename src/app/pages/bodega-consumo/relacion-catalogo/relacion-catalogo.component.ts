@@ -18,10 +18,10 @@ import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/cat
 @Component({
   selector: 'ngx-relacion-catalogo',
   templateUrl: './relacion-catalogo.component.html',
-  styleUrls: ['./relacion-catalogo.component.scss']
+  styleUrls: ['./relacion-catalogo.component.scss'],
 })
 export class RelacionCatalogoComponent implements OnInit {
- 
+
   source: LocalDataSource;
   source2: LocalDataSource;
   entradas: Array<Entrada>;
@@ -43,7 +43,7 @@ export class RelacionCatalogoComponent implements OnInit {
     this.subgrupo_id = subgrupo_id;
     // console.log(this.subgrupo_id);
     if (this.subgrupo_id !== undefined) {
-      this.ElementosSinAsignar(this.subgrupo_id)
+      this.ElementosSinAsignar(this.subgrupo_id);
     }
   }
 
@@ -110,13 +110,13 @@ export class RelacionCatalogoComponent implements OnInit {
 
 
   ElementosSinAsignar(subgrupo_id): void {
-    console.log(subgrupo_id);
+    // console.log(subgrupo_id);
     this.catalogoHelper.getElementosSubgrupo(subgrupo_id).subscribe((res: any) => {
-      console.log(res[0]);
+      // console.log(res[0]);
       if (Object.keys(res[0]).length !== 0) {
         this.source.load(res);
       }
-      
+
     });
   }
 

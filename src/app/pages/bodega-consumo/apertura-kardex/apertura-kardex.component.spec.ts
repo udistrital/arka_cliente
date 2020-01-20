@@ -8,7 +8,7 @@ describe('AperturaKardexComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ AperturaKardexComponent ]
+      declarations: [ AperturaKardexComponent ],
     })
     .compileComponents();
   }));

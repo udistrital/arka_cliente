@@ -6,7 +6,7 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'ngx-apertura-kardex',
   templateUrl: './apertura-kardex.component.html',
-  styleUrls: ['./apertura-kardex.component.scss']
+  styleUrls: ['./apertura-kardex.component.scss'],
 })
 export class AperturaKardexComponent implements OnInit {
 
@@ -18,17 +18,17 @@ export class AperturaKardexComponent implements OnInit {
   @Input('Elemento_C')
   set name(elemento: any) {
     this.elemento_catalogo = elemento;
-    console.log(elemento);
+    // console.log(elemento);
     if (this.elemento_catalogo !== undefined) {
-     
+
     }
   }
   @Input('Elemento_B')
   set name2(elemento: any) {
     this.elemento_bodega = elemento;
-    console.log(elemento);
+    // console.log(elemento);
     if (this.elemento_bodega !== undefined) {
-     
+
     }
   }
   Metodos: any[] = [
@@ -44,16 +44,16 @@ export class AperturaKardexComponent implements OnInit {
       Id: 3,
       Nombre: 'UEPS',
     },
-  ]
+  ];
 
   form_apertura: FormGroup;
   @ViewChild('fform') firstFormDirective;
-  
+
   constructor(
     private translate: TranslateService,
     private router: Router,
     private fb: FormBuilder,
-  ){
+  ) {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
     });
 
@@ -62,11 +62,11 @@ export class AperturaKardexComponent implements OnInit {
       Cantidad_Minima: ['', Validators.required],
       Cantidad_Maxima: ['', Validators.required],
       Observaciones: ['', Validators.required],
-    });;
-    
+    });
+
   }
 
   ngOnInit() {
-    
+
   }
 }

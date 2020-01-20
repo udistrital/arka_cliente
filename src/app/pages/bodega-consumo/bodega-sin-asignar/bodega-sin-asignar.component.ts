@@ -18,7 +18,7 @@ import { UserService } from '../../../@core/data/users.service';
 @Component({
   selector: 'ngx-bodega-sin-asignar',
   templateUrl: './bodega-sin-asignar.component.html',
-  styleUrls: ['./bodega-sin-asignar.component.scss']
+  styleUrls: ['./bodega-sin-asignar.component.scss'],
 })
 export class BodegaSinAsignarComponent implements OnInit {
 
@@ -121,7 +121,7 @@ export class BodegaSinAsignarComponent implements OnInit {
 
   ElementosSinAsignar(): void {
     this.salidasHelper.getElementos2().subscribe((res: any) => {
-      console.log(res);
+      // console.log(res);
       this.source.load(res);
     });
   }

@@ -12,31 +12,31 @@ export class AsignacionKardexComponent implements OnInit {
 
   ElementoSinAsignar: any;
   ElementoCatalogo: any;
-  
+
   constructor(
     private translate: TranslateService,
     private router: Router,
     private fb: FormBuilder,
-  ){
+  ) {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
     });
-    
+
   }
 
   Asignar_Elemento_Bodega(event) {
     this.ElementoSinAsignar = event;
-    console.log(event);
+    // console.log(event);
   }
   Asignar_Elemento_Catalogo(event) {
     this.ElementoCatalogo = event;
-    console.log(event);
+    // console.log(event);
   }
   onVolver() {
     this.ElementoCatalogo = undefined;
     this.ElementoSinAsignar = undefined;
   }
   ngOnInit() {
-    
+
   }
 
 }

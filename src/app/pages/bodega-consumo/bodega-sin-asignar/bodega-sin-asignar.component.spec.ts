@@ -8,7 +8,7 @@ describe('BodegaSinAsignarComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ BodegaSinAsignarComponent ]
+      declarations: [ BodegaSinAsignarComponent ],
     })
     .compileComponents();
   }));
