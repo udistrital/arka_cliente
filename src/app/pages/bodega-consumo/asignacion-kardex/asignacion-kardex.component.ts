@@ -6,7 +6,7 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'ngx-asignacion-kardex',
   templateUrl: './asignacion-kardex.component.html',
-  styleUrls: ['./asignacion-kardex.component.scss']
+  styleUrls: ['./asignacion-kardex.component.scss'],
 })
 export class AsignacionKardexComponent implements OnInit {
 
