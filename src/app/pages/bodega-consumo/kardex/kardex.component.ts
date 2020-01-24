@@ -1,7 +1,10 @@
-import { Component, OnInit } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
+import { Component, OnInit, LOCALE_ID, Input, Output, EventEmitter } from '@angular/core';
+import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { Validators, FormBuilder, FormGroup, AbstractControl, ValidatorFn } from '@angular/forms';
-
+import { getCurrencySymbol, formatCurrency } from '@angular/common';
+import { Pipe, PipeTransform } from '@angular/core';
+import { Kardex } from '../../../@core/data/models/bodega-consumo.ts/kardex';
+import { BodegaConsumoHelper } from '../../../helpers/bodega_consumo/bodegaConsumoHelper';
 
 @Component({
   selector: 'ngx-kardex',
@@ -9,34 +12,124 @@ import { Validators, FormBuilder, FormGroup, AbstractControl, ValidatorFn } from
   styleUrls: ['./kardex.component.scss'],
 })
 export class KardexComponent implements OnInit {
-  kardexForm: FormGroup;
-  constructor(private translate: TranslateService, private fb: FormBuilder) {
-
-  }
 
   encargado: string;
   elementos: any[];
   sales: any[];
-  kardex: any[];
+  kardex: Kardex[];
 
-  ngOnInit() {
-    this.kardexForm = this.fb.group({
-      elementoCtrl: ['', Validators.required],
+  @Input('Kardex')
+  set name(elemento: number) {
+
+    if (elemento !== undefined) {
+      this.bodegaConsumoService.getElementosKardex(elemento).subscribe((res: any) => {
+        if (Object.keys(res[0]).length !== 0) {
+          this.ArmarHojaKardex(res);
+        }
+      })
+    }
+  }
+
+  @Input('Apertura')
+  set name2(elemento: any[]) {
+    console.log('ok');
+    if (Object.keys(elemento).length !== 0) {
+      this.ArmarMovimientoPrevio(elemento);
+    }
+
+  }
+
+  @Input('Entrada')
+  set name3(elemento: any) {
+
+    if (Object.keys(elemento).length !== 0) {
+      this.bodegaConsumoService.getElementosKardex(elemento.ElementoCatalogoId).subscribe((res: any) => {
+        if (Object.keys(res[0]).length !== 0) {
+          this.ArmarHojaKardex(res);
+          this.ArmarMovimientoPrevio(elemento);
+        }
+      })
+    }
+  }
+
+  @Output() DatosEnviados = new EventEmitter();
+
+  constructor(
+    private translate: TranslateService,
+    private fb: FormBuilder,
+    private bodegaConsumoService: BodegaConsumoHelper,
+  ) {
+    this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
     });
+    this.kardex = new Array<Kardex>();
+  }
 
-      this.kardex = [
-        { fecha: '02/01/2020', detalle: 'Ocurrio la situación x', saldoInicialUnidad: '20', saldoInicialVUnitario: '$20.000',
-        saldoInicialVTotal: '$200.000', entradaUnidad: '50', entradaVUnitario: '$30.000' , entradaVTotal: '$300.000', salidaUnidad: ' 60',
-        salidaVUnitario: '$40.000', salidaVTotal: '$500.000', saldoCantidad: '10', saldoValor: ' $70.000' },
-        { fecha: '02/01/2020', detalle: 'Ocurrio la situación x', saldoInicialUnidad: '20', saldoInicialVUnitario: '$20.000',
-        saldoInicialVTotal: '$200.000', entradaUnidad: '50', entradaVUnitario: '$30.000' , entradaVTotal: '$300.000', salidaUnidad: '60',
-        salidaVUnitario: '$40.000', salidaVTotal: '$500.000', saldoCantidad: '10', saldoValor: '$70.000' },
-        { fecha: '02/01/2020', detalle: 'Ocurrio la situación x', saldoInicialUnidad: '20', saldoInicialVUnitario: '$20.000',
-        saldoInicialVTotal: '$200.000', entradaUnidad: '50', entradaVUnitario: '$30.000' , entradaVTotal: '$300.000', salidaUnidad: '60',
-        salidaVUnitario: '$40.000', salidaVTotal: '$500.000', saldoCantidad: '10', saldoValor: '$70.000' },
-        ];
+  ArmarHojaKardex(elementos: any[]) {
+
+    const Kardex = new Array<Kardex>();
+
+    for (const elemento_ of elementos) {
+      switch (elemento_.MovimientoId.FormatoTipoMovimientoId.CodigoAbreviacion) {
+        case 'AP_KDX':
+          const kardex_ = elemento_;
+          kardex_.Unidad_E = elemento_.Unidad;
+          kardex_.ValorUnitario_E = elemento_.ValorUnitario;
+          kardex_.ValorTotal_E = elemento_.ValorTotal;
+          kardex_.SaldoValorUnitario = elemento_.SaldoValor / elemento_.SaldoCantidad;
+          Kardex.push(kardex_);
+
+          break;
+        case 'EN_KDX':
+          const kardex_2 = elemento_;
+          kardex_2.Unidad_E = elemento_.Unidad;
+          kardex_.ValorUnitario_E = elemento_.ValorUnitario;
+          kardex_.ValorTotal_E = elemento_.ValorTotal;
+          kardex_2.SaldoValorUnitario = elemento_.SaldoValor / elemento_.SaldoCantidad
+          Kardex.push(kardex_2);
+          break;
+        case 'SAL_KDX':
+          const kardex_3 = elemento_;
+          kardex_3.Unidad_S = elemento_.Unidad;
+          kardex_3.ValorUnitario_S = elemento_.ValorUnitario;
+          kardex_3.ValorTotal_S = elemento_.ValorTotal;
+          kardex_3.SaldoValorUnitario = elemento_.SaldoValor / elemento_.SaldoCantidad
+          Kardex.push(kardex_3);
+          break;
+        default:
+          break;
+      }
+    }
+    this.kardex = Kardex;
+  }
+
+  ArmarMovimientoPrevio(elemento_: any) {
+
+    const kardex_ = elemento_;
+    kardex_.Unidad_E = elemento_.Unidad;
+    kardex_.ValorUnitario_E = elemento_.ValorUnitario;
+    kardex_.ValorTotal_E = elemento_.ValorTotal;
+    kardex_.SaldoValorUnitario = elemento_.SaldoValor / elemento_.SaldoCantidad;
+    this.kardex.push(kardex_)
+
+  }
+  ngOnInit() {
+
+
   }
   onSubmit() {
     // console.log('entrra')
+  }
+}
+
+@Pipe({ name: 'currencycustom' })
+
+export class CurrencyCustomPipe implements PipeTransform {
+  transform(value: any): string {
+    if (isNaN(value)) {
+      return value;
+    } else {
+      console.log(formatCurrency(value, 'en-US', '$', '', '2.2-2'));
+      return formatCurrency(value, 'en-US', '$', '', '2.2-2');
+    }
   }
 }
