@@ -23,4 +23,6 @@ export interface IAppState {
   listConsumo: Subgrupo[];
   listConsumoControlado: Subgrupo[];
   listDevolutivo: Subgrupo[];
+  listFormatosKardex: any[];
+  listEstadosMovimiento: any[];
 }
