@@ -9,7 +9,7 @@ import { Ng2SmartTableModule } from 'ngx-smart-table';
 import { OwlDateTimeModule, OwlNativeDateTimeModule } from 'ng-pick-datetime';
 import { FormElementosSeleccionadosComponent } from './form-elementos-seleccionados/form-elementos-seleccionados.component';
 import { NgxCurrencyModule } from 'ngx-currency';
-import { KardexComponent } from './kardex/kardex.component';
+import { KardexComponent, CurrencyCustomPipe } from './kardex/kardex.component';
 import { TableModule } from 'primeng/table';
 import { ConsultaSolicitudComponent } from './consulta-solicitud/consulta-solicitud.component';
 import { DetalleSolicitudComponent } from './detalle-solicitud/detalle-solicitud.component';
@@ -32,6 +32,7 @@ import { ConsultaKardexComponent } from './consulta-kardex/consulta-kardex.compo
     AperturaKardexComponent,
     AsignacionKardexComponent,
     ConsultaKardexComponent,
+    CurrencyCustomPipe,
   ],
   imports: [
     TranslateModule,

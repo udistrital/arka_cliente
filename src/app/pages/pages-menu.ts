@@ -94,9 +94,10 @@ export const MENU_ITEMS: NbMenuItem[] = [
         link: '/pages/bodega_consumo/asignacion_kardex',
       },
       {
-        title: 'kardex',
-        link: '/pages/bodega_consumo/kardex',
+        title: 'Consulta de Kardex',
+        link: '/pages/bodega_consumo/consulta_kardex',
       },
+      
     ],
   },
   {
