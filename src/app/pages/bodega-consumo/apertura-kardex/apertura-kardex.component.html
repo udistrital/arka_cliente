@@ -1,4 +1,9 @@
 <div class="col-lg-12" *ngIf="form_apertura">
+  <!-- <code>
+    <pre>
+      {{form_apertura.value | json}}
+    </pre>
+  </code> -->
   <form [formGroup]="form_apertura" #fform="ngForm">
     <div class="col-lg-12">
       <nb-card>
@@ -9,16 +14,6 @@
 
           <!-- CARD PARA MOSTRAR LAS SOLICITUDES *ngIf="!detalle" -->
           <p class="h4 pb-4">Datos Generales</p>
-          <code *ngIf="elemento_catalogo">
-            <pre>
-              {{elemento_catalogo.Nombre | json}}
-            </pre>
-          </code>
-          <code *ngIf="elemento_bodega">
-            <pre>
-              {{elemento_bodega.Nombre | json}}
-            </pre>
-          </code>
 
           <div class="form-group col-sm">
             <div class="form-group col-sm">
@@ -52,15 +47,27 @@
                 <textarea rows="5" placeholder="{{'GLOBAL.Acta_Recibido.RegistroActa.Observaciones2' | translate}}"
                   class="form-control" formControlName="Observaciones" required></textarea>
               </div>
-  
             </div>
           </div>
-          
 
         </nb-card-body>
         <nb-card-footer>
+          <button nbButton (click)="onSubmit()" [disabled]="!form_apertura.valid" class="float-right">Crear Registro</button>
+        </nb-card-footer>
+      </nb-card>
+      <nb-card *ngIf="ElementoMovimiento">
+        <nb-card-header>
+          Planilla de Kardex Inicial
+        </nb-card-header>
+        <nb-card-body>
+          <ngx-kardex *ngIf="ElementoMovimiento" [Apertura]="ElementoMovimiento">
+          </ngx-kardex>
+        </nb-card-body>
+        <nb-card-footer>
+          <button nbButton (click)="onSubmit2()" *ngIf="ElementoMovimiento" class="float-right">Confirmar Apertura de Kardex</button>
         </nb-card-footer>
       </nb-card>
     </div>
   </form>
+
 </div>

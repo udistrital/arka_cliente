@@ -1,3 +1,60 @@
-<p>
-  consulta-kardex works!
-</p>
+<div class="col-lg-12">
+  <nb-card>
+    <nb-card-header>
+      <!-- <h1>{{'GLOBAL.consultar_entrada' | translate}}</h1> -->
+      Consultar Kardex
+    </nb-card-header>
+    <nb-card-body>
+
+      <!-- CARD PARA MOSTRAR LAS SOLICITUDES *ngIf="!detalle" -->
+      <!-- <p class="h4 pb-4" *ngIf="!detalle">{{'GLOBAL.mensaje_consulta_entrada' | translate}}</p> -->
+      <p class="h4 pb-4" *ngIf="!kardex">
+        En la siguiente tabla se muestran de forma general los kardex de inventario de consumo, seleccione una para ver
+        la informacion asociada</p>
+      <ng2-smart-table [settings]="settings" [source]="source" (custom)="onCustom($event)" *ngIf="!kardex">
+      </ng2-smart-table>
+      <nb-card *ngIf="kardex">
+        <nb-card-body>
+
+          <div  class="justify-content-center">
+            <div class="row">
+              <div class="col">
+                <p class="text-uppercase"><strong>Consecutivo</strong>: {{ elemento.Id }}</p>
+              </div>
+              <div class="col">
+                <p class="text-uppercase"><strong>Fecha de Creacion:</strong>
+                  {{ elemento.FechaCreacion | date }}</p>
+              </div>
+              <div class="col">
+                <p class="text-uppercase"><strong>Nombre:</strong>
+                  {{ elemento.ElementoCatalogoId.Nombre}}</p>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col">
+                <p class="text-uppercase"><strong>Metodo de Valoracion</strong>: {{ elemento.MetodoValoracion.Nombre }}</p>
+              </div>
+              <div class="col">
+                <p class="text-uppercase"><strong>Cantidad Minima</strong>: {{ elemento.CantidadMinima }}</p>
+              </div>
+              <div class="col">
+                <p class="text-uppercase"><strong>Cantidad Maxima</strong>: {{ elemento.CantidadMaxima }}</p>
+              </div>
+            </div>
+          </div>
+    
+        </nb-card-body>
+      </nb-card>
+      <ngx-kardex *ngIf="kardex" [Kardex]="kardex"></ngx-kardex>
+
+      
+    </nb-card-body>
+    <nb-card-footer>
+      <div class="pt-4">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="onVolver()"
+          *ngIf="kardex">{{'GLOBAL.volver' | translate}}
+        </button>
+      </div>
+    </nb-card-footer>
+  </nb-card>
+</div>

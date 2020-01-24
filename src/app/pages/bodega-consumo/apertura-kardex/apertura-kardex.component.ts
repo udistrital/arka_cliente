@@ -2,6 +2,11 @@ import { Component, OnInit, ViewChild, Output, Input, EventEmitter } from '@angu
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { Router } from '@angular/router';
+import { Store } from '@ngrx/store';
+import Swal from 'sweetalert2';
+import { ListService } from '../../../@core/store/services/list.service';
+import { IAppState } from '../../../@core/store/app.state';
+import { BodegaConsumoHelper } from '../../../helpers/bodega_consumo/bodegaConsumoHelper';
 
 @Component({
   selector: 'ngx-apertura-kardex',
@@ -11,26 +16,27 @@ import { Router } from '@angular/router';
 export class AperturaKardexComponent implements OnInit {
 
   @Output() DatosEnviados = new EventEmitter();
-  @Output() DatosTotales = new EventEmitter();
+
   elemento_catalogo: any;
   elemento_bodega: any;
+
+  ElementoMovimiento: any;
+  FormatosKardex: any;
+  EstadosMovimiento: any;
+  Movimiento: any;
 
   @Input('Elemento_C')
   set name(elemento: any) {
     this.elemento_catalogo = elemento;
     // console.log(elemento);
-    if (this.elemento_catalogo !== undefined) {
-
-    }
   }
   @Input('Elemento_B')
   set name2(elemento: any) {
     this.elemento_bodega = elemento;
     // console.log(elemento);
-    if (this.elemento_bodega !== undefined) {
-
-    }
   }
+
+
   Metodos: any[] = [
     {
       Id: 1,
@@ -53,10 +59,15 @@ export class AperturaKardexComponent implements OnInit {
     private translate: TranslateService,
     private router: Router,
     private fb: FormBuilder,
+    private store: Store<IAppState>,
+    private listService: ListService,
+    private BodegaConsumoHelper: BodegaConsumoHelper,
   ) {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
     });
-
+    listService.findformatosKardex();
+    listService.findEstadosMovimiento();
+    this.loadLists();
     this.form_apertura = this.fb.group({
       Metodo_Valoracion: ['', Validators.required],
       Cantidad_Minima: ['', Validators.required],
@@ -66,7 +77,63 @@ export class AperturaKardexComponent implements OnInit {
 
   }
 
+  public loadLists() {
+    this.store.select((state) => state).subscribe(
+      (list) => {
+        console.log(list.listFormatosKardex[0]);
+        console.log(list.listEstadosMovimiento[0])
+        this.FormatosKardex = list.listFormatosKardex[0];
+        this.EstadosMovimiento = list.listEstadosMovimiento[0];
+      },
+    );
+  }
   ngOnInit() {
 
+  }
+  onSubmit(){
+
+    const form = this.form_apertura.value;
+    let detalle: any = {};
+    detalle.Metodo_Valoracion = parseFloat(form.Metodo_Valoracion);
+    detalle.Cantidad_Maxima = parseFloat(form.Cantidad_Maxima);
+    detalle.Cantidad_Minima = parseFloat(form.Cantidad_Minima);
+
+    this.Movimiento = {};
+    this.Movimiento.Observacion = form.Observaciones;
+    this.Movimiento.Activo = true;
+    this.Movimiento.Detalle = JSON.stringify(detalle);
+    this.Movimiento.FormatoTipoMovimientoId = this.FormatosKardex.find(x => x.CodigoAbreviacion === 'AP_KDX');
+    this.Movimiento.EstadoMovimientoId = this.EstadosMovimiento.find(x => x.Id === 4)
+    this.Movimiento.MovimientoPadreId = this.elemento_bodega.MovimientoId
+    console.log(this.Movimiento);
+
+    this.elemento_bodega.ElementoCatalogoId = this.elemento_catalogo.Id;
+    this.elemento_bodega.MovimientoId = this.Movimiento;
+    this.ElementoMovimiento = this.elemento_bodega;
+    console.log(this.ElementoMovimiento);
+    
+  }
+  onSubmit2() {
+
+    const AperturaKardex = {
+      Movimiento: []
+    }
+    AperturaKardex.Movimiento.push(
+      {
+        Kardex: this.Movimiento,
+        Elementos: [this.ElementoMovimiento],
+      }
+    )
+    console.log(AperturaKardex);
+    this.BodegaConsumoHelper.postMovimientoKardex(AperturaKardex).subscribe((res:any) => {
+      const opt: any = {
+        title: 'Apertura Realizada',
+        text: 'Se ha registrado la solicitud de los elementos relacionados',
+        type: 'success',
+      };
+      (Swal as any).fire(opt);
+      this.router.navigate(['/pages/bodega_consumo/consulta_kardex']);
+    })
+   
   }
 }

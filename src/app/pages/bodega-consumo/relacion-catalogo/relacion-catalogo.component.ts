@@ -94,14 +94,34 @@ export class RelacionCatalogoComponent implements OnInit {
         },
         FechaInicio: {
           title: 'Fecha de Inicio',
+          width: '70px',
           valuePrepareFunction: (value: any) => {
-            return value;
+            const date = value.split('T');
+            return date[0];
+          },
+          filter: {
+            type: 'daterange',
+            config: {
+              daterange: {
+                format: 'yyyy/mm/dd',
+              },
+            },
           },
         },
         FechaFin: {
           title: 'Fecha de Finalizacion',
+          width: '70px',
           valuePrepareFunction: (value: any) => {
-            return value;
+            const date = value.split('T');
+            return date[0];
+          },
+          filter: {
+            type: 'daterange',
+            config: {
+              daterange: {
+                format: 'yyyy/mm/dd',
+              },
+            },
           },
         },
       },
