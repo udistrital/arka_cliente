@@ -26,13 +26,13 @@ export class KardexComponent implements OnInit {
         if (Object.keys(res[0]).length !== 0) {
           this.ArmarHojaKardex(res);
         }
-      })
+      });
     }
   }
 
   @Input('Apertura')
   set name2(elemento: any[]) {
-    console.log('ok');
+    // console.log('ok');
     if (Object.keys(elemento).length !== 0) {
       this.ArmarMovimientoPrevio(elemento);
     }
@@ -48,7 +48,7 @@ export class KardexComponent implements OnInit {
           this.ArmarHojaKardex(res);
           this.ArmarMovimientoPrevio(elemento);
         }
-      })
+      });
     }
   }
 
@@ -66,7 +66,7 @@ export class KardexComponent implements OnInit {
 
   ArmarHojaKardex(elementos: any[]) {
 
-    const Kardex = new Array<Kardex>();
+    const Kardexx = new Array<Kardex>();
 
     for (const elemento_ of elementos) {
       switch (elemento_.MovimientoId.FormatoTipoMovimientoId.CodigoAbreviacion) {
@@ -76,7 +76,7 @@ export class KardexComponent implements OnInit {
           kardex_.ValorUnitario_E = elemento_.ValorUnitario;
           kardex_.ValorTotal_E = elemento_.ValorTotal;
           kardex_.SaldoValorUnitario = elemento_.SaldoValor / elemento_.SaldoCantidad;
-          Kardex.push(kardex_);
+          Kardexx.push(kardex_);
 
           break;
         case 'EN_KDX':
@@ -84,22 +84,22 @@ export class KardexComponent implements OnInit {
           kardex_2.Unidad_E = elemento_.Unidad;
           kardex_.ValorUnitario_E = elemento_.ValorUnitario;
           kardex_.ValorTotal_E = elemento_.ValorTotal;
-          kardex_2.SaldoValorUnitario = elemento_.SaldoValor / elemento_.SaldoCantidad
-          Kardex.push(kardex_2);
+          kardex_2.SaldoValorUnitario = elemento_.SaldoValor / elemento_.SaldoCantidad;
+          Kardexx.push(kardex_2);
           break;
         case 'SAL_KDX':
           const kardex_3 = elemento_;
           kardex_3.Unidad_S = elemento_.Unidad;
           kardex_3.ValorUnitario_S = elemento_.ValorUnitario;
           kardex_3.ValorTotal_S = elemento_.ValorTotal;
-          kardex_3.SaldoValorUnitario = elemento_.SaldoValor / elemento_.SaldoCantidad
-          Kardex.push(kardex_3);
+          kardex_3.SaldoValorUnitario = elemento_.SaldoValor / elemento_.SaldoCantidad;
+          Kardexx.push(kardex_3);
           break;
         default:
           break;
       }
     }
-    this.kardex = Kardex;
+    this.kardex = Kardexx;
   }
 
   ArmarMovimientoPrevio(elemento_: any) {
@@ -109,7 +109,7 @@ export class KardexComponent implements OnInit {
     kardex_.ValorUnitario_E = elemento_.ValorUnitario;
     kardex_.ValorTotal_E = elemento_.ValorTotal;
     kardex_.SaldoValorUnitario = elemento_.SaldoValor / elemento_.SaldoCantidad;
-    this.kardex.push(kardex_)
+    this.kardex.push(kardex_);
 
   }
   ngOnInit() {
@@ -128,7 +128,7 @@ export class CurrencyCustomPipe implements PipeTransform {
     if (isNaN(value)) {
       return value;
     } else {
-      console.log(formatCurrency(value, 'en-US', '$', '', '2.2-2'));
+      // console.log(formatCurrency(value, 'en-US', '$', '', '2.2-2'));
       return formatCurrency(value, 'en-US', '$', '', '2.2-2');
     }
   }

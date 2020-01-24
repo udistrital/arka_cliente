@@ -144,7 +144,8 @@ export class BodegaConsumoHelper {
      */
     public getElementosKardex(id) {
         this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
-        return this.rqManager.get('elementos_movimiento?query=ElementoCatalogoId:' + id + ',Activo:true&limit=-1&sortby=FechaCreacion&order=asc').pipe(
+        return this.rqManager.get('elementos_movimiento?query=ElementoCatalogoId:' + id +
+            ',Activo:true&limit=-1&sortby=FechaCreacion&order=asc').pipe(
             map(
                 (res) => {
                     if (res === 'error') {

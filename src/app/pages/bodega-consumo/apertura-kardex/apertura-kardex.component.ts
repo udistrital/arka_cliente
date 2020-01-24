@@ -61,7 +61,7 @@ export class AperturaKardexComponent implements OnInit {
     private fb: FormBuilder,
     private store: Store<IAppState>,
     private listService: ListService,
-    private BodegaConsumoHelper: BodegaConsumoHelper,
+    private BodegaConsumo: BodegaConsumoHelper,
   ) {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
     });
@@ -80,8 +80,8 @@ export class AperturaKardexComponent implements OnInit {
   public loadLists() {
     this.store.select((state) => state).subscribe(
       (list) => {
-        console.log(list.listFormatosKardex[0]);
-        console.log(list.listEstadosMovimiento[0])
+        // console.log(list.listFormatosKardex[0]);
+        // console.log(list.listEstadosMovimiento[0])
         this.FormatosKardex = list.listFormatosKardex[0];
         this.EstadosMovimiento = list.listEstadosMovimiento[0];
       },
@@ -90,10 +90,10 @@ export class AperturaKardexComponent implements OnInit {
   ngOnInit() {
 
   }
-  onSubmit(){
+  onSubmit() {
 
     const form = this.form_apertura.value;
-    let detalle: any = {};
+    const detalle: any = {};
     detalle.Metodo_Valoracion = parseFloat(form.Metodo_Valoracion);
     detalle.Cantidad_Maxima = parseFloat(form.Cantidad_Maxima);
     detalle.Cantidad_Minima = parseFloat(form.Cantidad_Minima);
@@ -103,29 +103,29 @@ export class AperturaKardexComponent implements OnInit {
     this.Movimiento.Activo = true;
     this.Movimiento.Detalle = JSON.stringify(detalle);
     this.Movimiento.FormatoTipoMovimientoId = this.FormatosKardex.find(x => x.CodigoAbreviacion === 'AP_KDX');
-    this.Movimiento.EstadoMovimientoId = this.EstadosMovimiento.find(x => x.Id === 4)
-    this.Movimiento.MovimientoPadreId = this.elemento_bodega.MovimientoId
-    console.log(this.Movimiento);
+    this.Movimiento.EstadoMovimientoId = this.EstadosMovimiento.find(x => x.Id === 4);
+    this.Movimiento.MovimientoPadreId = this.elemento_bodega.MovimientoId;
+    // console.log(this.Movimiento);
 
     this.elemento_bodega.ElementoCatalogoId = this.elemento_catalogo.Id;
     this.elemento_bodega.MovimientoId = this.Movimiento;
     this.ElementoMovimiento = this.elemento_bodega;
-    console.log(this.ElementoMovimiento);
-    
+    // console.log(this.ElementoMovimiento);
+
   }
   onSubmit2() {
 
     const AperturaKardex = {
-      Movimiento: []
-    }
+      Movimiento: [],
+    };
     AperturaKardex.Movimiento.push(
       {
         Kardex: this.Movimiento,
         Elementos: [this.ElementoMovimiento],
-      }
-    )
-    console.log(AperturaKardex);
-    this.BodegaConsumoHelper.postMovimientoKardex(AperturaKardex).subscribe((res:any) => {
+      },
+    );
+    // console.log(AperturaKardex);
+    this.BodegaConsumo.postMovimientoKardex(AperturaKardex).subscribe((res: any) => {
       const opt: any = {
         title: 'Apertura Realizada',
         text: 'Se ha registrado la solicitud de los elementos relacionados',
@@ -133,7 +133,6 @@ export class AperturaKardexComponent implements OnInit {
       };
       (Swal as any).fire(opt);
       this.router.navigate(['/pages/bodega_consumo/consulta_kardex']);
-    })
-   
+    });
   }
 }

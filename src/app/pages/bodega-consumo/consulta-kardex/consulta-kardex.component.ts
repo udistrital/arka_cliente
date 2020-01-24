@@ -108,7 +108,7 @@ export class ConsultaKardexComponent implements OnInit {
         Observaciones: {
           title: 'Observaciones',
         },
-        ElementoCatalogoId:{
+        ElementoCatalogoId: {
           title: 'Elemento',
           valuePrepareFunction: (value: any) => {
             if (value !== null) {
@@ -194,8 +194,8 @@ export class ConsultaKardexComponent implements OnInit {
     this.BodegaConsumoService.getAperturasKardex().subscribe(res1 => {
       // console.log(res1);
       res1.forEach(element => {
-        const met = this.Metodos.find(x => x.Id === element.MetodoValoracion)
-        element.MetodoValoracion = met
+        const met = this.Metodos.find(x => x.Id === element.MetodoValoracion);
+        element.MetodoValoracion = met;
       });
       this.source.load(res1);
     });

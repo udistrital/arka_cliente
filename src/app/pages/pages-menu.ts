@@ -97,7 +97,6 @@ export const MENU_ITEMS: NbMenuItem[] = [
         title: 'Consulta de Kardex',
         link: '/pages/bodega_consumo/consulta_kardex',
       },
-      
     ],
   },
   {

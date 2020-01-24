@@ -197,9 +197,9 @@ export class FormElementosSeleccionadosComponent implements OnInit {
           Id: 5,
         },
       };
-      this.bodegaConsumoHelper.postSolicitud(movimiento).subscribe((res: any) => {
+      this.bodegaConsumoHelper.postSolicitud(movimiento).subscribe((res_: any) => {
         const opt: any = {
-          title: 'Solicitud No '+ res.Id,
+          title: 'Solicitud No ' + res_.Id,
           text: 'Se ha registrado la solicitud de los elementos relacionados',
           type: 'success',
         };
