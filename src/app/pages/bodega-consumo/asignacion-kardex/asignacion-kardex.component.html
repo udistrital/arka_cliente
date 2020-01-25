@@ -1,0 +1,20 @@
+<nb-card>
+    <nb-card-body>
+        <ngx-bodega-sin-asignar *ngIf="!ElementoSinAsignar" (DatosEnviados)="Asignar_Elemento_Bodega($event)">
+        </ngx-bodega-sin-asignar>
+        <ngx-relacion-catalogo *ngIf="ElementoSinAsignar && !ElementoCatalogo"
+            [Subgrupo_Id]="ElementoSinAsignar.SubgrupoCatalogoId.Id"
+            (DatosEnviados)="Asignar_Elemento_Catalogo($event)">
+        </ngx-relacion-catalogo>
+        <ngx-apertura-kardex [Elemento_C]="ElementoCatalogo" [Elemento_B]="ElementoSinAsignar"
+            (DatosEnviados)="Asignar_Elemento_Movimiento($event)" *ngIf="ElementoCatalogo && ElementoSinAsignar">
+        </ngx-apertura-kardex>
+    </nb-card-body>
+    <nb-card-footer>
+        <div class="pt-4">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                (click)="onVolver()">{{'GLOBAL.volver' | translate}}
+            </button>
+        </div>
+    </nb-card-footer>
+</nb-card>
