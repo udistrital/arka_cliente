@@ -90,8 +90,12 @@ export const MENU_ITEMS: NbMenuItem[] = [
         link: '/pages/bodega_consumo/agregar_elementos',
       },
       {
-        title: 'kardex',
-        link: '/pages/bodega_consumo/kardex',
+        title: 'Asignacion a Kardex',
+        link: '/pages/bodega_consumo/asignacion_kardex',
+      },
+      {
+        title: 'Consulta de Kardex',
+        link: '/pages/bodega_consumo/consulta_kardex',
       },
     ],
   },

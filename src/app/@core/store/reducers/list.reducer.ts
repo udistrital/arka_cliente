@@ -116,5 +116,21 @@ export class ListReducer {
         return state;
     }
   }
+  static ListReducerFormatosKardex(state: Array<any> = new Array, action) {
+    switch (action.type) {
+      case REDUCER_LIST.FormatosKardex:
+        return [...state, action.payload];
+      default:
+        return state;
+    }
+  }
+  static ListReducerEstadosMovimiento(state: Array<any> = new Array, action) {
+    switch (action.type) {
+      case REDUCER_LIST.EstadosMovimiento:
+        return [...state, action.payload];
+      default:
+        return state;
+    }
+  }
 
 }

@@ -194,16 +194,17 @@ export class FormElementosSeleccionadosComponent implements OnInit {
           Id: 8,
         },
         EstadoMovimientoId: {
-          Id: 3,
+          Id: 5,
         },
       };
-      this.bodegaConsumoHelper.postSolicitud(movimiento).subscribe(() => {
+      this.bodegaConsumoHelper.postSolicitud(movimiento).subscribe((res_: any) => {
         const opt: any = {
-          title: 'Solicitud Ok',
-          text: 'Re ha registrado la solicitud de los elementos relacionados',
+          title: 'Solicitud No ' + res_.Id,
+          text: 'Se ha registrado la solicitud de los elementos relacionados',
           type: 'success',
         };
         (Swal as any).fire(opt);
+        this.router.navigate(['/pages/bodega_consumo/consulta_solicitud']);
       });
     });
   }

@@ -5,6 +5,9 @@ import { AgregarElementosComponent } from './agregar-elementos/agregar-elementos
 import { KardexComponent } from './kardex/kardex.component';
 import { ConsultaSolicitudComponent } from './consulta-solicitud/consulta-solicitud.component';
 import { DetalleSolicitudComponent } from './detalle-solicitud/detalle-solicitud.component';
+import { AsignacionKardexComponent } from './asignacion-kardex/asignacion-kardex.component';
+import { BodegaSinAsignarComponent } from './bodega-sin-asignar/bodega-sin-asignar.component';
+import { ConsultaKardexComponent } from './consulta-kardex/consulta-kardex.component';
 
 const routes: Routes = [{
   path: '',
@@ -29,6 +32,18 @@ const routes: Routes = [{
     {
       path: 'detalle_solicitud',
       component: DetalleSolicitudComponent,
+    },
+    {
+      path: 'asignacion_kardex',
+      component: AsignacionKardexComponent,
+    },
+    {
+      path: 'consulta_kardex',
+      component: ConsultaKardexComponent,
+    },
+    {
+      path: 'bodega_sin_asignar',
+      component: BodegaSinAsignarComponent,
     },
   ],
 }];

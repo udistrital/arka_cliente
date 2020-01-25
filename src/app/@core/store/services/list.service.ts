@@ -7,12 +7,14 @@ import { Proveedor } from '../../../@core/data/models/acta_recibido/Proveedor';
 import { Observable } from 'rxjs';
 import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/catalogoElementosHelper';
 import { Impuesto } from '../../data/models/acta_recibido/elemento';
+import { BodegaConsumoHelper } from '../../../helpers/bodega_consumo/bodegaConsumoHelper';
 @Injectable()
 export class ListService {
 
   constructor(
     private ActaRecibido: ActaRecibidoHelper,
     private CatalogoElementos: CatalogoElementosHelper,
+    private BodegaConsumo: BodegaConsumoHelper,
     private store: Store<IAppState>) {
   }
 
@@ -301,6 +303,47 @@ export class ListService {
               },
               error => {
                 this.addList(REDUCER_LIST.Devolutivo, []);
+              },
+            );
+        }
+      },
+    );
+  }
+
+  public findformatosKardex() {
+
+    this.store.select(REDUCER_LIST.FormatosKardex).subscribe(
+      (list: any) => {
+        if (!list || list.length === 0) {
+          this.BodegaConsumo.getFormatosKardex()
+            .subscribe(
+              (res: any[]) => {
+                // console.log(res)
+
+                this.addList(REDUCER_LIST.FormatosKardex, res);
+              },
+              error => {
+                this.addList(REDUCER_LIST.FormatosKardex, []);
+              },
+            );
+        }
+      },
+    );
+  }
+  public findEstadosMovimiento() {
+
+    this.store.select(REDUCER_LIST.EstadosMovimiento).subscribe(
+      (list: any) => {
+        if (!list || list.length === 0) {
+          this.BodegaConsumo.getEstadosMovimiento()
+            .subscribe(
+              (res: any[]) => {
+                // console.log(res)
+
+                this.addList(REDUCER_LIST.EstadosMovimiento, res);
+              },
+              error => {
+                this.addList(REDUCER_LIST.EstadosMovimiento, []);
               },
             );
         }

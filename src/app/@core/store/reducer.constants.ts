@@ -13,4 +13,6 @@ export const REDUCER_LIST = {
     Consumo: 'listConsumo',
     ConsumoControlado: 'listConsumoControlado',
     Devolutivo: 'listDevolutivo',
+    FormatosKardex: 'listFormatosKardex',
+    EstadosMovimiento: 'listEstadosMovimiento',
 };
