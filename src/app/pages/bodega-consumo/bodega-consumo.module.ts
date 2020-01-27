@@ -18,6 +18,7 @@ import { RelacionCatalogoComponent } from './relacion-catalogo/relacion-catalogo
 import { AperturaKardexComponent } from './apertura-kardex/apertura-kardex.component';
 import { AsignacionKardexComponent } from './asignacion-kardex/asignacion-kardex.component';
 import { ConsultaKardexComponent } from './consulta-kardex/consulta-kardex.component';
+import { EntradaKardexComponent } from './entrada-kardex/entrada-kardex.component';
 
 @NgModule({
   declarations: [
@@ -33,6 +34,7 @@ import { ConsultaKardexComponent } from './consulta-kardex/consulta-kardex.compo
     AsignacionKardexComponent,
     ConsultaKardexComponent,
     CurrencyCustomPipe,
+    EntradaKardexComponent,
   ],
   imports: [
     TranslateModule,
