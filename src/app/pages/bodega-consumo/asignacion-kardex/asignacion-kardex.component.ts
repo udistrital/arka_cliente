@@ -47,7 +47,7 @@ export class AsignacionKardexComponent implements OnInit {
       } else {
         this.apertura = true;
       }
-    })
+    });
 
     // console.log(event);
 

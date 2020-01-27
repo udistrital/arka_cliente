@@ -11,7 +11,7 @@ import { BodegaConsumoHelper } from '../../../helpers/bodega_consumo/bodegaConsu
 @Component({
   selector: 'ngx-entrada-kardex',
   templateUrl: './entrada-kardex.component.html',
-  styleUrls: ['./entrada-kardex.component.scss']
+  styleUrls: ['./entrada-kardex.component.scss'],
 })
 export class EntradaKardexComponent implements OnInit {
 
@@ -90,7 +90,7 @@ export class EntradaKardexComponent implements OnInit {
   onSubmit() {
 
     const form = this.form_apertura.value;
-    
+
     this.Movimiento = {};
     this.Movimiento.Observacion = form.Observaciones;
     this.Movimiento.Activo = true;

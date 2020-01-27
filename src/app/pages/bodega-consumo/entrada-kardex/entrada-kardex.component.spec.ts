@@ -8,7 +8,7 @@ describe('EntradaKardexComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ EntradaKardexComponent ]
+      declarations: [ EntradaKardexComponent ],
     })
     .compileComponents();
   }));
