@@ -7,7 +7,7 @@
             (DatosEnviados)="Asignar_Elemento_Catalogo($event)">
         </ngx-relacion-catalogo>
 
-        <ngx-entrada-kardex [Elemento_C]="ElementoCatalogo" [Elemento_B]="ElementoSinAsignar"
+        <ngx-entrada-kardex [Elementos_K]="ElementosKardex" [Elemento_C]="ElementoCatalogo" [Elemento_B]="ElementoSinAsignar"
             *ngIf="ElementoCatalogo && ElementoSinAsignar && entrada"
             (DatosEnviados)="Asignar_Elemento_Movimiento($event)"></ngx-entrada-kardex>
 

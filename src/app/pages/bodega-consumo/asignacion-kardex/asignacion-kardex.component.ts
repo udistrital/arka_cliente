@@ -16,6 +16,7 @@ export class AsignacionKardexComponent implements OnInit {
   ElementoPorAsignar: any;
   entrada: any;
   apertura: any;
+  ElementosKardex: any;
 
 
   constructor(
@@ -43,6 +44,7 @@ export class AsignacionKardexComponent implements OnInit {
     this.BodegaConsumo.getElementosKardex(event.Id).subscribe((res: any) => {
 
       if (Object.keys(res).length !== 0) {
+        this.ElementosKardex = res;
         this.entrada = true;
       } else {
         this.apertura = true;

@@ -79,11 +79,11 @@ export class KardexComponent implements OnInit {
           Kardexx.push(kardex_);
 
           break;
-        case 'EN_KDX':
+        case 'ENT_KDX':
           const kardex_2 = elemento_;
           kardex_2.Unidad_E = elemento_.Unidad;
-          kardex_.ValorUnitario_E = elemento_.ValorUnitario;
-          kardex_.ValorTotal_E = elemento_.ValorTotal;
+          kardex_2.ValorUnitario_E = elemento_.ValorUnitario;
+          kardex_2.ValorTotal_E = elemento_.ValorTotal;
           kardex_2.SaldoValorUnitario = elemento_.SaldoValor / elemento_.SaldoCantidad;
           Kardexx.push(kardex_2);
           break;
