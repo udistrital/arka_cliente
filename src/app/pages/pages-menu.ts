@@ -82,12 +82,16 @@ export const MENU_ITEMS: NbMenuItem[] = [
     icon: 'nb-shuffle',
     children: [
       {
+        title: 'Solicitar Elementos',
+        link: '/pages/bodega_consumo/agregar_elementos',
+      },
+      {
         title: 'Consultar Solicitudes',
         link: '/pages/bodega_consumo/consulta_solicitud',
       },
       {
-        title: 'Solicitar Elementos',
-        link: '/pages/bodega_consumo/agregar_elementos',
+        title: 'Responder Solicitudes',
+        link: '/pages/bodega_consumo/responder_solicitudes',
       },
       {
         title: 'Asignacion a Kardex',

@@ -19,6 +19,9 @@ import { AperturaKardexComponent } from './apertura-kardex/apertura-kardex.compo
 import { AsignacionKardexComponent } from './asignacion-kardex/asignacion-kardex.component';
 import { ConsultaKardexComponent } from './consulta-kardex/consulta-kardex.component';
 import { EntradaKardexComponent } from './entrada-kardex/entrada-kardex.component';
+import { AjustarCantidadComponent } from './ajustar-cantidad/ajustar-cantidad.component';
+import { NbDialogModule } from '@nebular/theme';
+import { RespuestaSolicitudesComponent } from './respuesta-solicitudes/respuesta-solicitudes.component';
 
 @NgModule({
   declarations: [
@@ -35,6 +38,8 @@ import { EntradaKardexComponent } from './entrada-kardex/entrada-kardex.componen
     ConsultaKardexComponent,
     CurrencyCustomPipe,
     EntradaKardexComponent,
+    AjustarCantidadComponent,
+    RespuestaSolicitudesComponent,
   ],
   imports: [
     TranslateModule,
@@ -46,6 +51,10 @@ import { EntradaKardexComponent } from './entrada-kardex/entrada-kardex.componen
     OwlNativeDateTimeModule,
     Ng2SmartTableModule,
     TableModule,
+    NbDialogModule.forRoot(),
   ],
+  entryComponents: [
+    AjustarCantidadComponent,
+  ]
 })
 export class BodegaConsumoModule { }

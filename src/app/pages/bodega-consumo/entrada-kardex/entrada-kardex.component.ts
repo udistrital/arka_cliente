@@ -31,7 +31,7 @@ export class EntradaKardexComponent implements OnInit {
   @Input('Elementos_K')
   set name3(elementos: any[]) {
     this.elementos_kardex = elementos;
-    console.log(elementos);
+    // console.log(elementos);
   }
   @Input('Elemento_C')
   set name(elemento: any) {
@@ -98,9 +98,6 @@ export class EntradaKardexComponent implements OnInit {
   onSubmit() {
 
     const ultimo_elemento = this.elementos_kardex[this.elementos_kardex.length - 1];
-
-    
-
     const form = this.form_apertura.value;
     this.Movimiento = {};
     this.Movimiento.Observacion = form.Observaciones;
@@ -115,8 +112,8 @@ export class EntradaKardexComponent implements OnInit {
     this.elemento_bodega.MovimientoId = this.Movimiento;
 
 
-    this.elemento_bodega.SaldoCantidad += ultimo_elemento.SaldoCantidad
-    this.elemento_bodega.SaldoValor += ultimo_elemento.SaldoValor
+    this.elemento_bodega.SaldoCantidad += ultimo_elemento.SaldoCantidad;
+    this.elemento_bodega.SaldoValor += ultimo_elemento.SaldoValor;
 
     this.ElementoMovimiento = this.elemento_bodega;
     // console.log(this.ElementoMovimiento);

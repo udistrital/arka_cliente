@@ -43,7 +43,7 @@ export class AsignacionKardexComponent implements OnInit {
 
     this.BodegaConsumo.getElementosKardex(event.Id).subscribe((res: any) => {
 
-      if (Object.keys(res).length !== 0) {
+      if (Object.keys(res[0]).length !== 0) {
         this.ElementosKardex = res;
         this.entrada = true;
       } else {
