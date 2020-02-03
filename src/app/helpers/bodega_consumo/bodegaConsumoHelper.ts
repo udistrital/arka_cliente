@@ -136,6 +136,28 @@ export class BodegaConsumoHelper {
             ),
         );
     }
+
+    /**
+    * Entrada Post
+    * If the response has errors in the OAS API it should show a popup message with an error.
+    * If the response suceed, it returns the data of the updated object.
+    * @param entradaData object to save in the DB
+    * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
+    */
+    public postResponderSolicitud(salidasData) {
+        this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
+        return this.rqManager.post(`tr_kardex/responder_solicitud`, salidasData).pipe(
+            map(
+                (res) => {
+                    if (res['Type'] === 'error') {
+                        this.pUpManager.showErrorAlert('No se pudo registrar la entrada solicitada.');
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
     /**
      * Entradas Get
      * If the response has errors in the OAS API it should show a popup message with an error.
@@ -145,7 +167,27 @@ export class BodegaConsumoHelper {
     public getElementosKardex(id) {
         this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
         return this.rqManager.get('elementos_movimiento?query=ElementoCatalogoId:' + id +
-            ',Activo:true&limit=-1&sortby=FechaCreacion&order=asc').pipe(
+            '&limit=-1&sortby=FechaCreacion&order=asc').pipe(
+                map(
+                    (res) => {
+                        if (res === 'error') {
+                            this.pUpManager.showErrorAlert('No se pudo consultar el contrato contratos');
+                            return undefined;
+                        }
+                        return res;
+                    },
+                ),
+            );
+    }
+    /**
+     * Entradas Get
+     * If the response has errors in the OAS API it should show a popup message with an error.
+     * If the response is successs, it returns the object's data.
+     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
+     */
+    public getExistenciasKardex() {
+        this.rqManager.setPath('ARKA_SERVICE');
+        return this.rqManager.get('bodega_consumo/existencias_kardex').pipe(
             map(
                 (res) => {
                     if (res === 'error') {
@@ -157,4 +199,98 @@ export class BodegaConsumoHelper {
             ),
         );
     }
+
+    /**
+     * SolicitudesBodega Get
+     * If the response has errors in the OAS API it should show a popup message with an error.
+     * If the response is successs, it returns the object's data.
+     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
+     */
+    public getSolicitudesBodega() {
+        this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
+        return this.rqManager.get('movimiento/?query=FormatoTipoMovimientoId__Id:8,Activo:true').pipe(
+            map(
+                (res) => {
+                    if (res === 'error') {
+                        this.pUpManager.showErrorAlert('No se pudo consultar las solicitudes');
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
+
+    /**
+     * SolicitudesBodega Get
+     * If the response has errors in the OAS API it should show a popup message with an error.
+     * If the response is successs, it returns the object's data.
+     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
+     */
+    public getSolicitudesBodegaPendiente() {
+        this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
+        return this.rqManager.get('movimiento/?query=FormatoTipoMovimientoId__Id:8,EstadoMovimientoId.Id:5,Activo:true').pipe(
+            map(
+                (res) => {
+                    if (res === 'error') {
+                        this.pUpManager.showErrorAlert('No se pudo consultar las solicitudes');
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
+
+    public getSolicitudBodega(id: string) {
+        this.rqManager.setPath('ARKA_SERVICE');
+        return this.rqManager.get('/bodega_consumo/solicitud/' + id).pipe(
+            map(
+                (res) => {
+                    if (res === 'error') {
+                        this.pUpManager.showErrorAlert('No se pudo consultar la solicitud');
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
+    // Elementos de bodega --actualmente no se ha definido y los traigo de movimientos.elementos
+    public getElementos(id: string) {
+        this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
+        return this.rqManager.get('elementos_movimiento/?query=Id:' + id).pipe(
+            map(
+                (res) => {
+                    if (res === 'error') {
+                        this.pUpManager.showErrorAlert('No se pudo consultar la solicitud');
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
+    /**
+    * Entrada Post
+    * If the response has errors in the OAS API it should show a popup message with an error.
+    * If the response suceed, it returns the data of the updated object.
+    * @param entradaData object to save in the DB
+    * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
+    */
+   public postRechazarSolicitud(salidasData) {
+    this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
+    return this.rqManager.post(`tr_kardex/rechazar_solicitud`, salidasData).pipe(
+        map(
+            (res) => {
+                if (res['Type'] === 'error') {
+                    this.pUpManager.showErrorAlert('No se pudo registrar la entrada solicitada.');
+                    return undefined;
+                }
+                return res;
+            },
+        ),
+    );
+}
+
 }
