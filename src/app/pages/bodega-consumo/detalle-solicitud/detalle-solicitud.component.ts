@@ -7,7 +7,7 @@ import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoH
 import { PopUpManager } from '../../../managers/popUpManager';
 import { BodegaConsumoHelper } from '../../../helpers/bodega_consumo/bodegaConsumoHelper';
 import { NbDialogService } from '@nebular/theme';
-import { AjustarCantidadComponent } from '../ajustar-cantidad/ajustar-cantidad.component'
+import { AjustarCantidadComponent } from '../ajustar-cantidad/ajustar-cantidad.component';
 import { Store } from '@ngrx/store';
 import { ListService } from '../../../@core/store/services/list.service';
 import { IAppState } from '../../../@core/store/app.state';
@@ -36,7 +36,7 @@ export class DetalleSolicitudComponent implements OnInit {
   @Input('Editar')
   set name4(edit: boolean) {
     this.Editar = edit;
-    console.log(edit)
+    // console.log(edit)
   }
 
   @Input('salida_id')
@@ -214,7 +214,7 @@ export class DetalleSolicitudComponent implements OnInit {
         },
         CantidadAprobada: {
           title: 'Cantidad Aprobada',
-        }
+        },
 
       },
     };
@@ -222,9 +222,9 @@ export class DetalleSolicitudComponent implements OnInit {
 
   loadSolicitud(): void {
     this.bodegaHelper.getSolicitudBodega(this.salida_id.Id).subscribe(res => {
-      console.log(res)
+      // console.log(res)
       if (Object.keys(res).length !== 0) {
-        this.source.load(res.Elementos)
+        this.source.load(res.Elementos);
         this.Solicitud = res.Solicitud[0];
         this.Detalle_Solicitud = JSON.parse(this.Solicitud.Detalle);
       }
@@ -233,7 +233,7 @@ export class DetalleSolicitudComponent implements OnInit {
 
   onEdit(event) {
 
-    console.log(event.data);
+    // console.log(event.data);
     this.dialogService.open(AjustarCantidadComponent, {
       context: {
         row: event.data,
@@ -249,7 +249,7 @@ export class DetalleSolicitudComponent implements OnInit {
   RevisarCantidadesAprobadas() {
     this.source.getAll().then((res) => {
       this.verificar = true;
-      var verificar2 = true;
+      let verificar2 = true;
       for (const elementos of res) {
         if (elementos.CantidadAprobada === 0) {
           verificar2 = false;
@@ -260,14 +260,14 @@ export class DetalleSolicitudComponent implements OnInit {
           if (element.ElementoActa === elementos.ElementoCatalogoId.Id) {
             element.CantidadAprobada = elementos.CantidadAprobada;
           }
-        })
+        });
       }
       if (verificar2) {
         this.Solicitud.EstadoMovimientoId = this.EstadosMovimiento.find(x => x.Id === 6);
       } else {
         this.Solicitud.EstadoMovimientoId = this.EstadosMovimiento.find(x => x.Id === 7);
       }
-    })
+    });
   }
 
   AgregarElementos(elemento: any) {
@@ -288,7 +288,7 @@ export class DetalleSolicitudComponent implements OnInit {
       Movimiento: [],
     };
 
-    this.Solicitud.Detalle = JSON.stringify(this.Detalle_Solicitud)
+    this.Solicitud.Detalle = JSON.stringify(this.Detalle_Solicitud);
     const form = this.form_apertura.value;
     const Movimiento: any = {};
     Movimiento.Observacion = form.Observaciones;
@@ -296,7 +296,7 @@ export class DetalleSolicitudComponent implements OnInit {
     Movimiento.Detalle = JSON.stringify({});
     Movimiento.FormatoTipoMovimientoId = this.FormatosKardex.find(x => x.CodigoAbreviacion === 'SAL_KDX');
     Movimiento.EstadoMovimientoId = this.EstadosMovimiento.find(x => x.Id === 3);
-    Movimiento.MovimientoPadreId = this.Solicitud
+    Movimiento.MovimientoPadreId = this.Solicitud;
     SalidaKardex.Movimiento.push(
       {
         Kardex: Movimiento,
@@ -308,9 +308,8 @@ export class DetalleSolicitudComponent implements OnInit {
       res.forEach(element => {
 
         const elemento: any = {};
-        
         const valor_promedio = element.SaldoValor / element.SaldoCantidad;
-        console.log(valor_promedio)
+        // console.log(valor_promedio)
         elemento.Id = element.Id;
         elemento.Activo = true;
         elemento.ElementoCatalogoId = element.ElementoCatalogoId.Id;
@@ -322,16 +321,18 @@ export class DetalleSolicitudComponent implements OnInit {
 
       });
 
-      this.BodegaConsumo.postResponderSolicitud(SalidaKardex).subscribe((res: any) => {
-        const opt: any = {
-          title: 'Salida Realizada',
-          text: 'Se ha registrado la salida de los elementos relacionados',
-          type: 'success',
-        };
-        (Swal as any).fire(opt);
-        this.router.navigate(['/pages/bodega_consumo/consulta_solicitud']);
+      this.BodegaConsumo.postResponderSolicitud(SalidaKardex).subscribe((res2: any) => {
+        if (res2 !== null) {
+          const opt: any = {
+            title: 'Salida Realizada',
+            text: 'Se ha registrado la salida de los elementos relacionados',
+            type: 'success',
+          };
+          (Swal as any).fire(opt);
+          this.router.navigate(['/pages/bodega_consumo/consulta_solicitud']);
+        }
       });
-    })
+    });
 
   }
 
@@ -340,7 +341,7 @@ export class DetalleSolicitudComponent implements OnInit {
     this.Solicitud.EstadoMovimientoId = this.EstadosMovimiento.find(x => x.Id === 8);
     this.Detalle_Solicitud.Elementos.forEach((element: any) => {
         element.CantidadAprobada = 0;
-    })
+    });
     this.Solicitud.Detalle = this.Detalle_Solicitud;
 
     this.BodegaConsumo.postRechazarSolicitud(this.Solicitud).subscribe((res: any) => {

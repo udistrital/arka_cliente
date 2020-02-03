@@ -8,7 +8,7 @@ describe('AjustarCantidadComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ AjustarCantidadComponent ]
+      declarations: [ AjustarCantidadComponent ],
     })
     .compileComponents();
   }));

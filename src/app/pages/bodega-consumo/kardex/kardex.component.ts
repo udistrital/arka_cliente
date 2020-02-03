@@ -23,7 +23,7 @@ export class KardexComponent implements OnInit {
 
     if (elemento !== undefined) {
       this.bodegaConsumoService.getElementosKardex(elemento).subscribe((res: any) => {
-        console.log(res)
+        // console.log(res)
         if (Object.keys(res[0]).length !== 0) {
           this.ArmarHojaKardex(res);
         }

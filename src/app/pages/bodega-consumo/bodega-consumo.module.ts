@@ -55,6 +55,6 @@ import { RespuestaSolicitudesComponent } from './respuesta-solicitudes/respuesta
   ],
   entryComponents: [
     AjustarCantidadComponent,
-  ]
+  ],
 })
 export class BodegaConsumoModule { }

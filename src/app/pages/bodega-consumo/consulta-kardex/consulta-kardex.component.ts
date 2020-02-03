@@ -192,7 +192,7 @@ export class ConsultaKardexComponent implements OnInit {
   loadSalidas(): void {
 
     this.BodegaConsumoService.getAperturasKardex().subscribe(res1 => {
-      if (Object.keys(res1[0]).length !== 0){
+      if (Object.keys(res1[0]).length !== 0) {
         res1.forEach(element => {
           const met = this.Metodos.find(x => x.Id === element.MetodoValoracion);
           element.MetodoValoracion = met;

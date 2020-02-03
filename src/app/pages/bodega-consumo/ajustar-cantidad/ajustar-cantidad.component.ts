@@ -5,7 +5,7 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 @Component({
   selector: 'ngx-ajustar-cantidad',
   templateUrl: './ajustar-cantidad.component.html',
-  styleUrls: ['./ajustar-cantidad.component.scss']
+  styleUrls: ['./ajustar-cantidad.component.scss'],
 })
 export class AjustarCantidadComponent implements OnInit {
 
@@ -24,11 +24,11 @@ export class AjustarCantidadComponent implements OnInit {
   }
 
   prueba() {
-    console.log(this.form_cantidad.get('Cantidad').validator);
+    // console.log(this.form_cantidad.get('Cantidad').validator);
   }
   submit() {
 
-    this.row.CantidadAprobada = this.form_cantidad.get('Cantidad').value
+    this.row.CantidadAprobada = this.form_cantidad.get('Cantidad').value;
     this.ref.close(this.row);
   }
 

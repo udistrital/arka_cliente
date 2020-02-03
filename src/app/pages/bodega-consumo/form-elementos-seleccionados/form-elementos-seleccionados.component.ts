@@ -155,7 +155,7 @@ export class FormElementosSeleccionadosComponent implements OnInit {
       });
     } else {
 
-      console.log(this.Datos)
+      // console.log(this.Datos)
       const elemento = this.Datos;
 
       // elemento.Funcionario = this.Proveedores.find(z => z.compuesto === form.Proveedor);
