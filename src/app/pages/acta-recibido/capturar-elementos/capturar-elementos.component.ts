@@ -122,19 +122,18 @@ export class CapturarElementosComponent implements OnInit {
     NuxeoService.nuxeo.request('/id/8e4d5b47-ba37-41dd-b549-4efc1777fef2')
       .get()
       .then(function (response) {
-        console.log(response)
+        // console.log(response)
         response.fetchBlob()
           .then(function (blob) {
-            console.log(blob)
+            // console.log(blob)
             blob.blob()
               .then(function (responseblob: Blob) {
-                console.log(responseblob)
-                
+                // console.log(responseblob)
                 const url = window.URL.createObjectURL(responseblob);
-                const plantilla = document.createElement("a")
+                const plantilla = document.createElement('a');
                 document.body.appendChild(plantilla);
                 plantilla.href = url;
-                plantilla.download = "plantilla.xlsx";
+                plantilla.download = 'plantilla.xlsx';
                 plantilla.click();
               });
           })
