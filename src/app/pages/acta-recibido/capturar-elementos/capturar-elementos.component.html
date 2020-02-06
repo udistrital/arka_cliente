@@ -2,7 +2,7 @@
   <form [formGroup]="form" (ngSubmit)="onSubmit()">
     <nb-card>
       <nb-card-header>{{'GLOBAL.Acta_Recibido.CapturarElementos.CargaMasivaTitle' | translate }}</nb-card-header>
-      <nb-card-body class=" col-sm soporte">
+      <nb-card-body class="row soporte">
         <div class="form-group col-sm soporte">
 
           <button nbButton type="button" (click)="fileInputDocumento.click()">
@@ -13,9 +13,17 @@
           <p></p>
           <p *ngIf="Validador">{{nombreArchivo}}</p>
           <p *ngIf="!Validador">{{'GLOBAL.Acta_Recibido.CapturarElementos.ValidadorPlaceholder' | translate }}</p>
-          <button type="button" class="btn btn-primary" (click)="clearFile()">
+          <button type="button" class="btn btn-primary" (click)="clearFile()" *ngIf="Validador">
             {{'GLOBAL.Acta_Recibido.CapturarElementos.LimpiarEspacioButton' | translate }}
           </button>
+        </div>
+        <p></p>
+        <div class="col-sm soporte">
+          <p>Descargar Plantilla</p>
+          <button nbButton type="button" (click)="TraerPlantilla()">
+            <i class="fas fa-file-excel fa-2x" ></i>
+          </button>
+          
         </div>
       </nb-card-body>
       <nb-card-footer class="soporte">

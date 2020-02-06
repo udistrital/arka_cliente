@@ -1,40 +1,63 @@
 <p class="h5 pb-4"></p>
 
 <!-- Detalle Solicitud -->
-<div class="container">
+<div class="container" *ngIf="Solicitud">
     <div class="row">
         <div class="col">
             <p class="text-uppercase"><strong>{{'GLOBAL.consecutivo' | translate}}:</strong>
-                {{salida_id.Id}} </p>
+                {{Solicitud.Id}} </p>
         </div>
         <div class="col">
             <p class="text-uppercase"><strong>{{'GLOBAL.fecha_creacion' | translate}}:</strong>
-                {{fechaCreacion}}
+                {{Solicitud.FechaCreacion}}
             </p>
         </div>
     </div>
     <div class="row">
         <div class="col">
             <p class="text-uppercase"><strong>{{'GLOBAL.solicitante' | translate}}:</strong>
-                {{salida_id.Funcionario}} </p>
+                {{Solicitud.Funcionario.NombreCompleto}} </p>
         </div>
         <div class="col">
             <p class="text-uppercase"><strong>{{'GLOBAL.documento' | translate}}:</strong>
-                {{salida_id.Cedula}}
+                {{Solicitud.Funcionario.Numero}}
             </p>
         </div>
     </div>
     <div class="row">
         <div class="col">
             <p class="text-uppercase"><strong>{{'GLOBAL.observaciones' | translate}}:</strong>
-                {{observacion}} </p>
+                {{Solicitud.Observacion}} </p>
+        </div>
+        <div class="col">
+            <p class="text-uppercase"><strong>Estado:</strong>
+                {{Solicitud.EstadoMovimientoId.Nombre}} </p>
         </div>
     </div>
 </div>
 
 <div class="container">
-    <ng2-smart-table [settings]="settings" [source]="source" (edit)="onRechazado($event)" 
-    (delete)="onAprobado($event)"
-    >
+    <ng2-smart-table [settings]="settings" [source]="source" (edit)="onEdit($event)">
     </ng2-smart-table>
+</div>
+<p></p>
+<p></p>
+<div class="col-lg-12" *ngIf="form_apertura">
+    <form [formGroup]="form_apertura" #fform="ngForm">
+        <div class="form-group col-sm">
+            <div class="form-group  col-lg-12">
+                <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Observaciones' | translate}}</label>
+                <div class="input-group">
+                    <textarea rows="5" placeholder="{{'GLOBAL.Acta_Recibido.RegistroActa.Observaciones2' | translate}}"
+                        class="form-control" formControlName="Observaciones" required></textarea>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+
+<div class="pt-4" *ngIf="Editar">
+    <button *ngIf="!verificar" nbButton (click)="onSubmit()" class="float-right">Aprobar Solicitud</button>
+    <button nbButton (click)="onSubmit2()">Rechazar Solicitud</button>
 </div>

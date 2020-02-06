@@ -7,7 +7,7 @@
   <nb-card>
     <nb-card-header>
       <div *ngIf="Datos">
-        {{ Datos.Descripcion }} | Cantidad Maxima: {{ Datos.SaldoCantidad }}
+        {{ Datos.Nombre }} | {{ Datos.ElementoCatalogoId.Descripcion }} | Cantidad Maxima: {{ Datos.SaldoCantidad }}
       </div>
     </nb-card-header>
     <nb-card-body class="bla">
