@@ -155,6 +155,7 @@ export class FormElementosSeleccionadosComponent implements OnInit {
       });
     } else {
 
+      // console.log(this.Datos)
       const elemento = this.Datos;
 
       // elemento.Funcionario = this.Proveedores.find(z => z.compuesto === form.Proveedor);
@@ -175,7 +176,7 @@ export class FormElementosSeleccionadosComponent implements OnInit {
 
         const elemento = {
           Ubicacion: elements.Ubicacion.Id,
-          ElementoActa: elements.Id,
+          ElementoActa: elements.ElementoCatalogoId.Id,
           Cantidad: elements.Cantidad,
         };
         detalle_solicitud.push(elemento);
@@ -229,35 +230,35 @@ export class FormElementosSeleccionadosComponent implements OnInit {
         ],
       },
       columns: {
-        Descripcion: {
+        Nombre: {
           title: 'Nombre',
+        },
+        ElementoCatalogoId: {
+          title: 'Descripcion',
+          valuePrepareFunction: (value: any) => {
+            if (value !== null) {
+              return value.Descripcion;
+            } else {
+              return '';
+            }
+          },
+          filterFunction: (cell?: any, search?: string): boolean => {
+            // console.log(cell);
+            // console.log(search);
+            if (Object.keys(cell).length !== 0) {
+              if (cell.Descripcion.indexOf(search) > -1) {
+                return true;
+              } else {
+                return false;
+              }
+            } else {
+              return false;
+            }
+          },
         },
         Cantidad: {
           title: 'Cantidad',
         },
-        // Funcionario: {
-        //   title: 'Funcionario',
-        //   valuePrepareFunction: (value: any) => {
-        //     if (value !== null) {
-        //       return value.NomProveedor;
-        //     } else {
-        //       return '';
-        //     }
-        //   },
-        //   filterFunction: (cell?: any, search?: string): boolean => {
-        //     // console.log(cell);
-        //     // console.log(search);
-        //     if (Object.keys(cell).length !== 0) {
-        //       if (cell.NomProveedor.indexOf(search) > -1) {
-        //         return true;
-        //       } else {
-        //         return false;
-        //       }
-        //     } else {
-        //       return false;
-        //     }
-        //   },
-        // },
         Sede: {
           title: 'Sede',
           valuePrepareFunction: (value: any) => {

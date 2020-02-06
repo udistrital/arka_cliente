@@ -13,6 +13,7 @@ import { DocumentoService } from '../../../@core/data/documento.service';
 import { SalidaHelper } from '../../../helpers/salidas/salidasHelper';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
 import { UserService } from '../../../@core/data/users.service';
+import { BodegaConsumoHelper } from '../../../helpers/bodega_consumo/bodegaConsumoHelper';
 
 @Component({
   selector: 'ngx-agregar-elementos',
@@ -40,6 +41,7 @@ export class AgregarElementosComponent implements OnInit {
     private nuxeoService: NuxeoService,
     private documentoService: DocumentoService,
     private actaRecibidoHelper: ActaRecibidoHelper,
+    private bodegaConsumo: BodegaConsumoHelper,
     private userService: UserService,
   ) {
     this.source = new LocalDataSource();
@@ -67,134 +69,34 @@ export class AgregarElementosComponent implements OnInit {
         ],
       },
       columns: {
-        Descripcion: {
+        Nombre: {
           title: 'Nombre',
+        },
+        ElementoCatalogoId: {
+          title: 'Descripcion',
+          valuePrepareFunction: (value: any) => {
+            if (value !== null) {
+              return value.Descripcion;
+            } else {
+              return '';
+            }
+          },
+          filterFunction: (cell?: any, search?: string): boolean => {
+            // console.log(cell);
+            // console.log(search);
+            if (Object.keys(cell).length !== 0) {
+              if (cell.Descripcion.indexOf(search) > -1) {
+                return true;
+              } else {
+                return false;
+              }
+            } else {
+              return false;
+            }
+          },
         },
         SaldoCantidad: {
-          title: 'Saldo',
-        },
-      },
-    };
-    this.settings2 = {
-
-      noDataMessage: 'No se encontraron elementos asociados.',
-      actions: {
-        columnTitle: 'Acciones',
-        position: 'right',
-        add: false,
-      },
-      add: {
-        addButtonContent: '<i class="nb-plus"></i>',
-        createButtonContent: '<i class="nb-checkmark"></i>',
-        cancelButtonContent: '<i class="nb-close"></i>',
-      },
-      edit: {
-        editButtonContent: '<i class="fas fa-pencil-alt"></i>',
-        saveButtonContent: '<i class="nb-checkmark"></i>',
-        cancelButtonContent: '<i class="nb-close"></i>',
-      },
-      delete: {
-        deleteButtonContent: '<i class="fas fa-times"></i>',
-      },
-      mode: 'external',
-      columns: {
-        Descripcion: {
-          title: 'Nombre',
-        },
-        Cantidad: {
-          title: 'Cantidad',
-        },
-        Funcionario: {
-          title: 'Funcionario',
-          valuePrepareFunction: (value: any) => {
-            if (value !== null) {
-              return value.NomProveedor;
-            } else {
-              return '';
-            }
-          },
-          filterFunction: (cell?: any, search?: string): boolean => {
-            // console.log(cell);
-            // console.log(search);
-            if (Object.keys(cell).length !== 0) {
-              if (cell.NomProveedor.indexOf(search) > -1) {
-                return true;
-              } else {
-                return false;
-              }
-            } else {
-              return false;
-            }
-          },
-        },
-        Sede: {
-          title: 'Sede',
-          valuePrepareFunction: (value: any) => {
-            if (value !== null) {
-              return value.Nombre;
-            } else {
-              return '';
-            }
-          },
-          filterFunction: (cell?: any, search?: string): boolean => {
-            // console.log(cell);
-            // console.log(search);
-            if (Object.keys(cell).length !== 0) {
-              if (cell.Nombre.indexOf(search) > -1) {
-                return true;
-              } else {
-                return false;
-              }
-            } else {
-              return false;
-            }
-          },
-        },
-        Dependencia: {
-          title: 'Dependencia',
-          valuePrepareFunction: (value: any) => {
-            if (value !== null) {
-              return value.Nombre;
-            } else {
-              return '';
-            }
-          },
-          filterFunction: (cell?: any, search?: string): boolean => {
-            // console.log(cell);
-            // console.log(search);
-            if (Object.keys(cell).length !== 0) {
-              if (cell.Nombre.indexOf(search) > -1) {
-                return true;
-              } else {
-                return false;
-              }
-            } else {
-              return false;
-            }
-          },
-        },
-        Ubicacion: {
-          title: 'Ubicacion',
-          valuePrepareFunction: (value: any) => {
-            if (value !== null) {
-              return value.EspacioFisicoId.Nombre;
-            } else {
-              return '';
-            }
-          },
-          filterFunction: (cell?: any, search?: string): boolean => {
-            // console.log(cell);
-            // console.log(search);
-            if (Object.keys(cell).length !== 0) {
-              if (cell.EspacioFisicoId.Nombre.indexOf(search) > -1) {
-                return true;
-              } else {
-                return false;
-              }
-            } else {
-              return false;
-            }
-          },
+          title: 'Existencias',
         },
       },
     };
@@ -202,18 +104,18 @@ export class AgregarElementosComponent implements OnInit {
 
 
   loadEntradas(): void {
-    this.salidasHelper.getElementos().subscribe((res: any) => {
+    this.bodegaConsumo.getExistenciasKardex().subscribe((res: any) => {
       if (Object.keys(res).length !== 0) {
         // console.log(res);
-        // this.source.load(res);
-        res.forEach(element => {
-          this.actaRecibidoHelper.getElemento(element.ElementoActaId).subscribe((res2: any) => {
-            // console.log(res2);
-            const descripcion = res2.Nombre + ' ' + res2.Marca + ' ' + res2.Serie;
-            element.Descripcion = descripcion;
-            this.source.append(element);
-          });
-        });
+        this.source.load(res);
+        // res.forEach(element => {
+        //   this.actaRecibidoHelper.getElemento(element.ElementoActaId).subscribe((res2: any) => {
+        //     // console.log(res2);
+        //     const descripcion = res2.Nombre + ' ' + res2.Marca + ' ' + res2.Serie;
+        //     element.Descripcion = descripcion;
+        //     this.source.append(element);
+        //   });
+        // });
       }
     });
   }

@@ -15,6 +15,9 @@ import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/cat
 import { Store } from '@ngrx/store';
 import { IAppState } from '../../../@core/store/app.state';
 import { ListService } from '../../../@core/store/services/list.service';
+import { HttpErrorResponse } from '@angular/common/http';
+import { NuxeoService } from '../../../@core/utils/nuxeo.service';
+import { DocumentoService } from '../../../@core/data/documento.service';
 
 @Component({
   selector: 'ngx-capturar-elementos',
@@ -55,6 +58,8 @@ export class CapturarElementosComponent implements OnInit {
     private actaRecibidoHelper: ActaRecibidoHelper,
     private store: Store<IAppState>,
     private listService: ListService,
+    private nuxeoService: NuxeoService,
+    private documentoService: DocumentoService,
     private catalogoHelper: CatalogoElementosHelper) {
 
     this.listService.findSubgruposConsumo();
@@ -111,6 +116,33 @@ export class CapturarElementosComponent implements OnInit {
     this.DatosTotales.emit(this.Totales);
   }
 
+  TraerPlantilla() {
+
+    NuxeoService.nuxeo.header('X-NXDocumentProperties', '*');
+    NuxeoService.nuxeo.request('/id/8e4d5b47-ba37-41dd-b549-4efc1777fef2')
+      .get()
+      .then(function (response) {
+        // console.log(response)
+        response.fetchBlob()
+          .then(function (blob) {
+            // console.log(blob)
+            blob.blob()
+              .then(function (responseblob: Blob) {
+                // console.log(responseblob)
+                const url = window.URL.createObjectURL(responseblob);
+                const plantilla = document.createElement('a');
+                document.body.appendChild(plantilla);
+                plantilla.href = url;
+                plantilla.download = 'plantilla.xlsx';
+                plantilla.click();
+              });
+          })
+          .catch(function (response2) {
+          });
+      })
+      .catch(function (response) {
+      });
+  }
 
   applyFilter(filterValue: string) {
     this.dataSource.filter = filterValue.trim().toLowerCase();
@@ -203,8 +235,9 @@ export class CapturarElementosComponent implements OnInit {
   }
 
   clearFile() {
-    this.fileInput.nativeElement.value = '';
+    this.Validador = false;
     this.form.get('archivo').setValue('');
+
   }
 
   onSubmit() {
