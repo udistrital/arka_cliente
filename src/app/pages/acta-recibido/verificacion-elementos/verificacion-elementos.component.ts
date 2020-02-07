@@ -23,20 +23,20 @@ import { SalidaHelper } from '../../../helpers/salidas/salidasHelper';
 @Component({
   selector: 'ngx-verificacion-elementos',
   templateUrl: './verificacion-elementos.component.html',
-  styleUrls: ['./verificacion-elementos.component.scss']
+  styleUrls: ['./verificacion-elementos.component.scss'],
 })
 export class VerificacionElementosComponent implements OnInit {
   selectMode: string;
 
   @Input('DatosRecibidos')
   set name(data: any[]) {
-    console.log(data)
+    // console.log(data)
     this.AjustarDatos(data);
   }
 
   @Input('mode')
   set name2(w: any) {
-    console.log(w);
+    // console.log(w);
     this.selectMode = w;
     this.cargarCampos();
   }
@@ -193,7 +193,7 @@ export class VerificacionElementosComponent implements OnInit {
     for (const index in datos) {
       if (true) {
         // console.log(datos[index])
-        const elemento = new Elemento
+        const elemento = new Elemento;
         elemento.ValorUnitario = datos[index].ValorUnitario;
         elemento.ValorTotal = datos[index].ValorTotal;
         elemento.Id = datos[index].Id;

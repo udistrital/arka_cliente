@@ -150,7 +150,7 @@ export class VerDetalleComponent implements OnInit {
   Cargar_Formularios(transaccion_: TransaccionActaRecibido) {
 
     this.Actas_Recibido.getSedeDependencia(transaccion_.ActaRecibido.UbicacionId).subscribe(res => {
-      console.log(res)
+      // console.log(res)
       const valor = res[0].EspacioFisicoId.Codigo.substring(0, 4);
       this.Acta = transaccion_;
 
@@ -226,7 +226,7 @@ export class VerDetalleComponent implements OnInit {
     // console.log(this.Sedes);
     if (transaccion.Sede !== undefined && transaccion.Dependencia !== undefined) {
       this.Actas_Recibido.postRelacionSedeDependencia(transaccion).subscribe((res: any) => {
-        console.log(res)
+        // console.log(res)
         if (Object.keys(res[0]).length !== 0) {
           this.Ubicaciones = res[0].Relaciones;
           this.firstForm.get('Formulario1').get('Ubicacion').setValue(

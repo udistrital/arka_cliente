@@ -151,16 +151,16 @@ export class VerificacionActaRecibidoComponent implements OnInit {
     return this.cp.transform(valor);
   }
 
-  
+
   Verificar_Tabla(event, index) {
-    console.log(event)
-    console.log(index)
+    // console.log(event)
+    // console.log(index)
     this.Verificar_tabla[index] = event;
-    console.log(this.Verificar_tabla)
+    // console.log(this.Verificar_tabla)
     this.bandera = false;
     // console.log(this.source);
     for (const datos of this.Verificar_tabla) {
-      console.log(datos)
+      // console.log(datos)
       if (datos !== true) {
         this.bandera = true;
         break;
@@ -175,7 +175,7 @@ export class VerificacionActaRecibidoComponent implements OnInit {
 
   }
   Cargar_Formularios(transaccion_: TransaccionActaRecibido) {
-    console.log(transaccion_)
+    // console.log(transaccion_)
     this.Actas_Recibido.getSedeDependencia(transaccion_.ActaRecibido.UbicacionId).subscribe(res => {
       const valor = res[0].EspacioFisicoId.Codigo.substring(0, 4);
       this.Acta = transaccion_;
@@ -246,14 +246,14 @@ export class VerificacionActaRecibidoComponent implements OnInit {
 
   Traer_Relacion_Ubicaciones(sede_, dependencia_, ubicacion_) {
 
-    console.log(sede_)
+    // console.log(sede_)
     const transaccion: any = {};
     transaccion.Sede = this.Sedes.find((x) => x.CodigoAbreviacion === sede_);
     transaccion.Dependencia = this.Dependencias.find((x) => x.Id === dependencia_);
-    console.log(transaccion);
+    // console.log(transaccion);
     if (transaccion.Sede !== undefined && transaccion.Dependencia !== undefined) {
       this.Actas_Recibido.postRelacionSedeDependencia(transaccion).subscribe((res: any) => {
-        console.log(res)
+        // console.log(res)
         if (Object.keys(res[0]).length !== 0) {
           this.Ubicaciones = res[0].Relaciones;
           this.firstForm.get('Formulario1').get('Ubicacion').setValue(
