@@ -89,7 +89,7 @@ export class ListService {
           this.ActaRecibido.getParametrosSoporte()
             .subscribe(
               (res: any[]) => {
-                // console.log(res)
+                console.log(res)
                 this.addList(REDUCER_LIST.Sedes, res[0].Sedes);
               },
               error => {

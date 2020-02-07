@@ -151,7 +151,7 @@ export class ArbolComponent implements OnInit, OnChanges {
     ]);
 
     observable.subscribe(([cuentas, detalle, elementos]) => {
-      // console.log([cuentas, detalle, elementos]);
+      console.log([cuentas, detalle, elementos]);
       // console.log(Object.keys(detalle).length);
       // console.log(Object.keys(elementos).length);
       // console.log(Object.keys(cuentas).length);
