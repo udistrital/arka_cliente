@@ -119,7 +119,7 @@ export class TablaEntradaAprobadaComponent implements OnInit {
   loadEntradas(): void {
 
     this.salidasHelper.getEntradasSinSalida().subscribe(res => {
-      if (Object.keys(res[0]).length !==0) {
+      if (Object.keys(res[0]).length !== 0) {
         for (const datos of res) {
           const entrada = new Entrada;
           const tipoEntradaAux = new TipoEntrada;

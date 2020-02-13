@@ -85,7 +85,7 @@ export class VerificacionElementosComponent implements OnInit {
 
   }
   onRowSelect(event) {
-    
+
     if (event.source.data.length === event.selected.length) {
       this.DatosEnviados.emit(true);
     } else {

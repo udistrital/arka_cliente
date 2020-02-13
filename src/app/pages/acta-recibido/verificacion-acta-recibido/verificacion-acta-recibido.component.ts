@@ -153,10 +153,10 @@ export class VerificacionActaRecibidoComponent implements OnInit {
 
 
   Verificar_Tabla(event, index) {
-    console.log(event)
+    // console.log(event)
     // console.log(index)
     this.Verificar_tabla[index] = event;
-    console.log(this.Verificar_tabla)
+    // console.log(this.Verificar_tabla)
     this.bandera = false;
     // console.log(this.source);
     for (const datos of this.Verificar_tabla) {
@@ -220,7 +220,7 @@ export class VerificacionActaRecibidoComponent implements OnInit {
             ValorTotal: [this.T_V(_Elemento.ValorFinal.toString())],
             Verificado: [false],
           });
-          
+
           (Formulario__2.get('Elementos') as FormArray).push(Elemento___);
         }
 

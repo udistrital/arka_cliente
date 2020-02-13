@@ -69,7 +69,7 @@ export class ArbolComponent implements OnInit, OnChanges {
     });
     this.construirForm();
     this.catalogoHelper.getTiposMovimientoKronos().subscribe((res: any) => {
-      console.log(res)
+      // console.log(res)
       this.Movimientos = res;
 
     });
@@ -158,13 +158,15 @@ export class ArbolComponent implements OnInit, OnChanges {
 
     observable.subscribe(([cuentas, detalle, elementos]: any[]) => {
       // console.log([cuentas, detalle, elementos]);
-      console.log(cuentas);
+      // console.log(cuentas);
       // console.log(Object.keys(elementos).length);
       // console.log(Object.keys(cuentas).length);
       if (Object.keys(cuentas[0]).length !== 0) {
-        console.log(this.Movimientos)
-        for (let cuenta in cuentas) {
-          cuentas[cuenta].SubtipoMovimientoId = this.Movimientos.find(x => x.Id === parseFloat(cuentas[cuenta].SubtipoMovimientoId))
+        // console.log(this.Movimientos)
+        for (const cuenta in cuentas) {
+          if (true) {
+            cuentas[cuenta].SubtipoMovimientoId = this.Movimientos.find(x => x.Id === parseFloat(cuentas[cuenta].SubtipoMovimientoId));
+          }
         }
         this.cuentasContables = <Array<CuentasGrupoTransaccion>>cuentas;
       }
