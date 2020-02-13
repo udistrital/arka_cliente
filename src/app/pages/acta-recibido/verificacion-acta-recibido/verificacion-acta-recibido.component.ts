@@ -153,10 +153,10 @@ export class VerificacionActaRecibidoComponent implements OnInit {
 
 
   Verificar_Tabla(event, index) {
-    // console.log(event)
+    console.log(event)
     // console.log(index)
     this.Verificar_tabla[index] = event;
-    // console.log(this.Verificar_tabla)
+    console.log(this.Verificar_tabla)
     this.bandera = false;
     // console.log(this.source);
     for (const datos of this.Verificar_tabla) {
@@ -194,6 +194,7 @@ export class VerificacionActaRecibidoComponent implements OnInit {
           Soporte: [Soporte.SoporteActa.DocumentoId],
           Elementos: this.fb.array([]),
         });
+        this.Verificar_tabla.push(false);
         for (const _Elemento of Soporte.Elementos) {
 
           const Elemento___ = this.fb.group({
@@ -219,7 +220,7 @@ export class VerificacionActaRecibidoComponent implements OnInit {
             ValorTotal: [this.T_V(_Elemento.ValorFinal.toString())],
             Verificado: [false],
           });
-          this.Verificar_tabla.push(false);
+          
           (Formulario__2.get('Elementos') as FormArray).push(Elemento___);
         }
 

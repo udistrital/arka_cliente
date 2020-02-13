@@ -79,88 +79,92 @@
                       <nb-card>
                         <nb-card-body (click)="usarLocalStorage()">
                           <div class="row">
-                            <div class="form-group col-sm">
-                              <label>{{'GLOBAL.Acta_Recibido.EdicionActa.Proveedor' | translate}}</label>
-                              <ng2-completer style="border: 0rem" inputClass="form-control" (keyup)="usarLocalStorage()"
-                                placeholder="{{'GLOBAL.Acta_Recibido.EdicionActa.SeleccioneFiltro' | translate}}"
-                                [clearUnselected]="true" nbInput [datasource]="dataService2" formControlName="Proveedor"
-                                [minSearchLength]="3">
-                              </ng2-completer>
-                              <p class="campo" *ngIf="firstForm.get('Formulario2').at(i).get('Proveedor').invalid">
-                                {{'GLOBAL.placeholder' | translate}}</p>
-                            </div>
-                            <div class="form-group col-sm">
-                              <label>{{'GLOBAL.Acta_Recibido.EdicionActa.Consecutivo' | translate}}</label>
-                              <div class="input-group">
-                                <input nbInput type="text" (keyup)="usarLocalStorage()"
-                                  placeholder="{{'GLOBAL.Acta_Recibido.EdicionActa.Consecutivo' | translate}}"
-                                  class="form-control" formControlName="Consecutivo" (keyup)="usarLocalStorage()"
-                                  required>
+                            <div class="col">
+                              <div class="form-group col-sm">
+                                <label>{{'GLOBAL.Acta_Recibido.EdicionActa.Proveedor' | translate}}</label>
+                                <ng2-completer style="border: 0rem" inputClass="form-control" (keyup)="usarLocalStorage()"
+                                  placeholder="{{'GLOBAL.Acta_Recibido.EdicionActa.SeleccioneFiltro' | translate}}"
+                                  [clearUnselected]="true" nbInput [datasource]="dataService2" formControlName="Proveedor"
+                                  [minSearchLength]="3">
+                                </ng2-completer>
+                                <p class="campo" *ngIf="firstForm.get('Formulario2').at(i).get('Proveedor').invalid">
+                                  {{'GLOBAL.placeholder' | translate}}</p>
                               </div>
-                              <p class="campo" *ngIf="firstForm.get('Formulario2').at(i).get('Consecutivo').invalid">
-                                {{'GLOBAL.placeholder' | translate}}</p>
+                              <div class="form-group col-sm">
+                                <label>{{'GLOBAL.Acta_Recibido.EdicionActa.Consecutivo' | translate}}</label>
+                                <div class="input-group">
+                                  <input nbInput type="text" (keyup)="usarLocalStorage()"
+                                    placeholder="{{'GLOBAL.Acta_Recibido.EdicionActa.Consecutivo' | translate}}"
+                                    class="form-control" formControlName="Consecutivo" (keyup)="usarLocalStorage()"
+                                    required>
+                                </div>
+                                <p class="campo" *ngIf="firstForm.get('Formulario2').at(i).get('Consecutivo').invalid">
+                                  {{'GLOBAL.placeholder' | translate}}</p>
+                              </div>
+                              <div class="form-group col-sm">
+                                <label>{{'GLOBAL.Acta_Recibido.EdicionActa.FechaSoporte' | translate}}</label>
+                                <div class="input-group">
+                                  <input nbInput (click)="usarLocalStorage()"
+                                    placeholder="{{'GLOBAL.Acta_Recibido.EdicionActa.FechaFiltro' | translate}}"
+                                    class="form-control" [nbDatepicker]="formpicker" (keyup)="usarLocalStorage()"
+                                    formControlName="Fecha_Factura" required>
+                                  <nb-datepicker (click)="usarLocalStorage()" #formpicker></nb-datepicker>
+                                </div>
+                                <p class="campo" *ngIf="firstForm.get('Formulario2').at(i).get('Fecha_Factura').invalid">
+                                  {{'GLOBAL.placeholder' | translate}}</p>
+                              </div>
+                            </div>
+                            <div class="col">
+                              
+                              <div class="form-group col-sm">
+                                <!-- <label>{{'GLOBAL.Acta_Recibido.EdicionActa.Soporte' | translate}}</label>
+                                <input nbInput type="file" class="form-control-file" id="factura"
+                                  formControlName="Soporte" (click)="usarLocalStorage()" required>
+                                  <p class="campo" *ngIf="firstForm.get('Formulario2').at(i).get('Soporte').invalid">{{'GLOBAL.placeholder' | translate}}</p> -->
+  
+                                <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Soporte' | translate}}</label>
+                                <nb-card>
+  
+                                  <nb-card-body>
+                                    <div class="col-sm soporte">
+                                      <div>
+                                        <button nbButton type="button" (click)="fileInputDocumento.click()">
+                                          <i class="fas fa-file-upload fa-2x"></i>
+                                          <input #fileInputDocumento type="file"
+                                            (change)="onInputFileDocumento($event, i)" style="display:none;"
+                                            accept="application/pdf" data-max-size="5120" />
+                                        </button>
+                                      </div>
+                                      <p></p>
+                                      <p *ngIf="Validador[i] && fileDocumento[i]">{{fileDocumento[i].name}}</p>
+                                      <p *ngIf="!Validador[i]">
+                                        {{'GLOBAL.Acta_Recibido.CapturarElementos.ValidadorPlaceholder2' | translate }}
+                                      </p>
+                                      <div>
+                                        <button nbButton type="button" *ngIf="fileDocumento[i]" target="_blank"
+                                          (click)="download(i)">
+                                          Ver
+                                        </button>
+                                        <button nbButton type="button" *ngIf="fileDocumento[i] === undefined" target="_blank"
+                                          (click)="downloadFile(uidDocumento[i])">
+                                          Ver
+                                        </button>
+                                      </div>
+                                      <p></p>
+                                      <div>
+                                        <button type="button" *ngIf="Validador[i]" class="btn btn-primary"
+                                          (click)="clearFile(i)">
+                                          {{'GLOBAL.Acta_Recibido.CapturarElementos.LimpiarEspacioButton' | translate }}
+                                        </button>
+                                      </div>
+                                    </div>
+                                  </nb-card-body>
+                                </nb-card>
+  
+                              </div>
                             </div>
                           </div>
-                          <div class="row">
-                            <div class="form-group col-sm">
-                              <label>{{'GLOBAL.Acta_Recibido.EdicionActa.FechaSoporte' | translate}}</label>
-                              <div class="input-group">
-                                <input nbInput (click)="usarLocalStorage()"
-                                  placeholder="{{'GLOBAL.Acta_Recibido.EdicionActa.FechaFiltro' | translate}}"
-                                  class="form-control" [nbDatepicker]="formpicker" (keyup)="usarLocalStorage()"
-                                  formControlName="Fecha_Factura" required>
-                                <nb-datepicker (click)="usarLocalStorage()" #formpicker></nb-datepicker>
-                              </div>
-                              <p class="campo" *ngIf="firstForm.get('Formulario2').at(i).get('Fecha_Factura').invalid">
-                                {{'GLOBAL.placeholder' | translate}}</p>
-                            </div>
-                            <div class="form-group col-sm">
-                              <!-- <label>{{'GLOBAL.Acta_Recibido.EdicionActa.Soporte' | translate}}</label>
-                              <input nbInput type="file" class="form-control-file" id="factura"
-                                formControlName="Soporte" (click)="usarLocalStorage()" required>
-                                <p class="campo" *ngIf="firstForm.get('Formulario2').at(i).get('Soporte').invalid">{{'GLOBAL.placeholder' | translate}}</p> -->
-
-                              <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Soporte' | translate}}</label>
-                              <nb-card>
-
-                                <nb-card-body>
-                                  <div class="col-sm soporte">
-                                    <div>
-                                      <button nbButton type="button" (click)="fileInputDocumento.click()">
-                                        <i class="fas fa-file-upload fa-2x"></i>
-                                        <input #fileInputDocumento type="file"
-                                          (change)="onInputFileDocumento($event, i)" style="display:none;"
-                                          accept="application/pdf" data-max-size="5120" />
-                                      </button>
-                                    </div>
-                                    <p></p>
-                                    <p *ngIf="Validador[i] && fileDocumento[i]">{{fileDocumento[i].name}}</p>
-                                    <p *ngIf="!Validador[i]">
-                                      {{'GLOBAL.Acta_Recibido.CapturarElementos.ValidadorPlaceholder2' | translate }}
-                                    </p>
-                                    <div>
-                                      <button nbButton type="button" *ngIf="fileDocumento[i]" target="_blank"
-                                        (click)="download(i)">
-                                        Ver
-                                      </button>
-                                      <button nbButton type="button" *ngIf="fileDocumento[i] === undefined" target="_blank"
-                                        (click)="downloadFile(uidDocumento[i])">
-                                        Ver
-                                      </button>
-                                    </div>
-                                    <p></p>
-                                    <div>
-                                      <button type="button" *ngIf="Validador[i]" class="btn btn-primary"
-                                        (click)="clearFile(i)">
-                                        {{'GLOBAL.Acta_Recibido.CapturarElementos.LimpiarEspacioButton' | translate }}
-                                      </button>
-                                    </div>
-                                  </div>
-                                </nb-card-body>
-                              </nb-card>
-
-                            </div>
-                          </div>
+                          
                         </nb-card-body>
                       </nb-card>
 

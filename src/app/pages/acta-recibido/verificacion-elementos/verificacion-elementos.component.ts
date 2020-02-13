@@ -27,6 +27,7 @@ import { SalidaHelper } from '../../../helpers/salidas/salidasHelper';
 })
 export class VerificacionElementosComponent implements OnInit {
   selectMode: string;
+  selectedItems: any;
 
   @Input('DatosRecibidos')
   set name(data: any[]) {
@@ -42,7 +43,7 @@ export class VerificacionElementosComponent implements OnInit {
   }
   @Output() DatosEnviados = new EventEmitter();
 
-  source: any;
+  source: LocalDataSource;
   elementos: Elemento[];
   Consumo: any;
   ConsumoControlado: any;
@@ -84,7 +85,7 @@ export class VerificacionElementosComponent implements OnInit {
 
   }
   onRowSelect(event) {
-
+    
     if (event.source.data.length === event.selected.length) {
       this.DatosEnviados.emit(true);
     } else {
@@ -183,6 +184,10 @@ export class VerificacionElementosComponent implements OnInit {
             return value;
           },
         },
+      },
+      pager: {
+        display: false,
+        perPage: 99999,
       },
     };
   }

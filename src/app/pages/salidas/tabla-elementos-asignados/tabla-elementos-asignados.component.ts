@@ -118,7 +118,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
           this.ConsumoControlado !== undefined && this.Devolutivo !== undefined &&
           this.respuesta === undefined && this.Sedes !== undefined && this.Dependencias !== undefined) {
           this.actaRecibidoHelper.getElementosActa(this.actaRecibidoId).subscribe((res: any) => {
-            // console.log(res)
+            console.log(res)
             this.respuesta = res;
             this.AjustarDatos(res);
           });
@@ -566,11 +566,11 @@ export class TablaElementosAsignadosComponent implements OnInit {
       const dependencia = 'ALMACEN GENERAL E INVENTARIOS';
 
       const transaccion: any = {};
-      transaccion.Sede = this.Sedes.find((x) => x.Codigo === sede);
+      transaccion.Sede = this.Sedes.find((x) => x.CodigoAbreviacion === sede);
       transaccion.Dependencia = this.Dependencias.find((x) => x.Nombre === dependencia);
       // console.log(transaccion);
       this.actaRecibidoHelper.postRelacionSedeDependencia(transaccion).subscribe((res: any) => {
-        // console.log(res)
+        console.log(res)
         const detalle = {
           ubicacion: res[0].Relaciones[0].Id,
         };

@@ -87,8 +87,10 @@
                     <nb-card-header>{{'GLOBAL.Acta_Recibido.VerificacionActa.ArticulosRelacionadosTitle' | translate}}
                     </nb-card-header>
                     <nb-card-body>
-
-                      <ngx-verificacion-elementos [DatosRecibidos]='soporte.get("Elementos").value' [mode]='"multi"' (DatosEnviados)="Verificar_Tabla($event, i)"></ngx-verificacion-elementos>
+                      <div class="pre-scrollable">
+                        <ngx-verificacion-elementos [DatosRecibidos]='soporte.get("Elementos").value' [mode]='"multi"' (DatosEnviados)="Verificar_Tabla($event, i)"></ngx-verificacion-elementos>
+                      </div>
+                      
                     </nb-card-body>
                   </nb-card>
                 </div>
