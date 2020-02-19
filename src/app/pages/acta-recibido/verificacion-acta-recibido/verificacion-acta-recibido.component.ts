@@ -41,7 +41,8 @@ export class VerificacionActaRecibidoComponent implements OnInit {
 
 
   config: ToasterConfig;
-
+  Verificar_tabla: boolean[];
+  Verificar_tabla2: boolean;
   // Mensajes de error
   errMess: any;
   private sub: Subscription;
@@ -78,6 +79,9 @@ export class VerificacionActaRecibidoComponent implements OnInit {
   Tarifas_Iva: any;
   Dependencias: any;
   Sedes: any;
+  bandera: boolean;
+  bandera2: boolean;
+  respuesta: any;
 
   constructor(
     private translate: TranslateService,
@@ -106,6 +110,7 @@ export class VerificacionActaRecibidoComponent implements OnInit {
     this.listService.findTipoBien();
     this.listService.findUnidades();
     this.listService.findImpuestoIVA();
+    this.Verificar_tabla = new Array<boolean>();
   }
   ngOnInit() {
     this.loadLists();
@@ -129,10 +134,11 @@ export class VerificacionActaRecibidoComponent implements OnInit {
           this.Tipos_Bien !== undefined && this.Unidades !== undefined &&
           this.Tarifas_Iva !== undefined && this.Proveedores !== undefined &&
           this.Dependencias !== undefined && this.Sedes !== undefined &&
-          this._ActaId !== undefined) {
+          this._ActaId !== undefined && this.respuesta === undefined) {
           // console.log(this._ActaId);
           this.Actas_Recibido.getTransaccionActa(this._ActaId).subscribe(Acta => {
             // console.log(Acta);
+            this.respuesta = true;
             this.Cargar_Formularios(Acta[0]);
             // console.log('ok');
           });
@@ -144,7 +150,32 @@ export class VerificacionActaRecibidoComponent implements OnInit {
   T_V(valor: string): string {
     return this.cp.transform(valor);
   }
+
+
+  Verificar_Tabla(event, index) {
+    // console.log(event)
+    // console.log(index)
+    this.Verificar_tabla[index] = event;
+    // console.log(this.Verificar_tabla)
+    this.bandera = false;
+    // console.log(this.source);
+    for (const datos of this.Verificar_tabla) {
+      // console.log(datos)
+      if (datos !== true) {
+        this.bandera = true;
+        break;
+      }
+    }
+    if (this.bandera === false) {
+      this.bandera2 = true;
+    } else {
+      this.bandera = false;
+      this.bandera2 = false;
+    }
+
+  }
   Cargar_Formularios(transaccion_: TransaccionActaRecibido) {
+    // console.log(transaccion_)
     this.Actas_Recibido.getSedeDependencia(transaccion_.ActaRecibido.UbicacionId).subscribe(res => {
       const valor = res[0].EspacioFisicoId.Codigo.substring(0, 4);
       this.Acta = transaccion_;
@@ -163,6 +194,7 @@ export class VerificacionActaRecibidoComponent implements OnInit {
           Soporte: [Soporte.SoporteActa.DocumentoId],
           Elementos: this.fb.array([]),
         });
+        this.Verificar_tabla.push(false);
         for (const _Elemento of Soporte.Elementos) {
 
           const Elemento___ = this.fb.group({
@@ -198,7 +230,7 @@ export class VerificacionActaRecibidoComponent implements OnInit {
       this.firstForm = this.fb.group({
         Formulario1: this.fb.group({
           Id: [transaccion_.ActaRecibido.Id],
-          Sede: [this.Sedes.find(x => x.Codigo === valor.toString()).Nombre],
+          Sede: [this.Sedes.find(x => x.CodigoAbreviacion === valor.toString()).Nombre],
           Dependencia: [this.Dependencias.find(x => x.Id === res[0].DependenciaId.Id).Nombre],
           Ubicacion: [transaccion_.ActaRecibido.UbicacionId],
         }),
@@ -215,10 +247,11 @@ export class VerificacionActaRecibidoComponent implements OnInit {
 
   Traer_Relacion_Ubicaciones(sede_, dependencia_, ubicacion_) {
 
+    // console.log(sede_)
     const transaccion: any = {};
-    transaccion.Sede = this.Sedes.find((x) => x.Codigo === sede_.toString());
+    transaccion.Sede = this.Sedes.find((x) => x.CodigoAbreviacion === sede_);
     transaccion.Dependencia = this.Dependencias.find((x) => x.Id === dependencia_);
-    // console.log(this.Sedes);
+    // console.log(transaccion);
     if (transaccion.Sede !== undefined && transaccion.Dependencia !== undefined) {
       this.Actas_Recibido.postRelacionSedeDependencia(transaccion).subscribe((res: any) => {
         // console.log(res)

@@ -150,6 +150,7 @@ export class VerDetalleComponent implements OnInit {
   Cargar_Formularios(transaccion_: TransaccionActaRecibido) {
 
     this.Actas_Recibido.getSedeDependencia(transaccion_.ActaRecibido.UbicacionId).subscribe(res => {
+      // console.log(res)
       const valor = res[0].EspacioFisicoId.Codigo.substring(0, 4);
       this.Acta = transaccion_;
 
@@ -202,7 +203,7 @@ export class VerDetalleComponent implements OnInit {
       this.firstForm = this.fb.group({
         Formulario1: this.fb.group({
           Id: [transaccion_.ActaRecibido.Id],
-          Sede: [this.Sedes.find(x => x.Codigo === valor.toString()).Nombre],
+          Sede: [this.Sedes.find(x => x.CodigoAbreviacion === valor.toString()).Nombre],
           Dependencia: [this.Dependencias.find(x => x.Id === res[0].DependenciaId.Id).Nombre],
           Ubicacion: [transaccion_.ActaRecibido.UbicacionId],
         }),
@@ -220,7 +221,7 @@ export class VerDetalleComponent implements OnInit {
   Traer_Relacion_Ubicaciones(sede_, dependencia_, ubicacion_) {
 
     const transaccion: any = {};
-    transaccion.Sede = this.Sedes.find((x) => x.Codigo === sede_.toString());
+    transaccion.Sede = this.Sedes.find((x) => x.CodigoAbreviacion === sede_.toString());
     transaccion.Dependencia = this.Dependencias.find((x) => x.Id === dependencia_);
     // console.log(this.Sedes);
     if (transaccion.Sede !== undefined && transaccion.Dependencia !== undefined) {

@@ -57,27 +57,33 @@ export class ArbolComponent implements OnInit, OnChanges {
   customColumn2: any;
   defaultColumns2: any[];
   allColumns2: string[];
+  Movimientos: any;
 
   constructor(
     private dataSourceBuilder: NbTreeGridDataSourceBuilder<CatalogoArbol>,
     private catalogoHelper: CatalogoElementosHelper,
     private translate: TranslateService,
     private pUpManager: PopUpManager) {
-      this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
-        this.construirForm();
-      });
+    this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
       this.construirForm();
-    }
+    });
+    this.construirForm();
+    this.catalogoHelper.getTiposMovimientoKronos().subscribe((res: any) => {
+      // console.log(res)
+      this.Movimientos = res;
 
-    construirForm() {
-      this.customColumn2 = this.translate.instant('GLOBAL.Codigo');
-      this.defaultColumns2 = [
-        this.translate.instant('GLOBAL.Nombre'),
-        this.translate.instant('GLOBAL.Descripcion'),
-        this.translate.instant('GLOBAL.Acciones'),
-      ];
-      this.allColumns2 = [this.customColumn, ...this.defaultColumns];
-    }
+    });
+  }
+
+  construirForm() {
+    this.customColumn2 = this.translate.instant('GLOBAL.Codigo');
+    this.defaultColumns2 = [
+      this.translate.instant('GLOBAL.Nombre'),
+      this.translate.instant('GLOBAL.Descripcion'),
+      this.translate.instant('GLOBAL.Acciones'),
+    ];
+    this.allColumns2 = [this.customColumn, ...this.defaultColumns];
+  }
   ngOnInit() {
     this.catalogoSeleccionado = 0;
     this.detalle = false;
@@ -150,16 +156,22 @@ export class ArbolComponent implements OnInit, OnChanges {
       this.catalogoHelper.getElementosSubgrupo(selectedRow.Id),
     ]);
 
-    observable.subscribe(([cuentas, detalle, elementos]) => {
+    observable.subscribe(([cuentas, detalle, elementos]: any[]) => {
       // console.log([cuentas, detalle, elementos]);
-      // console.log(Object.keys(detalle).length);
+      // console.log(cuentas);
       // console.log(Object.keys(elementos).length);
       // console.log(Object.keys(cuentas).length);
       if (Object.keys(cuentas[0]).length !== 0) {
+        // console.log(this.Movimientos)
+        for (const cuenta in cuentas) {
+          if (true) {
+            cuentas[cuenta].SubtipoMovimientoId = this.Movimientos.find(x => x.Id === parseFloat(cuentas[cuenta].SubtipoMovimientoId));
+          }
+        }
         this.cuentasContables = <Array<CuentasGrupoTransaccion>>cuentas;
       }
       if (Object.keys(detalle[0]).length !== 0) {
-        this.tipos_de_bien = <TipoBien>detalle.TipoBienId;
+        this.tipos_de_bien = <TipoBien>detalle[0].TipoBienId;
       }
       if (Object.keys(elementos[0]).length !== 0) {
         this.elementosSubgrupo = elementos;

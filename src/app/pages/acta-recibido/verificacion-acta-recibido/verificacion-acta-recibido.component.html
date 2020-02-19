@@ -87,152 +87,10 @@
                     <nb-card-header>{{'GLOBAL.Acta_Recibido.VerificacionActa.ArticulosRelacionadosTitle' | translate}}
                     </nb-card-header>
                     <nb-card-body>
-                      <div class="example-container mat-elevation-z8">
-                        <table mat-table #MatTable formArrayName="Elementos"
-                          [dataSource]='soporte.get("Elementos").controls'>
-
-                          <!-- Tipo de Bien -->
-                          <ng-container matColumnDef="TipoBienId">
-                            <th mat-header-cell *matHeaderCellDef>
-                              {{'GLOBAL.Acta_Recibido.VerificacionActa.TipoBienHeader' | translate}}</th>
-                            <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="rowIndex">
-                              <input nbInput type="text" fieldSize="tiny" class="cell" formControlName="TipoBienId"
-                                placeholder="Subcatalogo" readonly>
-                          </ng-container>
-                          <!-- Subgrupo Catalogo -->
-                          <ng-container matColumnDef="SubgrupoCatalogoId">
-                            <th mat-header-cell *matHeaderCellDef>
-                              {{'GLOBAL.Acta_Recibido.VerificacionActa.SubgrupoHeader' | translate}}</th>
-                            <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="rowIndex">
-                              <input nbInput type="text" fieldSize="tiny" class="cell"
-                                formControlName="SubgrupoCatalogoId" placeholder="Subcatalogo" readonly>
-                            </td>
-                          </ng-container>
-
-                          <!-- Nombre Catalogo -->
-                          <ng-container matColumnDef="Nombre">
-                            <th mat-header-cell *matHeaderCellDef>
-                              {{'GLOBAL.Acta_Recibido.VerificacionActa.DescripcionHeader' | translate}}</th>
-                            <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="rowIndex">
-                              <input nbInput type="text" fieldSize="tiny" class="cell" formControlName="Nombre"
-                                placeholder="Descripcion" readonly>
-
-                            </td>
-                          </ng-container>
-
-                          <!-- Cantidad Column -->
-                          <ng-container matColumnDef="Cantidad">
-                            <th mat-header-cell *matHeaderCellDef>
-                              {{'GLOBAL.Acta_Recibido.VerificacionActa.CantidadHeader' | translate}}</th>
-                            <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="rowIndex">
-                              <input nbInput type="text" fieldSize="tiny" class="cell" formControlName="Cantidad"
-                                placeholder="Cantidad" readonly>
-                            </td>
-                          </ng-container>
-
-                          <!-- Marca Column -->
-                          <ng-container matColumnDef="Marca">
-                            <th mat-header-cell *matHeaderCellDef>
-                              {{'GLOBAL.Acta_Recibido.VerificacionActa.MarcaHeader' | translate}}</th>
-                            <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="rowIndex">
-                              <input nbInput type="text" fieldSize="tiny" class="cell" formControlName="Marca"
-                                placeholder="Marca" readonly>
-                            </td>
-                          </ng-container>
-
-                          <!-- Serie Column -->
-                          <ng-container matColumnDef="Serie">
-                            <th mat-header-cell *matHeaderCellDef>
-                              {{'GLOBAL.Acta_Recibido.VerificacionActa.SerieHeader' | translate}}</th>
-                            <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="rowIndex">
-                              <input nbInput type="text" fieldSize="tiny" class="cell" formControlName="Serie"
-                                placeholder="Serie" readonly>
-                            </td>
-                          </ng-container>
-
-                          <!-- UnidadMedida Column -->
-                          <ng-container matColumnDef="UnidadMedida">
-                            <th mat-header-cell *matHeaderCellDef>
-                              {{'GLOBAL.Acta_Recibido.VerificacionActa.UnidadMedidaHeader' | translate}}</th>
-                            <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="rowIndex">
-                              <input nbInput type="text" fieldSize="tiny" class="cell" formControlName="UnidadMedida"
-                                placeholder="Medida" readonly>
-                            </td>
-                          </ng-container>
-
-                          <!-- ValorUnitario Column -->
-                          <ng-container matColumnDef="ValorUnitario">
-                            <th mat-header-cell *matHeaderCellDef>
-                              {{'GLOBAL.Acta_Recibido.VerificacionActa.ValorUnitarioHeader' | translate}}</th>
-                            <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="rowIndex">
-                              <input nbInput type="text" fieldSize="tiny" class="cell" formControlName="ValorUnitario"
-                                placeholder="Valor Unitario" readonly>
-                            </td>
-                          </ng-container>
-
-                          <!-- Subtotal Column -->
-                          <ng-container matColumnDef="Subtotal">
-                            <th mat-header-cell *matHeaderCellDef>
-                              {{'GLOBAL.Acta_Recibido.VerificacionActa.SubtotalHeader' | translate}}</th>
-                            <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="rowIndex">
-                              <input nbInput type="text" fieldSize="tiny" class="cell" formControlName="Subtotal"
-                                placeholder="Subtotal" readonly>
-                            </td>
-                          </ng-container>
-
-                          <!-- Descuento Column -->
-                          <ng-container matColumnDef="Descuento">
-                            <th mat-header-cell *matHeaderCellDef>
-                              {{'GLOBAL.Acta_Recibido.VerificacionActa.DescuentoHeader' | translate}}</th>
-                            <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="rowIndex">
-                              <input nbInput type="text" fieldSize="tiny" class="cell" formControlName="Descuento"
-                                placeholder="Descuento" readonly>
-                            </td>
-                          </ng-container>
-
-                          <!-- PorcentajeIvaId Column -->
-                          <ng-container matColumnDef="PorcentajeIvaId">
-                            <th mat-header-cell *matHeaderCellDef>
-                              {{'GLOBAL.Acta_Recibido.VerificacionActa.IVAHeader' | translate}}</th>
-                            <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="rowIndex">
-                              <input nbInput type="text" fieldSize="tiny" class="cell" formControlName="PorcentajeIvaId"
-                                placeholder="% IVA" readonly>
-                            </td>
-                          </ng-container>
-
-                          <!-- ValorIva Column -->
-                          <ng-container matColumnDef="ValorIva">
-                            <th mat-header-cell *matHeaderCellDef>
-                              {{'GLOBAL.Acta_Recibido.VerificacionActa.ValorIVAHeader' | translate}}</th>
-                            <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="rowIndex">
-                              <input nbInput type="text" fieldSize="tiny" class="cell" formControlName="ValorIva"
-                                placeholder="Valor Iva" readonly>
-                            </td>
-                          </ng-container>
-
-                          <!-- ValorTotal Column -->
-                          <ng-container matColumnDef="ValorTotal">
-                            <th mat-header-cell *matHeaderCellDef>
-                              {{'GLOBAL.Acta_Recibido.VerificacionActa.ValorTotalHeader' | translate}}</th>
-                            <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="rowIndex">
-                              <input nbInput type="text" fieldSize="tiny" class="cell" formControlName="ValorTotal"
-                                placeholder="Valor Total" readonly>
-                            </td>
-                          </ng-container>
-
-                          <!-- Acciones Column -->
-                          <ng-container matColumnDef="Acciones">
-                            <th mat-header-cell *matHeaderCellDef>
-                              {{'GLOBAL.Acta_Recibido.VerificacionActa.Verificar' | translate}}</th>
-                            <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="rowIndex">
-                              <nb-checkbox formControlName="Verificado"></nb-checkbox>
-                            </td>
-                          </ng-container>
-
-                          <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
-                          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-                        </table>
+                      <div class="pre-scrollable">
+                        <ngx-verificacion-elementos [DatosRecibidos]='soporte.get("Elementos").value' [mode]='"multi"' (DatosEnviados)="Verificar_Tabla($event, i)"></ngx-verificacion-elementos>
                       </div>
+                      
                     </nb-card-body>
                   </nb-card>
                 </div>
@@ -300,7 +158,7 @@
             <div class="justify-content-center">
               <button nbButton
                 (click)="Revisar_Totales2()">{{'GLOBAL.Acta_Recibido.VerificacionActa.Rechazar' | translate}}</button>
-              <button nbButton (click)="Revisar_Totales()"
+              <button nbButton [disabled]="!bandera2" (click)="Revisar_Totales()"
                 class="float-right">{{'GLOBAL.Acta_Recibido.VerificacionActa.Verificar' | translate}}</button>
             </div>
           </nb-card-footer>

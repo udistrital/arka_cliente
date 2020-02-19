@@ -48,26 +48,26 @@
         <span class="font-weight-normal">{{ grupoSeleccionado.Nombre }}</span></p>
 
     <div *ngIf="tipos_de_bien">
-        <p class="font-weight-bold text-uppercase">Tipo de Bien:</p>
-        <span class="font-weight-normal">{{ tipos_de_bien.Nombre }}</span>
+        <p class="font-weight-bold text-uppercase">Tipo de Bien:
+            <span class="font-weight-normal">{{ tipos_de_bien.Nombre }}</span></p>
     </div>
-
+    <p></p>
     <div *ngIf="cuentasContables">
         <div *ngFor="let cuenta of cuentasContables" class="row">
             <div class="col">
-                <p class="font-weight-bold text-uppercase">Tipo de movimiento:</p>
-                <span class="font-weight-normal">{{ cuenta.SubtipoMovimientoId }}</span>
-                <p class="font-weight-bold text-uppercase"></p>
+                <p class="font-weight-bold text-uppercase">Tipo de movimiento:
+                    <span class="font-weight-normal">{{ cuenta.SubtipoMovimientoId.Nombre }}</span></p>
+
             </div>
             <div class="col">
-                <p class="font-weight-bold text-uppercase">Cuenta Crédito:</p>
-                <span class="font-weight-normal">{{ cuenta.CuentaCreditoId.Codigo }}</span>
-                <p class="font-weight-bold text-uppercase"></p>
+                <p class="font-weight-bold text-uppercase">Cuenta Crédito:
+                    <span class="font-weight-normal">{{ cuenta.CuentaCreditoId.Codigo }}</span></p>
+
             </div>
             <div class="col">
-                <p class="font-weight-bold text-uppercase">Cuenta Débito:</p>
-                <span class="font-weight-normal">{{ cuenta.CuentaDebitoId.Codigo }}</span>
-                <p class="font-weight-bold text-uppercase"></p>
+                <p class="font-weight-bold text-uppercase">Cuenta Débito:
+                    <span class="font-weight-normal">{{ cuenta.CuentaDebitoId.Codigo }}</span></p>
+
             </div>
         </div>
     </div>

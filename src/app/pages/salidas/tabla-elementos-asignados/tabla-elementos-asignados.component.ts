@@ -566,7 +566,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
       const dependencia = 'ALMACEN GENERAL E INVENTARIOS';
 
       const transaccion: any = {};
-      transaccion.Sede = this.Sedes.find((x) => x.Codigo === sede);
+      transaccion.Sede = this.Sedes.find((x) => x.CodigoAbreviacion === sede);
       transaccion.Dependencia = this.Dependencias.find((x) => x.Nombre === dependencia);
       // console.log(transaccion);
       this.actaRecibidoHelper.postRelacionSedeDependencia(transaccion).subscribe((res: any) => {
