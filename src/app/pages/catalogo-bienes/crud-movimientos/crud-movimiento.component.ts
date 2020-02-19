@@ -204,12 +204,11 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
         const cuentaDebito = event.data.CuentasFormulario.CuentaDebitoId;
         const cuentaCredito = event.data.CuentasFormulario.CuentaCreditoId;
         this.respuesta2 = {};
-        this.respuesta2['Id'] = null;
         this.respuesta2.SubgrupoId = this.subgrupo_id;
         this.respuesta2.CuentaCreditoId = cuentaCredito.Id;
         this.respuesta2.CuentaDebitoId = cuentaDebito.Id;
         this.respuesta2.SubtipoMovimientoId = this.movimiento_id.Id;
-        this.formulario.emit(<CuentaGrupo>this.respuesta2);
+        this.formulario.emit(this.respuesta2);
         // console.log(this.respuesta2);
       }
     }

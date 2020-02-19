@@ -22,6 +22,7 @@ import { NgxCurrencyModule } from 'ngx-currency';
 import { rootReducer } from '../../@core/store/rootReducer';
 import { Store, StoreModule } from '@ngrx/store';
 import { ListService } from '../../@core/store/services/list.service';
+import { VerificacionElementosComponent } from './verificacion-elementos/verificacion-elementos.component';
 
 
 @NgModule({
@@ -33,6 +34,7 @@ import { ListService } from '../../@core/store/services/list.service';
     EdicionActaRecibidoComponent,
     VerDetalleComponent,
     CapturarElementosComponent,
+    VerificacionElementosComponent,
   ],
   imports: [
     CommonModule,

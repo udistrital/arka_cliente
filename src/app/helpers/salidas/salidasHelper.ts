@@ -59,8 +59,8 @@ export class SalidaHelper {
     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
     */
     public postSalidas(salidasData) {
-        this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
-        return this.rqManager.post(`tr_salida`, salidasData).pipe(
+        this.rqManager.setPath('ARKA_SERVICE');
+        return this.rqManager.post(`salida`, salidasData).pipe(
             map(
                 (res) => {
                     if (res['Type'] === 'error') {

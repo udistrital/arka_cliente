@@ -280,7 +280,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
       this.firstForm = this.fb.group({
         Formulario1: this.fb.group({
           Id: [transaccion_.ActaRecibido.Id],
-          Sede: [this.Sedes.find(x => x.Codigo === valor.toString()).Id, Validators.required],
+          Sede: [this.Sedes.find(x => x.CodigoAbreviacion === valor.toString()).Id, Validators.required],
           Dependencia: [this.Dependencias.find(x => x.Id === res[0].DependenciaId.Id).Nombre, Validators.required],
           Ubicacion: [
             transaccion_.ActaRecibido.UbicacionId,
@@ -335,7 +335,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
       // console.log(res);
       const valor = res[0].EspacioFisicoId.Codigo.substring(0, 4);
       // console.log(valor);
-      const Sede = this.Sedes.find(x => x.Codigo === valor.toString()).Id;
+      const Sede = this.Sedes.find(x => x.CodigoAbreviacion === valor.toString()).Id;
       const _Dependencia = res[0].DependenciaId.Id;
       // console.log(Sede, Dependencia);
       return [Sede, _Dependencia];
