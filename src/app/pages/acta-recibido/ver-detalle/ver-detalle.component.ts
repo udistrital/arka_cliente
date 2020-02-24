@@ -58,10 +58,16 @@ export class VerDetalleComponent implements OnInit {
 
   // Tablas parametricas
 
-  @Input('Id_Acta') _ActaId: number;
+  
+  _ActaId: number;
   Estados_Acta: any;
   Tipos_Bien: any;
   Estados_Elemento: any;
+  @Input('Id_Acta') 
+  set name(id:any) {
+    this._ActaId = id;
+    this.loadLists();
+  }
 
   // Modelos
 
@@ -110,7 +116,7 @@ export class VerDetalleComponent implements OnInit {
     this.listService.findImpuestoIVA();
   }
   ngOnInit() {
-    this.loadLists();
+    
   }
 
   public loadLists() {

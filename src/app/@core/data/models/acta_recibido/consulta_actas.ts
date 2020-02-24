@@ -7,7 +7,7 @@ export class ConsultaActaRecibido {
     FechaVistoBueno: Date;
     Id: number;
     Observaciones: string;
-    RevisorId: number;
+    RevisorId: any;
     UbicacionId: string;
     CodigoAbreviacion: string;
     Estado: string;

@@ -4,15 +4,11 @@ import { LocalDataSource } from 'ngx-smart-table';
 import { NavigationEnd, Router } from '@angular/router';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
 import { PopUpManager } from '../../../managers/popUpManager';
-import { ActaRecibido } from '../../../@core/data/models/acta_recibido/acta_recibido';
 import { ConsultaActaRecibido } from '../../../@core/data/models/acta_recibido/consulta_actas';
-import { stringify } from '@angular/compiler/src/util';
-import { Ubicacion } from '../../../@core/data/models/acta_recibido/soporte_acta';
-import { Subscription, combineLatest, empty } from 'rxjs';
 import Swal from 'sweetalert2';
 import { Store } from '@ngrx/store';
 import { IAppState } from '../../../@core/store/app.state';
-import { ListService } from '../../../@core/store/services/list.service';
+import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
 
 @Component({
   selector: 'ngx-consulta-acta-recibido',
@@ -36,10 +32,10 @@ export class ConsultaActaRecibidoComponent implements OnInit {
     private router: Router,
     private actaRecibidoHelper: ActaRecibidoHelper,
     private store: Store<IAppState>,
-    private listService: ListService,
+
+    private terceroshelper:TercerosHelper,
     private pUpManager: PopUpManager) {
-    this.listService.findUbicaciones();
-    this.Ubicaciones = {};
+
     this.navigationSubscription = this.router.events.subscribe((e: any) => {
       // If it is a NavigationEnd event re-initalise the component
       if (e instanceof NavigationEnd) {
@@ -54,7 +50,7 @@ export class ConsultaActaRecibidoComponent implements OnInit {
     this.cargarCampos();
     this.source = new LocalDataSource(); // create the source
     this.actas = new Array<ConsultaActaRecibido>();
-    this.loadLists();
+    
 
   }
   initialiseInvites() {
@@ -66,22 +62,16 @@ export class ConsultaActaRecibidoComponent implements OnInit {
     // console.log('1')
   }
   ngOnInit() {
+    this.actaRecibidoHelper.getActasRecibido3().subscribe((res: any) => {
+      console.log(res);
+      this.mostrar = true;
+      if (Object.keys(res[0]).length != 0) {
+        this.source.load(res);
+      }
+    });
   }
 
-  public loadLists() {
-    this.store.select((state) => state).subscribe(
-      (list) => {
-        this.Ubicaciones = list.listUbicaciones[0];
-        if (this.Ubicaciones !== undefined) {
-          this.actaRecibidoHelper.getActasRecibido2().subscribe(res => {
-            this.loadActas(res);
-          });
-        }
-      },
-    );
-
-  }
-
+  
   cargarCampos() {
 
     this.settings = {
@@ -264,35 +254,5 @@ export class ConsultaActaRecibidoComponent implements OnInit {
     // console.log('1')
   }
 
-  loadActas(res: any): void {
-    this.actas = new Array<ConsultaActaRecibido>();
-    this.mostrar = true;
-    if (res !== undefined && res !== []) {
-      for (const index in res) {
-        if (res.hasOwnProperty(index)) {
-          const acta = new ConsultaActaRecibido;
-          const ubicacion = this.Ubicaciones.find(ubicacion_ => ubicacion_.Id === res[index].ActaRecibidoId.UbicacionId);
-          if (ubicacion == null) {
-            acta.UbicacionId = 'Ubicacion no Especificada';
-          } else {
-            acta.UbicacionId = ubicacion.EspacioFisicoId.Nombre;
-          }
-          acta.Activo = res[index].ActaRecibidoId.Activo;
-          acta.FechaCreacion = res[index].ActaRecibidoId.FechaCreacion;
-          acta.FechaModificacion = res[index].ActaRecibidoId.FechaModificacion;
-          acta.FechaVistoBueno = res[index].ActaRecibidoId.FechaVistoBueno;
-          acta.Id = res[index].ActaRecibidoId.Id;
-          acta.Observaciones = res[index].ActaRecibidoId.Observaciones;
-          acta.RevisorId = res[index].ActaRecibidoId.RevisorId;
-          acta.Estado = res[index].EstadoActaId.Nombre;
-          this.actas.push(acta);
-        }
-      }
-      this.source.load(this.actas);
-      // console.log('1')
-    } else {
-      this.source.load([]);
-      // console.log('1')
-    }
-  }
+  
 }

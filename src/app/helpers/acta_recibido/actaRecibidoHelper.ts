@@ -54,6 +54,27 @@ export class ActaRecibidoHelper {
         );
     }
 
+/**
+     * Actas de Recibido Activas Get
+     * If the response has errors in the OAS API it should show a popup message with an error.
+     * If the response is successs, it returns the object's data.
+     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
+     */
+    public getActasRecibido3() {
+        this.rqManager.setPath('ARKA_SERVICE');
+        return this.rqManager.get('acta_recibido/get_all_actas/').pipe(
+            map(
+                (res) => {
+                    if (res === 'error') {
+                        this.pUpManager.showErrorAlert('No se pudo consultar las actas de recibido');
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
+
 
     /**
      * Elementos Acta Get
