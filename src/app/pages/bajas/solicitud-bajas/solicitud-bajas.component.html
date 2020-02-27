@@ -1,3 +1,13 @@
-<p>
-  solicitud-bajas works!
-</p>
+<nb-card>
+    <nb-card-header>
+        Formulario de Solicitud de Bajas
+    </nb-card-header>
+    <nb-card-body>
+        <ngx-form-funcionario-solicitud></ngx-form-funcionario-solicitud>
+        <ngx-form-elementos-seleccionados></ngx-form-elementos-seleccionados>
+        <ngx-tabla-elementos-agregados></ngx-tabla-elementos-agregados>
+    </nb-card-body>
+    <nb-card-footer>
+        <button nbButton [disabled]="true" class="float-right">Generar Solicitud</button>
+    </nb-card-footer>
+</nb-card>

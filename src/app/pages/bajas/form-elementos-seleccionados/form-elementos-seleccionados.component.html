@@ -1,0 +1,89 @@
+<!-- <code>
+  <pre>
+    {{form_salida.value | json}}
+  </pre>
+</code> -->
+<form [formGroup]="form_salida" #fform="ngForm" class="step-container">
+  <nb-card>
+    <nb-card-header>
+      Informacion de Elemento
+    </nb-card-header>
+    <nb-card-body class="bla">
+      <div class="form-group col-sm">
+        <div class="row">
+          <div class="form-group col-sm">
+            <div class="form-group col-sm">
+              <label>Placa</label>
+              <div class="input-group">
+                <input type="text" placeholder="Placa Elemento Hurtado" class="form-control" formControlName="Placa"
+                  (input)="changePlacaElemento($event)" list="elementosList2" />
+              </div>
+              <datalist id="elementosList2">
+                <!-- <option value="seleccione un valor" selected disabled></option>           -->
+                <option *ngFor="let item of elementos_placa" [(value)]="item.Placa"></option>
+              </datalist>
+            </div>
+            <div class="form-group col-sm">
+              <label>Tipo de Baja</label>
+              <div class="input-group">
+                <input type="text" placeholder="Placa Elemento Hurtado" class="form-control" formControlName="Placa"
+                  (input)="changePlacaElemento($event)" list="elementosList2" />
+              </div>
+              <datalist id="elementosList2">
+                <!-- <option value="seleccione un valor" selected disabled></option>           -->
+                <option *ngFor="let item of elementos_placa" [(value)]="item.Placa"></option>
+              </datalist>
+            </div>
+          </div>
+          <div class="form-group col-sm">
+            <nb-card>
+              
+              <nb-card-body>
+                <div class="col-sm soporte">
+                  <p>Soporte</p>
+                  <p></p>
+                  <div>
+                    <button nbButton type="button" (click)="fileInputDocumento.click()">
+                      <i class="fas fa-file-upload fa-2x"></i>
+                      <input #fileInputDocumento formControlName="Soporte" type="file"
+                        (change)="onInputFileDocumento($event)" style="display:none;" accept="application/pdf"
+                        data-max-size="5120" />
+                    </button>
+                  </div>
+                  <p></p>
+                  <p *ngIf="Validador">{{fileDocumento.name}}</p>
+                  <p *ngIf="!Validador">
+                    {{'GLOBAL.Acta_Recibido.CapturarElementos.ValidadorPlaceholder2' | translate }}</p>
+                  <div>
+                    <button nbButton type="button" *ngIf="fileDocumento" target="_blank" (click)="download()">
+                      Ver
+                    </button>
+                  </div>
+                  <p></p>
+                  <div>
+                    <button type="button" *ngIf="Validador" class="btn btn-primary" (click)="clearFile()">
+                      {{'GLOBAL.Acta_Recibido.CapturarElementos.LimpiarEspacioButton' | translate }}
+                    </button>
+                  </div>
+                </div>
+              </nb-card-body>
+            </nb-card>
+          </div>
+        </div>
+        <div class="form-group  col-lg-12">
+          <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Observaciones' | translate}}</label>
+          <div class="input-group">
+            <textarea rows="2" placeholder="{{'GLOBAL.Acta_Recibido.RegistroActa.Observaciones2' | translate}}"
+              class="form-control" formControlName="Observaciones" required></textarea>
+          </div>
+          <!-- <p class="campo" *ngIf="firstForm.get('Formulario3').get('Datos_Adicionales').invalid">
+            {{'GLOBAL.placeholder' | translate}}</p> -->
+        </div>
+      </div>
+    </nb-card-body>
+    <nb-card-footer>
+      <button nbButton [disabled]="!form_salida.valid" (click)="verfificarProveedor()" class="float-right">Añadir
+        Elemento</button>
+    </nb-card-footer>
+  </nb-card>
+</form>

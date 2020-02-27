@@ -1,3 +1,10 @@
-<p>
-  consulta-solicitud-bajas works!
-</p>
+<div>
+  <nb-card>
+    <nb-card-header>Consultar Solicitudes</nb-card-header>
+    <nb-card-body>
+      <ng2-smart-table [settings]="settings" [source]="source" (delete)="onDelete($event)"
+        (rowSelect)="itemselec($event)" (edit)="onEdit($event)" (create)="onCreate($event)">
+      </ng2-smart-table>
+    </nb-card-body>
+  </nb-card>
+</div>
