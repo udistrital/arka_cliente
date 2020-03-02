@@ -46,7 +46,7 @@ export class FormElementosSeleccionadosComponent implements OnInit {
   fileDocumento: any;
   Validador: any;
 
-  
+
   @Output() DatosEnviados = new EventEmitter();
   placa: any;
   encargado: string;
@@ -98,15 +98,27 @@ export class FormElementosSeleccionadosComponent implements OnInit {
       TipoBaja: [''],
       Placa: ['', [
         Validators.required,
-        Validators.pattern('^[0-9]{13,13}$')] ],
+        Validators.pattern('^[0-9]{13,13}$')]],
+      Observaciones: ['', [Validators.required]]
     });
   }
- 
-  onSubmit() {
-    
-      this.DatosEnviados.emit(this.form_salida.value);
 
+  onSubmit() {
+
+    if (this.form_salida.valid === true) {
+      const form = this.form_salida.value;
+      console.log(form)
+      const datos: any = {
+        Soporte: this.fileDocumento,
+        TipoBaja: form.TipoBaja,
+        Placa: this.elementos_placa.find(element => element.Placa === form.Placa ),
+        Observaciones: form.Observaciones,
+      };
+      console.log(datos);
+      this.DatosEnviados.emit(datos);
+    }
   }
+
   usarLocalStorage() { }
 
 
@@ -121,7 +133,7 @@ export class FormElementosSeleccionadosComponent implements OnInit {
   }
 
 
-  
+
   onInputFileDocumento(event) {
     // console.log(event.target.files);
     // console.log(event.srcElement.files);
@@ -133,11 +145,11 @@ export class FormElementosSeleccionadosComponent implements OnInit {
         if (file.size < max_size * 1024000) {
 
           file.urlTemp = URL.createObjectURL(event.srcElement.files[0]);
-        file.url = this.cleanURL(file.urlTemp);
-        file.IdDocumento = 13; // tipo de documento (API documentos_crud)
-        file.file = event.target.files[0];
-        this.fileDocumento = file;
-        this.Validador = true;
+          file.url = this.cleanURL(file.urlTemp);
+          file.IdDocumento = 13; // tipo de documento (API documentos_crud)
+          file.file = event.target.files[0];
+          this.fileDocumento = file;
+          this.Validador = true;
 
         } else {
           (Swal as any).fire({
@@ -175,7 +187,7 @@ export class FormElementosSeleccionadosComponent implements OnInit {
       });
     }
   }
-// MÉTODO QUE ACTUALIZA LO CAMBIOS EN EL CAMPO DE PLACAS
+  // MÉTODO QUE ACTUALIZA LO CAMBIOS EN EL CAMPO DE PLACAS
   changePlacaElemento(event) {
     this.placa = event.target.value;
     this.loadPlacasElementos();

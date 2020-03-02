@@ -7,9 +7,21 @@ import { Component, OnInit } from '@angular/core';
 })
 export class SolicitudBajasComponent implements OnInit {
 
+  DatosElemento: any;
+  DatosTabla: any;
+  DatosSolicitante: any;
   constructor() { }
 
   ngOnInit() {
   }
 
+  Datos_Elemento(elemento: any) {
+    this.DatosElemento = elemento;
+  }
+  Datos_Solicitante(solicitante: any) {
+    this.DatosSolicitante = solicitante;
+  }
+  Datos_Tabla(elementos) {
+    this.DatosTabla = elementos;
+  }
 }

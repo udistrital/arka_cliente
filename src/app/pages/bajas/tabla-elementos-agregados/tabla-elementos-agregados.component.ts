@@ -19,6 +19,7 @@ import { LocalDataSource } from 'ngx-smart-table';
 import { ElementoSalida } from '../../../@core/data/models/salidas/salida_elementos';
 import { SalidaHelper } from '../../../helpers/salidas/salidasHelper';
 import { SafeResourceUrl, DomSanitizer } from '@angular/platform-browser';
+import { BajasHelper } from '../../../helpers/bajas/bajasHelper';
 
 @Component({
   selector: 'ngx-tabla-elementos-agregados',
@@ -27,9 +28,13 @@ import { SafeResourceUrl, DomSanitizer } from '@angular/platform-browser';
 })
 export class TablaElementosAgregadosComponent implements OnInit {
 
-  source: any;
+  source: LocalDataSource;
   settings: any;
   navigationSubscription;
+  bandera: boolean;
+  bandera2: boolean;
+
+  @Output() DatosEnviados = new EventEmitter();
 
   @Input('Elemento')
   set name(Elemento: any) {
@@ -40,7 +45,8 @@ export class TablaElementosAgregadosComponent implements OnInit {
     private router: Router,
     private actaRecibidoHelper: ActaRecibidoHelper,
     private sanitization: DomSanitizer,
-    private pUpManager: PopUpManager
+    private pUpManager: PopUpManager,
+    private bajasHelper: BajasHelper
   ) {
     this.source = new LocalDataSource();
     this.cargarCampos();
@@ -62,9 +68,32 @@ export class TablaElementosAgregadosComponent implements OnInit {
   }
 
   Agregar_Elemento(elemento: any) {
-
+    this.source.getElements().then((elements: any) => {
+      this.bandera = false;
+      elements.forEach(element => {
+        if (element.Id === elemento.Placa.Id) {
+          this.bandera = true;
+        }
+      });
+      if (this.bandera === false) {
+        this.bajasHelper.GetElemento(elemento.Placa.Id).subscribe((res: any) => {
+          console.log(res)
+          res.Soporte = elemento.Soporte;
+          res.TipoBaja = elemento.TipoBaja;
+          res.Observaciones = elemento.Observaciones;
+          this.source.prepend(res).then(() => {
+            this.source.refresh();
+          });
+        });
+      } else {
+        this.bandera = false;
+      }
+    })
+    this.source.getElements().then((elements) => {
+      this.DatosEnviados.emit(elements);
+    })
+    
   }
-
 
   cargarCampos() {
 
@@ -75,8 +104,8 @@ export class TablaElementosAgregadosComponent implements OnInit {
         columnTitle: 'Acciones',
         position: 'right',
         add: false,
-        delete: false,
-        edit: false,
+        delete: true,
+        edit: true,
       },
       add: {
         addButtonContent: '<i class="nb-plus"></i>',
@@ -84,17 +113,29 @@ export class TablaElementosAgregadosComponent implements OnInit {
         cancelButtonContent: '<i class="nb-close"></i>',
       },
       edit: {
-        editButtonContent: '<i class="fas fa-pencil-alt"></i>',
+        editButtonContent: '<i class="fas fa-file-pdf"></i>',
         saveButtonContent: '<i class="nb-checkmark"></i>',
         cancelButtonContent: '<i class="nb-close"></i>',
       },
       delete: {
-        deleteButtonContent: '<i class="fas fa-eye"></i>',
+        deleteButtonContent: '<i class="fas fa-times"></i>',
       },
       mode: 'external',
       columns: {
-        Cantidad: {
+        Placa: {
           title: 'Placa',
+          valuePrepareFunction: (value: any) => {
+            return value;
+          },
+        },
+        TipoBaja: {
+          title: 'Tipo de Baja',
+          valuePrepareFunction: (value: any) => {
+            return value;
+          },
+        },
+        Observaciones: {
+          title: 'Observaciones',
           valuePrepareFunction: (value: any) => {
             return value;
           },
@@ -134,6 +175,44 @@ export class TablaElementosAgregadosComponent implements OnInit {
             // console.log(search);
             if (Object.keys(cell).length !== 0) {
               if (cell.Nombre.indexOf(search) > -1) {
+                return true;
+              } else {
+                return false;
+              }
+            } else {
+              return false;
+            }
+          },
+        },
+        Entrada: {
+          title: 'Entrada',
+          valuePrepareFunction: (value: any) => {
+            return value.Id;
+          },
+          filterFunction: (cell?: any, search?: string): boolean => {
+            // console.log(cell);
+            // console.log(search);
+            if (Object.keys(cell).length !== 0) {
+              if (cell.Id.indexOf(search) > -1) {
+                return true;
+              } else {
+                return false;
+              }
+            } else {
+              return false;
+            }
+          },
+        },
+        Salida: {
+          title: 'Salida',
+          valuePrepareFunction: (value: any) => {
+            return value.Id;
+          },
+          filterFunction: (cell?: any, search?: string): boolean => {
+            // console.log(cell);
+            // console.log(search);
+            if (Object.keys(cell).length !== 0) {
+              if (cell.Id.indexOf(search) > -1) {
                 return true;
               } else {
                 return false;
@@ -251,5 +330,23 @@ export class TablaElementosAgregadosComponent implements OnInit {
       },
     };
   }
+  onEdit(event: any) {
+    if (event.data.Soporte !== undefined) {
+      this.download(event.data.Soporte);
+    }
+  }
+  onDelete(event: any) {
+    this.source.remove(event.data).then(() => {
+      this.source.refresh();
+    })
+  }
 
+  download(file) {
+
+    const new_tab = window.open(file.urlTemp, file.urlTemp, '_blank');
+    new_tab.onload = () => {
+      new_tab.location = file.urlTemp;
+    };
+    new_tab.focus();
+  }
 }

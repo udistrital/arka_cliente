@@ -4,7 +4,7 @@
   </pre>
 </code> -->
 <form [formGroup]="form_salida" #fform="ngForm" class="step-container">
-  <nb-card>
+  <nb-card (click)="onSubmit()" (keyup)="onSubmit()">
     <nb-card-header>
       Informacion de Solicitante
     </nb-card-header>
@@ -13,19 +13,19 @@
         <p></p>
         <div class="row">
           <div class="form-group col-sm">
-            <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Proveedor' | translate}}</label>
+            <label>Funcionario</label>
             <input type="text" placeholder="{{'GLOBAL.Acta_Recibido.RegistroActa.SeleccioneFiltro' | translate}}"
               Class="form-control" (input)="changeNombreProveedor($event)" value='{{proveedorfiltro}}'
-              list="elementosList" formControlName="Proveedor" />
+              list="elementosList" formControlName="Funcionario" />
           </div>
           <datalist id="elementosList">
-            <option value="sleccione un valor" selected disabled></option>
-            <option *ngFor="let item of elementos" value='{{ item }}'></option>
+            <option value="seleccione un valor" selected disabled></option>
+            <option *ngFor="let item of elementos" [(value)]="item.NombreCompleto"></option>
           </datalist>
         </div>
         <div class="row">
           <div class="form-group col-sm">
-            <label>Funcionario</label>
+            <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Sede' | translate}}</label>
             <select nbInput type="text" class="form-control" formControlName="Sede" required
               (click)="Traer_Relacion_Ubicaciones();">
               <option *ngFor="let sede of Sedes" [(value)]="sede.Id">{{sede.Nombre}}</option>

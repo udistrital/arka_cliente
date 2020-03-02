@@ -15,7 +15,7 @@
             <div class="form-group col-sm">
               <label>Placa</label>
               <div class="input-group">
-                <input type="text" placeholder="Placa Elemento Hurtado" class="form-control" formControlName="Placa"
+                <input type="text" placeholder="Placa Elemento" class="form-control" formControlName="Placa"
                   (input)="changePlacaElemento($event)" list="elementosList2" />
               </div>
               <datalist id="elementosList2">
@@ -26,18 +26,20 @@
             <div class="form-group col-sm">
               <label>Tipo de Baja</label>
               <div class="input-group">
-                <input type="text" placeholder="Placa Elemento Hurtado" class="form-control" formControlName="Placa"
-                  (input)="changePlacaElemento($event)" list="elementosList2" />
+                <select nbInput type="text" class="form-control" formControlName="TipoBaja" required>
+                  <!-- <option *ngFor="let sede of Sedes" [(value)]="sede.Id">{{sede.Nombre}}</option> -->
+                  <option>Opcion1</option>
+                  <option>Opcion1</option>
+                  <option>Opcion1</option>
+                  <option>Opcion1</option>
+                </select>
               </div>
-              <datalist id="elementosList2">
-                <!-- <option value="seleccione un valor" selected disabled></option>           -->
-                <option *ngFor="let item of elementos_placa" [(value)]="item.Placa"></option>
-              </datalist>
+
             </div>
           </div>
           <div class="form-group col-sm">
             <nb-card>
-              
+
               <nb-card-body>
                 <div class="col-sm soporte">
                   <p>Soporte</p>
@@ -82,7 +84,7 @@
       </div>
     </nb-card-body>
     <nb-card-footer>
-      <button nbButton [disabled]="!form_salida.valid" (click)="verfificarProveedor()" class="float-right">Añadir
+      <button nbButton [disabled]="!form_salida.valid" (click)="onSubmit()" class="float-right">Añadir
         Elemento</button>
     </nb-card-footer>
   </nb-card>
