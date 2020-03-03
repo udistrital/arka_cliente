@@ -33,7 +33,7 @@ export class ConsultaActaRecibidoComponent implements OnInit {
     private actaRecibidoHelper: ActaRecibidoHelper,
     private store: Store<IAppState>,
 
-    private terceroshelper:TercerosHelper,
+    private terceroshelper: TercerosHelper,
     private pUpManager: PopUpManager) {
 
     this.navigationSubscription = this.router.events.subscribe((e: any) => {
@@ -50,7 +50,7 @@ export class ConsultaActaRecibidoComponent implements OnInit {
     this.cargarCampos();
     this.source = new LocalDataSource(); // create the source
     this.actas = new Array<ConsultaActaRecibido>();
-    
+
 
   }
   initialiseInvites() {
@@ -63,15 +63,15 @@ export class ConsultaActaRecibidoComponent implements OnInit {
   }
   ngOnInit() {
     this.actaRecibidoHelper.getActasRecibido3().subscribe((res: any) => {
-      console.log(res);
+      // console.log(res);
       this.mostrar = true;
-      if (Object.keys(res[0]).length != 0) {
+      if (Object.keys(res[0]).length !== 0) {
         this.source.load(res);
       }
     });
   }
 
-  
+
   cargarCampos() {
 
     this.settings = {
@@ -254,5 +254,5 @@ export class ConsultaActaRecibidoComponent implements OnInit {
     // console.log('1')
   }
 
-  
+
 }

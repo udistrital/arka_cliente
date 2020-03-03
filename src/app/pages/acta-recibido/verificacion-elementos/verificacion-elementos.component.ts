@@ -42,7 +42,7 @@ export class VerificacionElementosComponent implements OnInit {
         }
       },
     );
-    
+
   }
 
   @Input('mode')
@@ -206,7 +206,7 @@ export class VerificacionElementosComponent implements OnInit {
     this.Datos = new Array<any>();
     for (const index in datos) {
       if (true) {
-        console.log(datos[index])
+        // console.log(datos[index])
         const elemento: any = {};
         elemento.ValorUnitario = datos[index].ValorUnitario;
         elemento.ValorTotal = datos[index].ValorTotal;
@@ -222,20 +222,20 @@ export class VerificacionElementosComponent implements OnInit {
         elemento.ValorIva = datos[index].ValorIva;
         elemento.PorcentajeIvaId = datos[index].PorcentajeIvaId;
 
-        if (datos[index].TipoBienId === "Consumo" && Object.keys(this.Consumo[0]).length !== 0) {
+        if (datos[index].TipoBienId === 'Consumo' && Object.keys(this.Consumo[0]).length !== 0) {
           elemento.SubgrupoCatalogoId = this.Consumo.find(x => x.Id === datos[index].SubgrupoCatalogoId).Nombre;
         }
-        if (datos[index].TipoBienId === "Consumo Controlado" && Object.keys(this.ConsumoControlado[0]).length !== 0) {
+        if (datos[index].TipoBienId === 'Consumo Controlado' && Object.keys(this.ConsumoControlado[0]).length !== 0) {
           elemento.SubgrupoCatalogoId = this.ConsumoControlado.find(x => x.Id === datos[index].SubgrupoCatalogoId).Nombre;
         }
-        if (datos[index].TipoBienId === "Devolutivo" && Object.keys(this.Devolutivo[0]).length !== 0) {
+        if (datos[index].TipoBienId === 'Devolutivo' && Object.keys(this.Devolutivo[0]).length !== 0) {
           elemento.SubgrupoCatalogoId = this.Devolutivo.find(x => x.Id === datos[index].SubgrupoCatalogoId).Nombre;
         }
         this.Datos.push(elemento);
       }
     }
     if (this.Datos !== undefined) {
-      console.log(this.Datos)
+      // console.log(this.Datos)
       this.source.load(this.Datos);
     }
   }

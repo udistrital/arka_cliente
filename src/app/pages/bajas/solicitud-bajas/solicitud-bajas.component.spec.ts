@@ -8,7 +8,7 @@ describe('SolicitudBajasComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ SolicitudBajasComponent ]
+      declarations: [ SolicitudBajasComponent ],
     })
     .compileComponents();
   }));

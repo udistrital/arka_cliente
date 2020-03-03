@@ -24,7 +24,7 @@ import { BajasHelper } from '../../../helpers/bajas/bajasHelper';
 @Component({
   selector: 'ngx-tabla-elementos-agregados',
   templateUrl: './tabla-elementos-agregados.component.html',
-  styleUrls: ['./tabla-elementos-agregados.component.scss']
+  styleUrls: ['./tabla-elementos-agregados.component.scss'],
 })
 export class TablaElementosAgregadosComponent implements OnInit {
 
@@ -37,10 +37,10 @@ export class TablaElementosAgregadosComponent implements OnInit {
   @Output() DatosEnviados = new EventEmitter();
 
   @Input('Elemento')
-  set name(Elemento: any) {
-    console.log(Elemento)
-    if (Elemento !== false) {
-    this.Agregar_Elemento(Elemento);
+  set name(Elemento__: any) {
+    // console.log(Elemento)
+    if (Elemento__ !== false) {
+    this.Agregar_Elemento(Elemento__);
     }
   }
   constructor(
@@ -49,7 +49,7 @@ export class TablaElementosAgregadosComponent implements OnInit {
     private actaRecibidoHelper: ActaRecibidoHelper,
     private sanitization: DomSanitizer,
     private pUpManager: PopUpManager,
-    private bajasHelper: BajasHelper
+    private bajasHelper: BajasHelper,
   ) {
     this.source = new LocalDataSource();
     this.cargarCampos();
@@ -80,23 +80,23 @@ export class TablaElementosAgregadosComponent implements OnInit {
       });
       if (this.bandera === false) {
         this.bajasHelper.GetElemento(elemento.Placa.Id).subscribe((res: any) => {
-          console.log(res)
+          // console.log(res)
           res.Soporte = elemento.Soporte;
           res.TipoBaja = elemento.TipoBaja;
           res.Observaciones = elemento.Observaciones;
           this.source.prepend(res).then(() => {
             this.source.refresh();
-            this.source.getElements().then((elements) => {
-              this.DatosEnviados.emit(elements);
-            })
+            this.source.getElements().then((elements__) => {
+              this.DatosEnviados.emit(elements__);
+            });
           });
         });
       } else {
         this.bandera = false;
       }
-    })
-    
-    
+    });
+
+
   }
 
   cargarCampos() {
@@ -342,7 +342,7 @@ export class TablaElementosAgregadosComponent implements OnInit {
   onDelete(event: any) {
     this.source.remove(event.data).then(() => {
       this.source.refresh();
-    })
+    });
   }
 
   download(file) {

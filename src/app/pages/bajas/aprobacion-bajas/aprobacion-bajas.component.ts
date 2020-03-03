@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'aprobacion-bajas',
+  selector: 'ngx-aprobacion-bajas',
   templateUrl: './aprobacion-bajas.component.html',
-  styleUrls: ['./aprobacion-bajas.component.scss']
+  styleUrls: ['./aprobacion-bajas.component.scss'],
 })
 export class AprobacionBajasComponent implements OnInit {
 

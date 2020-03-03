@@ -8,7 +8,7 @@ describe('AprobacionBajasComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ AprobacionBajasComponent ]
+      declarations: [ AprobacionBajasComponent ],
     })
     .compileComponents();
   }));

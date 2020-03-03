@@ -10,9 +10,9 @@ import { ListService } from '../../../@core/store/services/list.service';
 import { UserService } from '../../../@core/data/users.service';
 
 @Component({
-  selector: 'solicitud-bajas',
+  selector: 'ngx-solicitud-bajas',
   templateUrl: './solicitud-bajas.component.html',
-  styleUrls: ['./solicitud-bajas.component.scss']
+  styleUrls: ['./solicitud-bajas.component.scss'],
 })
 export class SolicitudBajasComponent implements OnInit {
 
@@ -58,27 +58,27 @@ export class SolicitudBajasComponent implements OnInit {
   Datos_Elemento(elemento: any) {
     if (elemento !== false) {
       this.DatosElemento = elemento;
-      console.log(this.DatosElemento)
+      // console.log(this.DatosElemento)
     }
-    
+
     this.Validar_Datos();
 
   }
   Datos_Solicitante(solicitante: any) {
     if (solicitante !== false) {
       this.DatosSolicitante = solicitante;
-      console.log(this.DatosSolicitante)
+      // console.log(this.DatosSolicitante)
     }
     this.Validar_Datos();
   }
   Datos_Tabla(elementos: any) {
     this.DatosTabla = elementos;
-    console.log(this.DatosTabla)
+    // console.log(this.DatosTabla)
     this.DatosTabla.forEach((element, index) => {
       this.Soportes[index] = element.Soporte;
-      console.log(this.Soportes)
+      // console.log(this.Soportes)
     });
-    
+
     this.Validar_Datos();
 
   }
@@ -91,7 +91,7 @@ export class SolicitudBajasComponent implements OnInit {
   }
 
   async postSoporteNuxeo(files: any) {
-    console.log(files);
+    // console.log(files);
     return new Promise(async (resolve, reject) => {
       files.forEach((file) => {
         // console.log(file);
@@ -103,7 +103,7 @@ export class SolicitudBajasComponent implements OnInit {
       // console.log(files);
       await this.nuxeoService.getDocumentos$(files, this.documentoService)
         .subscribe(response => {
-          console.log('response', response);
+          // console.log('response', response);
           if (Object.keys(response).length === files.length) {
             resolve(response[files[0].key]);
           }
@@ -120,16 +120,16 @@ export class SolicitudBajasComponent implements OnInit {
   }
 
   async onSubmit() {
-    console.log(this.Soportes)
+    // console.log(this.Soportes)
 
     const start = async () => {
       await this.asyncForEach(this.Soportes, async (file, index) => {
         await this.postSoporteNuxeo([file]).then((resp: any) => {
-          console.log(resp);
+          // console.log(resp);
           this.DatosTabla[index].Soporte.Id = resp.Id;
         });
       });
-      
+
     };
     await start();
 
@@ -142,18 +142,18 @@ export class SolicitudBajasComponent implements OnInit {
         Soporte: element.Soporte.Id,
         Observaciones: element.Observaciones,
         TipoBaja: element.TipoBaja,
-      })
-    })
+      });
+    });
     const Baja: any = {
       Funcionario : this.DatosSolicitante.Funcionario.Id,
       Ubicacion : this.DatosSolicitante.Ubicacion.Id,
       Revisor: parseInt(window.localStorage.getItem('persona_id'), 10),
       FechaVistoBueno: null,
-      Elementos : Elementos, 
+      Elementos : Elementos,
     };
 
     this.Movimiento = {};
-    this.Movimiento.Observacion = "Solicitud de Bajas de Elementos";
+    this.Movimiento.Observacion = 'Solicitud de Bajas de Elementos';
     this.Movimiento.Activo = true;
     this.Movimiento.Detalle = JSON.stringify(Baja);
     this.Movimiento.FormatoTipoMovimientoId = this.FormatosMovimiento.find(x => x.CodigoAbreviacion === 'SOL_BAJA');
@@ -169,8 +169,8 @@ export class SolicitudBajasComponent implements OnInit {
       (Swal as any).fire(opt);
       this.router.navigate(['/pages/bajas/consulta_solicitud_bajas']);
     });
-    
-    
+
+
 
   }
 }

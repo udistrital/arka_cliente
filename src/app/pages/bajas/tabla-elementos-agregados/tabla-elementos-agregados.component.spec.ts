@@ -8,7 +8,7 @@ describe('TablaElementosAgregadosComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ TablaElementosAgregadosComponent ]
+      declarations: [ TablaElementosAgregadosComponent ],
     })
     .compileComponents();
   }));

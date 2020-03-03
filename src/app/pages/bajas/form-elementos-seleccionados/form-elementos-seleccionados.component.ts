@@ -99,7 +99,7 @@ export class FormElementosSeleccionadosComponent implements OnInit {
       Placa: ['', [
         Validators.required,
         Validators.pattern('^[0-9]{13,13}$')]],
-      Observaciones: ['', [Validators.required]]
+      Observaciones: ['', [Validators.required]],
     });
   }
 
@@ -107,14 +107,14 @@ export class FormElementosSeleccionadosComponent implements OnInit {
 
     if (this.form_salida.valid === true) {
       const form = this.form_salida.value;
-      console.log(form)
+      // console.log(form)
       const datos: any = {
         Soporte: this.fileDocumento,
         TipoBaja: form.TipoBaja,
         Placa: this.elementos_placa.find(element => element.Placa === form.Placa ),
         Observaciones: form.Observaciones,
       };
-      console.log(datos);
+      // console.log(datos);
       this.DatosEnviados.emit(datos);
       this.form_salida.reset();
       this.clearFile();
@@ -184,7 +184,7 @@ export class FormElementosSeleccionadosComponent implements OnInit {
   loadPlacasElementos(): void {
     if (this.placa.length > 3) {
       this.Actas_Recibido.getElementosByPlaca2(this.placa).subscribe(res => {
-        console.log(res)
+        // console.log(res)
         if (Object.keys(res).length !== 0) {
           this.elementos_placa = res;
         }

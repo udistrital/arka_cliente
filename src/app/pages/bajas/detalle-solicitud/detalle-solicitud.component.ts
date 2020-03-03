@@ -10,7 +10,7 @@ import { TranslateService } from '@ngx-translate/core';
 @Component({
   selector: 'ngx-detalle-solicitud',
   templateUrl: './detalle-solicitud.component.html',
-  styleUrls: ['./detalle-solicitud.component.scss']
+  styleUrls: ['./detalle-solicitud.component.scss'],
 })
 export class DetalleSolicitudComponent implements OnInit {
 
@@ -23,7 +23,7 @@ export class DetalleSolicitudComponent implements OnInit {
     this.bajasHelper.getSolicitud(Id).subscribe((res: any) => {
       this.Solicitud = res;
       this.source.load(res.Elementos);
-    })
+    });
   }
 
   constructor(
@@ -267,7 +267,7 @@ export class DetalleSolicitudComponent implements OnInit {
     };
   }
   onCustom(event) {
-    console.log(event.data)
+    // console.log(event.data)
     this.downloadFile(event.data.Soporte);
   }
   downloadFile(id_documento: any) {
@@ -282,7 +282,7 @@ export class DetalleSolicitudComponent implements OnInit {
         const filesResponse = <any>response;
         // console.log("files", filesResponse);
         if (Object.keys(filesResponse).length === filesToGet.length) {
-          
+
           filesToGet.forEach((file: any) => {
             const url = filesResponse[file.Id];
             window.open(url);

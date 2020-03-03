@@ -5,12 +5,12 @@ import { BajasHelper } from '../../../helpers/bajas/bajasHelper';
 import { LocalDataSource } from 'ngx-smart-table';
 
 @Component({
-  selector: 'consulta-solicitud-bajas',
+  selector: 'ngx-consulta-solicitud-bajas',
   templateUrl: './consulta-solicitud-bajas.component.html',
-  styleUrls: ['./consulta-solicitud-bajas.component.scss']
+  styleUrls: ['./consulta-solicitud-bajas.component.scss'],
 })
 export class ConsultaSolicitudBajasComponent implements OnInit {
-  
+
   settings: any;
   listColumns: any;
   source: LocalDataSource;
@@ -29,8 +29,8 @@ export class ConsultaSolicitudBajasComponent implements OnInit {
   ngOnInit() {
     this.source = new LocalDataSource();
     this.bajasHelper.getSolicitudes().subscribe((res: any) => {
-      console.log(res);
-      if (Object.keys(res[0]).length != 0) {
+      // console.log(res);
+      if (Object.keys(res[0]).length !== 0) {
         this.source.load(res);
       }
     });
@@ -84,9 +84,9 @@ export class ConsultaSolicitudBajasComponent implements OnInit {
             const date = value.split('T');
             return date[0];
           } else {
-            return "Por Aprobar"
+            return 'Por Aprobar';
           }
-          
+
         },
         filter: {
           type: 'daterange',
@@ -144,7 +144,7 @@ export class ConsultaSolicitudBajasComponent implements OnInit {
     };
   }
   onEdit(event): void {
-    
+
   }
   itemselec(event): void {
     // console.log('afssaf');
@@ -154,13 +154,13 @@ export class ConsultaSolicitudBajasComponent implements OnInit {
   }
 
   onDelete(event): void {
-    console.log(event)
+    // console.log(event)
     this.SolicitudId = event.data.Id;
     this.detalle = true;
   }
 
   onBack() {
-   
+
   }
   onVolver() {
     this.detalle = false;

@@ -24,7 +24,7 @@ import { NbStepperComponent } from '@nebular/theme';
 @Component({
   selector: 'ngx-form-funcionario-solicitud',
   templateUrl: './form-funcionario-solicitud.component.html',
-  styleUrls: ['./form-funcionario-solicitud.component.scss']
+  styleUrls: ['./form-funcionario-solicitud.component.scss'],
 })
 export class FormFuncionarioSolicitudComponent implements OnInit {
 
@@ -123,17 +123,17 @@ export class FormFuncionarioSolicitudComponent implements OnInit {
 
     if (this.form_salida.valid === true) {
       const form = this.form_salida.value;
-      console.log(form)
-      console.log(this.elementos);
-      console.log(this.Sedes);
-      console.log(this.Ubicaciones)
+      // console.log(form)
+      // console.log(this.elementos);
+      // console.log(this.Sedes);
+      // console.log(this.Ubicaciones)
       const datos: any = {
         Funcionario: this.elementos.find(element => element.NombreCompleto === form.Funcionario),
         Sede: this.Sedes.find(element => element.Id === parseFloat(form.Sede)),
         Dependencia: this.Dependencias.find(element => element.Nombre === form.Dependencia),
         Ubicacion: this.Ubicaciones.find(element => element.Id === parseFloat(form.Ubicacion)),
       };
-      console.log(datos);
+      // console.log(datos);
       this.DatosEnviados.emit(datos);
     } else {
       this.DatosEnviados.emit(false);
@@ -146,7 +146,7 @@ export class FormFuncionarioSolicitudComponent implements OnInit {
   loadProveedoresElementos(): void {
     if (this.proveedorfiltro.length > 3) {
       this.terceros.getProveedores(this.proveedorfiltro).subscribe(res => {
-        console.log(res)
+        // console.log(res)
         if (Object.keys(res).length !== 0) {
 
           this.elementos = res

@@ -103,7 +103,7 @@ export class BajasHelper {
      */
     public getSolicitud(id) {
         this.rqManager.setPath('ARKA_SERVICE');
-        return this.rqManager.get('bajas_elementos/solicitud/'+ id).pipe(
+        return this.rqManager.get('bajas_elementos/solicitud/' + id).pipe(
             map(
                 (res) => {
                     if (res === 'error') {

@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'consulta-bajas',
+  selector: 'ngx-consulta-bajas',
   templateUrl: './consulta-bajas.component.html',
-  styleUrls: ['./consulta-bajas.component.scss']
+  styleUrls: ['./consulta-bajas.component.scss'],
 })
 export class ConsultaBajasComponent implements OnInit {
 

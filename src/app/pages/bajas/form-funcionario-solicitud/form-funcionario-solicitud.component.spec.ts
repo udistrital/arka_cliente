@@ -8,7 +8,7 @@ describe('FormFuncionarioSolicitudComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ FormFuncionarioSolicitudComponent ]
+      declarations: [ FormFuncionarioSolicitudComponent ],
     })
     .compileComponents();
   }));
