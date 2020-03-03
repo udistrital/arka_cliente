@@ -94,8 +94,8 @@ export class FormElementosSeleccionadosComponent implements OnInit {
   }
   get Formulario(): FormGroup {
     return this.fb.group({
-      Soporte: [''],
-      TipoBaja: [''],
+      Soporte: ['', [Validators.required]],
+      TipoBaja: ['', [Validators.required]],
       Placa: ['', [
         Validators.required,
         Validators.pattern('^[0-9]{13,13}$')]],
@@ -116,6 +116,10 @@ export class FormElementosSeleccionadosComponent implements OnInit {
       };
       console.log(datos);
       this.DatosEnviados.emit(datos);
+      this.form_salida.reset();
+      this.clearFile();
+    } else {
+      this.DatosEnviados.emit(false);
     }
   }
 

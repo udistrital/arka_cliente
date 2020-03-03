@@ -8,6 +8,6 @@
         <ngx-tabla-elementos-agregados [Elemento]="DatosElemento" (DatosEnviados)="Datos_Tabla($event)"></ngx-tabla-elementos-agregados>
     </nb-card-body>
     <nb-card-footer>
-        <button nbButton [disabled]="true" class="float-right">Generar Solicitud</button>
+        <button nbButton [disabled]="!HabilitarFormulario" (click)="onSubmit()" class="float-right">Generar Solicitud</button>
     </nb-card-footer>
 </nb-card>

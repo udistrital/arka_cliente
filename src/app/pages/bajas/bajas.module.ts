@@ -17,6 +17,7 @@ import { ThemeModule } from '../../@theme/theme.module';
 import { FormElementosSeleccionadosComponent } from './form-elementos-seleccionados/form-elementos-seleccionados.component';
 import { TablaElementosAgregadosComponent } from './tabla-elementos-agregados/tabla-elementos-agregados.component';
 import { FormFuncionarioSolicitudComponent } from './form-funcionario-solicitud/form-funcionario-solicitud.component';
+import { DetalleSolicitudComponent } from './detalle-solicitud/detalle-solicitud.component';
 
 
 @NgModule({
@@ -29,6 +30,7 @@ import { FormFuncionarioSolicitudComponent } from './form-funcionario-solicitud/
     FormElementosSeleccionadosComponent,
     TablaElementosAgregadosComponent,
     FormFuncionarioSolicitudComponent,
+    DetalleSolicitudComponent,
   ],
   imports: [
     CommonModule,

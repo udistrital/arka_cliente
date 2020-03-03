@@ -46,7 +46,7 @@ export class FormFuncionarioSolicitudComponent implements OnInit {
   fileDocumento: any;
   Validador: any;
 
-  
+
   @Output() DatosEnviados = new EventEmitter();
   placa: any;
   encargado: string;
@@ -120,8 +120,8 @@ export class FormFuncionarioSolicitudComponent implements OnInit {
   }
 
   onSubmit() {
-    
-      if (this.form_salida.valid === true) {
+
+    if (this.form_salida.valid === true) {
       const form = this.form_salida.value;
       console.log(form)
       console.log(this.elementos);
@@ -129,12 +129,14 @@ export class FormFuncionarioSolicitudComponent implements OnInit {
       console.log(this.Ubicaciones)
       const datos: any = {
         Funcionario: this.elementos.find(element => element.NombreCompleto === form.Funcionario),
-        Sede: this.Sedes.find(element => element.Id === parseFloat(form.Sede) ),
-        Dependencia: this.Dependencias.find( element => element.Nombre === form.Dependencia ),
-        Ubicacion: this.Ubicaciones.find( element => element.Id === parseFloat(form.Ubicacion) ),
+        Sede: this.Sedes.find(element => element.Id === parseFloat(form.Sede)),
+        Dependencia: this.Dependencias.find(element => element.Nombre === form.Dependencia),
+        Ubicacion: this.Ubicaciones.find(element => element.Id === parseFloat(form.Ubicacion)),
       };
       console.log(datos);
       this.DatosEnviados.emit(datos);
+    } else {
+      this.DatosEnviados.emit(false);
     }
 
   }
@@ -146,9 +148,9 @@ export class FormFuncionarioSolicitudComponent implements OnInit {
       this.terceros.getProveedores(this.proveedorfiltro).subscribe(res => {
         console.log(res)
         if (Object.keys(res).length !== 0) {
-          
+
           this.elementos = res
-           
+
         }
       });
     }

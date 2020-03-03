@@ -38,7 +38,10 @@ export class TablaElementosAgregadosComponent implements OnInit {
 
   @Input('Elemento')
   set name(Elemento: any) {
-    this.Agregar_Elemento(Elemento)
+    console.log(Elemento)
+    if (Elemento !== false) {
+    this.Agregar_Elemento(Elemento);
+    }
   }
   constructor(
     private translate: TranslateService,
@@ -83,15 +86,16 @@ export class TablaElementosAgregadosComponent implements OnInit {
           res.Observaciones = elemento.Observaciones;
           this.source.prepend(res).then(() => {
             this.source.refresh();
+            this.source.getElements().then((elements) => {
+              this.DatosEnviados.emit(elements);
+            })
           });
         });
       } else {
         this.bandera = false;
       }
     })
-    this.source.getElements().then((elements) => {
-      this.DatosEnviados.emit(elements);
-    })
+    
     
   }
 
