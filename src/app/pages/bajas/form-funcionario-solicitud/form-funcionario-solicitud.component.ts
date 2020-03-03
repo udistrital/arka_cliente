@@ -149,7 +149,7 @@ export class FormFuncionarioSolicitudComponent implements OnInit {
         // console.log(res)
         if (Object.keys(res).length !== 0) {
 
-          this.elementos = res
+          this.elementos = res;
 
         }
       });
