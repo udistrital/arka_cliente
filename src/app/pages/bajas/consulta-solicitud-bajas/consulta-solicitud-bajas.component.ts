@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
+import { BajasHelper } from '../../../helpers/bajas/bajasHelper';
+import { LocalDataSource } from 'ngx-smart-table';
 
 @Component({
   selector: 'consulta-solicitud-bajas',
@@ -8,18 +10,30 @@ import { TranslateService } from '@ngx-translate/core';
   styleUrls: ['./consulta-solicitud-bajas.component.scss']
 })
 export class ConsultaSolicitudBajasComponent implements OnInit {
+  
   settings: any;
   listColumns: any;
+  source: LocalDataSource;
+  detalle: boolean;
+  SolicitudId: any;
 
   constructor(
     private translate: TranslateService,
     private router: Router,
+    private bajasHelper: BajasHelper,
   ) {
     this.loadTablaSettings();
 
   }
 
   ngOnInit() {
+    this.source = new LocalDataSource();
+    this.bajasHelper.getSolicitudes().subscribe((res: any) => {
+      console.log(res);
+      if (Object.keys(res[0]).length != 0) {
+        this.source.load(res);
+      }
+    });
   }
 
   loadTablaSettings() {
@@ -30,8 +44,24 @@ export class ConsultaSolicitudBajasComponent implements OnInit {
           return value;
         },
       },
-      FechaRegistro: {
+      FechaCreacion: {
         title: 'Fecha de registro',
+        width: '70px',
+        valuePrepareFunction: (value: any) => {
+          const date = value.split('T');
+          return date[0];
+        },
+        filter: {
+          type: 'daterange',
+          config: {
+            daterange: {
+              format: 'yyyy/mm/dd',
+            },
+          },
+        },
+      },
+      FechaModificacion: {
+        title: 'Fecha de Visto Bueno',
         width: '70px',
         valuePrepareFunction: (value: any) => {
           const date = value.split('T');
@@ -50,8 +80,13 @@ export class ConsultaSolicitudBajasComponent implements OnInit {
         title: 'Fecha de Visto Bueno',
         width: '70px',
         valuePrepareFunction: (value: any) => {
-          const date = value.split('T');
-          return date[0];
+          if (value !== null ) {
+            const date = value.split('T');
+            return date[0];
+          } else {
+            return "Por Aprobar"
+          }
+          
         },
         filter: {
           type: 'daterange',
@@ -62,19 +97,19 @@ export class ConsultaSolicitudBajasComponent implements OnInit {
           },
         },
       },
-      RevisorId: {
+      Revisor: {
         title: 'Revisor',
         valuePrepareFunction: (value: any) => {
           return value;
         },
       },
-      SolicitanteId: {
+      Funcionario: {
         title: 'Solicitante',
         valuePrepareFunction: (value: any) => {
           return value;
         },
       },
-      EstadoId: {
+      Estado: {
         title: 'Estado',
         valuePrepareFunction: (value: any) => {
           return value;
@@ -119,10 +154,15 @@ export class ConsultaSolicitudBajasComponent implements OnInit {
   }
 
   onDelete(event): void {
-    
+    console.log(event)
+    this.SolicitudId = event.data.Id;
+    this.detalle = true;
   }
 
   onBack() {
    
+  }
+  onVolver() {
+    this.detalle = false;
   }
 }
