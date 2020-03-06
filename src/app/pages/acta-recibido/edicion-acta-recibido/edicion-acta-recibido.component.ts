@@ -30,6 +30,7 @@ import { PopUpManager } from '../../../managers/popUpManager';
 import { DocumentoService } from '../../../@core/data/documento.service';
 import { analyzeAndValidateNgModules } from '@angular/compiler';
 import { HttpErrorResponse } from '@angular/common/http';
+import { UserService } from '../../../@core/data/users.service';
 
 @Component({
   selector: 'ngx-edicion-acta-recibido',
@@ -118,8 +119,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
     private sanitization: DomSanitizer,
     private nuxeoService: NuxeoService,
     private documentoService: DocumentoService,
-
-
+    private userService: UserService,
   ) {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
     });
@@ -625,7 +625,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
     Acta_de_Recibido.Activo = true;
     Acta_de_Recibido.FechaCreacion = new Date();
     Acta_de_Recibido.FechaModificacion = new Date();
-    Acta_de_Recibido.RevisorId = 123;
+    Acta_de_Recibido.RevisorId = parseInt(window.localStorage.getItem('persona_id'), 10);
     Acta_de_Recibido.UbicacionId = parseFloat(Datos.Ubicacion);
     Acta_de_Recibido.Observaciones = Datos2.Datos_Adicionales;
 

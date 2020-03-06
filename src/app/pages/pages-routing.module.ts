@@ -57,6 +57,10 @@ const routes: Routes = [{
       loadChildren: './bodega-consumo/bodega-consumo.module#BodegaConsumoModule',
     },
     {
+      path: 'bajas',
+      loadChildren: './bajas/bajas.module#BajasModule',
+    },
+    {
       path: '',
       redirectTo: 'dashboard',
       pathMatch: 'full',

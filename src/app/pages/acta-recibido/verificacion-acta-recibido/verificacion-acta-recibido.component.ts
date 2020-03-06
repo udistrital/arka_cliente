@@ -29,6 +29,7 @@ import { PopUpManager } from '../../../managers/popUpManager';
 import { DomSanitizer } from '@angular/platform-browser';
 import { CompleterData, CompleterService } from 'ng2-completer';
 import { HttpErrorResponse } from '@angular/common/http';
+import { UserService } from '../../../@core/data/users.service';
 
 
 
@@ -97,6 +98,7 @@ export class VerificacionActaRecibidoComponent implements OnInit {
     private listService: ListService,
     private pUpManager: PopUpManager,
     private sanitization: DomSanitizer,
+    private userService: UserService,
 
   ) {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
@@ -372,7 +374,7 @@ export class VerificacionActaRecibidoComponent implements OnInit {
     Acta_de_Recibido.FechaCreacion = new Date();
     Acta_de_Recibido.FechaModificacion = new Date();
     Acta_de_Recibido.FechaVistoBueno =  new Date();
-    Acta_de_Recibido.RevisorId = 123;
+    Acta_de_Recibido.RevisorId = parseInt(window.localStorage.getItem('persona_id'), 10);
     Acta_de_Recibido.UbicacionId = this.Ubicaciones.find(ubicacion => ubicacion.Nombre === Datos.Ubicacion).Id;
     Acta_de_Recibido.Observaciones = Datos2.Datos_Adicionales;
 

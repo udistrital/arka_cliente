@@ -8,6 +8,7 @@ import { Observable } from 'rxjs';
 import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/catalogoElementosHelper';
 import { Impuesto } from '../../data/models/acta_recibido/elemento';
 import { BodegaConsumoHelper } from '../../../helpers/bodega_consumo/bodegaConsumoHelper';
+import { BajasHelper } from '../../../helpers/bajas/bajasHelper';
 @Injectable()
 export class ListService {
 
@@ -15,6 +16,7 @@ export class ListService {
     private ActaRecibido: ActaRecibidoHelper,
     private CatalogoElementos: CatalogoElementosHelper,
     private BodegaConsumo: BodegaConsumoHelper,
+    private Bajas: BajasHelper,
     private store: Store<IAppState>) {
   }
 
@@ -344,6 +346,27 @@ export class ListService {
               },
               error => {
                 this.addList(REDUCER_LIST.EstadosMovimiento, []);
+              },
+            );
+        }
+      },
+    );
+  }
+
+  public findformatosMovimiento() {
+
+    this.store.select(REDUCER_LIST.FormatosMovimiento).subscribe(
+      (list: any) => {
+        if (!list || list.length === 0) {
+          this.Bajas.getFormatosMovimiento()
+            .subscribe(
+              (res: any[]) => {
+                // console.log(res)
+
+                this.addList(REDUCER_LIST.FormatosMovimiento, res);
+              },
+              error => {
+                this.addList(REDUCER_LIST.FormatosMovimiento, []);
               },
             );
         }
