@@ -104,6 +104,20 @@ export const MENU_ITEMS: NbMenuItem[] = [
     ],
   },
   {
+    title: 'Bajas',
+    icon: 'nb-shuffle',
+    children: [
+      {
+        title: 'Consultar Solicitudes',
+        link: '/pages/bajas/consulta_solicitud_bajas',
+      },
+      {
+        title: 'Registrar Solicitud',
+        link: '/pages/bajas/solicitud_bajas',
+      },
+    ],
+  },
+  {
     title: 'Movimientos',
     icon: 'nb-shuffle',
     children: [

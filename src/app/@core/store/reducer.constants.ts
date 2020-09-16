@@ -15,4 +15,5 @@ export const REDUCER_LIST = {
     Devolutivo: 'listDevolutivo',
     FormatosKardex: 'listFormatosKardex',
     EstadosMovimiento: 'listEstadosMovimiento',
+    FormatosMovimiento: 'listFormatosMovimiento',
 };

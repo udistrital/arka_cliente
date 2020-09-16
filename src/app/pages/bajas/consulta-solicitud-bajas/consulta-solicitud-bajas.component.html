@@ -1,0 +1,28 @@
+<div *ngIf="!detalle">
+  <nb-card>
+    <nb-card-header>Consultar Solicitudes</nb-card-header>
+    <nb-card-body>
+      <ng2-smart-table [settings]="settings" [source]="source" (delete)="onDelete($event)"
+        (rowSelect)="itemselec($event)" (edit)="onEdit($event)" (create)="onCreate($event)">
+      </ng2-smart-table>
+    </nb-card-body>
+  </nb-card>
+</div>
+
+<!--Card para mostrar el detalle de un elemento-->
+<nb-card *ngIf="detalle">
+  <nb-card-header>
+    <h1>Detalle de solicitud</h1>
+  </nb-card-header>
+  <nb-card-body>
+    <ngx-detalle-solicitud [Id]="SolicitudId"></ngx-detalle-solicitud>
+
+  </nb-card-body>
+  <nb-card-footer>
+    <div class="pt-4">
+      <button type="button" class="btn btn-secondary" data-dismiss="modal"
+        (click)="onVolver()">{{'GLOBAL.volver' | translate}}
+      </button>
+    </div>
+  </nb-card-footer>
+</nb-card>

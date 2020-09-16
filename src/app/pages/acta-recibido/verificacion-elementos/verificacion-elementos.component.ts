@@ -32,7 +32,17 @@ export class VerificacionElementosComponent implements OnInit {
   @Input('DatosRecibidos')
   set name(data: any[]) {
     // console.log(data)
-    this.AjustarDatos(data);
+    this.store.select((state) => state).subscribe(
+      (list) => {
+        this.Consumo = list.listConsumo[0];
+        this.ConsumoControlado = list.listConsumoControlado[0];
+        this.Devolutivo = list.listDevolutivo[0];
+        if (this.Consumo !== undefined && this.Devolutivo !== undefined && this.ConsumoControlado !== undefined) {
+          this.AjustarDatos(data);
+        }
+      },
+    );
+
   }
 
   @Input('mode')
@@ -79,7 +89,6 @@ export class VerificacionElementosComponent implements OnInit {
         this.Consumo = list.listConsumo[0];
         this.ConsumoControlado = list.listConsumoControlado[0];
         this.Devolutivo = list.listDevolutivo[0];
-
       },
     );
 
@@ -194,11 +203,11 @@ export class VerificacionElementosComponent implements OnInit {
 
   AjustarDatos(datos: any[]) {
     // console.log(datos);
-    this.Datos = new Array<Elemento>();
+    this.Datos = new Array<any>();
     for (const index in datos) {
       if (true) {
         // console.log(datos[index])
-        const elemento = new Elemento;
+        const elemento: any = {};
         elemento.ValorUnitario = datos[index].ValorUnitario;
         elemento.ValorTotal = datos[index].ValorTotal;
         elemento.Id = datos[index].Id;
@@ -213,19 +222,20 @@ export class VerificacionElementosComponent implements OnInit {
         elemento.ValorIva = datos[index].ValorIva;
         elemento.PorcentajeIvaId = datos[index].PorcentajeIvaId;
 
-        if (datos[index].TipoBienId.Id === 1 && Object.keys(this.Consumo[0]).length !== 0) {
-          elemento.SubgrupoCatalogoId = this.Consumo.find(x => x.Id === datos[index].SubgrupoCatalogoId);
+        if (datos[index].TipoBienId === 'Consumo' && Object.keys(this.Consumo[0]).length !== 0) {
+          elemento.SubgrupoCatalogoId = this.Consumo.find(x => x.Id === datos[index].SubgrupoCatalogoId).Nombre;
         }
-        if (datos[index].TipoBienId.Id === 2 && Object.keys(this.ConsumoControlado[0]).length !== 0) {
-          elemento.SubgrupoCatalogoId = this.ConsumoControlado.find(x => x.Id === datos[index].SubgrupoCatalogoId);
+        if (datos[index].TipoBienId === 'Consumo Controlado' && Object.keys(this.ConsumoControlado[0]).length !== 0) {
+          elemento.SubgrupoCatalogoId = this.ConsumoControlado.find(x => x.Id === datos[index].SubgrupoCatalogoId).Nombre;
         }
-        if (datos[index].TipoBienId.Id === 3 && Object.keys(this.Devolutivo[0]).length !== 0) {
-          elemento.SubgrupoCatalogoId = this.Devolutivo.find(x => x.Id === datos[index].SubgrupoCatalogoId);
+        if (datos[index].TipoBienId === 'Devolutivo' && Object.keys(this.Devolutivo[0]).length !== 0) {
+          elemento.SubgrupoCatalogoId = this.Devolutivo.find(x => x.Id === datos[index].SubgrupoCatalogoId).Nombre;
         }
         this.Datos.push(elemento);
       }
     }
     if (this.Datos !== undefined) {
+      // console.log(this.Datos)
       this.source.load(this.Datos);
     }
   }
