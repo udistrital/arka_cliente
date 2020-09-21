@@ -157,7 +157,7 @@ export class ListCatalogoComponent implements OnInit {
       .then((willDelete) => {
 
         if (willDelete.value) {
-          this.catalogoElementosService.deleteCatalogo(event.data).subscribe(res => {
+          this.catalogoElementosService.deleteCatalogo(event.data.Id).subscribe(res => {
             if (res !== null) {
               this.loadData();
               this.showToast('info', 'deleted', 'Catalogo deleted');
