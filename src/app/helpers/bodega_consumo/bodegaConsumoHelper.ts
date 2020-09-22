@@ -244,7 +244,7 @@ export class BodegaConsumoHelper {
 
     public getSolicitudBodega(id: string) {
         this.rqManager.setPath('ARKA_SERVICE');
-        return this.rqManager.get('bodega_consumo/solicitud/38' + id).pipe(
+        return this.rqManager.get('bodega_consumo/solicitud/' + id).pipe(
             map(
                 (res) => {
                     if (res === 'error') {
