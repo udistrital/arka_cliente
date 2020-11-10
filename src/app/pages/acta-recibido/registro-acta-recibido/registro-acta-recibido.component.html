@@ -61,8 +61,8 @@
                       <option *ngFor="let ubicacion of Ubicaciones" [(value)]="ubicacion.Id">{{ubicacion.Nombre}}
                       </option>
                     </select>
-                   <!--  <p class="campo" *ngIf="firstForm.get('Formulario1').get('Ubicacion').invalid">
-                      {{'GLOBAL.placeholder' | translate}}</p> -->
+                    <p class="campo" *ngIf="firstForm.get('Formulario1').get('Ubicacion').invalid">
+                      {{'GLOBAL.placeholder' | translate}}</p>
                   </div>
                 </div>
               </nb-card-body>

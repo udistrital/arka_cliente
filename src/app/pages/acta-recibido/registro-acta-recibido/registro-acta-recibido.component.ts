@@ -293,7 +293,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
     return this.fb.group({
       Sede: [''],
       Dependencia: [''],
-      Ubicacion: ['', Validators.required],
+      Ubicacion: ['3', Validators.required],
     });
   }
   get Formulario_2(): FormGroup {
