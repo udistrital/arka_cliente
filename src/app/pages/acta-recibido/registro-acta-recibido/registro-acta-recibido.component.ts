@@ -669,6 +669,11 @@ export class RegistroActaRecibidoComponent implements OnInit {
     }
   }
 
+  cambiarubicacion(evento){
+    this.firstForm.get('Formulario1').get('Ubicación').setValue(evento.target.value,{onlySelf:true});
+
+  }
+
   Traer_Relacion_Ubicaciones() {
     const sede = this.firstForm.get('Formulario1').get('Sede').value;
     const dependencia = this.firstForm.get('Formulario1').get('Dependencia').value;
