@@ -54,17 +54,20 @@
                     </ng2-completer> -->
 
                     <select nbInput type="text" class="form-control" formControlName="Ubicacion"
-                      (click)="usarLocalStorage()" required>
-                      <option *ngFor="let ubicacion of Ubicaciones" [(ngValue)]="ubicacion.Id">{{ubicacion.Nombre}}
+                      (click)="usarLocalStorage()" >
+                      <option *ngFor="let ubicacion of Ubicaciones" [(value)]="ubicacion.Id">{{ubicacion.Nombre}}
                       </option>
                     </select>
-                    <p class="campo" *ngIf="firstForm.get('Formulario1').get('Ubicacion').invalid">
-                      {{'GLOBAL.placeholder' | translate}}</p>
+                   <!--  <p class="campo" *ngIf="firstForm.get('Formulario1').get('Ubicacion').invalid">
+                      {{'GLOBAL.placeholder' | translate}}</p> -->
                   </div>
                 </div>
               </nb-card-body>
               <nb-card-footer>
-                <button nbButton matStepperNext [disabled]="!firstForm.get('Formulario1').valid"
+                <!-- <button nbButton matStepperNext [disabled]="!firstForm.get('Formulario1').valid"
+                  (click)="usarLocalStorage()"
+                  class="float-right">{{'GLOBAL.Acta_Recibido.RegistroActa.SiguienteButton' | translate}}</button> -->
+                  <button nbButton matStepperNext 
                   (click)="usarLocalStorage()"
                   class="float-right">{{'GLOBAL.Acta_Recibido.RegistroActa.SiguienteButton' | translate}}</button>
               </nb-card-footer>
