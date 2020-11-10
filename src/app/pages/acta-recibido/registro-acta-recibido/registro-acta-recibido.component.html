@@ -55,7 +55,7 @@
 
                     <select nbInput type="text" class="form-control" formControlName="Ubicacion"
                       (click)="usarLocalStorage()" >
-                      <option *ngFor="let ubicacion of Ubicaciones" [(value)]="ubicacion.Id">{{ubicacion.Nombre}}
+                      <option *ngFor="let ubicacion of Ubicaciones" [value]="ubicacion.Id">{{ubicacion.Nombre}}
                       </option>
                     </select>
                    <!--  <p class="campo" *ngIf="firstForm.get('Formulario1').get('Ubicacion').invalid">
