@@ -279,7 +279,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
         Id: [''],
         Sede: [transaccion_.Formulario1.Sede, Validators.required],
         Dependencia: [transaccion_.Formulario1.Dependencia, Validators.required],
-        Ubicacion: [transaccion_.Formulario1.Ubicacion, Validators.required],
+        //Ubicacion: [transaccion_.Formulario1.Ubicacion, Validators.required],
       }),
       Formulario2: Form2,
       Formulario3: this.fb.group({
