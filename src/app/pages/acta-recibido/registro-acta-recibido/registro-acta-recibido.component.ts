@@ -669,8 +669,8 @@ export class RegistroActaRecibidoComponent implements OnInit {
     }
   }
 
-  cambiarubicacion(evento){
-    this.firstForm.get('Formulario1').get('Ubicación').setValue(evento.target.value,{onlySelf:true});
+  cambiarubicacion(evento) {
+    this.firstForm.get('Formulario1').get('Ubicación').setValue(evento.target.value, {onlySelf: true});
 
   }
 
