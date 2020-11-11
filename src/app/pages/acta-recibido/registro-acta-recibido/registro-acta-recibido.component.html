@@ -67,10 +67,7 @@
                 </div>
               </nb-card-body>
               <nb-card-footer>
-                <!-- <button nbButton matStepperNext [disabled]="!firstForm.get('Formulario1').valid"
-                  (click)="usarLocalStorage()"
-                  class="float-right">{{'GLOBAL.Acta_Recibido.RegistroActa.SiguienteButton' | translate}}</button> -->
-                  <button nbButton matStepperNext 
+                <button nbButton matStepperNext [disabled]="!firstForm.get('Formulario1').valid"
                   (click)="usarLocalStorage()"
                   class="float-right">{{'GLOBAL.Acta_Recibido.RegistroActa.SiguienteButton' | translate}}</button>
               </nb-card-footer>
