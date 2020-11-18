@@ -4,13 +4,11 @@
       {{'GLOBAL.catalogo' | translate}}
     </nb-card-header>
     <nb-card-body>
-      <div>
         <select class="form-control mb-4" (change)="onChange($event.target.value)">
           <option disabled selected>{{'GLOBAL.seleccionar' | translate}}...</option>
           <option *ngFor="let item of catalogos" value="{{ item.Id }}">{{ item.Nombre }}</option>
         </select>
         <ngx-arbol *ngIf="catalogoId !== 0" [catalogoId]="catalogoId" (grupo)="receiveMessage($event)" [updateSignal]="eventChange"></ngx-arbol>
-      </div>
     </nb-card-body>
     <nb-card-footer *ngIf="catalogoId !== 0">
       <div>
@@ -18,6 +16,7 @@
       </div>
     </nb-card-footer>
   </nb-card>
+
   <div class="col" *ngIf="ver_formulario">
     <nb-card *ngIf="uid_1">
       <nb-card-header>
@@ -25,10 +24,8 @@
       </nb-card-header>
       <ngx-crud-grupo [grupo_id]="uid_1" (eventChange)="recargarCatalogo($event)"></ngx-crud-grupo>
       <nb-card-footer>
-        <div>
             <button nbButton (click)="QuitarVista()">{{'GLOBAL.Deshacer' | translate}}</button>
           <button nbButton class="float-right" (click)="AgregarSubgrupo(1)">{{'GLOBAL.Agregar_Subgrupo' | translate}}</button>
-        </div>
       </nb-card-footer>
     </nb-card>
 
@@ -36,12 +33,10 @@
       <nb-card-header>
         {{'GLOBAL.Modificar_Subgrupo' | translate}}
       </nb-card-header>
-      <ngx-crud-subgrupo-1 [subgrupo_1_id]="uid_2" (eventChange)="recargarCatalogo($event)"></ngx-crud-subgrupo-1>
+      <ngx-crud-subgrupo [subgrupo_id]="uid_2" (eventChange)="recargarCatalogo($event)"></ngx-crud-subgrupo>
       <nb-card-footer>
-        <div>
             <button nbButton (click)="QuitarVista()">{{'GLOBAL.Deshacer' | translate}}</button>
           <button nbButton class="float-right" (click)="AgregarSubgrupo(1)">{{'GLOBAL.Agregar_Subgrupo' | translate}}</button>
-        </div>
       </nb-card-footer>
     </nb-card>
 
@@ -51,9 +46,7 @@
       </nb-card-header>
       <ngx-crud-grupo [catalogo_id]="catalogoId" (eventChange)="recargarCatalogo($event)"></ngx-crud-grupo>
       <nb-card-footer>
-          <div>
               <button nbButton (click)="QuitarVista()">{{'GLOBAL.Deshacer' | translate}}</button>
-          </div>
         </nb-card-footer>
     </nb-card>
 
@@ -61,7 +54,7 @@
       <nb-card-header>
         {{'GLOBAL.Agregar_Subgrupo' | translate}}
       </nb-card-header>
-      <ngx-crud-subgrupo-1 [subgrupo_Padre]="subgrupoPadre" (eventChange)="recargarCatalogo($event)"></ngx-crud-subgrupo-1>
+      <ngx-crud-subgrupo [subgrupo_Padre]="subgrupoPadre" (eventChange)="recargarCatalogo($event)"></ngx-crud-subgrupo>
       <nb-card-footer>
           <div>
               <button nbButton (click)="QuitarVista()">{{'GLOBAL.Deshacer' | translate}}</button>

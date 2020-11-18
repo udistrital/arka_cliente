@@ -1,5 +1,5 @@
 
-export let FORM_SUBGRUPO_1 = {
+export let FORM_SUBGRUPO = {
     titulo: 'Subgrupo1',
     tipo_formulario: 'mini',
     btn: 'Guardar',

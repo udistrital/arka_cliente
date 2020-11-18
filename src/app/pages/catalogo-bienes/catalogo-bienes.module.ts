@@ -11,7 +11,7 @@ import { TreeModule } from 'angular-tree-component';
 import { RegistroCatalogoComponent } from './registro-catalogo/registro-catalogo.component';
 import { ToasterModule } from 'angular2-toaster';
 import { CrudGrupoComponent } from './crud-grupo/crud-grupo.component';
-import { CrudSubgrupo1Component } from './crud-subgrupo_1/crud-subgrupo_1.component';
+import { CrudSubgrupoComponent } from './crud-subgrupo/crud-subgrupo.component';
 import { RegistroElementosComponent } from './registro-elementos/registro-elementos.component';
 import { InactivarGrupoComponent } from './inactivar-grupo/inactivar-grupo.component';
 import { RegistroCuentasCatalogoComponent } from './registro-cuentas-catalogo/registro-cuentas-catalogo.component';
@@ -26,7 +26,7 @@ import { CrudMovimientoComponent } from './crud-movimientos/crud-movimiento.comp
     FsIconAComponent,
     RegistroCatalogoComponent,
     CrudGrupoComponent,
-    CrudSubgrupo1Component,
+    CrudSubgrupoComponent,
     RegistroElementosComponent,
     InactivarGrupoComponent,
     CrudMovimientoComponent,
