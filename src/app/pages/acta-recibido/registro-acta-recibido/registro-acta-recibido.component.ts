@@ -11,6 +11,8 @@ import { ActaRecibido } from '../../../@core/data/models/acta_recibido/acta_reci
 import { Elemento, Impuesto } from '../../../@core/data/models/acta_recibido/elemento';
 import { TipoBien } from '../../../@core/data/models/acta_recibido/tipo_bien';
 import { SoporteActa, Ubicacion, Dependencia } from '../../../@core/data/models/acta_recibido/soporte_acta';
+import { ActaRecibidoUbicacion } from '../../../@core/data/models/acta_recibido/acta_recibido';
+
 import { Proveedor } from '../../../@core/data/models/acta_recibido/Proveedor';
 import { EstadoActa } from '../../../@core/data/models/acta_recibido/estado_acta';
 import { EstadoElemento } from '../../../@core/data/models/acta_recibido/estado_elemento';
@@ -31,6 +33,8 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { DocumentoService } from '../../../@core/data/documento.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { UserService } from '../../../@core/data/users.service';
+import { Console } from 'console';
+import { INVALID } from '@angular/forms/src/model';
 
 @Component({
   selector: 'ngx-registro-acta-recibido',
@@ -78,6 +82,8 @@ export class RegistroActaRecibidoComponent implements OnInit {
   Unidades: any;
   Proveedores: any;
   Ubicaciones: any;
+  UbicacionesForm: Ubicacion;
+  DependenciaV: any;
   Sedes: any;
   Dependencias: any;
   DatosTotales: any;
@@ -126,6 +132,9 @@ export class RegistroActaRecibidoComponent implements OnInit {
     this.idDocumento = [];
   }
   ngOnInit() {
+
+    // this.Traer_Relacion_Ubicaciones;
+
     this.searchStr2 = new Array<string>();
     this.DatosElementos = new Array<any>();
     this.Elementos__Soporte = new Array<any>();
@@ -176,7 +185,6 @@ export class RegistroActaRecibidoComponent implements OnInit {
         }
       });
     }
-
   }
 
   public loadLists() {
@@ -187,10 +195,10 @@ export class RegistroActaRecibidoComponent implements OnInit {
         this.Tipos_Bien = list.listTipoBien[0];
         this.Unidades = list.listUnidades[0];
         this.Tarifas_Iva = list.listIVA[0];
+        this.Sedes = list.listSedes[0];
         this.Proveedores = list.listProveedores[0];
         this.Dependencias = list.listDependencias[0];
-        // this.Ubicaciones = list.listUbicaciones[0];
-        this.Sedes = list.listSedes[0];
+        this.Ubicaciones = list.listUbicaciones[0];
         this.dataService2 = this.completerService.local(this.Proveedores, 'compuesto', 'compuesto');
         this.dataService3 = this.completerService.local(this.Dependencias, 'Nombre', 'Nombre');
         // this.dataService = this.completerService.local(this.Ubicaciones, 'Nombre', 'Nombre');
@@ -255,6 +263,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
       Formulario2: this.fb.array([this.Formulario_2]),
       Formulario3: this.Formulario_3,
     });
+    // console.log(this.Formulario_1);
     this.carga_agregada = true;
   }
   Cargar_Formularios2(transaccion_: any, elementos_: any) {
@@ -289,6 +298,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
     this.carga_agregada = true;
     this.Traer_Relacion_Ubicaciones();
   }
+
   get Formulario_1(): FormGroup {
     return this.fb.group({
       Sede: [''],
@@ -519,16 +529,12 @@ export class RegistroActaRecibidoComponent implements OnInit {
         Elemento__.FechaModificacion = new Date();
         this.validador = false;
         if ((Elemento__.Nombre === '') || (Elemento__.Marca === '') || (Elemento__.Serie === '')) {
-          // console.log(this.validador);
           this.validador = true;
           this.validador_soporte = Soporte.ProveedorId;
-          // console.log(this.validador);
         }
         if ((Elemento__.ValorUnitario === 0.00) || (Elemento__.Cantidad === 0.00)) {
-          // console.log(this.validador);
           this.validador = true;
           this.validador_soporte = Soporte.ProveedorId;
-          // console.log(this.validador);
         }
         Elementos_Soporte.push(Elemento__);
       }
@@ -670,19 +676,28 @@ export class RegistroActaRecibidoComponent implements OnInit {
   }
 
   Traer_Relacion_Ubicaciones() {
+
     const sede = this.firstForm.get('Formulario1').get('Sede').value;
     const dependencia = this.firstForm.get('Formulario1').get('Dependencia').value;
+
+    // Limpia el campo de ubicación si se cambia la dependencia
+    if (this.DependenciaV !== dependencia) {
+          this.firstForm.patchValue({
+            Formulario1: {
+              Ubicacion: '',
+    },
+    });
+    }
 
     if (this.firstForm.get('Formulario1').get('Sede').valid || this.firstForm.get('Formulario1').get('Dependencia').valid) {
       const transaccion: any = {};
       transaccion.Sede = this.Sedes.find((x) => x.Id === parseFloat(sede));
       transaccion.Dependencia = this.Dependencias.find((x) => x.Nombre === dependencia);
-      // console.log(this.Sedes);
       if (transaccion.Sede !== undefined && transaccion.Dependencia !== undefined) {
         this.Actas_Recibido.postRelacionSedeDependencia(transaccion).subscribe((res: any) => {
-          // console.log(res)
           if (Object.keys(res[0]).length !== 0) {
-            this.Ubicaciones = res[0].Relaciones;
+            this.UbicacionesForm = res[0].Relaciones;
+            this.DependenciaV = this.firstForm.get('Formulario1').get('Dependencia').value;
           } else {
             this.Ubicaciones = undefined;
           }
