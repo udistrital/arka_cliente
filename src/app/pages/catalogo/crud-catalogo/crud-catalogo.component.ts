@@ -4,7 +4,9 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { FORM_CATALOGO } from './form-catalogo';
 import { ToasterService, ToasterConfig, Toast, BodyOutputType } from 'angular2-toaster';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
+import {Router} from '@angular/router';
 import Swal from 'sweetalert2';
+import { ActivatedRoute, Params } from '@angular/router';
 import 'style-loader!angular2-toaster/toaster.css';
 import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/catalogoElementosHelper';
 
@@ -16,6 +18,7 @@ import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/cat
 export class CrudCatalogoComponent implements OnInit {
   config: ToasterConfig;
   catalogo_id: number;
+  myParam: string;
 
   @Input('catalogo_id')
   set name(catalogo_id: number) {
@@ -34,12 +37,20 @@ export class CrudCatalogoComponent implements OnInit {
     private translate: TranslateService,
     private catalogoElementosService: CatalogoElementosHelper,
     private toasterService: ToasterService,
+    private route: ActivatedRoute,
+    public router: Router,
     ) {
+
+
     this.formCatalogo = FORM_CATALOGO;
     this.construirForm();
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
       this.construirForm();
     });
+    if (this.router.getCurrentNavigation().extras.state !== undefined) {
+      this.catalogo_id = this.router.getCurrentNavigation().extras.state.example;
+      this.loadCatalogo();
+    }
    }
 
   construirForm() {
@@ -162,6 +173,7 @@ export class CrudCatalogoComponent implements OnInit {
       bodyOutputType: BodyOutputType.TrustedHtml,
     };
     this.toasterService.popAsync(toast);
+    this.router.navigate(['/pages/catalogo/list-catalogo']);
   }
 
 }

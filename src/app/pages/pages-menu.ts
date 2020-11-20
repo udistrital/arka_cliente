@@ -10,13 +10,17 @@ export const MENU_ITEMS: NbMenuItem[] = [
     icon: 'nb-compose',
     children: [
       {
-        title: 'Lista de Catalogos',
+        title: 'Listar catálogos',
         link: '/pages/catalogo/list-catalogo',
       },
-      // {
-      //   title: 'Detalle de Catálogo',
-      //   link: '/pages/catalogo_bienes/consulta_catalogo',
-      // },
+      {
+        title: 'Crear catálogo',
+        link: '/pages/catalogo/crud-catalogo',
+      },
+      {
+         title: 'Consultar catálogo',
+         link: '/pages/catalogo_bienes/consulta_catalogo',
+      },
       {
         title: 'Construcción de Catálogo',
         link: '/pages/catalogo_bienes/registro_catalogo',
