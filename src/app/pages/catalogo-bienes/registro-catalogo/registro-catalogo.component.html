@@ -12,7 +12,7 @@
     </nb-card-body>
     <nb-card-footer *ngIf="catalogoId !== 0">
       <div>
-        <button nbButton class="float-right" (click)="AgregarGrupo(1)">{{'GLOBAL.Agregar_Grupo' | translate}}</button>
+        <button nbButton class="float-right" (click)="AgregarGrupo(1)">{{'GLOBAL.subgrupo.grupo.agregar' | translate}}</button>
       </div>
     </nb-card-footer>
   </nb-card>
@@ -20,29 +20,30 @@
   <div class="col" *ngIf="ver_formulario">
     <nb-card *ngIf="uid_1">
       <nb-card-header>
-        {{'GLOBAL.Modificar_Grupo' | translate}}
+        {{'GLOBAL.subgrupo.grupo.modificar' | translate}}
       </nb-card-header>
       <ngx-crud-grupo [grupo_id]="uid_1" (eventChange)="recargarCatalogo($event)"></ngx-crud-grupo>
       <nb-card-footer>
             <button nbButton (click)="QuitarVista()">{{'GLOBAL.Deshacer' | translate}}</button>
-          <button nbButton class="float-right" (click)="AgregarSubgrupo(1)">{{'GLOBAL.Agregar_Subgrupo' | translate}}</button>
+          <button nbButton class="float-right" (click)="AgregarSubgrupo(1)">{{'GLOBAL.subgrupo.segmento.agregar' | translate}}</button>
       </nb-card-footer>
     </nb-card>
 
     <nb-card *ngIf="uid_2">
       <nb-card-header>
-        {{'GLOBAL.Modificar_Subgrupo' | translate}}
+        {{'GLOBAL.subgrupo.'+modificando_tipo+'.modificar' | translate}}
       </nb-card-header>
       <ngx-crud-subgrupo [subgrupo_id]="uid_2" (eventChange)="recargarCatalogo($event)"></ngx-crud-subgrupo>
       <nb-card-footer>
             <button nbButton (click)="QuitarVista()">{{'GLOBAL.Deshacer' | translate}}</button>
-          <button nbButton class="float-right" (click)="AgregarSubgrupo(1)">{{'GLOBAL.Agregar_Subgrupo' | translate}}</button>
+            <!-- TODO: Actualizar dinamicamente este texto: -->
+          <button nbButton class="float-right" (click)="AgregarSubgrupo(1)">{{'GLOBAL.subgrupo.'+modificando_tipo+'.agregar' | translate}}</button>
       </nb-card-footer>
     </nb-card>
 
     <nb-card *ngIf="uid_3">
       <nb-card-header>
-        {{'GLOBAL.Agregar_Grupo' | translate}}
+        {{'GLOBAL.subgrupo.grupo.agregar' | translate}}
       </nb-card-header>
       <ngx-crud-grupo [catalogo_id]="catalogoId" (eventChange)="recargarCatalogo($event)"></ngx-crud-grupo>
       <nb-card-footer>
@@ -52,7 +53,7 @@
 
     <nb-card *ngIf="uid_4">
       <nb-card-header>
-        {{'GLOBAL.Agregar_Subgrupo' | translate}}
+        {{'GLOBAL.subgrupo.'+modificando_tipo+'.modificar' | translate}}
       </nb-card-header>
       <ngx-crud-subgrupo [subgrupo_Padre]="subgrupoPadre" (eventChange)="recargarCatalogo($event)"></ngx-crud-subgrupo>
       <nb-card-footer>

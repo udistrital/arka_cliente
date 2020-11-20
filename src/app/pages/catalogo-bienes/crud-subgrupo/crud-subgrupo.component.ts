@@ -50,7 +50,8 @@ export class CrudSubgrupoComponent implements OnInit {
   }
 
   construirForm() {
-    this.formSubgrupo.titulo = this.translate.instant('GLOBAL.subgrupo');
+    // TODO: Actualizar dinamicamente este texto:
+    this.formSubgrupo.titulo = this.translate.instant('GLOBAL.subgrupo.segmento.nombre');
     this.formSubgrupo.btn = this.translate.instant('GLOBAL.guardar');
     for (let i = 0; i < this.formSubgrupo.campos.length; i++) {
       this.formSubgrupo.campos[i].label = this.translate.instant('GLOBAL.' + this.formSubgrupo.campos[i].label_i18n);
@@ -108,7 +109,8 @@ export class CrudSubgrupoComponent implements OnInit {
 
     const opt: any = {
       title: this.translate.instant('GLOBAL.Actualizar'),
-      text: this.translate.instant('GLOBAL.Actualizar_Subgrupo_placeholder'),
+      // TODO: Actualizar dinamicamente este texto:
+      text: this.translate.instant('GLOBAL.subgrupo.segmento.pregunta_actualizar'),
       type: 'warning',
       showCancelButton: true,
     };
@@ -123,7 +125,8 @@ export class CrudSubgrupoComponent implements OnInit {
               this.showToast(
                 'info',
                 this.translate.instant('GLOBAL.Actualizado'),
-                this.translate.instant('GLOBAL.Actualizado_Subgrupo_placeholder'),
+                // TODO: Actualizar dinamicamente este texto:
+                this.translate.instant('GLOBAL.subgrupo.segmento.respuesta_actualizar_ok'),
               );
             });
         }
@@ -133,7 +136,8 @@ export class CrudSubgrupoComponent implements OnInit {
   createSubgrupo(subgrupo: any): void {
     const opt: any = {
       title: this.translate.instant('GLOBAL.Crear'),
-      text: this.translate.instant('GLOBAL.Crear_Subgrupo_placeholder'),
+      // TODO: Actualizar dinamicamente este texto:
+      text: this.translate.instant('GLOBAL.subgrupo.segmento.pregunta_crear'),
       type: 'warning',
       showCancelButton: true,
     };
@@ -151,7 +155,9 @@ export class CrudSubgrupoComponent implements OnInit {
             .subscribe(res => {
               this.info_subgrupo = <Subgrupo><unknown>res;
               this.eventChange.emit(true);
-              this.showToast('info', this.translate.instant('GLOBAL.Creado'), this.translate.instant('GLOBAL.Creado_Subgrupo_placeholder') );
+              this.showToast('info', this.translate.instant('GLOBAL.Creado'),
+                // TODO: Actualizar dinamicamente este texto:
+                this.translate.instant('GLOBAL.subgrupo.segmento.respuesta_crear_ok') );
             });
         }
       });

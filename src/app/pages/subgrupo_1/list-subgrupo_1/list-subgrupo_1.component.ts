@@ -78,7 +78,8 @@ export class ListSubgrupo1Component implements OnInit {
           },
         },
         Grupo: {
-          title: this.translate.instant('GLOBAL.grupo'),
+          // TODO: Actualizar dinamicamente este texto:
+          title: this.translate.instant('GLOBAL.subgrupo.grupo.nombre'),
           // type: 'grupo;',
           valuePrepareFunction: (value) => {
             return value;

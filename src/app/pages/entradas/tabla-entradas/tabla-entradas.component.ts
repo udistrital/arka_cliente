@@ -94,7 +94,8 @@ export class TablaEntradasComponent implements OnInit {
           },
         },
         SubgrupoCatalogoId: {
-          title: this.translate.instant('GLOBAL.subgrupo'),
+          // TODO: Actualizar dinamicamente este texto:
+          title: this.translate.instant('GLOBAL.subgrupo.segmento.nombre'),
         },
         Nombre: {
           title: this.translate.instant('GLOBAL.descripcion'),

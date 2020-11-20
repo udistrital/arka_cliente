@@ -288,15 +288,25 @@
     "Sobrante": "Surplus",
     "Terceros": "Terceros",
     "Elaboracion Propia": "Self Elaboration",
+
     "Codigo": "Code",
     "Nombre": "Name",
     "Descripcion": "Description",
     "Acciones": "Actions",
+
     "Deshacer": "Undo",
     "Agregar_Subgrupo": "Add Subgroup",
     "Agregar_Grupo": "Add Group",
     "Modificar_Grupo": "Update Group",
     "Modificar_Subgrupo": "Update Subgroup",
+
+    "Agregar_Segmento":"Add Segment",
+    "Modificar_Segmento":"Edit Segment",
+    "Agregar_Familia":"Add Family",
+    "Modificar_Familia":"Edit Family",
+    "Agregar_Clase":"Add Class",
+    "Modificar_Clase":"Edit Class",
+
     "Actualizar_Catalogo_placeholder": "Are you sure about update this catalogue?",
     "Actualizar": "Update?",
     "Actualizado_Catalogo_placeholder": "Catalogue successfully updated",
@@ -307,6 +317,7 @@
     "Actualizado_Grupo_placeholder": "Group successfully updated",
     "Actualizar_Movimientos_placeholder": "Are you sure about update this accounts?",
     "Actualizado_Movimientos_placeholder": "Accounts successfully updated",
+
     "Crear_Catalogo_placeholder": "Are you sure about create this catalogue?",
     "Crear": "Create?",
     "Creado_Catalogo_placeholder": "Catalogue successfully created",
@@ -317,6 +328,7 @@
     "Creado_Grupo_placeholder": "Group successfully created",
     "Crear_Movimientos_placeholder": "Are you sure about create this accounts?",
     "Creado_Movimientos_placeholder": "Accounts successfully created",
+
     "Detalle": "Detail",
     "placeholder": "This field is mandatory",
     "search": "Search",
