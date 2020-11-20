@@ -119,8 +119,6 @@
         "Registrada":" ha sido registrada de forma exitosa",
         "RegistradaTitleNO":"Acta No Registrada",
         "RegistradaNO":"El Acta no ha podido ser registrada de forma exitosa, intenta más tarde"
-
-
       },
       "EdicionActa":{
         "Title": "Editar Acta de Recibido",
@@ -256,7 +254,6 @@
         "RechazadaTitleNO":"Acta No Devuelta",
         "RechazadaNO":"El Acta no ha podido ser Devuelta de forma exitosa, intente más tarde"
       }
-
     },
     "fecha_inicio":"Fecha de inicio",
     "fecha_fin":"Fecha de finalizacion",
@@ -289,12 +286,11 @@
     "Terceros":"Terceros",
     "Elaboración Propia":"Elaboración Propia",
 
-
     "Codigo":"Código",
     "Nombre":"Nombre",
     "Descripcion":"Descripción",
     "Acciones":"Acciones",
-    
+
     "Deshacer":"Deshacer",
 
     "nivel_jerarquico": "Nivel Jerárquico",
@@ -310,7 +306,7 @@
         "respuesta_crear_ok": "Grupo creado exitosamente",
         "pregunta_inactivar": "¿Inactivar grupo?",
         "respuesta_inactivar_ok": "Grupo inactivado exitosamente",
-        "respuesta_inactivar_err": "No se pudo inactivar el grupo"
+        "respuesta_inactivar_err": "¡No se pudo inactivar el grupo!"
       },
       "segmento": {
         "nombre": "Segmento",
@@ -343,25 +339,25 @@
 
     "Actualizar":"Actualizar?",
     "Actualizado":"Actualizado",
+    "Crear":"Crear?",
+    "Creado":"Creado",
 
     "Actualizar_Catalogo_placeholder":"Está seguro de actualizar el catálogo?",
     "Actualizado_Catalogo_placeholder":"Catálogo actualizado exitosamente",
     "Crear_Catalogo_placeholder":"Está seguro de crear el catálogo?",
-    "Crear":"Crear?",
     "Creado_Catalogo_placeholder":"Catálogo creado exitosamente",
-    "Creado":"Creado",
 
     "Actualizar_Movimientos_placeholder":"Está seguro de actualizar las cuentas?",
     "Actualizado_Movimientos_placeholder":"Cuentas actualizadas exitosamente",
     "Crear_Movimientos_placeholder":"Está seguro de crear las cuentas?",
     "Creado_Movimientos_placeholder":"Cuentas creadas exitosamente",
 
-
     "Detalle":"Detalle",
     "placeholder":"Este Campo es Obligatorio",
     "search": "Buscar",
     "catalogo": "Catálogo",
     "inactivar_grupos_subgrupos": "Inactivar grupos y subgrupos",
+    "inactivar": "Inactivar",
     "inactivar_info": "Esta acción no se puede revertir!",
     "notificacion_estado": "notificacion_estado",
     "placeholder_notificacion_estado": "notificacion_estado",
