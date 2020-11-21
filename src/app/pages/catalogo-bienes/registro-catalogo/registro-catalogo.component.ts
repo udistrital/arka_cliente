@@ -111,6 +111,7 @@ export class RegistroCatalogoComponent implements OnInit {
     this.info_grupo = <Grupo>event;
     // Lo siguiente deberá modificarse de acuerdo a info_grupo
     this.modificando_tipo = 'segmento';
+    // TODO: Cambiar la siguiente variable en función de event:
     this.permitir_crear_subgrupo = true;
     this.catalogoElementosService.getGrupoById(event.Id).subscribe(
       res => {
