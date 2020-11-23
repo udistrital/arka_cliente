@@ -15,6 +15,7 @@
 *.launch
 .settings/
 *.sublime-workspace
+tmpnodejsnpm-cache
 
 # IDE - VSCode
 .vscode/*

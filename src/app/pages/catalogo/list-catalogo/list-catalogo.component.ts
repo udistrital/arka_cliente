@@ -1,10 +1,12 @@
 import { Component, OnInit } from '@angular/core';
+import { Catalogo } from '../../../@core/data/models/catalogo';
 import { LocalDataSource } from 'ngx-smart-table';
 import { ToasterService, ToasterConfig, Toast, BodyOutputType } from 'angular2-toaster';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import Swal from 'sweetalert2';
 import 'style-loader!angular2-toaster/toaster.css';
 import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/catalogoElementosHelper';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'ngx-list-catalogo',
@@ -23,6 +25,7 @@ export class ListCatalogoComponent implements OnInit {
     private translate: TranslateService,
     private catalogoElementosService: CatalogoElementosHelper,
     private toasterService: ToasterService,
+    public router: Router,
   ) {
     this.loadData();
     this.cargarCampos();
@@ -62,6 +65,7 @@ export class ListCatalogoComponent implements OnInit {
         // },
         Nombre: {
           title: this.translate.instant('GLOBAL.nombre'),
+          width: '20%',
           // type: 'string;',
           valuePrepareFunction: (value) => {
             return value;
@@ -69,6 +73,7 @@ export class ListCatalogoComponent implements OnInit {
         },
         Descripcion: {
           title: this.translate.instant('GLOBAL.descripcion'),
+          width: '20%',
           // type: 'string;',
           valuePrepareFunction: (value) => {
             return value;
@@ -76,6 +81,7 @@ export class ListCatalogoComponent implements OnInit {
         },
         FechaInicio: {
           title: this.translate.instant('GLOBAL.fechainicio'),
+          width: '20%',
           // type: 'Date;',
           valuePrepareFunction: (value: any) => {
             const date = value.split('T');
@@ -92,6 +98,7 @@ export class ListCatalogoComponent implements OnInit {
         },
         FechaFin: {
           title: this.translate.instant('GLOBAL.fechafin'),
+          width: '20%',
           // type: 'Date;',
           valuePrepareFunction: (value: any) => {
             const date = value.split('T');
@@ -108,9 +115,13 @@ export class ListCatalogoComponent implements OnInit {
         },
         Activo: {
           title: this.translate.instant('GLOBAL.activo'),
+          width: '10%',
           // type: 'boolean;',
           valuePrepareFunction: (value) => {
-            return value;
+            if (value === true)
+               return 'Activo';
+            else
+               return 'Inactivo';
           },
         },
       },
@@ -136,7 +147,7 @@ export class ListCatalogoComponent implements OnInit {
 
   onEdit(event): void {
     this.uid = event.data.Id;
-    this.cambiotab = [false, true, false];
+    this.router.navigate(['/pages/catalogo/crud-catalogo'], { state: { example: this.uid}});
   }
 
   onCreate(event): void {
@@ -146,8 +157,8 @@ export class ListCatalogoComponent implements OnInit {
 
   onDelete(event): void {
     const opt: any = {
-      title: 'Deleting?',
-      text: 'Delete Catalogo!',
+      title: 'Desactivar?',
+      text: 'Catalogo desactivado!',
       icon: 'warning',
       buttons: true,
       dangerMode: true,
@@ -155,14 +166,28 @@ export class ListCatalogoComponent implements OnInit {
     };
     (Swal as any)(opt)
       .then((willDelete) => {
-
         if (willDelete.value) {
+
+         const catalogo = <Catalogo>event.data;
+         catalogo.Activo = false;
+
+
+
+        this.catalogoElementosService.putCatalogo(catalogo, catalogo.Id).subscribe(res => {
+            if (res !== null) {
+              this.loadData();
+              this.showToast('info', 'deleted', 'Catalogo deleted');
+            }
+        });
+/*
+
           this.catalogoElementosService.deleteCatalogo(event.data).subscribe(res => {
             if (res !== null) {
               this.loadData();
               this.showToast('info', 'deleted', 'Catalogo deleted');
             }
-          });
+          });*/
+
         }
       });
   }
@@ -200,6 +225,9 @@ export class ListCatalogoComponent implements OnInit {
     if (event) {
       this.loadData();
       this.cambiotab = [true, false, false];
+
+
+
     }
   }
 
