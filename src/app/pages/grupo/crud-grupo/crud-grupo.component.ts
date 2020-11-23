@@ -45,7 +45,8 @@ export class CrudGrupoComponent implements OnInit {
    }
 
   construirForm() {
-    this.formGrupo.titulo = this.translate.instant('GLOBAL.grupo');
+    // TODO: Actualizar dinamicamente este texto:
+    this.formGrupo.titulo = this.translate.instant('GLOBAL.subgrupo.grupo.nombre');
     this.formGrupo.btn = this.translate.instant('GLOBAL.guardar');
     for (let i = 0; i < this.formGrupo.campos.length; i++) {
       this.formGrupo.campos[i].label = this.translate.instant('GLOBAL.' + this.formGrupo.campos[i].label_i18n);

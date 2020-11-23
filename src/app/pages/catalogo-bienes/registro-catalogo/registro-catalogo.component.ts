@@ -32,6 +32,8 @@ export class RegistroCatalogoComponent implements OnInit {
   uid_4: number;
   ver_formulario: boolean;
 
+  modificando_tipo: string;
+  permitir_crear_subgrupo: boolean;
 
   constructor(
     private translate: TranslateService,
@@ -45,6 +47,8 @@ export class RegistroCatalogoComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.modificando_tipo = '';
+    this.permitir_crear_subgrupo = false;
   }
 
   useLanguage(language: string) {
@@ -80,17 +84,13 @@ export class RegistroCatalogoComponent implements OnInit {
   }
 
   AgregarGrupo(id: number) {
-    this.uid_1 = undefined;
-    this.uid_2 = undefined;
+    this.QuitarVista();
     this.uid_3 = id;
-    this.uid_4 = undefined;
     this.ver_formulario = true;
   }
 
   AgregarSubgrupo(id: number) {
-    this.uid_1 = undefined;
-    this.uid_2 = undefined;
-    this.uid_3 = undefined;
+    this.QuitarVista();
     this.uid_4 = id;
     this.ver_formulario = true;
   }
@@ -101,24 +101,34 @@ export class RegistroCatalogoComponent implements OnInit {
     this.uid_4 = undefined;
     this.ver_formulario = false;
   }
+
+  // Ver formularios de modificacion
   receiveMessage(event) {
+    // console.log('event');
+    // console.log(event);
+    this.QuitarVista();
     this.subgrupoPadre = event;
     this.info_grupo = <Grupo>event;
+    // Lo siguiente deberá modificarse de acuerdo a info_grupo
+    this.modificando_tipo = 'segmento';
+    // TODO: Cambiar la siguiente variable en función de event:
+    this.permitir_crear_subgrupo = true;
     this.catalogoElementosService.getGrupoById(event.Id).subscribe(
       res => {
         if (Object.keys(res[0]).length !== 0) {
+          // Si es grupo (no tiene subgrupo padre)
+          // console.log('res');
+          // console.log(res);
           this.uid_1 = event.Id;
-          this.uid_2 = undefined;
-          this.uid_3 = undefined;
-          this.uid_4 = undefined;
-          this.ver_formulario = true;
         } else {
-          this.uid_1 = undefined;
+          // Si NO es grupo (segmento/familia/...)
+          // this.catalogoElementosService.getSubgrupoById(event.Id).subscribe( res_sub => {
+          //   console.log('res_sub');
+          //   console.log(res_sub);
+          // });
           this.uid_2 = event.Id;
-          this.uid_3 = undefined;
-          this.uid_4 = undefined;
-          this.ver_formulario = true;
         }
+        this.ver_formulario = true;
       });
   }
 }

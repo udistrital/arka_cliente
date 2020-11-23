@@ -1,7 +1,7 @@
 import { Grupo } from '../../../@core/data/models/catalogo/grupo';
 import { Subgrupo, SubgrupoTransaccion } from '../../../@core/data/models/catalogo/subgrupo';
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { FORM_SUBGRUPO_1 } from './form-subgrupo_1';
+import { FORM_SUBGRUPO } from './form-subgrupo';
 import { ToasterService, ToasterConfig, Toast, BodyOutputType } from 'angular2-toaster';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import Swal from 'sweetalert2';
@@ -9,19 +9,19 @@ import 'style-loader!angular2-toaster/toaster.css';
 import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/catalogoElementosHelper';
 
 @Component({
-  selector: 'ngx-crud-subgrupo-1',
-  templateUrl: './crud-subgrupo_1.component.html',
-  styleUrls: ['./crud-subgrupo_1.component.scss'],
+  selector: 'ngx-crud-subgrupo',
+  templateUrl: './crud-subgrupo.component.html',
+  styleUrls: ['./crud-subgrupo.component.scss'],
 })
-export class CrudSubgrupo1Component implements OnInit {
+export class CrudSubgrupoComponent implements OnInit {
   config: ToasterConfig;
-  subgrupo_1_id: number;
+  subgrupo_id: number;
   subgrupoPadre: any;
 
-  @Input('subgrupo_1_id')
-  set name(subgrupo_1_id: number) {
-    this.subgrupo_1_id = subgrupo_1_id;
-    this.loadSubgrupo1();
+  @Input('subgrupo_id')
+  set name(subgrupo_id: number) {
+    this.subgrupo_id = subgrupo_id;
+    this.loadSubgrupo();
   }
 
   @Input('subgrupo_Padre')
@@ -32,9 +32,9 @@ export class CrudSubgrupo1Component implements OnInit {
   @Output() eventChange = new EventEmitter();
   @Output() mostrar = new EventEmitter();
 
-  info_subgrupo_1: Subgrupo;
-  formSubgrupo1: any;
-  regSubgrupo1: any;
+  info_subgrupo: Subgrupo;
+  formSubgrupo: any;
+  regSubgrupo: any;
   clean: boolean;
 
   constructor(
@@ -42,7 +42,7 @@ export class CrudSubgrupo1Component implements OnInit {
     private catalogoElementosService: CatalogoElementosHelper,
     private toasterService: ToasterService,
   ) {
-    this.formSubgrupo1 = FORM_SUBGRUPO_1;
+    this.formSubgrupo = FORM_SUBGRUPO;
     this.construirForm();
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
       this.construirForm();
@@ -50,11 +50,12 @@ export class CrudSubgrupo1Component implements OnInit {
   }
 
   construirForm() {
-    this.formSubgrupo1.titulo = this.translate.instant('GLOBAL.subgrupo_1');
-    this.formSubgrupo1.btn = this.translate.instant('GLOBAL.guardar');
-    for (let i = 0; i < this.formSubgrupo1.campos.length; i++) {
-      this.formSubgrupo1.campos[i].label = this.translate.instant('GLOBAL.' + this.formSubgrupo1.campos[i].label_i18n);
-      this.formSubgrupo1.campos[i].placeholder = this.translate.instant('GLOBAL.placeholder_' + this.formSubgrupo1.campos[i].label_i18n);
+    // TODO: Actualizar dinamicamente este texto:
+    this.formSubgrupo.titulo = this.translate.instant('GLOBAL.subgrupo.segmento.nombre');
+    this.formSubgrupo.btn = this.translate.instant('GLOBAL.guardar');
+    for (let i = 0; i < this.formSubgrupo.campos.length; i++) {
+      this.formSubgrupo.campos[i].label = this.translate.instant('GLOBAL.' + this.formSubgrupo.campos[i].label_i18n);
+      this.formSubgrupo.campos[i].placeholder = this.translate.instant('GLOBAL.placeholder_' + this.formSubgrupo.campos[i].label_i18n);
     }
   }
 
@@ -69,13 +70,13 @@ export class CrudSubgrupo1Component implements OnInit {
         if (res !== null) {
           grupo = <Array<Grupo>>res;
         }
-        this.formSubgrupo1.campos[this.getIndexForm('Grupo')].opciones = grupo;
+        this.formSubgrupo.campos[this.getIndexForm('Grupo')].opciones = grupo;
       });
   }
 
   getIndexForm(nombre: String): number {
-    for (let index = 0; index < this.formSubgrupo1.campos.length; index++) {
-      const element = this.formSubgrupo1.campos[index];
+    for (let index = 0; index < this.formSubgrupo.campos.length; index++) {
+      const element = this.formSubgrupo.campos[index];
       if (element.nombre === nombre) {
         return index;
       }
@@ -84,56 +85,59 @@ export class CrudSubgrupo1Component implements OnInit {
   }
 
 
-  public loadSubgrupo1(): void {
-    if (this.subgrupo_1_id !== undefined && this.subgrupo_1_id !== 0) {
-      this.catalogoElementosService.getSubgrupoById(this.subgrupo_1_id)
+  public loadSubgrupo(): void {
+    if (this.subgrupo_id !== undefined && this.subgrupo_id !== 0) {
+      this.catalogoElementosService.getSubgrupoById(this.subgrupo_id)
         .subscribe(res => {
           if (Object.keys(res[0]).length !== 0) {
-            this.info_subgrupo_1 = <Subgrupo>res[0].SubgrupoHijoId;
+            this.info_subgrupo = <Subgrupo>res[0].SubgrupoHijoId;
             this.mostrar.emit(true);
           } else {
-            this.info_subgrupo_1 = undefined;
+            this.info_subgrupo = undefined;
             this.clean = !this.clean;
             this.mostrar.emit(false);
 
           }
         });
     } else {
-      this.info_subgrupo_1 = undefined;
+      this.info_subgrupo = undefined;
       this.clean = !this.clean;
     }
   }
 
-  updateSubgrupo1(subgrupo1: any): void {
+  updateSubgrupo(subgrupo: any): void {
 
     const opt: any = {
       title: this.translate.instant('GLOBAL.Actualizar'),
-      text: this.translate.instant('GLOBAL.Actualizar_Subgrupo_placeholder'),
+      // TODO: Actualizar dinamicamente este texto:
+      text: this.translate.instant('GLOBAL.subgrupo.segmento.pregunta_actualizar'),
       type: 'warning',
       showCancelButton: true,
     };
     (Swal as any).fire(opt)
       .then((willDelete) => {
         if (willDelete.value) {
-          this.info_subgrupo_1 = <Subgrupo>subgrupo1;
-          this.catalogoElementosService.putSubgrupo(this.info_subgrupo_1, this.info_subgrupo_1.Id)
+          this.info_subgrupo = <Subgrupo>subgrupo;
+          this.catalogoElementosService.putSubgrupo(this.info_subgrupo, this.info_subgrupo.Id)
             .subscribe(res => {
-              this.loadSubgrupo1();
+              this.loadSubgrupo();
               this.eventChange.emit(true);
               this.showToast(
                 'info',
                 this.translate.instant('GLOBAL.Actualizado'),
-                this.translate.instant('GLOBAL.Actualizado_Subgrupo_placeholder'),
+                // TODO: Actualizar dinamicamente este texto:
+                this.translate.instant('GLOBAL.subgrupo.segmento.respuesta_actualizar_ok'),
               );
             });
         }
       });
   }
 
-  createSubgrupo1(subgrupo: any): void {
+  createSubgrupo(subgrupo: any): void {
     const opt: any = {
       title: this.translate.instant('GLOBAL.Crear'),
-      text: this.translate.instant('GLOBAL.Crear_Subgrupo_placeholder'),
+      // TODO: Actualizar dinamicamente este texto:
+      text: this.translate.instant('GLOBAL.subgrupo.segmento.pregunta_crear'),
       type: 'warning',
       showCancelButton: true,
     };
@@ -149,25 +153,27 @@ export class CrudSubgrupo1Component implements OnInit {
           subgrupoPost.SubgrupoHijo = subgrupoHijo;
           this.catalogoElementosService.postSubgrupo(subgrupoPost)
             .subscribe(res => {
-              this.info_subgrupo_1 = <Subgrupo><unknown>res;
+              this.info_subgrupo = <Subgrupo><unknown>res;
               this.eventChange.emit(true);
-              this.showToast('info', this.translate.instant('GLOBAL.Creado'), this.translate.instant('GLOBAL.Creado_Subgrupo_placeholder') );
+              this.showToast('info', this.translate.instant('GLOBAL.Creado'),
+                // TODO: Actualizar dinamicamente este texto:
+                this.translate.instant('GLOBAL.subgrupo.segmento.respuesta_crear_ok') );
             });
         }
       });
   }
 
   ngOnInit() {
-    this.loadSubgrupo1();
+    this.loadSubgrupo();
   }
 
   validarForm(event) {
     // console.log(event);
     if (event.valid) {
-      if (this.info_subgrupo_1 === undefined) {
-        this.createSubgrupo1(event.data.Subgrupo);
+      if (this.info_subgrupo === undefined) {
+        this.createSubgrupo(event.data.Subgrupo);
       } else {
-        this.updateSubgrupo1(event.data.Subgrupo);
+        this.updateSubgrupo(event.data.Subgrupo);
       }
     }
   }
