@@ -168,6 +168,7 @@ export class ListCatalogoComponent implements OnInit {
       .then((willDelete) => {
         if (willDelete.value) {
 
+
          const catalogo = <Catalogo>event.data;
          catalogo.Activo = false;
 
@@ -182,6 +183,7 @@ export class ListCatalogoComponent implements OnInit {
 /*
 
           this.catalogoElementosService.deleteCatalogo(event.data).subscribe(res => {
+
             if (res !== null) {
               this.loadData();
               this.showToast('info', 'deleted', 'Catalogo deleted');

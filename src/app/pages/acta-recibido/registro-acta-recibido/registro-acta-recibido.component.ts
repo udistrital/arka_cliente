@@ -303,7 +303,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
     return this.fb.group({
       Sede: [''],
       Dependencia: [''],
-      Ubicacion: ['', Validators.required],
+      Ubicacion: [3, Validators.required],
     });
   }
   get Formulario_2(): FormGroup {
@@ -673,6 +673,11 @@ export class RegistroActaRecibidoComponent implements OnInit {
       sessionStorage.setItem('Formulario_Registro', JSON.stringify(this.firstForm.value));
       sessionStorage.setItem('Elementos_Formulario_Registro', JSON.stringify(this.Elementos__Soporte));
     }
+  }
+
+  cambiarubicacion(evento) {
+    this.firstForm.get('Formulario1').get('Ubicación').setValue(evento.target.value, {onlySelf: true});
+
   }
 
   Traer_Relacion_Ubicaciones() {
