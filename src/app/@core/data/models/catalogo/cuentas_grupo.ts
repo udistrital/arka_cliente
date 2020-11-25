@@ -1,4 +1,4 @@
-import { Subgrupo } from './subgrupo';
+import { SubgrupoID } from './jerarquia';
 import { Cuenta } from './cuenta_contable';
 
 
@@ -10,7 +10,7 @@ export class CuentaGrupo {
     FechaCreacion: Date;
     FechaModificacion: Date;
     Activo: boolean;
-    SubgrupoId: Subgrupo;
+    SubgrupoId: SubgrupoID;
 }
 export class CuentasFormulario {
     CuentaCreditoId: Cuenta;

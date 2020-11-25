@@ -1,5 +1,7 @@
 import { Catalogo } from '../../../@core/data/models/catalogo/catalogo';
-import { Grupo, GrupoTransaccion, Detalle, Grupo2 } from '../../../@core/data/models/catalogo/grupo';
+import { Detalle } from '../../../@core/data/models/catalogo/detalle';
+import { Grupo, Grupo2 } from '../../../@core/data/models/catalogo/jerarquia';
+import { GrupoTransaccion } from '../../../@core/data/models/catalogo/transacciones';
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { TipoBien } from '../../../@core/data/models/acta_recibido/tipo_bien';
 import { FORM_GRUPO } from './form-grupo';

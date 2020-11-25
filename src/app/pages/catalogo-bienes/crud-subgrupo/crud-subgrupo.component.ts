@@ -1,5 +1,5 @@
-import { Grupo } from '../../../@core/data/models/catalogo/grupo';
-import { Subgrupo, SubgrupoTransaccion } from '../../../@core/data/models/catalogo/subgrupo';
+import { Grupo, Subgrupo } from '../../../@core/data/models/catalogo/jerarquia';
+import { SubgrupoTransaccion } from '../../../@core/data/models/catalogo/transacciones';
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { FORM_SUBGRUPO } from './form-subgrupo';
 import { ToasterService, ToasterConfig, Toast, BodyOutputType } from 'angular2-toaster';

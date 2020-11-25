@@ -1,9 +1,8 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { Subgrupo } from '../../../@core/data/models/catalogo/subgrupo';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/catalogoElementosHelper';
-import { Grupo } from '../../../@core/data/models/catalogo/grupo';
-import { Catalogo } from '../../../@core/data/models/catalogo';
+import { Grupo, Subgrupo } from '../../../@core/data/models/catalogo/jerarquia';
+import { Catalogo } from '../../../@core/data/models/catalogo/catalogo';
 
 
 @Component({
