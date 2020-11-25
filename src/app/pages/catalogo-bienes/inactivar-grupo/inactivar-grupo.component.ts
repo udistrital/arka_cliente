@@ -41,7 +41,7 @@ export class InactivarGrupoComponent implements OnInit {
   }
 
   construirForm() {
-    this.formGrupo.titulo = this.translate.instant('GLOBAL.grupo');
+    this.formGrupo.titulo = this.translate.instant('GLOBAL.subgrupo.grupo.nombre');
     this.formGrupo.btn = this.translate.instant('GLOBAL.inactivar');
     for (let i = 0; i < this.formGrupo.campos.length; i++) {
       this.formGrupo.campos[i].label = this.translate.instant('GLOBAL.' + this.formGrupo.campos[i].label_i18n);
@@ -82,10 +82,11 @@ export class InactivarGrupoComponent implements OnInit {
       res => {
         // console.log(res[0]);
         if (Object.keys(res[0]).length !== 0) {
-          this.formGrupo.titulo = this.translate.instant('GLOBAL.grupo');
+          this.formGrupo.titulo = this.translate.instant('GLOBAL.subgrupo.grupo.nombre');
           this.ver_formulario = true;
         } else {
-          this.formGrupo.titulo = this.translate.instant('GLOBAL.subgrupo');
+          // TODO: Actualizar dinamicamente este texto:
+          this.formGrupo.titulo = this.translate.instant('GLOBAL.subgrupo.segmento.nombre');
           this.ver_formulario = true;
         }
       });
@@ -101,25 +102,25 @@ export class InactivarGrupoComponent implements OnInit {
 
   inactivarGrupo() {
     (Swal as any).fire({
-      title: this.translate.instant('GLOBAL.inactivar_grupo_pregunta'),
-      text: this.translate.instant('GLOBAL.inactivar_grupo_info'),
+      title: this.translate.instant('GLOBAL.subgrupo.grupo.pregunta_inactivar'),
+      text: this.translate.instant('GLOBAL.inactivar_info'),
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
       cancelButtonText: this.translate.instant('GLOBAL.cancelar'),
-      confirmButtonText: this.translate.instant('GLOBAL.inactivar_btn'),
+      confirmButtonText: this.translate.instant('GLOBAL.inactivar'),
     }).then((result) => {
       if (result.value) {
         this.info_grupo.Activo = false;
         this.catalogoBienesHelper.putSubgrupo(this.info_grupo, this.info_grupo.Id).subscribe(res => {
           if (res !== null) {
-            this.pUpManager.showSuccessAlert(this.translate.instant('GLOBAL.inactivar_exito'));
+            this.pUpManager.showSuccessAlert(this.translate.instant('GLOBAL.subgrupo.grupo.respuesta_inactivar_ok'));
             this.router.navigateByUrl('/RefreshComponent', { skipLocationChange: true }).then(() => {
               this.router.navigate(['/pages/catalogo_bienes/inactiva_grupos']);
             });
           } else {
-            this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.inactivar_fallido'));
+            this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.subgrupo.grupo.respuesta_inactivar_err'));
           }
         });
       }

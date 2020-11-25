@@ -3,21 +3,21 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { DebugElement } from '@angular/core';
 
-import { CrudSubgrupo1Component } from './crud-subgrupo_1.component';
+import { CrudSubgrupoComponent } from './crud-subgrupo.component';
 
 describe('CrudSubgrupo1Component', () => {
-  let component: CrudSubgrupo1Component;
-  let fixture: ComponentFixture<CrudSubgrupo1Component>;
+  let component: CrudSubgrupoComponent;
+  let fixture: ComponentFixture<CrudSubgrupoComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ CrudSubgrupo1Component ],
+      declarations: [ CrudSubgrupoComponent ],
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CrudSubgrupo1Component);
+    fixture = TestBed.createComponent(CrudSubgrupoComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

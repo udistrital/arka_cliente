@@ -45,7 +45,8 @@ export class CrudSubgrupo1Component implements OnInit {
    }
 
   construirForm() {
-    this.formSubgrupo1.titulo = this.translate.instant('GLOBAL.subgrupo_1');
+    // TODO: Actualizar dinamicamente este texto:
+    this.formSubgrupo1.titulo = this.translate.instant('GLOBAL.subgrupo.segmento.nombre');
     this.formSubgrupo1.btn = this.translate.instant('GLOBAL.guardar');
     for (let i = 0; i < this.formSubgrupo1.campos.length; i++) {
       this.formSubgrupo1.campos[i].label = this.translate.instant('GLOBAL.' + this.formSubgrupo1.campos[i].label_i18n);

@@ -55,7 +55,7 @@ export class CrudGrupoComponent implements OnInit {
   }
 
   construirForm() {
-    this.formGrupo.titulo = this.translate.instant('GLOBAL.grupo');
+    this.formGrupo.titulo = this.translate.instant('GLOBAL.subgrupo.grupo.nombre');
     this.formGrupo.btn = this.translate.instant('GLOBAL.guardar');
     for (let i = 0; i < this.formGrupo.campos.length; i++) {
       this.formGrupo.campos[i].label = this.translate.instant('GLOBAL.' + this.formGrupo.campos[i].label_i18n);
@@ -125,7 +125,7 @@ export class CrudGrupoComponent implements OnInit {
 
     const opt: any = {
       title: this.translate.instant('GLOBAL.Actualizar'),
-      text: this.translate.instant('GLOBAL.Actualizar_Grupo_placeholder'),
+      text: this.translate.instant('GLOBAL.subgrupo.grupo.pregunta_actualizar'),
       type: 'warning',
       showCancelButton: true,
     };
@@ -158,7 +158,9 @@ export class CrudGrupoComponent implements OnInit {
             .subscribe(res => {
               // console.log(res);
               this.info_grupo = <Grupo2><unknown>res;
-              this.showToast('info', this.translate.instant('GLOBAL.Actualizado'), this.translate.instant('GLOBAL.Actualizado_Grupo_placeholder') );
+              this.showToast('info',
+                this.translate.instant('GLOBAL.Actualizado'),
+                this.translate.instant('GLOBAL.subgrupo.grupo.respuesta_actualizar_ok') );
               // this.loadGrupo();
               this.eventChange.emit(true);
 
@@ -170,7 +172,7 @@ export class CrudGrupoComponent implements OnInit {
   createGrupo(grupo: any): void {
     const opt: any = {
       title: this.translate.instant('GLOBAL.Crear'),
-      text: this.translate.instant('GLOBAL.Crear_Grupo_placeholder'),
+      text: this.translate.instant('GLOBAL.subgrupo.grupo.pregunta_crear'),
       type: 'warning',
       showCancelButton: true,
     };
@@ -204,7 +206,9 @@ export class CrudGrupoComponent implements OnInit {
               // console.log(res);
               this.info_grupo = <Grupo2><unknown>res;
               this.eventChange.emit(true);
-              this.showToast('info', this.translate.instant('GLOBAL.Creado'), this.translate.instant('GLOBAL.Creado_Grupo_placeholder') );
+              this.showToast('info',
+                this.translate.instant('GLOBAL.Creado'),
+                this.translate.instant('GLOBAL.subgrupo.grupo.respuesta_crear_ok') );
             });
         }
       });

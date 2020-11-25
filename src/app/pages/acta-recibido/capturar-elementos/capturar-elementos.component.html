@@ -59,7 +59,8 @@
         <!-- Subgrupo Catalogo -->
         <ng-container matColumnDef="SubgrupoCatalogoId">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>
-            {{'GLOBAL.Acta_Recibido.CapturarElementos.SubgrupoHeader' | translate }} </th>
+            <!-- TODO: Revisar texto siguiente -->
+            {{ 'GLOBAL.subgrupo.segmento.nombre' | translate }} </th>
           <td mat-cell *matCellDef="let element; let rowIndex = index">
 
             <div [ngSwitch]="element.TipoBienId">
