@@ -13,7 +13,7 @@ export let FORM_GRUPO = {
         label_i18n: 'codigo',
         placeholder_i18n: 'codigo',
         requerido: true,
-        tipo: 'text',
+        tipo: 'text-uppercase',
         maxlength: '1',
         pattern: '^[a-gA-G]{1}',
     },

@@ -312,7 +312,7 @@
                                 [placeholder]="c.placeholder" [disabled]="c.deshabilitar" maxlength="{{c.maxlength}}" pattern={{c.pattern}}/>
                                 <span matPrefix *ngIf="c.prefix">{{c.prefix.value}}&nbsp;</span>
                                 <span matSuffix *ngIf="c.suffix">&nbsp;{{c.suffix.value}}</span>
-                            <mat-hint *ngIf="c.maxlength" align="end">{{input.value.length}} / 2</mat-hint>
+                            <mat-hint *ngIf="c.maxlength" align="end">{{input.value.length}} / {{c.maxlength}}</mat-hint>
                             <mat-hint class="text-danger">{{c.alerta}}</mat-hint>
                         </mat-form-field>
 

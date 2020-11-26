@@ -87,8 +87,8 @@ export class CrudSubgrupoComponent implements OnInit {
 
   public loadSubgrupo(): void {
     if (this.subgrupo_id !== undefined && this.subgrupo_id !== 0) {
-      this.formSubgrupo.campos[this.getIndexForm('Codigo')].prefix.value = ''
-      this.formSubgrupo.campos[this.getIndexForm('Codigo')].suffix.value = ''
+      this.formSubgrupo.campos[this.getIndexForm('Codigo')].prefix.value = '';
+      this.formSubgrupo.campos[this.getIndexForm('Codigo')].suffix.value = '';
 
       this.catalogoElementosService.getSubgrupoById(this.subgrupo_id)
         .subscribe(res => {
@@ -152,7 +152,7 @@ export class CrudSubgrupoComponent implements OnInit {
           subgrupo.TipoBienId = this.subgrupoPadre.TipoBienId;
           subgrupo.Activo = true;
           // console.log(this.subgrupoPadre);
-          subgrupo.TipoNivelId = { Id: (this.subgrupoPadre.TipoNivelId.Id+1) };
+          subgrupo.TipoNivelId = { Id: (this.subgrupoPadre.TipoNivelId.Id + 1) };
           // subgrupo.Codigo = `${subgrupo.Codigo}`;
           subgrupoHijo.push(subgrupo);
           subgrupoPost.SubgrupoPadre = this.subgrupoPadre;
@@ -174,19 +174,19 @@ export class CrudSubgrupoComponent implements OnInit {
     this.loadPrefixSuffixCreate();
 }
 
-  loadPrefixSuffixCreate (){
-    if (this.subgrupoPadre !== undefined){
-      if (this.subgrupoPadre.TipoNivelId.Id == 1){
+  loadPrefixSuffixCreate () {
+    if (this.subgrupoPadre !== undefined) {
+      if (this.subgrupoPadre.TipoNivelId.Id === 1) {
         this.formSubgrupo.campos[this.getIndexForm('Codigo')].prefix.value = '';
         this.formSubgrupo.campos[this.getIndexForm('Codigo')].suffix.value = '0000';
       }
-      else  if (this.subgrupoPadre.TipoNivelId.Id == 2){
-        this.formSubgrupo.campos[this.getIndexForm('Codigo')].prefix.value = this.subgrupoPadre.Codigo.substring(0,2);
+      else  if (this.subgrupoPadre.TipoNivelId.Id === 2) {
+        this.formSubgrupo.campos[this.getIndexForm('Codigo')].prefix.value = this.subgrupoPadre.Codigo.substring(0, 2);
         this.formSubgrupo.campos[this.getIndexForm('Codigo')].suffix.value = '00';
-      }else if (this.subgrupoPadre.TipoNivelId.Id == 3){
-        this.formSubgrupo.campos[this.getIndexForm('Codigo')].prefix.value = this.subgrupoPadre.Codigo.substring(0,4);
+      }else if (this.subgrupoPadre.TipoNivelId.Id === 3) {
+        this.formSubgrupo.campos[this.getIndexForm('Codigo')].prefix.value = this.subgrupoPadre.Codigo.substring(0, 4);
         this.formSubgrupo.campos[this.getIndexForm('Codigo')].suffix.value = '';
-      }else{
+      }else {
         this.formSubgrupo.campos[this.getIndexForm('Codigo')].prefix.value = '';
         this.formSubgrupo.campos[this.getIndexForm('Codigo')].suffix.value = '';
       }
@@ -194,22 +194,22 @@ export class CrudSubgrupoComponent implements OnInit {
     }
   }
 
-  loadPrefixSuffixList (){
-    if (this.info_subgrupo !== undefined){
-      if (this.info_subgrupo.TipoNivelId.Id == 2){
+  loadPrefixSuffixList () {
+    if (this.info_subgrupo !== undefined) {
+      if (this.info_subgrupo.TipoNivelId.Id === 2) {
         this.formSubgrupo.campos[this.getIndexForm('Codigo')].prefix.value = '';
-        this.info_subgrupo.Codigo = this.info_subgrupo.Codigo.substring(0,2);
+        this.info_subgrupo.Codigo = this.info_subgrupo.Codigo.substring(0, 2);
         this.formSubgrupo.campos[this.getIndexForm('Codigo')].suffix.value = '0000';
       }
-      else  if (this.info_subgrupo.TipoNivelId.Id == 3){
-        this.formSubgrupo.campos[this.getIndexForm('Codigo')].prefix.value = this.info_subgrupo.Codigo.substring(0,2);
-        this.info_subgrupo.Codigo = this.info_subgrupo.Codigo.substring(2,4);
+      else  if (this.info_subgrupo.TipoNivelId.Id === 3) {
+        this.formSubgrupo.campos[this.getIndexForm('Codigo')].prefix.value = this.info_subgrupo.Codigo.substring(0, 2);
+        this.info_subgrupo.Codigo = this.info_subgrupo.Codigo.substring(2, 4);
         this.formSubgrupo.campos[this.getIndexForm('Codigo')].suffix.value = '00';
-      }else if (this.info_subgrupo.TipoNivelId.Id == 4){
-        this.formSubgrupo.campos[this.getIndexForm('Codigo')].prefix.value = this.info_subgrupo.Codigo.substring(0,4);
-        this.info_subgrupo.Codigo = this.info_subgrupo.Codigo.substring(4,6);
+      }else if (this.info_subgrupo.TipoNivelId.Id === 4) {
+        this.formSubgrupo.campos[this.getIndexForm('Codigo')].prefix.value = this.info_subgrupo.Codigo.substring(0, 4);
+        this.info_subgrupo.Codigo = this.info_subgrupo.Codigo.substring(4, 6);
         this.formSubgrupo.campos[this.getIndexForm('Codigo')].suffix.value = '';
-      }else{
+      }else {
         this.formSubgrupo.campos[this.getIndexForm('Codigo')].prefix.value = '';
         this.formSubgrupo.campos[this.getIndexForm('Codigo')].suffix.value = '';
       }
@@ -218,34 +218,28 @@ export class CrudSubgrupoComponent implements OnInit {
 
 
   validarForm(event) {
-    console.log(event);
     if (event.valid) {
       if (this.info_subgrupo === undefined) {
-        if (this.subgrupoPadre.TipoNivelId.Id == 1){
-          event.data.Subgrupo.Codigo = event.data.Subgrupo.Codigo+'0000';
-        }else if (this.subgrupoPadre.TipoNivelId.Id == 2){
-          event.data.Subgrupo.Codigo = this.subgrupoPadre.Codigo.substring(0,2)+event.data.Subgrupo.Codigo+'00';
-          this.formSubgrupo.campos[this.getIndexForm('Codigo')].prefix.value = this.subgrupoPadre.Codigo.substring(0,2);
-          }else if (this.subgrupoPadre.TipoNivelId.Id == 3){
-            event.data.Subgrupo.Codigo = this.subgrupoPadre.Codigo.substring(0,4)+event.data.Subgrupo.Codigo;
-            this.formSubgrupo.campos[this.getIndexForm('Codigo')].prefix.value = this.subgrupoPadre.Codigo.substring(0,4);
+        if (this.subgrupoPadre.TipoNivelId.Id === 1) {
+          event.data.Subgrupo.Codigo = event.data.Subgrupo.Codigo + '0000';
+        }else if (this.subgrupoPadre.TipoNivelId.Id === 2) {
+          event.data.Subgrupo.Codigo = this.subgrupoPadre.Codigo.substring(0, 2) + event.data.Subgrupo.Codigo + '00';
+          this.formSubgrupo.campos[this.getIndexForm('Codigo')].prefix.value = this.subgrupoPadre.Codigo.substring(0, 2);
+          }else if (this.subgrupoPadre.TipoNivelId.Id === 3) {
+            event.data.Subgrupo.Codigo = this.subgrupoPadre.Codigo.substring(0, 4) + event.data.Subgrupo.Codigo;
+            this.formSubgrupo.campos[this.getIndexForm('Codigo')].prefix.value = this.subgrupoPadre.Codigo.substring(0, 4);
         }
         this.construirForm();
         this.createSubgrupo(event.data.Subgrupo);
       } else {
-        console.log(this.info_subgrupo.Codigo);
-        console.log(event.data.Subgrupo.Codigo);
         this.updateSubgrupo(event.data.Subgrupo);
-        console.log(event.data.Subgrupo);
-        console.log(this.subgrupoPadre);
       }
     }
-    
   }
 
   private showToast(type: string, title: string, body: string) {
     this.config = new ToasterConfig({
-      // 'toast-top-full-width', 'toast-bottom-full-width', 'toast-top-left', 'toast-top-center'
+    // 'toast-top-full-width', 'toast-bottom-full-width', 'toast-top-left', 'toast-top-center'
       positionClass: 'toast-top-center',
       timeout: 5000,  // ms
       newestOnTop: true,

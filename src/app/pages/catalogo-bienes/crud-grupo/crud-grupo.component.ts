@@ -219,15 +219,21 @@ export class CrudGrupoComponent implements OnInit {
 
   ngOnInit() {
     this.loadGrupo();
+    // let isnum = /^\d+$/.test('12');
+    // let isnum = /^[a-gA-G]{1}/.test('a');
+    // ^[a-gA-G]{1}
+    // console.log(isnum);
   }
 
   validarForm(event) {
     if (event.valid) {
-      if (this.info_grupo === undefined) {
-        this.createGrupo(event.data.Grupo);
-        console.log(event.data.Grupo);
-      } else {
-        this.updateGrupo(event.data.Grupo);
+      if (/^[a-gA-G]{1}/.test(event.data.Grupo.Codigo)) {
+        if (this.info_grupo === undefined) {
+          this.createGrupo(event.data.Grupo);
+          console.log(event.data.Grupo.Codigo);
+        } else {
+          this.updateGrupo(event.data.Grupo);
+        }
       }
     }
   }
