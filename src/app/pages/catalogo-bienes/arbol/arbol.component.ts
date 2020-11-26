@@ -76,7 +76,7 @@ export class ArbolComponent implements OnInit, OnChanges {
   }
 
   construirForm() {
-    this.customColumn2 = this.translate.instant('GLOBAL.Codigo');
+    this.customColumn2 = this.translate.instant('GLOBAL.codigo');
     this.defaultColumns2 = [
       this.translate.instant('GLOBAL.Nombre'),
       this.translate.instant('GLOBAL.Descripcion'),

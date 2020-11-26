@@ -286,7 +286,6 @@
     "Terceros": "Terceros",
     "Elaboracion Propia": "Self Elaboration",
 
-    "Codigo": "Code",
     "Nombre": "Name",
     "Descripcion": "Description",
     "Acciones": "Actions",
@@ -366,6 +365,7 @@
     "nombre": "Name",
     "placeholder_nombre": "name",
     "codigo": "Code",
+    "placeholder_codigo": "Code",
     "codigo_abreviacion": "Abbreviation Code",
     "placeholder_codigo_abreviacion": "Abbreviation code",
     "descripcion": "Description",
@@ -460,6 +460,7 @@
     "volver": "Return",
     "factura": "Bill",
     "tipo_bien": "Type of Asset",
+    "placeholder_tipo_bien": "Type of Asset",
     "cantidad": "Quantity",
     "marca": "Brand Name",
     "serie": "Serie",
