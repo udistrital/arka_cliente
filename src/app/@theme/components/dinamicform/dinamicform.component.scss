@@ -180,6 +180,14 @@
     outline: none;
   }
 
+  upper-transform-text {
+    text-transform: uppercase;
+  }
+
+  lower-transform-text {
+    text-transform: lowercase;
+  }
+
   ngb-rating i {
     color: nb-theme(color-success);
     @include nb-for-theme(cosmic) {

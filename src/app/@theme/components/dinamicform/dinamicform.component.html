@@ -308,8 +308,8 @@
                             floatLabel="always">
                             <mat-label>{{c.requerido?'* '+c.label:c.label}}:</mat-label>
                             <input #input min="1" matInput [(ngModel)]="c.valor" (ngModelChange)="validCampo(c)"
-                                [ngModelOptions]="{standalone: true}" type="{{c.tipo}}" id="{{c.nombre}}"
-                                [placeholder]="c.placeholder" [disabled]="c.deshabilitar" maxlength="{{c.maxlength}}" pattern={{c.pattern}}/>
+                                [ngModelOptions]="{standalone: true}" type="{{c.tipo}}" id="{{c.nombre}}" 
+                                [placeholder]="c.placeholder" [disabled]="c.deshabilitar" maxlength="{{c.maxlength}}"/>
                                 <span matPrefix *ngIf="c.prefix">{{c.prefix.value}}&nbsp;</span>
                                 <span matSuffix *ngIf="c.suffix">&nbsp;{{c.suffix.value}}</span>
                             <mat-hint *ngIf="c.maxlength" align="end">{{input.value.length}} / {{c.maxlength}}</mat-hint>

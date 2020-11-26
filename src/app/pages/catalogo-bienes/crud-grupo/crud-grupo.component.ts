@@ -97,8 +97,6 @@ export class CrudGrupoComponent implements OnInit {
             const detalle = <Detalle>res[0].Detalle;
             const subgrupo = <Grupo>res[0].Subgrupo;
             // console.log(detalle);
-            console.log(res);
-
             // console.log(subgrupo);
             const info__grupo = new Grupo2;
             this.detalle_id = detalle.Id;
@@ -143,7 +141,6 @@ export class CrudGrupoComponent implements OnInit {
           catalogo.Id = parseFloat(this.catalogoid as string);
           grupo.Activo = true;
           grupo.Id = this.grupo_id;
-
           detalle.Depreciacion = grupo.Depreciacion;
           detalle.Valorizacion = grupo.Valorizacion;
           detalle.TipoBienId = grupo.TipoBienId;
@@ -219,10 +216,6 @@ export class CrudGrupoComponent implements OnInit {
 
   ngOnInit() {
     this.loadGrupo();
-    // let isnum = /^\d+$/.test('12');
-    // let isnum = /^[a-gA-G]{1}/.test('a');
-    // ^[a-gA-G]{1}
-    // console.log(isnum);
   }
 
   validarForm(event) {
@@ -230,10 +223,16 @@ export class CrudGrupoComponent implements OnInit {
       if (/^[a-gA-G]{1}/.test(event.data.Grupo.Codigo)) {
         if (this.info_grupo === undefined) {
           this.createGrupo(event.data.Grupo);
-          console.log(event.data.Grupo.Codigo);
         } else {
           this.updateGrupo(event.data.Grupo);
         }
+      }else {
+        (Swal as any).fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: 'Inserte un código válido!',
+          footer: '<a href>El código debe ser una letra entre A-G</a>',
+        });
       }
     }
   }

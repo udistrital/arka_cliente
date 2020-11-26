@@ -364,6 +364,8 @@
     "id": "id",
     "placeholder_id": "id",
     "nombre": "Name",
+    "placeholder_codigo": "Ex.: A",
+    "placeholder_codigo0": "Ex.: 11",
     "placeholder_nombre": "name",
     "codigo": "Code",
     "codigo_abreviacion": "Abbreviation Code",
