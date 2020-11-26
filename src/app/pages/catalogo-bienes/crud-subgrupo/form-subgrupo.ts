@@ -14,6 +14,13 @@ export let FORM_SUBGRUPO = {
             placeholder_i18n: 'codigo',
             requerido: true,
             tipo: 'number',
+            maxlength: '2',
+            prefix: {
+                value: '',
+            },
+            suffix: {
+                value: '',
+            },
         },
         {
             etiqueta: 'input',

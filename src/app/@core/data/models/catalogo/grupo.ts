@@ -5,7 +5,7 @@ import { Subgrupo } from './subgrupo';
 
 export class Grupo {
   Id: number;
-  Codigo: number;
+  Codigo: string;
   Nombre: string;
   Descripcion: string;
   Activo: boolean;
@@ -15,7 +15,7 @@ export class Grupo {
 
 export class Grupo2 {
   Id: number;
-  Codigo: number;
+  Codigo: string;
   Nombre: string;
   Descripcion: string;
   Activo: boolean;

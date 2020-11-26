@@ -97,6 +97,8 @@ export class CrudGrupoComponent implements OnInit {
             const detalle = <Detalle>res[0].Detalle;
             const subgrupo = <Grupo>res[0].Subgrupo;
             // console.log(detalle);
+            console.log(res);
+
             // console.log(subgrupo);
             const info__grupo = new Grupo2;
             this.detalle_id = detalle.Id;
@@ -160,7 +162,7 @@ export class CrudGrupoComponent implements OnInit {
               this.info_grupo = <Grupo2><unknown>res;
               this.showToast('info',
                 this.translate.instant('GLOBAL.Actualizado'),
-                this.translate.instant('GLOBAL.subgrupo.grupo.respuesta_actualizar_ok') );
+                this.translate.instant('GLOBAL.subgrupo.grupo.respuesta_actualizar_ok'));
               // this.loadGrupo();
               this.eventChange.emit(true);
 
@@ -185,6 +187,7 @@ export class CrudGrupoComponent implements OnInit {
 
           catalogo.Id = parseFloat(this.catalogoid);
           grupo.Activo = true;
+          grupo.TipoNivelId = { Id: 1 };
 
           if (grupo.Depreciacion === '') {
             grupo.Depreciacion = false;
@@ -208,7 +211,7 @@ export class CrudGrupoComponent implements OnInit {
               this.eventChange.emit(true);
               this.showToast('info',
                 this.translate.instant('GLOBAL.Creado'),
-                this.translate.instant('GLOBAL.subgrupo.grupo.respuesta_crear_ok') );
+                this.translate.instant('GLOBAL.subgrupo.grupo.respuesta_crear_ok'));
             });
         }
       });
@@ -222,6 +225,7 @@ export class CrudGrupoComponent implements OnInit {
     if (event.valid) {
       if (this.info_grupo === undefined) {
         this.createGrupo(event.data.Grupo);
+        console.log(event.data.Grupo);
       } else {
         this.updateGrupo(event.data.Grupo);
       }

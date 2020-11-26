@@ -1,7 +1,7 @@
 import { Grupo } from '../../../@core/data/models/catalogo/grupo';
 import { Subgrupo, SubgrupoTransaccion } from '../../../@core/data/models/catalogo/subgrupo';
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { FORM_SUBGRUPO } from './form-subgrupo';
+// import { FORM_SUBGRUPO } from './form-subgrupo';
 import { ToasterService, ToasterConfig, Toast, BodyOutputType } from 'angular2-toaster';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import Swal from 'sweetalert2';
@@ -32,7 +32,7 @@ export class CrudSubgrupoComponent implements OnInit {
   @Output() eventChange = new EventEmitter();
   @Output() mostrar = new EventEmitter();
 
-  info_subgrupo: Subgrupo;
+  info_subgrupo: any;
   formSubgrupo: any;
   regSubgrupo: any;
   clean: boolean;
@@ -45,7 +45,7 @@ export class CrudSubgrupoComponent implements OnInit {
     this.formSubgrupo = FORM_SUBGRUPO;
     this.construirForm();
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
-      this.construirForm();
+    this.construirForm();
     });
   }
 
@@ -87,16 +87,19 @@ export class CrudSubgrupoComponent implements OnInit {
 
   public loadSubgrupo(): void {
     if (this.subgrupo_id !== undefined && this.subgrupo_id !== 0) {
+      this.formSubgrupo.campos[this.getIndexForm('Codigo')].prefix.value = ''
+      this.formSubgrupo.campos[this.getIndexForm('Codigo')].suffix.value = ''
+
       this.catalogoElementosService.getSubgrupoById(this.subgrupo_id)
         .subscribe(res => {
           if (Object.keys(res[0]).length !== 0) {
             this.info_subgrupo = <Subgrupo>res[0].SubgrupoHijoId;
+            this.loadPrefixSuffixList();
             this.mostrar.emit(true);
           } else {
             this.info_subgrupo = undefined;
             this.clean = !this.clean;
             this.mostrar.emit(false);
-
           }
         });
     } else {
@@ -148,6 +151,9 @@ export class CrudSubgrupoComponent implements OnInit {
           const subgrupoHijo = new Array<Subgrupo>();
           subgrupo.TipoBienId = this.subgrupoPadre.TipoBienId;
           subgrupo.Activo = true;
+          // console.log(this.subgrupoPadre);
+          subgrupo.TipoNivelId = { Id: (this.subgrupoPadre.TipoNivelId.Id+1) };
+          // subgrupo.Codigo = `${subgrupo.Codigo}`;
           subgrupoHijo.push(subgrupo);
           subgrupoPost.SubgrupoPadre = this.subgrupoPadre;
           subgrupoPost.SubgrupoHijo = subgrupoHijo;
@@ -157,7 +163,7 @@ export class CrudSubgrupoComponent implements OnInit {
               this.eventChange.emit(true);
               this.showToast('info', this.translate.instant('GLOBAL.Creado'),
                 // TODO: Actualizar dinamicamente este texto:
-                this.translate.instant('GLOBAL.subgrupo.segmento.respuesta_crear_ok') );
+                this.translate.instant('GLOBAL.subgrupo.segmento.respuesta_crear_ok'));
             });
         }
       });
@@ -165,17 +171,76 @@ export class CrudSubgrupoComponent implements OnInit {
 
   ngOnInit() {
     this.loadSubgrupo();
+    this.loadPrefixSuffixCreate();
+}
+
+  loadPrefixSuffixCreate (){
+    if (this.subgrupoPadre !== undefined){
+      if (this.subgrupoPadre.TipoNivelId.Id == 1){
+        this.formSubgrupo.campos[this.getIndexForm('Codigo')].prefix.value = '';
+        this.formSubgrupo.campos[this.getIndexForm('Codigo')].suffix.value = '0000';
+      }
+      else  if (this.subgrupoPadre.TipoNivelId.Id == 2){
+        this.formSubgrupo.campos[this.getIndexForm('Codigo')].prefix.value = this.subgrupoPadre.Codigo.substring(0,2);
+        this.formSubgrupo.campos[this.getIndexForm('Codigo')].suffix.value = '00';
+      }else if (this.subgrupoPadre.TipoNivelId.Id == 3){
+        this.formSubgrupo.campos[this.getIndexForm('Codigo')].prefix.value = this.subgrupoPadre.Codigo.substring(0,4);
+        this.formSubgrupo.campos[this.getIndexForm('Codigo')].suffix.value = '';
+      }else{
+        this.formSubgrupo.campos[this.getIndexForm('Codigo')].prefix.value = '';
+        this.formSubgrupo.campos[this.getIndexForm('Codigo')].suffix.value = '';
+      }
+      this.construirForm();
+    }
   }
 
-  validarForm(event) {
-    // console.log(event);
-    if (event.valid) {
-      if (this.info_subgrupo === undefined) {
-        this.createSubgrupo(event.data.Subgrupo);
-      } else {
-        this.updateSubgrupo(event.data.Subgrupo);
+  loadPrefixSuffixList (){
+    if (this.info_subgrupo !== undefined){
+      if (this.info_subgrupo.TipoNivelId.Id == 2){
+        this.formSubgrupo.campos[this.getIndexForm('Codigo')].prefix.value = '';
+        this.info_subgrupo.Codigo = this.info_subgrupo.Codigo.substring(0,2);
+        this.formSubgrupo.campos[this.getIndexForm('Codigo')].suffix.value = '0000';
+      }
+      else  if (this.info_subgrupo.TipoNivelId.Id == 3){
+        this.formSubgrupo.campos[this.getIndexForm('Codigo')].prefix.value = this.info_subgrupo.Codigo.substring(0,2);
+        this.info_subgrupo.Codigo = this.info_subgrupo.Codigo.substring(2,4);
+        this.formSubgrupo.campos[this.getIndexForm('Codigo')].suffix.value = '00';
+      }else if (this.info_subgrupo.TipoNivelId.Id == 4){
+        this.formSubgrupo.campos[this.getIndexForm('Codigo')].prefix.value = this.info_subgrupo.Codigo.substring(0,4);
+        this.info_subgrupo.Codigo = this.info_subgrupo.Codigo.substring(4,6);
+        this.formSubgrupo.campos[this.getIndexForm('Codigo')].suffix.value = '';
+      }else{
+        this.formSubgrupo.campos[this.getIndexForm('Codigo')].prefix.value = '';
+        this.formSubgrupo.campos[this.getIndexForm('Codigo')].suffix.value = '';
       }
     }
+  }
+
+
+  validarForm(event) {
+    console.log(event);
+    if (event.valid) {
+      if (this.info_subgrupo === undefined) {
+        if (this.subgrupoPadre.TipoNivelId.Id == 1){
+          event.data.Subgrupo.Codigo = event.data.Subgrupo.Codigo+'0000';
+        }else if (this.subgrupoPadre.TipoNivelId.Id == 2){
+          event.data.Subgrupo.Codigo = this.subgrupoPadre.Codigo.substring(0,2)+event.data.Subgrupo.Codigo+'00';
+          this.formSubgrupo.campos[this.getIndexForm('Codigo')].prefix.value = this.subgrupoPadre.Codigo.substring(0,2);
+          }else if (this.subgrupoPadre.TipoNivelId.Id == 3){
+            event.data.Subgrupo.Codigo = this.subgrupoPadre.Codigo.substring(0,4)+event.data.Subgrupo.Codigo;
+            this.formSubgrupo.campos[this.getIndexForm('Codigo')].prefix.value = this.subgrupoPadre.Codigo.substring(0,4);
+        }
+        this.construirForm();
+        this.createSubgrupo(event.data.Subgrupo);
+      } else {
+        console.log(this.info_subgrupo.Codigo);
+        console.log(event.data.Subgrupo.Codigo);
+        this.updateSubgrupo(event.data.Subgrupo);
+        console.log(event.data.Subgrupo);
+        console.log(this.subgrupoPadre);
+      }
+    }
+    
   }
 
   private showToast(type: string, title: string, body: string) {
@@ -200,3 +265,69 @@ export class CrudSubgrupoComponent implements OnInit {
   }
 
 }
+
+let FORM_SUBGRUPO = {
+  titulo: 'Subgrupo1',
+  tipo_formulario: 'mini',
+  btn: 'Guardar',
+  alertas: true,
+  modelo: 'Subgrupo',
+  campos: [
+    {
+      etiqueta: 'input',
+      claseGrid: 'col-lg-4 col-md-4 col-sm-4 col-xs-4',
+      nombre: 'Codigo',
+      label_i18n: 'codigo',
+      placeholder_i18n: 'codigo',
+      requerido: true,
+      tipo: 'text',
+      maxlength: '2',
+      valor: '2',
+      prefix: {
+        value: '',
+      },
+      suffix: {
+        value: '',
+      },
+      pattern: '[0-9]{2}',
+    },
+    {
+      etiqueta: 'input',
+      claseGrid: 'col-lg-8 col-md-8 col-sm-8 col-xs-8',
+      nombre: 'Nombre',
+      label_i18n: 'nombre',
+      placeholder_i18n: 'nombre',
+      requerido: true,
+      tipo: 'text',
+    },
+    {
+      etiqueta: 'input',
+      claseGrid: 'col-lg-12 col-md-12 col-sm-12 col-xs-12',
+      nombre: 'Descripcion',
+      label_i18n: 'descripcion',
+      placeholder_i18n: 'descripcion',
+      requerido: true,
+      tipo: 'text',
+    },
+    // {
+    //     etiqueta: 'checkbox',
+    //     claseGrid: 'col-6',
+    //     nombre: 'Activo',
+    //     label_i18n: 'activo',
+    //     placeholder_i18n: 'activo',
+    //     requerido: true,
+    //     tipo: 'checkbox',
+    // },
+    // {
+    //     etiqueta: 'select',
+    //     claseGrid: 'col-6',
+    //     nombre: 'Grupo',
+    //     label_i18n: 'grupo',
+    //     placeholder_i18n: 'grupo',
+    //     requerido: true,
+    //     tipo: 'Grupo',
+    //     // key: 'Name',
+    //     opciones: [],
+    // },
+  ],
+};
