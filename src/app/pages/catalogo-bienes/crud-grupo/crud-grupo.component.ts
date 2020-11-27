@@ -1,9 +1,9 @@
 import { Catalogo } from '../../../@core/data/models/catalogo/catalogo';
 import { Detalle } from '../../../@core/data/models/catalogo/detalle';
-import { Grupo, Grupo2 } from '../../../@core/data/models/catalogo/jerarquia';
+import { TipoNivelID } from '../../../@core/data/models/catalogo/tipo_nivel';
+import { Grupo, Grupo2, SubgrupoComun } from '../../../@core/data/models/catalogo/jerarquia';
 import { GrupoTransaccion } from '../../../@core/data/models/catalogo/transacciones';
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { TipoBien } from '../../../@core/data/models/acta_recibido/tipo_bien';
 import { FORM_GRUPO } from './form-grupo';
 import { ToasterService, ToasterConfig, Toast, BodyOutputType } from 'angular2-toaster';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
@@ -22,7 +22,6 @@ export class CrudGrupoComponent implements OnInit {
   config: ToasterConfig;
   grupo_id: number;
   catalogoid: any;
-  detalle_id: number;
 
   @Input('grupo_id')
   set name(grupo_id: number) {
@@ -38,7 +37,7 @@ export class CrudGrupoComponent implements OnInit {
   @Output() eventChange = new EventEmitter();
   @Output() mostrar = new EventEmitter();
 
-  info_grupo: Grupo2;
+  info_grupo: Grupo;
   formGrupo: any;
   regGrupo: any;
   clean: boolean;
@@ -53,7 +52,6 @@ export class CrudGrupoComponent implements OnInit {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
       this.construirForm();
     });
-    this.loadOptionsCatalogo();
   }
 
   construirForm() {
@@ -67,17 +65,6 @@ export class CrudGrupoComponent implements OnInit {
 
   useLanguage(language: string) {
     this.translate.use(language);
-  }
-
-  loadOptionsCatalogo(): void {
-    let Tipo_Bien: Array<any> = [];
-    this.catalogoElementosService.getTipoBien()
-      .subscribe(res => {
-        if (res !== null) {
-          Tipo_Bien = <Array<TipoBien>>res;
-        }
-        this.formGrupo.campos[this.getIndexForm('TipoBienId')].opciones = Tipo_Bien;
-      });
   }
 
   getIndexForm(nombre: String): number {
@@ -95,21 +82,9 @@ export class CrudGrupoComponent implements OnInit {
     if (this.grupo_id !== undefined && this.grupo_id !== 0) {
       this.catalogoElementosService.getGrupoTransaccionById(this.grupo_id)
         .subscribe(res => {
+          // console.log({'loadGrupo() - res': res});
           if (Object.keys(res[0]).length !== 0) {
-            const detalle = <Detalle>res[0].Detalle;
-            const subgrupo = <Grupo>res[0].Subgrupo;
-            // console.log(detalle);
-            // console.log(subgrupo);
-            const info__grupo = new Grupo2;
-            this.detalle_id = detalle.Id;
-            info__grupo.Descripcion = subgrupo.Descripcion;
-            info__grupo.Nombre = subgrupo.Nombre;
-            info__grupo.Codigo = subgrupo.Codigo;
-            info__grupo.TipoBienId = detalle.TipoBienId;
-            info__grupo.Depreciacion = detalle.Depreciacion;
-            info__grupo.Valorizacion = detalle.Valorizacion;
-            this.info_grupo = info__grupo;
-            // console.log(res)
+            this.info_grupo = <Grupo>res[0].Subgrupo;
             this.mostrar.emit(true);
           } else {
             this.info_grupo = undefined;
@@ -118,7 +93,6 @@ export class CrudGrupoComponent implements OnInit {
           }
         });
     } else {
-      // this.info_grupo = undefined;
       this.clean = !this.clean;
     }
   }
@@ -136,36 +110,22 @@ export class CrudGrupoComponent implements OnInit {
         if (willDelete.value) {
           this.info_grupo = <Grupo2>grupo;
 
-          const grupoPut = new GrupoTransaccion;
-          const catalogo = new Catalogo;
-          const detalle = new Detalle;
+          const grupoActual = <SubgrupoComun>grupo;
+          // console.log({'updateGrupo(grupoActual)': grupoActual});
 
-          catalogo.Id = parseFloat(this.catalogoid as string);
-          grupo.Activo = true;
-          grupo.Id = this.grupo_id;
+          grupoActual.Activo = true;
+          grupoActual.Id = this.grupo_id;
+          grupoActual.TipoNivelId = <TipoNivelID>{'Id': 1}; // 1 --> Grupo
 
-          detalle.Depreciacion = grupo.Depreciacion;
-          detalle.Valorizacion = grupo.Valorizacion;
-          detalle.TipoBienId = grupo.TipoBienId;
-          detalle.SubgrupoId = grupo;
-          detalle.Activo = true;
-          detalle.Id = this.detalle_id;
-
-          grupoPut.Catalogo = catalogo;
-          grupoPut.Subgrupo = grupo;
-          grupoPut.DetalleSubgrupo = detalle;
-          // console.log(this.grupo_id);
-          // console.log(grupoPut);
-          this.catalogoElementosService.putGrupo(grupoPut, grupo.Id)
+          this.catalogoElementosService.putSubgrupo(grupoActual, grupo.Id)
             .subscribe(res => {
               // console.log(res);
-              this.info_grupo = <Grupo2><unknown>res;
+              this.info_grupo = <Grupo2><unknown>res; // esto es realmente necesario?
               this.showToast('info',
                 this.translate.instant('GLOBAL.Actualizado'),
                 this.translate.instant('GLOBAL.subgrupo.grupo.respuesta_actualizar_ok') );
               // this.loadGrupo();
               this.eventChange.emit(true);
-
             });
         }
       });
@@ -181,27 +141,26 @@ export class CrudGrupoComponent implements OnInit {
     (Swal as any).fire(opt)
       .then((willDelete) => {
         if (willDelete.value) {
+
           const grupoPost = new GrupoTransaccion;
           const catalogo = new Catalogo;
-          const detalle = new Detalle;
 
           catalogo.Id = parseFloat(this.catalogoid);
           grupo.Activo = true;
 
-          if (grupo.Depreciacion === '') {
-            grupo.Depreciacion = false;
-          }
-          if (grupo.Valorizacion === '') {
-            grupo.Valorizacion = false;
-          }
-
-          detalle.Depreciacion = grupo.Depreciacion;
-          detalle.Valorizacion = grupo.Valorizacion;
-          detalle.TipoBienId = grupo.TipoBienId;
+          // TODO: Eliminar este bloque PROVISIONAL una vez se actualice la API
+          // (Revisar también en GrupoTransaccion)
+          grupoPost.DetalleSubgrupo = <Detalle>{
+            'Depreciacion': false,
+            'Valorizacion': false,
+            'Deterioro': false,
+            'Activo': false,
+            'TipoBienId': {'Id': 1},
+          };
 
           grupoPost.Catalogo = catalogo;
           grupoPost.Subgrupo = grupo;
-          grupoPost.DetalleSubgrupo = detalle;
+          grupoPost.Subgrupo.TipoNivelId = <TipoNivelID>{'Id': 1}; // 1 --> Grupo
           // console.log(grupoPost)
           this.catalogoElementosService.postGrupo(grupoPost)
             .subscribe(res => {

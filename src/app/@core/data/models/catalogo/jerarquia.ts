@@ -1,5 +1,7 @@
 import { CatalogoID, Catalogo } from './catalogo';
-import { TipoBien } from '../acta_recibido/tipo_bien';
+import { Detalle } from './detalle';
+import { TipoBienID } from '../acta_recibido/tipo_bien';
+import { TipoNivelID } from './tipo_nivel';
 import { VerDetalleComponent } from '../../../../pages/acta-recibido/ver-detalle/ver-detalle.component';
 
 export class SubgrupoID {
@@ -11,12 +13,12 @@ export class SubgrupoComun extends SubgrupoID {
   Nombre: string;
   Descripcion: string;
   Activo: boolean;
+  TipoNivelId: TipoNivelID;
 }
 
 export class Subgrupo extends SubgrupoComun {
   FechaCreacion: Date;
   FechaModificacion: Date;
-  TipoBienId: TipoBien;
 }
 
 export class Grupo extends SubgrupoComun {
@@ -24,12 +26,16 @@ export class Grupo extends SubgrupoComun {
   // TipoBienId: TipoBien;
 }
 
+export class Clase extends Subgrupo {
+  Detalle: Detalle;
+}
+
 // A eliminar ?
 export class Grupo2 extends Grupo {
   Depreciacion: boolean;
   Valorizacion: boolean;
   Deterioro: boolean;
-  TipoBienId: TipoBien;
+  TipoBienId: TipoBienID;
 }
 
 // A eliminar ?

@@ -53,7 +53,7 @@
 
     <nb-card *ngIf="uid_4">
       <nb-card-header>
-        {{'GLOBAL.subgrupo.'+modificando_tipo+'.modificar' | translate}}
+        {{'GLOBAL.subgrupo.'+modificando_tipo+'.agregar' | translate}}
       </nb-card-header>
       <ngx-crud-subgrupo [subgrupo_Padre]="subgrupoPadre" (eventChange)="recargarCatalogo($event)"></ngx-crud-subgrupo>
       <nb-card-footer>

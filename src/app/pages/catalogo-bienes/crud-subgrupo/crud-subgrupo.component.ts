@@ -1,4 +1,7 @@
-import { Grupo, Subgrupo } from '../../../@core/data/models/catalogo/jerarquia';
+import { Grupo, Grupo2, Clase, Subgrupo, SubgrupoID } from '../../../@core/data/models/catalogo/jerarquia';
+import { Detalle } from '../../../@core/data/models/catalogo/detalle';
+import { TipoNivelID } from '../../../@core/data/models/catalogo/tipo_nivel';
+import { TipoBien, TipoBienID } from '../../../@core/data/models/acta_recibido/tipo_bien';
 import { SubgrupoTransaccion } from '../../../@core/data/models/catalogo/transacciones';
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { FORM_SUBGRUPO } from './form-subgrupo';
@@ -17,6 +20,8 @@ export class CrudSubgrupoComponent implements OnInit {
   config: ToasterConfig;
   subgrupo_id: number;
   subgrupoPadre: any;
+  detalle: Detalle;
+  detalle_id: number;
 
   @Input('subgrupo_id')
   set name(subgrupo_id: number) {
@@ -32,7 +37,7 @@ export class CrudSubgrupoComponent implements OnInit {
   @Output() eventChange = new EventEmitter();
   @Output() mostrar = new EventEmitter();
 
-  info_subgrupo: Subgrupo;
+  info_subgrupo: Grupo2;
   formSubgrupo: any;
   regSubgrupo: any;
   clean: boolean;
@@ -47,13 +52,16 @@ export class CrudSubgrupoComponent implements OnInit {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
       this.construirForm();
     });
+    this.loadOptionsCatalogo();
   }
 
   construirForm() {
-    // TODO: Actualizar dinamicamente este texto:
+    // TODO: Actualizar dinamicamente este texto segun el nivel:
     this.formSubgrupo.titulo = this.translate.instant('GLOBAL.subgrupo.segmento.nombre');
     this.formSubgrupo.btn = this.translate.instant('GLOBAL.guardar');
+
     for (let i = 0; i < this.formSubgrupo.campos.length; i++) {
+      // TODO: Actualizar dinamicamente estos textos segun el nivel:
       this.formSubgrupo.campos[i].label = this.translate.instant('GLOBAL.' + this.formSubgrupo.campos[i].label_i18n);
       this.formSubgrupo.campos[i].placeholder = this.translate.instant('GLOBAL.placeholder_' + this.formSubgrupo.campos[i].label_i18n);
     }
@@ -63,14 +71,14 @@ export class CrudSubgrupoComponent implements OnInit {
     this.translate.use(language);
   }
 
-  loadOptionsGrupo(): void {
-    let grupo: Array<any> = [];
-    this.catalogoElementosService.getGrupo()
+  loadOptionsCatalogo(): void {
+    let Tipo_Bien: Array<any> = [];
+    this.catalogoElementosService.getTipoBien()
       .subscribe(res => {
         if (res !== null) {
-          grupo = <Array<Grupo>>res;
+          Tipo_Bien = <Array<TipoBien>>res;
         }
-        this.formSubgrupo.campos[this.getIndexForm('Grupo')].opciones = grupo;
+        this.formSubgrupo.campos[this.getIndexForm('TipoBienId')].opciones = Tipo_Bien;
       });
   }
 
@@ -87,25 +95,47 @@ export class CrudSubgrupoComponent implements OnInit {
 
   public loadSubgrupo(): void {
     if (this.subgrupo_id !== undefined && this.subgrupo_id !== 0) {
+      // TODO - PROVISIONAL: Esta línea podría NO usarse ...
+      this.catalogoElementosService.getDetalleSubgrupo(this.subgrupo_id)
+      /* ... Debería usarse UNICAMENTE esta (Cambiar despues de actualizada la API):
       this.catalogoElementosService.getSubgrupoById(this.subgrupo_id)
+      */
         .subscribe(res => {
+          // console.log({'loadSubgrupo() - res':  res});
           if (Object.keys(res[0]).length !== 0) {
-            this.info_subgrupo = <Subgrupo>res[0].SubgrupoHijoId;
+            // const detalle = <Detalle>res[0].Detalle;
+            const detalle = <Detalle>res[0];
+            const subgrupo = <Grupo>res[0].SubgrupoId;
+
+            const info__grupo = new Grupo2;
+            this.detalle_id = detalle.Id;
+            info__grupo.Descripcion = subgrupo.Descripcion;
+            info__grupo.Nombre = subgrupo.Nombre;
+            info__grupo.Codigo = subgrupo.Codigo;
+            info__grupo.TipoBienId = detalle.TipoBienId;
+            info__grupo.Depreciacion = detalle.Depreciacion;
+            info__grupo.Valorizacion = detalle.Valorizacion;
+
+            // this.info_subgrupo = <Subgrupo>res[0].Subgrupo;
+            this.info_subgrupo = info__grupo;
+            // console.log({'cr_subg.subgrupoPadre': this.subgrupoPadre});
             this.mostrar.emit(true);
           } else {
             this.info_subgrupo = undefined;
             this.clean = !this.clean;
             this.mostrar.emit(false);
-
           }
         });
     } else {
+      // this.subgrupo = undefined;
       this.info_subgrupo = undefined;
       this.clean = !this.clean;
     }
   }
 
   updateSubgrupo(subgrupo: any): void {
+
+    // console.log({'updateSubgrupo(subgrupo)': subgrupo});
 
     const opt: any = {
       title: this.translate.instant('GLOBAL.Actualizar'),
@@ -117,8 +147,32 @@ export class CrudSubgrupoComponent implements OnInit {
     (Swal as any).fire(opt)
       .then((willDelete) => {
         if (willDelete.value) {
-          this.info_subgrupo = <Subgrupo>subgrupo;
-          this.catalogoElementosService.putSubgrupo(this.info_subgrupo, this.info_subgrupo.Id)
+          // this.info = <Subgrupo>subgrupo;
+          this.info_subgrupo = <Grupo2>subgrupo;
+
+          const subGrupoPut = new SubgrupoTransaccion;
+          // TODO: Esto debería depender del nivel
+          const detalle = new Detalle;
+
+          subgrupo.Activo = true;
+          subgrupo.Id = this.subgrupo_id;
+
+          detalle.Depreciacion = subgrupo.Depreciacion;
+          detalle.Valorizacion = subgrupo.Valorizacion;
+          detalle.TipoBienId = subgrupo.TipoBienId;
+          detalle.SubgrupoId = <SubgrupoID>subgrupo;
+          detalle.Activo = true;
+          detalle.Id = this.detalle_id;
+          subgrupo.DetalleSubgrupo = detalle;
+
+          // TODO: Esto debe depender del nivel
+          const subgrupoNuevo = <Clase>subgrupo; // con detalle
+          // const subgrupoNuevo =  <Subgrupo>subgrupo; // sin detalle
+
+          subGrupoPut.SubgrupoPadre = <SubgrupoID> this.subgrupoPadre;
+          subGrupoPut.SubgrupoHijo = [subgrupoNuevo];
+
+          this.catalogoElementosService.putSubgrupo(subGrupoPut, this.info_subgrupo.Id)
             .subscribe(res => {
               this.loadSubgrupo();
               this.eventChange.emit(true);
@@ -144,16 +198,40 @@ export class CrudSubgrupoComponent implements OnInit {
     (Swal as any).fire(opt)
       .then((willDelete) => {
         if (willDelete.value) {
+          // console.log({'formulario subgrupo': subgrupo});
+
           const subgrupoPost = new SubgrupoTransaccion;
-          const subgrupoHijo = new Array<Subgrupo>();
-          subgrupo.TipoBienId = this.subgrupoPadre.TipoBienId;
+          const subgrupoHijos = new Array<Subgrupo>();
+
           subgrupo.Activo = true;
-          subgrupoHijo.push(subgrupo);
-          subgrupoPost.SubgrupoPadre = this.subgrupoPadre;
-          subgrupoPost.SubgrupoHijo = subgrupoHijo;
+
+          // TODO: La creacion del detalle (esta parte)
+          // debe depender del nivel actual.
+          const detalle = new Detalle;
+          detalle.Depreciacion = (subgrupo.Depreciacion === '') ? false : subgrupo.Depreciacion;
+          detalle.Valorizacion = (subgrupo.Valorizacion === '') ? false : subgrupo.Valorizacion;
+          detalle.TipoBienId = <TipoBienID>{'Id': subgrupo.TipoBienId.Id};
+          subgrupo.DetalleSubgrupo = detalle;
+
+          // Limpieza antes de enviar el POST...
+          delete subgrupo.Depreciacion;
+          delete subgrupo.Valorizacion;
+          delete subgrupo.TipoBienId;
+
+          subgrupoHijos.push(subgrupo);
+          subgrupoPost.SubgrupoPadre = <SubgrupoID>{'Id': this.subgrupoPadre.Id};
+          subgrupoPost.SubgrupoHijo = [subgrupo];
+          subgrupoPost.SubgrupoHijo[0].TipoNivelId = <TipoNivelID>{'Id': 1}; // Grupo = 1 - TODO: Cambiar
+
+          // console.log({'POST': subgrupoPost});
+
           this.catalogoElementosService.postSubgrupo(subgrupoPost)
             .subscribe(res => {
-              this.info_subgrupo = <Subgrupo><unknown>res;
+              // console.log({'createSubgrupo()>postSubgrupo>res': res});
+              // this.subgrupo = <Subgrupo><unknown>res;
+              const subg = <Clase><unknown>res;
+              // this.info_subgrupo = <Subgrupo>subg;
+              this.detalle = <Detalle>subg.Detalle;
               this.eventChange.emit(true);
               this.showToast('info', this.translate.instant('GLOBAL.Creado'),
                 // TODO: Actualizar dinamicamente este texto:

@@ -1,12 +1,11 @@
 import { CatalogoID } from './catalogo';
-import { Detalle } from './detalle';
 import { SubgrupoID, Grupo, Subgrupo } from './jerarquia';
-import { TipoBien } from '../acta_recibido/tipo_bien';
+import { Detalle } from './detalle'; // TODO: Eliminar una vez se actualice la API
 
 export class GrupoTransaccion {
   Catalogo: CatalogoID;
   Subgrupo: Grupo;
-  DetalleSubgrupo: Detalle;
+  DetalleSubgrupo: Detalle; // TODO: Eliminar una vez se actualice la API
 }
 
 export class SubgrupoTransaccion {

@@ -116,14 +116,12 @@ export class RegistroCatalogoComponent implements OnInit {
       res => {
         if (Object.keys(res[0]).length !== 0) {
           // Si es grupo (no tiene subgrupo padre)
-          // console.log('res');
-          // console.log(res);
+          // console.log({'receiveMessage - res': res});
           this.uid_1 = event.Id;
         } else {
           // Si NO es grupo (segmento/familia/...)
           // this.catalogoElementosService.getSubgrupoById(event.Id).subscribe( res_sub => {
-          //   console.log('res_sub');
-          //   console.log(res_sub);
+          //   console.log({'receiveMessage - res_sub': res_sub});
           // });
           this.uid_2 = event.Id;
         }
