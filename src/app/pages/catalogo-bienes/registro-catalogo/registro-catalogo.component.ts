@@ -58,7 +58,6 @@ export class RegistroCatalogoComponent implements OnInit {
   loadCatalogos() {
     this.catalogoElementosService.getCatalogo().subscribe((res) => {
       if (res !== null) {
-        // console.log(res);
         const data = <Array<Catalogo>>res;
         for (const datos in Object.keys(data)) {
           if (data.hasOwnProperty(datos)) {

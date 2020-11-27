@@ -26,7 +26,7 @@ export class DinamicformComponent implements OnInit, OnChanges {
 
   constructor(private sanitization: DomSanitizer,
     private completerService: CompleterService,
-    ) {
+  ) {
     this.data = {
       valid: true,
       data: {},
@@ -82,7 +82,7 @@ export class DinamicformComponent implements OnInit, OnChanges {
                         }));
                       }
                       break;
-                      case 'autocomplete':
+                    case 'autocomplete':
                       if (element.hasOwnProperty('opciones')) {
                         this.dataService[element.id] = this.completerService.local(element.opciones, element.key, element.key);
                         element.opciones.forEach((e1) => {
@@ -154,14 +154,14 @@ export class DinamicformComponent implements OnInit, OnChanges {
   cleanURL(oldURL: string): SafeResourceUrl {
     return this.sanitization.bypassSecurityTrustUrl(oldURL);
   }
-
-
-
   onChangeDate(event, c) {
     c.valor = event.value;
   }
 
   validCampo(c): boolean {
+    if (c.uppercase) {
+      c.valor = c.valor.toUpperCase();
+    }
 
     if (c.etiqueta === 'file') {
       console.info((c.etiqueta === 'file' && c.valor.name === undefined));
@@ -205,6 +205,22 @@ export class DinamicformComponent implements OnInit, OnChanges {
         return false;
       }
     }
+    if (c.uppercase) {
+      c.valor = c.valor.toUpperCase();
+    }
+    if (c.pattern) {
+      if (c.pattern.value !== undefined ) {
+        const regex = new RegExp(c.pattern.value);
+        if (!regex.test(c.valor)) {
+          c.alerta = c.pattern.message;
+          return false;
+        } else {
+          c.alerta = null;
+          return true;
+        }
+      }
+    }
+
     if (c.etiqueta === 'file' && c.valor !== null && c.valor !== undefined && c.valor !== '') {
       if (c.valor.size > c.tamanoMaximo * 1024000) {
         c.clase = 'form-control form-control-danger';
@@ -228,7 +244,9 @@ export class DinamicformComponent implements OnInit, OnChanges {
   }
 
   validCampo2(c): boolean {
-
+    if (c.uppercase) {
+      c.valor = c.valor.toUpperCase();
+    }
     if (c.etiqueta === 'file') {
       console.info((c.etiqueta === 'file' && c.valor.name === undefined));
     }
@@ -271,6 +289,20 @@ export class DinamicformComponent implements OnInit, OnChanges {
         return false;
       }
     }
+
+    if (c.pattern) {
+      if (c.pattern.value !== undefined ) {
+        const regex = new RegExp(c.pattern.value);
+        if (!regex.test(c.valor)) {
+          c.alerta = c.pattern.message;
+          return false;
+        } else {
+          c.alerta = null;
+          return true;
+        }
+      }
+    }
+
     if (c.etiqueta === 'file' && c.valor !== null && c.valor !== undefined && c.valor !== '') {
       if (c.valor.size > c.tamanoMaximo * 1024000) {
         c.clase = 'form-control form-control-danger';
@@ -309,6 +341,7 @@ export class DinamicformComponent implements OnInit, OnChanges {
       // console.log(d);
       if (this.normalform.btn) {
         /// console.log('ok');
+
         if (this.validCampo(d)) {
           if (d.etiqueta === 'file') {
             result[d.nombre] = { nombre: d.nombre, file: d.File };

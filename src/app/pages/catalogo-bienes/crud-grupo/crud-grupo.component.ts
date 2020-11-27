@@ -141,7 +141,6 @@ export class CrudGrupoComponent implements OnInit {
           catalogo.Id = parseFloat(this.catalogoid as string);
           grupo.Activo = true;
           grupo.Id = this.grupo_id;
-
           detalle.Depreciacion = grupo.Depreciacion;
           detalle.Valorizacion = grupo.Valorizacion;
           detalle.TipoBienId = grupo.TipoBienId;
@@ -160,7 +159,7 @@ export class CrudGrupoComponent implements OnInit {
               this.info_grupo = <Grupo2><unknown>res;
               this.showToast('info',
                 this.translate.instant('GLOBAL.Actualizado'),
-                this.translate.instant('GLOBAL.subgrupo.grupo.respuesta_actualizar_ok') );
+                this.translate.instant('GLOBAL.subgrupo.grupo.respuesta_actualizar_ok'));
               // this.loadGrupo();
               this.eventChange.emit(true);
 
@@ -185,6 +184,7 @@ export class CrudGrupoComponent implements OnInit {
 
           catalogo.Id = parseFloat(this.catalogoid);
           grupo.Activo = true;
+          grupo.TipoNivelId = { Id: 1 };
 
           if (grupo.Depreciacion === '') {
             grupo.Depreciacion = false;
@@ -208,7 +208,7 @@ export class CrudGrupoComponent implements OnInit {
               this.eventChange.emit(true);
               this.showToast('info',
                 this.translate.instant('GLOBAL.Creado'),
-                this.translate.instant('GLOBAL.subgrupo.grupo.respuesta_crear_ok') );
+                this.translate.instant('GLOBAL.subgrupo.grupo.respuesta_crear_ok'));
             });
         }
       });
@@ -220,11 +220,11 @@ export class CrudGrupoComponent implements OnInit {
 
   validarForm(event) {
     if (event.valid) {
-      if (this.info_grupo === undefined) {
-        this.createGrupo(event.data.Grupo);
-      } else {
-        this.updateGrupo(event.data.Grupo);
-      }
+        if (this.info_grupo === undefined) {
+          this.createGrupo(event.data.Grupo);
+        } else {
+          this.updateGrupo(event.data.Grupo);
+        }
     }
   }
 

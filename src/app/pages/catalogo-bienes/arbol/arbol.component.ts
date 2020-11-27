@@ -22,7 +22,7 @@ interface CatalogoArbol {
   FechaCreacion: Date;
   FechaModificacion: Date;
   Activo: boolean;
-  Codigo: number;
+  Codigo: string;
 }
 
 @Component({

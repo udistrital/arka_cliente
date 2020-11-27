@@ -13,7 +13,13 @@ export let FORM_GRUPO = {
         label_i18n: 'codigo',
         placeholder_i18n: 'codigo',
         requerido: true,
-        tipo: 'number',
+        tipo: 'text',
+        maxlength: '1',
+        uppercase: true,
+        pattern: {
+            value: '^[a-gA-G]{1}',
+            message: '** Formato no válido. Se espera una letra entre A y G',
+        },
     },
     {
         etiqueta: 'input',
