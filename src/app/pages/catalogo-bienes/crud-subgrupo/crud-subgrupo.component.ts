@@ -1,7 +1,7 @@
 import { Grupo } from '../../../@core/data/models/catalogo/grupo';
 import { Subgrupo, SubgrupoTransaccion } from '../../../@core/data/models/catalogo/subgrupo';
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-// import { FORM_SUBGRUPO } from './form-subgrupo';
+import { FORM_SUBGRUPO } from './form-subgrupo';
 import { ToasterService, ToasterConfig, Toast, BodyOutputType } from 'angular2-toaster';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import Swal from 'sweetalert2';
@@ -218,7 +218,6 @@ export class CrudSubgrupoComponent implements OnInit {
 
   validarForm(event) {
     if (event.valid) {
-      if (/^[0-9]{2}/.test(event.data.Subgrupo.Codigo)) {
         if (this.info_subgrupo === undefined) {
           if (this.subgrupoPadre.TipoNivelId.Id === 1) {
             event.data.Subgrupo.Codigo = event.data.Subgrupo.Codigo + '0000';
@@ -234,14 +233,6 @@ export class CrudSubgrupoComponent implements OnInit {
         } else {
           this.updateSubgrupo(event.data.Subgrupo);
         }
-      } else {
-        (Swal as any).fire({
-          icon: 'error',
-          title: 'Oops...',
-          text: 'Inserte un código válido!',
-          footer: '<a href>El código debe ser de dos dígitos</a>',
-        });
-      }
     }
   }
 
@@ -267,53 +258,3 @@ private showToast(type: string, title: string, body: string) {
   }
 
 }
-
-const FORM_SUBGRUPO = {
-  titulo: 'Subgrupo1',
-  tipo_formulario: 'mini',
-  btn: 'Guardar',
-  alertas: true,
-  modelo: 'Subgrupo',
-  campos: [
-    {
-      etiqueta: 'input',
-      claseGrid: 'col-lg-4 col-md-4 col-sm-4 col-xs-4',
-      nombre: 'Codigo',
-      label_i18n: 'codigo',
-      placeholder: 'Ej.: 11',
-      placeholder_i18n: 'codigo',
-      requerido: true,
-      tipo: 'text',
-      maxlength: '2',
-      valor: '2',
-      prefix: {
-        value: '',
-      },
-      suffix: {
-        value: '',
-      },
-      pattern: {
-        value: '^[0-9]{2}',
-        message: '** Formato no válido. Ingrese dos dígitos',
-    },
-    },
-    {
-      etiqueta: 'input',
-      claseGrid: 'col-lg-8 col-md-8 col-sm-8 col-xs-8',
-      nombre: 'Nombre',
-      label_i18n: 'nombre',
-      placeholder_i18n: 'nombre',
-      requerido: true,
-      tipo: 'text',
-    },
-    {
-      etiqueta: 'input',
-      claseGrid: 'col-lg-12 col-md-12 col-sm-12 col-xs-12',
-      nombre: 'Descripcion',
-      label_i18n: 'descripcion',
-      placeholder_i18n: 'descripcion',
-      requerido: true,
-      tipo: 'text',
-    },
-  ],
-};

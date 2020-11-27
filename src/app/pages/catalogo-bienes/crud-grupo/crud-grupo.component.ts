@@ -220,20 +220,11 @@ export class CrudGrupoComponent implements OnInit {
 
   validarForm(event) {
     if (event.valid) {
-      if (/^[a-gA-G]{1}/.test(event.data.Grupo.Codigo)) {
         if (this.info_grupo === undefined) {
           this.createGrupo(event.data.Grupo);
         } else {
           this.updateGrupo(event.data.Grupo);
         }
-      }else {
-        (Swal as any).fire({
-          icon: 'error',
-          title: 'Oops...',
-          text: 'Inserte un código válido!',
-          footer: '<a href>El código debe ser una letra entre A-G</a>',
-        });
-      }
     }
   }
 
