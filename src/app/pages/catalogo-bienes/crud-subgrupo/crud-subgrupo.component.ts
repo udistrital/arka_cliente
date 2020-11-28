@@ -1,6 +1,7 @@
 import { Grupo, Grupo2, Clase, Subgrupo, SubgrupoID } from '../../../@core/data/models/catalogo/jerarquia';
 import { Detalle } from '../../../@core/data/models/catalogo/detalle';
-import { TipoNivelID } from '../../../@core/data/models/catalogo/tipo_nivel';
+import { TipoNivelID, Nivel } from '../../../@core/data/models/catalogo/tipo_nivel';
+import { NivelHelper as nh } from '../../../@core/utils/niveles.helper';
 import { TipoBien, TipoBienID } from '../../../@core/data/models/acta_recibido/tipo_bien';
 import { SubgrupoTransaccion } from '../../../@core/data/models/catalogo/transacciones';
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
@@ -199,6 +200,7 @@ export class CrudSubgrupoComponent implements OnInit {
       .then((willDelete) => {
         if (willDelete.value) {
           // console.log({'formulario subgrupo': subgrupo});
+          // console.log({'subgrupoPadre': this.subgrupoPadre});
 
           const subgrupoPost = new SubgrupoTransaccion;
           const subgrupoHijos = new Array<Subgrupo>();
@@ -218,10 +220,11 @@ export class CrudSubgrupoComponent implements OnInit {
           delete subgrupo.Valorizacion;
           delete subgrupo.TipoBienId;
 
+          const nivelHijo = <TipoNivelID>{'Id': nh.Hijo(<Nivel>this.subgrupoPadre.TipoNivelId.Id)};
           subgrupoHijos.push(subgrupo);
           subgrupoPost.SubgrupoPadre = <SubgrupoID>{'Id': this.subgrupoPadre.Id};
           subgrupoPost.SubgrupoHijo = [subgrupo];
-          subgrupoPost.SubgrupoHijo[0].TipoNivelId = <TipoNivelID>{'Id': 1}; // Grupo = 1 - TODO: Cambiar
+          subgrupoPost.SubgrupoHijo[0].TipoNivelId = nivelHijo;
 
           // console.log({'POST': subgrupoPost});
 

@@ -1,6 +1,6 @@
 import { Catalogo } from '../../../@core/data/models/catalogo/catalogo';
 import { Detalle } from '../../../@core/data/models/catalogo/detalle';
-import { TipoNivelID } from '../../../@core/data/models/catalogo/tipo_nivel';
+import { TipoNivelID, Nivel } from '../../../@core/data/models/catalogo/tipo_nivel';
 import { Grupo, Grupo2, SubgrupoComun } from '../../../@core/data/models/catalogo/jerarquia';
 import { GrupoTransaccion } from '../../../@core/data/models/catalogo/transacciones';
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
@@ -115,7 +115,7 @@ export class CrudGrupoComponent implements OnInit {
 
           grupoActual.Activo = true;
           grupoActual.Id = this.grupo_id;
-          grupoActual.TipoNivelId = <TipoNivelID>{'Id': 1}; // 1 --> Grupo
+          grupoActual.TipoNivelId = <TipoNivelID>{'Id': Nivel.Grupo};
 
           this.catalogoElementosService.putSubgrupo(grupoActual, grupo.Id)
             .subscribe(res => {
@@ -160,7 +160,7 @@ export class CrudGrupoComponent implements OnInit {
 
           grupoPost.Catalogo = catalogo;
           grupoPost.Subgrupo = grupo;
-          grupoPost.Subgrupo.TipoNivelId = <TipoNivelID>{'Id': 1}; // 1 --> Grupo
+          grupoPost.Subgrupo.TipoNivelId = <TipoNivelID>{'Id': Nivel.Grupo};
           // console.log(grupoPost)
           this.catalogoElementosService.postGrupo(grupoPost)
             .subscribe(res => {
