@@ -97,7 +97,7 @@ export class CrudGrupoComponent implements OnInit {
     }
   }
 
-  updateGrupo(grupo: any): void {
+  updateGrupo(form_data: any): void {
 
     const opt: any = {
       title: this.translate.instant('GLOBAL.Actualizar'),
@@ -108,16 +108,16 @@ export class CrudGrupoComponent implements OnInit {
     (Swal as any).fire(opt)
       .then((willDelete) => {
         if (willDelete.value) {
-          this.info_grupo = <Grupo2>grupo;
+          this.info_grupo = <Grupo2>form_data;
 
-          const grupoActual = <SubgrupoComun>grupo;
+          const grupoActual = <SubgrupoComun>form_data;
           // console.log({'updateGrupo(grupoActual)': grupoActual});
 
           grupoActual.Activo = true;
           grupoActual.Id = this.grupo_id;
           grupoActual.TipoNivelId = <TipoNivelID>{'Id': Nivel_t.Grupo};
 
-          this.catalogoElementosService.putSubgrupo(grupoActual, grupo.Id)
+          this.catalogoElementosService.putSubgrupo(grupoActual, form_data.Id)
             .subscribe(res => {
               // console.log(res);
               this.info_grupo = <Grupo2><unknown>res; // esto es realmente necesario?
@@ -131,7 +131,7 @@ export class CrudGrupoComponent implements OnInit {
       });
   }
 
-  createGrupo(grupo: any): void {
+  createGrupo(form_data: any): void {
     const opt: any = {
       title: this.translate.instant('GLOBAL.Crear'),
       text: this.translate.instant('GLOBAL.subgrupo.grupo.pregunta_crear'),
@@ -146,10 +146,11 @@ export class CrudGrupoComponent implements OnInit {
           const catalogo = new Catalogo;
 
           catalogo.Id = parseFloat(this.catalogoid);
-          grupo.Activo = true;
+          form_data.Activo = true;
 
           // TODO: Eliminar este bloque PROVISIONAL una vez se actualice la API
           // (Revisar también en GrupoTransaccion)
+          /*
           grupoPost.DetalleSubgrupo = <Detalle>{
             'Depreciacion': false,
             'Valorizacion': false,
@@ -157,9 +158,10 @@ export class CrudGrupoComponent implements OnInit {
             'Activo': false,
             'TipoBienId': {'Id': 1},
           };
+          // */
 
           grupoPost.Catalogo = catalogo;
-          grupoPost.Subgrupo = grupo;
+          grupoPost.Subgrupo = form_data;
           grupoPost.Subgrupo.TipoNivelId = <TipoNivelID>{'Id': Nivel_t.Grupo};
           // console.log(grupoPost)
           this.catalogoElementosService.postGrupo(grupoPost)

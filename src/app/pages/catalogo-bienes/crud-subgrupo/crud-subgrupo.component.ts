@@ -182,8 +182,8 @@ export class CrudSubgrupoComponent implements OnInit {
             const detalle = new Detalle;
             detalle.Id = this.detalle_id;
             detalle.Activo = true;
-            detalle.Depreciacion = form_data.Depreciacion;
-            detalle.Valorizacion = form_data.Valorizacion;
+            detalle.Depreciacion = <boolean>form_data.Depreciacion;
+            detalle.Valorizacion = <boolean>form_data.Valorizacion;
             detalle.TipoBienId = {Id: form_data.TipoBienId.Id};
             detalle.SubgrupoId = {Id: form_data.Id};
             subGrupoPut.SubgrupoHijo = [<SubgrupoDetalle>{...this.subgrupo, DetalleSubgrupo: detalle}];
@@ -228,23 +228,26 @@ export class CrudSubgrupoComponent implements OnInit {
           const nivel = nh.Hijo(this.subgrupoPadre.TipoNivelId.Id);
 
           // Detalle
-          const detalle = new Detalle;
           if (nivel === Nivel_t.Clase) {
             // Usar datos del detalle
+            const detalle = new Detalle;
+            detalle.Activo = true;
             detalle.Depreciacion = (form_data.Depreciacion === '') ? false : form_data.Depreciacion;
             detalle.Valorizacion = (form_data.Valorizacion === '') ? false : form_data.Valorizacion;
             detalle.TipoBienId = <TipoBienID>{'Id': form_data.TipoBienId.Id};
-          } else {
+            form_data.DetalleSubgrupo = detalle;
+          } // else {
             // TODO: Posiblemente este 'else' se deba actualizar o borrar
             // despues de actualizada la API
+            /*
             detalle.Depreciacion = false;
             detalle.Valorizacion = false;
             detalle.TipoBienId = <TipoBienID>{'Id': Bien_t.consumo};
-          }
+            // */
+          // }
 
           // Subgrupo
           form_data.Activo = true;
-          form_data.DetalleSubgrupo = detalle;
           form_data.TipoNivelId = <TipoNivelID>{'Id': nivel};
           // Limpieza antes de enviar el POST...
           delete form_data.Depreciacion;
