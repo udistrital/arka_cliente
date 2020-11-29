@@ -1,4 +1,4 @@
-import { Grupo, Grupo2, Clase, Subgrupo, SubgrupoID } from '../../../@core/data/models/catalogo/jerarquia';
+import { Grupo2, Clase, Subgrupo, SubgrupoID } from '../../../@core/data/models/catalogo/jerarquia';
 import { Detalle, SubgrupoDetalle } from '../../../@core/data/models/catalogo/detalle';
 import { TipoNivelID, Nivel_t } from '../../../@core/data/models/catalogo/tipo_nivel';
 import { NivelHelper as nh } from '../../../@core/utils/niveles.helper';
@@ -157,11 +157,11 @@ export class CrudSubgrupoComponent implements OnInit {
   updateSubgrupo(form_data: any): void {
 
     // console.log({'updateSubgrupo(form_data)': form_data});
+    const nivel = this.subgrupo.TipoNivelId.Id;
 
     const opt: any = {
       title: this.translate.instant('GLOBAL.Actualizar'),
-      // TODO: Actualizar dinamicamente este texto:
-      text: this.translate.instant('GLOBAL.subgrupo.segmento.pregunta_actualizar'),
+      text: this.translate.instant('GLOBAL.subgrupo.' + nh.Texto(nivel) + '.pregunta_actualizar'),
       type: 'warning',
       showCancelButton: true,
     };
@@ -172,7 +172,6 @@ export class CrudSubgrupoComponent implements OnInit {
           // console.log({'this.subgrupo': this.subgrupo});
 
           const subGrupoPut = new SubgrupoTransaccion;
-          const nivel = this.subgrupo.TipoNivelId.Id;
 
           this.subgrupo.Codigo = form_data.Codigo;
           this.subgrupo.Nombre = form_data.Nombre;
@@ -203,7 +202,6 @@ export class CrudSubgrupoComponent implements OnInit {
               this.showToast(
                 'info',
                 this.translate.instant('GLOBAL.Actualizado'),
-                // TODO: Actualizar dinamicamente este texto:
                 this.translate.instant('GLOBAL.subgrupo.' + nh.Texto(nivel) + '.respuesta_actualizar_ok'),
               );
             });
@@ -212,10 +210,12 @@ export class CrudSubgrupoComponent implements OnInit {
   }
 
   createSubgrupo(form_data: any): void {
+
+    const nivel = nh.Hijo(this.subgrupoPadre.TipoNivelId.Id);
+
     const opt: any = {
       title: this.translate.instant('GLOBAL.Crear'),
-      // TODO: Actualizar dinamicamente este texto:
-      text: this.translate.instant('GLOBAL.subgrupo.segmento.pregunta_crear'),
+      text: this.translate.instant('GLOBAL.subgrupo.' + nh.Texto(nivel) + '.pregunta_crear'),
       type: 'warning',
       showCancelButton: true,
     };
@@ -224,8 +224,6 @@ export class CrudSubgrupoComponent implements OnInit {
         if (willDelete.value) {
           // console.log({'formulario subgrupo': form_data});
           // console.log({'this.subgrupoPadre': this.subgrupoPadre});
-
-          const nivel = nh.Hijo(this.subgrupoPadre.TipoNivelId.Id);
 
           // Detalle
           if (nivel === Nivel_t.Clase) {
@@ -269,8 +267,7 @@ export class CrudSubgrupoComponent implements OnInit {
               this.detalle = <Detalle>subg.Detalle;
               this.eventChange.emit(true);
               this.showToast('info', this.translate.instant('GLOBAL.Creado'),
-                // TODO: Actualizar dinamicamente este texto:
-                this.translate.instant('GLOBAL.subgrupo.segmento.respuesta_crear_ok') );
+                this.translate.instant('GLOBAL.subgrupo.' + nh.Texto(nivel) + '.respuesta_crear_ok') );
             });
         }
       });
