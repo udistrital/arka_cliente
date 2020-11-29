@@ -1,5 +1,11 @@
+export enum Bien_t {
+    consumo = 1,
+    consumoControlado,
+    devolutuvo,
+}
+
 export class TipoBienID {
-    Id: number;
+    Id: Bien_t;
 }
 
 export class TipoBien extends TipoBienID {

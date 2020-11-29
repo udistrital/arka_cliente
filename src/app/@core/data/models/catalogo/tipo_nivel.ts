@@ -1,4 +1,4 @@
-export enum Nivel {
+export enum Nivel_t {
     Grupo = 1,
     Segmento,
     Familia,
@@ -6,7 +6,7 @@ export enum Nivel {
 }
 
 export class TipoNivelID {
-    Id: Nivel;
+    Id: Nivel_t;
 }
 
 export class TipoNivel extends TipoNivelID {

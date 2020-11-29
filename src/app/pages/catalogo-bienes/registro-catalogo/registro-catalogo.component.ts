@@ -2,7 +2,7 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/catalogoElementosHelper';
 import { Grupo, Subgrupo } from '../../../@core/data/models/catalogo/jerarquia';
-import { Nivel } from '../../../@core/data/models/catalogo/tipo_nivel';
+import { Nivel_t } from '../../../@core/data/models/catalogo/tipo_nivel';
 import { NivelHelper as nh } from '../../../@core/utils/niveles.helper';
 import { Catalogo } from '../../../@core/data/models/catalogo/catalogo';
 
@@ -118,7 +118,7 @@ export class RegistroCatalogoComponent implements OnInit {
           // Si es grupo (no tiene subgrupo padre, tiene catalogo)
           // console.log({'receiveMessage - res': res});
           this.uid_1 = event.Id;
-          this.nivel_hijo = nh.Texto(nh.Hijo(Nivel.Grupo));
+          this.nivel_hijo = nh.Texto(nh.Hijo(Nivel_t.Grupo));
         } else {
           // Si NO es grupo (es segmento/familia/clase, tiene subgrupo padre)
           this.permitir_crear_subgrupo = false; // Reinicia "permiso"
@@ -127,8 +127,8 @@ export class RegistroCatalogoComponent implements OnInit {
           this.catalogoElementosService.getSubgrupoById(event.Id).subscribe( res_sub => {
             // console.log({'receiveMessage - res_sub': res_sub});
             if (Object.keys(res_sub[0]).length !== 0) {
-              const nivel = <Nivel>(res_sub[0].SubgrupoHijoId.TipoNivelId.Id);
-              this.permitir_crear_subgrupo = (nivel !== Nivel.Clase);
+              const nivel = <Nivel_t>(res_sub[0].SubgrupoHijoId.TipoNivelId.Id);
+              this.permitir_crear_subgrupo = (nivel !== Nivel_t.Clase);
               this.nivel_actual = nh.Texto(nivel);
               this.nivel_hijo = nh.Texto(nh.Hijo(nivel));
             } else {
