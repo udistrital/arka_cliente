@@ -1,9 +1,9 @@
 import { Grupo2, Clase, Subgrupo, SubgrupoID } from '../../../@core/data/models/catalogo/jerarquia';
-import { Detalle, SubgrupoDetalle } from '../../../@core/data/models/catalogo/detalle';
+import { Detalle } from '../../../@core/data/models/catalogo/detalle';
 import { TipoNivelID, Nivel_t } from '../../../@core/data/models/catalogo/tipo_nivel';
 import { NivelHelper as nh } from '../../../@core/utils/niveles.helper';
 import { TipoBien, TipoBienID, Bien_t } from '../../../@core/data/models/acta_recibido/tipo_bien';
-import { SubgrupoTransaccion } from '../../../@core/data/models/catalogo/transacciones';
+import { SubgrupoTransaccion, SubgrupoTransaccionDetalle } from '../../../@core/data/models/catalogo/transacciones';
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { FORM_SUBGRUPO } from './form-subgrupo';
 import { ToasterService, ToasterConfig, Toast, BodyOutputType } from 'angular2-toaster';
@@ -97,17 +97,13 @@ export class CrudSubgrupoComponent implements OnInit {
 
   public loadSubgrupo(): void {
     if (this.subgrupo_id !== undefined && this.subgrupo_id !== 0) {
-      // TODO - PROVISIONAL: Esta línea podría NO usarse ...
-      this.catalogoElementosService.getDetalleSubgrupo(this.subgrupo_id)
-      /* ... Debería usarse UNICAMENTE esta (Cambiar despues de actualizada la API):
       this.catalogoElementosService.getSubgrupoById(this.subgrupo_id)
-      */
         .subscribe(res => {
           // console.log({'loadSubgrupo() - res': res});
           if (Object.keys(res[0]).length !== 0) {
 
             const subgrupo = new Subgrupo;
-            Object.assign(subgrupo, res[0].SubgrupoId);
+            Object.assign(subgrupo, res[0].Subgrupo);
             const nivel: TipoNivelID = { Id: subgrupo.TipoNivelId.Id };
             subgrupo.TipoNivelId = nivel;
             // console.log({'subgrupo': subgrupo});
@@ -121,7 +117,7 @@ export class CrudSubgrupoComponent implements OnInit {
             // TODO: Meter las siguientes lineas dentro del 'if'
             // despues de actualizada la API
             const detalle = new Detalle;
-            Object.assign(detalle, res[0]);
+            Object.assign(detalle, res[0].Detalle);
             // console.log({'detalle': detalle});
             this.detalle_id = detalle.Id;
             if (nivel.Id === Nivel_t.Clase) {
@@ -130,12 +126,6 @@ export class CrudSubgrupoComponent implements OnInit {
               info__grupo.Valorizacion = detalle.Valorizacion;
               this.detalle = detalle;
             }
-            // TODO: Descomentar despues de actualizar la API
-            /*
-            else {
-              this.detalle_id = undefined;
-            }
-            // */
 
             this.subgrupo = subgrupo;
             this.info_subgrupo = info__grupo;
@@ -171,13 +161,14 @@ export class CrudSubgrupoComponent implements OnInit {
           // console.log({'this.info_subgrupo': this.info_subgrupo});
           // console.log({'this.subgrupo': this.subgrupo});
 
-          const subGrupoPut = new SubgrupoTransaccion;
+          let subGrupoPut;
 
           this.subgrupo.Codigo = form_data.Codigo;
           this.subgrupo.Nombre = form_data.Nombre;
           this.subgrupo.Descripcion = form_data.Descripcion;
 
           if (nivel === Nivel_t.Clase) {
+            subGrupoPut = new SubgrupoTransaccionDetalle;
             const detalle = new Detalle;
             detalle.Id = this.detalle_id;
             detalle.Activo = true;
@@ -185,15 +176,14 @@ export class CrudSubgrupoComponent implements OnInit {
             detalle.Valorizacion = <boolean>form_data.Valorizacion;
             detalle.TipoBienId = {Id: form_data.TipoBienId.Id};
             detalle.SubgrupoId = {Id: form_data.Id};
-            subGrupoPut.SubgrupoHijo = [<SubgrupoDetalle>{...this.subgrupo, DetalleSubgrupo: detalle}];
-            // console.log({'detalle': detalle, 'subGrupoPut': subGrupoPut});
+            subGrupoPut.SubgrupoHijo = this.subgrupo;
+            subGrupoPut.DetalleSubgrupo = detalle;
           } else {
-            // TODO: Posiblemente este 'else' se deba actualizar o borrar
-            // despues de actualizada la API
-            subGrupoPut.SubgrupoHijo = [{...this.subgrupo}];
+            subGrupoPut = new SubgrupoTransaccion;
+            subGrupoPut.SubgrupoHijo = {...this.subgrupo};
           }
 
-          // console.log(subGrupoPut);
+          // console.log({'PUT':subGrupoPut});
 
           this.catalogoElementosService.putSubgrupo(subGrupoPut, this.info_subgrupo.Id)
             .subscribe(res => {
@@ -225,45 +215,41 @@ export class CrudSubgrupoComponent implements OnInit {
           // console.log({'formulario subgrupo': form_data});
           // console.log({'this.subgrupoPadre': this.subgrupoPadre});
 
+          // Subgrupo
+          form_data.Activo = true;
+          form_data.TipoNivelId = <TipoNivelID>{'Id': nivel};
+
           // Detalle
+          let detalle;
           if (nivel === Nivel_t.Clase) {
             // Usar datos del detalle
-            const detalle = new Detalle;
+            detalle = new Detalle;
             detalle.Activo = true;
             detalle.Depreciacion = (form_data.Depreciacion === '') ? false : form_data.Depreciacion;
             detalle.Valorizacion = (form_data.Valorizacion === '') ? false : form_data.Valorizacion;
             detalle.TipoBienId = <TipoBienID>{'Id': form_data.TipoBienId.Id};
-            form_data.DetalleSubgrupo = detalle;
-          } // else {
-            // TODO: Posiblemente este 'else' se deba actualizar o borrar
-            // despues de actualizada la API
-            /*
-            detalle.Depreciacion = false;
-            detalle.Valorizacion = false;
-            detalle.TipoBienId = <TipoBienID>{'Id': Bien_t.consumo};
-            // */
-          // }
+          }
 
-          // Subgrupo
-          form_data.Activo = true;
-          form_data.TipoNivelId = <TipoNivelID>{'Id': nivel};
           // Limpieza antes de enviar el POST...
           delete form_data.Depreciacion;
           delete form_data.Valorizacion;
           delete form_data.TipoBienId;
 
           // POST
-          const subgrupoPost = new SubgrupoTransaccion;
+          let subgrupoPost;
+          if (detalle !== undefined) {
+            subgrupoPost = new SubgrupoTransaccionDetalle;
+            subgrupoPost.DetalleSubgrupo = detalle;
+          } else {
+            subgrupoPost = new SubgrupoTransaccion;
+          }
           subgrupoPost.SubgrupoPadre = <SubgrupoID>{'Id': this.subgrupoPadre.Id};
-          subgrupoPost.SubgrupoHijo = [form_data];
+          subgrupoPost.SubgrupoHijo = form_data;
           // console.log({'POST': subgrupoPost});
 
           this.catalogoElementosService.postSubgrupo(subgrupoPost)
             .subscribe(res => {
-              // console.log({'createSubgrupo()>postSubgrupo>res': res});
-              // this.subgrupo = <Subgrupo><unknown>res;
               const subg = <Clase><unknown>res;
-              // this.info_subgrupo = <Subgrupo>subg;
               this.detalle = <Detalle>subg.Detalle;
               this.eventChange.emit(true);
               this.showToast('info', this.translate.instant('GLOBAL.Creado'),

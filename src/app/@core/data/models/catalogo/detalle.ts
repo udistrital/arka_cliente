@@ -1,4 +1,4 @@
-import { SubgrupoID, Subgrupo } from './jerarquia';
+import { SubgrupoID } from './jerarquia';
 import { TipoBienID } from '../acta_recibido/tipo_bien';
 
 export class DetalleID {
@@ -14,11 +14,4 @@ export class Detalle extends DetalleID {
   TipoBienId: TipoBienID;
   FechaCreacion: Date;
   FechaModificacion: Date;
-}
-
-// A usar con SubgrupoTransaccion (tr_grupo)
-// TODO: Revisar si es necesaria esta clase despues
-// de que se actualice la API
-export class SubgrupoDetalle extends Subgrupo {
-  DetalleSubgrupo: Detalle;
 }

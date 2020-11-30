@@ -127,7 +127,7 @@ export class RegistroCatalogoComponent implements OnInit {
           this.catalogoElementosService.getSubgrupoById(event.Id).subscribe( res_sub => {
             // console.log({'receiveMessage - res_sub': res_sub});
             if (Object.keys(res_sub[0]).length !== 0) {
-              const nivel = <Nivel_t>(res_sub[0].SubgrupoHijoId.TipoNivelId.Id);
+              const nivel = <Nivel_t>(res_sub[0].Subgrupo.TipoNivelId.Id);
               this.permitir_crear_subgrupo = (nivel !== Nivel_t.Clase);
               this.nivel_actual = nh.Texto(nivel);
               this.nivel_hijo = nh.Texto(nh.Hijo(nivel));

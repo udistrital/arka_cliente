@@ -5,10 +5,13 @@ import { Detalle } from './detalle'; // TODO: Eliminar una vez se actualice la A
 export class GrupoTransaccion {
   Catalogo: CatalogoID;
   Subgrupo: Grupo;
-  DetalleSubgrupo: Detalle; // TODO: Eliminar una vez se actualice la API
 }
 
 export class SubgrupoTransaccion {
   SubgrupoPadre: SubgrupoID;
-  SubgrupoHijo: Array<Subgrupo>;
+  SubgrupoHijo: Subgrupo;
+}
+
+export class SubgrupoTransaccionDetalle extends SubgrupoTransaccion {
+  DetalleSubgrupo: Detalle;
 }

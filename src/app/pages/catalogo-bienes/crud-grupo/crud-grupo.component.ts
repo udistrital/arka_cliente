@@ -117,7 +117,7 @@ export class CrudGrupoComponent implements OnInit {
           grupoActual.Id = this.grupo_id;
           grupoActual.TipoNivelId = <TipoNivelID>{'Id': Nivel_t.Grupo};
 
-          this.catalogoElementosService.putSubgrupo(grupoActual, form_data.Id)
+          this.catalogoElementosService.putGrupo(grupoActual, form_data.Id)
             .subscribe(res => {
               // console.log(res);
               this.info_grupo = <Grupo2><unknown>res; // esto es realmente necesario?
@@ -147,18 +147,6 @@ export class CrudGrupoComponent implements OnInit {
 
           catalogo.Id = parseFloat(this.catalogoid);
           form_data.Activo = true;
-
-          // TODO: Eliminar este bloque PROVISIONAL una vez se actualice la API
-          // (Revisar también en GrupoTransaccion)
-          /*
-          grupoPost.DetalleSubgrupo = <Detalle>{
-            'Depreciacion': false,
-            'Valorizacion': false,
-            'Deterioro': false,
-            'Activo': false,
-            'TipoBienId': {'Id': 1},
-          };
-          // */
 
           grupoPost.Catalogo = catalogo;
           grupoPost.Subgrupo = form_data;
