@@ -216,7 +216,7 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
   }
 
   validarForm(event) {
-    // console.log(this.respuesta)
+    // console.log(event)
     if (event.valid) {
       if (this.respuesta !== undefined) {
         const cuentaDebito = event.data.CuentasFormulario.CuentaDebitoId;
@@ -233,7 +233,7 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
         this.respuesta2.CuentaDebitoId = cuentaDebito.Id;
         this.respuesta2.SubtipoMovimientoId = this.movimiento_id.Id;
         this.formulario.emit(this.respuesta2);
-        // console.log(this.respuesta2);
+      //  console.log(this.respuesta2);
       }
     }
 

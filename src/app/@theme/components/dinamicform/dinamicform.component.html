@@ -380,7 +380,7 @@
                                 <ng2-completer style="border: 0rem" [clearUnselected]="true" nbInput inputClass="form-control"
                                 [datasource]="dataService[c.id]" [(ngModel)]="c.valor" (ngModelChange)="validCampo(c)"
                                 [ngModelOptions]="{standalone: true}" [disabled]="c.deshabilitar"
-                                [minSearchLength]="4"
+                                [minSearchLength]="c.minSearchLength"
                                 [placeholder]="c.valor?(c.key?c.valor[c.key]:c.valor|json):c.placeholder">
                                 </ng2-completer>
                                 <p class="text-danger">{{c.alerta}}</p>
