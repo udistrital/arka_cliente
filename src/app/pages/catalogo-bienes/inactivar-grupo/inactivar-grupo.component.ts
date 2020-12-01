@@ -1,8 +1,8 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
-import { Catalogo } from '../../../@core/data/models/catalogo';
+import { Catalogo } from '../../../@core/data/models/catalogo/catalogo';
 import { FORM_INACTIVAR } from './form-inactivar';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
-import { Grupo } from '../../../@core/data/models/grupo';
+import { Grupo } from '../../../@core/data/models/catalogo/jerarquia';
 import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/catalogoElementosHelper';
 import Swal from 'sweetalert2';
 import { PopUpManager } from '../../../managers/popUpManager';

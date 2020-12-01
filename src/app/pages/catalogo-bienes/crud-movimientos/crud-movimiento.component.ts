@@ -1,5 +1,5 @@
 import { Catalogo } from '../../../@core/data/models/catalogo/catalogo';
-import { Grupo, GrupoTransaccion } from '../../../@core/data/models/catalogo/grupo';
+import { Grupo, Subgrupo } from '../../../@core/data/models/catalogo/jerarquia';
 import { Component, OnInit, Input, Output, EventEmitter, ViewChild, AfterViewInit, OnChanges } from '@angular/core';
 import { TipoBien } from '../../../@core/data/models/acta_recibido/tipo_bien';
 import { FORM_MOVIMIENTO } from './form-movimiento';
@@ -13,7 +13,7 @@ import { Cuenta } from '../../../@core/data/models/catalogo/cuenta_contable';
 import { Store } from '@ngrx/store';
 import { IAppState } from '../../../@core/store/app.state';
 import { ListService } from '../../../@core/store/services/list.service';
-import { Subgrupo } from '../../../@core/data/models/catalogo/subgrupo';
+import { GrupoTransaccion } from '../../../@core/data/models/catalogo/transacciones';
 import { DinamicformComponent } from '../../../@theme/components';
 
 

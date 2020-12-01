@@ -1,6 +1,6 @@
 import { CuentaContable } from './cuenta_contable';
 
-import { Subgrupo } from './subgrupo';
+import { Subgrupo } from './jerarquia';
 
 export class CuentasGrupoTransaccion {
     Id: number;
