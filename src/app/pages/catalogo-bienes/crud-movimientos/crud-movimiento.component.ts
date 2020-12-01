@@ -1,6 +1,6 @@
 import { Catalogo } from '../../../@core/data/models/catalogo/catalogo';
 import { Grupo, GrupoTransaccion } from '../../../@core/data/models/catalogo/grupo';
-import { Component, OnInit, Input, Output, EventEmitter, ViewChild, AfterViewInit, OnChanges } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, ViewChildren,ElementRef, AfterViewInit, OnChanges } from '@angular/core';
 import { TipoBien } from '../../../@core/data/models/acta_recibido/tipo_bien';
 import { FORM_MOVIMIENTO } from './form-movimiento';
 import { ToasterService, ToasterConfig, Toast, BodyOutputType } from 'angular2-toaster';
@@ -15,6 +15,19 @@ import { IAppState } from '../../../@core/store/app.state';
 import { ListService } from '../../../@core/store/services/list.service';
 import { Subgrupo } from '../../../@core/data/models/catalogo/subgrupo';
 import { DinamicformComponent } from '../../../@theme/components';
+import {
+  trigger,
+  state,
+  style,
+  animate,
+  transition } from '@angular/animations';
+import {
+    NbGetters,
+    NbSortDirection,
+    NbTreeGridRowComponent,
+    NbTreeGridDataSource,
+    NbTreeGridDataSourceBuilder,
+  } from '@nebular/theme';
 
 
 @Component({
@@ -50,10 +63,20 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
   @Output() eventChange = new EventEmitter();
   @Output() formulario = new EventEmitter();
 
+  @Output() columns : any;
+
+  @ViewChildren(NbTreeGridRowComponent, { read: ElementRef }) treeNodes: ElementRef[];
+
   info_movimiento: CuentasFormulario;
   formMovimiento: any;
   regMovimiento: any;
   clean: boolean;
+
+  stateHighlight: string = 'initial';
+  animationCuenta: string;
+  searchValue: string;
+  sortDirection: NbSortDirection = NbSortDirection.NONE;
+  private data: [];
 
   constructor(
     private translate: TranslateService,
@@ -77,6 +100,7 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
     this.construirForm();
     this.loadLists();
     this.loadCuentaGrupo();
+    
   }
   ngOnChanges() {
     this.construirForm();

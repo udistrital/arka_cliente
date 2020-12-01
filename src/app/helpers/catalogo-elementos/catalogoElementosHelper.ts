@@ -387,6 +387,25 @@ export class CatalogoElementosHelper {
         );
     }
 
+/*------------------------------TRAER UNA CUENTA CONTABLE------------------------------------- 
+    public getCuenta(cuenta,withDisabledNodes = false) {
+        this.rqManager.setPath('CUENTAS_CONTABLES_SERVICE');
+        // Set the optional branch for the API request.
+        // const raiz = 3;
+        // call request manager for the tree's data.
+        return this.rqManager.get('/getNodosCuentasArka/'+cuenta).pipe(
+          map(
+            (res) => {
+              if (res && res['Type'] === 'error') {
+                this.pUpManager.showErrorAlert('No se pudo consultar la informacion del arbol');
+                return undefined;
+              }
+    
+              return res;
+            },
+          ),
+        );
+      }*/
     /**
      * Tipo de Bien Acta Get
      * If the response has errors in the OAS API it should show a popup message with an error.
@@ -394,9 +413,8 @@ export class CatalogoElementosHelper {
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
      */
     public getPlanCuentas(naturaleza) {
-        this.rqManager.setPath('FINANCIERA_SERVICE');
-        return this.rqManager.get('cuenta_contable?query=Naturaleza:' + naturaleza +
-            ',NivelClasificacion.Id:5&fields=Id,Nombre,Naturaleza,Descripcion,Codigo&limit=-1').pipe(
+        this.rqManager.setPath('CUENTAS_CONTABLES_SERVICE');
+        return this.rqManager.get('nodo_cuenta_contable/getNodosCuentasArka/'+naturaleza).pipe(
                 map(
                     (res) => {
                         if (res === 'error') {
