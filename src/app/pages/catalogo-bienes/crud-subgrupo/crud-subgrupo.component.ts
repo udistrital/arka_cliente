@@ -217,8 +217,7 @@ export class CrudSubgrupoComponent implements OnInit {
       .then((willDelete) => {
         if (willDelete.value) {
           // console.log({'formulario subgrupo': form_data});
-          // console.log({'this.subgrupoPadre': this.subgrupoPadre});
-          
+          // console.log({'this.subgrupoPadre': this.subgrupoPadre});          
           // Subgrupo
           form_data.Activo = true;
           form_data.TipoNivelId = <TipoNivelID>{'Id': nivel};
