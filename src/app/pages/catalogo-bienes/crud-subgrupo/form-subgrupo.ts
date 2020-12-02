@@ -52,7 +52,7 @@ export let FORM_SUBGRUPO = {
             nombre: 'TipoBienId',
             label_i18n: 'tipo_bien',
             placeholder_i18n: 'tipo_bien',
-            requerido: true,
+            requerido: false,
             tipo: 'TipoBien',
             key: 'Nombre',
             opciones: [],
