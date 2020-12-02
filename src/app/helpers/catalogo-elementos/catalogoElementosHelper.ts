@@ -394,9 +394,8 @@ export class CatalogoElementosHelper {
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
      */
     public getPlanCuentas(naturaleza) {
-        this.rqManager.setPath('FINANCIERA_SERVICE');
-        return this.rqManager.get('cuenta_contable?query=Naturaleza:' + naturaleza +
-            ',NivelClasificacion.Id:5&fields=Id,Nombre,Naturaleza,Descripcion,Codigo&limit=-1').pipe(
+        this.rqManager.setPath('CUENTAS_CONTABLES_SERVICE');
+                return this.rqManager.get('nodo_cuenta_contable/getNodosCuentasArka/' + naturaleza).pipe(
                 map(
                     (res) => {
                         if (res === 'error') {

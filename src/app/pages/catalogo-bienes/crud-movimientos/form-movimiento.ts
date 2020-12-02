@@ -5,7 +5,7 @@ export let FORM_MOVIMIENTO = {
     alertas: true,
     modelo: 'CuentasFormulario',
     campos: [
-        {
+        {   minSearchLength: 0,
             etiqueta: 'autocomplete',
             claseGrid: 'col-6',
             nombre: 'CuentaDebitoId',
@@ -17,7 +17,7 @@ export let FORM_MOVIMIENTO = {
             key: 'Codigo',
             opciones: [],
         },
-        {
+        {   minSearchLength: 0,
             etiqueta: 'autocomplete',
             claseGrid: 'col-6',
             nombre: 'CuentaCreditoId',
