@@ -150,37 +150,40 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
       text: this.translate.instant('Revisar las caracteristicas del catalogo'),
       type: 'warning',
     };
-    this.catalogoElementosService.getGrupoById(event.Id).subscribe(
+    this.catalogoElementosService.getSubgrupoById(event.Id).subscribe(
       res => {
-        // console.log(res[0]);
-        if (Object.keys(res[0]).length !== 0) {
-          this.catalogoElementosService.getDetalleSubgrupo(event.Id).subscribe(res2 => {
-            if (Object.keys(res2[0]).length !== 0) {
-              this.Movimientos = [];
-              this.depreciacion_ok = res2[0].Depreciacion;
-              this.valorizacion_ok = res2[0].Valorizacion;
-              this.Total_Movimientos();
-              // console.log(this.all_mov);
-              this.uid_1 = event;
-              this.uid_2 = undefined;
-            } else {
-              this.Movimientos = [];
-              this.depreciacion_ok = false;
-              this.valorizacion_ok = false;
-              this.Total_Movimientos();
-              this.uid_1 = event;
-              this.uid_2 = undefined;
-              (Swal as any).fire(opt);
-            }
-          });
-        } else {
-          this.Movimientos = [];
-          this.depreciacion_ok = false;
-          this.valorizacion_ok = false;
-          this.Total_Movimientos();
-          this.uid_1 = undefined;
-          this.uid_2 = event;
-          (Swal as any).fire(opt);
+        if(event.TipoNivelId.Id==4)
+        {
+          console.log(event.TipoNivelId.Id);
+          if (Object.keys(res[0]).length !== 0) {
+            this.catalogoElementosService.getDetalleSubgrupo(event.Id).subscribe(res2 => {
+              if (Object.keys(res2[0]).length !== 0) {
+                this.Movimientos = [];
+                this.depreciacion_ok = res2[0].Depreciacion;
+                this.valorizacion_ok = res2[0].Valorizacion;
+                this.Total_Movimientos();
+                // console.log(this.all_mov);
+                this.uid_1 = event;
+                this.uid_2 = undefined;
+              } else {
+                this.Movimientos = [];
+                this.depreciacion_ok = false;
+                this.valorizacion_ok = false;
+                this.Total_Movimientos();
+                this.uid_1 = event;
+                this.uid_2 = undefined;
+                (Swal as any).fire(opt);
+              }
+            });
+          } else {
+            this.Movimientos = [];
+            this.depreciacion_ok = false;
+            this.valorizacion_ok = false;
+            this.Total_Movimientos();
+            this.uid_1 = undefined;
+            this.uid_2 = event;
+            (Swal as any).fire(opt);
+          }
         }
       });
     // console.log(event);
