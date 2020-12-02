@@ -1,6 +1,4 @@
-import { Subgrupo1 } from '../../../@core/data/models/subgrupo_1';
-
-import { Subgrupo2 } from '../../../@core/data/models/subgrupo_2';
+import { Subgrupo1, Subgrupo2 } from '../../../@core/data/models/catalogo/jerarquia';
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { FORM_SUBGRUPO_2 } from './form-subgrupo_2';
 import { ToasterService, ToasterConfig, Toast, BodyOutputType } from 'angular2-toaster';

@@ -286,7 +286,6 @@
     "Terceros":"Terceros",
     "Elaboración Propia":"Elaboración Propia",
 
-    "Codigo":"Código",
     "Nombre":"Nombre",
     "Descripcion":"Descripción",
     "Acciones":"Acciones",
@@ -366,6 +365,7 @@
     "nombre": "Nombre",
     "placeholder_nombre": "nombre",
     "codigo": "Código",
+    "placeholder_codigo": "Código",
     "codigo_abreviacion": "codigo_abreviacion",
     "placeholder_codigo_abreviacion": "codigo_abreviacion",
     "descripcion": "Descripción",
@@ -460,6 +460,7 @@
     "volver": "Volver",
     "factura": "Factura",
     "tipo_bien": "Tipo de Bien",
+    "placeholder_tipo_bien": "Tipo de Bien",
     "cantidad": "Cantidad",
     "marca": "Marca",
     "serie": "Serie",

@@ -1,5 +1,9 @@
-import { Grupo } from '../../../@core/data/models/catalogo/grupo';
-import { Subgrupo, SubgrupoTransaccion } from '../../../@core/data/models/catalogo/subgrupo';
+import { Grupo2, Clase, Subgrupo, SubgrupoID } from '../../../@core/data/models/catalogo/jerarquia';
+import { Detalle } from '../../../@core/data/models/catalogo/detalle';
+import { TipoNivelID, Nivel_t } from '../../../@core/data/models/catalogo/tipo_nivel';
+import { NivelHelper as nh } from '../../../@core/utils/niveles.helper';
+import { TipoBien, TipoBienID } from '../../../@core/data/models/acta_recibido/tipo_bien';
+import { SubgrupoTransaccion, SubgrupoTransaccionDetalle } from '../../../@core/data/models/catalogo/transacciones';
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { FORM_SUBGRUPO } from './form-subgrupo';
 import { ToasterService, ToasterConfig, Toast, BodyOutputType } from 'angular2-toaster';
@@ -15,8 +19,11 @@ import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/cat
 })
 export class CrudSubgrupoComponent implements OnInit {
   config: ToasterConfig;
+  subgrupo: Subgrupo;
   subgrupo_id: number;
   subgrupoPadre: any;
+  detalle: Detalle;
+  detalle_id: number;
 
   @Input('subgrupo_id')
   set name(subgrupo_id: number) {
@@ -32,7 +39,7 @@ export class CrudSubgrupoComponent implements OnInit {
   @Output() eventChange = new EventEmitter();
   @Output() mostrar = new EventEmitter();
 
-  info_subgrupo: Subgrupo;
+  info_subgrupo: Grupo2;
   formSubgrupo: any;
   regSubgrupo: any;
   clean: boolean;
@@ -45,15 +52,18 @@ export class CrudSubgrupoComponent implements OnInit {
     this.formSubgrupo = FORM_SUBGRUPO;
     this.construirForm();
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
-      this.construirForm();
+    this.construirForm();
     });
+    this.loadOptionsCatalogo();
   }
 
   construirForm() {
-    // TODO: Actualizar dinamicamente este texto:
+    // TODO: Actualizar dinamicamente este texto segun el nivel:
     this.formSubgrupo.titulo = this.translate.instant('GLOBAL.subgrupo.segmento.nombre');
     this.formSubgrupo.btn = this.translate.instant('GLOBAL.guardar');
+
     for (let i = 0; i < this.formSubgrupo.campos.length; i++) {
+      // TODO: Ocultar dinamicamente alguno de estos campos segun el nivel:
       this.formSubgrupo.campos[i].label = this.translate.instant('GLOBAL.' + this.formSubgrupo.campos[i].label_i18n);
       this.formSubgrupo.campos[i].placeholder = this.translate.instant('GLOBAL.placeholder_' + this.formSubgrupo.campos[i].label_i18n);
     }
@@ -63,14 +73,14 @@ export class CrudSubgrupoComponent implements OnInit {
     this.translate.use(language);
   }
 
-  loadOptionsGrupo(): void {
-    let grupo: Array<any> = [];
-    this.catalogoElementosService.getGrupo()
+  loadOptionsCatalogo(): void {
+    let Tipo_Bien: Array<any> = [];
+    this.catalogoElementosService.getTipoBien()
       .subscribe(res => {
         if (res !== null) {
-          grupo = <Array<Grupo>>res;
+          Tipo_Bien = <Array<TipoBien>>res;
         }
-        this.formSubgrupo.campos[this.getIndexForm('Grupo')].opciones = grupo;
+        this.formSubgrupo.campos[this.getIndexForm('TipoBienId')].opciones = Tipo_Bien;
       });
   }
 
@@ -87,77 +97,198 @@ export class CrudSubgrupoComponent implements OnInit {
 
   public loadSubgrupo(): void {
     if (this.subgrupo_id !== undefined && this.subgrupo_id !== 0) {
+      this.formSubgrupo.campos[this.getIndexForm('Codigo')].prefix.value = '';
+      this.formSubgrupo.campos[this.getIndexForm('Codigo')].suffix.value = '';
+
       this.catalogoElementosService.getSubgrupoById(this.subgrupo_id)
         .subscribe(res => {
+          
+          // console.log({'loadSubgrupo() - res': res});
           if (Object.keys(res[0]).length !== 0) {
-            this.info_subgrupo = <Subgrupo>res[0].SubgrupoHijoId;
+            // this.info_subgrupo = <Subgrupo>res[0].SubgrupoHijoId;
+            const subgrupo = new Subgrupo;
+            Object.assign(subgrupo, res[0].Subgrupo);
+            const nivel: TipoNivelID = { Id: subgrupo.TipoNivelId.Id };
+            subgrupo.TipoNivelId = nivel;
+            // console.log({'subgrupo': subgrupo});
+
+            const info__grupo = new Grupo2;
+            info__grupo.Descripcion = subgrupo.Descripcion;
+            info__grupo.Nombre = subgrupo.Nombre;
+            info__grupo.Id = subgrupo.Id;
+
+            if (this.subgrupo !== undefined) {
+              if (subgrupo.TipoNivelId.Id === 2) {
+                this.formSubgrupo.campos[this.getIndexForm('Codigo')].prefix.value = '';
+                info__grupo.Codigo = this.subgrupo.Codigo.substring(0, 2);
+                this.formSubgrupo.campos[this.getIndexForm('Codigo')].suffix.value = '0000';
+              } else  if (subgrupo.TipoNivelId.Id === 3) {
+                this.formSubgrupo.campos[this.getIndexForm('Codigo')].prefix.value = this.subgrupo.Codigo.substring(0, 2);
+                info__grupo.Codigo = this.subgrupo.Codigo.substring(2, 4);
+                this.formSubgrupo.campos[this.getIndexForm('Codigo')].suffix.value = '00';
+              } else if (subgrupo.TipoNivelId.Id === 4) {
+                this.formSubgrupo.campos[this.getIndexForm('Codigo')].prefix.value = this.subgrupo.Codigo.substring(0, 4);
+                info__grupo.Codigo = this.subgrupo.Codigo.substring(4, 6);
+                this.formSubgrupo.campos[this.getIndexForm('Codigo')].suffix.value = '';
+        
+              } else {
+                this.formSubgrupo.campos[this.getIndexForm('Codigo')].prefix.value = '';
+                this.formSubgrupo.campos[this.getIndexForm('Codigo')].suffix.value = '';
+              }
+            }
+
+            // console.log(info__grupo.Codigo);
+
+            // TODO: Meter las siguientes lineas dentro del 'if'
+            // despues de actualizada la API
+
+            const detalle = new Detalle;
+            Object.assign(detalle, res[0].Detalle);
+            // console.log({'detalle': detalle});
+            this.detalle_id = detalle.Id;
+            if (nivel.Id === Nivel_t.Clase) {
+              info__grupo.TipoBienId = detalle.TipoBienId;
+              info__grupo.Depreciacion = detalle.Depreciacion;
+              info__grupo.Valorizacion = detalle.Valorizacion;
+              this.detalle = detalle;
+            }
+
+            this.subgrupo = subgrupo;
+            this.info_subgrupo = info__grupo;
             this.mostrar.emit(true);
           } else {
+            // this.subgrupo = undefined;
             this.info_subgrupo = undefined;
             this.clean = !this.clean;
             this.mostrar.emit(false);
-
           }
         });
     } else {
+      // this.subgrupo = undefined;
       this.info_subgrupo = undefined;
       this.clean = !this.clean;
     }
   }
 
-  updateSubgrupo(subgrupo: any): void {
+  updateSubgrupo(form_data: any): void {
+
+    // console.log({'updateSubgrupo(form_data)': form_data});
+    const nivel = this.subgrupo.TipoNivelId.Id;
 
     const opt: any = {
       title: this.translate.instant('GLOBAL.Actualizar'),
-      // TODO: Actualizar dinamicamente este texto:
-      text: this.translate.instant('GLOBAL.subgrupo.segmento.pregunta_actualizar'),
+      text: this.translate.instant('GLOBAL.subgrupo.' + nh.Texto(nivel) + '.pregunta_actualizar'),
       type: 'warning',
       showCancelButton: true,
     };
     (Swal as any).fire(opt)
       .then((willDelete) => {
         if (willDelete.value) {
-          this.info_subgrupo = <Subgrupo>subgrupo;
-          this.catalogoElementosService.putSubgrupo(this.info_subgrupo, this.info_subgrupo.Id)
+          // console.log({'this.info_subgrupo': this.info_subgrupo});
+          // console.log({'this.subgrupo': this.subgrupo});
+
+          let subGrupoPut;
+          //this.subgrupo.Codigo = form_data.Codigo;
+          this.subgrupo.Nombre = form_data.Nombre;
+
+          if (nivel === 2) {
+            this.subgrupo.Codigo = form_data.Codigo + '0000';
+          } else if (nivel === 3) {
+              this.subgrupo.Codigo = this.subgrupo.Codigo.substring(0, 2) + form_data.Codigo + '00';
+            } else if (nivel === 4) {
+                this.subgrupo.Codigo = this.subgrupo.Codigo.substring(0, 4) + form_data.Codigo;
+          }
+
+          console.log(this.subgrupo.Codigo)
+          this.subgrupo.Descripcion = form_data.Descripcion;
+
+          if (nivel === Nivel_t.Clase) {
+            subGrupoPut = new SubgrupoTransaccionDetalle;
+            const detalle = new Detalle;
+            detalle.Id = this.detalle_id;
+            detalle.Activo = true;
+            detalle.Depreciacion = <boolean>form_data.Depreciacion;
+            detalle.Valorizacion = <boolean>form_data.Valorizacion;
+            detalle.TipoBienId = {Id: form_data.TipoBienId.Id};
+            detalle.SubgrupoId = {Id: form_data.Id};
+            subGrupoPut.SubgrupoHijo = this.subgrupo;
+            subGrupoPut.DetalleSubgrupo = detalle;
+          } else {
+            subGrupoPut = new SubgrupoTransaccion;
+            subGrupoPut.SubgrupoHijo = {...this.subgrupo};
+          }
+
+          console.log(subGrupoPut);
+          this.catalogoElementosService.putSubgrupo(subGrupoPut, this.info_subgrupo.Id)
             .subscribe(res => {
+              
               this.loadSubgrupo();
               this.eventChange.emit(true);
               this.showToast(
                 'info',
                 this.translate.instant('GLOBAL.Actualizado'),
-                // TODO: Actualizar dinamicamente este texto:
-                this.translate.instant('GLOBAL.subgrupo.segmento.respuesta_actualizar_ok'),
+                this.translate.instant('GLOBAL.subgrupo.' + nh.Texto(nivel) + '.respuesta_actualizar_ok'),
               );
             });
         }
       });
   }
 
-  createSubgrupo(subgrupo: any): void {
+  createSubgrupo(form_data: any): void {
+
+    const nivel = nh.Hijo(this.subgrupoPadre.TipoNivelId.Id);
+
     const opt: any = {
       title: this.translate.instant('GLOBAL.Crear'),
-      // TODO: Actualizar dinamicamente este texto:
-      text: this.translate.instant('GLOBAL.subgrupo.segmento.pregunta_crear'),
+      text: this.translate.instant('GLOBAL.subgrupo.' + nh.Texto(nivel) + '.pregunta_crear'),
       type: 'warning',
       showCancelButton: true,
     };
     (Swal as any).fire(opt)
       .then((willDelete) => {
         if (willDelete.value) {
-          const subgrupoPost = new SubgrupoTransaccion;
-          const subgrupoHijo = new Array<Subgrupo>();
-          subgrupo.TipoBienId = this.subgrupoPadre.TipoBienId;
-          subgrupo.Activo = true;
-          subgrupoHijo.push(subgrupo);
-          subgrupoPost.SubgrupoPadre = this.subgrupoPadre;
-          subgrupoPost.SubgrupoHijo = subgrupoHijo;
+          // console.log({'formulario subgrupo': form_data});
+          // console.log({'this.subgrupoPadre': this.subgrupoPadre});
+          // Subgrupo
+          form_data.Activo = true;
+          form_data.TipoNivelId = <TipoNivelID>{'Id': nivel};
+          // subgrupo.TipoNivelId = { Id: (this.subgrupoPadre.TipoNivelId.Id + 1) };
+
+          // Detalle
+          let detalle;
+          if (nivel === Nivel_t.Clase) {
+            // Usar datos del detalle
+            detalle = new Detalle;
+            detalle.Activo = true;
+            detalle.Depreciacion = (form_data.Depreciacion === '') ? false : form_data.Depreciacion;
+            detalle.Valorizacion = (form_data.Valorizacion === '') ? false : form_data.Valorizacion;
+            detalle.TipoBienId = <TipoBienID>{'Id': form_data.TipoBienId.Id};
+          }
+
+          // Limpieza antes de enviar el POST...
+          delete form_data.Depreciacion;
+          delete form_data.Valorizacion;
+          delete form_data.TipoBienId;
+
+          // POST
+          let subgrupoPost;
+          if (detalle !== undefined) {
+            subgrupoPost = new SubgrupoTransaccionDetalle;
+            subgrupoPost.DetalleSubgrupo = detalle;
+          } else {
+            subgrupoPost = new SubgrupoTransaccion;
+          }
+          subgrupoPost.SubgrupoPadre = <SubgrupoID>{'Id': this.subgrupoPadre.Id};
+          subgrupoPost.SubgrupoHijo = form_data;
+          // console.log({'POST': subgrupoPost});
+
           this.catalogoElementosService.postSubgrupo(subgrupoPost)
             .subscribe(res => {
-              this.info_subgrupo = <Subgrupo><unknown>res;
+              const subg = <Clase><unknown>res;
+              this.detalle = <Detalle>subg.Detalle;
               this.eventChange.emit(true);
               this.showToast('info', this.translate.instant('GLOBAL.Creado'),
-                // TODO: Actualizar dinamicamente este texto:
-                this.translate.instant('GLOBAL.subgrupo.segmento.respuesta_crear_ok') );
+                this.translate.instant('GLOBAL.subgrupo.' + nh.Texto(nivel) + '.respuesta_crear_ok') );
             });
         }
       });
@@ -165,22 +296,51 @@ export class CrudSubgrupoComponent implements OnInit {
 
   ngOnInit() {
     this.loadSubgrupo();
-  }
+    this.loadPrefixSuffixCreate();
+}
 
-  validarForm(event) {
-    // console.log(event);
-    if (event.valid) {
-      if (this.info_subgrupo === undefined) {
-        this.createSubgrupo(event.data.Subgrupo);
+  loadPrefixSuffixCreate () {
+    if (this.subgrupoPadre !== undefined) {
+      if (this.subgrupoPadre.TipoNivelId.Id === 1) {
+        this.formSubgrupo.campos[this.getIndexForm('Codigo')].prefix.value = '';
+        this.formSubgrupo.campos[this.getIndexForm('Codigo')].suffix.value = '0000';
+      } else  if (this.subgrupoPadre.TipoNivelId.Id === 2) {
+        this.formSubgrupo.campos[this.getIndexForm('Codigo')].prefix.value = this.subgrupoPadre.Codigo.substring(0, 2);
+        this.formSubgrupo.campos[this.getIndexForm('Codigo')].suffix.value = '00';
+      } else if (this.subgrupoPadre.TipoNivelId.Id === 3) {
+        this.formSubgrupo.campos[this.getIndexForm('Codigo')].prefix.value = this.subgrupoPadre.Codigo.substring(0, 4);
+        this.formSubgrupo.campos[this.getIndexForm('Codigo')].suffix.value = '';
       } else {
-        this.updateSubgrupo(event.data.Subgrupo);
+        this.formSubgrupo.campos[this.getIndexForm('Codigo')].prefix.value = '';
+        this.formSubgrupo.campos[this.getIndexForm('Codigo')].suffix.value = '';
       }
+      this.construirForm();
     }
   }
 
-  private showToast(type: string, title: string, body: string) {
+validarForm(event) {
+    if (event.valid) {
+        if (this.info_subgrupo === undefined) {
+          if (this.subgrupoPadre.TipoNivelId.Id === 1) {
+            event.data.Subgrupo.Codigo = event.data.Subgrupo.Codigo + '0000';
+          } else if (this.subgrupoPadre.TipoNivelId.Id === 2) {
+            event.data.Subgrupo.Codigo = this.subgrupoPadre.Codigo.substring(0, 2) + event.data.Subgrupo.Codigo + '00';
+            this.formSubgrupo.campos[this.getIndexForm('Codigo')].prefix.value = this.subgrupoPadre.Codigo.substring(0, 2);
+            } else if (this.subgrupoPadre.TipoNivelId.Id === 3) {
+              event.data.Subgrupo.Codigo = this.subgrupoPadre.Codigo.substring(0, 4) + event.data.Subgrupo.Codigo;
+              this.formSubgrupo.campos[this.getIndexForm('Codigo')].prefix.value = this.subgrupoPadre.Codigo.substring(0, 4);
+          }
+          this.construirForm();
+          this.createSubgrupo(event.data.Subgrupo);
+        } else {
+          this.updateSubgrupo(event.data.Subgrupo);
+        }
+    }
+  }
+
+private showToast(type: string, title: string, body: string) {
     this.config = new ToasterConfig({
-      // 'toast-top-full-width', 'toast-bottom-full-width', 'toast-top-left', 'toast-top-center'
+    // 'toast-top-full-width', 'toast-bottom-full-width', 'toast-top-left', 'toast-top-center'
       positionClass: 'toast-top-center',
       timeout: 5000,  // ms
       newestOnTop: true,
