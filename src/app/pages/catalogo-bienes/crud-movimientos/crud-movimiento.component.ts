@@ -1,6 +1,6 @@
 import { Catalogo } from '../../../@core/data/models/catalogo/catalogo';
 import { Grupo, GrupoTransaccion } from '../../../@core/data/models/catalogo/grupo';
-import { Component, OnInit, Input, Output, EventEmitter, ViewChildren,ElementRef, AfterViewInit, OnChanges } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, ViewChildren, ElementRef, AfterViewInit, OnChanges } from '@angular/core';
 import { TipoBien } from '../../../@core/data/models/acta_recibido/tipo_bien';
 import { FORM_MOVIMIENTO } from './form-movimiento';
 import { ToasterService, ToasterConfig, Toast, BodyOutputType } from 'angular2-toaster';
@@ -63,7 +63,7 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
   @Output() eventChange = new EventEmitter();
   @Output() formulario = new EventEmitter();
 
-  @Output() columns : any;
+  @Output() columns: any;
 
   @ViewChildren(NbTreeGridRowComponent, { read: ElementRef }) treeNodes: ElementRef[];
 
@@ -100,7 +100,6 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
     this.construirForm();
     this.loadLists();
     this.loadCuentaGrupo();
-    
   }
   ngOnChanges() {
     this.construirForm();
@@ -131,7 +130,7 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
   }
 
   public loadLists() {
-    this.store.select((state) => state).subscribe(
+    this.store.select((state) => state).subscribe( // eslint-disable-line
       (list) => {
         if (list.listPlanCuentasCredito !== undefined || list.listPlanCuentasDebito !== undefined) {
 
