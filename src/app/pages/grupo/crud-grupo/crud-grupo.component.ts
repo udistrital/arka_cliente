@@ -1,6 +1,6 @@
-import { Catalogo } from '../../../@core/data/models/catalogo';
+import { Catalogo } from '../../../@core/data/models/catalogo/catalogo';
 
-import { Grupo } from '../../../@core/data/models/grupo';
+import { Grupo } from '../../../@core/data/models/catalogo/jerarquia';
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { FORM_GRUPO } from './form-grupo';
 import { ToasterService, ToasterConfig, Toast, BodyOutputType } from 'angular2-toaster';

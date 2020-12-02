@@ -1,5 +1,14 @@
-export class TipoBien {
-    Id: number;
+export enum Bien_t {
+    consumo = 1,
+    consumoControlado,
+    devolutuvo,
+}
+
+export class TipoBienID {
+    Id: Bien_t;
+}
+
+export class TipoBien extends TipoBienID {
     Nombre: string;
     Descripcion: string;
     CodigoAbreviacion: string;

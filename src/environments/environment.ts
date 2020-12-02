@@ -34,6 +34,7 @@ export const environment = {
   MOVIMIENTOS_ARKA_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/movimientos_arka_crud/v1/',
   // MOVIMIENTOS_ARKA_SERVICE: 'http://10.20.2.143:8090/v1/',
   CATALOGO_ELEMENTOS_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/catalogo_elementos_crud/v1/',
+  // CATALOGO_ELEMENTOS_SERVICE: 'http://pruebasapi.intranetoas.udistrital.edu.co:8120/v1/',
   // CATALOGO_ELEMENTOS_SERVICE: 'http://10.20.2.143:8087/v1/',
   TERCEROS_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/terceros_crud/v1/',
   SPAGOBI: {

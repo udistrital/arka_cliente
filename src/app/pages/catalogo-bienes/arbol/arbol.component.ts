@@ -4,7 +4,8 @@ import { Observable, combineLatest } from 'rxjs';
 import { CuentaContable } from '../../../@core/data/models/catalogo/cuenta_contable';
 import { PopUpManager } from '../../../managers/popUpManager';
 import { CuentasGrupoTransaccion } from '../../../@core/data/models/catalogo/cuentas_subgrupo';
-import { SubgrupoTransaccion, Subgrupo } from '../../../@core/data/models/catalogo/subgrupo';
+import { SubgrupoTransaccion } from '../../../@core/data/models/catalogo/transacciones';
+import { Subgrupo } from '../../../@core/data/models/catalogo/jerarquia';
 import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/catalogoElementosHelper';
 import { TipoBien } from '../../../@core/data/models/acta_recibido/tipo_bien';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
@@ -22,7 +23,7 @@ interface CatalogoArbol {
   FechaCreacion: Date;
   FechaModificacion: Date;
   Activo: boolean;
-  Codigo: number;
+  Codigo: string;
 }
 
 @Component({
