@@ -2,6 +2,7 @@ import { Component, OnInit, Input, Output, EventEmitter, ViewChild, QueryList, V
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/catalogoElementosHelper';
 import { Grupo, Subgrupo } from '../../../@core/data/models/catalogo/jerarquia';
+import { Nivel_t } from '../../../@core/data/models/catalogo/tipo_nivel';
 import { Catalogo } from '../../../@core/data/models/catalogo/catalogo';
 import Swal from 'sweetalert2';
 import { Store } from '@ngrx/store';
@@ -152,9 +153,8 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
     };
     this.catalogoElementosService.getSubgrupoById(event.Id).subscribe(
       res => {
-        if(event.TipoNivelId.Id==4)
-        {
-          console.log(event.TipoNivelId.Id);
+        if (event.TipoNivelId.Id === Nivel_t.Clase) {
+          // console.log(event.TipoNivelId.Id);
           if (Object.keys(res[0]).length !== 0) {
             this.catalogoElementosService.getDetalleSubgrupo(event.Id).subscribe(res2 => {
               if (Object.keys(res2[0]).length !== 0) {

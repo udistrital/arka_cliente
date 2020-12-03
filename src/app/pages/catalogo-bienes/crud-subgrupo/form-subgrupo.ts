@@ -48,7 +48,7 @@ export let FORM_SUBGRUPO = {
         },
         {
             etiqueta: 'select',
-            claseGrid: 'col-lg-12 col-md-12 col-sm-12 col-xs-12',
+            claseGrid: 'col-lg-12 col-md-12 col-sm-12 col-xs-12 det-subg-catalogo',
             nombre: 'TipoBienId',
             label_i18n: 'tipo_bien',
             placeholder_i18n: 'tipo_bien',
@@ -59,7 +59,7 @@ export let FORM_SUBGRUPO = {
         },
         {
             etiqueta: 'checkbox',
-            claseGrid: 'col-lg-12 col-md-12 col-sm-12 col-xs-12',
+            claseGrid: 'col-lg-12 col-md-12 col-sm-12 col-xs-12 det-subg-catalogo',
             nombre: 'Depreciacion',
             label_i18n: 'depreciacion',
             placeholder_i18n: 'depreciacion',
@@ -68,7 +68,7 @@ export let FORM_SUBGRUPO = {
         },
         {
             etiqueta: 'checkbox',
-            claseGrid: 'col-lg-12 col-md-12 col-sm-12 col-xs-12',
+            claseGrid: 'col-lg-12 col-md-12 col-sm-12 col-xs-12 det-subg-catalogo',
             nombre: 'Valorizacion',
             label_i18n: 'valorizacion',
             placeholder_i18n: 'valorizacion',

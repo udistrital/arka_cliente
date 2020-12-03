@@ -130,7 +130,7 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
   }
 
   public loadLists() {
-    this.store.select((state) => state).subscribe( // eslint-disable-line
+    this.store.select((stte) => stte).subscribe(
       (list) => {
         if (list.listPlanCuentasCredito !== undefined || list.listPlanCuentasDebito !== undefined) {
 
