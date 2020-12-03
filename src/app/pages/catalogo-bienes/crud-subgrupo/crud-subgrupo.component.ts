@@ -102,7 +102,6 @@ export class CrudSubgrupoComponent implements OnInit {
 
       this.catalogoElementosService.getSubgrupoById(this.subgrupo_id)
         .subscribe(res => {
-          
           // console.log({'loadSubgrupo() - res': res});
           if (Object.keys(res[0]).length !== 0) {
             // this.info_subgrupo = <Subgrupo>res[0].SubgrupoHijoId;
@@ -130,7 +129,6 @@ export class CrudSubgrupoComponent implements OnInit {
                 this.formSubgrupo.campos[this.getIndexForm('Codigo')].prefix.value = this.subgrupo.Codigo.substring(0, 4);
                 info__grupo.Codigo = this.subgrupo.Codigo.substring(4, 6);
                 this.formSubgrupo.campos[this.getIndexForm('Codigo')].suffix.value = '';
-        
               } else {
                 this.formSubgrupo.campos[this.getIndexForm('Codigo')].prefix.value = '';
                 this.formSubgrupo.campos[this.getIndexForm('Codigo')].suffix.value = '';
@@ -188,7 +186,7 @@ export class CrudSubgrupoComponent implements OnInit {
           // console.log({'this.subgrupo': this.subgrupo});
 
           let subGrupoPut;
-          //this.subgrupo.Codigo = form_data.Codigo;
+          // this.subgrupo.Codigo = form_data.Codigo;
           this.subgrupo.Nombre = form_data.Nombre;
 
           if (nivel === 2) {
@@ -199,7 +197,7 @@ export class CrudSubgrupoComponent implements OnInit {
                 this.subgrupo.Codigo = this.subgrupo.Codigo.substring(0, 4) + form_data.Codigo;
           }
 
-          console.log(this.subgrupo.Codigo)
+          // console.log(this.subgrupo.Codigo);
           this.subgrupo.Descripcion = form_data.Descripcion;
 
           if (nivel === Nivel_t.Clase) {
@@ -218,10 +216,9 @@ export class CrudSubgrupoComponent implements OnInit {
             subGrupoPut.SubgrupoHijo = {...this.subgrupo};
           }
 
-          console.log(subGrupoPut);
+          // console.log(subGrupoPut);
           this.catalogoElementosService.putSubgrupo(subGrupoPut, this.info_subgrupo.Id)
             .subscribe(res => {
-              
               this.loadSubgrupo();
               this.eventChange.emit(true);
               this.showToast(

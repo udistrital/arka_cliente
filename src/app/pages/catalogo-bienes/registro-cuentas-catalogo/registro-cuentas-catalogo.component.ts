@@ -152,9 +152,8 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
     };
     this.catalogoElementosService.getSubgrupoById(event.Id).subscribe(
       res => {
-        if(event.TipoNivelId.Id==4)
-        {
-          console.log(event.TipoNivelId.Id);
+        if (event.TipoNivelId.Id === 4) {
+          // console.log(event.TipoNivelId.Id);
           if (Object.keys(res[0]).length !== 0) {
             this.catalogoElementosService.getDetalleSubgrupo(event.Id).subscribe(res2 => {
               if (Object.keys(res2[0]).length !== 0) {
