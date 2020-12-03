@@ -4,7 +4,7 @@ import { TipoNivelID, Nivel_t } from '../../../@core/data/models/catalogo/tipo_n
 import { NivelHelper as nh } from '../../../@core/utils/niveles.helper';
 import { TipoBien, TipoBienID, Bien_t } from '../../../@core/data/models/acta_recibido/tipo_bien';
 import { SubgrupoTransaccion, SubgrupoTransaccionDetalle } from '../../../@core/data/models/catalogo/transacciones';
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, AfterViewInit, Input, Output, EventEmitter } from '@angular/core';
 import { FORM_SUBGRUPO } from './form-subgrupo';
 import { ToasterService, ToasterConfig, Toast, BodyOutputType } from 'angular2-toaster';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
@@ -17,7 +17,7 @@ import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/cat
   templateUrl: './crud-subgrupo.component.html',
   styleUrls: ['./crud-subgrupo.component.scss'],
 })
-export class CrudSubgrupoComponent implements OnInit {
+export class CrudSubgrupoComponent implements OnInit, AfterViewInit {
   config: ToasterConfig;
   subgrupo: Subgrupo;
   subgrupo_id: number;
@@ -319,10 +319,17 @@ export class CrudSubgrupoComponent implements OnInit {
     });
   }
 
+  ngAfterViewInit() {
+    if (this.subgrupoPadre !== undefined) {
+      const nivelPadre = this.subgrupoPadre.TipoNivelId.Id;
+      this.muestraDetalles(nh.Hijo(nivelPadre) === Nivel_t.Clase);
+    }
+  }
+
   ngOnInit() {
     this.loadSubgrupo();
     this.loadPrefixSuffixCreate();
-}
+  }
 
   loadPrefixSuffixCreate () {
     if (this.subgrupoPadre !== undefined) {
