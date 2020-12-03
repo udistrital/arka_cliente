@@ -117,15 +117,15 @@ export class CrudSubgrupoComponent implements OnInit {
             info__grupo.Id = subgrupo.Id;
 
             if (this.subgrupo !== undefined) {
-              if (subgrupo.TipoNivelId.Id === 2) {
+              if (subgrupo.TipoNivelId.Id === Nivel_t.Segmento) {
                 this.formSubgrupo.campos[this.getIndexForm('Codigo')].prefix.value = '';
                 info__grupo.Codigo = this.subgrupo.Codigo.substring(0, 2);
                 this.formSubgrupo.campos[this.getIndexForm('Codigo')].suffix.value = '0000';
-              } else  if (subgrupo.TipoNivelId.Id === 3) {
+              } else  if (subgrupo.TipoNivelId.Id === Nivel_t.Familia) {
                 this.formSubgrupo.campos[this.getIndexForm('Codigo')].prefix.value = this.subgrupo.Codigo.substring(0, 2);
                 info__grupo.Codigo = this.subgrupo.Codigo.substring(2, 4);
                 this.formSubgrupo.campos[this.getIndexForm('Codigo')].suffix.value = '00';
-              } else if (subgrupo.TipoNivelId.Id === 4) {
+              } else if (subgrupo.TipoNivelId.Id === Nivel_t.Clase) {
                 this.formSubgrupo.campos[this.getIndexForm('Codigo')].prefix.value = this.subgrupo.Codigo.substring(0, 4);
                 info__grupo.Codigo = this.subgrupo.Codigo.substring(4, 6);
                 this.formSubgrupo.campos[this.getIndexForm('Codigo')].suffix.value = '';
@@ -189,11 +189,11 @@ export class CrudSubgrupoComponent implements OnInit {
           // this.subgrupo.Codigo = form_data.Codigo;
           this.subgrupo.Nombre = form_data.Nombre;
 
-          if (nivel === 2) {
+          if (nivel === Nivel_t.Segmento) {
             this.subgrupo.Codigo = form_data.Codigo + '0000';
-          } else if (nivel === 3) {
+          } else if (nivel === Nivel_t.Familia) {
               this.subgrupo.Codigo = this.subgrupo.Codigo.substring(0, 2) + form_data.Codigo + '00';
-            } else if (nivel === 4) {
+            } else if (nivel === Nivel_t.Clase) {
                 this.subgrupo.Codigo = this.subgrupo.Codigo.substring(0, 4) + form_data.Codigo;
           }
 
@@ -249,7 +249,7 @@ export class CrudSubgrupoComponent implements OnInit {
           // Subgrupo
           form_data.Activo = true;
           form_data.TipoNivelId = <TipoNivelID>{'Id': nivel};
-          // subgrupo.TipoNivelId = { Id: (this.subgrupoPadre.TipoNivelId.Id + 1) };
+          // subgrupo.TipoNivelId = { Id: nh.Hijo(this.subgrupoPadre.TipoNivelId.Id) };
 
           // Detalle
           let detalle;
@@ -298,13 +298,13 @@ export class CrudSubgrupoComponent implements OnInit {
 
   loadPrefixSuffixCreate () {
     if (this.subgrupoPadre !== undefined) {
-      if (this.subgrupoPadre.TipoNivelId.Id === 1) {
+      if (this.subgrupoPadre.TipoNivelId.Id === Nivel_t.Grupo) {
         this.formSubgrupo.campos[this.getIndexForm('Codigo')].prefix.value = '';
         this.formSubgrupo.campos[this.getIndexForm('Codigo')].suffix.value = '0000';
-      } else  if (this.subgrupoPadre.TipoNivelId.Id === 2) {
+      } else  if (this.subgrupoPadre.TipoNivelId.Id === Nivel_t.Segmento) {
         this.formSubgrupo.campos[this.getIndexForm('Codigo')].prefix.value = this.subgrupoPadre.Codigo.substring(0, 2);
         this.formSubgrupo.campos[this.getIndexForm('Codigo')].suffix.value = '00';
-      } else if (this.subgrupoPadre.TipoNivelId.Id === 3) {
+      } else if (this.subgrupoPadre.TipoNivelId.Id === Nivel_t.Familia) {
         this.formSubgrupo.campos[this.getIndexForm('Codigo')].prefix.value = this.subgrupoPadre.Codigo.substring(0, 4);
         this.formSubgrupo.campos[this.getIndexForm('Codigo')].suffix.value = '';
       } else {
@@ -318,12 +318,12 @@ export class CrudSubgrupoComponent implements OnInit {
 validarForm(event) {
     if (event.valid) {
         if (this.info_subgrupo === undefined) {
-          if (this.subgrupoPadre.TipoNivelId.Id === 1) {
+          if (this.subgrupoPadre.TipoNivelId.Id === Nivel_t.Grupo) {
             event.data.Subgrupo.Codigo = event.data.Subgrupo.Codigo + '0000';
-          } else if (this.subgrupoPadre.TipoNivelId.Id === 2) {
+          } else if (this.subgrupoPadre.TipoNivelId.Id === Nivel_t.Segmento) {
             event.data.Subgrupo.Codigo = this.subgrupoPadre.Codigo.substring(0, 2) + event.data.Subgrupo.Codigo + '00';
             this.formSubgrupo.campos[this.getIndexForm('Codigo')].prefix.value = this.subgrupoPadre.Codigo.substring(0, 2);
-            } else if (this.subgrupoPadre.TipoNivelId.Id === 3) {
+            } else if (this.subgrupoPadre.TipoNivelId.Id === Nivel_t.Familia) {
               event.data.Subgrupo.Codigo = this.subgrupoPadre.Codigo.substring(0, 4) + event.data.Subgrupo.Codigo;
               this.formSubgrupo.campos[this.getIndexForm('Codigo')].prefix.value = this.subgrupoPadre.Codigo.substring(0, 4);
           }
