@@ -117,6 +117,7 @@ export class CrudSubgrupoComponent implements OnInit, AfterViewInit {
             const subgrupo = new Subgrupo;
             Object.assign(subgrupo, res[0].Subgrupo);
             const nivel: TipoNivelID = { Id: subgrupo.TipoNivelId.Id };
+            this.formSubgrupo.titulo = this.translate.instant('GLOBAL.subgrupo.' + nh.Texto(nivel.Id) + '.nombre');
             subgrupo.TipoNivelId = nivel;
             // console.log({'subgrupo': subgrupo});
 
@@ -321,8 +322,9 @@ export class CrudSubgrupoComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit() {
     if (this.subgrupoPadre !== undefined) {
-      const nivelPadre = this.subgrupoPadre.TipoNivelId.Id;
-      this.muestraDetalles(nh.Hijo(nivelPadre) === Nivel_t.Clase);
+      const nivel = nh.Hijo(this.subgrupoPadre.TipoNivelId.Id);
+      this.formSubgrupo.titulo = this.translate.instant('GLOBAL.subgrupo.' + nh.Texto(nivel) + '.nombre');
+      this.muestraDetalles(nivel === Nivel_t.Clase);
     }
   }
 
