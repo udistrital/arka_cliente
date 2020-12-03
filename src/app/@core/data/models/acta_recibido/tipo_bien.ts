@@ -1,7 +1,7 @@
 export enum Bien_t {
     consumo = 1,
     consumoControlado,
-    devolutuvo,
+    devolutivo,
 }
 
 export class TipoBienID {

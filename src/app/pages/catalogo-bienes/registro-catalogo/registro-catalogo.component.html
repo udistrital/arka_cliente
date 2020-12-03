@@ -11,9 +11,7 @@
         <ngx-arbol *ngIf="catalogoId !== 0" [catalogoId]="catalogoId" (grupo)="receiveMessage($event)" [updateSignal]="eventChange"></ngx-arbol>
     </nb-card-body>
     <nb-card-footer *ngIf="catalogoId !== 0">
-      <div>
         <button nbButton class="float-right" (click)="AgregarGrupo(1)">{{'GLOBAL.subgrupo.grupo.agregar' | translate}}</button>
-      </div>
     </nb-card-footer>
   </nb-card>
 
@@ -36,7 +34,6 @@
       <ngx-crud-subgrupo [subgrupo_id]="uid_2" (eventChange)="recargarCatalogo($event)"></ngx-crud-subgrupo>
       <nb-card-footer>
             <button nbButton (click)="QuitarVista()">{{'GLOBAL.Deshacer' | translate}}</button>
-            <!-- TODO: Validar la actualizacion dinamica de este texto (y extender a componentes similares): -->
           <button nbButton class="float-right" (click)="AgregarSubgrupo(1)" *ngIf="permitir_crear_subgrupo">{{'GLOBAL.subgrupo.'+nivel_hijo+'.agregar' | translate}}</button>
       </nb-card-footer>
     </nb-card>
@@ -57,9 +54,7 @@
       </nb-card-header>
       <ngx-crud-subgrupo [subgrupo_Padre]="subgrupoPadre" (eventChange)="recargarCatalogo($event)"></ngx-crud-subgrupo>
       <nb-card-footer>
-          <div>
               <button nbButton (click)="QuitarVista()">{{'GLOBAL.Deshacer' | translate}}</button>
-          </div>
         </nb-card-footer>
     </nb-card>
   </div>
