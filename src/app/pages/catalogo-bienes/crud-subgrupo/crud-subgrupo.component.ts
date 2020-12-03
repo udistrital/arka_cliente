@@ -2,7 +2,7 @@ import { Grupo2, Clase, Subgrupo, SubgrupoID } from '../../../@core/data/models/
 import { Detalle } from '../../../@core/data/models/catalogo/detalle';
 import { TipoNivelID, Nivel_t } from '../../../@core/data/models/catalogo/tipo_nivel';
 import { NivelHelper as nh } from '../../../@core/utils/niveles.helper';
-import { TipoBien, TipoBienID } from '../../../@core/data/models/acta_recibido/tipo_bien';
+import { TipoBien, TipoBienID, Bien_t } from '../../../@core/data/models/acta_recibido/tipo_bien';
 import { SubgrupoTransaccion, SubgrupoTransaccionDetalle } from '../../../@core/data/models/catalogo/transacciones';
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { FORM_SUBGRUPO } from './form-subgrupo';
@@ -44,11 +44,20 @@ export class CrudSubgrupoComponent implements OnInit {
   regSubgrupo: any;
   clean: boolean;
 
+  // ver comentarios en muestraDetalles()
+  // campos_detalle_requeridos: Array<boolean>;
+
   constructor(
     private translate: TranslateService,
     private catalogoElementosService: CatalogoElementosHelper,
     private toasterService: ToasterService,
   ) {
+    // ver comentarios en muestraDetalles()
+    // this.campos_detalle_requeridos = FORM_SUBGRUPO.campos.map(campo => {
+    //   return campo.claseGrid.includes('det-subg-catalogo') && campo.requerido;
+    // });
+    // console.log({'campos requeridos':this.campos_detalle_requeridos});
+
     this.formSubgrupo = FORM_SUBGRUPO;
     this.construirForm();
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
@@ -137,25 +146,25 @@ export class CrudSubgrupoComponent implements OnInit {
 
             // console.log(info__grupo.Codigo);
 
-            // TODO: Meter las siguientes lineas dentro del 'if'
-            // despues de actualizada la API
-
-            const detalle = new Detalle;
-            Object.assign(detalle, res[0].Detalle);
-            // console.log({'detalle': detalle});
-            this.detalle_id = detalle.Id;
             if (nivel.Id === Nivel_t.Clase) {
+              const detalle = new Detalle;
+              Object.assign(detalle, res[0].Detalle);
+              // console.log({'detalle': detalle});
+              this.detalle_id = detalle.Id;
               info__grupo.TipoBienId = detalle.TipoBienId;
               info__grupo.Depreciacion = detalle.Depreciacion;
               info__grupo.Valorizacion = detalle.Valorizacion;
               this.detalle = detalle;
+            } else {
+              // Valores "dummy" para campos requeridos
+              info__grupo.TipoBienId = <TipoBienID>{Id: Bien_t.devolutivo};
             }
+            this.muestraDetalles(nivel.Id === Nivel_t.Clase);
 
             this.subgrupo = subgrupo;
             this.info_subgrupo = info__grupo;
             this.mostrar.emit(true);
           } else {
-            // this.subgrupo = undefined;
             this.info_subgrupo = undefined;
             this.clean = !this.clean;
             this.mostrar.emit(false);
@@ -289,6 +298,25 @@ export class CrudSubgrupoComponent implements OnInit {
             });
         }
       });
+  }
+
+  muestraDetalles (mostrar: boolean): void {
+
+    // PARTE 1: Hacer que los campos que eran requeridos, ahora no lo sean
+    // // Forma 1: Funciona PERO, cuando se guarda el formulario, no llegan los datos...
+    // this.campos_detalle_requeridos.map((campoNum,idx) => [idx, campoNum]).filter(campoReq => campoReq[1]).forEach(campo => {
+    //   // console.log({'campo':campo,'mostrar':mostrar});
+    //   this.formSubgrupo.campos[<number>campo[0]].requerido = mostrar;
+    // });
+    // Forma 2 (EN USO):  Cargar valores dummy en campos requeridos que se van a ocultar (e ignorar)
+    // (Ver loadSubgrupo())
+
+    // PARTE 2: Actualizar el estilo
+    // Funciona, pero si quedaron campos simplemente quedaron ocultos
+    document.querySelectorAll<HTMLElement>('.det-subg-catalogo').forEach(campo => {
+      // campo.style.display = 'none' ;
+      campo.style.display = mostrar ? 'block' : 'none' ;
+    });
   }
 
   ngOnInit() {
