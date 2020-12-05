@@ -78,8 +78,9 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
 
   ngOnInit() {
   }
-
+  // Se ve si ya tiene cuentas asignadas para mostrarlas en el formulario
   ver3(event) {
+    // console.log(event); 
     let mov_existente: boolean;
     if (event.Id === undefined) {
       this.Movimientos.forEach((element1: CuentaGrupo) => {
@@ -95,6 +96,7 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
 
     } else {
       this.Movimientos.forEach((element2: CuentaGrupo) => {
+        console.log(element2)
         if (element2.Id === event.Id) {
           element2.CuentaCreditoId = event.CuentaCreditoId;
           element2.CuentaDebitoId = event.CuentaDebitoId;
@@ -154,7 +156,7 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
       res => {
         if(event.TipoNivelId.Id==4)
         {
-          console.log(event.TipoNivelId.Id);
+         // console.log(event.TipoNivelId.Id);
           if (Object.keys(res[0]).length !== 0) {
             this.catalogoElementosService.getDetalleSubgrupo(event.Id).subscribe(res2 => {
               if (Object.keys(res2[0]).length !== 0) {
@@ -191,6 +193,7 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
   onSubmit() {
     let mov_existente: boolean;
     this.Movimientos.forEach((element3: CuentaGrupo) => {
+      // console.log(element3)
       if (element3.Id !== null) {
         mov_existente = true;
       }
