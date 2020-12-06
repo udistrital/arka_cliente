@@ -16,45 +16,46 @@
       <nb-card-header>{{'GLOBAL.Acta_Recibido.RegistroActa.Title' | translate}}</nb-card-header>
         <nb-card-body>
           <mat-vertical-stepper [linear]="true" #stepper>
+
             <mat-step label="{{'GLOBAL.Acta_Recibido.RegistroActa.DatosTitle' | translate}}" formGroupName="Formulario1">
                 <nb-card [nbSpinner]="!Sedes">
                   <nb-card-body class="bla">
                     <div class="row" (click)="usarLocalStorage()">
                       <div class="form-group col-sm">
                         <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Sede' | translate}}</label>
-                          <select nbInput type="text" class="form-control" formControlName="Sede"
-                          (click)="usarLocalStorage(); Traer_Relacion_Ubicaciones();" required>
-                            <option *ngFor="let sede of Sedes" [(value)]="sede.Id">{{sede.Nombre}}</option>
-                          </select>
+                        <select nbInput type="text" class="form-control" formControlName="Sede"
+                        (click)="usarLocalStorage(); Traer_Relacion_Ubicaciones();" required>
+                          <option *ngFor="let sede of Sedes" [(value)]="sede.Id">{{sede.Nombre}}</option>
+                        </select>
                         <p class="campo" *ngIf="firstForm.get('Formulario1').get('Sede').invalid">
                           {{'GLOBAL.placeholder' | translate}}</p>
-                    </div>
+                      </div>
                       <div class="form-group col-sm">
-                        <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Dependencia' | translate}}</label>
-                          <ng2-completer style="border: 0rem" inputClass="form-control" nbInput (keyup)="usarLocalStorage(); Traer_Relacion_Ubicaciones;"
-                          [datasource]="dataService3" formControlName="Dependencia" [minSearchLength]="2"
-                          (change)="Traer_Relacion_Ubicaciones()"
-                          placeholder="{{'GLOBAL.Acta_Recibido.RegistroActa.SeleccioneFiltro' | translate}}">
-                          </ng2-completer>
-                          <p class="campo" *ngIf="firstForm.get('Formulario1').get('Dependencia').invalid">
-                          {{'GLOBAL.placeholder' | translate}}</p>
-                    </div>
+                        <label id="lbl-dependencia">{{'GLOBAL.Acta_Recibido.RegistroActa.Dependencia' | translate}}</label>
+                        <ng2-completer style="border: 0rem" inputClass="form-control" nbInput (keyup)="usarLocalStorage(); Traer_Relacion_Ubicaciones;"
+                        [datasource]="dataService3" formControlName="Dependencia" [minSearchLength]="2"
+                        (change)="Traer_Relacion_Ubicaciones()"
+                        placeholder="{{'GLOBAL.Acta_Recibido.RegistroActa.SeleccioneFiltro' | translate}}">
+                        </ng2-completer>
+                        <p class="campo" *ngIf="firstForm.get('Formulario1').get('Dependencia').invalid">
+                        {{'GLOBAL.placeholder' | translate}}</p>
+                      </div>
                       <div class="form-group col-sm">
                         <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Ubicacion' | translate}}</label>
-                          <select nbInput type="text" class="form-control" formControlName="Ubicacion" (click)="Traer_Relacion_Ubicaciones();" required>
-                            <option value="" selected></option>
-                            <option *ngFor="let ubicacion of UbicacionesForm" [(value)]="ubicacion.Id">{{ubicacion.Nombre}}</option>
-                          </select>
+                        <select nbInput type="text" class="form-control" formControlName="Ubicacion" (click)="Traer_Relacion_Ubicaciones();" required>
+                          <option value="" selected></option>
+                          <option *ngFor="let ubicacion of UbicacionesForm" [(value)]="ubicacion.Id">{{ubicacion.Nombre}}</option>
+                        </select>
                         <p class="campo" *ngIf="firstForm.get('Formulario1').get('Ubicacion').invalid">
                         {{'GLOBAL.placeholder' | translate}}</p>
                       </div>
                     </div>
                   </nb-card-body>
-                <nb-card-footer>
-                  <button nbButton matStepperNext [disabled]="!firstForm.get('Formulario1').valid" (click)="usarLocalStorage()"
-                  class="float-right">{{'GLOBAL.Acta_Recibido.RegistroActa.SiguienteButton' | translate}}</button>
-                </nb-card-footer>
-              </nb-card>
+                  <nb-card-footer>
+                    <button nbButton matStepperNext [disabled]="!firstForm.get('Formulario1').valid" (click)="usarLocalStorage()"
+                    class="float-right">{{'GLOBAL.Acta_Recibido.RegistroActa.SiguienteButton' | translate}}</button>
+                  </nb-card-footer>
+                </nb-card>
             </mat-step>
 
             <mat-step label="{{'GLOBAL.Acta_Recibido.RegistroActa.SoporteTitle' | translate}}"
@@ -108,16 +109,16 @@
                                 </div>
                               </div>
                               <div class="col">
-                                
+
                                 <div class="form-group col-sm">
                                   <!-- <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Soporte' | translate}}</label>
                                   <input nbInput type="file" class="form-control-file"(keyup)="usarLocalStorage()" id="factura"
                                     formControlName="Soporte" required>
                                     <p class="campo" *ngIf="firstForm.get('Formulario2').at(i).get('Soporte').invalid">{{'GLOBAL.placeholder' | translate}}</p> -->
-    
+
                                   <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Soporte' | translate}}</label>
                                   <nb-card>
-    
+
                                     <nb-card-body>
                                       <div class="col-sm soporte">
                                         <div>
@@ -144,15 +145,15 @@
                                             {{'GLOBAL.Acta_Recibido.CapturarElementos.LimpiarEspacioButton' | translate }}
                                           </button>
                                         </div>
-    
+
                                       </div>
                                     </nb-card-body>
                                   </nb-card>
-    
+
                                 </div>
                               </div>
                             </div>
-                            
+
                           </nb-card-body>
                         </nb-card>
 

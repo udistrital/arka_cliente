@@ -42,7 +42,6 @@ import { INVALID } from '@angular/forms/src/model';
   styleUrls: ['./registro-acta-recibido.component.scss'],
 })
 
-
 export class RegistroActaRecibidoComponent implements OnInit {
 
   config: ToasterConfig;
@@ -65,7 +64,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
   @ViewChild('fform') firstFormDirective;
   Datos: any;
   DatosElementos: Array<any>;
-  carga_agregada: boolean;
+  carga_agregada: boolean; // No se usa?
   index;
   selected = new FormControl(0);
   // Tablas parametricas
@@ -112,7 +111,6 @@ export class RegistroActaRecibidoComponent implements OnInit {
     private nuxeoService: NuxeoService,
     private documentoService: DocumentoService,
     private userService: UserService,
-
   ) {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
     });
@@ -131,6 +129,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
     this.uidDocumento = [];
     this.idDocumento = [];
   }
+
   ngOnInit() {
 
     // this.Traer_Relacion_Ubicaciones;
@@ -264,8 +263,9 @@ export class RegistroActaRecibidoComponent implements OnInit {
       Formulario3: this.Formulario_3,
     });
     // console.log(this.Formulario_1);
-    this.carga_agregada = true;
+    this.carga_agregada = true; // No se usa?
   }
+
   Cargar_Formularios2(transaccion_: any, elementos_: any) {
 
     const Form2 = this.fb.array([]);
@@ -295,7 +295,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
         Datos_Adicionales: [transaccion_.Formulario3.Datos_Adicionales, Validators.required],
       }),
     });
-    this.carga_agregada = true;
+    this.carga_agregada = true; // No se usa?
     this.Traer_Relacion_Ubicaciones();
   }
 
@@ -442,8 +442,8 @@ export class RegistroActaRecibidoComponent implements OnInit {
           this.Proveedores.find(x => x.Id === this.validador_soporte),
       });
     }
-
   }
+
   Registrar_Acta(Datos: any, Datos2: any): ActaRecibido {
 
     const Acta_de_Recibido = new ActaRecibido();
@@ -457,6 +457,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
 
     return Acta_de_Recibido;
   }
+
   Registrar_Estado_Acta(Acta: ActaRecibido, Estado: number): HistoricoActa {
 
     const Historico_ = new HistoricoActa();
@@ -470,6 +471,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
 
     return Historico_;
   }
+
   Registrar_Soporte(Datos: any, Elementos_: any, Acta: ActaRecibido, index: number): TransaccionSoporteActa {
 
     const Soporte_Acta = new SoporteActa();
@@ -492,6 +494,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
     Transaccion.Elementos = this.Registrar_Elementos(Elementos_, Soporte_Acta);
     return Transaccion;
   }
+
   Registrar_Elementos(Datos: any, Soporte: SoporteActa): Array<Elemento> {
     const Elementos_Soporte = new Array<Elemento>();
     if ((Object.keys(Datos).length === 0)) {
@@ -567,15 +570,19 @@ export class RegistroActaRecibidoComponent implements OnInit {
     // }
     return any;
   }
+
   valortotal(subtotal: string, descuento: string, iva: string) {
     return (parseFloat(subtotal) - parseFloat(descuento) + parseFloat(iva));
   }
+
   valorXcantidad(valor_unitario: string, cantidad: string) {
     return (parseFloat(valor_unitario) * parseFloat(cantidad));
   }
+
   valor_iva(subtotal: string, descuento: string, porcentaje_iva: string) {
     return ((parseFloat(subtotal) - parseFloat(descuento)) * parseFloat(porcentaje_iva) / 100);
   }
+
   ver(event: any, index: number) {
     this.DatosElementos = event;
     if (this.Elementos__Soporte === undefined) {
@@ -590,6 +597,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
     this.usarLocalStorage();
 
   }
+
   ver2(event: any, index: number) {
     this.DatosTotales = event;
     if (this.Totales === undefined) {
@@ -602,6 +610,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
       }
     }
   }
+
   Revisar_Totales() {
     (Swal as any).fire({
       type: 'warning',
@@ -609,6 +618,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
       text: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.CargaElementos'),
     });
   }
+
   Revisar_Totales2() {
     (Swal as any).fire({
       title: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.DatosVeridicosTitle'),
@@ -633,6 +643,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
       }
     });
   }
+
   getGranSubtotal() {
     if (this.Totales !== []) {
       return this.Totales.map(t => t.Subtotal).reduce((acc, value) => parseFloat(acc) + parseFloat(value));
@@ -640,39 +651,41 @@ export class RegistroActaRecibidoComponent implements OnInit {
       return '0';
     }
   }
-  getGranDescuentos() {
 
+  getGranDescuentos() {
     if (this.Totales !== []) {
       return this.Totales.map(t => t.Descuento).reduce((acc, value) => parseFloat(acc) + parseFloat(value));
     } else {
       return '0';
     }
   }
-  getGranValorIva() {
 
+  getGranValorIva() {
     if (this.Totales !== []) {
       return this.Totales.map(t => t.ValorIva).reduce((acc, value) => parseFloat(acc) + parseFloat(value));
     } else {
       return '0';
     }
   }
-  getGranTotal() {
 
+  getGranTotal() {
     if (this.Totales !== []) {
       return this.Totales.map(t => t.ValorTotal).reduce((acc, value) => parseFloat(acc) + parseFloat(value));
     } else {
       return '0';
     }
   }
-  usarLocalStorage() {
 
-    if (sessionStorage.Formulario_Registro == null) {
+  usarLocalStorage() {
+    // if (sessionStorage.Formulario_Registro == null) {
       sessionStorage.setItem('Formulario_Registro', JSON.stringify(this.firstForm.value));
       sessionStorage.setItem('Elementos_Formulario_Registro', JSON.stringify(this.Elementos__Soporte));
+    /* // Este 'if/else' no es necesario por lo que hace...
     } else {
       sessionStorage.setItem('Formulario_Registro', JSON.stringify(this.firstForm.value));
       sessionStorage.setItem('Elementos_Formulario_Registro', JSON.stringify(this.Elementos__Soporte));
     }
+    // */
   }
 
   cambiarubicacion(evento) {
