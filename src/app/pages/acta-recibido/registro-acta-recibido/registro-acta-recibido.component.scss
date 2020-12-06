@@ -52,7 +52,13 @@
     float: none;
     text-align: center;
   }
-  
 
-  
-  
+// Para que la lista de Dependencias no salga "recortada" (Ver Issue #315)
+:host /deep/ .completer-dropdown-holder {
+  position: fixed;
+}
+:host /deep/ .completer-dropdown {
+  max-height: 200px !important;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
