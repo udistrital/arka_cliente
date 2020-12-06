@@ -245,6 +245,7 @@ export class CapturarElementosComponent implements OnInit {
   }
 
   displayedColumns = [
+    'AccionesMacro',
     'TipoBienId',
     'SubgrupoCatalogoId',
     'Nombre',
