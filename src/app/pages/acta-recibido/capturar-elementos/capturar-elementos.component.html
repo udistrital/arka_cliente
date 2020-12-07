@@ -56,10 +56,10 @@
             <mat-checkbox aria-label="Seleccionar/Deseleccionar Todo" (change)="cambioCheckTodos($event.checked)"
               nbPopover="Seleccionar/Deseleccionar Todo"
               nbPopoverTrigger="hover" nbPopoverPlacement="left"
-              [(value)]="checkTodos" [(indeterminate)]="checkTodos_indet"></mat-checkbox>
+              [checked]="checkTodos" [indeterminate]="checkParcial"></mat-checkbox>
           </th>
           <td mat-cell *matCellDef="let element; let rowIndex = index">
-            <nb-checkbox (change)="cambioCheckItem($event,rowIndex)"
+            <nb-checkbox (change)="refrescaCheckTotal()"
               [(ngModel)]="element.seleccionado"></nb-checkbox>
           </td>
           <td mat-footer-cell *matFooterCellDef>Totales</td>

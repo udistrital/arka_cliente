@@ -57,7 +57,7 @@ export class CapturarElementosComponent implements OnInit {
   Devolutivo: any;
 
   checkTodos: boolean = false;
-  checkTodos_indet: boolean;
+  checkParcial: boolean = false;
 
   constructor(private fb: FormBuilder,
     private translate: TranslateService,
@@ -118,6 +118,7 @@ export class CapturarElementosComponent implements OnInit {
   }
 
   ver() {
+    this.refrescaCheckTotal();
     this.DatosEnviados.emit(this.dataSource.data);
     this.DatosTotales.emit(this.Totales);
   }
@@ -357,6 +358,7 @@ export class CapturarElementosComponent implements OnInit {
 
   borraSeleccionados() {
     this._deleteElemento(this.getSeleccionados());
+    this.refrescaCheckTotal();
   }
 
   getSeleccionados() {
@@ -396,15 +398,26 @@ export class CapturarElementosComponent implements OnInit {
     }
   }
 
-  cambioCheckItem(marcar: any, item: number) {
-    // console.log({'check-item': marcar, item});
+  refrescaCheckTotal() {
+    let checkTodos = false;
+    let checkParcial = false;
+    if (isArray(this.dataSource.data) && this.dataSource.data.length) {
+      if (this.dataSource.data.every(elem => elem.seleccionado)) {
+        // console.log('todos');
+        checkTodos = true;
+      } else if (this.dataSource.data.some(elem => elem.seleccionado)) {
+        // console.log('algunos');
+        checkParcial = true;
+      } // "else" ninguno
+    }
+    this.checkTodos = checkTodos;
+    this.checkParcial = checkParcial;
   }
 
   cambioCheckTodos(marcar: boolean) {
-    // console.log({'check-todos': marcar});
-    // if (marcar) {
-    // } else {}
-    // this._deleteElemento([0,2]);
+    this.dataSource.data.forEach(elem => {
+      elem.seleccionado = marcar;
+    });
   }
 
   valortotal(subtotal: string, descuento: string, iva: string) {
