@@ -20,6 +20,7 @@ import { NuxeoService } from '../../../@core/utils/nuxeo.service';
 import { DocumentoService } from '../../../@core/data/documento.service';
 import { isNumeric } from 'rxjs/internal-compatibility';
 import { isArray } from 'util';
+import { MatCheckboxChange } from '@angular/material';
 
 @Component({
   selector: 'ngx-capturar-elementos',
@@ -55,7 +56,7 @@ export class CapturarElementosComponent implements OnInit {
   ConsumoControlado: any;
   Devolutivo: any;
 
-  checkTodos: boolean;
+  checkTodos: boolean = false;
   checkTodos_indet: boolean;
 
   constructor(private fb: FormBuilder,
@@ -283,7 +284,6 @@ export class CapturarElementosComponent implements OnInit {
   }
 
   getSubtotales() {
-
     if (this.dataSource.data.length !== 0) {
       this.Totales.Subtotal = this.dataSource.data.map(t => t.Subtotal).reduce((acc, value) => parseFloat(acc) + parseFloat(value));
       const total = this.dataSource.data.map(t => t.Subtotal).reduce((acc, value) => parseFloat(acc) + parseFloat(value));
@@ -355,6 +355,16 @@ export class CapturarElementosComponent implements OnInit {
     // console.log(this.dataSource.data);
   }
 
+  borraSeleccionados() {
+    this._deleteElemento(this.getSeleccionados());
+  }
+
+  getSeleccionados() {
+    return this.dataSource.data.map((elem, idx) => ({'idx_data': idx, elem}))
+      .filter(elem => elem.elem.seleccionado)
+      .map(elem => elem.idx_data);
+  }
+
   deleteElemento(index: number) {
     (Swal as any).fire({
       title: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.EliminarElementosTitle'),
@@ -386,8 +396,14 @@ export class CapturarElementosComponent implements OnInit {
     }
   }
 
-  marcarTodos(marcar: boolean) {
-    // console.log({'this.checkTodos': this.checkTodos, 'this.checkTodos_indet': this.checkTodos_indet});
+  cambioCheckItem(marcar: any, item: number) {
+    // console.log({'check-item': marcar, item});
+  }
+
+  cambioCheckTodos(marcar: boolean) {
+    // console.log({'check-todos': marcar});
+    // if (marcar) {
+    // } else {}
     // this._deleteElemento([0,2]);
   }
 
