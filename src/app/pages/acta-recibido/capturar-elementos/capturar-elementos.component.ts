@@ -18,6 +18,8 @@ import { ListService } from '../../../@core/store/services/list.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { NuxeoService } from '../../../@core/utils/nuxeo.service';
 import { DocumentoService } from '../../../@core/data/documento.service';
+import { isNumeric } from 'rxjs/internal-compatibility';
+import { isArray } from 'util';
 
 @Component({
   selector: 'ngx-capturar-elementos',
@@ -52,6 +54,9 @@ export class CapturarElementosComponent implements OnInit {
   Consumo: any;
   ConsumoControlado: any;
   Devolutivo: any;
+
+  checkTodos: boolean;
+  checkTodos_indet: boolean;
 
   constructor(private fb: FormBuilder,
     private translate: TranslateService,
@@ -349,8 +354,8 @@ export class CapturarElementosComponent implements OnInit {
 
     // console.log(this.dataSource.data);
   }
-  deleteElemento(index: number) {
 
+  deleteElemento(index: number) {
     (Swal as any).fire({
       title: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.EliminarElementosTitle'),
       text: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.EliminarElementosText'),
@@ -362,12 +367,28 @@ export class CapturarElementosComponent implements OnInit {
       cancelButtonText: 'No',
     }).then((result) => {
       if (result.value) {
-        const data = this.dataSource.data;
-        data.splice((this.paginator.pageIndex * this.paginator.pageSize) + index, 1);
-        this.dataSource.data = data;
+        this._deleteElemento(index);
         this.ver();
       }
     });
+  }
+
+  private _deleteElemento(index: any) {
+    // console.log({index});
+    const indices = isNumeric(index) ? [index] : ( isArray(index) ? index : undefined );
+    if (indices) {
+      const data = this.dataSource.data;
+      indices.sort((a, b) => b - a);
+      for (let i = 0; i < indices.length; i++) {
+        data.splice((this.paginator.pageIndex * this.paginator.pageSize) + indices[i], 1);
+      }
+      this.dataSource.data = data;
+    }
+  }
+
+  marcarTodos(marcar: boolean) {
+    // console.log({'this.checkTodos': this.checkTodos, 'this.checkTodos_indet': this.checkTodos_indet});
+    // this._deleteElemento([0,2]);
   }
 
   valortotal(subtotal: string, descuento: string, iva: string) {
