@@ -63,8 +63,8 @@
         "ElementosCargadosTextNO": "The elements haven't been loaded, try again later",
         "EliminarElementosTitle": "Are you Sure?",
         "EliminarElementosText": "Are you sure about remove the selected item?",
-        "EliminarVariosElementosTitle":"Delete {{cantidad}} elements?",
-        "EliminarVariosElementosText":"Are you sure to delete {{cantidad}} elements?"
+        "EliminarVariosElementosTitle":"Delete {{cantidad}} element(s)?",
+        "EliminarVariosElementosText":"Are you sure to delete {{cantidad}} element(s)?"
       },
       "ConsultaActas": {
         "Title": "Receipt Certificates",
