@@ -357,8 +357,24 @@ export class CapturarElementosComponent implements OnInit {
   }
 
   borraSeleccionados() {
-    this._deleteElemento(this.getSeleccionados());
-    this.refrescaCheckTotal();
+    const seleccionados = this.getSeleccionados();
+    if (seleccionados.length) {
+      (Swal as any).fire({
+        title: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.EliminarVariosElementosTitle', {cantidad: seleccionados.length}),
+        text: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.EliminarVariosElementosText', {cantidad: seleccionados.length}),
+        type: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Si',
+        cancelButtonText: 'No',
+      }).then((result) => {
+        if (result.value) {
+          this._deleteElemento(seleccionados);
+          this.ver();
+        }
+      });
+    }
   }
 
   getSeleccionados() {
