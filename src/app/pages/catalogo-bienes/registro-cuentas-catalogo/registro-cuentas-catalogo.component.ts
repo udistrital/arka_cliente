@@ -80,9 +80,9 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
   }
   // Se ve si ya tiene cuentas asignadas para mostrarlas en el formulario
   ver3(event) {
-    // console.log(event); 
+    // console.log(event);
     let mov_existente: boolean;
-    if (event.Id === undefined) {
+    if (event.SubgrupoId.Id === undefined) {
       this.Movimientos.forEach((element1: CuentaGrupo) => {
         if (element1.SubtipoMovimientoId === event.SubtipoMovimientoId) {
           mov_existente = true;
@@ -96,8 +96,8 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
 
     } else {
       this.Movimientos.forEach((element2: CuentaGrupo) => {
-        console.log(element2)
-        if (element2.Id === event.Id) {
+        // console.log(element2)
+        if (element2.SubgrupoId.Id === event.SubgrupoId.Id) {
           element2.CuentaCreditoId = event.CuentaCreditoId;
           element2.CuentaDebitoId = event.CuentaDebitoId;
           mov_existente = true;

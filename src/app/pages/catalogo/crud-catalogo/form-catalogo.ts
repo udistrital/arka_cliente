@@ -15,7 +15,7 @@ export let FORM_CATALOGO = {
     //     requerido: true,
     //     tipo: 'number',
     // },
-    {
+    {   
         etiqueta: 'input',
         claseGrid: 'col-6',
         nombre: 'Nombre',
