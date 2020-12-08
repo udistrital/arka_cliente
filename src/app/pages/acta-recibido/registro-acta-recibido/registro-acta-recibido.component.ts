@@ -1,3 +1,4 @@
+import { Formulario } from './../edicion-acta-recibido/datos_locales';
 import { Component, OnInit, ViewChild, ViewChildren, QueryList } from '@angular/core';
 import { Subscription, combineLatest, Observable } from 'rxjs';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -63,8 +64,6 @@ export class RegistroActaRecibidoComponent implements OnInit {
   firstForm: FormGroup;
   @ViewChild('fform') firstFormDirective;
   Datos: any;
-  DatosElementos: Array<any>;
-  carga_agregada: boolean; // No se usa?
   index;
   selected = new FormControl(0);
   // Tablas parametricas
@@ -75,10 +74,9 @@ export class RegistroActaRecibidoComponent implements OnInit {
 
   // Modelos
   Acta: ActaRecibido;
-  Elementos__Soporte: Array<any>;
+  // Elementos__Soporte: Array<any>;
   Soportes_Acta: Array<SoporteActa>;
   Historico_Acta: HistoricoActa;
-  Unidades: any;
   Proveedores: any;
   Ubicaciones: any;
   UbicacionesForm: Ubicacion;
@@ -87,7 +85,6 @@ export class RegistroActaRecibidoComponent implements OnInit {
   Dependencias: any;
   DatosTotales: any;
   Totales: Array<any>;
-  Tarifas_Iva: any;
   fileDocumento: any[];
   uidDocumento: any;
   idDocumento: number[];
@@ -121,8 +118,6 @@ export class RegistroActaRecibidoComponent implements OnInit {
     this.listService.findEstadosActa();
     this.listService.findEstadosElemento();
     this.listService.findTipoBien();
-    this.listService.findUnidades();
-    this.listService.findImpuestoIVA();
     this.loadLists();
     this.fileDocumento = [];
     this.Validador = [];
@@ -132,25 +127,11 @@ export class RegistroActaRecibidoComponent implements OnInit {
 
   ngOnInit() {
 
-    // this.Traer_Relacion_Ubicaciones;
-
     this.searchStr2 = new Array<string>();
-    this.DatosElementos = new Array<any>();
-    this.Elementos__Soporte = new Array<any>();
-
     if (sessionStorage.Formulario_Registro == null) {
       this.Cargar_Formularios();
     } else {
       const formulario = JSON.parse(sessionStorage.Formulario_Registro);
-      // console.log(sessionStorage.Formulario_Registro);
-      // console.log(sessionStorage.Elementos_Formulario_Registro);
-      let elementos;
-      if (sessionStorage.Elementos_Formulario_Registro === []) {
-        elementos = [];
-      } else {
-        elementos = JSON.parse(sessionStorage.getItem('Elementos_Formulario_Registro'));
-        // console.log(elementos);
-      }
       (Swal as any).fire({
         type: 'warning',
         title: 'Registro sin completar',
@@ -162,7 +143,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
         cancelButtonText: 'Nuevo Registro, se eliminara el registro anterior',
       }).then((result) => {
         if (result.value) {
-          this.Cargar_Formularios2(formulario, elementos);
+          this.Cargar_Formularios2(formulario);
         } else {
           (Swal as any).fire({
             type: 'warning',
@@ -175,10 +156,9 @@ export class RegistroActaRecibidoComponent implements OnInit {
           }).then((result2) => {
             if (result2.value) {
               sessionStorage.removeItem('Formulario_Registro');
-              sessionStorage.removeItem('Elementos_Formulario_Registro');
               this.Cargar_Formularios();
             } else {
-              this.Cargar_Formularios2(formulario, elementos);
+              this.Cargar_Formularios2(formulario);
             }
           });
         }
@@ -192,8 +172,6 @@ export class RegistroActaRecibidoComponent implements OnInit {
         this.Estados_Acta = list.listEstadosActa[0];
         this.Estados_Elemento = list.listEstadosElemento[0];
         this.Tipos_Bien = list.listTipoBien[0];
-        this.Unidades = list.listUnidades[0];
-        this.Tarifas_Iva = list.listIVA[0];
         this.Sedes = list.listSedes[0];
         this.Proveedores = list.listProveedores[0];
         this.Dependencias = list.listDependencias[0];
@@ -214,8 +192,6 @@ export class RegistroActaRecibidoComponent implements OnInit {
   }
 
   onInputFileDocumento(event, index) {
-    // console.log(event.target.files);
-    // console.log(event.srcElement.files);
     const max_size = 1;
     if (event.target.files.length > 0) {
       const file = event.target.files[0];
@@ -224,11 +200,11 @@ export class RegistroActaRecibidoComponent implements OnInit {
         if (file.size < max_size * 1024000) {
 
           file.urlTemp = URL.createObjectURL(event.srcElement.files[0]);
-        file.url = this.cleanURL(file.urlTemp);
-        file.IdDocumento = 13; // tipo de documento (API documentos_crud)
-        file.file = event.target.files[0];
-        this.fileDocumento[index] = file;
-        this.Validador[index] = true;
+          file.url = this.cleanURL(file.urlTemp);
+          file.IdDocumento = 13; // tipo de documento (API documentos_crud)
+          file.file = event.target.files[0];
+          this.fileDocumento[index] = file;
+          this.Validador[index] = true;
 
         } else {
           (Swal as any).fire({
@@ -238,19 +214,19 @@ export class RegistroActaRecibidoComponent implements OnInit {
           });
           this.Validador[index] = false;
         }
-        // console.log(file);
-        // console.log(this.fileDocumento);
       } else {
         this.Validador[index] = false;
         this.pUpManager.showErrorAlert('error' + this.translate.instant('GLOBAL.error'));
       }
     }
   }
+
   clearFile(index) {
     (this.firstForm.get('Formulario2') as FormArray).at(index).get('Soporte').setValue('');
     this.fileDocumento[index] = undefined;
     this.Validador[index] = undefined;
   }
+
   cleanURL(oldURL: string): SafeResourceUrl {
     return this.sanitization.bypassSecurityTrustUrl(oldURL);
   }
@@ -260,16 +236,11 @@ export class RegistroActaRecibidoComponent implements OnInit {
     this.firstForm = this.fb.group({
       Formulario1: this.Formulario_1,
       Formulario2: this.fb.array([this.Formulario_2]),
-      Formulario3: this.Formulario_3,
     });
-    // console.log(this.Formulario_1);
-    this.carga_agregada = true; // No se usa?
   }
 
-  Cargar_Formularios2(transaccion_: any, elementos_: any) {
-
+  Cargar_Formularios2(transaccion_: any) {
     const Form2 = this.fb.array([]);
-    const elementos = new Array<any[]>();
 
     for (const Soporte of transaccion_.Formulario2) {
       const Formulario__2 = this.fb.group({
@@ -281,7 +252,6 @@ export class RegistroActaRecibidoComponent implements OnInit {
       });
       Form2.push(Formulario__2);
     }
-    this.Elementos__Soporte = elementos_;
 
     this.firstForm = this.fb.group({
       Formulario1: this.fb.group({
@@ -291,19 +261,33 @@ export class RegistroActaRecibidoComponent implements OnInit {
         Ubicacion: [transaccion_.Formulario1.Ubicacion, Validators.required],
       }),
       Formulario2: Form2,
-      Formulario3: this.fb.group({
-        Datos_Adicionales: [transaccion_.Formulario3.Datos_Adicionales, Validators.required],
-      }),
     });
-    this.carga_agregada = true; // No se usa?
-    this.Traer_Relacion_Ubicaciones();
+    const sede = this.firstForm.get('Formulario1').get('Sede').value;
+    const dependencia = this.firstForm.get('Formulario1').get('Dependencia').value;
+
+    if (this.firstForm.get('Formulario1').get('Sede').valid || this.firstForm.get('Formulario1').get('Dependencia').valid) {
+      const transaccion: any = {};
+      transaccion.Sede = this.Sedes.find((x) => x.Id === parseFloat(sede));
+      transaccion.Dependencia = this.Dependencias.find((x) => x.Nombre === dependencia);
+      if (transaccion.Sede !== undefined && transaccion.Dependencia !== undefined) {
+        this.Actas_Recibido.postRelacionSedeDependencia(transaccion).subscribe((res: any) => {
+          if (Object.keys(res[0]).length !== 0) {
+            this.UbicacionesForm = res[0].Relaciones;
+            this.DependenciaV = this.firstForm.get('Formulario1').get('Dependencia').value;
+          } else {
+            this.UbicacionesForm = undefined;
+          }
+        });
+      }
+    }
+
   }
 
   get Formulario_1(): FormGroup {
     return this.fb.group({
-      Sede: [''],
-      Dependencia: [''],
-      Ubicacion: [3, Validators.required],
+      Sede: ['', Validators.required],
+      Dependencia: ['', Validators.required],
+      Ubicacion: ['', Validators.required],
     });
   }
   get Formulario_2(): FormGroup {
@@ -314,67 +298,40 @@ export class RegistroActaRecibidoComponent implements OnInit {
       Soporte: [''],
     });
   }
-  get Elementos(): FormGroup {
-    return this.fb.group({
-      TipoBienId: [''],
-      SubgrupoCatalogoId: [''],
-      Nombre: [''],
-      Cantidad: ['0'],
-      Marca: [''],
-      Serie: [''],
-      UnidadMedida: [''],
-      ValorUnitario: ['0'],
-      Subtotal: ['0'],
-      Descuento: ['0'],
-      PorcentajeIvaId: [''],
-      ValorIva: ['0'],
-      ValorTotal: ['0'],
-    });
-  }
-  get Formulario_3(): FormGroup {
-    return this.fb.group({
-      Datos_Adicionales: ['', Validators.required],
-    });
-  }
+
   addSoportes() {
     (this.firstForm.get('Formulario2') as FormArray).push(this.Formulario_2);
   }
+
   deleteSoportes(index: number) {
     (this.firstForm.get('Formulario2') as FormArray).removeAt(index);
   }
+
   addTab() {
     this.addSoportes();
     this.searchStr2.push();
     this.selected.setValue(this.firstForm.get('Formulario2').value.length - 1);
-    // console.log(this.dataService2);
-
   }
+
   removeTab(i: number) {
     this.deleteSoportes(i);
     this.searchStr2.splice(i, 1);
     this.selected.setValue(i - 1);
-
   }
+
   async postSoporteNuxeo(files: any) {
-    // console.log(files);
     return new Promise(async (resolve, reject) => {
       files.forEach((file) => {
-        // console.log(file);
         file.Id = file.nombre;
         file.nombre = 'soporte_' + file.IdDocumento + '_acta_recibido';
-        // file.key = file.Id;
         file.key = 'soporte_' + file.IdDocumento;
       });
-      // console.log(files);
       await this.nuxeoService.getDocumentos$(files, this.documentoService)
         .subscribe(response => {
-          // console.log('response', response);
           if (Object.keys(response).length === files.length) {
-            // console.log('response', response);
             files.forEach((file, index) => {
               this.uidDocumento[index] = file.uid;
               this.idDocumento[index] = response[file.key].Id;
-              // console.log(this.idDocumento);
               resolve(response[file.key].Id);
             });
           }
@@ -395,29 +352,22 @@ export class RegistroActaRecibidoComponent implements OnInit {
     const start = async () => {
       await this.asyncForEach(this.fileDocumento, async (file) => {
         await this.postSoporteNuxeo([file]);
-        // console.log(file);
       });
-      // console.log('Done');
     };
     await start();
-    // console.log(this.uidDocumento);
-    // console.log(this.idDocumento);
     this.Datos = this.firstForm.value;
     const Transaccion_Acta = new TransaccionActaRecibido();
     Transaccion_Acta.ActaRecibido = this.Registrar_Acta(this.Datos.Formulario1);
     Transaccion_Acta.UltimoEstado = this.Registrar_Estado_Acta(Transaccion_Acta.ActaRecibido, 1);
     const Soportes = new Array<TransaccionSoporteActa>();
     this.Datos.Formulario2.forEach((soporte, index) => {
-      Soportes.push(this.Registrar_Soporte(soporte, this.Elementos__Soporte[index], Transaccion_Acta.ActaRecibido, index));
-
+      Soportes.push(this.Registrar_Soporte(soporte, Transaccion_Acta.ActaRecibido, index));
     });
+
     Transaccion_Acta.SoportesActa = Soportes;
-    // console.log('ok');
-    // console.log(Transaccion_Acta)
     if (this.validador === false) {
       this.Actas_Recibido.postTransaccionActa(Transaccion_Acta).subscribe((res: any) => {
         if (res !== null) {
-          console.log(res);
           (Swal as any).fire({
             type: 'success',
             title: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.Acta') +
@@ -451,7 +401,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
     Acta_de_Recibido.Activo = true;
     Acta_de_Recibido.FechaCreacion = new Date();
     Acta_de_Recibido.FechaModificacion = new Date();
-    Acta_de_Recibido.RevisorId = 94; // parseInt(window.localStorage.getItem('persona_id'), 10);
+    Acta_de_Recibido.RevisorId = parseInt(window.localStorage.getItem('persona_id'), 10);
     Acta_de_Recibido.UbicacionId = parseFloat(Datos.Ubicacion);
     Acta_de_Recibido.Observaciones = '';
 
@@ -472,7 +422,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
     return Historico_;
   }
 
-  Registrar_Soporte(Datos: any, Elementos_: any, Acta: ActaRecibido, index: number): TransaccionSoporteActa {
+  Registrar_Soporte(Datos: any, Acta: ActaRecibido, index: number): TransaccionSoporteActa {
 
     const Soporte_Acta = new SoporteActa();
     const Transaccion = new TransaccionSoporteActa();
@@ -486,122 +436,44 @@ export class RegistroActaRecibidoComponent implements OnInit {
     Soporte_Acta.FechaModificacion = new Date();
     Soporte_Acta.FechaSoporte = Datos.Fecha_Factura;
     Soporte_Acta.ProveedorId = this.Proveedores.find(proveedor => proveedor.NumDocumento.toString() === proveedor___[0].toString()).Id;
-
     Soporte_Acta.DocumentoId = this.idDocumento[index];
 
-    // console.log(Soporte_Acta.DocumentoId);
     Transaccion.SoporteActa = Soporte_Acta;
-    Transaccion.Elementos = this.Registrar_Elementos(Elementos_, Soporte_Acta);
+    Transaccion.Elementos = this.Registrar_Elementos(Soporte_Acta);
     return Transaccion;
   }
 
-  Registrar_Elementos(Datos: any, Soporte: SoporteActa): Array<Elemento> {
+  Registrar_Elementos(Soporte: SoporteActa): Array<Elemento> {
     const Elementos_Soporte = new Array<Elemento>();
     const Elemento__ = new Elemento;
-    console.log('here')
     Elemento__.Id = null;
     Elemento__.Nombre = '';
     Elemento__.Cantidad = 0;
     Elemento__.Marca = '';
     Elemento__.Serie = '';
-    Elemento__.UnidadMedida =0;
+    Elemento__.UnidadMedida = 0;
     Elemento__.ValorUnitario = 0;
     Elemento__.Subtotal = 0;
     Elemento__.Descuento = 0;
     Elemento__.ValorTotal = 0;
-    Elemento__.PorcentajeIvaId = 6;//parseFloat(datos.PorcentajeIvaId);
+    Elemento__.PorcentajeIvaId = 6;
     Elemento__.ValorIva = 0;
     Elemento__.ValorFinal = 0;
-    Elemento__.SubgrupoCatalogoId = null; //= parseFloat(datos.SubgrupoCatalogoId);
+    Elemento__.SubgrupoCatalogoId = null;
     Elemento__.Verificado = false;
-    Elemento__.TipoBienId = this.Tipos_Bien[0]; //this.Tipos_Bien.find(bien => bien.Id === parseFloat(datos.TipoBienId));
-    Elemento__.EstadoElementoId = this.Estados_Acta[0]; //this.Estados_Acta.find(estado => estado.Id === 1);
+    Elemento__.TipoBienId = this.Tipos_Bien[0];
+    Elemento__.EstadoElementoId = this.Estados_Acta[0];
     Elemento__.SoporteActaId = Soporte;
     Elemento__.Activo = true;
     Elemento__.FechaCreacion = new Date();
     Elemento__.FechaModificacion = new Date();
     this.validador = false;
 
-        Elementos_Soporte.push(Elemento__);
-    
+    Elementos_Soporte.push(Elemento__);
     return Elementos_Soporte;
   }
 
-  displayedColumns = [
-    'TipoBienId',
-    'SubgrupoCatalogoId',
-    'Nombre',
-    'Cantidad',
-    'Marca',
-    'Serie',
-    'UnidadMedida',
-    'ValorUnitario',
-    'Subtotal',
-    'Descuento',
-    'PorcentajeIvaId',
-    'ValorIva',
-    'ValorTotal',
-    'Acciones',
-  ];
-
-  Pipe2Number(any: string) {
-    // if (any !== null) {
-    //  return any.replace(/[$,]/g, '');
-    // } else {
-    //   return '0';
-    // }
-    return any;
-  }
-
-  valortotal(subtotal: string, descuento: string, iva: string) {
-    return (parseFloat(subtotal) - parseFloat(descuento) + parseFloat(iva));
-  }
-
-  valorXcantidad(valor_unitario: string, cantidad: string) {
-    return (parseFloat(valor_unitario) * parseFloat(cantidad));
-  }
-
-  valor_iva(subtotal: string, descuento: string, porcentaje_iva: string) {
-    return ((parseFloat(subtotal) - parseFloat(descuento)) * parseFloat(porcentaje_iva) / 100);
-  }
-
-  ver(event: any, index: number) {
-    this.DatosElementos = event;
-    if (this.Elementos__Soporte === undefined) {
-      this.Elementos__Soporte = new Array<any>(this.DatosElementos);
-    } else {
-      if (index < (this.Elementos__Soporte.length)) {
-        this.Elementos__Soporte[index] = this.DatosElementos;
-      } else {
-        this.Elementos__Soporte.push(this.DatosElementos);
-      }
-    }
-    this.usarLocalStorage();
-
-  }
-
-  ver2(event: any, index: number) {
-    this.DatosTotales = event;
-    if (this.Totales === undefined) {
-      this.Totales = new Array<any>(this.DatosTotales);
-    } else {
-      if (index < (this.Totales.length)) {
-        this.Totales[index] = this.DatosTotales;
-      } else {
-        this.Totales.push(this.DatosTotales);
-      }
-    }
-  }
-
   Revisar_Totales() {
-    (Swal as any).fire({
-      type: 'warning',
-      title: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.CargaElementosTitle'),
-      text: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.CargaElementos'),
-    });
-  }
-
-  Revisar_Totales2() {
     (Swal as any).fire({
       title: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.DatosVeridicosTitle'),
       text: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.DatosVeridicos'),
@@ -616,79 +488,29 @@ export class RegistroActaRecibidoComponent implements OnInit {
         this.onFirstSubmit();
         if (!this.validador) {
           sessionStorage.removeItem('Formulario_Registro');
-          sessionStorage.removeItem('Elementos_Formulario_Registro');
-          // this.router.navigateByUrl('/RefreshComponent', { skipLocationChange: true }).then(() => {
-          //   this.router.navigate(['/pages/acta_recibido/consulta_acta_recibido']);
-          // });
+          this.router.navigateByUrl('/RefreshComponent', { skipLocationChange: true }).then(() => {
+            this.router.navigate(['/pages/acta_recibido/consulta_acta_recibido']);
+          });
         }
 
       }
     });
   }
 
-  getGranSubtotal() {
-    if (this.Totales !== []) {
-      return this.Totales.map(t => t.Subtotal).reduce((acc, value) => parseFloat(acc) + parseFloat(value));
-    } else {
-      return '0';
-    }
-  }
-
-  getGranDescuentos() {
-    if (this.Totales !== []) {
-      return this.Totales.map(t => t.Descuento).reduce((acc, value) => parseFloat(acc) + parseFloat(value));
-    } else {
-      return '0';
-    }
-  }
-
-  getGranValorIva() {
-    if (this.Totales !== []) {
-      return this.Totales.map(t => t.ValorIva).reduce((acc, value) => parseFloat(acc) + parseFloat(value));
-    } else {
-      return '0';
-    }
-  }
-
-  getGranTotal() {
-    if (this.Totales !== []) {
-      return this.Totales.map(t => t.ValorTotal).reduce((acc, value) => parseFloat(acc) + parseFloat(value));
-    } else {
-      return '0';
-    }
-  }
-
   usarLocalStorage() {
-    // if (sessionStorage.Formulario_Registro == null) {
-      sessionStorage.setItem('Formulario_Registro', JSON.stringify(this.firstForm.value));
-      sessionStorage.setItem('Elementos_Formulario_Registro', JSON.stringify(this.Elementos__Soporte));
-    /* // Este 'if/else' no es necesario por lo que hace...
-    } else {
-      sessionStorage.setItem('Formulario_Registro', JSON.stringify(this.firstForm.value));
-      sessionStorage.setItem('Elementos_Formulario_Registro', JSON.stringify(this.Elementos__Soporte));
-    }
-    // */
-  }
-
-  cambiarubicacion(evento) {
-    this.firstForm.get('Formulario1').get('Ubicación').setValue(evento.target.value, {onlySelf: true});
-
+    sessionStorage.setItem('Formulario_Registro', JSON.stringify(this.firstForm.value));
   }
 
   Traer_Relacion_Ubicaciones() {
-
     const sede = this.firstForm.get('Formulario1').get('Sede').value;
     const dependencia = this.firstForm.get('Formulario1').get('Dependencia').value;
-
-    // Limpia el campo de ubicación si se cambia la dependencia
     if (this.DependenciaV !== dependencia) {
-          this.firstForm.patchValue({
-            Formulario1: {
-              Ubicacion: '',
-    },
-    });
+      this.firstForm.patchValue({
+        Formulario1: {
+          Ubicacion: '',
+        },
+      });
     }
-
     if (this.firstForm.get('Formulario1').get('Sede').valid || this.firstForm.get('Formulario1').get('Dependencia').valid) {
       const transaccion: any = {};
       transaccion.Sede = this.Sedes.find((x) => x.Id === parseFloat(sede));
@@ -699,7 +521,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
             this.UbicacionesForm = res[0].Relaciones;
             this.DependenciaV = this.firstForm.get('Formulario1').get('Dependencia').value;
           } else {
-            this.Ubicaciones = undefined;
+            this.UbicacionesForm = undefined;
           }
         });
       }
