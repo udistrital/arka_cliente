@@ -620,6 +620,17 @@ export class RegistroActaRecibidoComponent implements OnInit {
   }
 
   Revisar_Totales2() {
+    if (!parseInt(window.localStorage.getItem('persona_id'), 10)) {
+      (Swal as any).fire({
+        title: this.translate.instant('GLOBAL.error'),
+        text: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.ErrorRevisorMsg'),
+        type: 'error',
+        showCancelButton: false,
+        confirmButtonColor: '#3085d6',
+        confirmButtonText: 'Ok',
+      });
+      return;
+    }
     (Swal as any).fire({
       title: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.DatosVeridicosTitle'),
       text: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.DatosVeridicos'),

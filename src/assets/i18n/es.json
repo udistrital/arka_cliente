@@ -118,7 +118,8 @@
         "Acta":"Acta N° ",
         "Registrada":" ha sido registrada de forma exitosa",
         "RegistradaTitleNO":"Acta No Registrada",
-        "RegistradaNO":"El Acta no ha podido ser registrada de forma exitosa, intenta más tarde"
+        "RegistradaNO":"El Acta no ha podido ser registrada de forma exitosa, intenta más tarde",
+        "ErrorRevisorMsg": "El Revisor Asignado no está registrado en la Base de Datos de Terceros. Por favor escoja un revisor registrado e Intente Nuevamente"
       },
       "EdicionActa":{
         "Title": "Editar Acta de Recibido",
