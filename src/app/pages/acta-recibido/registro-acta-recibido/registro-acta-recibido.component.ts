@@ -404,8 +404,8 @@ export class RegistroActaRecibidoComponent implements OnInit {
     // console.log(this.idDocumento);
     this.Datos = this.firstForm.value;
     const Transaccion_Acta = new TransaccionActaRecibido();
-    Transaccion_Acta.ActaRecibido = this.Registrar_Acta(this.Datos.Formulario1, this.Datos.Formulario3);
-    Transaccion_Acta.UltimoEstado = this.Registrar_Estado_Acta(Transaccion_Acta.ActaRecibido, 2);
+    Transaccion_Acta.ActaRecibido = this.Registrar_Acta(this.Datos.Formulario1);
+    Transaccion_Acta.UltimoEstado = this.Registrar_Estado_Acta(Transaccion_Acta.ActaRecibido, 1);
     const Soportes = new Array<TransaccionSoporteActa>();
     this.Datos.Formulario2.forEach((soporte, index) => {
       Soportes.push(this.Registrar_Soporte(soporte, this.Elementos__Soporte[index], Transaccion_Acta.ActaRecibido, index));
@@ -417,7 +417,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
     if (this.validador === false) {
       this.Actas_Recibido.postTransaccionActa(Transaccion_Acta).subscribe((res: any) => {
         if (res !== null) {
-          // console.log(res);
+          console.log(res);
           (Swal as any).fire({
             type: 'success',
             title: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.Acta') +
@@ -444,16 +444,16 @@ export class RegistroActaRecibidoComponent implements OnInit {
     }
   }
 
-  Registrar_Acta(Datos: any, Datos2: any): ActaRecibido {
+  Registrar_Acta(Datos: any): ActaRecibido {
 
     const Acta_de_Recibido = new ActaRecibido();
     Acta_de_Recibido.Id = null;
     Acta_de_Recibido.Activo = true;
     Acta_de_Recibido.FechaCreacion = new Date();
     Acta_de_Recibido.FechaModificacion = new Date();
-    Acta_de_Recibido.RevisorId = parseInt(window.localStorage.getItem('persona_id'), 10);
+    Acta_de_Recibido.RevisorId = 94; // parseInt(window.localStorage.getItem('persona_id'), 10);
     Acta_de_Recibido.UbicacionId = parseFloat(Datos.Ubicacion);
-    Acta_de_Recibido.Observaciones = Datos2.Datos_Adicionales;
+    Acta_de_Recibido.Observaciones = '';
 
     return Acta_de_Recibido;
   }
@@ -497,51 +497,33 @@ export class RegistroActaRecibidoComponent implements OnInit {
 
   Registrar_Elementos(Datos: any, Soporte: SoporteActa): Array<Elemento> {
     const Elementos_Soporte = new Array<Elemento>();
-    if ((Object.keys(Datos).length === 0)) {
-      // console.log(this.validador);
-      this.validador = true;
-      this.validador_soporte = Soporte.ProveedorId;
-      // console.log(this.validador);
-    } else {
-      for (const datos of Datos) {
-        const Elemento__ = new Elemento;
-        const valorTotal = (parseFloat(this.Pipe2Number(datos.Subtotal)) - parseFloat(this.Pipe2Number(datos.Descuento)));
-        // console.log(this.Unidades);
-        // console.log(Datos);
-        // console.log(this.Unidades.find(unidad => unidad.Id === parseInt(datos.UnidadMedida)))
-        Elemento__.Id = null;
-        Elemento__.Nombre = datos.Nombre;
-        Elemento__.Cantidad = parseFloat(this.Pipe2Number(datos.Cantidad));
-        Elemento__.Marca = datos.Marca;
-        Elemento__.Serie = datos.Serie;
-        Elemento__.UnidadMedida = this.Unidades.find(unidad => unidad.Id === parseFloat(datos.UnidadMedida)).Id;
-        Elemento__.ValorUnitario = parseFloat(this.Pipe2Number(datos.ValorUnitario));
-        Elemento__.Subtotal = parseFloat(this.Pipe2Number(datos.Subtotal));
-        Elemento__.Descuento = parseFloat(this.Pipe2Number(datos.Descuento));
-        Elemento__.ValorTotal = valorTotal;
-        Elemento__.PorcentajeIvaId = parseFloat(datos.PorcentajeIvaId);
-        Elemento__.ValorIva = parseFloat(this.Pipe2Number(datos.ValorIva));
-        Elemento__.ValorFinal = parseFloat(this.Pipe2Number(datos.ValorTotal));
-        Elemento__.SubgrupoCatalogoId = parseFloat(datos.SubgrupoCatalogoId);
-        Elemento__.Verificado = false;
-        Elemento__.TipoBienId = this.Tipos_Bien.find(bien => bien.Id === parseFloat(datos.TipoBienId));
-        Elemento__.EstadoElementoId = this.Estados_Acta.find(estado => estado.Id === 1);
-        Elemento__.SoporteActaId = Soporte;
-        Elemento__.Activo = true;
-        Elemento__.FechaCreacion = new Date();
-        Elemento__.FechaModificacion = new Date();
-        this.validador = false;
-        if ((Elemento__.Nombre === '') || (Elemento__.Marca === '') || (Elemento__.Serie === '')) {
-          this.validador = true;
-          this.validador_soporte = Soporte.ProveedorId;
-        }
-        if ((Elemento__.ValorUnitario === 0.00) || (Elemento__.Cantidad === 0.00)) {
-          this.validador = true;
-          this.validador_soporte = Soporte.ProveedorId;
-        }
+    const Elemento__ = new Elemento;
+    console.log('here')
+    Elemento__.Id = null;
+    Elemento__.Nombre = '';
+    Elemento__.Cantidad = 0;
+    Elemento__.Marca = '';
+    Elemento__.Serie = '';
+    Elemento__.UnidadMedida =0;
+    Elemento__.ValorUnitario = 0;
+    Elemento__.Subtotal = 0;
+    Elemento__.Descuento = 0;
+    Elemento__.ValorTotal = 0;
+    Elemento__.PorcentajeIvaId = 6;//parseFloat(datos.PorcentajeIvaId);
+    Elemento__.ValorIva = 0;
+    Elemento__.ValorFinal = 0;
+    Elemento__.SubgrupoCatalogoId = null; //= parseFloat(datos.SubgrupoCatalogoId);
+    Elemento__.Verificado = false;
+    Elemento__.TipoBienId = this.Tipos_Bien[0]; //this.Tipos_Bien.find(bien => bien.Id === parseFloat(datos.TipoBienId));
+    Elemento__.EstadoElementoId = this.Estados_Acta[0]; //this.Estados_Acta.find(estado => estado.Id === 1);
+    Elemento__.SoporteActaId = Soporte;
+    Elemento__.Activo = true;
+    Elemento__.FechaCreacion = new Date();
+    Elemento__.FechaModificacion = new Date();
+    this.validador = false;
+
         Elementos_Soporte.push(Elemento__);
-      }
-    }
+    
     return Elementos_Soporte;
   }
 
