@@ -166,7 +166,7 @@ export class CapturarElementosComponent implements OnInit {
     if (event.target.files.length > 0) {
       nombre = event.target.files[0].name;
       this.nombreArchivo = event.target.files[0].name;
-      const [_, extension] = nombre.split('.');
+      const extension = nombre.split('.').pop();
       const file = event.target.files[0];
       if (extension !== 'xlsx') {
         this.Validador = false;
