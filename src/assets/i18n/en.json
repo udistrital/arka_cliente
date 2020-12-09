@@ -62,7 +62,9 @@
         "ElementosCargadosTitleNO": "Unloaded Elements",
         "ElementosCargadosTextNO": "The elements haven't been loaded, try again later",
         "EliminarElementosTitle": "Are you Sure?",
-        "EliminarElementosText": "Are you sure about remove the selected item?"
+        "EliminarElementosText": "Are you sure about remove the selected item?",
+        "EliminarVariosElementosTitle":"Delete {{cantidad}} element(s)?",
+        "EliminarVariosElementosText":"Are you sure to delete {{cantidad}} element(s)?"
       },
       "ConsultaActas": {
         "Title": "Receipt Certificates",
@@ -118,7 +120,8 @@
         "Acta": "Certificate N° ",
         "Registrada": " has been succesfully registered",
         "RegistradaTitleNO": "Unregistered Certificate",
-        "RegistradaNO": "The Certificate hasn't been succesfully registered, try again later"
+        "RegistradaNO": "The Certificate hasn't been succesfully registered, try again later",
+        "ErrorRevisorMsg": "The assigned reviewer is not registered in the Third-Party Database. Please grab a registered reviewer and Try Again"
       },
       "EdicionActa": {
         "Title": "Edit Receipt Certificate",
