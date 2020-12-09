@@ -61,8 +61,10 @@
         "ElementosCargadosTextOK":"Elementos Cargados Exitosamente",
         "ElementosCargadosTitleNO":"Elementos No Cargados",
         "ElementosCargadosTextNO":"Los elementos no han podido ser cargados, intente más tarde",
-        "EliminarElementosTitle":"Está seguro?",
-        "EliminarElementosText":"Está seguro de eliminar el elemento seleccionado?"
+        "EliminarElementosTitle":"¿Está seguro?",
+        "EliminarElementosText":"¿Está seguro de eliminar el elemento seleccionado?",
+        "EliminarVariosElementosTitle":"¿Eliminar {{cantidad}} elemento(s)?",
+        "EliminarVariosElementosText":"Se eliminará(n) {{cantidad}} elemento(s). ¿Desea continuar?"
       },
       "ConsultaActas":{
         "Title":"Actas de Recibido",

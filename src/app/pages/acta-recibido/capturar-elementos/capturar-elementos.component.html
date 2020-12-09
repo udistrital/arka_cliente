@@ -23,7 +23,7 @@
           <button nbButton type="button" (click)="TraerPlantilla()">
             <i class="fas fa-file-excel fa-2x" ></i>
           </button>
-          
+
         </div>
       </nb-card-body>
       <nb-card-footer class="soporte">
@@ -39,10 +39,31 @@
   <nb-card-header>{{'GLOBAL.Acta_Recibido.CapturarElementos.ArticulosRelacionadosTitle' | translate }}</nb-card-header>
   <nb-card-body>
 
-    <input nbInput (keyup)="applyFilter($event.target.value)" class="filter" placeholder="Filtro">
+    <div class="row">
+      <div class="col">
+        <button nbButton (click)="borraSeleccionados()">Borrar Seleccionados</button>
+      </div>
+      <div class="col">
+        <input nbInput (keyup)="applyFilter($event.target.value)" class="filter" placeholder="Filtro">
+      </div>
+    </div>
 
-    <div>
       <table mat-table #table [dataSource]="dataSource" matSort (keyup)="ver()">
+
+        <!-- Acciones Macro/Checkbox -->
+        <ng-container matColumnDef="AccionesMacro">
+          <th mat-header-cell *matHeaderCellDef >
+            <mat-checkbox aria-label="Seleccionar/Deseleccionar Todo" (change)="cambioCheckTodos($event.checked)"
+              nbPopover="Seleccionar/Deseleccionar Todo"
+              nbPopoverTrigger="hover" nbPopoverPlacement="left"
+              [checked]="checkTodos" [indeterminate]="checkParcial"></mat-checkbox>
+          </th>
+          <td mat-cell *matCellDef="let element; let rowIndex = index">
+            <nb-checkbox (change)="refrescaCheckTotal()"
+              [(ngModel)]="element.seleccionado"></nb-checkbox>
+          </td>
+          <td mat-footer-cell *matFooterCellDef>Totales</td>
+        </ng-container>
 
         <!-- Tipo de Bien -->
         <ng-container matColumnDef="TipoBienId">
@@ -254,7 +275,7 @@
         <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
         <tr mat-footer-row *matFooterRowDef="displayedColumns; sticky: true"></tr>
       </table>
-    </div>
+
     <mat-paginator [pageSizeOptions]="[10, 20, 30, 40, 50]"></mat-paginator>
   </nb-card-body>
 </nb-card>
