@@ -80,9 +80,9 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
   }
   // Se ve si ya tiene cuentas asignadas para mostrarlas en el formulario
   ver3(event) {
-    // console.log(event);
+    // console.log(event); REVISAR AQUI
     let mov_existente: boolean;
-    if (event.SubgrupoId.Id === undefined) {
+    if (event.Id === undefined) {
       this.Movimientos.forEach((element1: CuentaGrupo) => {
         if (element1.SubtipoMovimientoId === event.SubtipoMovimientoId) {
           mov_existente = true;
@@ -97,7 +97,7 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
     } else {
       this.Movimientos.forEach((element2: CuentaGrupo) => {
         // console.log(element2)
-        if (element2.SubgrupoId.Id === event.SubgrupoId.Id) {
+        if (element2.Id === event.Id) {
           element2.CuentaCreditoId = event.CuentaCreditoId;
           element2.CuentaDebitoId = event.CuentaDebitoId;
           mov_existente = true;
@@ -194,7 +194,7 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
     let mov_existente: boolean;
     this.Movimientos.forEach((element3: CuentaGrupo) => {
       // console.log(element3)
-      if (element3.Id !== null) {
+      if (element3.Id !== null && element3.Id !== undefined) {
         mov_existente = true;
       }
     });
@@ -250,7 +250,7 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
         if (willDelete.value) {
           const mov: any = {};
           mov['Cuentas'] = subgrupo;
-          // console.log(mov)
+          // console.log(mov['Cuentas'])
           this.catalogoElementosService.postTransaccionCuentasSubgrupo(mov)
             .subscribe(res => {
               // console.log(res);
