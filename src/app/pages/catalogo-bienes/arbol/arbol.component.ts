@@ -1,14 +1,16 @@
 import { Component, OnInit, Input, EventEmitter, Output, OnChanges } from '@angular/core';
 import { NbTreeGridDataSource, NbSortDirection, NbSortRequest, NbTreeGridDataSourceBuilder } from '@nebular/theme';
-import { Observable, combineLatest } from 'rxjs';
+import { Observable, combineLatest, from } from 'rxjs';
 import { CuentaContable } from '../../../@core/data/models/catalogo/cuenta_contable';
 import { PopUpManager } from '../../../managers/popUpManager';
 import { CuentasGrupoTransaccion } from '../../../@core/data/models/catalogo/cuentas_subgrupo';
+import {TipoNivelID} from '../../../@core/data/models/catalogo/tipo_nivel';
 import { SubgrupoTransaccion } from '../../../@core/data/models/catalogo/transacciones';
 import { Subgrupo } from '../../../@core/data/models/catalogo/jerarquia';
 import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/catalogoElementosHelper';
 import { TipoBien } from '../../../@core/data/models/acta_recibido/tipo_bien';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
+import { TipoNivel } from '../../../@core/data/models/catalogo/tipo_nivel';
 
 interface TreeNode<T> {
   data: T;
@@ -24,6 +26,7 @@ interface CatalogoArbol {
   FechaModificacion: Date;
   Activo: boolean;
   Codigo: string;
+  TipoNivelId : TipoNivel;
 }
 
 @Component({
@@ -34,6 +37,7 @@ interface CatalogoArbol {
 export class ArbolComponent implements OnInit, OnChanges {
 
   data: TreeNode<CatalogoArbol>[];
+  aux: TreeNode<CatalogoArbol>[];
   customColumn = 'Codigo';
   defaultColumns = ['Nombre', 'Descripcion', 'Acciones'];
   allColumns = [this.customColumn, ...this.defaultColumns];
@@ -132,6 +136,7 @@ export class ArbolComponent implements OnInit, OnChanges {
         if (res[0].hasOwnProperty('data')) {
           this.data = res;
           this.dataSource = this.dataSourceBuilder.create(this.data);
+          console.log(res)
         }
       }
     });
