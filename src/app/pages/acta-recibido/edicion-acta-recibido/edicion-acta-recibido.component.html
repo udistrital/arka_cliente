@@ -19,6 +19,7 @@
       <nb-card-header>{{'GLOBAL.Acta_Recibido.EdicionActa.Title' | translate}}</nb-card-header>
       <nb-card-body>
         <mat-vertical-stepper [linear]="true" #stepper>
+
           <mat-step label="{{'GLOBAL.Acta_Recibido.EdicionActa.DatosTitle' | translate}}" formGroupName="Formulario1">
             <nb-card>
               <nb-card-body>
@@ -45,7 +46,7 @@
                   <div class="form-group col-sm">
                     <label>{{'GLOBAL.Acta_Recibido.EdicionActa.Ubicacion' | translate}}</label>
                     <!-- <ng2-completer style="border: 0rem" inputClass="form-control" nbInput [datasource]="dataService" (keyup)="usarLocalStorage()" (click)="usarLocalStorage()"
-                      formControlName="Ubicacion" [minSearchLength]="3" [clearUnselected]="true"> 
+                      formControlName="Ubicacion" [minSearchLength]="3" [clearUnselected]="true">
                     </ng2-completer> -->
 
                     <select nbInput type="text" class="form-control" formControlName="Ubicacion"
@@ -65,6 +66,7 @@
               </nb-card-footer>
             </nb-card>
           </mat-step>
+
           <mat-step label="Datos de Soporte" formArrayName="Formulario2">
             <nb-card>
               <nb-card-body>
@@ -115,16 +117,16 @@
                               </div>
                             </div>
                             <div class="col">
-                              
+
                               <div class="form-group col-sm">
                                 <!-- <label>{{'GLOBAL.Acta_Recibido.EdicionActa.Soporte' | translate}}</label>
                                 <input nbInput type="file" class="form-control-file" id="factura"
                                   formControlName="Soporte" (click)="usarLocalStorage()" required>
                                   <p class="campo" *ngIf="firstForm.get('Formulario2').at(i).get('Soporte').invalid">{{'GLOBAL.placeholder' | translate}}</p> -->
-  
+
                                 <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Soporte' | translate}}</label>
                                 <nb-card>
-  
+
                                   <nb-card-body>
                                     <div class="col-sm soporte">
                                       <div>
@@ -160,11 +162,11 @@
                                     </div>
                                   </nb-card-body>
                                 </nb-card>
-  
+
                               </div>
                             </div>
                           </div>
-                          
+
                         </nb-card-body>
                       </nb-card>
 
@@ -192,7 +194,9 @@
               </nb-card-footer>
             </nb-card>
           </mat-step>
+
           <mat-step label="Datos Adicionales" formGroupName="Formulario3">
+
             <nb-card *ngIf="Totales">
               <nb-card-header>{{'GLOBAL.Acta_Recibido.EdicionActa.Consolidado' | translate}}</nb-card-header>
               <nb-card-body>
@@ -236,6 +240,7 @@
                 </table>
               </nb-card-body>
             </nb-card>
+
             <nb-card>
               <nb-card-header>{{'GLOBAL.Acta_Recibido.EdicionActa.DatosAdicionales' | translate}}</nb-card-header>
               <nb-card-body>
@@ -260,9 +265,10 @@
                 </div>
               </nb-card-footer>
             </nb-card>
+
             <div class="justify-content-center">
               <button nbButton (click)="Revisar_Totales3()"
-                [disabled]="!firstForm.get('Formulario3').valid || !firstForm.get('Formulario2').valid || !firstForm.get('Formulario3').valid || verificar"
+                [disabled]="!firstForm.get('Formulario1').valid || !firstForm.get('Formulario2').valid || !firstForm.get('Formulario3').valid || verificar"
                 class="float-right">{{'GLOBAL.Acta_Recibido.EdicionActa.VerificacionButton' | translate}}</button>
             </div>
           </mat-step>

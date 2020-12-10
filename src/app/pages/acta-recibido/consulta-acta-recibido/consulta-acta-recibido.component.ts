@@ -231,6 +231,7 @@ export class ConsultaActaRecibidoComponent implements OnInit {
         break;
       }
     }
+    // console.log({'this.estadoActaSeleccionada':this.estadoActaSeleccionada});
   }
   itemselec(event): void {
     // console.log('afssaf');

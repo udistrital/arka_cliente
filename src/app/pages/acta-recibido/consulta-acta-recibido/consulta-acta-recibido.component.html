@@ -18,17 +18,19 @@
     </nb-card-body>
   </nb-card>
 
+  <!-- lectura -->
   <ngx-ver-detalle *ngIf=" accion === 'Ver' && estadoActaSeleccionada === 'Ver'" [Id_Acta]="actaSeleccionada"></ngx-ver-detalle>
 
+  <!-- escritura -->
   <ngx-edicion-acta-recibido *ngIf="estadoActaSeleccionada === 'En Elaboracion'"
     [Id_Acta]="actaSeleccionada"></ngx-edicion-acta-recibido>
-
   <ngx-edicion-acta-recibido *ngIf="estadoActaSeleccionada === 'En Modificacion'"
     [Id_Acta]="actaSeleccionada"></ngx-edicion-acta-recibido>
-  
+
+  <!-- "lectura" (+ checkboxes) -->
   <ngx-verificacion-acta-recibido *ngIf="estadoActaSeleccionada === 'En verificacion'"
     [Id_Acta]="actaSeleccionada"></ngx-verificacion-acta-recibido>
-    
+
   <div class="justify-content-center float-right" *ngIf="actaSeleccionada !== ''">
     <button type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off"
       (click)="onBack()">
