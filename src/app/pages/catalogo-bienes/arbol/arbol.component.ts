@@ -11,6 +11,8 @@ import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/cat
 import { TipoBien } from '../../../@core/data/models/acta_recibido/tipo_bien';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { TipoNivel } from '../../../@core/data/models/catalogo/tipo_nivel';
+import { request } from 'http';
+import { exists } from 'fs';
 
 interface TreeNode<T> {
   data: T;
@@ -22,8 +24,8 @@ interface CatalogoArbol {
   Id: number;
   Nombre: string;
   Descripcion: string;
-  FechaCreacion: Date;
-  FechaModificacion: Date;
+  FechaCreacion: string;
+  FechaModificacion: string;
   Activo: boolean;
   Codigo: string;
   TipoNivelId : TipoNivel;
@@ -108,8 +110,52 @@ export class ArbolComponent implements OnInit, OnChanges {
   }
 
   updateSort(sortRequest: NbSortRequest): void {
+    this.data= this.sortGeneral(sortRequest,this.data)
     this.sortColumn = sortRequest.column;
     this.sortDirection = sortRequest.direction;
+    this.dataSource = this.dataSourceBuilder.create(this.data)
+  }
+
+  sortGeneral(request,data){
+    const _this = this;
+    if (!request) {
+        return data;
+    }
+    const sorted = data.sort(function (na, nb) { 
+      let key = request.column;
+      let dir = request.direction;
+      const a = na.data[key];
+      const b = nb.data[key];
+      let res = 0;
+      if (a > b) {
+          res = 1;
+      }
+      if (a < b) {
+          res = -1;
+      }
+      return dir === NbSortDirection.ASCENDING ? res : res * -1;
+    });
+    for (let _i = 0, data_1 = data; _i < data_1.length; _i++) {
+        let node = data_1[_i];
+        if (node.hasOwnProperty("children") && node.children !== undefined){   
+        node.children = this.sortGeneral(request, node.children);
+        }
+    }
+    return sorted;
+  }
+  SortComparador(request,na,nb){
+    let key = request.column;
+    let dir = request.direction;
+    const a = na.data[key];
+    const b = nb.data[key];
+    let res = 0;
+    if (a > b) {
+        res = 1;
+    }
+    if (a < b) {
+        res = -1;
+    }
+    return dir === NbSortDirection.ASCENDING ? res : res * -1;
   }
 
   getSortDirection(column: string): NbSortDirection {
@@ -135,8 +181,53 @@ export class ArbolComponent implements OnInit, OnChanges {
       if (res !== null) {
         if (res[0].hasOwnProperty('data')) {
           this.data = res;
+          // this.data =   [{
+          //   "data": {
+          //     "Id": 4309,
+          //     "Nombre": "rrrr",
+          //     "Descripcion": "rrrr",
+          //     "FechaCreacion": "2020-12-02 22:50:53.601016 +0000 +0000",
+          //     "FechaModificacion": "2020-12-02 22:50:53.601109 +0000 +0000",
+          //     "Activo": true,
+          //     "Codigo": "A",
+          //     "TipoNivelId": {
+          //       "Id": 1,
+          //       "Nombre": "Grupo",
+          //       "Descripcion": "Clasificación designada como grupo",
+          //       "CodigoAbreviacion": "Grupo",
+          //       "Orden": 1,
+          //       "Activo": true,
+          //       "FechaCreacion": "2020-12-01 11:14:45.158096 +0000 +0000",
+          //       "FechaModificacion": "2020-12-01 11:14:45.158096 +0000 +0000"
+          //     }
+          //   },
+          //   "children":[
+          //     { "data": {
+          //       "Id": 33,
+          //       "Nombre": "Material Vivo Vegetal y Animal, Accesorios y Suministros",
+          //       "Descripcion": "Material Vivo Vegetal y Animal, Accesorios y Suministros",
+          //       "FechaCreacion": "2020-12-02 19:11:39.653 +0000 +0000",
+          //       "FechaModificacion": "2020-12-02 19:11:39.653 +0000 +0000",
+          //       "Activo": true,
+          //       "Codigo": "10",
+          //       "TipoNivelId": {
+          //         "Id": 2,
+          //         "Nombre": "Segmento",
+          //         "Descripcion": "Clasificación designada como segmento",
+          //         "CodigoAbreviacion": "Segmento",
+          //         "Orden": 2,
+          //         "Activo": true,
+          //         "FechaCreacion": "2020-12-01 11:14:45.162917 +0000 +0000",
+          //         "FechaModificacion": "2020-12-01 11:14:45.162917 +0000 +0000"
+          //        }
+          //       },
+          //       "children":[], 
+          //     }
+          //   ]
+          // }]
           this.dataSource = this.dataSourceBuilder.create(this.data);
-          console.log(res)
+          // this.dataSource.sortService.sort = ()
+          // console.log(this.dataSource)
         }
       }
     });
