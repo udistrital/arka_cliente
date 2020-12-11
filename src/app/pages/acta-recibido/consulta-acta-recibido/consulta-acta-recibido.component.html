@@ -19,12 +19,10 @@
   </nb-card>
 
   <!-- lectura -->
-  <ngx-ver-detalle *ngIf=" accion === 'Ver' && estadoActaSeleccionada === 'Ver'" [Id_Acta]="actaSeleccionada"></ngx-ver-detalle>
+  <ngx-ver-detalle *ngIf="verActa" [Id_Acta]="actaSeleccionada"></ngx-ver-detalle>
 
   <!-- escritura -->
-  <ngx-edicion-acta-recibido *ngIf="estadoActaSeleccionada === 'En Elaboracion'"
-    [Id_Acta]="actaSeleccionada"></ngx-edicion-acta-recibido>
-  <ngx-edicion-acta-recibido *ngIf="estadoActaSeleccionada === 'En Modificacion'"
+  <ngx-edicion-acta-recibido *ngIf="editarActa"
     [Id_Acta]="actaSeleccionada"></ngx-edicion-acta-recibido>
 
   <!-- "lectura" (+ checkboxes) -->

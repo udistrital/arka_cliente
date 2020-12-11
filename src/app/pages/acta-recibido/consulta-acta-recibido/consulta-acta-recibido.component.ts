@@ -19,6 +19,8 @@ export class ConsultaActaRecibidoComponent implements OnInit {
 
   actaSeleccionada: string;
   estadoActaSeleccionada: string;
+  editarActa: boolean = false;
+  verActa: boolean = false;
   source: LocalDataSource;
   actas: Array<ConsultaActaRecibido>;
   Ubicaciones: any;
@@ -194,31 +196,17 @@ export class ConsultaActaRecibidoComponent implements OnInit {
   }
 
   onEdit(event): void {
-    // console.log(event.data)
+    // console.log({'event.data': event.data});
+    let editarActa = false;
     switch (event.data.Estado.toString()) {
-      case 'Registrada': {
-
-        this.actaSeleccionada = `${event.data.Id}`;
-        this.estadoActaSeleccionada = `${event.data.Estado}`;
-        this.accion = '';
-        break;
-      }
-      case 'En Elaboracion': {
-        this.actaSeleccionada = `${event.data.Id}`;
-        this.estadoActaSeleccionada = `${event.data.Estado}`;
-        this.accion = '';
-        break;
-      }
-      case 'En Modificacion': {
-        this.actaSeleccionada = `${event.data.Id}`;
-        this.estadoActaSeleccionada = `${event.data.Estado}`;
-        this.accion = '';
-        break;
-      }
+      case 'Registrada':
+      case 'En Elaboracion':
+      case 'En Modificacion':
       case 'En verificacion': {
         this.actaSeleccionada = `${event.data.Id}`;
         this.estadoActaSeleccionada = `${event.data.Estado}`;
         this.accion = '';
+        editarActa = true;
         break;
       }
 
@@ -231,6 +219,7 @@ export class ConsultaActaRecibidoComponent implements OnInit {
         break;
       }
     }
+    this.editarActa = editarActa;
     // console.log({'this.estadoActaSeleccionada':this.estadoActaSeleccionada});
   }
   itemselec(event): void {
@@ -245,6 +234,7 @@ export class ConsultaActaRecibidoComponent implements OnInit {
     this.actaSeleccionada = `${event.data.Id}`;
     this.estadoActaSeleccionada = 'Ver';
     this.accion = 'Ver';
+    this.verActa = true;
     // console.log('1')
   }
 
@@ -252,6 +242,8 @@ export class ConsultaActaRecibidoComponent implements OnInit {
     this.actaSeleccionada = '';
     this.estadoActaSeleccionada = '';
     this.accion = '';
+    this.editarActa = false;
+    this.verActa = false;
     // console.log('1')
   }
 
