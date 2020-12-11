@@ -73,6 +73,8 @@
             <nb-card>
               <nb-card-body>
                 <mat-tab-group [selectedIndex]="selected.value" (selectedIndexChange)="selected.setValue($event)">
+
+                  <!-- cada soporte -->
                   <mat-tab *ngFor="let soporte of firstForm.get('Formulario2').controls; let i = index"
                     [formGroupName]="i">
                     <ng-template mat-tab-label>
@@ -80,6 +82,8 @@
                       &nbsp; &nbsp;<i class="fas fa-window-close" (click)="removeTab(i); usarLocalStorage()"></i>
                     </ng-template>
                     <div>
+
+                      <!-- Soporte -->
                       <nb-card>
                         <nb-card-body (click)="usarLocalStorage()">
                           <div class="row">
@@ -168,10 +172,10 @@
                               </div>
                             </div>
                           </div>
-
                         </nb-card-body>
                       </nb-card>
 
+                      <!-- Elementos asociados al Soporte -->
                       <ngx-capturar-elementos [DatosRecibidos]="Elementos__Soporte[i]" (DatosTotales)="ver2($event,i)"
                         (DatosEnviados)="ver($event, i)">
                       </ngx-capturar-elementos>

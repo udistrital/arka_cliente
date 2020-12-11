@@ -108,10 +108,10 @@ export class EdicionActaRecibidoComponent implements OnInit {
 
   permisos: {
     Acta: Permiso,
-    Soportes: Permiso,
+    Elementos: Permiso,
   } = {
     Acta: Permiso.Ninguno,
-    Soportes: Permiso.Ninguno,
+    Elementos: Permiso.Ninguno,
   };
 
   constructor(
@@ -155,24 +155,24 @@ export class EdicionActaRecibidoComponent implements OnInit {
 
     // Modificar/Ver parte superior (Datos basicos y Soportes)
     let permisoActa = Permiso.Ninguno;
-    if (this.userService.tieneAlgunRol([Rol.Secretaria, Rol.Jefe])) {
+    if (this.userService.tieneAlgunRol([Rol.ADMIN_ALMACEN, Rol.SECRETARIA_ALMACEN])) {
       permisoActa = Permiso.Modificar;
-    } else if (this.userService.tieneAlgunRol([Rol.Proveedor])) {
+    } else if (this.userService.tieneAlgunRol([Rol.CONTRATISTA])) {
       permisoActa = Permiso.Ver;
     }
 
     // Modificar/Ver parte inferior (Elementos asociados a cada soporte)
-    let permisoSoportes = Permiso.Ninguno;
-    if (this.userService.tieneAlgunRol([Rol.Secretaria, Rol.Jefe])) {
-      permisoSoportes = Permiso.Ninguno;
-    } else if (this.userService.tieneAlgunRol([Rol.Proveedor])) {
-      permisoSoportes = Permiso.Modificar;
+    let permisoElementos = Permiso.Ninguno;
+    if (this.userService.tieneAlgunRol([Rol.CONTRATISTA])) {
+      permisoElementos = Permiso.Modificar;
+    } else if (this.userService.tieneAlgunRol([Rol.SECRETARIA_ALMACEN])) {
+      permisoElementos = Permiso.Ver;
     }
 
     // Guardar permisos requeridos para cada parte del componente
-    // console.log({permisoActa, permisoSoportes});
+    // console.log({'permisoActa': Permiso[permisoActa], 'permisoElementos': Permiso[permisoElementos]});
     this.permisos.Acta = permisoActa;
-    this.permisos.Soportes = permisoSoportes;
+    this.permisos.Elementos = permisoElementos;
     Object.freeze(this.permisos);
   }
 
