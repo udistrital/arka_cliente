@@ -39,11 +39,12 @@ interface CatalogoArbol {
 export class ArbolComponent implements OnInit, OnChanges {
 
   data: TreeNode<CatalogoArbol>[];
+  data2: TreeNode<CatalogoArbol>[];
   aux: TreeNode<CatalogoArbol>[];
   customColumn = 'Codigo';
   defaultColumns = ['Nombre', 'Descripcion', 'Acciones'];
   allColumns = [this.customColumn, ...this.defaultColumns];
-
+  stringBusqueda: any;
 
   dataSource: NbTreeGridDataSource<CatalogoArbol>;
 
@@ -71,6 +72,7 @@ export class ArbolComponent implements OnInit, OnChanges {
     private catalogoHelper: CatalogoElementosHelper,
     private translate: TranslateService,
     private pUpManager: PopUpManager) {
+    this.stringBusqueda='';
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
       this.construirForm();
     });
@@ -110,10 +112,18 @@ export class ArbolComponent implements OnInit, OnChanges {
   }
 
   updateSort(sortRequest: NbSortRequest): void {
+    if (this.data2 !== undefined){
+      this.data2 = this.sortGeneral(sortRequest, this.data2);
+      this.sortColumn = sortRequest.column;
+      this.sortDirection = sortRequest.direction;
+      this.dataSource = this.dataSourceBuilder.create(this.data2);
+    }
+    else{
     this.data = this.sortGeneral(sortRequest, this.data);
     this.sortColumn = sortRequest.column;
     this.sortDirection = sortRequest.direction;
     this.dataSource = this.dataSourceBuilder.create(this.data);
+    }
   }
 
   sortGeneral(request, data) {
@@ -170,11 +180,32 @@ export class ArbolComponent implements OnInit, OnChanges {
     const nextColumnStep = 100;
     return minWithForMultipleColumns + (nextColumnStep * index);
   }
+  Filter(){
+    console.log("")
+    let encontrado: boolean = false;
+    const resultado: any[] = [];
+    if (this.stringBusqueda === '') {
+      this.dataSource = this.dataSourceBuilder.create(this.data);
+      this.data2 = undefined;
+    } else {
+      for (const item of this.data) {
+        if (JSON.stringify(item).toString().toLowerCase().indexOf(this.stringBusqueda.toLowerCase()) > -1) {
+          encontrado = true;
+        }
+        if (encontrado) {
+          resultado.push(item);
+          encontrado = false;
+        }
+      }
+      this.data2 = (resultado as TreeNode<CatalogoArbol>[])
+      console.log(this.data2)
+      this.dataSource = this.dataSourceBuilder.create(this.data2);
 
+    }
+  }
   getSelectedRow2(selectedRow) {
     this.grupo.emit(selectedRow);
   }
-
   loadTreeCatalogo() {
     this.catalogoHelper.getArbolCatalogo(this.catalogoId).subscribe((res) => {
 
