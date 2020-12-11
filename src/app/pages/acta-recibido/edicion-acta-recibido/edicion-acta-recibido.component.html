@@ -20,6 +20,7 @@
       <nb-card-body>
         <mat-vertical-stepper [linear]="true" #stepper>
 
+          <!-- Datos iniciales -->
           <mat-step label="{{'GLOBAL.Acta_Recibido.EdicionActa.DatosTitle' | translate}}" formGroupName="Formulario1">
             <nb-card>
               <nb-card-body>
@@ -67,6 +68,7 @@
             </nb-card>
           </mat-step>
 
+          <!-- Soportes -->
           <mat-step label="Datos de Soporte" formArrayName="Formulario2">
             <nb-card>
               <nb-card-body>
@@ -195,6 +197,7 @@
             </nb-card>
           </mat-step>
 
+          <!-- Resumen, Validación, Envío, Guardar -->
           <mat-step label="Datos Adicionales" formGroupName="Formulario3">
 
             <nb-card *ngIf="Totales">

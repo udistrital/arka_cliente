@@ -13,6 +13,7 @@ export class AuthGuard implements CanActivate {
 
       let valid: boolean =  false;
       const roles = route.data['roles'] as Array<string>;
+      // console.log({roles});
       const id_token = window.localStorage.getItem('id_token').split('.');
       const payload = JSON.parse(atob(id_token[1]));
 

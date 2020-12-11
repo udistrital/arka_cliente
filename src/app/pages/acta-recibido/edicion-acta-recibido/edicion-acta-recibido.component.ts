@@ -31,6 +31,7 @@ import { DocumentoService } from '../../../@core/data/documento.service';
 import { analyzeAndValidateNgModules } from '@angular/compiler';
 import { HttpErrorResponse } from '@angular/common/http';
 import { UserService } from '../../../@core/data/users.service';
+import { RolUsuario_t as Rol, PermisoUsuario_t as Permiso } from '../../../@core/data/models/roles/rol_usuario';
 
 @Component({
   selector: 'ngx-edicion-acta-recibido',
@@ -105,6 +106,14 @@ export class EdicionActaRecibidoComponent implements OnInit {
   Tarifas_Iva: any;
   verificar: boolean = true;
 
+  permisos: {
+    Acta: Permiso,
+    Soportes: Permiso,
+  } = {
+    Acta: Permiso.Ninguno,
+    Soportes: Permiso.Ninguno,
+  };
+
   constructor(
     private translate: TranslateService,
     private router: Router,
@@ -139,6 +148,32 @@ export class EdicionActaRecibidoComponent implements OnInit {
     this.searchStr2 = new Array<string>();
     this.DatosElementos = new Array<any>();
     this.Elementos__Soporte = new Array<any>();
+    this.cargaPermisos();
+  }
+
+  cargaPermisos () {
+
+    // Modificar/Ver parte superior (Datos basicos y Soportes)
+    let permisoActa = Permiso.Ninguno;
+    if (this.userService.tieneAlgunRol([Rol.Secretaria, Rol.Jefe])) {
+      permisoActa = Permiso.Modificar;
+    } else if (this.userService.tieneAlgunRol([Rol.Proveedor])) {
+      permisoActa = Permiso.Ver;
+    }
+
+    // Modificar/Ver parte inferior (Elementos asociados a cada soporte)
+    let permisoSoportes = Permiso.Ninguno;
+    if (this.userService.tieneAlgunRol([Rol.Secretaria, Rol.Jefe])) {
+      permisoSoportes = Permiso.Ninguno;
+    } else if (this.userService.tieneAlgunRol([Rol.Proveedor])) {
+      permisoSoportes = Permiso.Modificar;
+    }
+
+    // Guardar permisos requeridos para cada parte del componente
+    // console.log({permisoActa, permisoSoportes});
+    this.permisos.Acta = permisoActa;
+    this.permisos.Soportes = permisoSoportes;
+    Object.freeze(this.permisos);
   }
 
   Cargar_localStorage(Acta: any) {
