@@ -12,7 +12,7 @@ import { Elemento, Impuesto } from '../../../@core/data/models/acta_recibido/ele
 import { TipoBien } from '../../../@core/data/models/acta_recibido/tipo_bien';
 import { SoporteActa, Ubicacion } from '../../../@core/data/models/acta_recibido/soporte_acta';
 import { Proveedor } from '../../../@core/data/models/acta_recibido/Proveedor';
-import { EstadoActa } from '../../../@core/data/models/acta_recibido/estado_acta';
+import { EstadoActa_t } from '../../../@core/data/models/acta_recibido/estado_acta';
 import { EstadoElemento } from '../../../@core/data/models/acta_recibido/estado_elemento';
 import { HistoricoActa } from '../../../@core/data/models/acta_recibido/historico_acta';
 import { TransaccionSoporteActa, TransaccionActaRecibido } from '../../../@core/data/models/acta_recibido/transaccion_acta_recibido';
@@ -298,16 +298,19 @@ export class VerificacionActaRecibidoComponent implements OnInit {
         });
   }
 
+  // Acta Verificada
   onFirstSubmit() {
     this.Datos = this.firstForm.value;
     const Transaccion_Acta = new TransaccionActaRecibido();
     Transaccion_Acta.ActaRecibido = this.Registrar_Acta(this.Datos.Formulario1, this.Datos.Formulario3);
-    Transaccion_Acta.UltimoEstado = this.Registrar_Estado_Acta(Transaccion_Acta.ActaRecibido, 5);
+    Transaccion_Acta.UltimoEstado = this.Registrar_Estado_Acta(Transaccion_Acta.ActaRecibido, EstadoActa_t.Aceptada);
+
     const Soportes = new Array<TransaccionSoporteActa>();
     for (const soporte of this.Datos.Formulario2) {
       Soportes.push(this.Registrar_Soporte(soporte, soporte.Elementos, Transaccion_Acta.ActaRecibido));
     }
     Transaccion_Acta.SoportesActa = Soportes;
+
     this.Actas_Recibido.putTransaccionActa(Transaccion_Acta, Transaccion_Acta.ActaRecibido.Id).subscribe((res: any) => {
       if (res !== null) {
         (Swal as any).fire({
@@ -331,12 +334,13 @@ export class VerificacionActaRecibidoComponent implements OnInit {
     });
   }
 
+  // Acta rechazada
   onFirstSubmit2() {
 
     this.Datos = this.firstForm.value;
     const Transaccion_Acta = new TransaccionActaRecibido();
     Transaccion_Acta.ActaRecibido = this.Registrar_Acta(this.Datos.Formulario1, this.Datos.Formulario3);
-    Transaccion_Acta.UltimoEstado = this.Registrar_Estado_Acta(Transaccion_Acta.ActaRecibido, 3);
+    Transaccion_Acta.UltimoEstado = this.Registrar_Estado_Acta(Transaccion_Acta.ActaRecibido, EstadoActa_t.EnModificacion);
     const Soportes = new Array<TransaccionSoporteActa>();
     for (const soporte of this.Datos.Formulario2) {
       Soportes.push(this.Registrar_Soporte(soporte, soporte.Elementos, Transaccion_Acta.ActaRecibido));
@@ -478,6 +482,8 @@ export class VerificacionActaRecibidoComponent implements OnInit {
   valor_iva(subtotal: string, descuento: string, porcentaje_iva: string) {
     return ((parseFloat(subtotal) - parseFloat(descuento)) * parseFloat(porcentaje_iva) / 100);
   }
+
+  // Validar Acta? (Aprobar?)
   Revisar_Totales() {
 
     (Swal as any).fire({
@@ -495,6 +501,8 @@ export class VerificacionActaRecibidoComponent implements OnInit {
       }
     });
   }
+
+  // Rechazar Acta?
   Revisar_Totales2() {
 
     (Swal as any).fire({
