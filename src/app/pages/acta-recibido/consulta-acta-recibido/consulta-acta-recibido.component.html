@@ -9,7 +9,7 @@
   </nb-card>
 </div>
 <div class="col-lg-12">
-  <nb-card *ngIf="actaSeleccionada === '' && mostrar">
+  <nb-card *ngIf="!(editarActa||verActa)">
     <nb-card-header>{{'GLOBAL.Acta_Recibido.ConsultaActas.Title' | translate}}</nb-card-header>
     <nb-card-body>
       <ng2-smart-table [settings]="settings" [source]="source" (delete)="onDelete($event)"
