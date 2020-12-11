@@ -72,7 +72,7 @@ export class ArbolComponent implements OnInit, OnChanges {
     private catalogoHelper: CatalogoElementosHelper,
     private translate: TranslateService,
     private pUpManager: PopUpManager) {
-    this.stringBusqueda='';
+    this.stringBusqueda = '';
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
       this.construirForm();
     });
@@ -112,13 +112,12 @@ export class ArbolComponent implements OnInit, OnChanges {
   }
 
   updateSort(sortRequest: NbSortRequest): void {
-    if (this.data2 !== undefined){
+    if (this.data2 !== undefined) {
       this.data2 = this.sortGeneral(sortRequest, this.data2);
       this.sortColumn = sortRequest.column;
       this.sortDirection = sortRequest.direction;
       this.dataSource = this.dataSourceBuilder.create(this.data2);
-    }
-    else{
+    } else {
     this.data = this.sortGeneral(sortRequest, this.data);
     this.sortColumn = sortRequest.column;
     this.sortDirection = sortRequest.direction;
@@ -147,25 +146,57 @@ export class ArbolComponent implements OnInit, OnChanges {
     });
     for (let _i = 0, data_1 = data; _i < data_1.length; _i++) {
         const node = data_1[_i];
-        if (node.hasOwnProperty('children') && node.children !== undefined) {  
+        if (node.hasOwnProperty('children') && node.children !== undefined) {
         node.children = this.sortGeneral(request, node.children);
         }
     }
     return sorted;
   }
-  SortComparador(request, na, nb) {
-    const key = request.column;
-    const dir = request.direction;
-    const a = na.data[key];
-    const b = nb.data[key];
-    let res = 0;
-    if (a > b) {
-        res = 1;
+
+  filterSearch() {
+    if (this.stringBusqueda === '') {
+      this.dataSource = this.dataSourceBuilder.create(this.data);
+      this.data2 = undefined;
+      this.loadTreeCatalogo();
     }
-    if (a < b) {
-        res = -1;
+    if (this.stringBusqueda.length > 4) {
+    this.data2 = this.filter(this.stringBusqueda, this.data);
+    this.dataSource = this.dataSourceBuilder.create(this.data2);
     }
-    return dir === NbSortDirection.ASCENDING ? res : res * -1;
+  }
+
+  filter(query, data) {
+    const _this = this;
+    if (!query) {
+      return data;
+    } else {
+      if (data !== undefined) {
+        return data.reduce(function (filtered, node) {
+          const filteredChildren = _this.filter(query, node.children);
+          node.children = filteredChildren;
+          node.expanded = false;
+          if (filteredChildren && filteredChildren.length) {
+              node.expanded = true;
+              filtered.push(node);
+          } else if (_this.filterPredicate(node.data, query)) {
+              filtered.push(node);
+            }
+          return filtered;
+        }, []);
+      }
+    }
+  }
+
+  filterPredicate(data, searchQuery) {
+    const preparedQuery = searchQuery.trim().toLocaleLowerCase();
+    for (let _i = 0, _a = Object.values(data); _i < _a.length; _i++) {
+        const val = _a[_i];
+        const preparedVal = ('' + val).trim().toLocaleLowerCase();
+        if (preparedVal.includes(preparedQuery)) {
+            return true;
+        }
+    }
+    return false;
   }
 
   getSortDirection(column: string): NbSortDirection {
@@ -180,29 +211,7 @@ export class ArbolComponent implements OnInit, OnChanges {
     const nextColumnStep = 100;
     return minWithForMultipleColumns + (nextColumnStep * index);
   }
-  Filter(){
-    console.log("")
-    let encontrado: boolean = false;
-    const resultado: any[] = [];
-    if (this.stringBusqueda === '') {
-      this.dataSource = this.dataSourceBuilder.create(this.data);
-      this.data2 = undefined;
-    } else {
-      for (const item of this.data) {
-        if (JSON.stringify(item).toString().toLowerCase().indexOf(this.stringBusqueda.toLowerCase()) > -1) {
-          encontrado = true;
-        }
-        if (encontrado) {
-          resultado.push(item);
-          encontrado = false;
-        }
-      }
-      this.data2 = (resultado as TreeNode<CatalogoArbol>[])
-      console.log(this.data2)
-      this.dataSource = this.dataSourceBuilder.create(this.data2);
 
-    }
-  }
   getSelectedRow2(selectedRow) {
     this.grupo.emit(selectedRow);
   }
