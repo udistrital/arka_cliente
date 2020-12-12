@@ -19,8 +19,11 @@ export class ConsultaActaRecibidoComponent implements OnInit {
 
   actaSeleccionada: string;
   estadoActaSeleccionada: string;
+
   editarActa: boolean = false;
   verActa: boolean = false;
+  validarActa: boolean = false;
+
   source: LocalDataSource;
   actas: Array<ConsultaActaRecibido>;
   Ubicaciones: any;
@@ -198,17 +201,18 @@ export class ConsultaActaRecibidoComponent implements OnInit {
   onEdit(event): void {
     // console.log({'event.data': event.data});
     let editarActa = false;
+    let validarActa: boolean;
+
     switch (event.data.Estado.toString()) {
+      case 'En verificacion':
       case 'Registrada':
       case 'En Elaboracion':
       case 'En Modificacion':
-      case 'En verificacion': {
         this.actaSeleccionada = `${event.data.Id}`;
         this.estadoActaSeleccionada = `${event.data.Estado}`;
         this.accion = '';
         editarActa = true;
         break;
-      }
 
       default: {
         (Swal as any).fire({
@@ -219,7 +223,10 @@ export class ConsultaActaRecibidoComponent implements OnInit {
         break;
       }
     }
-    this.editarActa = editarActa;
+
+    validarActa = event.data.Estado.toString() === 'En verificacion';
+    this.editarActa = editarActa && !validarActa;
+    this.validarActa = validarActa;
     // console.log({'this.estadoActaSeleccionada':this.estadoActaSeleccionada});
   }
   itemselec(event): void {
@@ -244,8 +251,8 @@ export class ConsultaActaRecibidoComponent implements OnInit {
     this.accion = '';
     this.editarActa = false;
     this.verActa = false;
+    this.validarActa = false;
     // console.log('1')
   }
-
 
 }
