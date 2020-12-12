@@ -12,7 +12,7 @@ import { Elemento, Impuesto } from '../../../@core/data/models/acta_recibido/ele
 import { TipoBien } from '../../../@core/data/models/acta_recibido/tipo_bien';
 import { SoporteActa, Ubicacion, Dependencia } from '../../../@core/data/models/acta_recibido/soporte_acta';
 import { Proveedor } from '../../../@core/data/models/acta_recibido/Proveedor';
-import { EstadoActa } from '../../../@core/data/models/acta_recibido/estado_acta';
+import { EstadoActa_t } from '../../../@core/data/models/acta_recibido/estado_acta';
 import { EstadoElemento } from '../../../@core/data/models/acta_recibido/estado_elemento';
 import { HistoricoActa } from '../../../@core/data/models/acta_recibido/historico_acta';
 import { TransaccionSoporteActa, TransaccionActaRecibido } from '../../../@core/data/models/acta_recibido/transaccion_acta_recibido';
@@ -81,7 +81,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
 
   }
 
-  @Input('estado') estadoActualActa: string;
+  @Input('estado') estadoActa: string;
   Estados_Acta: any;
   Tipos_Bien: any;
   Estados_Elemento: any;
@@ -155,7 +155,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
 
   // Los permisos dependen del estado del acta y del rol.
   cargaPermisos () {
-    // console.log({'this.estadoActualActa': this.estadoActualActa});
+    // console.log({'this.estadoActualActa': this.estadoActa});
 
     // Modificar/Ver parte superior (Datos basicos y Soportes)
     let permisoActa: Permiso;
@@ -169,7 +169,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
     ] = [
       'Acta',
       'Elementos',
-    ].map(seccion => this.permisosRoles_EstadoSeccion(this.estadoActualActa, seccion))
+    ].map(seccion => this.permisosRoles_EstadoSeccion(this.estadoActa, seccion))
       .map(permisosSeccion => {
         return this.userService
           .tieneAlgunRol(permisosSeccion.PuedenModificar) ? Permiso.Modificar : (
@@ -609,6 +609,8 @@ export class EdicionActaRecibidoComponent implements OnInit {
         });
     });
   }
+
+  // Envío de Guardar Cambios
   async onFirstSubmit() {
 
     const start = async () => {
@@ -622,7 +624,8 @@ export class EdicionActaRecibidoComponent implements OnInit {
     this.Datos = this.firstForm.value;
     const Transaccion_Acta = new TransaccionActaRecibido();
     Transaccion_Acta.ActaRecibido = this.Registrar_Acta(this.Datos.Formulario1, this.Datos.Formulario3);
-    Transaccion_Acta.UltimoEstado = this.Registrar_Estado_Acta(Transaccion_Acta.ActaRecibido, 3);
+    Transaccion_Acta.UltimoEstado = this.Registrar_Estado_Acta(Transaccion_Acta.ActaRecibido,
+      (this.estadoActa === 'Registrada') ? EstadoActa_t.Registrada : EstadoActa_t.EnModificacion);
     const Soportes = new Array<TransaccionSoporteActa>();
     this.Datos.Formulario2.forEach((soporte, index) => {
       Soportes.push(this.Registrar_Soporte(soporte, this.Elementos__Soporte[index], Transaccion_Acta.ActaRecibido));
@@ -653,25 +656,30 @@ export class EdicionActaRecibidoComponent implements OnInit {
     });
   }
 
+  // Envío final a siguiente etapa (revisor/proveedor)
   onFirstSubmit2() {
     this.Datos = this.firstForm.value;
     const Transaccion_Acta = new TransaccionActaRecibido();
     Transaccion_Acta.ActaRecibido = this.Registrar_Acta(this.Datos.Formulario1, this.Datos.Formulario3);
-    Transaccion_Acta.UltimoEstado = this.Registrar_Estado_Acta(Transaccion_Acta.ActaRecibido, 4);
+    Transaccion_Acta.UltimoEstado = this.Registrar_Estado_Acta(Transaccion_Acta.ActaRecibido,
+      (this.estadoActa === 'Registrada') ? EstadoActa_t.EnElaboracion : EstadoActa_t.EnVerificacion );
     const Soportes = new Array<TransaccionSoporteActa>();
     this.Datos.Formulario2.forEach((soporte, index) => {
       Soportes.push(this.Registrar_Soporte(soporte, this.Elementos__Soporte[index], Transaccion_Acta.ActaRecibido));
 
     });
     Transaccion_Acta.SoportesActa = Soportes;
+
+    const L10n_base = 'GLOBAL.Acta_Recibido.EdicionActa.';
+    const resultadoL10n_titulo = L10n_base + 'VerificadaTitle2';
+    const resultadoL10n_desc = L10n_base + ((this.estadoActa === 'Registrada') ? 'Verificada3' : 'Verificada2') ;
+
     this.Actas_Recibido.putTransaccionActa(Transaccion_Acta, Transaccion_Acta.ActaRecibido.Id).subscribe((res: any) => {
       if (res !== null) {
         (Swal as any).fire({
           type: 'success',
-          title: this.translate.instant('GLOBAL.Acta_Recibido.EdicionActa.Acta') +
-            `${res.ActaRecibido.Id}` + this.translate.instant('GLOBAL.Acta_Recibido.EdicionActa.VerificadaTitle'),
-          text: this.translate.instant('GLOBAL.Acta_Recibido.EdicionActa.Acta') +
-            `${res.ActaRecibido.Id}` + this.translate.instant('GLOBAL.Acta_Recibido.EdicionActa.Verificada'),
+          title: this.translate.instant(resultadoL10n_titulo, {id: res.ActaRecibido.Id}),
+          text: this.translate.instant(resultadoL10n_desc, {id: res.ActaRecibido.Id}),
         }).then((willDelete) => {
           if (willDelete.value) {
             window.location.reload();
@@ -834,6 +842,8 @@ export class EdicionActaRecibidoComponent implements OnInit {
       text: this.translate.instant('GLOBAL.Acta_Recibido.EdicionActa.CargaElementos'),
     });
   }
+
+  // Guardar Cambios ?
   Revisar_Totales2() {
     (Swal as any).fire({
       title: this.translate.instant('GLOBAL.Acta_Recibido.EdicionActa.DatosVeridicosTitle'),
@@ -846,15 +856,19 @@ export class EdicionActaRecibidoComponent implements OnInit {
       cancelButtonText: 'No',
     }).then((result) => {
       if (result.value) {
-
         this.onFirstSubmit();
       }
     });
   }
+
+  // Enviar a revisor/proveedor?
   Revisar_Totales3() {
+    const L10n_base = 'GLOBAL.Acta_Recibido.EdicionActa.';
+    const codigoL10n_titulo = L10n_base + 'DatosVeridicosTitle' ;
+    const codigoL10n_desc = L10n_base + ((this.estadoActa === 'Registrada') ? 'DatosVeridicos3' : 'DatosVeridicos2') ;
     (Swal as any).fire({
-      title: this.translate.instant('GLOBAL.Acta_Recibido.EdicionActa.DatosVeridicosTitle'),
-      text: this.translate.instant('GLOBAL.Acta_Recibido.EdicionActa.DatosVeridicos2'),
+      title: this.translate.instant(codigoL10n_titulo),
+      text: this.translate.instant(codigoL10n_desc),
       type: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',

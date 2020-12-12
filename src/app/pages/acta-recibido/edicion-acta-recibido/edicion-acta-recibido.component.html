@@ -83,7 +83,7 @@
                     </ng-template>
                     <div>
 
-                      <!-- Soporte -->
+                      <!-- Datos básicos del Soporte -->
                       <nb-card>
                         <nb-card-body (click)="usarLocalStorage()">
                           <div class="row">
@@ -176,7 +176,9 @@
                       </nb-card>
 
                       <!-- Elementos asociados al Soporte -->
-                      <ngx-capturar-elementos [DatosRecibidos]="Elementos__Soporte[i]" (DatosTotales)="ver2($event,i)"
+                      <ngx-capturar-elementos
+                        *ngIf="getPermisoEditar(permisos.Elementos)"
+                        [DatosRecibidos]="Elementos__Soporte[i]" (DatosTotales)="ver2($event,i)"
                         (DatosEnviados)="ver($event, i)">
                       </ngx-capturar-elementos>
 
@@ -275,8 +277,13 @@
 
             <div class="justify-content-center">
               <button nbButton (click)="Revisar_Totales3()"
+                *ngIf="estadoActa === 'En Elaboracion' || estadoActa === 'En Modificacion'"
                 [disabled]="!firstForm.get('Formulario1').valid || !firstForm.get('Formulario2').valid || !firstForm.get('Formulario3').valid || verificar"
                 class="float-right">{{'GLOBAL.Acta_Recibido.EdicionActa.VerificacionButton' | translate}}</button>
+              <button nbButton
+                *ngIf="estadoActa === 'Registrada'" (click)="Revisar_Totales3()"
+                [disabled]="!firstForm.get('Formulario1').valid || !firstForm.get('Formulario2').valid || verificar"
+                class="float-right">{{'GLOBAL.Acta_Recibido.EdicionActa.EnviarProveedorButton' | translate}}</button>
             </div>
           </mat-step>
         </mat-vertical-stepper>
