@@ -26,7 +26,7 @@ export class UserService {
     // TODO: Guardar en algun lado los roles reportados por WSO2
     // que NO sea LocalStorage ni Cookies ni Session Storage
     // porque el usuario puede modificarlos "facilmente"
-    this.roles = [RolUsuario_t.ADMIN_ALMACEN, RolUsuario_t.CONTRATISTA];
+    this.roles = [RolUsuario_t.Admin, RolUsuario_t.Contratista];
 
     if (window.localStorage.getItem('id_token') !== null && window.localStorage.getItem('id_token') !== undefined) {
       const id_token = window.localStorage.getItem('id_token').split('.');

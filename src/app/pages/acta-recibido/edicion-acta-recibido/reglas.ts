@@ -10,18 +10,18 @@ export const permisosSeccionesActas = [
     Permisos: [
       {
         Estado: 'Registrada',
-        PuedenModificar: [Rol.ADMIN_ALMACEN, Rol.SECRETARIA_ALMACEN],
-        PuedenVer: [Rol.CONTRATISTA],
+        PuedenModificar: [Rol.Admin, Rol.Secretaria],
+        PuedenVer: [Rol.Contratista],
       },
       {
         Estado: 'En Elaboracion',
-        PuedenModificar: [Rol.ADMIN_ALMACEN],
-        PuedenVer: [Rol.SECRETARIA_ALMACEN, Rol.CONTRATISTA],
+        PuedenModificar: [Rol.Admin],
+        PuedenVer: [Rol.Secretaria, Rol.Contratista],
       },
       {
         Estado: 'En Modificacion',
-        PuedenModificar: [Rol.ADMIN_ALMACEN],
-        PuedenVer: [Rol.SECRETARIA_ALMACEN, Rol.CONTRATISTA],
+        PuedenModificar: [Rol.Admin],
+        PuedenVer: [Rol.Secretaria, Rol.Contratista],
       },
     ],
   },
@@ -30,18 +30,18 @@ export const permisosSeccionesActas = [
     Permisos: [
       {
         Estado: 'Registrada',
-        PuedenModificar: [Rol.ADMIN_ALMACEN],
+        PuedenModificar: [Rol.Admin],
         PuedenVer: [],
       },
       {
         Estado: 'En Elaboracion',
-        PuedenModificar: [Rol.ADMIN_ALMACEN, Rol.CONTRATISTA],
-        PuedenVer: [Rol.SECRETARIA_ALMACEN],
+        PuedenModificar: [Rol.Admin, Rol.Contratista],
+        PuedenVer: [Rol.Secretaria],
       },
       {
         Estado: 'En Modificacion',
-        PuedenModificar: [Rol.ADMIN_ALMACEN, Rol.CONTRATISTA],
-        PuedenVer: [Rol.SECRETARIA_ALMACEN],
+        PuedenModificar: [Rol.Admin, Rol.Contratista],
+        PuedenVer: [Rol.Secretaria],
       },
     ],
   },

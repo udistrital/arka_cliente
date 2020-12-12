@@ -1,10 +1,9 @@
-export enum RolUsuario_t {    // para edicion
-    // Jefe = 1, // *
-    SECRETARIA_ALMACEN,             // reg *
-    CONTRATISTA,            // elab, mod *
-    // Proveedor,              // reg
-    REVISOR,                // reg, verifica *
-    ADMIN_ALMACEN,
+export enum RolUsuario_t {
+    Secretaria = 'SECRETARIA_ARCHIVO',
+    Contratista = 'CONTRATISTA',
+    Proveedor = 'PROVEEDOR',
+    Revisor = 'REVISOR',
+    Admin = 'ADMIN_ARKA',
 }
 
 export enum PermisoUsuario_t {
