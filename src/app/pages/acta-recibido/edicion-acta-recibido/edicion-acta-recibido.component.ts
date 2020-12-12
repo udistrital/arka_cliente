@@ -32,6 +32,7 @@ import { analyzeAndValidateNgModules } from '@angular/compiler';
 import { HttpErrorResponse } from '@angular/common/http';
 import { UserService } from '../../../@core/data/users.service';
 import { RolUsuario_t as Rol, PermisoUsuario_t as Permiso } from '../../../@core/data/models/roles/rol_usuario';
+import { permisosSeccionesActas } from './reglas';
 
 @Component({
   selector: 'ngx-edicion-acta-recibido',
@@ -79,6 +80,8 @@ export class EdicionActaRecibidoComponent implements OnInit {
     // console.log(this._Acta_Id);
 
   }
+
+  @Input('estado') estadoActualActa: string;
   Estados_Acta: any;
   Tipos_Bien: any;
   Estados_Elemento: any;
@@ -148,32 +151,65 @@ export class EdicionActaRecibidoComponent implements OnInit {
     this.searchStr2 = new Array<string>();
     this.DatosElementos = new Array<any>();
     this.Elementos__Soporte = new Array<any>();
-    this.cargaPermisos();
   }
 
+  // Los permisos dependen del estado del acta y del rol.
   cargaPermisos () {
+    // console.log({'this.estadoActualActa': this.estadoActualActa});
 
     // Modificar/Ver parte superior (Datos basicos y Soportes)
-    let permisoActa = Permiso.Ninguno;
-    if (this.userService.tieneAlgunRol([Rol.ADMIN_ALMACEN, Rol.SECRETARIA_ALMACEN])) {
-      permisoActa = Permiso.Modificar;
-    } else if (this.userService.tieneAlgunRol([Rol.CONTRATISTA])) {
-      permisoActa = Permiso.Ver;
-    }
+    let permisoActa: Permiso;
 
     // Modificar/Ver parte inferior (Elementos asociados a cada soporte)
-    let permisoElementos = Permiso.Ninguno;
-    if (this.userService.tieneAlgunRol([Rol.CONTRATISTA])) {
-      permisoElementos = Permiso.Modificar;
-    } else if (this.userService.tieneAlgunRol([Rol.SECRETARIA_ALMACEN])) {
-      permisoElementos = Permiso.Ver;
-    }
+    let permisoElementos: Permiso;
+
+    [
+      permisoActa,
+      permisoElementos,
+    ] = [
+      'Acta',
+      'Elementos',
+    ].map(seccion => this.permisosRoles_EstadoSeccion(this.estadoActualActa, seccion))
+      .map(permisosSeccion => {
+        return this.userService
+          .tieneAlgunRol(permisosSeccion.PuedenModificar) ? Permiso.Modificar : (
+            this.userService
+              .tieneAlgunRol(permisosSeccion.PuedenVer) ? Permiso.Ver : Permiso.Ninguno
+          );
+      });
 
     // Guardar permisos requeridos para cada parte del componente
     // console.log({'permisoActa': Permiso[permisoActa], 'permisoElementos': Permiso[permisoElementos]});
     this.permisos.Acta = permisoActa;
     this.permisos.Elementos = permisoElementos;
     Object.freeze(this.permisos);
+  }
+
+  // Devuelve un objeto en que el nombre de cada propiedad es un permiso, y
+  // los valores de cada propiedad son los roles que tienen dicho permiso.
+  permisosRoles_EstadoSeccion(estado: string, seccion: string) {
+    let PuedenModificar: Rol[] = [];
+    let PuedenVer: Rol[] = [];
+
+    permisosSeccionesActas.filter(PermSecciones => seccion === PermSecciones.Seccion)
+      .forEach(PermSeccion => {
+        // Si no hay secciones duplicadas, debería entrar solo una vez
+        PermSeccion.Permisos.filter(PermEstados => estado === PermEstados.Estado)
+          .forEach(PermEstado => {
+            // Si no hay estados duplicados, debería entrar solo una vez
+            PuedenModificar = PermEstado.PuedenModificar;
+            PuedenVer = PermEstado.PuedenVer;
+          });
+      });
+
+    return {PuedenModificar, PuedenVer};
+  }
+
+  getPermisoEditar(p: Permiso): boolean {
+    return p === Permiso.Modificar;
+  }
+  getPermisoVer(p: Permiso): boolean {
+    return p === Permiso.Ver;
   }
 
   Cargar_localStorage(Acta: any) {
@@ -227,7 +263,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
   }
 
   ngOnInit() {
-
+    this.cargaPermisos();
   }
   public loadLists() {
     this.store.select((state) => state).subscribe(
@@ -270,7 +306,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
   Cargar_Formularios(transaccion_: TransaccionActaRecibido) {
 
     this.Actas_Recibido.getSedeDependencia(transaccion_.ActaRecibido.UbicacionId).subscribe(res => {
-      const valor = res[0].EspacioFisicoId.Codigo.substring(0, 4);
+      const valor = res[0].EspacioFisicoId.Codigo.substring(0, 4); // Para algunas actas lanza error "Cannot read 'Codigo' of undefined"
       const Form2 = this.fb.array([]);
       const elementos = new Array<any[]>();
       transaccion_.SoportesActa.forEach((Soporte, index) => {
@@ -287,7 +323,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
         this.Validador[index] = true;
         this.uidDocumento[index] = Soporte.SoporteActa.DocumentoId;
         const elementoSoporte = [];
-        for (const _Elemento of Soporte.Elementos) {
+        for (const _Elemento of Soporte.Elementos) { // Para alguna actas lanza error "Cannot read 'length' of null"
 
           const Elemento___ = {
             Id: _Elemento.Id,
