@@ -470,8 +470,9 @@ export class RegistroActaRecibidoComponent implements OnInit {
     return Elementos_Soporte;
   }
 
-  // Posible TODO: Esta función también se repite en el componente
-  // edición-acta-recibido, por tanto se podría dejar en un servicio aparte
+  // Posible TODO: Esta función también se repite en los componentes
+  // edición-acta-recibido y verificacion-acta-recibido
+  // por tanto se podría dejar en un servicio aparte
   revisorValido(): boolean {
     if (!this.userService.getPersonaId()) {
       (Swal as any).fire({
