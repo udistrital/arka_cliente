@@ -1,10 +1,10 @@
+import { AuthInterceptor } from './../../../@core/_Interceptor/auth.Interceptor';
 import { Formulario } from './../edicion-acta-recibido/datos_locales';
 import { Component, OnInit, ViewChild, ViewChildren, QueryList } from '@angular/core';
 import { Subscription, combineLatest, Observable } from 'rxjs';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, FormControl, FormArray } from '@angular/forms';
 import { NuxeoService } from '../../../@core/utils/nuxeo.service';
-
 import { MatTable } from '@angular/material';
 import 'hammerjs';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
@@ -79,7 +79,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
   Historico_Acta: HistoricoActa;
   Proveedores: any;
   Ubicaciones: any;
-  UbicacionesForm: Ubicacion;
+  UbicacionesForm: any;
   DependenciaV: any;
   Sedes: any;
   Dependencias: any;
@@ -109,16 +109,16 @@ export class RegistroActaRecibidoComponent implements OnInit {
     private documentoService: DocumentoService,
     private userService: UserService,
   ) {
-    this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
-    });
-    this.listService.findProveedores();
+    this.listService.findUbicaciones();
     this.listService.findDependencias();
     this.listService.findSedes();
-    this.listService.findUbicaciones();
+    this.listService.findProveedores();
     this.listService.findEstadosActa();
     this.listService.findEstadosElemento();
     this.listService.findTipoBien();
     this.loadLists();
+    this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
+    });
     this.fileDocumento = [];
     this.Validador = [];
     this.uidDocumento = [];
@@ -126,12 +126,13 @@ export class RegistroActaRecibidoComponent implements OnInit {
   }
 
   ngOnInit() {
-
+    this.loadLists();
     this.searchStr2 = new Array<string>();
     if (sessionStorage.Formulario_Registro == null) {
       this.Cargar_Formularios();
     } else {
       const formulario = JSON.parse(sessionStorage.Formulario_Registro);
+
       (Swal as any).fire({
         type: 'warning',
         title: 'Registro sin completar',
@@ -143,7 +144,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
         cancelButtonText: 'Nuevo Registro, se eliminara el registro anterior',
       }).then((result) => {
         if (result.value) {
-          this.Cargar_Formularios2(formulario);
+          this.cargar(formulario);
         } else {
           (Swal as any).fire({
             type: 'warning',
@@ -158,7 +159,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
               sessionStorage.removeItem('Formulario_Registro');
               this.Cargar_Formularios();
             } else {
-              this.Cargar_Formularios2(formulario);
+              this.cargar(formulario);
             }
           });
         }
@@ -169,13 +170,13 @@ export class RegistroActaRecibidoComponent implements OnInit {
   public loadLists() {
     this.store.select((state) => state).subscribe(
       (list) => {
+        this.Ubicaciones = list.listUbicaciones[0];
+        this.Sedes = list.listSedes[0];
+        this.Dependencias = list.listDependencias[0];
         this.Estados_Acta = list.listEstadosActa[0];
         this.Estados_Elemento = list.listEstadosElemento[0];
         this.Tipos_Bien = list.listTipoBien[0];
-        this.Sedes = list.listSedes[0];
         this.Proveedores = list.listProveedores[0];
-        this.Dependencias = list.listDependencias[0];
-        this.Ubicaciones = list.listUbicaciones[0];
         this.dataService2 = this.completerService.local(this.Proveedores, 'compuesto', 'compuesto');
         this.dataService3 = this.completerService.local(this.Dependencias, 'Nombre', 'Nombre');
         // this.dataService = this.completerService.local(this.Ubicaciones, 'Nombre', 'Nombre');
@@ -241,7 +242,6 @@ export class RegistroActaRecibidoComponent implements OnInit {
 
   Cargar_Formularios2(transaccion_: any) {
     const Form2 = this.fb.array([]);
-
     for (const Soporte of transaccion_.Formulario2) {
       const Formulario__2 = this.fb.group({
         Id: [''],
@@ -264,7 +264,6 @@ export class RegistroActaRecibidoComponent implements OnInit {
     });
     const sede = this.firstForm.get('Formulario1').get('Sede').value;
     const dependencia = this.firstForm.get('Formulario1').get('Dependencia').value;
-
     if (this.firstForm.get('Formulario1').get('Sede').valid || this.firstForm.get('Formulario1').get('Dependencia').valid) {
       const transaccion: any = {};
       transaccion.Sede = this.Sedes.find((x) => x.Id === parseFloat(sede));
@@ -273,14 +272,10 @@ export class RegistroActaRecibidoComponent implements OnInit {
         this.Actas_Recibido.postRelacionSedeDependencia(transaccion).subscribe((res: any) => {
           if (Object.keys(res[0]).length !== 0) {
             this.UbicacionesForm = res[0].Relaciones;
-            this.DependenciaV = this.firstForm.get('Formulario1').get('Dependencia').value;
-          } else {
-            this.UbicacionesForm = undefined;
           }
         });
       }
     }
-
   }
 
   get Formulario_1(): FormGroup {
@@ -295,7 +290,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
       Proveedor: ['', Validators.required],
       Consecutivo: ['', Validators.required],
       Fecha_Factura: ['', Validators.required],
-      Soporte: [''],
+      Soporte: ['', Validators.required],
     });
   }
 
@@ -375,6 +370,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
             text: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.Acta') +
               `${res.ActaRecibido.Id}` + this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.Registrada'),
           });
+          sessionStorage.removeItem('Formulario_Registro');
           this.router.navigate(['/pages/acta_recibido/consulta_acta_recibido']);
         } else {
           (Swal as any).fire({
@@ -387,9 +383,8 @@ export class RegistroActaRecibidoComponent implements OnInit {
     } else {
       (Swal as any).fire({
         type: 'error',
-        title: 'Datos Incompletos',
-        text: 'Existen datos de elementos incompletos en el soporte del proveedor :' +
-          this.Proveedores.find(x => x.Id === this.validador_soporte),
+        title: 'Datos Erróneos',
+        text: 'Existen datos no válidos',
       });
     }
   }
@@ -497,19 +492,20 @@ export class RegistroActaRecibidoComponent implements OnInit {
     }).then((result) => {
       if (result.value) {
         this.onFirstSubmit();
-        if (!this.validador) {
-          sessionStorage.removeItem('Formulario_Registro');
-          this.router.navigateByUrl('/RefreshComponent', { skipLocationChange: true }).then(() => {
-            this.router.navigate(['/pages/acta_recibido/consulta_acta_recibido']);
-          });
-        }
-
       }
     });
   }
 
   usarLocalStorage() {
     sessionStorage.setItem('Formulario_Registro', JSON.stringify(this.firstForm.value));
+  }
+
+  cargar(formulario) {
+    if (this.Sedes && this.Dependencias) {
+      this.Cargar_Formularios2(formulario);
+    } else {
+      setTimeout(() => { this.cargar(formulario); }, 100);
+    }
   }
 
   Traer_Relacion_Ubicaciones() {
@@ -531,8 +527,6 @@ export class RegistroActaRecibidoComponent implements OnInit {
           if (Object.keys(res[0]).length !== 0) {
             this.UbicacionesForm = res[0].Relaciones;
             this.DependenciaV = this.firstForm.get('Formulario1').get('Dependencia').value;
-          } else {
-            this.UbicacionesForm = undefined;
           }
         });
       }
