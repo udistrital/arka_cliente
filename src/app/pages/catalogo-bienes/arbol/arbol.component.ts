@@ -45,6 +45,7 @@ export class ArbolComponent implements OnInit, OnChanges {
   defaultColumns = ['Nombre', 'Descripcion', 'Acciones'];
   allColumns = [this.customColumn, ...this.defaultColumns];
   stringBusqueda: any;
+  mostrar: boolean=false;
 
   dataSource: NbTreeGridDataSource<CatalogoArbol>;
 
@@ -216,8 +217,9 @@ export class ArbolComponent implements OnInit, OnChanges {
     this.grupo.emit(selectedRow);
   }
   loadTreeCatalogo() {
+    this.mostrar = false;  
     this.catalogoHelper.getArbolCatalogo(this.catalogoId).subscribe((res) => {
-
+      this.mostrar = true;
       if (res !== null) {
         if (res[0].hasOwnProperty('data')) {
           this.data = res;
