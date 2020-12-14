@@ -45,7 +45,7 @@ export class ArbolComponent implements OnInit, OnChanges {
   defaultColumns = ['Nombre', 'Descripcion', 'Acciones'];
   allColumns = [this.customColumn, ...this.defaultColumns];
   stringBusqueda: any;
-  mostrar: boolean=false;
+  mostrar: boolean = false;
 
   dataSource: NbTreeGridDataSource<CatalogoArbol>;
 
@@ -126,14 +126,14 @@ export class ArbolComponent implements OnInit, OnChanges {
     }
   }
 
-  sortGeneral(request, data) {
+  sortGeneral(mrequest, data) {
     const _this = this;
-    if (!request) {
+    if (!mrequest) {
         return data;
     }
     const sorted = data.sort(function (na, nb) {
-      const key = request.column;
-      const dir = request.direction;
+      const key = mrequest.column;
+      const dir = mrequest.direction;
       const a = na.data[key];
       const b = nb.data[key];
       let res = 0;
@@ -148,7 +148,7 @@ export class ArbolComponent implements OnInit, OnChanges {
     for (let _i = 0, data_1 = data; _i < data_1.length; _i++) {
         const node = data_1[_i];
         if (node.hasOwnProperty('children') && node.children !== undefined) {
-        node.children = this.sortGeneral(request, node.children);
+        node.children = this.sortGeneral(mrequest, node.children);
         }
     }
     return sorted;
@@ -217,7 +217,7 @@ export class ArbolComponent implements OnInit, OnChanges {
     this.grupo.emit(selectedRow);
   }
   loadTreeCatalogo() {
-    this.mostrar = false;  
+    this.mostrar = false;
     this.catalogoHelper.getArbolCatalogo(this.catalogoId).subscribe((res) => {
       this.mostrar = true;
       if (res !== null) {
