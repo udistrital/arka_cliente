@@ -249,6 +249,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
         Consecutivo: [Soporte.Consecutivo, Validators.required],
         Fecha_Factura: [Soporte.Fecha_Factura, Validators.required],
         Soporte: [Soporte.Soporte, Validators.required],
+        Revisor: [Soporte.Revisor, Validators.required],
       });
       Form2.push(Formulario__2);
     }
@@ -290,6 +291,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
       Proveedor: ['', Validators.required],
       Consecutivo: ['', Validators.required],
       Fecha_Factura: ['', Validators.required],
+      Revisor: ['', Validators.required],
       Soporte: ['', Validators.required],
     });
   }
