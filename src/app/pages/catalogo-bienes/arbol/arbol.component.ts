@@ -1,14 +1,18 @@
 import { Component, OnInit, Input, EventEmitter, Output, OnChanges } from '@angular/core';
 import { NbTreeGridDataSource, NbSortDirection, NbSortRequest, NbTreeGridDataSourceBuilder } from '@nebular/theme';
-import { Observable, combineLatest } from 'rxjs';
+import { Observable, combineLatest, from } from 'rxjs';
 import { CuentaContable } from '../../../@core/data/models/catalogo/cuenta_contable';
 import { PopUpManager } from '../../../managers/popUpManager';
 import { CuentasGrupoTransaccion } from '../../../@core/data/models/catalogo/cuentas_subgrupo';
+import {TipoNivelID} from '../../../@core/data/models/catalogo/tipo_nivel';
 import { SubgrupoTransaccion } from '../../../@core/data/models/catalogo/transacciones';
 import { Subgrupo } from '../../../@core/data/models/catalogo/jerarquia';
 import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/catalogoElementosHelper';
 import { TipoBien } from '../../../@core/data/models/acta_recibido/tipo_bien';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
+import { TipoNivel } from '../../../@core/data/models/catalogo/tipo_nivel';
+import { request } from 'http';
+import { exists } from 'fs';
 
 interface TreeNode<T> {
   data: T;
@@ -20,10 +24,11 @@ interface CatalogoArbol {
   Id: number;
   Nombre: string;
   Descripcion: string;
-  FechaCreacion: Date;
-  FechaModificacion: Date;
+  FechaCreacion: string;
+  FechaModificacion: string;
   Activo: boolean;
   Codigo: string;
+  TipoNivelId: TipoNivel;
 }
 
 @Component({
@@ -34,10 +39,12 @@ interface CatalogoArbol {
 export class ArbolComponent implements OnInit, OnChanges {
 
   data: TreeNode<CatalogoArbol>[];
+  data2: TreeNode<CatalogoArbol>[];
+  aux: TreeNode<CatalogoArbol>[];
   customColumn = 'Codigo';
   defaultColumns = ['Nombre', 'Descripcion', 'Acciones'];
   allColumns = [this.customColumn, ...this.defaultColumns];
-
+  stringBusqueda: any;
 
   dataSource: NbTreeGridDataSource<CatalogoArbol>;
 
@@ -65,6 +72,7 @@ export class ArbolComponent implements OnInit, OnChanges {
     private catalogoHelper: CatalogoElementosHelper,
     private translate: TranslateService,
     private pUpManager: PopUpManager) {
+    this.stringBusqueda = '';
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
       this.construirForm();
     });
@@ -104,8 +112,91 @@ export class ArbolComponent implements OnInit, OnChanges {
   }
 
   updateSort(sortRequest: NbSortRequest): void {
+    if (this.data2 !== undefined) {
+      this.data2 = this.sortGeneral(sortRequest, this.data2);
+      this.sortColumn = sortRequest.column;
+      this.sortDirection = sortRequest.direction;
+      this.dataSource = this.dataSourceBuilder.create(this.data2);
+    } else {
+    this.data = this.sortGeneral(sortRequest, this.data);
     this.sortColumn = sortRequest.column;
     this.sortDirection = sortRequest.direction;
+    this.dataSource = this.dataSourceBuilder.create(this.data);
+    }
+  }
+
+  sortGeneral(request, data) {
+    const _this = this;
+    if (!request) {
+        return data;
+    }
+    const sorted = data.sort(function (na, nb) {
+      const key = request.column;
+      const dir = request.direction;
+      const a = na.data[key];
+      const b = nb.data[key];
+      let res = 0;
+      if (a > b) {
+          res = 1;
+      }
+      if (a < b) {
+          res = -1;
+      }
+      return dir === NbSortDirection.ASCENDING ? res : res * -1;
+    });
+    for (let _i = 0, data_1 = data; _i < data_1.length; _i++) {
+        const node = data_1[_i];
+        if (node.hasOwnProperty('children') && node.children !== undefined) {
+        node.children = this.sortGeneral(request, node.children);
+        }
+    }
+    return sorted;
+  }
+
+  filterSearch() {
+    if (this.stringBusqueda === '') {
+      this.dataSource = this.dataSourceBuilder.create(this.data);
+      this.data2 = undefined;
+      this.loadTreeCatalogo();
+    }
+    if (this.stringBusqueda.length > 4) {
+    this.data2 = this.filter(this.stringBusqueda, this.data);
+    this.dataSource = this.dataSourceBuilder.create(this.data2);
+    }
+  }
+
+  filter(query, data) {
+    const _this = this;
+    if (!query) {
+      return data;
+    } else {
+      if (data !== undefined) {
+        return data.reduce(function (filtered, node) {
+          const filteredChildren = _this.filter(query, node.children);
+          node.children = filteredChildren;
+          node.expanded = false;
+          if (filteredChildren && filteredChildren.length) {
+              node.expanded = true;
+              filtered.push(node);
+          } else if (_this.filterPredicate(node.data, query)) {
+              filtered.push(node);
+            }
+          return filtered;
+        }, []);
+      }
+    }
+  }
+
+  filterPredicate(data, searchQuery) {
+    const preparedQuery = searchQuery.trim().toLocaleLowerCase();
+    for (let _i = 0, _a = Object.values(data); _i < _a.length; _i++) {
+        const val = _a[_i];
+        const preparedVal = ('' + val).trim().toLocaleLowerCase();
+        if (preparedVal.includes(preparedQuery)) {
+            return true;
+        }
+    }
+    return false;
   }
 
   getSortDirection(column: string): NbSortDirection {
@@ -124,7 +215,6 @@ export class ArbolComponent implements OnInit, OnChanges {
   getSelectedRow2(selectedRow) {
     this.grupo.emit(selectedRow);
   }
-
   loadTreeCatalogo() {
     this.catalogoHelper.getArbolCatalogo(this.catalogoId).subscribe((res) => {
 
@@ -132,6 +222,8 @@ export class ArbolComponent implements OnInit, OnChanges {
         if (res[0].hasOwnProperty('data')) {
           this.data = res;
           this.dataSource = this.dataSourceBuilder.create(this.data);
+          // this.dataSource.sortService.sort = ()
+          // console.log(this.dataSource)
         }
       }
     });
