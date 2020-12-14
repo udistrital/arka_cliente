@@ -147,7 +147,7 @@ export class SolicitudBajasComponent implements OnInit {
     const Baja: any = {
       Funcionario : this.DatosSolicitante.Funcionario.Id,
       Ubicacion : this.DatosSolicitante.Ubicacion.Id,
-      Revisor: parseInt(window.localStorage.getItem('persona_id'), 10),
+      Revisor: this.userService.getPersonaId(),
       FechaVistoBueno: null,
       Elementos : Elementos,
     };

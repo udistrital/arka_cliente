@@ -31,7 +31,7 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { DocumentoService } from '../../../@core/data/documento.service';
 import { LocalDataSource } from 'ngx-smart-table';
 import { BodegaConsumoHelper } from '../../../helpers/bodega_consumo/bodegaConsumoHelper';
-
+import { UserService } from '../../../@core/data/users.service';
 
 
 @Component({
@@ -79,7 +79,7 @@ export class FormElementosSeleccionadosComponent implements OnInit {
     private nuxeoService: NuxeoService,
     private documentoService: DocumentoService,
     private bodegaConsumoHelper: BodegaConsumoHelper,
-
+    private userService: UserService,
 
 
   ) {
@@ -182,7 +182,7 @@ export class FormElementosSeleccionadosComponent implements OnInit {
         detalle_solicitud.push(elemento);
       }
       const solicitud = {
-        Funcionario: parseInt(window.localStorage.getItem('persona_id'), 10),
+        Funcionario: this.userService.getPersonaId(),
         Elementos: detalle_solicitud,
       };
       // console.log(solicitud);
