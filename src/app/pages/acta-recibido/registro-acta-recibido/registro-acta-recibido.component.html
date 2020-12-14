@@ -106,6 +106,20 @@
                                   *ngIf="firstForm.get('Formulario2').at(i).get('Fecha_Factura').invalid">
                                   {{'GLOBAL.placeholder' | translate}}</p>
                               </div>
+
+
+                             <div class="form-group col-sm">
+                                  <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Revisor' | translate}}</label>
+                                  <ng2-completer style="border: 0rem" inputClass="form-control" [clearUnselected]="true"
+                                    placeholder="{{'GLOBAL.Acta_Recibido.RegistroActa.SeleccioneFiltro' | translate}}"
+                                    nbInput [datasource]="dataService2" formControlName="Revisor"
+                                    (keyup)="usarLocalStorage()" [minSearchLength]="3">
+                                  </ng2-completer> 
+                                  <p class="campo" *ngIf="firstForm.get('Formulario2').at(i).get('Revisor').invalid">                                                                     
+                                    {{'GLOBAL.placeholder' | translate}}</p>                                                                                                              
+                             </div>         
+
+
                             </div>
                             <div class="col">
                               <div class="form-group col-sm">
