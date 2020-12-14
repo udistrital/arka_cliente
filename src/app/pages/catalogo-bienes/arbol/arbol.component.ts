@@ -65,7 +65,7 @@ export class ArbolComponent implements OnInit, OnChanges {
   dataSource: NbTreeGridDataSource<CatalogoArbol>;
 
   sortColumn: string;
-  aux:any;
+  aux: any;
   sortDirection: NbSortDirection = NbSortDirection.NONE;
 
   catalogoSeleccionado: number;
@@ -177,7 +177,7 @@ export class ArbolComponent implements OnInit, OnChanges {
       this.data2 = undefined;
       this.loadTreeCatalogo();
     }
-    if (this.stringBusqueda.length < this.aux){
+    if (this.stringBusqueda.length < this.aux) {
       this.catalogoHelper.getArbolCatalogo(this.catalogoId).subscribe((res) => {
         this.mostrar = true;
         if (res !== null) {
@@ -196,7 +196,7 @@ export class ArbolComponent implements OnInit, OnChanges {
     this.data2 = this.filter(this.stringBusqueda, this.data2);
     this.dataSource = this.dataSourceBuilder.create(this.data2);
     }
-    this.aux = this.stringBusqueda.length
+    this.aux = this.stringBusqueda.length;
 
   }
 
