@@ -470,7 +470,9 @@ export class RegistroActaRecibidoComponent implements OnInit {
     return Elementos_Soporte;
   }
 
-  Revisar_Totales() {
+  // Posible TODO: Esta función también se repite en el componente
+  // edición-acta-recibido, por tanto se podría dejar en un servicio aparte
+  revisorValido(): boolean {
     if (!this.userService.getPersonaId()) {
       (Swal as any).fire({
         title: this.translate.instant('GLOBAL.error'),
@@ -480,6 +482,14 @@ export class RegistroActaRecibidoComponent implements OnInit {
         confirmButtonColor: '#3085d6',
         confirmButtonText: 'Ok',
       });
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  Revisar_Totales() {
+    if (!this.revisorValido()) {
       return;
     }
     (Swal as any).fire({
