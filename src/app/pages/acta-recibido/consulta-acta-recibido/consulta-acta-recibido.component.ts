@@ -265,7 +265,9 @@ export class ConsultaActaRecibidoComponent implements OnInit {
       type: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
-      confirmButtonText: 'Ok',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Anular Acta',
+      cancelButtonText: 'Cancelar',
     }).then((result) => {
       if (result.value) {
         // console.log('anular-ok');
