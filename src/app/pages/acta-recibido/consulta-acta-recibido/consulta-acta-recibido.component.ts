@@ -96,7 +96,6 @@ export class ConsultaActaRecibidoComponent implements OnInit {
   }
 
   cargarCampos() {
-
     this.settings = {
       noDataMessage: 'No se encontraron elementos asociados.',
       actions: {
@@ -105,13 +104,9 @@ export class ConsultaActaRecibidoComponent implements OnInit {
       },
       add: {
         addButtonContent: '<i class="nb-plus"></i>',
-        createButtonContent: '<i class="nb-checkmark"></i>',
-        cancelButtonContent: '<i class="nb-close"></i>',
       },
       edit: {
         editButtonContent: '<i class="fas fa-pencil-alt"></i>',
-        saveButtonContent: '<i class="nb-checkmark"></i>',
-        cancelButtonContent: '<i class="nb-close"></i>',
       },
       delete: {
         deleteButtonContent: '<i class="fas fa-eye"></i>',
