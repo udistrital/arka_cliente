@@ -85,7 +85,7 @@ export class ConsultaActaRecibidoComponent implements OnInit {
         // ... Pero podría llegarse a algo similar a lo realizado
         // en el componente edicion-acta-recibido
         if (this.userService.tieneAlgunRol([Rol.Secretaria])) {
-          resFiltrado = res.filter(acta => acta.Estado = 'Registrada');
+          resFiltrado = res.filter(acta => acta.Estado === 'Registrada');
         } else {
           resFiltrado = res;
         }
