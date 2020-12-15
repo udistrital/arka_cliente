@@ -84,6 +84,8 @@
         "Aceptada": "Acepted",
         "Asociada": "Entrance Associated",
         "Anulada": "Closed",
+        "DialogoAnularTitulo":"Void Act {{ACTA}}?",
+        "DialogoAnularMsg":"This action cannot be undone. Are you sure to VOID the Act {{ACTA}}?",
         "OpcionNoValida": "Invalid Option",
         "OpcionNoValida2": "Invalid Option for this Certificate"
       },

@@ -13,7 +13,7 @@
     <nb-card-header>{{'GLOBAL.Acta_Recibido.ConsultaActas.Title' | translate}}</nb-card-header>
     <nb-card-body>
       <ng2-smart-table [settings]="settings" [source]="source" (delete)="onDelete($event)"
-        (rowSelect)="itemselec($event)" (edit)="onEdit($event)" (create)="onCreate($event)">
+        (userRowSelect)="seleccionarActa($event)" (edit)="onEdit($event)" (create)="onCreate($event)">
       </ng2-smart-table>
     </nb-card-body>
   </nb-card>

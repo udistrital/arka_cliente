@@ -103,13 +103,13 @@ export class ConsultaActaRecibidoComponent implements OnInit {
         position: 'right',
       },
       add: {
-        addButtonContent: '<i class="nb-plus"></i>',
+        addButtonContent: '<i class="nb-plus" title="Registrar Acta Nueva" aria-label="Registrar Acta Nueva"></i>',
       },
       edit: {
-        editButtonContent: '<i class="fas fa-pencil-alt"></i>',
+        editButtonContent: '<i class="far fa-edit" title="Editar Acta" aria-label="Editar Acta"></i>',
       },
       delete: {
-        deleteButtonContent: '<i class="fas fa-eye"></i>',
+        deleteButtonContent: '<i class="fas fa-ban" title="Anular Acta" aria-label="Anular Acta"></i>',
       },
       mode: 'external',
       columns: {
@@ -242,20 +242,39 @@ export class ConsultaActaRecibidoComponent implements OnInit {
     this.validarActa = validarActa;
     // console.log({'this.estadoActaSeleccionada':this.estadoActaSeleccionada});
   }
-  itemselec(event): void {
-    // console.log('afssaf');
-  }
+
   onCreate(event): void {
+    // console.log({'onCreate': event});
     this.router.navigate(['/pages/acta_recibido/registro_acta_recibido']);
   }
 
-  onDelete(event): void {
+  seleccionarActa(event): void {
     // console.log(event.data.Estado)
     this.actaSeleccionada = `${event.data.Id}`;
     this.estadoActaSeleccionada = 'Ver';
     this.accion = 'Ver';
     this.verActa = true;
     // console.log('1')
+  }
+
+  onDelete(event): void {
+    // console.log({'Anular': event});
+    (Swal as any).fire({
+      title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.DialogoAnularTitulo', {'ACTA': event.data.Id}),
+      text: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.DialogoAnularMsg', {'ACTA': event.data.Id}),
+      type: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      confirmButtonText: 'Ok',
+    }).then((result) => {
+      if (result.value) {
+        // console.log('anular-ok');
+      }
+      // else {
+      //   console.log('anular-canceldo');
+      // }
+    });
+    this.ngOnInit();
   }
 
   onBack() {

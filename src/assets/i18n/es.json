@@ -84,6 +84,8 @@
         "Aceptada":"Aceptada",
         "Asociada":"Asociada a Entrada",
         "Anulada":"Anulada",
+        "DialogoAnularTitulo":"¿Anular Acta {{ACTA}}?",
+        "DialogoAnularMsg":"Esta acción no se puede deshacer. ¿Está seguro de ANULAR la Acta {{ACTA}}?",
         "OpcionNoValida":"Opción no válida",
         "OpcionNoValida2":"Opción no válida para el estado de esta acta"
       },
