@@ -11,6 +11,9 @@ import { IAppState } from '../../../@core/store/app.state';
 import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
 import { UserService } from '../../../@core/data/users.service';
 import { RolUsuario_t as Rol } from '../../../@core/data/models/roles/rol_usuario';
+import { TransaccionActaRecibido } from '../../../@core/data/models/acta_recibido/transaccion_acta_recibido';
+import { HistoricoActa } from '../../../@core/data/models/acta_recibido/historico_acta';
+import { EstadoActa_t } from '../../../@core/data/models/acta_recibido/estado_acta';
 
 @Component({
   selector: 'ngx-consulta-acta-recibido',
@@ -217,7 +220,44 @@ export class ConsultaActaRecibidoComponent implements OnInit {
   }
 
   anularActa (id: number) {
-    // console.log({'anularActa': id});
+    // console.log({'idActa': id});
+
+    // 1. Traer acta tal cual está
+    this.actaRecibidoHelper.getTransaccionActa(id).subscribe(acta => {
+      // console.log({'actaHelper': acta});
+
+      // 2. Crear estado "Anulada"
+      // const Transaccion_Acta = new TransaccionActaRecibido();
+      const Transaccion_Acta = <TransaccionActaRecibido> acta[0];
+      const nuevoEstado = <HistoricoActa> {
+        Id: null,
+        ActaRecibidoId: Transaccion_Acta.ActaRecibido,
+        Activo: true,
+        EstadoActaId: {Id: EstadoActa_t.Anulada},
+        FechaCreacion: new Date(),
+        FechaModificacion: new Date(),
+      };
+      Transaccion_Acta.UltimoEstado = nuevoEstado;
+      // console.log({Transaccion_Acta});
+
+      // 3. Anular acta
+      this.actaRecibidoHelper.putTransaccionActa(Transaccion_Acta, id)
+        .subscribe(res => {if (res !== null) {
+          (Swal as any).fire({
+            type: 'success',
+            title: this.translate.instant('GLOBAL.Acta_Recibido.AnuladaOkTitulo',
+              {ACTA: id}),
+            text: this.translate.instant('GLOBAL.Acta_Recibido.AnuladaOkMsg',
+              {ACTA: id}),
+          });
+
+          // Se usa una redirección "dummy", intermedia. Ver
+          // https://stackoverflow.com/a/49509706/3180052
+          this.router.navigateByUrl('/', {skipLocationChange: true}).then(() => {
+            this.router.navigateByUrl('/pages/acta_recibido/consulta_acta_recibido');
+          });
+        }});
+    });
   }
 
   onEdit(event): void {

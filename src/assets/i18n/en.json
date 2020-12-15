@@ -36,6 +36,8 @@
   "GLOBAL": {
     "Acta_Recibido": {
       "ErrorAnularMsg": "The Act {{ACTA}} cannot be voided by having state \"{{ESTADO}}\"",
+      "AnuladaOkTitulo":"Act {{ACTA}} Voided",
+      "AnuladaOkMsg":"The Act {{ACTA}} was successfully Voided",
       "CapturarElementos": {
         "CargaMasivaTitle": "Masive Load",
         "ValidadorPlaceholder": "The file have xlsx extension (*.xlsx)",

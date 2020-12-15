@@ -656,7 +656,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
     });
   }
 
-  // Envío final a siguiente etapa (revisor/proveedor)
+  // Envío a siguiente etapa (revisor/proveedor)
   onFirstSubmit2() {
     this.Datos = this.firstForm.value;
     const Transaccion_Acta = new TransaccionActaRecibido();
@@ -682,7 +682,11 @@ export class EdicionActaRecibidoComponent implements OnInit {
           text: this.translate.instant(resultadoL10n_desc, {id: res.ActaRecibido.Id}),
         }).then((willDelete) => {
           if (willDelete.value) {
-            window.location.reload();
+            // Se usa una redirección "dummy", intermedia. Ver
+            // https://stackoverflow.com/a/49509706/3180052
+            this.router.navigateByUrl('/', {skipLocationChange: true}).then(() => {
+              this.router.navigateByUrl('/pages/acta_recibido/consulta_acta_recibido');
+            });
           }
         });
       } else {
