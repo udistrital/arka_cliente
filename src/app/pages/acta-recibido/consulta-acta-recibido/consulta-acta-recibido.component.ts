@@ -9,6 +9,8 @@ import Swal from 'sweetalert2';
 import { Store } from '@ngrx/store';
 import { IAppState } from '../../../@core/store/app.state';
 import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
+import { UserService } from '../../../@core/data/users.service';
+import { RolUsuario_t as Rol } from '../../../@core/data/models/roles/rol_usuario';
 
 @Component({
   selector: 'ngx-consulta-acta-recibido',
@@ -39,7 +41,9 @@ export class ConsultaActaRecibidoComponent implements OnInit {
     private store: Store<IAppState>,
 
     private terceroshelper: TercerosHelper,
-    private pUpManager: PopUpManager) {
+    private pUpManager: PopUpManager,
+    private userService: UserService,
+  ) {
 
     this.navigationSubscription = this.router.events.subscribe((e: any) => {
       // If it is a NavigationEnd event re-initalise the component
@@ -66,16 +70,30 @@ export class ConsultaActaRecibidoComponent implements OnInit {
     this.accion = '';
     // console.log('1')
   }
+
   ngOnInit() {
+    // TODO: Si es posible, filtrar desde la API cuando sea necesario
+    // (agregar parámetros al request enviado al ARKA_SERVICE)
     this.actaRecibidoHelper.getActasRecibido3().subscribe((res: any) => {
       // console.log(res);
       this.mostrar = true;
-      if (Object.keys(res[0]).length !== 0) {
-        this.source.load(res);
+      if (res.length !== 0) {
+        let resFiltrado;
+
+        // TODO: Agregar más complejidad a esta parte, la implementación
+        // fue corta para efectos del Issue #347 ...
+        // ... Pero podría llegarse a algo similar a lo realizado
+        // en el componente edicion-acta-recibido
+        if (this.userService.tieneAlgunRol([Rol.Secretaria])) {
+          resFiltrado = res.filter(acta => acta.Estado = 'Registrada');
+        } else {
+          resFiltrado = res;
+        }
+
+        this.source.load(resFiltrado);
       }
     });
   }
-
 
   cargarCampos() {
 
