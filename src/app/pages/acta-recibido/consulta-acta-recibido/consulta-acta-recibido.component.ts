@@ -216,6 +216,10 @@ export class ConsultaActaRecibidoComponent implements OnInit {
     }
   }
 
+  anularActa (id: number) {
+    // console.log({'anularActa': id});
+  }
+
   onEdit(event): void {
     // console.log({'event.data': event.data});
     let editarActa = false;
@@ -264,24 +268,43 @@ export class ConsultaActaRecibidoComponent implements OnInit {
 
   onDelete(event): void {
     // console.log({'Anular': event});
-    (Swal as any).fire({
-      title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.DialogoAnularTitulo', {'ACTA': event.data.Id}),
-      text: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.DialogoAnularMsg', {'ACTA': event.data.Id}),
-      type: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Anular Acta',
-      cancelButtonText: 'Cancelar',
-    }).then((result) => {
-      if (result.value) {
-        // console.log('anular-ok');
-      }
-      // else {
-      //   console.log('anular-canceldo');
-      // }
-    });
-    this.ngOnInit();
+    switch (event.data.Estado) {
+
+      case 'Registrada':
+      case 'En Elaboracion':
+      case 'En Modificacion':
+      case 'En Verificacion':
+      case 'Aceptada':
+        (Swal as any).fire({
+          title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.DialogoAnularTitulo', {'ACTA': event.data.Id}),
+          text: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.DialogoAnularMsg', {'ACTA': event.data.Id}),
+          type: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Anular Acta',
+          cancelButtonText: 'Cancelar',
+        }).then((result) => {
+          if (result.value) {
+            this.anularActa(event.data.Id);
+          }
+        });
+        this.ngOnInit();
+        break;
+
+      default:
+        (Swal as any).fire({
+          title: this.translate.instant('GLOBAL.error'),
+          text: this.translate.instant('GLOBAL.Acta_Recibido.ErrorAnularMsg',
+            {ACTA: event.data.Id, ESTADO: event.data.Estado}),
+          type: 'error',
+          showCancelButton: false,
+          confirmButtonColor: '#3085d6',
+          confirmButtonText: 'Ok',
+        });
+        break;
+
+    }
   }
 
   onBack() {

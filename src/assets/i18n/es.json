@@ -35,6 +35,7 @@
   },
   "GLOBAL": {
     "Acta_Recibido":{
+      "ErrorAnularMsg": "No se puede anular la Acta {{ACTA}} por tener estado \"{{ESTADO}}\"",
       "CapturarElementos":{
         "CargaMasivaTitle":"Carga Masiva",
         "ValidadorPlaceholder":"El archivo debe tener extension (*.xlsx)",
