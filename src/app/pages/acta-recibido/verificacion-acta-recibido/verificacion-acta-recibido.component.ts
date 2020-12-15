@@ -483,8 +483,27 @@ export class VerificacionActaRecibidoComponent implements OnInit {
     return ((parseFloat(subtotal) - parseFloat(descuento)) * parseFloat(porcentaje_iva) / 100);
   }
 
+  revisorValido(): boolean {
+    if (!this.userService.getPersonaId()) {
+      (Swal as any).fire({
+        title: this.translate.instant('GLOBAL.error'),
+        text: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.ErrorRevisorMsg'),
+        type: 'error',
+        showCancelButton: false,
+        confirmButtonColor: '#3085d6',
+        confirmButtonText: 'Ok',
+      });
+      return false;
+    } else {
+      return true;
+    }
+  }
+
   // Validar Acta? (Aprobar?)
   Revisar_Totales() {
+    if (!this.revisorValido()) {
+      return;
+    }
 
     (Swal as any).fire({
       title: this.translate.instant('GLOBAL.Acta_Recibido.VerificacionActa.DatosVeridicosTitle'),
@@ -504,6 +523,9 @@ export class VerificacionActaRecibidoComponent implements OnInit {
 
   // Rechazar Acta?
   Revisar_Totales2() {
+    if (!this.revisorValido()) {
+      return;
+    }
 
     (Swal as any).fire({
       title: this.translate.instant('GLOBAL.Acta_Recibido.VerificacionActa.DatosVeridicosTitle'),

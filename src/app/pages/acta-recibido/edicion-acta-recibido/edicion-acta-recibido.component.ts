@@ -843,8 +843,27 @@ export class EdicionActaRecibidoComponent implements OnInit {
     });
   }
 
+  revisorValido(): boolean {
+    if (!this.userService.getPersonaId()) {
+      (Swal as any).fire({
+        title: this.translate.instant('GLOBAL.error'),
+        text: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.ErrorRevisorMsg'),
+        type: 'error',
+        showCancelButton: false,
+        confirmButtonColor: '#3085d6',
+        confirmButtonText: 'Ok',
+      });
+      return false;
+    } else {
+      return true;
+    }
+  }
+
   // Guardar Cambios ?
   Revisar_Totales2() {
+    if (!this.revisorValido()) {
+      return;
+    }
     (Swal as any).fire({
       title: this.translate.instant('GLOBAL.Acta_Recibido.EdicionActa.DatosVeridicosTitle'),
       text: this.translate.instant('GLOBAL.Acta_Recibido.EdicionActa.DatosVeridicos'),
@@ -863,6 +882,9 @@ export class EdicionActaRecibidoComponent implements OnInit {
 
   // Enviar a revisor/proveedor?
   Revisar_Totales3() {
+    if (!this.revisorValido()) {
+      return;
+    }
     const L10n_base = 'GLOBAL.Acta_Recibido.EdicionActa.';
     const codigoL10n_titulo = L10n_base + 'DatosVeridicosTitle' ;
     const codigoL10n_desc = L10n_base + ((this.estadoActa === 'Registrada') ? 'DatosVeridicos3' : 'DatosVeridicos2') ;
