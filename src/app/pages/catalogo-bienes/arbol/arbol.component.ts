@@ -13,14 +13,30 @@ import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { TipoNivel } from '../../../@core/data/models/catalogo/tipo_nivel';
 import { request } from 'http';
 import { exists } from 'fs';
+import { shiftInitState } from '@angular/core/src/view';
 
 interface TreeNode<T> {
   data: T;
   children?: TreeNode<T>[];
   expanded?: boolean;
 }
+interface TreeNode2<T> {
+  data: T;
+  children?: TreeNode2<T>[];
+  expanded?: boolean;
+}
 
 interface CatalogoArbol {
+  Id: number;
+  Nombre: string;
+  Descripcion: string;
+  FechaCreacion: string;
+  FechaModificacion: string;
+  Activo: boolean;
+  Codigo: string;
+  TipoNivelId: TipoNivel;
+}
+interface CatalogoArbol2 {
   Id: number;
   Nombre: string;
   Descripcion: string;
@@ -39,8 +55,7 @@ interface CatalogoArbol {
 export class ArbolComponent implements OnInit, OnChanges {
 
   data: TreeNode<CatalogoArbol>[];
-  data2: TreeNode<CatalogoArbol>[];
-  aux: TreeNode<CatalogoArbol>[];
+  data2: TreeNode2<CatalogoArbol2>[];
   customColumn = 'Codigo';
   defaultColumns = ['Nombre', 'Descripcion', 'Acciones'];
   allColumns = [this.customColumn, ...this.defaultColumns];
@@ -50,6 +65,7 @@ export class ArbolComponent implements OnInit, OnChanges {
   dataSource: NbTreeGridDataSource<CatalogoArbol>;
 
   sortColumn: string;
+  aux: any;
   sortDirection: NbSortDirection = NbSortDirection.NONE;
 
   catalogoSeleccionado: number;
@@ -74,6 +90,7 @@ export class ArbolComponent implements OnInit, OnChanges {
     private translate: TranslateService,
     private pUpManager: PopUpManager) {
     this.stringBusqueda = '';
+    this.aux = 0;
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
       this.construirForm();
     });
@@ -160,10 +177,27 @@ export class ArbolComponent implements OnInit, OnChanges {
       this.data2 = undefined;
       this.loadTreeCatalogo();
     }
-    if (this.stringBusqueda.length > 4) {
-    this.data2 = this.filter(this.stringBusqueda, this.data);
+    if (this.stringBusqueda.length < this.aux) {
+      this.catalogoHelper.getArbolCatalogo(this.catalogoId).subscribe((res) => {
+        this.mostrar = true;
+        if (res !== null) {
+          if (res[0].hasOwnProperty('data')) {
+            this.data = res;
+            this.aux = res;
+            this.data2 = this.data;
+            this.data2 = this.filter(this.stringBusqueda, this.data2);
+            this.dataSource = this.dataSourceBuilder.create(this.data2);
+          }
+        }
+      });
+    }
+    if (this.stringBusqueda.length >= 4 && this.stringBusqueda.length >= this.aux) {
+    this.data2 = this.data;
+    this.data2 = this.filter(this.stringBusqueda, this.data2);
     this.dataSource = this.dataSourceBuilder.create(this.data2);
     }
+    this.aux = this.stringBusqueda.length;
+
   }
 
   filter(query, data) {
@@ -223,6 +257,7 @@ export class ArbolComponent implements OnInit, OnChanges {
       if (res !== null) {
         if (res[0].hasOwnProperty('data')) {
           this.data = res;
+          this.aux = res;
           this.dataSource = this.dataSourceBuilder.create(this.data);
           // this.dataSource.sortService.sort = ()
           // console.log(this.dataSource)
