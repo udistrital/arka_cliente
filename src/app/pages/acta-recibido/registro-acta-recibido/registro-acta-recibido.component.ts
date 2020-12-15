@@ -15,7 +15,7 @@ import { SoporteActa, Ubicacion, Dependencia } from '../../../@core/data/models/
 import { ActaRecibidoUbicacion } from '../../../@core/data/models/acta_recibido/acta_recibido';
 
 import { Proveedor } from '../../../@core/data/models/acta_recibido/Proveedor';
-import { EstadoActa } from '../../../@core/data/models/acta_recibido/estado_acta';
+import { EstadoActa_t } from '../../../@core/data/models/acta_recibido/estado_acta';
 import { EstadoElemento } from '../../../@core/data/models/acta_recibido/estado_elemento';
 import { HistoricoActa } from '../../../@core/data/models/acta_recibido/historico_acta';
 import { TransaccionSoporteActa, TransaccionActaRecibido } from '../../../@core/data/models/acta_recibido/transaccion_acta_recibido';
@@ -355,7 +355,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
     this.Datos = this.firstForm.value;
     const Transaccion_Acta = new TransaccionActaRecibido();
     Transaccion_Acta.ActaRecibido = this.Registrar_Acta(this.Datos.Formulario1);
-    Transaccion_Acta.UltimoEstado = this.Registrar_Estado_Acta(Transaccion_Acta.ActaRecibido, 1);
+    Transaccion_Acta.UltimoEstado = this.Registrar_Estado_Acta(Transaccion_Acta.ActaRecibido, EstadoActa_t.Registrada);
     const Soportes = new Array<TransaccionSoporteActa>();
     this.Datos.Formulario2.forEach((soporte, index) => {
       Soportes.push(this.Registrar_Soporte(soporte, Transaccion_Acta.ActaRecibido, index));
@@ -436,38 +436,10 @@ export class RegistroActaRecibidoComponent implements OnInit {
     Soporte_Acta.DocumentoId = this.idDocumento[index];
 
     Transaccion.SoporteActa = Soporte_Acta;
-    Transaccion.Elementos = this.Registrar_Elementos(Soporte_Acta);
-    return Transaccion;
-  }
-
-  Registrar_Elementos(Soporte: SoporteActa): Array<Elemento> {
-    const Elementos_Soporte = new Array<Elemento>();
-    const Elemento__ = new Elemento;
-    Elemento__.Id = null;
-    Elemento__.Nombre = '';
-    Elemento__.Cantidad = 0;
-    Elemento__.Marca = '';
-    Elemento__.Serie = '';
-    Elemento__.UnidadMedida = 0;
-    Elemento__.ValorUnitario = 0;
-    Elemento__.Subtotal = 0;
-    Elemento__.Descuento = 0;
-    Elemento__.ValorTotal = 0;
-    Elemento__.PorcentajeIvaId = 6;
-    Elemento__.ValorIva = 0;
-    Elemento__.ValorFinal = 0;
-    Elemento__.SubgrupoCatalogoId = null;
-    Elemento__.Verificado = false;
-    Elemento__.TipoBienId = this.Tipos_Bien[0];
-    Elemento__.EstadoElementoId = this.Estados_Acta[0];
-    Elemento__.SoporteActaId = Soporte;
-    Elemento__.Activo = true;
-    Elemento__.FechaCreacion = new Date();
-    Elemento__.FechaModificacion = new Date();
+    // Transaccion.Elementos = this.Registrar_Elementos(Soporte_Acta);
+    Transaccion.Elementos = <Elemento[]>[];
     this.validador = false;
-
-    Elementos_Soporte.push(Elemento__);
-    return Elementos_Soporte;
+    return Transaccion;
   }
 
   // Posible TODO: Esta función también se repite en los componentes

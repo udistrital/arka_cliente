@@ -323,6 +323,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
         this.Validador[index] = true;
         this.uidDocumento[index] = Soporte.SoporteActa.DocumentoId;
         const elementoSoporte = [];
+        if (Soporte.Elementos && Soporte.Elementos.length)
         for (const _Elemento of Soporte.Elementos) { // Para alguna actas lanza error "Cannot read 'length' of null"
 
           const Elemento___ = {
@@ -666,9 +667,9 @@ export class EdicionActaRecibidoComponent implements OnInit {
     const Soportes = new Array<TransaccionSoporteActa>();
     this.Datos.Formulario2.forEach((soporte, index) => {
       Soportes.push(this.Registrar_Soporte(soporte, this.Elementos__Soporte[index], Transaccion_Acta.ActaRecibido));
-
     });
     Transaccion_Acta.SoportesActa = Soportes;
+    // console.log({'this.estadoActa': this.estadoActa, Transaccion_Acta});
 
     const L10n_base = 'GLOBAL.Acta_Recibido.EdicionActa.';
     const resultadoL10n_titulo = L10n_base + 'VerificadaTitle2';
