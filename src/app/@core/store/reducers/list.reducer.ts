@@ -140,5 +140,14 @@ export class ListReducer {
         return state;
     }
   }
+  static ListReducerClases(state: Array<any> = new Array, action) {
+    switch (action.type) {
+      case REDUCER_LIST.Clases:
+        return [...state, action.payload];
+      default:
+        return state;
+    }
+  }
+
 
 }

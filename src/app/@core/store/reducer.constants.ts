@@ -16,4 +16,5 @@ export const REDUCER_LIST = {
     FormatosKardex: 'listFormatosKardex',
     EstadosMovimiento: 'listEstadosMovimiento',
     FormatosMovimiento: 'listFormatosMovimiento',
+    Clases: 'listClases',
 };
