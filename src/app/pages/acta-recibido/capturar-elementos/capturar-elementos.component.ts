@@ -21,6 +21,7 @@ import { DocumentoService } from '../../../@core/data/documento.service';
 import { isNumeric } from 'rxjs/internal-compatibility';
 import { isArray } from 'util';
 import { MatCheckboxChange } from '@angular/material';
+import { CompleterData, CompleterService } from 'ng2-completer';
 
 @Component({
   selector: 'ngx-capturar-elementos',
@@ -36,6 +37,7 @@ export class CapturarElementosComponent implements OnInit {
   Validador: boolean = false;
   Totales: DatosLocales;
   loading: boolean = false;
+  protected dataService: CompleterData;
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -55,6 +57,7 @@ export class CapturarElementosComponent implements OnInit {
   Consumo: any;
   ConsumoControlado: any;
   Devolutivo: any;
+  Clases: any;
 
   checkTodos: boolean = false;
   checkParcial: boolean = false;
@@ -66,7 +69,8 @@ export class CapturarElementosComponent implements OnInit {
     private listService: ListService,
     private nuxeoService: NuxeoService,
     private documentoService: DocumentoService,
-    private catalogoHelper: CatalogoElementosHelper) {
+    private catalogoHelper: CatalogoElementosHelper,
+    private completerService: CompleterService,) {
 
     this.listService.findSubgruposConsumo();
     this.listService.findSubgruposConsumoControlado();
@@ -75,6 +79,7 @@ export class CapturarElementosComponent implements OnInit {
     this.listService.findTipoBien();
     this.listService.findUnidades();
     this.listService.findImpuestoIVA();
+    this.listService.findClases();
     this.loadLists();
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
     });
@@ -89,7 +94,9 @@ export class CapturarElementosComponent implements OnInit {
         this.Tipos_Bien = list.listTipoBien[0];
         this.Unidades = list.listUnidades[0];
         this.Tarifas_Iva = list.listIVA[0];
-        // console.log(this.Tarifas_Iva)
+        this.Clases =list.listClases[0];
+        this.dataService = this.completerService.local(this.Clases,'Nombre', 'Nombre');
+        // console.log(list.listClases[0])
       },
     );
   }
@@ -253,8 +260,9 @@ export class CapturarElementosComponent implements OnInit {
 
   displayedColumns = [
     'AccionesMacro',
-    'TipoBienId',
+    'CodigoSubgrupo',
     'SubgrupoCatalogoId',
+    'TipoBienId',
     'Nombre',
     'Cantidad',
     'Marca',
@@ -339,6 +347,7 @@ export class CapturarElementosComponent implements OnInit {
       PorcentajeIvaId: '3',
       Serie: '',
       SubgrupoCatalogoId: '',
+      CodigoSubgrupo: '',
       Subtotal: '0',
       TipoBienId: '1',
       UnidadMedida: '2',
