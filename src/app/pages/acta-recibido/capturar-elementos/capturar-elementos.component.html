@@ -69,7 +69,7 @@
         <ng-container matColumnDef="CodigoSubgrupo">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>
             <!-- TODO: Revisar texto siguiente -->
-            {{ 'GLOBAL.subgrupo.segmento.nombre' | translate }} </th>
+            {{ 'GLOBAL.codigo' | translate }} </th>
           <td mat-cell *matCellDef="let element; let rowIndex = index">
             <div>
               <input disabled nbInput type="text" fieldSize="tiny"
@@ -84,14 +84,14 @@
         <ng-container matColumnDef="SubgrupoCatalogoId">
           <th mat-header-cell *matHeaderCellDef mat-sort-header>
             <!-- TODO: Revisar texto siguiente -->
-            {{ 'GLOBAL.subgrupo.segmento.nombre' | translate }} </th>
+            {{ 'GLOBAL.subgrupo.clase.nombre' | translate }} </th>
           <td mat-cell *matCellDef="let element; let rowIndex = index">
             <div style="width: 150px;">
                 <ng2-completer nbInput type="text" inputClass="cell form-control" style="border: 0rem"  
                   fieldSize="tiny" 
                   [datasource]="dataService" 
                   [minSearchLength]="4"
-                  (selected)="onSelected($event,rowIndex)"
+                  (selected)="onSelectedClase($event,rowIndex)"
                 ></ng2-completer>
             </div>
           </td>
