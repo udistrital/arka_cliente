@@ -21,7 +21,9 @@ import { DocumentoService } from '../../../@core/data/documento.service';
 import { isNumeric } from 'rxjs/internal-compatibility';
 import { isArray } from 'util';
 import { MatCheckboxChange } from '@angular/material';
-import { CompleterData, CompleterService } from 'ng2-completer';
+import { CompleterData, CompleterService, CompleterItem } from 'ng2-completer';
+import {Observable} from 'rxjs';
+import { Row } from 'ngx-smart-table/lib/data-set/row';
 
 @Component({
   selector: 'ngx-capturar-elementos',
@@ -29,7 +31,8 @@ import { CompleterData, CompleterService } from 'ng2-completer';
   styleUrls: ['./capturar-elementos.component.scss'],
 })
 export class CapturarElementosComponent implements OnInit {
-
+  ControlClases = new FormControl();
+  filteredOptions: Observable<string[]>;
   fileString: string | ArrayBuffer;
   arrayBuffer: Iterable<number>;
   form: FormGroup;
@@ -58,7 +61,7 @@ export class CapturarElementosComponent implements OnInit {
   ConsumoControlado: any;
   Devolutivo: any;
   Clases: any;
-
+  Codigo: any;
   checkTodos: boolean = false;
   checkParcial: boolean = false;
 
@@ -70,7 +73,7 @@ export class CapturarElementosComponent implements OnInit {
     private nuxeoService: NuxeoService,
     private documentoService: DocumentoService,
     private catalogoHelper: CatalogoElementosHelper,
-    private completerService: CompleterService,) {
+    private completerService: CompleterService) {
 
     this.listService.findSubgruposConsumo();
     this.listService.findSubgruposConsumoControlado();
@@ -94,9 +97,8 @@ export class CapturarElementosComponent implements OnInit {
         this.Tipos_Bien = list.listTipoBien[0];
         this.Unidades = list.listUnidades[0];
         this.Tarifas_Iva = list.listIVA[0];
-        this.Clases =list.listClases[0];
-        this.dataService = this.completerService.local(this.Clases,'Nombre', 'Nombre');
-        // console.log(list.listClases[0])
+        this.Clases = list.listClases[0];
+        this.dataService = this.completerService.local(this.Clases,'SubgrupoId.Nombre', 'SubgrupoId.Nombre');
       },
     );
   }
@@ -122,6 +124,10 @@ export class CapturarElementosComponent implements OnInit {
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
     }
+  }
+  onSelected(selected:CompleterItem,fila:number){
+    this.dataSource.data[fila].CodigoSubgrupo = selected.originalObject.SubgrupoId.Codigo
+    this.dataSource.data[fila].TipoBienId =selected.originalObject.TipoBienId.Nombre
   }
 
   ver() {
@@ -349,7 +355,7 @@ export class CapturarElementosComponent implements OnInit {
       SubgrupoCatalogoId: '',
       CodigoSubgrupo: '',
       Subtotal: '0',
-      TipoBienId: '1',
+      TipoBienId: '',
       UnidadMedida: '2',
       ValorIva: '0',
       ValorTotal: '0',
