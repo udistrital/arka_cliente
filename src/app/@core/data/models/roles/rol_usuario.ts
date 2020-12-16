@@ -1,5 +1,5 @@
 export enum RolUsuario_t {
-    Secretaria = 'SECRETARIA_ARCHIVO',
+    Secretaria = 'SECRETARIA_ALMACEN',
     Contratista = 'CONTRATISTA',
     Proveedor = 'PROVEEDOR',
     Revisor = 'REVISOR',
