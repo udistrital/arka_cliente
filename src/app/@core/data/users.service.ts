@@ -23,15 +23,12 @@ export class UserService {
   private roles: RolUsuario_t[] = [];
 
   constructor(private http: HttpClient) {
-    // TODO: Guardar en algun lado los roles reportados por WSO2
-    // que NO sea LocalStorage ni Cookies ni Session Storage
-    // porque el usuario puede modificarlos "facilmente"
-    this.roles = [RolUsuario_t.Admin, RolUsuario_t.Contratista];
-
+    // this.roles = [RolUsuario_t.Secretaria, RolUsuario_t.Contratista];
     if (window.localStorage.getItem('id_token') !== null && window.localStorage.getItem('id_token') !== undefined) {
       const id_token = window.localStorage.getItem('id_token').split('.');
       const payload = JSON.parse(atob(id_token[1]));
       window.localStorage.setItem('usuario', payload.sub);
+      this.roles = payload.role;
       // this.http.get(path + 'persona/?query=Usuario:' + payload.sub, httpOptions)
       this.http.get(path + 'tercero/?query=UsuarioWSO2:' + payload.sub, httpOptions)
         .subscribe(res => {
