@@ -11,6 +11,9 @@ import { IAppState } from '../../../@core/store/app.state';
 import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
 import { UserService } from '../../../@core/data/users.service';
 import { RolUsuario_t as Rol } from '../../../@core/data/models/roles/rol_usuario';
+import { TransaccionActaRecibido } from '../../../@core/data/models/acta_recibido/transaccion_acta_recibido';
+import { HistoricoActa } from '../../../@core/data/models/acta_recibido/historico_acta';
+import { EstadoActa_t } from '../../../@core/data/models/acta_recibido/estado_acta';
 
 @Component({
   selector: 'ngx-consulta-acta-recibido',
@@ -96,25 +99,18 @@ export class ConsultaActaRecibidoComponent implements OnInit {
   }
 
   cargarCampos() {
-
     this.settings = {
       noDataMessage: 'No se encontraron elementos asociados.',
       actions: {
         columnTitle: 'Acciones',
         position: 'right',
+        delete: false,
       },
       add: {
-        addButtonContent: '<i class="nb-plus"></i>',
-        createButtonContent: '<i class="nb-checkmark"></i>',
-        cancelButtonContent: '<i class="nb-close"></i>',
+        addButtonContent: '<i class="nb-plus" title="Registrar Acta Nueva" aria-label="Registrar Acta Nueva"></i>',
       },
       edit: {
-        editButtonContent: '<i class="fas fa-pencil-alt"></i>',
-        saveButtonContent: '<i class="nb-checkmark"></i>',
-        cancelButtonContent: '<i class="nb-close"></i>',
-      },
-      delete: {
-        deleteButtonContent: '<i class="fas fa-eye"></i>',
+        editButtonContent: '<i class="far fa-edit" title="Editar Acta" aria-label="Editar Acta"></i>',
       },
       mode: 'external',
       columns: {
@@ -214,6 +210,54 @@ export class ConsultaActaRecibidoComponent implements OnInit {
         },
       },
     };
+
+    if (this.userService.tieneAlgunRol([Rol.Admin, Rol.Revisor])) {
+      this.settings.delete = {
+        deleteButtonContent: '<i class="fas fa-ban" title="Anular Acta" aria-label="Anular Acta"></i>',
+      };
+      this.settings.actions.delete = true;
+    }
+  }
+
+  anularActa (id: number) {
+    // console.log({'idActa': id});
+
+    // 1. Traer acta tal cual está
+    this.actaRecibidoHelper.getTransaccionActa(id).subscribe(acta => {
+      // console.log({'actaHelper': acta});
+
+      // 2. Crear estado "Anulada"
+      // const Transaccion_Acta = new TransaccionActaRecibido();
+      const Transaccion_Acta = <TransaccionActaRecibido> acta[0];
+      const nuevoEstado = <HistoricoActa> {
+        Id: null,
+        ActaRecibidoId: Transaccion_Acta.ActaRecibido,
+        Activo: true,
+        EstadoActaId: {Id: EstadoActa_t.Anulada},
+        FechaCreacion: new Date(),
+        FechaModificacion: new Date(),
+      };
+      Transaccion_Acta.UltimoEstado = nuevoEstado;
+      // console.log({Transaccion_Acta});
+
+      // 3. Anular acta
+      this.actaRecibidoHelper.putTransaccionActa(Transaccion_Acta, id)
+        .subscribe(res => {if (res !== null) {
+          (Swal as any).fire({
+            type: 'success',
+            title: this.translate.instant('GLOBAL.Acta_Recibido.AnuladaOkTitulo',
+              {ACTA: id}),
+            text: this.translate.instant('GLOBAL.Acta_Recibido.AnuladaOkMsg',
+              {ACTA: id}),
+          });
+
+          // Se usa una redirección "dummy", intermedia. Ver
+          // https://stackoverflow.com/a/49509706/3180052
+          this.router.navigateByUrl('/', {skipLocationChange: true}).then(() => {
+            this.router.navigateByUrl('/pages/acta_recibido/consulta_acta_recibido');
+          });
+        }});
+    });
   }
 
   onEdit(event): void {
@@ -247,20 +291,60 @@ export class ConsultaActaRecibidoComponent implements OnInit {
     this.validarActa = validarActa;
     // console.log({'this.estadoActaSeleccionada':this.estadoActaSeleccionada});
   }
-  itemselec(event): void {
-    // console.log('afssaf');
-  }
+
   onCreate(event): void {
+    // console.log({'onCreate': event});
     this.router.navigate(['/pages/acta_recibido/registro_acta_recibido']);
   }
 
-  onDelete(event): void {
+  seleccionarActa(event): void {
     // console.log(event.data.Estado)
     this.actaSeleccionada = `${event.data.Id}`;
     this.estadoActaSeleccionada = 'Ver';
     this.accion = 'Ver';
     this.verActa = true;
     // console.log('1')
+  }
+
+  onDelete(event): void {
+    // console.log({'Anular': event});
+    switch (event.data.Estado) {
+
+      case 'Registrada':
+      case 'En Elaboracion':
+      case 'En Modificacion':
+      case 'En Verificacion':
+      case 'Aceptada':
+        (Swal as any).fire({
+          title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.DialogoAnularTitulo', {'ACTA': event.data.Id}),
+          text: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.DialogoAnularMsg', {'ACTA': event.data.Id}),
+          type: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Anular Acta',
+          cancelButtonText: 'Cancelar',
+        }).then((result) => {
+          if (result.value) {
+            this.anularActa(event.data.Id);
+          }
+        });
+        this.ngOnInit();
+        break;
+
+      default:
+        (Swal as any).fire({
+          title: this.translate.instant('GLOBAL.error'),
+          text: this.translate.instant('GLOBAL.Acta_Recibido.ErrorAnularMsg',
+            {ACTA: event.data.Id, ESTADO: event.data.Estado}),
+          type: 'error',
+          showCancelButton: false,
+          confirmButtonColor: '#3085d6',
+          confirmButtonText: 'Ok',
+        });
+        break;
+
+    }
   }
 
   onBack() {

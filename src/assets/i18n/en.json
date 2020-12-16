@@ -35,6 +35,9 @@
   },
   "GLOBAL": {
     "Acta_Recibido": {
+      "ErrorAnularMsg": "The Act {{ACTA}} cannot be voided by having state \"{{ESTADO}}\"",
+      "AnuladaOkTitulo":"Act {{ACTA}} Voided",
+      "AnuladaOkMsg":"The Act {{ACTA}} was successfully Voided",
       "CapturarElementos": {
         "CargaMasivaTitle": "Masive Load",
         "ValidadorPlaceholder": "The file have xlsx extension (*.xlsx)",
@@ -84,6 +87,8 @@
         "Aceptada": "Acepted",
         "Asociada": "Entrance Associated",
         "Anulada": "Closed",
+        "DialogoAnularTitulo":"Void Act {{ACTA}}?",
+        "DialogoAnularMsg":"This action cannot be undone. Are you sure to VOID the Act {{ACTA}}?",
         "OpcionNoValida": "Invalid Option",
         "OpcionNoValida2": "Invalid Option for this Certificate"
       },

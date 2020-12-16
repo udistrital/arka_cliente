@@ -35,6 +35,9 @@
   },
   "GLOBAL": {
     "Acta_Recibido":{
+      "ErrorAnularMsg": "No se puede anular la Acta {{ACTA}} por tener estado \"{{ESTADO}}\"",
+      "AnuladaOkTitulo":"Acta {{ACTA}} Anulada",
+      "AnuladaOkMsg":"La Acta {{ACTA}} fue Anulada exitosamente",
       "CapturarElementos":{
         "CargaMasivaTitle":"Carga Masiva",
         "ValidadorPlaceholder":"El archivo debe tener extension (*.xlsx)",
@@ -84,6 +87,8 @@
         "Aceptada":"Aceptada",
         "Asociada":"Asociada a Entrada",
         "Anulada":"Anulada",
+        "DialogoAnularTitulo":"¿Anular Acta {{ACTA}}?",
+        "DialogoAnularMsg":"Esta acción no se puede deshacer. ¿Está seguro de ANULAR la Acta {{ACTA}}?",
         "OpcionNoValida":"Opción no válida",
         "OpcionNoValida2":"Opción no válida para el estado de esta acta"
       },
