@@ -36,6 +36,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { UserService } from '../../../@core/data/users.service';
 import { Console } from 'console';
 import { INVALID } from '@angular/forms/src/model';
+import { NbDateService } from '@nebular/theme';
 
 @Component({
   selector: 'ngx-registro-acta-recibido',
@@ -92,6 +93,8 @@ export class RegistroActaRecibidoComponent implements OnInit {
   validador_soporte: number;
   Nombre: any;
   Validador: any;
+  TodaysDate: any;
+  Registrando: Boolean;
 
   constructor(
     private translate: TranslateService,
@@ -108,6 +111,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
     private nuxeoService: NuxeoService,
     private documentoService: DocumentoService,
     private userService: UserService,
+    private dateService: NbDateService<Date>,
   ) {
     this.listService.findUbicaciones();
     this.listService.findDependencias();
@@ -116,6 +120,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
     this.listService.findEstadosActa();
     this.listService.findEstadosElemento();
     this.listService.findTipoBien();
+    this.TodaysDate = this.dateService.today();
     this.loadLists();
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
     });
@@ -345,7 +350,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
   }
 
   async onFirstSubmit() {
-
+    this.Registrando = true;
     const start = async () => {
       await this.asyncForEach(this.fileDocumento, async (file) => {
         await this.postSoporteNuxeo([file]);
@@ -374,6 +379,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
           });
           sessionStorage.removeItem('Formulario_Registro');
           this.router.navigate(['/pages/acta_recibido/consulta_acta_recibido']);
+          this.Registrando = false;
         } else {
           (Swal as any).fire({
             type: 'error',
