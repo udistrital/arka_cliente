@@ -98,7 +98,7 @@ export class CapturarElementosComponent implements OnInit {
         this.Unidades = list.listUnidades[0];
         this.Tarifas_Iva = list.listIVA[0];
         this.Clases = list.listClases[0];
-        this.dataService = this.completerService.local(this.Clases,'SubgrupoId.Nombre', 'SubgrupoId.Nombre');
+        this.dataService = this.completerService.local(this.Clases, 'SubgrupoId.Nombre', 'SubgrupoId.Nombre');
       },
     );
   }
@@ -124,16 +124,16 @@ export class CapturarElementosComponent implements OnInit {
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
     }
-    for (let i=0;i<this.dataSource.data.length; i++) {
+    for (let i = 0; i < this.dataSource.data.length; i++) {
       if (this.dataSource.data[i].CodigoSubgrupo === undefined) {
         this.dataSource.data[i].CodigoSubgrupo = '' ;
       }
     }
   }
 
-  onSelectedClase(selected:CompleterItem,fila:number){
-    this.dataSource.data[fila].CodigoSubgrupo = selected.originalObject.SubgrupoId.Codigo
-    this.dataSource.data[fila].TipoBienId =selected.originalObject.TipoBienId.Nombre
+  onSelectedClase(selected: CompleterItem, fila: number) {
+    this.dataSource.data[fila].CodigoSubgrupo = selected.originalObject.SubgrupoId.Codigo;
+    this.dataSource.data[fila].TipoBienId = selected.originalObject.TipoBienId.Nombre;
   }
 
   ver() {
@@ -235,13 +235,13 @@ export class CapturarElementosComponent implements OnInit {
           });
           this.clearFile();
         } else {
-          console.log(res);
+          // console.log(res);
           this.respuesta = res;
           this.dataSource.data = this.respuesta[0].Elementos;
           this.ver();
           this.dataSource.paginator = this.paginator;
           this.dataSource.sort = this.sort;
-          for (let i=0;i<this.dataSource.data.length; i++) {
+          for (let i = 0; i < this.dataSource.data.length; i++) {
             if (this.dataSource.data[i].CodigoSubgrupo === undefined) {
               this.dataSource.data[i].CodigoSubgrupo = '' ;
             }
