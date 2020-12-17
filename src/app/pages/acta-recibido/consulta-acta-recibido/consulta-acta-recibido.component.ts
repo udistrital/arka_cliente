@@ -97,6 +97,8 @@ export class ConsultaActaRecibidoComponent implements OnInit {
         // // en el componente edicion-acta-recibido
         if (this.userService.tieneAlgunRol([Rol.Secretaria])) {
           resFiltrado = res.filter(acta => acta.Estado === 'Registrada');
+        } else if (this.userService.tieneAlgunRol([Rol.Contratista])) {
+          resFiltrado = res.filter(acta => acta.Estado === 'En Elaboracion' || acta.Estado === 'En Modificacion');
         } else {
           resFiltrado = res;
         }
