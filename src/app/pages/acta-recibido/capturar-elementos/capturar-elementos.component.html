@@ -92,6 +92,7 @@
                   [datasource]="dataService" 
                   [minSearchLength]="4"
                   (selected)="onSelectedClase($event,rowIndex)"
+                  [(ngModel)] = "element.NombreClase"
                 ></ng2-completer>
             </div>
           </td>
@@ -106,7 +107,8 @@
             <div>
               <input disabled nbInput type="text" fieldSize="tiny"
               class="cell"
-              [(value)]="element.TipoBienId" readonly>
+              [(ngModel)]="element.TipoBienNombre"
+              readonly>
             </div>
           </td>
           <td mat-footer-cell *matFooterCellDef>Totales</td>
