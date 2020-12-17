@@ -35,6 +35,9 @@
   },
   "GLOBAL": {
     "Acta_Recibido":{
+      "ErrorAnularMsg": "No se puede anular la Acta {{ACTA}} por tener estado \"{{ESTADO}}\"",
+      "AnuladaOkTitulo":"Acta {{ACTA}} Anulada",
+      "AnuladaOkMsg":"La Acta {{ACTA}} fue Anulada exitosamente",
       "CapturarElementos":{
         "CargaMasivaTitle":"Carga Masiva",
         "ValidadorPlaceholder":"El archivo debe tener extension (*.xlsx)",
@@ -61,8 +64,10 @@
         "ElementosCargadosTextOK":"Elementos Cargados Exitosamente",
         "ElementosCargadosTitleNO":"Elementos No Cargados",
         "ElementosCargadosTextNO":"Los elementos no han podido ser cargados, intente más tarde",
-        "EliminarElementosTitle":"Está seguro?",
-        "EliminarElementosText":"Está seguro de eliminar el elemento seleccionado?"
+        "EliminarElementosTitle":"¿Está seguro?",
+        "EliminarElementosText":"¿Está seguro de eliminar el elemento seleccionado?",
+        "EliminarVariosElementosTitle":"¿Eliminar {{cantidad}} elemento(s)?",
+        "EliminarVariosElementosText":"Se eliminará(n) {{cantidad}} elemento(s). ¿Desea continuar?"
       },
       "ConsultaActas":{
         "Title":"Actas de Recibido",
@@ -82,6 +87,8 @@
         "Aceptada":"Aceptada",
         "Asociada":"Asociada a Entrada",
         "Anulada":"Anulada",
+        "DialogoAnularTitulo":"¿Anular Acta {{ACTA}}?",
+        "DialogoAnularMsg":"Esta acción no se puede deshacer. ¿Está seguro de ANULAR la Acta {{ACTA}}?",
         "OpcionNoValida":"Opción no válida",
         "OpcionNoValida2":"Opción no válida para el estado de esta acta"
       },
@@ -98,6 +105,7 @@
         "FechaFiltro":"Seleccione Fecha",
         "Consecutivo":"Consecutivo",
         "Soporte":"Soporte a Relacionar",
+        "Revisor":"Revisor",
         "DatosAdicionales":"Datos Adicionales",
         "Observaciones":"Observaciones",
         "GuardarCambiosButton":"Guardar Cambios",
@@ -118,7 +126,8 @@
         "Acta":"Acta N° ",
         "Registrada":" ha sido registrada de forma exitosa",
         "RegistradaTitleNO":"Acta No Registrada",
-        "RegistradaNO":"El Acta no ha podido ser registrada de forma exitosa, intenta más tarde"
+        "RegistradaNO":"El Acta no ha podido ser registrada de forma exitosa, intenta más tarde",
+        "ErrorRevisorMsg": "El Revisor Asignado no está registrado en la Base de Datos de Terceros. Por favor escoja un revisor registrado e Intente Nuevamente"
       },
       "EdicionActa":{
         "Title": "Editar Acta de Recibido",
@@ -146,20 +155,27 @@
         "Total":"Gran Total:",
         "Observaciones2":"Proporciona datos adicionales que no se pueden expresar en el formulario (Obligatorio)",
         "DatosVeridicos":"Está seguro que desea guardar los cambios?",
-        "DatosVeridicos2":"Está seguro que desea enviar el acta a verificación?",
-        "DatosVeridicosTitle":"Está seguro?",
+        "DatosVeridicos2":"¿Está seguro que desea enviar el acta a verificación?",
+        "DatosVeridicos3":"¿Está seguro que desea enviar el acta al Proveedor?",
+        "DatosVeridicosTitle":"¿Está seguro?",
         "CargaElementosTitle":"Carga de Elementos",
         "CargaElementos":"Por favor verificar la carga de elementos, valores y totales asociados al soporte antes de generar el registro",
         "ModificadaTitle":" Modificada",
         "Acta":"Acta N° ",
         "Modificada":" ha sido Modificada de forma exitosa",
+        "Modificada2":"Acta N° {{id}} ha sido Modificada de forma exitosa",
         "ModificadaTitleNO":"Acta No Modificada",
         "ModificadaNO":"El Acta no ha podido ser modificada de forma exitosa, intenta más tarde",
         "VerificadaTitle":" Enviada",
+        "VerificadaTitle2":"Acta N° {{id}} Enviada",
         "Verificada":" ha sido Enviada a Verificación de forma exitosa",
+        "Verificada2":"Acta N° {{id}} ha sido Enviada a Verificación de forma exitosa",
+        "Verificada3":"Acta N° {{id}} ha sido Enviada al Proveedor de forma exitosa",
         "VerificadaTitleNO":"Acta No Enviada",
-        "VerificadaNO":"El Acta no ha podido ser enviada e verificación de forma exitosa, intenta más tarde",
-        "VerificacionButton":"Enviar a Verificación"
+        "VerificadaNO":"El Acta no ha podido ser enviada a verificación de forma exitosa, intenta más tarde",
+        "ProveedorNO":"El Acta no ha podido ser enviada al proveedor de forma exitosa, intenta más tarde",
+        "VerificacionButton":"Enviar a Verificación",
+        "EnviarProveedorButton": "Enviar a Proveedor"
       },
       "DetalleActa":{
         "Title": "Detalle Acta de Recibido",

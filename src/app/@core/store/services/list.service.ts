@@ -374,6 +374,26 @@ export class ListService {
     );
   }
 
+  public findClases() {
+
+    this.store.select(REDUCER_LIST.Clases).subscribe(
+      (list: any) => {
+        if (!list || list.length === 0) {
+          this.CatalogoElementos.getClases()
+            .subscribe(
+              (res: any[]) => {
+                // console.log(res)
+                this.addList(REDUCER_LIST.Clases, res);
+              },
+              error => {
+                this.addList(REDUCER_LIST.Clases, []);
+              },
+            );
+        }
+      },
+    );
+  }
+
 
   private addList(type: string, object: Array<any>) {
     this.store.dispatch({

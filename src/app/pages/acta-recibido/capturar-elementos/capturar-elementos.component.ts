@@ -18,6 +18,12 @@ import { ListService } from '../../../@core/store/services/list.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { NuxeoService } from '../../../@core/utils/nuxeo.service';
 import { DocumentoService } from '../../../@core/data/documento.service';
+import { isNumeric } from 'rxjs/internal-compatibility';
+import { isArray } from 'util';
+import { MatCheckboxChange } from '@angular/material';
+import { CompleterData, CompleterService, CompleterItem } from 'ng2-completer';
+import {Observable} from 'rxjs';
+import { Row } from 'ngx-smart-table/lib/data-set/row';
 
 @Component({
   selector: 'ngx-capturar-elementos',
@@ -25,7 +31,8 @@ import { DocumentoService } from '../../../@core/data/documento.service';
   styleUrls: ['./capturar-elementos.component.scss'],
 })
 export class CapturarElementosComponent implements OnInit {
-
+  ControlClases = new FormControl();
+  filteredOptions: Observable<string[]>;
   fileString: string | ArrayBuffer;
   arrayBuffer: Iterable<number>;
   form: FormGroup;
@@ -33,6 +40,7 @@ export class CapturarElementosComponent implements OnInit {
   Validador: boolean = false;
   Totales: DatosLocales;
   loading: boolean = false;
+  protected dataService: CompleterData;
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
@@ -52,6 +60,10 @@ export class CapturarElementosComponent implements OnInit {
   Consumo: any;
   ConsumoControlado: any;
   Devolutivo: any;
+  Clases: any;
+  Codigo: any;
+  checkTodos: boolean = false;
+  checkParcial: boolean = false;
 
   constructor(private fb: FormBuilder,
     private translate: TranslateService,
@@ -60,7 +72,8 @@ export class CapturarElementosComponent implements OnInit {
     private listService: ListService,
     private nuxeoService: NuxeoService,
     private documentoService: DocumentoService,
-    private catalogoHelper: CatalogoElementosHelper) {
+    private catalogoHelper: CatalogoElementosHelper,
+    private completerService: CompleterService) {
 
     this.listService.findSubgruposConsumo();
     this.listService.findSubgruposConsumoControlado();
@@ -69,6 +82,7 @@ export class CapturarElementosComponent implements OnInit {
     this.listService.findTipoBien();
     this.listService.findUnidades();
     this.listService.findImpuestoIVA();
+    this.listService.findClases();
     this.loadLists();
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
     });
@@ -83,7 +97,8 @@ export class CapturarElementosComponent implements OnInit {
         this.Tipos_Bien = list.listTipoBien[0];
         this.Unidades = list.listUnidades[0];
         this.Tarifas_Iva = list.listIVA[0];
-        // console.log(this.Tarifas_Iva)
+        this.Clases = list.listClases[0];
+        this.dataService = this.completerService.local(this.Clases, 'SubgrupoId.Nombre', 'SubgrupoId.Nombre');
       },
     );
   }
@@ -109,9 +124,20 @@ export class CapturarElementosComponent implements OnInit {
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
     }
+    for (let i = 0; i < this.dataSource.data.length; i++) {
+      if (this.dataSource.data[i].CodigoSubgrupo === undefined) {
+        this.dataSource.data[i].CodigoSubgrupo = '' ;
+      }
+    }
+  }
+
+  onSelectedClase(selected: CompleterItem, fila: number) {
+    this.dataSource.data[fila].CodigoSubgrupo = selected.originalObject.SubgrupoId.Codigo;
+    this.dataSource.data[fila].TipoBienId = selected.originalObject.TipoBienId.Nombre;
   }
 
   ver() {
+    this.refrescaCheckTotal();
     this.DatosEnviados.emit(this.dataSource.data);
     this.DatosTotales.emit(this.Totales);
   }
@@ -166,7 +192,7 @@ export class CapturarElementosComponent implements OnInit {
     if (event.target.files.length > 0) {
       nombre = event.target.files[0].name;
       this.nombreArchivo = event.target.files[0].name;
-      const [_, extension] = nombre.split('.');
+      const extension = nombre.split('.').pop();
       const file = event.target.files[0];
       if (extension !== 'xlsx') {
         this.Validador = false;
@@ -182,6 +208,7 @@ export class CapturarElementosComponent implements OnInit {
           });
           this.Validador = false;
         }
+      //  console.log(this.form)
       }
 
     } else {
@@ -214,7 +241,11 @@ export class CapturarElementosComponent implements OnInit {
           this.ver();
           this.dataSource.paginator = this.paginator;
           this.dataSource.sort = this.sort;
-
+          for (let i = 0; i < this.dataSource.data.length; i++) {
+            if (this.dataSource.data[i].CodigoSubgrupo === undefined) {
+              this.dataSource.data[i].CodigoSubgrupo = '' ;
+            }
+          }
           (Swal as any).fire({
             type: 'success',
             title: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.ElementosCargadosTitleOK'),
@@ -245,8 +276,10 @@ export class CapturarElementosComponent implements OnInit {
   }
 
   displayedColumns = [
-    'TipoBienId',
+    'AccionesMacro',
+    'CodigoSubgrupo',
     'SubgrupoCatalogoId',
+    'TipoBienId',
     'Nombre',
     'Cantidad',
     'Marca',
@@ -277,7 +310,6 @@ export class CapturarElementosComponent implements OnInit {
   }
 
   getSubtotales() {
-
     if (this.dataSource.data.length !== 0) {
       this.Totales.Subtotal = this.dataSource.data.map(t => t.Subtotal).reduce((acc, value) => parseFloat(acc) + parseFloat(value));
       const total = this.dataSource.data.map(t => t.Subtotal).reduce((acc, value) => parseFloat(acc) + parseFloat(value));
@@ -332,8 +364,9 @@ export class CapturarElementosComponent implements OnInit {
       PorcentajeIvaId: '3',
       Serie: '',
       SubgrupoCatalogoId: '',
+      CodigoSubgrupo: '',
       Subtotal: '0',
-      TipoBienId: '1',
+      TipoBienId: '',
       UnidadMedida: '2',
       ValorIva: '0',
       ValorTotal: '0',
@@ -348,8 +381,35 @@ export class CapturarElementosComponent implements OnInit {
 
     // console.log(this.dataSource.data);
   }
-  deleteElemento(index: number) {
 
+  borraSeleccionados() {
+    const seleccionados = this.getSeleccionados();
+    if (seleccionados.length) {
+      (Swal as any).fire({
+        title: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.EliminarVariosElementosTitle', {cantidad: seleccionados.length}),
+        text: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.EliminarVariosElementosText', {cantidad: seleccionados.length}),
+        type: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Si',
+        cancelButtonText: 'No',
+      }).then((result) => {
+        if (result.value) {
+          this._deleteElemento(seleccionados);
+          this.ver();
+        }
+      });
+    }
+  }
+
+  getSeleccionados() {
+    return this.dataSource.data.map((elem, idx) => ({'idx_data': idx, elem}))
+      .filter(elem => elem.elem.seleccionado)
+      .map(elem => elem.idx_data);
+  }
+
+  deleteElemento(index: number) {
     (Swal as any).fire({
       title: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.EliminarElementosTitle'),
       text: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.EliminarElementosText'),
@@ -361,11 +421,44 @@ export class CapturarElementosComponent implements OnInit {
       cancelButtonText: 'No',
     }).then((result) => {
       if (result.value) {
-        const data = this.dataSource.data;
-        data.splice((this.paginator.pageIndex * this.paginator.pageSize) + index, 1);
-        this.dataSource.data = data;
+        this._deleteElemento(index);
         this.ver();
       }
+    });
+  }
+
+  private _deleteElemento(index: any) {
+    // console.log({index});
+    const indices = isNumeric(index) ? [index] : ( isArray(index) ? index : undefined );
+    if (indices) {
+      const data = this.dataSource.data;
+      indices.sort((a, b) => b - a);
+      for (let i = 0; i < indices.length; i++) {
+        data.splice((this.paginator.pageIndex * this.paginator.pageSize) + indices[i], 1);
+      }
+      this.dataSource.data = data;
+    }
+  }
+
+  refrescaCheckTotal() {
+    let checkTodos = false;
+    let checkParcial = false;
+    if (isArray(this.dataSource.data) && this.dataSource.data.length) {
+      if (this.dataSource.data.every(elem => elem.seleccionado)) {
+        // console.log('todos');
+        checkTodos = true;
+      } else if (this.dataSource.data.some(elem => elem.seleccionado)) {
+        // console.log('algunos');
+        checkParcial = true;
+      } // "else" ninguno
+    }
+    this.checkTodos = checkTodos;
+    this.checkParcial = checkParcial;
+  }
+
+  cambioCheckTodos(marcar: boolean) {
+    this.dataSource.data.forEach(elem => {
+      elem.seleccionado = marcar;
     });
   }
 

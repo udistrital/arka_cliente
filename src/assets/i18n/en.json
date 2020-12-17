@@ -35,6 +35,9 @@
   },
   "GLOBAL": {
     "Acta_Recibido": {
+      "ErrorAnularMsg": "The Act {{ACTA}} cannot be voided by having state \"{{ESTADO}}\"",
+      "AnuladaOkTitulo":"Act {{ACTA}} Voided",
+      "AnuladaOkMsg":"The Act {{ACTA}} was successfully Voided",
       "CapturarElementos": {
         "CargaMasivaTitle": "Masive Load",
         "ValidadorPlaceholder": "The file have xlsx extension (*.xlsx)",
@@ -62,7 +65,9 @@
         "ElementosCargadosTitleNO": "Unloaded Elements",
         "ElementosCargadosTextNO": "The elements haven't been loaded, try again later",
         "EliminarElementosTitle": "Are you Sure?",
-        "EliminarElementosText": "Are you sure about remove the selected item?"
+        "EliminarElementosText": "Are you sure about remove the selected item?",
+        "EliminarVariosElementosTitle":"Delete {{cantidad}} element(s)?",
+        "EliminarVariosElementosText":"Are you sure to delete {{cantidad}} element(s)?"
       },
       "ConsultaActas": {
         "Title": "Receipt Certificates",
@@ -82,6 +87,8 @@
         "Aceptada": "Acepted",
         "Asociada": "Entrance Associated",
         "Anulada": "Closed",
+        "DialogoAnularTitulo":"Void Act {{ACTA}}?",
+        "DialogoAnularMsg":"This action cannot be undone. Are you sure to VOID the Act {{ACTA}}?",
         "OpcionNoValida": "Invalid Option",
         "OpcionNoValida2": "Invalid Option for this Certificate"
       },
@@ -98,6 +105,7 @@
         "FechaFiltro": "Select Date",
         "Consecutivo": "Consecutive",
         "Soporte": "Related Support",
+        "Revisor": "Reviewer",
         "DatosAdicionales": "Aditional Data",
         "Observaciones": "Observations",
         "GuardarCambiosButton": "Save Changes",
@@ -118,7 +126,8 @@
         "Acta": "Certificate N° ",
         "Registrada": " has been succesfully registered",
         "RegistradaTitleNO": "Unregistered Certificate",
-        "RegistradaNO": "The Certificate hasn't been succesfully registered, try again later"
+        "RegistradaNO": "The Certificate hasn't been succesfully registered, try again later",
+        "ErrorRevisorMsg": "The assigned reviewer is not registered in the Third-Party Database. Please grab a registered reviewer and Try Again"
       },
       "EdicionActa": {
         "Title": "Edit Receipt Certificate",
@@ -147,19 +156,25 @@
         "Observaciones2": "Proporciona datos adicionales que no se pueden expresar en el formulario (Obligatorio)",
         "DatosVeridicos": "Are you sure do you want to save the data?",
         "DatosVeridicos2": "Are you sure do you want to send the data to verificate?",
+        "DatosVeridicos3":"Are you sure to Send the data to Supplier?",
         "DatosVeridicosTitle": "Are You Sure?",
         "CargaElementosTitle": "Elements Load",
         "CargaElementos": "Please verify the load of elements, values ​​and totals associated with the support before generating the record",
         "ModificadaTitle": " Modified",
         "Acta": "Certificate N° ",
         "Modificada": " has been succesfully modified",
+        "Modificada2":"Certificate N° {{id}} has been succesfully modified",
         "ModificadaTitleNO": "Unmodified Certificate",
         "ModificadaNO": "The Certificate hasn't been modified, try again later",
         "VerificadaTitle": " Sent",
+        "VerificadaTitle2":"Certificate N° {{id}} Sent",
         "Verificada": " has been succesfully sent",
-        "VerificadaTitleNO": "Unverified Certificate",
-        "VerificadaNO": "The Certificate hasn't been succesfully verified, try again later",
-        "VerificacionButton": "Send to Verification"
+        "Verificada2":"Certificate N° {{id}} has been successfully sent to Verification",
+        "Verificada3":"Certificate N° {{id}} has been successfully sent to Supplier",
+        "VerificadaTitleNO": "Certificate Not Sent!",
+        "VerificadaNO": "The Certificate hasn't been succesfully sent to verify. Try again later",
+        "VerificacionButton": "Send to Verification",
+        "EnviarProveedorButton": "Send to Supplier"
       },
       "DetalleActa": {
         "Title": "Receipt Certificate Detail",

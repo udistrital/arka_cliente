@@ -21,4 +21,5 @@ export const rootReducer: ActionReducerMap<IAppState> = {
   listFormatosKardex: ListReducer.ListReducerFormatosKardex,
   listEstadosMovimiento: ListReducer.ListReducerEstadosMovimiento,
   listFormatosMovimiento: ListReducer.ListReducerFormatosMovimiento,
+  listClases: ListReducer.ListReducerClases,
 };

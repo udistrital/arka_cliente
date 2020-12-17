@@ -9,26 +9,26 @@
   </nb-card>
 </div>
 <div class="col-lg-12">
-  <nb-card *ngIf="actaSeleccionada === '' && mostrar">
+  <nb-card *ngIf="!(editarActa||verActa||validarActa) && mostrar">
     <nb-card-header>{{'GLOBAL.Acta_Recibido.ConsultaActas.Title' | translate}}</nb-card-header>
     <nb-card-body>
       <ng2-smart-table [settings]="settings" [source]="source" (delete)="onDelete($event)"
-        (rowSelect)="itemselec($event)" (edit)="onEdit($event)" (create)="onCreate($event)">
+        (userRowSelect)="seleccionarActa($event)" (edit)="onEdit($event)" (create)="onCreate($event)">
       </ng2-smart-table>
     </nb-card-body>
   </nb-card>
 
-  <ngx-ver-detalle *ngIf=" accion === 'Ver' && estadoActaSeleccionada === 'Ver'" [Id_Acta]="actaSeleccionada"></ngx-ver-detalle>
+  <!-- lectura -->
+  <ngx-ver-detalle *ngIf="verActa" [Id_Acta]="actaSeleccionada"></ngx-ver-detalle>
 
-  <ngx-edicion-acta-recibido *ngIf="estadoActaSeleccionada === 'En Elaboracion'"
+  <!-- escritura -->
+  <ngx-edicion-acta-recibido *ngIf="editarActa" [estado]="estadoActaSeleccionada"
     [Id_Acta]="actaSeleccionada"></ngx-edicion-acta-recibido>
 
-  <ngx-edicion-acta-recibido *ngIf="estadoActaSeleccionada === 'En Modificacion'"
-    [Id_Acta]="actaSeleccionada"></ngx-edicion-acta-recibido>
-  
-  <ngx-verificacion-acta-recibido *ngIf="estadoActaSeleccionada === 'En verificacion'"
+  <!-- "lectura" (+ checkboxes) -->
+  <ngx-verificacion-acta-recibido *ngIf="validarActa"
     [Id_Acta]="actaSeleccionada"></ngx-verificacion-acta-recibido>
-    
+
   <div class="justify-content-center float-right" *ngIf="actaSeleccionada !== ''">
     <button type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off"
       (click)="onBack()">

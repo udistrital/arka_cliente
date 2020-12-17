@@ -26,4 +26,5 @@ export interface IAppState {
   listFormatosKardex: any[];
   listEstadosMovimiento: any[];
   listFormatosMovimiento: any[];
+  listClases: Subgrupo[];
 }
