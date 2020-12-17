@@ -113,9 +113,9 @@ export class EdicionActaRecibidoComponent implements OnInit {
     Acta: Permiso,
     Elementos: Permiso,
   } = {
-    Acta: Permiso.Ninguno,
-    Elementos: Permiso.Ninguno,
-  };
+      Acta: Permiso.Ninguno,
+      Elementos: Permiso.Ninguno,
+    };
 
   constructor(
     private translate: TranslateService,
@@ -154,7 +154,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
   }
 
   // Los permisos dependen del estado del acta y del rol.
-  cargaPermisos () {
+  cargaPermisos() {
     // console.log({'this.estadoActualActa': this.estadoActa});
 
     // Modificar/Ver parte superior (Datos basicos y Soportes)
@@ -201,8 +201,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
             PuedenVer = PermEstado.PuedenVer;
           });
       });
-
-    return {PuedenModificar, PuedenVer};
+    return { PuedenModificar, PuedenVer };
   }
 
   getPermisoEditar(p: Permiso): boolean {
@@ -324,26 +323,26 @@ export class EdicionActaRecibidoComponent implements OnInit {
         this.uidDocumento[index] = Soporte.SoporteActa.DocumentoId;
         const elementoSoporte = [];
         if (Soporte.Elementos && Soporte.Elementos.length)
-        for (const _Elemento of Soporte.Elementos) { // Para alguna actas lanza error "Cannot read 'length' of null"
+          for (const _Elemento of Soporte.Elementos) { // Para alguna actas lanza error "Cannot read 'length' of null"
 
-          const Elemento___ = {
-            Id: _Elemento.Id,
-            TipoBienId: this.Tipos_Bien.find(tipo => tipo.Id.toString() === _Elemento.TipoBienId.Id.toString()).Id,
-            SubgrupoCatalogoId: _Elemento.SubgrupoCatalogoId,
-            Nombre: _Elemento.Nombre,
-            Cantidad: _Elemento.Cantidad,
-            Marca: _Elemento.Marca,
-            Serie: _Elemento.Serie,
-            UnidadMedida: this.Unidades.find(unidad => unidad.Id.toString() === _Elemento.UnidadMedida.toString()).Id,
-            ValorUnitario: _Elemento.ValorUnitario,
-            Subtotal: _Elemento.ValorTotal,
-            Descuento: _Elemento.Descuento,
-            PorcentajeIvaId: this.Tarifas_Iva.find(tarifa => tarifa.Id.toString() === _Elemento.PorcentajeIvaId.toString()).Id,
-            ValorIva: _Elemento.ValorIva,
-            ValorTotal: _Elemento.ValorFinal,
-          };
-          elementoSoporte.push(Elemento___);
-        }
+            const Elemento___ = {
+              Id: _Elemento.Id,
+              TipoBienId: this.Tipos_Bien.find(tipo => tipo.Id.toString() === _Elemento.TipoBienId.Id.toString()).Id,
+              SubgrupoCatalogoId: _Elemento.SubgrupoCatalogoId,
+              Nombre: _Elemento.Nombre,
+              Cantidad: _Elemento.Cantidad,
+              Marca: _Elemento.Marca,
+              Serie: _Elemento.Serie,
+              UnidadMedida: this.Unidades.find(unidad => unidad.Id.toString() === _Elemento.UnidadMedida.toString()).Id,
+              ValorUnitario: _Elemento.ValorUnitario,
+              Subtotal: _Elemento.ValorTotal,
+              Descuento: _Elemento.Descuento,
+              PorcentajeIvaId: this.Tarifas_Iva.find(tarifa => tarifa.Id.toString() === _Elemento.PorcentajeIvaId.toString()).Id,
+              ValorIva: _Elemento.ValorIva,
+              ValorTotal: _Elemento.ValorFinal,
+            };
+            elementoSoporte.push(Elemento___);
+          }
         elementos.push(elementoSoporte);
         Form2.push(Formulario__2);
       });
@@ -613,7 +612,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
 
   // Envío de Guardar Cambios
   async onFirstSubmit() {
-
     const start = async () => {
       await this.asyncForEach(this.fileDocumento, async (file) => {
         await this.postSoporteNuxeo([file]);
@@ -626,7 +624,8 @@ export class EdicionActaRecibidoComponent implements OnInit {
     const Transaccion_Acta = new TransaccionActaRecibido();
     Transaccion_Acta.ActaRecibido = this.Registrar_Acta(this.Datos.Formulario1, this.Datos.Formulario3);
     Transaccion_Acta.UltimoEstado = this.Registrar_Estado_Acta(Transaccion_Acta.ActaRecibido,
-      (this.estadoActa === 'Registrada') ? EstadoActa_t.Registrada : EstadoActa_t.EnModificacion);
+      (this.estadoActa === 'Registrada') ? EstadoActa_t.Registrada :
+        (this.estadoActa === 'Aceptada') ? EstadoActa_t.Aceptada : EstadoActa_t.EnModificacion);
     const Soportes = new Array<TransaccionSoporteActa>();
     this.Datos.Formulario2.forEach((soporte, index) => {
       Soportes.push(this.Registrar_Soporte(soporte, this.Elementos__Soporte[index], Transaccion_Acta.ActaRecibido));
@@ -643,7 +642,9 @@ export class EdicionActaRecibidoComponent implements OnInit {
             `${res.ActaRecibido.Id}` + this.translate.instant('GLOBAL.Acta_Recibido.EdicionActa.Modificada'),
         }).then((willDelete) => {
           if (willDelete.value) {
-            // window.location.reload();
+            this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+              this.router.navigateByUrl('/pages/acta_recibido/consulta_acta_recibido');
+            });
             this.verificar = false;
           }
         });
@@ -663,7 +664,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
     const Transaccion_Acta = new TransaccionActaRecibido();
     Transaccion_Acta.ActaRecibido = this.Registrar_Acta(this.Datos.Formulario1, this.Datos.Formulario3);
     Transaccion_Acta.UltimoEstado = this.Registrar_Estado_Acta(Transaccion_Acta.ActaRecibido,
-      (this.estadoActa === 'Registrada') ? EstadoActa_t.EnElaboracion : EstadoActa_t.EnVerificacion );
+      (this.estadoActa === 'Registrada') ? EstadoActa_t.EnElaboracion : EstadoActa_t.EnVerificacion);
     const Soportes = new Array<TransaccionSoporteActa>();
     this.Datos.Formulario2.forEach((soporte, index) => {
       Soportes.push(this.Registrar_Soporte(soporte, this.Elementos__Soporte[index], Transaccion_Acta.ActaRecibido));
@@ -673,19 +674,19 @@ export class EdicionActaRecibidoComponent implements OnInit {
 
     const L10n_base = 'GLOBAL.Acta_Recibido.EdicionActa.';
     const resultadoL10n_titulo = L10n_base + 'VerificadaTitle2';
-    const resultadoL10n_desc = L10n_base + ((this.estadoActa === 'Registrada') ? 'Verificada3' : 'Verificada2') ;
+    const resultadoL10n_desc = L10n_base + ((this.estadoActa === 'Registrada') ? 'Verificada3' : 'Verificada2');
 
     this.Actas_Recibido.putTransaccionActa(Transaccion_Acta, Transaccion_Acta.ActaRecibido.Id).subscribe((res: any) => {
       if (res !== null) {
         (Swal as any).fire({
           type: 'success',
-          title: this.translate.instant(resultadoL10n_titulo, {id: res.ActaRecibido.Id}),
-          text: this.translate.instant(resultadoL10n_desc, {id: res.ActaRecibido.Id}),
+          title: this.translate.instant(resultadoL10n_titulo, { id: res.ActaRecibido.Id }),
+          text: this.translate.instant(resultadoL10n_desc, { id: res.ActaRecibido.Id }),
         }).then((willDelete) => {
           if (willDelete.value) {
             // Se usa una redirección "dummy", intermedia. Ver
             // https://stackoverflow.com/a/49509706/3180052
-            this.router.navigateByUrl('/', {skipLocationChange: true}).then(() => {
+            this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
               this.router.navigateByUrl('/pages/acta_recibido/consulta_acta_recibido');
             });
           }
@@ -891,8 +892,8 @@ export class EdicionActaRecibidoComponent implements OnInit {
       return;
     }
     const L10n_base = 'GLOBAL.Acta_Recibido.EdicionActa.';
-    const codigoL10n_titulo = L10n_base + 'DatosVeridicosTitle' ;
-    const codigoL10n_desc = L10n_base + ((this.estadoActa === 'Registrada') ? 'DatosVeridicos3' : 'DatosVeridicos2') ;
+    const codigoL10n_titulo = L10n_base + 'DatosVeridicosTitle';
+    const codigoL10n_desc = L10n_base + ((this.estadoActa === 'Registrada') ? 'DatosVeridicos3' : 'DatosVeridicos2');
     (Swal as any).fire({
       title: this.translate.instant(codigoL10n_titulo),
       text: this.translate.instant(codigoL10n_desc),
