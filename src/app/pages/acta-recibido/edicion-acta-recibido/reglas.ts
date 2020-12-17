@@ -23,6 +23,11 @@ export const permisosSeccionesActas = [
         PuedenModificar: [Rol.Admin],
         PuedenVer: [Rol.Secretaria, Rol.Contratista],
       },
+      {
+        Estado: 'Aceptada',
+        PuedenModificar: [Rol.Admin, Rol.Revisor],
+        PuedenVer: [],
+      },
     ],
   },
   {
@@ -42,6 +47,11 @@ export const permisosSeccionesActas = [
         Estado: 'En Modificacion',
         PuedenModificar: [Rol.Admin, Rol.Contratista],
         PuedenVer: [Rol.Secretaria],
+      },
+      {
+        Estado: 'Aceptada',
+        PuedenModificar: [Rol.Admin, Rol.Revisor],
+        PuedenVer: [],
       },
     ],
   },

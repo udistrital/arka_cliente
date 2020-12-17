@@ -10,10 +10,11 @@ import { Store } from '@ngrx/store';
 import { IAppState } from '../../../@core/store/app.state';
 import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
 import { UserService } from '../../../@core/data/users.service';
-import { RolUsuario_t as Rol } from '../../../@core/data/models/roles/rol_usuario';
+import { RolUsuario_t as Rol, PermisoUsuario_t as Permiso } from '../../../@core/data/models/roles/rol_usuario';
 import { TransaccionActaRecibido } from '../../../@core/data/models/acta_recibido/transaccion_acta_recibido';
 import { HistoricoActa } from '../../../@core/data/models/acta_recibido/historico_acta';
 import { EstadoActa_t } from '../../../@core/data/models/acta_recibido/estado_acta';
+import { permisosSeccionesActas } from '../../acta-recibido/edicion-acta-recibido/reglas';
 
 @Component({
   selector: 'ngx-consulta-acta-recibido',
@@ -38,6 +39,13 @@ export class ConsultaActaRecibidoComponent implements OnInit {
   accion: string;
   actas2: any;
   mostrar: boolean;
+  permisos: {
+    Acta: Permiso,
+    Elementos: Permiso,
+  } = {
+      Acta: Permiso.Ninguno,
+      Elementos: Permiso.Ninguno,
+    };
   constructor(private translate: TranslateService,
     private router: Router,
     private actaRecibidoHelper: ActaRecibidoHelper,
@@ -86,13 +94,12 @@ export class ConsultaActaRecibidoComponent implements OnInit {
         // TODO: Agregar más complejidad a esta parte, la implementación
         // fue corta para efectos del Issue #347 ...
         // ... Pero podría llegarse a algo similar a lo realizado
-        // en el componente edicion-acta-recibido
+        // // en el componente edicion-acta-recibido
         if (this.userService.tieneAlgunRol([Rol.Secretaria])) {
           resFiltrado = res.filter(acta => acta.Estado === 'Registrada');
         } else {
           resFiltrado = res;
         }
-
         this.source.load(resFiltrado);
       }
     });
@@ -219,7 +226,7 @@ export class ConsultaActaRecibidoComponent implements OnInit {
     }
   }
 
-  anularActa (id: number) {
+  anularActa(id: number) {
     // console.log({'idActa': id});
 
     // 1. Traer acta tal cual está
@@ -228,12 +235,12 @@ export class ConsultaActaRecibidoComponent implements OnInit {
 
       // 2. Crear estado "Anulada"
       // const Transaccion_Acta = new TransaccionActaRecibido();
-      const Transaccion_Acta = <TransaccionActaRecibido> acta[0];
-      const nuevoEstado = <HistoricoActa> {
+      const Transaccion_Acta = <TransaccionActaRecibido>acta[0];
+      const nuevoEstado = <HistoricoActa>{
         Id: null,
         ActaRecibidoId: Transaccion_Acta.ActaRecibido,
         Activo: true,
-        EstadoActaId: {Id: EstadoActa_t.Anulada},
+        EstadoActaId: { Id: EstadoActa_t.Anulada },
         FechaCreacion: new Date(),
         FechaModificacion: new Date(),
       };
@@ -242,21 +249,23 @@ export class ConsultaActaRecibidoComponent implements OnInit {
 
       // 3. Anular acta
       this.actaRecibidoHelper.putTransaccionActa(Transaccion_Acta, id)
-        .subscribe(res => {if (res !== null) {
-          (Swal as any).fire({
-            type: 'success',
-            title: this.translate.instant('GLOBAL.Acta_Recibido.AnuladaOkTitulo',
-              {ACTA: id}),
-            text: this.translate.instant('GLOBAL.Acta_Recibido.AnuladaOkMsg',
-              {ACTA: id}),
-          });
+        .subscribe(res => {
+          if (res !== null) {
+            (Swal as any).fire({
+              type: 'success',
+              title: this.translate.instant('GLOBAL.Acta_Recibido.AnuladaOkTitulo',
+                { ACTA: id }),
+              text: this.translate.instant('GLOBAL.Acta_Recibido.AnuladaOkMsg',
+                { ACTA: id }),
+            });
 
-          // Se usa una redirección "dummy", intermedia. Ver
-          // https://stackoverflow.com/a/49509706/3180052
-          this.router.navigateByUrl('/', {skipLocationChange: true}).then(() => {
-            this.router.navigateByUrl('/pages/acta_recibido/consulta_acta_recibido');
-          });
-        }});
+            // Se usa una redirección "dummy", intermedia. Ver
+            // https://stackoverflow.com/a/49509706/3180052
+            this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+              this.router.navigateByUrl('/pages/acta_recibido/consulta_acta_recibido');
+            });
+          }
+        });
     });
   }
 
@@ -275,7 +284,12 @@ export class ConsultaActaRecibidoComponent implements OnInit {
         this.accion = '';
         editarActa = true;
         break;
-
+      case 'Aceptada':
+        this.actaSeleccionada = `${event.data.Id}`;
+        this.estadoActaSeleccionada = `${event.data.Estado}`;
+        this.accion = '';
+        editarActa = true;
+        break;
       default: {
         (Swal as any).fire({
           type: 'warning',
@@ -316,8 +330,8 @@ export class ConsultaActaRecibidoComponent implements OnInit {
       case 'En Verificacion':
       case 'Aceptada':
         (Swal as any).fire({
-          title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.DialogoAnularTitulo', {'ACTA': event.data.Id}),
-          text: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.DialogoAnularMsg', {'ACTA': event.data.Id}),
+          title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.DialogoAnularTitulo', { 'ACTA': event.data.Id }),
+          text: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.DialogoAnularMsg', { 'ACTA': event.data.Id }),
           type: 'warning',
           showCancelButton: true,
           confirmButtonColor: '#3085d6',
@@ -336,7 +350,7 @@ export class ConsultaActaRecibidoComponent implements OnInit {
         (Swal as any).fire({
           title: this.translate.instant('GLOBAL.error'),
           text: this.translate.instant('GLOBAL.Acta_Recibido.ErrorAnularMsg',
-            {ACTA: event.data.Id, ESTADO: event.data.Estado}),
+            { ACTA: event.data.Id, ESTADO: event.data.Estado }),
           type: 'error',
           showCancelButton: false,
           confirmButtonColor: '#3085d6',

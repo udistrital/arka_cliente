@@ -268,8 +268,8 @@
                 <div class="justify-content-center">
                   <button nbButton
                     matStepperPrevious>{{'GLOBAL.Acta_Recibido.EdicionActa.AnteriorButton' | translate}}</button>
-                  <button nbButton (click)="Revisar_Totales2()"
-                    [disabled]="!firstForm.get('Formulario3').valid || !firstForm.get('Formulario2').valid || !firstForm.get('Formulario3').valid"
+                  <button nbButton (click)="Revisar_Totales2()" *ngIf="(permisos.Acta === 2) || (permisos.Elementos === 2)"
+                    [disabled]="!firstForm.get('Formulario3').valid || !firstForm.get('Formulario2').valid || !firstForm.get('Formulario3').valid || !(permisos.Acta === 2) || !(permisos.Elementos === 2)"
                     class="float-right">{{'GLOBAL.Acta_Recibido.EdicionActa.GuardarCambiosButton' | translate}}</button>
                 </div>
               </nb-card-footer>
