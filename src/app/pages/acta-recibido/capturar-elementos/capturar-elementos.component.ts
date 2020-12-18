@@ -1,5 +1,6 @@
 import { Component, OnInit, ViewChild, ElementRef, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import * as XLSX from 'xlsx';
+import * as FileSaver from 'file-saver';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
@@ -24,6 +25,7 @@ import { MatCheckboxChange } from '@angular/material';
 import { CompleterData, CompleterService, CompleterItem } from 'ng2-completer';
 import {Observable} from 'rxjs';
 import { Row } from 'ngx-smart-table/lib/data-set/row';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'ngx-capturar-elementos',
@@ -47,6 +49,7 @@ export class CapturarElementosComponent implements OnInit {
   @ViewChild(MatTable) table: MatTable<any>;
   @ViewChild('fileInput') fileInput: ElementRef;
   dataSource: MatTableDataSource<any>;
+  dataSource2: MatTableDataSource<any>;
 
   @Input() DatosRecibidos: any;
   @Output() DatosEnviados = new EventEmitter();
@@ -132,6 +135,31 @@ export class CapturarElementosComponent implements OnInit {
         this.dataSource.data[i].CodigoSubgrupo = '' ;
       }
     }
+  }
+
+  exportToExcel(json:any[], excelFileName: string)
+  {
+    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(json);
+    const workbook: XLSX.WorkBook ={
+      Sheets: {'data': worksheet},
+      SheetNames: ['data']
+    };
+    const excelBuffer: any = XLSX.write(workbook,{bookType: 'xlsx', type:'array'});
+    this.saveAsExcel(excelBuffer, excelFileName);
+
+  }
+  saveAsExcel(buffer:any, fileName:string)
+  {
+    const data: Blob = new Blob(
+      [buffer],
+      {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet; charset=UTF-8'
+      });
+    FileSaver.saveAs(data, fileName + '_export_' + 'xlsx');
+  }
+  DescargarTabla()
+  {
+    this.exportToExcel(this.dataSource.data,'prueba1');
+    // console.log(this.dataSource)
   }
 
   onSelectedClase(selected: CompleterItem, fila: number) {
