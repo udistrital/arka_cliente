@@ -32,6 +32,7 @@ import { ListService } from './@core/store/services/list.service';
 import { Store, StoreModule } from '@ngrx/store';
 import { rootReducer } from './@core/store/rootReducer';
 import { NuxeoService } from './@core/utils/nuxeo.service';
+import { ActaEspecialComponent } from './acta-especial/acta-especial.component';
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
 }
@@ -51,6 +52,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     CdkTreeModule,
     // Material
   ],
+  declarations: [ActaEspecialComponent],
 })
 export class MaterialModule {}
 

@@ -23,6 +23,7 @@ import { rootReducer } from '../../@core/store/rootReducer';
 import { Store, StoreModule } from '@ngrx/store';
 import { ListService } from '../../@core/store/services/list.service';
 import { VerificacionElementosComponent } from './verificacion-elementos/verificacion-elementos.component';
+import { ActaEspecialComponent } from './acta-especial/acta-especial.component';
 
 
 @NgModule({
@@ -35,6 +36,7 @@ import { VerificacionElementosComponent } from './verificacion-elementos/verific
     VerDetalleComponent,
     CapturarElementosComponent,
     VerificacionElementosComponent,
+    ActaEspecialComponent,
   ],
   imports: [
     CommonModule,
