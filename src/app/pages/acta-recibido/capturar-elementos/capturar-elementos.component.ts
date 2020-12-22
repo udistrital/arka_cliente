@@ -99,6 +99,7 @@ export class CapturarElementosComponent implements OnInit {
         this.Tarifas_Iva = list.listIVA[0];
         this.Clases = list.listClases[0];
         this.dataService = this.completerService.local(this.Clases, 'SubgrupoId.Nombre', 'SubgrupoId.Nombre');
+        // console.log({pollito:this.Clases})
       },
     );
   }
@@ -118,6 +119,8 @@ export class CapturarElementosComponent implements OnInit {
       this.getSubtotales();
       this.getIVA();
       this.getTotales();
+      this.getClasesElementos();
+      // this.dataSource.data[0].TipoBienNombre = this.Tipos_Bien[2].Nombre;
       this.ver();
     } else {
       this.dataSource = new MatTableDataSource();
@@ -133,11 +136,14 @@ export class CapturarElementosComponent implements OnInit {
 
   onSelectedClase(selected: CompleterItem, fila: number) {
     this.dataSource.data[fila].CodigoSubgrupo = selected.originalObject.SubgrupoId.Codigo;
-    this.dataSource.data[fila].TipoBienId = selected.originalObject.TipoBienId.Nombre;
+    this.dataSource.data[fila].TipoBienId = selected.originalObject.TipoBienId.Id;
+    this.dataSource.data[fila].SubgrupoCatalogoId = selected.originalObject.SubgrupoId.Id;
+    this.dataSource.data[fila].TipoBienNombre = selected.originalObject.TipoBienId.Nombre;
   }
 
   ver() {
     this.refrescaCheckTotal();
+    // console.log(this.DatosEnviados)
     this.DatosEnviados.emit(this.dataSource.data);
     this.DatosTotales.emit(this.Totales);
   }
@@ -244,6 +250,7 @@ export class CapturarElementosComponent implements OnInit {
           for (let i = 0; i < this.dataSource.data.length; i++) {
             if (this.dataSource.data[i].CodigoSubgrupo === undefined) {
               this.dataSource.data[i].CodigoSubgrupo = '' ;
+              this.dataSource.data[i].TipoBienNombre = '';
             }
           }
           (Swal as any).fire({
@@ -335,6 +342,15 @@ export class CapturarElementosComponent implements OnInit {
       }
     } else {
       return '0';
+    }
+  }
+  getClasesElementos() {
+    if (this.Clases && this.Clases.length ) {
+      this.dataSource.data.map((elemento) => {
+        elemento.TipoBienNombre = this.Tipos_Bien.find((x) => x.Id === elemento.TipoBienId).Nombre;
+        elemento.CodigoSubgrupo = this.Clases.find((x) => x.SubgrupoId.Id === elemento.SubgrupoCatalogoId).SubgrupoId.Codigo;
+        elemento.NombreClase = this.Clases.find((x) => x.SubgrupoId.Id === elemento.SubgrupoCatalogoId).SubgrupoId.Nombre;
+      });
     }
   }
 
