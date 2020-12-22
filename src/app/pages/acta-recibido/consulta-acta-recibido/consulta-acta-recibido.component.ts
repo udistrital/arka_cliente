@@ -281,17 +281,13 @@ export class ConsultaActaRecibidoComponent implements OnInit {
       case 'Registrada':
       case 'En Elaboracion':
       case 'En Modificacion':
-        this.actaSeleccionada = `${event.data.Id}`;
-        this.estadoActaSeleccionada = `${event.data.Estado}`;
-        this.accion = '';
-        editarActa = true;
-        break;
       case 'Aceptada':
         this.actaSeleccionada = `${event.data.Id}`;
         this.estadoActaSeleccionada = `${event.data.Estado}`;
         this.accion = '';
         editarActa = true;
         break;
+
       default: {
         (Swal as any).fire({
           type: 'warning',

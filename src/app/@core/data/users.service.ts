@@ -12,7 +12,6 @@ const httpOptions = {
 };
 
 // const path = environment.PERSONA_SERVICE;
-// const path = environment.TERCEROS_SERVICE;
 const path = environment.TERCEROS_SERVICE;
 
 @Injectable()
@@ -23,12 +22,14 @@ export class UserService {
   private roles: RolUsuario_t[] = [];
 
   constructor(private http: HttpClient) {
-    // this.roles = [RolUsuario_t.Secretaria, RolUsuario_t.Contratista];
     if (window.localStorage.getItem('id_token') !== null && window.localStorage.getItem('id_token') !== undefined) {
       const id_token = window.localStorage.getItem('id_token').split('.');
       const payload = JSON.parse(atob(id_token[1]));
       window.localStorage.setItem('usuario', payload.sub);
+      // this.roles = [RolUsuario_t.Contratista];
+      // this.roles = [RolUsuario_t.Secretaria];
       this.roles = (payload && payload.role && payload.role.length) ? payload.role : [] ;
+      // console.log({'Roles': this.roles});
       // this.http.get(path + 'persona/?query=Usuario:' + payload.sub, httpOptions)
       this.http.get(path + 'tercero/?query=UsuarioWSO2:' + payload.sub, httpOptions)
         .subscribe(res => {

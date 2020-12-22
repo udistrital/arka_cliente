@@ -115,7 +115,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
   } = {
       Acta: Permiso.Ninguno,
       Elementos: Permiso.Ninguno,
-    };
+  };
 
   constructor(
     private translate: TranslateService,
@@ -625,12 +625,13 @@ export class EdicionActaRecibidoComponent implements OnInit {
     const Transaccion_Acta = new TransaccionActaRecibido();
     Transaccion_Acta.ActaRecibido = this.Registrar_Acta(this.Datos.Formulario1, this.Datos.Formulario3);
     Transaccion_Acta.UltimoEstado = this.Registrar_Estado_Acta(Transaccion_Acta.ActaRecibido,
-      (this.estadoActa === 'Registrada') ? EstadoActa_t.Registrada :
-        (this.estadoActa === 'Aceptada') ? EstadoActa_t.Aceptada : EstadoActa_t.EnModificacion);
+      (this.estadoActa === 'Registrada') ? EstadoActa_t.Registrada : (
+        (this.estadoActa === 'Aceptada') ? EstadoActa_t.Aceptada : EstadoActa_t.EnModificacion
+      )
+    );
     const Soportes = new Array<TransaccionSoporteActa>();
     this.Datos.Formulario2.forEach((soporte, index) => {
       Soportes.push(this.Registrar_Soporte(soporte, this.Elementos__Soporte[index], Transaccion_Acta.ActaRecibido));
-
     });
     Transaccion_Acta.SoportesActa = Soportes;
     // console.log(Transaccion_Acta);
