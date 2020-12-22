@@ -114,9 +114,7 @@ export class ConsultaActaRecibidoComponent implements OnInit {
         columnTitle: 'Acciones',
         position: 'right',
         delete: false,
-      },
-      add: {
-        addButtonContent: '<i class="nb-plus" title="Registrar Acta Nueva" aria-label="Registrar Acta Nueva"></i>',
+        add: false,
       },
       edit: {
         editButtonContent: '<i class="far fa-edit" title="Editar Acta" aria-label="Editar Acta"></i>',
@@ -219,6 +217,13 @@ export class ConsultaActaRecibidoComponent implements OnInit {
         },
       },
     };
+
+    if (this.userService.tieneAlgunRol([Rol.Secretaria, Rol.Admin, Rol.Revisor])) {
+      this.settings.add = {
+        addButtonContent: '<i class="nb-plus" title="Registrar Acta Nueva" aria-label="Registrar Acta Nueva"></i>',
+      };
+      this.settings.actions.add = true;
+    }
 
     if (this.userService.tieneAlgunRol([Rol.Admin, Rol.Revisor])) {
       this.settings.delete = {
