@@ -241,6 +241,7 @@ export class ActaEspecialComponent implements OnInit {
           file.IdDocumento = 13; // tipo de documento (API documentos_crud)
           file.file = event.target.files[0];
           this.fileDocumento[index] = file;
+          console.log(this.fileDocumento)
           this.Validador[index] = true;
 
         } else {
@@ -284,7 +285,7 @@ export class ActaEspecialComponent implements OnInit {
         Proveedor: [Soporte.Proveedor, Validators.required],
         Consecutivo: [Soporte.Consecutivo, Validators.required],
         Fecha_Factura: [Soporte.Fecha_Factura, Validators.required],
-        Soporte: [Soporte.Soporte, Validators.required],
+        Soporte: [Soporte.Soporte],
         Revisor: [Soporte.Revisor, Validators.required],
       });
       Form2.push(Formulario__2);
@@ -328,7 +329,7 @@ export class ActaEspecialComponent implements OnInit {
       Consecutivo: ['', Validators.required],
       Fecha_Factura: ['', Validators.required],
       Revisor: ['', Validators.required],
-      Soporte: ['', Validators.required],
+      Soporte: [''],
     });
   }
 
@@ -407,19 +408,25 @@ export class ActaEspecialComponent implements OnInit {
     };
     await start();
     this.Datos = this.firstForm.value;
+    console.log(this.Datos)
     const Transaccion_Acta = new TransaccionActaRecibido();
     Transaccion_Acta.ActaRecibido = this.Registrar_Acta(this.Datos.Formulario1);
     Transaccion_Acta.UltimoEstado = this.Registrar_Estado_Acta(Transaccion_Acta.ActaRecibido, EstadoActa_t.Registrada);
     const Soportes = new Array<TransaccionSoporteActa>();
+    console.log(this.Datos.Formulario2);
     this.Datos.Formulario2.forEach((soporte, index) => {
-      Soportes.push(this.Registrar_Soporte(soporte, Transaccion_Acta.ActaRecibido, index));
+      // Soportes.push(this.Registrar_Soporte(soporte, Transaccion_Acta.ActaRecibido, index));
+      Soportes.push(this.Registrar_Soporte(soporte, this.Elementos__Soporte[index], Transaccion_Acta.ActaRecibido));
+
     });
 
     Transaccion_Acta.SoportesActa = Soportes;
-    if (this.validador === false) {
+    console.log(Transaccion_Acta)
+    // if (this.validador === false) {
       this.Actas_Recibido.postTransaccionActa(Transaccion_Acta).subscribe((res: any) => {
+        console.log(res)
         if (res !== null) {
-          (Swal as any).fire({
+        (Swal as any).fire({
             type: 'success',
             title: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.Acta') +
               `${res.ActaRecibido.Id}` + this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.RegistradaTitle'),
@@ -437,13 +444,13 @@ export class ActaEspecialComponent implements OnInit {
           });
         }
       });
-    } else {
-      (Swal as any).fire({
-        type: 'error',
-        title: 'Datos Erróneos',
-        text: 'Existen datos no válidos',
-      });
-    }
+    // } else {
+    //   (Swal as any).fire({
+    //     type: 'error',
+    //     title: 'Datos Erróneos',
+    //     text: 'Existen datos no válidos',
+    //   });
+    // }
   }
 
   Registrar_Acta(Datos: any): ActaRecibido {
@@ -474,27 +481,67 @@ export class ActaEspecialComponent implements OnInit {
     return Historico_;
   }
 
-  Registrar_Soporte(Datos: any, Acta: ActaRecibido, index: number): TransaccionSoporteActa {
-
+  Registrar_Soporte(Datos: any, Elementos_: any, __: ActaRecibido): TransaccionSoporteActa {
+    console.log(Datos)
     const Soporte_Acta = new SoporteActa();
     const Transaccion = new TransaccionSoporteActa();
-
     const proveedor___ = Datos.Proveedor.split(' ');
-    Soporte_Acta.Id = null;
-    Soporte_Acta.ActaRecibidoId = Acta;
+    Soporte_Acta.Id = null; //arseFloat(Datos.Id);
+    console.log(Datos)
+    Soporte_Acta.ActaRecibidoId = __;
     Soporte_Acta.Activo = true;
-    Soporte_Acta.Consecutivo = Datos.Consecutivo;
+    Soporte_Acta.Consecutivo = "384";// Datos.Consecutivo;
     Soporte_Acta.FechaCreacion = new Date();
     Soporte_Acta.FechaModificacion = new Date();
-    Soporte_Acta.FechaSoporte = Datos.Fecha_Factura;
-    Soporte_Acta.ProveedorId = this.Proveedores.find(proveedor => proveedor.NumDocumento.toString() === proveedor___[0].toString()).Id;
-    Soporte_Acta.DocumentoId = this.idDocumento[index];
+    Soporte_Acta.FechaSoporte = new Date(); //Datos.Fecha_Factura;
+    // Soporte_Acta.ProveedorId = 14860; //this.Proveedores.find(proveedor => proveedor.NumDocumento.toString() === proveedor___[0].toString()).Id;
 
     Transaccion.SoporteActa = Soporte_Acta;
-    // Transaccion.Elementos = this.Registrar_Elementos(Soporte_Acta);
-    Transaccion.Elementos = <Elemento[]>[];
-    this.validador = false;
+    Transaccion.Elementos = this.Registrar_Elementos(Elementos_, Soporte_Acta);
     return Transaccion;
+  }
+
+  Registrar_Elementos(Datos: any, Soporte: SoporteActa): Array<Elemento> {
+    const Elementos_Soporte = new Array<Elemento>();
+    console.log(Datos)
+    for (const datos of Datos) {
+
+      const Elemento__ = new Elemento;
+      const valorTotal = (parseFloat(this.Pipe2Number(datos.Subtotal)) - parseFloat(this.Pipe2Number(datos.Descuento)));
+
+      Elemento__.Id = parseFloat(Datos.Id);
+      Elemento__.Nombre = datos.Nombre;
+      Elemento__.Cantidad = parseFloat(this.Pipe2Number(datos.Cantidad));
+      Elemento__.Marca = datos.Marca;
+      Elemento__.Serie = datos.Serie;
+      Elemento__.UnidadMedida = this.Unidades.find(unidad => unidad.Id === parseFloat(datos.UnidadMedida)).Id;
+      Elemento__.ValorUnitario = parseFloat(this.Pipe2Number(datos.ValorUnitario));
+      Elemento__.Subtotal = parseFloat(this.Pipe2Number(datos.Subtotal));
+      Elemento__.Descuento = parseFloat(this.Pipe2Number(datos.Descuento));
+      Elemento__.ValorTotal = valorTotal;
+      Elemento__.PorcentajeIvaId = parseFloat(datos.PorcentajeIvaId);
+      Elemento__.ValorIva = parseFloat(this.Pipe2Number(datos.ValorIva));
+      Elemento__.ValorFinal = parseFloat(this.Pipe2Number(datos.ValorTotal));
+      Elemento__.SubgrupoCatalogoId = parseFloat(datos.SubgrupoCatalogoId);
+      Elemento__.Verificado = false;
+      Elemento__.TipoBienId = this.Tipos_Bien.find(bien => bien.Id === parseFloat(datos.TipoBienId));
+      Elemento__.EstadoElementoId = this.Estados_Acta.find(estado => estado.Id === 1);
+      Elemento__.SoporteActaId = Soporte;
+      Elemento__.Activo = true;
+      Elemento__.FechaCreacion = new Date();
+      Elemento__.FechaModificacion = new Date();
+      Elementos_Soporte.push(Elemento__);
+      console.log(Elementos_Soporte)
+    }
+    return Elementos_Soporte;
+  }
+  Pipe2Number(any: string) {
+    // if (any !== null) {
+    //   return any.replace(/[$,]/g, '');
+    // } else {
+    //   return '0';
+    // }
+    return any;
   }
 
   // Posible TODO: Esta función también se repite en los componentes

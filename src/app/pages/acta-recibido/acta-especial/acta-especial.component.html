@@ -67,8 +67,8 @@
                       {{'GLOBAL.Acta_Recibido.RegistroActa.SoporteSubTitle' | translate}} &nbsp; {{i + 1}} &nbsp; &nbsp;
                       &nbsp; &nbsp;<i class="fas fa-window-close" (click)="removeTab(i); usarLocalStorage()"></i>
                     </ng-template>
-                    <div>
-                      <nb-card>
+                     <div>
+                    <!--<nb-card>
                         <nb-card-body (click)="usarLocalStorage()">
                           <div class="row">
                             <div class="col">
@@ -159,7 +159,7 @@
                             </div>
                           </div>
                         </nb-card-body>
-                      </nb-card>
+                      </nb-card> -->
 
                       <ngx-capturar-elementos
                       *ngIf="getPermisoEditar(permisos.Elementos)"
@@ -182,13 +182,13 @@
                     {{'GLOBAL.Acta_Recibido.RegistroActa.AnteriorButton' | translate}}
                   </button>
                   <button nbButton matStepperNext (click)="Revisar_Totales()"
-                    [disabled]="!firstForm.get('Formulario1').valid || !firstForm.get('Formulario2').valid"
+                    [disabled]="!firstForm.get('Formulario1').valid"
                     class="float-right">{{'GLOBAL.Acta_Recibido.RegistroActa.GuardarCambiosButton' | translate}}
                   </button>
                 </div>
               </nb-card-footer>
             </nb-card>
-          </mat-step>
+          </mat-step>          
         </mat-vertical-stepper>
       </nb-card-body>
     </nb-card>
