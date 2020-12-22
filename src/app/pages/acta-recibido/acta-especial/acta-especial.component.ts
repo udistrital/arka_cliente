@@ -113,6 +113,7 @@ export class ActaEspecialComponent implements OnInit {
   TodaysDate: any;
   DatosElementos: Array<any>;
   Registrando: Boolean;
+  Unidades: any;
 
   permisos: {
     Acta: Permiso,
@@ -142,6 +143,7 @@ export class ActaEspecialComponent implements OnInit {
     this.listService.findUbicaciones();
     this.listService.findDependencias();
     this.listService.findSedes();
+    this.listService.findUnidades();
     this.listService.findProveedores();
     this.listService.findEstadosActa();
     this.listService.findEstadosElemento();
@@ -204,10 +206,12 @@ export class ActaEspecialComponent implements OnInit {
       (list) => {
         this.Ubicaciones = list.listUbicaciones[0];
         this.Sedes = list.listSedes[0];
+        
         this.Dependencias = list.listDependencias[0];
         this.Estados_Acta = list.listEstadosActa[0];
         this.Estados_Elemento = list.listEstadosElemento[0];
         this.Tipos_Bien = list.listTipoBien[0];
+        this.Unidades = list.listUnidades[0];
         this.Proveedores = list.listProveedores[0];
         this.dataService2 = this.completerService.local(this.Proveedores, 'compuesto', 'compuesto');
         this.dataService3 = this.completerService.local(this.Dependencias, 'Nombre', 'Nombre');
@@ -328,6 +332,24 @@ export class ActaEspecialComponent implements OnInit {
     });
   }
 
+  get Elementos(): FormGroup {
+    return this.fb.group({
+      TipoBienId: [''],
+      SubgrupoCatalogoId: [''],
+      Nombre: [''],
+      Cantidad: ['0'],
+      Marca: [''],
+      Serie: [''],
+      UnidadMedida: [''],
+      ValorUnitario: ['0'],
+      Subtotal: ['0'],
+      Descuento: ['0'],
+      PorcentajeIvaId: [''],
+      ValorIva: ['0'],
+      ValorTotal: ['0'],
+    });
+  }
+
   addSoportes() {
     (this.firstForm.get('Formulario2') as FormArray).push(this.Formulario_2);
   }
@@ -387,7 +409,7 @@ export class ActaEspecialComponent implements OnInit {
     this.Datos = this.firstForm.value;
     const Transaccion_Acta = new TransaccionActaRecibido();
     Transaccion_Acta.ActaRecibido = this.Registrar_Acta(this.Datos.Formulario1);
-    Transaccion_Acta.UltimoEstado = this.Registrar_Estado_Acta(Transaccion_Acta.ActaRecibido, EstadoActa_t.Aceptada);
+    Transaccion_Acta.UltimoEstado = this.Registrar_Estado_Acta(Transaccion_Acta.ActaRecibido, EstadoActa_t.Registrada);
     const Soportes = new Array<TransaccionSoporteActa>();
     this.Datos.Formulario2.forEach((soporte, index) => {
       Soportes.push(this.Registrar_Soporte(soporte, Transaccion_Acta.ActaRecibido, index));
