@@ -89,22 +89,26 @@ export class ConsultaActaRecibidoComponent implements OnInit {
       // console.log(res);
       this.mostrar = true;
       if (res.length !== 0) {
-        let resFiltrado;
-
-        // TODO: Agregar más complejidad a esta parte, la implementación
-        // fue corta para efectos del Issue #347 ...
-        // ... Pero podría llegarse a algo similar a lo realizado
-        // // en el componente edicion-acta-recibido
-        if (this.userService.tieneAlgunRol([Rol.Secretaria])) {
-          resFiltrado = res.filter(acta => acta.Estado === 'Registrada');
-        } else if (this.userService.tieneAlgunRol([Rol.Contratista])) {
-          resFiltrado = res.filter(acta => acta.Estado === 'En Elaboracion' || acta.Estado === 'En Modificacion');
-        } else {
-          resFiltrado = res;
-        }
+        const resFiltrado = this.actasSegunRol(res);
         this.source.load(resFiltrado);
       }
     });
+  }
+
+  private actasSegunRol(actas): any {
+    const filtroActas = [
+      {est: 'Registrada', roles: [Rol.Admin, Rol.Revisor, Rol.Secretaria]},
+      {est: 'En Elaboracion', roles: [Rol.Admin, Rol.Revisor, Rol.Proveedor, Rol.Contratista]},
+      {est: 'En Modificacion', roles: [Rol.Admin, Rol.Revisor, Rol.Contratista]},
+      {est: 'En verificacion', roles: [Rol.Admin, Rol.Revisor]},
+      {est: 'Aceptada', roles: [Rol.Admin, Rol.Revisor]},
+      {est: 'Asociada a Entrada', roles: [Rol.Admin, Rol.Revisor]},
+      {est: 'Anulada', roles: [Rol.Admin, Rol.Revisor]},
+    ];
+    return actas.filter(acta =>
+      filtroActas.some(estRol =>
+        estRol.est === acta.Estado
+        && this.userService.tieneAlgunRol(estRol.roles)));
   }
 
   cargarCampos() {

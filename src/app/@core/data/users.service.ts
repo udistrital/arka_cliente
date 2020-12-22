@@ -26,8 +26,11 @@ export class UserService {
       const id_token = window.localStorage.getItem('id_token').split('.');
       const payload = JSON.parse(atob(id_token[1]));
       window.localStorage.setItem('usuario', payload.sub);
-      // this.roles = [RolUsuario_t.Contratista];
       // this.roles = [RolUsuario_t.Secretaria];
+      // this.roles = [RolUsuario_t.Proveedor];
+      // this.roles = [RolUsuario_t.Contratista];
+      // this.roles = [RolUsuario_t.Admin];
+      // this.roles = [RolUsuario_t.Revisor];
       this.roles = (payload && payload.role && payload.role.length) ? payload.role : [] ;
       // console.log({'Roles': this.roles});
       // this.http.get(path + 'persona/?query=Usuario:' + payload.sub, httpOptions)

@@ -276,12 +276,10 @@
             </nb-card>
 
             <div class="justify-content-center">
-              <button nbButton (click)="Revisar_Totales3()"
-                *ngIf="estadoActa === 'En Elaboracion' || estadoActa === 'En Modificacion'"
+              <button nbButton (click)="Revisar_Totales3()" *ngIf="accion.envioValidar"
                 [disabled]="!firstForm.get('Formulario1').valid || !firstForm.get('Formulario2').valid || !firstForm.get('Formulario3').valid || !verificar"
                 class="float-right">{{'GLOBAL.Acta_Recibido.EdicionActa.VerificacionButton' | translate}}</button>
-              <button nbButton
-                *ngIf="estadoActa === 'Registrada'" (click)="Revisar_Totales3()"
+              <button nbButton (click)="Revisar_Totales3()" *ngIf="accion.envioProveedor"
                 [disabled]="!firstForm.get('Formulario1').valid || !firstForm.get('Formulario2').valid || !verificar"
                 class="float-right">{{'GLOBAL.Acta_Recibido.EdicionActa.EnviarProveedorButton' | translate}}</button>
             </div>
