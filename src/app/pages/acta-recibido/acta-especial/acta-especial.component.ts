@@ -274,6 +274,7 @@ export class ActaEspecialComponent implements OnInit {
     this.firstForm = this.fb.group({
       Formulario1: this.Formulario_1,
       Formulario2: this.fb.array([this.Formulario_2]),
+      Formulario3: this.Formulario_3,
     });
   }
 
@@ -289,6 +290,7 @@ export class ActaEspecialComponent implements OnInit {
         Revisor: [Soporte.Revisor, Validators.required],
       });
       Form2.push(Formulario__2);
+
     }
 
     this.firstForm = this.fb.group({
@@ -299,6 +301,9 @@ export class ActaEspecialComponent implements OnInit {
         Ubicacion: [transaccion_.Formulario1.Ubicacion, Validators.required],
       }),
       Formulario2: Form2,
+      Formulario3: this.fb.group({
+        Datos_Adicionales: [transaccion_.Formulario3.Datos_Adicionales],
+      }),
     });
     const sede = this.firstForm.get('Formulario1').get('Sede').value;
     const dependencia = this.firstForm.get('Formulario1').get('Dependencia').value;
@@ -330,6 +335,11 @@ export class ActaEspecialComponent implements OnInit {
       Fecha_Factura: ['', Validators.required],
       Revisor: ['', Validators.required],
       Soporte: [''],
+    });
+  }
+  get Formulario_3(): FormGroup {
+    return this.fb.group({
+      Datos_Adicionales: ['', Validators.required],
     });
   }
 
@@ -408,9 +418,9 @@ export class ActaEspecialComponent implements OnInit {
     };
     await start();
     this.Datos = this.firstForm.value;
-    console.log(this.Datos)
+    console.log(this.Datos.Formulario3.Datos_Adicionales)
     const Transaccion_Acta = new TransaccionActaRecibido();
-    Transaccion_Acta.ActaRecibido = this.Registrar_Acta(this.Datos.Formulario1);
+    Transaccion_Acta.ActaRecibido = this.Registrar_Acta(this.Datos);
     Transaccion_Acta.UltimoEstado = this.Registrar_Estado_Acta(Transaccion_Acta.ActaRecibido, EstadoActa_t.Registrada);
     const Soportes = new Array<TransaccionSoporteActa>();
     console.log(this.Datos.Formulario2);
@@ -423,27 +433,27 @@ export class ActaEspecialComponent implements OnInit {
     Transaccion_Acta.SoportesActa = Soportes;
     console.log(Transaccion_Acta)
     // if (this.validador === false) {
-      this.Actas_Recibido.postTransaccionActa(Transaccion_Acta).subscribe((res: any) => {
-        console.log(res)
-        if (res !== null) {
-        (Swal as any).fire({
-            type: 'success',
-            title: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.Acta') +
-              `${res.ActaRecibido.Id}` + this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.RegistradaTitle'),
-            text: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.Acta') +
-              `${res.ActaRecibido.Id}` + this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.Registrada'),
-          });
-          sessionStorage.removeItem('Formulario_Registro');
-          this.router.navigate(['/pages/acta_recibido/consulta_acta_recibido']);
-          this.Registrando = false;
-        } else {
-          (Swal as any).fire({
-            type: 'error',
-            title: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.RegistradaTitleNO'),
-            text: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.RegistradaNO'),
-          });
-        }
-      });
+      // this.Actas_Recibido.postTransaccionActa(Transaccion_Acta).subscribe((res: any) => {
+      //   console.log(res)
+      //   if (res !== null) {
+      //   (Swal as any).fire({
+      //       type: 'success',
+      //       title: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.Acta') +
+      //         `${res.ActaRecibido.Id}` + this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.RegistradaTitle'),
+      //       text: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.Acta') +
+      //         `${res.ActaRecibido.Id}` + this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.Registrada'),
+      //     });
+      //     sessionStorage.removeItem('Formulario_Registro');
+      //     this.router.navigate(['/pages/acta_recibido/consulta_acta_recibido']);
+      //     this.Registrando = false;
+      //   } else {
+      //     (Swal as any).fire({
+      //       type: 'error',
+      //       title: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.RegistradaTitleNO'),
+      //       text: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.RegistradaNO'),
+      //     });
+      //   }
+      // });
     // } else {
     //   (Swal as any).fire({
     //     type: 'error',
@@ -454,15 +464,15 @@ export class ActaEspecialComponent implements OnInit {
   }
 
   Registrar_Acta(Datos: any): ActaRecibido {
-
+    // console.log(Observaciones)
     const Acta_de_Recibido = new ActaRecibido();
     Acta_de_Recibido.Id = null;
     Acta_de_Recibido.Activo = true;
     Acta_de_Recibido.FechaCreacion = new Date();
     Acta_de_Recibido.FechaModificacion = new Date();
     Acta_de_Recibido.RevisorId = this.userService.getPersonaId();
-    Acta_de_Recibido.UbicacionId = parseFloat(Datos.Ubicacion);
-    Acta_de_Recibido.Observaciones = '';
+    Acta_de_Recibido.UbicacionId = parseFloat(Datos.Formulario1.Ubicacion);
+    Acta_de_Recibido.Observaciones = Datos.Formulario3.Datos_Adicionales;
 
     return Acta_de_Recibido;
   }
@@ -490,7 +500,7 @@ export class ActaEspecialComponent implements OnInit {
     console.log(Datos)
     Soporte_Acta.ActaRecibidoId = __;
     Soporte_Acta.Activo = true;
-    Soporte_Acta.Consecutivo = "384";// Datos.Consecutivo;
+    Soporte_Acta.Consecutivo = "382"//Datos.Consecutivo;
     Soporte_Acta.FechaCreacion = new Date();
     Soporte_Acta.FechaModificacion = new Date();
     Soporte_Acta.FechaSoporte = new Date(); //Datos.Fecha_Factura;
@@ -582,7 +592,56 @@ export class ActaEspecialComponent implements OnInit {
       }
     });
   }
+  getGranSubtotal() {
+    if (this.Totales !== []) {
+      return this.Totales.map(t => t.Subtotal).reduce((acc, value) => parseFloat(acc) + parseFloat(value));
+    } else {
+      return '0';
+    }
+  }
+  getGranDescuentos() {
 
+    if (this.Totales !== []) {
+      return this.Totales.map(t => t.Descuento).reduce((acc, value) => parseFloat(acc) + parseFloat(value));
+    } else {
+      return '0';
+    }
+  }
+  getGranValorIva() {
+
+    if (this.Totales !== []) {
+      return this.Totales.map(t => t.ValorIva).reduce((acc, value) => parseFloat(acc) + parseFloat(value));
+    } else {
+      return '0';
+    }
+  }
+  getGranTotal() {
+
+    if (this.Totales !== []) {
+      return this.Totales.map(t => t.ValorTotal).reduce((acc, value) => parseFloat(acc) + parseFloat(value));
+    } else {
+      return '0';
+    }
+  }
+  Revisar_Totales2() {
+    if (!this.revisorValido()) {
+      return;
+    }
+    (Swal as any).fire({
+      title: this.translate.instant('GLOBAL.Acta_Recibido.EdicionActa.DatosVeridicosTitle'),
+      text: this.translate.instant('GLOBAL.Acta_Recibido.EdicionActa.DatosVeridicos'),
+      type: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Si',
+      cancelButtonText: 'No',
+    }).then((result) => {
+      if (result.value) {
+        this.onFirstSubmit();
+      }
+    });
+  }
   usarLocalStorage() {
     sessionStorage.setItem('Formulario_Registro', JSON.stringify(this.firstForm.value));
   }

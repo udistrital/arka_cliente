@@ -188,7 +188,80 @@
                 </div>
               </nb-card-footer>
             </nb-card>
-          </mat-step>          
+          </mat-step>
+          
+          <mat-step label="{{'GLOBAL.Acta_Recibido.RegistroActa.DatosAdicionales' | translate}}"
+              formGroupName="Formulario3">
+              <nb-card *ngIf="Totales">
+                <nb-card-header>{{'GLOBAL.Acta_Recibido.RegistroActa.Consolidado' | translate}}</nb-card-header>
+                <nb-card-body>
+                  <table>
+                    <tr>
+                      <td class="cell-3"></td>
+                      <td class="cell-3"></td>
+                      <td class="cell-3">{{'GLOBAL.Acta_Recibido.RegistroActa.Subtotal' | translate}}</td>
+                      <td class="cell-3"></td>
+                      <td class="cell-3">{{getGranSubtotal() | currency}}</td>
+                      <td class="cell-3"></td>
+                      <td class="cell-3"></td>
+                    </tr>
+                    <tr>
+                      <td class="cell-3"></td>
+                      <td class="cell-3"></td>
+                      <td class="cell-3">{{'GLOBAL.Acta_Recibido.RegistroActa.Descuento' | translate}}</td>
+                      <td class="cell-3"></td>
+                      <td class="cell-3">{{getGranDescuentos() | currency}}</td>
+                      <td class="cell-3"></td>
+                      <td class="cell-3"></td>
+                    </tr>
+                    <tr>
+                      <td class="cell-3"></td>
+                      <td class="cell-3"></td>
+                      <td class="cell-3">{{'GLOBAL.Acta_Recibido.RegistroActa.ValorIva' | translate}}</td>
+                      <td class="cell-3"></td>
+                      <td class="cell-3">{{getGranValorIva() | currency}}</td>
+                      <td class="cell-3"></td>
+                      <td class="cell-3"></td>
+                    </tr>
+                    <tr>
+                      <td class="cell-3"></td>
+                      <td class="cell-3"></td>
+                      <td class="cell-3">{{'GLOBAL.Acta_Recibido.RegistroActa.Total' | translate}}</td>
+                      <td class="cell-3"></td>
+                      <td class="cell-3">{{getGranTotal() | currency}}</td>
+                      <td class="cell-3"></td>
+                      <td class="cell-3"></td>
+                    </tr>
+                  </table>
+                </nb-card-body>
+              </nb-card>
+              <nb-card>
+                <nb-card-header>{{'GLOBAL.Acta_Recibido.RegistroActa.DatosAdicionales' | translate}}</nb-card-header>
+                <nb-card-body>
+                  <div class="form-group  col-lg-12">
+                    <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Observaciones' | translate}}</label>
+                    <div class="input-group">
+                      <textarea rows="5" placeholder="{{'GLOBAL.Acta_Recibido.RegistroActa.Observaciones2' | translate}}"
+                        class="form-control" formControlName="Datos_Adicionales" (keyup)="usarLocalStorage()"
+                        required></textarea>
+                    </div>
+                    <p class="campo" *ngIf="firstForm.get('Formulario3').get('Datos_Adicionales').invalid">
+                      {{'GLOBAL.placeholder' | translate}}</p>
+                  </div>
+                </nb-card-body>
+                <nb-card-footer>
+                  <div class="justify-content-center">
+                    <button nbButton
+                      matStepperPrevious>{{'GLOBAL.Acta_Recibido.RegistroActa.AnteriorButton' | translate}}</button>
+                    <button nbButton matStepperNext (click)="Revisar_Totales2()"
+                      [disabled]="!firstForm.get('Formulario3').valid || !firstForm.get('Formulario2').valid || !firstForm.get('Formulario3').valid"
+                      class="float-right">{{'GLOBAL.Acta_Recibido.RegistroActa.GuardarCambiosButton' | translate}}</button>
+                  </div>
+                </nb-card-footer>
+              </nb-card>
+
+            </mat-step>
+
         </mat-vertical-stepper>
       </nb-card-body>
     </nb-card>
