@@ -1,19 +1,3 @@
-// import { Component, OnInit } from '@angular/core';
-
-// @Component({
-//   selector: 'acta-especial',
-//   templateUrl: './acta-especial.component.html',
-//   styleUrls: ['./acta-especial.component.scss']
-// })
-// export class ActaEspecialComponent implements OnInit {
-
-//   constructor() { }
-
-//   ngOnInit() {
-//   }
-
-// }
-
 import { AuthInterceptor } from './../../../@core/_Interceptor/auth.Interceptor';
 import { Formulario } from './../edicion-acta-recibido/datos_locales';
 import { Component, OnInit, ViewChild, ViewChildren, QueryList } from '@angular/core';
@@ -215,7 +199,6 @@ export class ActaEspecialComponent implements OnInit {
         this.Proveedores = list.listProveedores[0];
         this.dataService2 = this.completerService.local(this.Proveedores, 'compuesto', 'compuesto');
         this.dataService3 = this.completerService.local(this.Dependencias, 'Nombre', 'Nombre');
-        // this.dataService = this.completerService.local(this.Ubicaciones, 'Nombre', 'Nombre');
       },
     );
   }
@@ -241,7 +224,6 @@ export class ActaEspecialComponent implements OnInit {
           file.IdDocumento = 13; // tipo de documento (API documentos_crud)
           file.file = event.target.files[0];
           this.fileDocumento[index] = file;
-          console.log(this.fileDocumento)
           this.Validador[index] = true;
 
         } else {
@@ -282,12 +264,12 @@ export class ActaEspecialComponent implements OnInit {
     const Form2 = this.fb.array([]);
     for (const Soporte of transaccion_.Formulario2) {
       const Formulario__2 = this.fb.group({
-        Id: [''],
-        Proveedor: [Soporte.Proveedor, Validators.required],
-        Consecutivo: [Soporte.Consecutivo, Validators.required],
-        Fecha_Factura: [Soporte.Fecha_Factura, Validators.required],
-        Soporte: [Soporte.Soporte],
-        Revisor: [Soporte.Revisor, Validators.required],
+        // Id: [''],
+        // Proveedor: [Soporte.Proveedor, Validators.required],
+        // Consecutivo: [Soporte.Consecutivo, Validators.required],
+        // Fecha_Factura: [Soporte.Fecha_Factura, Validators.required],
+        // Soporte: [Soporte.Soporte],
+        // Revisor: [Soporte.Revisor, Validators.required],
       });
       Form2.push(Formulario__2);
 
@@ -330,11 +312,11 @@ export class ActaEspecialComponent implements OnInit {
   }
   get Formulario_2(): FormGroup {
     return this.fb.group({
-      Proveedor: ['', Validators.required],
-      Consecutivo: ['', Validators.required],
-      Fecha_Factura: ['', Validators.required],
-      Revisor: ['', Validators.required],
-      Soporte: [''],
+      // Proveedor: ['', Validators.required],
+      // Consecutivo: ['', Validators.required],
+      // Fecha_Factura: ['', Validators.required],
+      // Revisor: ['', Validators.required],
+      // Soporte: [''],
     });
   }
   get Formulario_3(): FormGroup {
@@ -418,14 +400,11 @@ export class ActaEspecialComponent implements OnInit {
     };
     await start();
     this.Datos = this.firstForm.value;
-    console.log(this.Datos.Formulario3.Datos_Adicionales)
     const Transaccion_Acta = new TransaccionActaRecibido();
     Transaccion_Acta.ActaRecibido = this.Registrar_Acta(this.Datos);
     Transaccion_Acta.UltimoEstado = this.Registrar_Estado_Acta(Transaccion_Acta.ActaRecibido, EstadoActa_t.Registrada);
     const Soportes = new Array<TransaccionSoporteActa>();
-    console.log(this.Datos.Formulario2);
     this.Datos.Formulario2.forEach((soporte, index) => {
-      // Soportes.push(this.Registrar_Soporte(soporte, Transaccion_Acta.ActaRecibido, index));
       Soportes.push(this.Registrar_Soporte(soporte, this.Elementos__Soporte[index], Transaccion_Acta.ActaRecibido));
 
     });
@@ -464,7 +443,6 @@ export class ActaEspecialComponent implements OnInit {
   }
 
   Registrar_Acta(Datos: any): ActaRecibido {
-    // console.log(Observaciones)
     const Acta_de_Recibido = new ActaRecibido();
     Acta_de_Recibido.Id = null;
     Acta_de_Recibido.Activo = true;
@@ -492,12 +470,12 @@ export class ActaEspecialComponent implements OnInit {
   }
 
   Registrar_Soporte(Datos: any, Elementos_: any, __: ActaRecibido): TransaccionSoporteActa {
-    console.log(Datos)
+    console.log(this.DatosElementos)
+    
     const Soporte_Acta = new SoporteActa();
     const Transaccion = new TransaccionSoporteActa();
-    const proveedor___ = Datos.Proveedor.split(' ');
-    Soporte_Acta.Id = null; //arseFloat(Datos.Id);
-    console.log(Datos)
+    // const proveedor___ = Datos.Proveedor.split(' ');
+    Soporte_Acta.Id = null; //parseFloat(Datos.Id);
     Soporte_Acta.ActaRecibidoId = __;
     Soporte_Acta.Activo = true;
     Soporte_Acta.Consecutivo = "382"//Datos.Consecutivo;
@@ -513,7 +491,6 @@ export class ActaEspecialComponent implements OnInit {
 
   Registrar_Elementos(Datos: any, Soporte: SoporteActa): Array<Elemento> {
     const Elementos_Soporte = new Array<Elemento>();
-    console.log(Datos)
     for (const datos of Datos) {
 
       const Elemento__ = new Elemento;
@@ -541,7 +518,6 @@ export class ActaEspecialComponent implements OnInit {
       Elemento__.FechaCreacion = new Date();
       Elemento__.FechaModificacion = new Date();
       Elementos_Soporte.push(Elemento__);
-      console.log(Elementos_Soporte)
     }
     return Elementos_Soporte;
   }

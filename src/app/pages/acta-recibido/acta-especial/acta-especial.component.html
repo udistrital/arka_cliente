@@ -181,10 +181,13 @@
                   <button nbButton matStepperPrevious>
                     {{'GLOBAL.Acta_Recibido.RegistroActa.AnteriorButton' | translate}}
                   </button>
-                  <button nbButton matStepperNext (click)="Revisar_Totales()"
+                  <!-- <button nbButton matStepperNext (click)="Revisar_Totales()"
                     [disabled]="!firstForm.get('Formulario1').valid"
                     class="float-right">{{'GLOBAL.Acta_Recibido.RegistroActa.GuardarCambiosButton' | translate}}
-                  </button>
+                  </button> -->
+                  <button nbButton matStepperNext usarLocalStorage
+                      [disabled]="!firstForm.get('Formulario1').valid || !DatosElementos"
+                      class="float-right">{{'GLOBAL.Acta_Recibido.RegistroActa.SiguienteButton' | translate}}</button>
                 </div>
               </nb-card-footer>
             </nb-card>
@@ -253,8 +256,8 @@
                   <div class="justify-content-center">
                     <button nbButton
                       matStepperPrevious>{{'GLOBAL.Acta_Recibido.RegistroActa.AnteriorButton' | translate}}</button>
-                    <button nbButton matStepperNext (click)="Revisar_Totales2()"
-                      [disabled]="!firstForm.get('Formulario3').valid || !firstForm.get('Formulario2').valid || !firstForm.get('Formulario3').valid"
+                    <button nbButton matStepperNext (click)="Revisar_Totales()"
+                      [disabled]="!firstForm.get('Formulario1').valid || !firstForm.get('Formulario3').valid || !firstForm.get('Formulario2').valid"
                       class="float-right">{{'GLOBAL.Acta_Recibido.RegistroActa.GuardarCambiosButton' | translate}}</button>
                   </div>
                 </nb-card-footer>
