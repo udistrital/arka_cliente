@@ -4,24 +4,28 @@ import { RolUsuario_t as Rol } from '../../../@core/data/models/roles/rol_usuari
 // un arreglo de dos dimensiones con indices tipo string.
 // Ver https://stackoverflow.com/a/29043535/3180052
 
+// Si se tienen roles con permisos de editar y ver
+// tendrá prevalencia el permiso de editar
+// ( ver función cargaPermisos() )
+
 export const permisosSeccionesActas = [
   {
     Seccion: 'Acta',
     Permisos: [
       {
         Estado: 'Registrada',
-        PuedenModificar: [Rol.Admin, Rol.Secretaria],
+        PuedenModificar: [Rol.Admin, Rol.Secretaria, Rol.Revisor],
         PuedenVer: [Rol.Contratista],
       },
       {
         Estado: 'En Elaboracion',
-        PuedenModificar: [Rol.Admin],
-        PuedenVer: [Rol.Secretaria, Rol.Contratista],
+        PuedenModificar: [Rol.Admin, Rol.Revisor],
+        PuedenVer: [Rol.Contratista, Rol.Proveedor],
       },
       {
         Estado: 'En Modificacion',
-        PuedenModificar: [Rol.Admin],
-        PuedenVer: [Rol.Secretaria, Rol.Contratista],
+        PuedenModificar: [Rol.Admin, Rol.Revisor],
+        PuedenVer: [Rol.Contratista],
       },
       {
         Estado: 'Aceptada',
@@ -35,18 +39,18 @@ export const permisosSeccionesActas = [
     Permisos: [
       {
         Estado: 'Registrada',
-        PuedenModificar: [Rol.Admin],
+        PuedenModificar: [Rol.Admin, Rol.Revisor],
         PuedenVer: [],
       },
       {
         Estado: 'En Elaboracion',
-        PuedenModificar: [Rol.Admin, Rol.Contratista],
-        PuedenVer: [Rol.Secretaria],
+        PuedenModificar: [Rol.Admin, Rol.Contratista, Rol.Proveedor, Rol.Revisor],
+        PuedenVer: [],
       },
       {
         Estado: 'En Modificacion',
-        PuedenModificar: [Rol.Admin, Rol.Contratista],
-        PuedenVer: [Rol.Secretaria],
+        PuedenModificar: [Rol.Admin, Rol.Contratista, Rol.Revisor],
+        PuedenVer: [],
       },
       {
         Estado: 'Aceptada',

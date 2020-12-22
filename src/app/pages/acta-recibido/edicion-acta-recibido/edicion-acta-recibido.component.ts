@@ -153,7 +153,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
     this.Elementos__Soporte = new Array<any>();
   }
 
-  // Los permisos dependen del estado del acta y del rol.
+  // Los permisos en cada sección dependen del estado del acta y del rol.
   cargaPermisos() {
     // console.log({'this.estadoActualActa': this.estadoActa});
 
