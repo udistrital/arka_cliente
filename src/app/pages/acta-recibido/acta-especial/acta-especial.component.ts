@@ -103,9 +103,9 @@ export class ActaEspecialComponent implements OnInit {
     Acta: Permiso,
     Elementos: Permiso,
   } = {
-    Acta: Permiso.Ninguno,
-    Elementos: Permiso.Ninguno,
-  };
+      Acta: Permiso.Ninguno,
+      Elementos: Permiso.Ninguno,
+    };
 
   constructor(
     private translate: TranslateService,
@@ -150,7 +150,12 @@ export class ActaEspecialComponent implements OnInit {
       this.Cargar_Formularios();
     } else {
       const formulario = JSON.parse(sessionStorage.Formulario_Acta_Especial);
-
+      let elementos;
+      if (sessionStorage.Elementos_Acta_Especial === []) {
+        elementos = [];
+      } else {
+        elementos = JSON.parse(sessionStorage.Elementos_Acta_Especial);
+      }
       (Swal as any).fire({
         type: 'warning',
         title: 'Registro sin completar',
@@ -162,7 +167,7 @@ export class ActaEspecialComponent implements OnInit {
         cancelButtonText: 'Nuevo Registro, se eliminara el registro anterior',
       }).then((result) => {
         if (result.value) {
-          this.cargar(formulario);
+          this.cargar(formulario, elementos);
         } else {
           (Swal as any).fire({
             type: 'warning',
@@ -175,9 +180,10 @@ export class ActaEspecialComponent implements OnInit {
           }).then((result2) => {
             if (result2.value) {
               sessionStorage.removeItem('Formulario_Acta_Especial');
+              sessionStorage.removeItem('Elementos_Acta_Especial');
               this.Cargar_Formularios();
             } else {
-              this.cargar(formulario);
+              this.cargar(formulario, elementos);
             }
           });
         }
@@ -259,14 +265,14 @@ export class ActaEspecialComponent implements OnInit {
     });
   }
 
-  Cargar_Formularios2(transaccion_: any) {
+  Cargar_Formularios2(transaccion_: any, elementos_: any) {
     const Form2 = this.fb.array([]);
     for (const Soporte of transaccion_.Formulario2) {
       const Formulario__2 = this.fb.group({
       });
       Form2.push(Formulario__2);
-
     }
+    this.Elementos__Soporte = elementos_;
 
     this.firstForm = this.fb.group({
       Formulario1: this.fb.group({
@@ -397,28 +403,27 @@ export class ActaEspecialComponent implements OnInit {
       Soportes.push(this.Registrar_Soporte(soporte, this.Elementos__Soporte[index], Transaccion_Acta.ActaRecibido));
 
     });
-    console.log(this.firstForm.get('Formulario2').get('Elementos'))
     Transaccion_Acta.SoportesActa = Soportes;
-      this.Actas_Recibido.postTransaccionActa(Transaccion_Acta).subscribe((res: any) => {
-        if (res !== null) {
+    this.Actas_Recibido.postTransaccionActa(Transaccion_Acta).subscribe((res: any) => {
+      if (res !== null) {
         (Swal as any).fire({
-            type: 'success',
-            title: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.Acta') +
-              `${res.ActaRecibido.Id}` + this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.RegistradaTitle'),
-            text: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.Acta') +
-              `${res.ActaRecibido.Id}` + this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.Registrada'),
-          });
-          sessionStorage.removeItem('Formulario_Acta_Especial');
-          this.router.navigate(['/pages/acta_recibido/consulta_acta_recibido']);
-          this.Registrando = false;
-        } else {
-          (Swal as any).fire({
-            type: 'error',
-            title: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.RegistradaTitleNO'),
-            text: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.RegistradaNO'),
-          });
-        }
-      });
+          type: 'success',
+          title: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.Acta') +
+            `${res.ActaRecibido.Id}` + this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.RegistradaTitle'),
+          text: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.Acta') +
+            `${res.ActaRecibido.Id}` + this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.Registrada'),
+        });
+        sessionStorage.removeItem('Formulario_Acta_Especial');
+        this.router.navigate(['/pages/acta_recibido/consulta_acta_recibido']);
+        this.Registrando = false;
+      } else {
+        (Swal as any).fire({
+          type: 'error',
+          title: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.RegistradaTitleNO'),
+          text: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.RegistradaNO'),
+        });
+      }
+    });
   }
 
   Registrar_Acta(Datos: any): ActaRecibido {
@@ -595,20 +600,16 @@ export class ActaEspecialComponent implements OnInit {
     });
   }
   usarLocalStorage() {
-      if (sessionStorage.Formulario_Edicion == null) {
-        sessionStorage.setItem('Formulario_Acta_Especial', JSON.stringify(this.firstForm.value));
-        sessionStorage.setItem('Elementos_Acta_Especial', JSON.stringify(this.Elementos__Soporte));
-      } else {
-        sessionStorage.setItem('Formulario_Acta_Especial', JSON.stringify(this.firstForm.value));
-        sessionStorage.setItem('Elementos_Acta_Especial', JSON.stringify(this.Elementos__Soporte));
-      }
+    console.log(JSON.parse(sessionStorage.Elementos_Acta_Especial))
+    sessionStorage.setItem('Formulario_Acta_Especial', JSON.stringify(this.firstForm.value));
+    sessionStorage.setItem('Elementos_Acta_Especial', JSON.stringify(this.Elementos__Soporte));
   }
 
-  cargar(formulario) {
+  cargar(formulario, elementos) {
     if (this.Sedes && this.Dependencias) {
-      this.Cargar_Formularios2(formulario);
+      this.Cargar_Formularios2(formulario, elementos);
     } else {
-      setTimeout(() => { this.cargar(formulario); }, 100);
+      setTimeout(() => { this.cargar(formulario, elementos); }, 100);
     }
   }
 
@@ -638,7 +639,6 @@ export class ActaEspecialComponent implements OnInit {
   }
 
   getPermisoEditar(p: Permiso): boolean {
-    // console.log(p === Permiso.Modificar)
     return true;
   }
 
@@ -666,7 +666,6 @@ export class ActaEspecialComponent implements OnInit {
         this.Elementos__Soporte.push(this.DatosElementos);
       }
     }
-    // console.log(this.Elementos__Soporte);
   }
 
 }

@@ -70,6 +70,7 @@
                     </ng-template>
                     <div>
                       <ngx-capturar-elementos *ngIf="getPermisoEditar(permisos.Elementos)"
+                        (click)="usarLocalStorage()"
                         [DatosRecibidos]="Elementos__Soporte[i]" (DatosTotales)="ver2($event,i)"
                         (DatosEnviados)="ver($event, i)">
                       </ngx-capturar-elementos>
@@ -87,10 +88,6 @@
                   <button nbButton matStepperPrevious>
                     {{'GLOBAL.Acta_Recibido.RegistroActa.AnteriorButton' | translate}}
                   </button>
-                  <!-- <button nbButton matStepperNext (click)="Revisar_Totales()"
-                    [disabled]="!firstForm.get('Formulario1').valid"
-                    class="float-right">{{'GLOBAL.Acta_Recibido.RegistroActa.GuardarCambiosButton' | translate}}
-                  </button> -->
                   <button nbButton matStepperNext
                     [disabled]="!firstForm.get('Formulario1').valid || !Elementos__Soporte" (click)="usarLocalStorage()"
                     class="float-right">{{'GLOBAL.Acta_Recibido.RegistroActa.SiguienteButton' | translate}}</button>
