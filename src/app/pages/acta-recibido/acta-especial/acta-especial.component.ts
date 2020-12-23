@@ -401,7 +401,7 @@ export class ActaEspecialComponent implements OnInit {
     this.Datos = this.firstForm.value;
     const Transaccion_Acta = new TransaccionActaRecibido();
     Transaccion_Acta.ActaRecibido = this.Registrar_Acta(this.Datos);
-    Transaccion_Acta.UltimoEstado = this.Registrar_Estado_Acta(Transaccion_Acta.ActaRecibido, EstadoActa_t.Registrada);
+    Transaccion_Acta.UltimoEstado = this.Registrar_Estado_Acta(Transaccion_Acta.ActaRecibido, EstadoActa_t.Aceptada);
     const Soportes = new Array<TransaccionSoporteActa>();
     this.Datos.Formulario2.forEach((soporte, index) => {
       Soportes.push(this.Registrar_Soporte(soporte, this.Elementos__Soporte[index], Transaccion_Acta.ActaRecibido));
@@ -410,7 +410,6 @@ export class ActaEspecialComponent implements OnInit {
 
     Transaccion_Acta.SoportesActa = Soportes;
     // console.log(Transaccion_Acta)
-    if (this.validador === false) {
       this.Actas_Recibido.postTransaccionActa(Transaccion_Acta).subscribe((res: any) => {
         if (res !== null) {
         (Swal as any).fire({
@@ -431,13 +430,6 @@ export class ActaEspecialComponent implements OnInit {
           });
         }
       });
-    } else {
-      (Swal as any).fire({
-        type: 'error',
-        title: 'Datos Erróneos',
-        text: 'Existen datos no válidos',
-      });
-    }
   }
 
   Registrar_Acta(Datos: any): ActaRecibido {
@@ -474,7 +466,7 @@ export class ActaEspecialComponent implements OnInit {
     Soporte_Acta.Id = null; // parseFloat(Datos.Id);
     Soporte_Acta.ActaRecibidoId = __;
     Soporte_Acta.Activo = true;
-    Soporte_Acta.Consecutivo = '382'; // Datos.Consecutivo;
+    Soporte_Acta.Consecutivo = '505'; // Datos.Consecutivo;
     Soporte_Acta.FechaCreacion = new Date();
     Soporte_Acta.FechaModificacion = new Date();
     Soporte_Acta.FechaSoporte = new Date(); // Datos.Fecha_Factura;
