@@ -51,7 +51,6 @@ export function HttpLoaderFactory(http: HttpClient) {
     CdkTreeModule,
     // Material
   ],
-  declarations: [],
 })
 export class MaterialModule {}
 

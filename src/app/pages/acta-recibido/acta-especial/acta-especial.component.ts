@@ -40,9 +40,9 @@ import { NbDateService } from '@nebular/theme';
 import { RolUsuario_t as Rol, PermisoUsuario_t as Permiso } from '../../../@core/data/models/roles/rol_usuario';
 
 @Component({
-  selector: 'acta-especial',
+  selector: 'ngx-acta-especial',
   templateUrl: './acta-especial.component.html',
-  styleUrls: ['./acta-especial.component.scss']
+  styleUrls: ['./acta-especial.component.scss'],
 })
 
 export class ActaEspecialComponent implements OnInit {
@@ -190,7 +190,6 @@ export class ActaEspecialComponent implements OnInit {
       (list) => {
         this.Ubicaciones = list.listUbicaciones[0];
         this.Sedes = list.listSedes[0];
-        
         this.Dependencias = list.listDependencias[0];
         this.Estados_Acta = list.listEstadosActa[0];
         this.Estados_Elemento = list.listEstadosElemento[0];
@@ -410,36 +409,35 @@ export class ActaEspecialComponent implements OnInit {
     });
 
     Transaccion_Acta.SoportesActa = Soportes;
-    console.log(Transaccion_Acta)
-    // if (this.validador === false) {
-      // this.Actas_Recibido.postTransaccionActa(Transaccion_Acta).subscribe((res: any) => {
-      //   console.log(res)
-      //   if (res !== null) {
-      //   (Swal as any).fire({
-      //       type: 'success',
-      //       title: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.Acta') +
-      //         `${res.ActaRecibido.Id}` + this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.RegistradaTitle'),
-      //       text: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.Acta') +
-      //         `${res.ActaRecibido.Id}` + this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.Registrada'),
-      //     });
-      //     sessionStorage.removeItem('Formulario_Registro');
-      //     this.router.navigate(['/pages/acta_recibido/consulta_acta_recibido']);
-      //     this.Registrando = false;
-      //   } else {
-      //     (Swal as any).fire({
-      //       type: 'error',
-      //       title: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.RegistradaTitleNO'),
-      //       text: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.RegistradaNO'),
-      //     });
-      //   }
-      // });
-    // } else {
-    //   (Swal as any).fire({
-    //     type: 'error',
-    //     title: 'Datos Erróneos',
-    //     text: 'Existen datos no válidos',
-    //   });
-    // }
+    // console.log(Transaccion_Acta)
+    if (this.validador === false) {
+      this.Actas_Recibido.postTransaccionActa(Transaccion_Acta).subscribe((res: any) => {
+        if (res !== null) {
+        (Swal as any).fire({
+            type: 'success',
+            title: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.Acta') +
+              `${res.ActaRecibido.Id}` + this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.RegistradaTitle'),
+            text: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.Acta') +
+              `${res.ActaRecibido.Id}` + this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.Registrada'),
+          });
+          sessionStorage.removeItem('Formulario_Registro');
+          this.router.navigate(['/pages/acta_recibido/consulta_acta_recibido']);
+          this.Registrando = false;
+        } else {
+          (Swal as any).fire({
+            type: 'error',
+            title: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.RegistradaTitleNO'),
+            text: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.RegistradaNO'),
+          });
+        }
+      });
+    } else {
+      (Swal as any).fire({
+        type: 'error',
+        title: 'Datos Erróneos',
+        text: 'Existen datos no válidos',
+      });
+    }
   }
 
   Registrar_Acta(Datos: any): ActaRecibido {
@@ -470,18 +468,16 @@ export class ActaEspecialComponent implements OnInit {
   }
 
   Registrar_Soporte(Datos: any, Elementos_: any, __: ActaRecibido): TransaccionSoporteActa {
-    console.log(this.DatosElementos)
-    
     const Soporte_Acta = new SoporteActa();
     const Transaccion = new TransaccionSoporteActa();
     // const proveedor___ = Datos.Proveedor.split(' ');
-    Soporte_Acta.Id = null; //parseFloat(Datos.Id);
+    Soporte_Acta.Id = null; // parseFloat(Datos.Id);
     Soporte_Acta.ActaRecibidoId = __;
     Soporte_Acta.Activo = true;
-    Soporte_Acta.Consecutivo = "382"//Datos.Consecutivo;
+    Soporte_Acta.Consecutivo = '382'; // Datos.Consecutivo;
     Soporte_Acta.FechaCreacion = new Date();
     Soporte_Acta.FechaModificacion = new Date();
-    Soporte_Acta.FechaSoporte = new Date(); //Datos.Fecha_Factura;
+    Soporte_Acta.FechaSoporte = new Date(); // Datos.Fecha_Factura;
     // Soporte_Acta.ProveedorId = 14860; //this.Proveedores.find(proveedor => proveedor.NumDocumento.toString() === proveedor___[0].toString()).Id;
 
     Transaccion.SoporteActa = Soporte_Acta;

@@ -8,7 +8,7 @@ describe('ActaEspecialComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ActaEspecialComponent ]
+      declarations: [ ActaEspecialComponent ],
     })
     .compileComponents();
   }));
