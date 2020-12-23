@@ -51,6 +51,10 @@ export const MENU_ITEMS: NbMenuItem[] = [
         title: 'Registro de Acta',
         link: '/pages/acta_recibido/registro_acta_recibido',
       },
+      {
+        title: 'Registro de Acta Especial',
+        link: '/pages/acta_recibido/acta_especial',
+      },
     ],
   },
   {

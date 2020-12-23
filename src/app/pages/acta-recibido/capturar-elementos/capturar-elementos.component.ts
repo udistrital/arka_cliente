@@ -1,5 +1,6 @@
 import { Component, OnInit, ViewChild, ElementRef, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import * as XLSX from 'xlsx';
+import * as FileSaver from 'file-saver';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
@@ -24,6 +25,7 @@ import { MatCheckboxChange } from '@angular/material';
 import { CompleterData, CompleterService, CompleterItem } from 'ng2-completer';
 import {Observable} from 'rxjs';
 import { Row } from 'ngx-smart-table/lib/data-set/row';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'ngx-capturar-elementos',
@@ -47,6 +49,7 @@ export class CapturarElementosComponent implements OnInit {
   @ViewChild(MatTable) table: MatTable<any>;
   @ViewChild('fileInput') fileInput: ElementRef;
   dataSource: MatTableDataSource<any>;
+  dataSource2: MatTableDataSource<any>;
 
   @Input() DatosRecibidos: any;
   @Output() DatosEnviados = new EventEmitter();
@@ -99,6 +102,7 @@ export class CapturarElementosComponent implements OnInit {
         this.Tarifas_Iva = list.listIVA[0];
         this.Clases = list.listClases[0];
         this.dataService = this.completerService.local(this.Clases, 'SubgrupoId.Nombre', 'SubgrupoId.Nombre');
+        // console.log({pollito:this.Clases})
       },
     );
   }
@@ -118,6 +122,8 @@ export class CapturarElementosComponent implements OnInit {
       this.getSubtotales();
       this.getIVA();
       this.getTotales();
+      this.getClasesElementos();
+      // this.dataSource.data[0].TipoBienNombre = this.Tipos_Bien[2].Nombre;
       this.ver();
     } else {
       this.dataSource = new MatTableDataSource();
@@ -131,13 +137,61 @@ export class CapturarElementosComponent implements OnInit {
     }
   }
 
+  exportToExcel(json: any[], excelFileName: string) {
+    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(json);
+    const workbook: XLSX.WorkBook = {
+      Sheets: {'data': worksheet},
+      SheetNames: ['data'],
+    };
+    const excelBuffer: any = XLSX.write(workbook, {bookType: 'xlsx', type: 'array'});
+    this.saveAsExcel(excelBuffer, excelFileName);
+
+  }
+  saveAsExcel(buffer: any, fileName: string) {
+    const data: Blob = new Blob(
+      [buffer],
+      {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet; charset=UTF-8',
+      });
+    FileSaver.saveAs(data, fileName + '_export_' + 'xlsx');
+  }
+  DescargarTabla() {
+    if (this.dataSource2 === undefined) {
+      let dataexcel = new Array();
+      for (let i = 0; i < this.dataSource.data.length; i++) {
+        dataexcel[i] = {};
+      }
+      this.dataSource2 = new MatTableDataSource(dataexcel);
+    }
+    for (let i = 0; i < this.dataSource.data.length; i++) {
+      this.dataSource2.data[i].Codigo = this.dataSource.data[i].CodigoSubgrupo;
+      this.dataSource2.data[i].Clase = this.dataSource.data[i].NombreClase;
+      this.dataSource2.data[i].TipoBien = this.dataSource.data[i].TipoBienNombre;
+      this.dataSource2.data[i].Descripcion = this.dataSource.data[i].Nombre;
+      this.dataSource2.data[i].Cantidad = this.dataSource.data[i].Cantidad;
+      this.dataSource2.data[i].Marca = this.dataSource.data[i].Marca;
+      this.dataSource2.data[i].Serie = this.dataSource.data[i].Serie;
+      this.dataSource2.data[i].UnidadMedida = this.dataSource.data[i].UnidadMedida;
+      this.dataSource2.data[i].ValorUnitario = this.dataSource.data[i].ValorUnitario;
+      this.dataSource2.data[i].Subtotal = this.dataSource.data[i].Subtotal;
+      this.dataSource2.data[i].Descuento = this.dataSource.data[i].Descuento;
+      this.dataSource2.data[i].PorcentajeIva = this.dataSource.data[i].PorcentajeIvaId;
+      this.dataSource2.data[i].ValorIva = this.dataSource.data[i].ValorIva;
+      this.dataSource2.data[i].ValorTotal = this.dataSource.data[i].ValorTotal;
+    }
+    this.exportToExcel(this.dataSource2.data, 'prueba1');
+    // console.log(this.dataSource2.data);
+  }
+
   onSelectedClase(selected: CompleterItem, fila: number) {
     this.dataSource.data[fila].CodigoSubgrupo = selected.originalObject.SubgrupoId.Codigo;
-    this.dataSource.data[fila].TipoBienId = selected.originalObject.TipoBienId.Nombre;
+    this.dataSource.data[fila].TipoBienId = selected.originalObject.TipoBienId.Id;
+    this.dataSource.data[fila].SubgrupoCatalogoId = selected.originalObject.SubgrupoId.Id;
+    this.dataSource.data[fila].TipoBienNombre = selected.originalObject.TipoBienId.Nombre;
   }
 
   ver() {
     this.refrescaCheckTotal();
+    // console.log(this.DatosEnviados)
     this.DatosEnviados.emit(this.dataSource.data);
     this.DatosTotales.emit(this.Totales);
   }
@@ -145,7 +199,8 @@ export class CapturarElementosComponent implements OnInit {
   TraerPlantilla() {
 
     NuxeoService.nuxeo.header('X-NXDocumentProperties', '*');
-    NuxeoService.nuxeo.request('/id/8e4d5b47-ba37-41dd-b549-4efc1777fef2')
+    //NuxeoService.nuxeo.request('/id/8e4d5b47-ba37-41dd-b549-4efc1777fef2')
+    NuxeoService.nuxeo.request('/id/76e0956e-1cbe-45d7-993c-1839fbbf2cfc')
       .get()
       .then(function (response) {
         // console.log(response)
@@ -244,6 +299,7 @@ export class CapturarElementosComponent implements OnInit {
           for (let i = 0; i < this.dataSource.data.length; i++) {
             if (this.dataSource.data[i].CodigoSubgrupo === undefined) {
               this.dataSource.data[i].CodigoSubgrupo = '' ;
+              this.dataSource.data[i].TipoBienNombre = '';
             }
           }
           (Swal as any).fire({
@@ -335,6 +391,15 @@ export class CapturarElementosComponent implements OnInit {
       }
     } else {
       return '0';
+    }
+  }
+  getClasesElementos() {
+    if (this.Clases && this.Clases.length ) {
+      this.dataSource.data.map((elemento) => {
+        elemento.TipoBienNombre = this.Tipos_Bien.find((x) => x.Id === elemento.TipoBienId).Nombre;
+        elemento.CodigoSubgrupo = this.Clases.find((x) => x.SubgrupoId.Id === elemento.SubgrupoCatalogoId).SubgrupoId.Codigo;
+        elemento.NombreClase = this.Clases.find((x) => x.SubgrupoId.Id === elemento.SubgrupoCatalogoId).SubgrupoId.Nombre;
+      });
     }
   }
 

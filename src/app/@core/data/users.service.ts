@@ -28,7 +28,7 @@ export class UserService {
       const id_token = window.localStorage.getItem('id_token').split('.');
       const payload = JSON.parse(atob(id_token[1]));
       window.localStorage.setItem('usuario', payload.sub);
-      this.roles = payload.role;
+      this.roles = (payload && payload.role && payload.role.length) ? payload.role : [] ;
       // this.http.get(path + 'persona/?query=Usuario:' + payload.sub, httpOptions)
       this.http.get(path + 'tercero/?query=UsuarioWSO2:' + payload.sub, httpOptions)
         .subscribe(res => {
