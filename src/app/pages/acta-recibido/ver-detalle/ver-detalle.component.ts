@@ -85,6 +85,7 @@ export class VerDetalleComponent implements OnInit {
   fileDocumento: any;
   Dependencias: any;
   Sedes: any;
+  ActaEspecial: boolean;
 
   constructor(
     private translate: TranslateService,
@@ -168,7 +169,9 @@ export class VerDetalleComponent implements OnInit {
 
         const Formulario__2 = this.fb.group({
           Id: [Soporte.SoporteActa.Id],
-          Proveedor: [this.Proveedores.find(proveedor => proveedor.Id === Soporte.SoporteActa.ProveedorId).compuesto],
+          Proveedor: [
+            Soporte.SoporteActa.ProveedorId === 0 ? this.ActaEspecial = true : this.Proveedores.find((proveedor) => proveedor.Id.toString() === Soporte.SoporteActa.ProveedorId.toString()).compuesto,
+          ],
           Consecutivo: [Soporte.SoporteActa.Consecutivo],
           Fecha_Factura: [Soporte.SoporteActa.FechaSoporte],
           Soporte: [Soporte.SoporteActa.DocumentoId],

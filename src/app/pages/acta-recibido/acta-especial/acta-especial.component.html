@@ -61,27 +61,12 @@
             formArrayName="Formulario2">
             <nb-card>
               <nb-card-body>
-                <mat-tab-group [selectedIndex]="selected.value" (selectedIndexChange)="selected.setValue($event)">
-                  <mat-tab *ngFor="let soporte of firstForm.get('Formulario2').controls; let i = index"
-                    [formGroupName]="i">
-                    <ng-template mat-tab-label>
-                      {{'GLOBAL.Acta_Recibido.RegistroActa.SoporteSubTitle' | translate}} &nbsp; {{i + 1}} &nbsp; &nbsp;
-                      &nbsp; &nbsp;<i class="fas fa-window-close" (click)="removeTab(i); usarLocalStorage()"></i>
-                    </ng-template>
-                    <div>
-                      <ngx-capturar-elementos *ngIf="getPermisoEditar(permisos.Elementos)"
-                        (click)="usarLocalStorage()"
-                        [DatosRecibidos]="Elementos__Soporte[i]" (DatosTotales)="ver2($event,i)"
-                        (DatosEnviados)="ver($event, i)">
-                      </ngx-capturar-elementos>
-                    </div>
-                  </mat-tab>
-                  <mat-tab [disabled]="true">
-                    <ng-template mat-tab-label>
-                      <i class="fas fa-plus-square fa-2x" (click)="addTab(); usarLocalStorage()"></i>
-                    </ng-template>
-                  </mat-tab>
-                </mat-tab-group>
+                <div>
+                  <ngx-capturar-elementos *ngIf="getPermisoEditar(permisos.Elementos)" (click)="usarLocalStorage()"
+                    [DatosRecibidos]="Elementos__Soporte[0]" (DatosTotales)="ver2($event)"
+                    (DatosEnviados)="ver($event)">
+                  </ngx-capturar-elementos>
+                </div>
               </nb-card-body>
               <nb-card-footer>
                 <div class="justify-content-center">

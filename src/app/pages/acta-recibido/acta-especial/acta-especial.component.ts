@@ -207,50 +207,6 @@ export class ActaEspecialComponent implements OnInit {
       },
     );
   }
-  download(index) {
-
-    const new_tab = window.open(this.fileDocumento[index].urlTemp, this.fileDocumento[index].urlTemp, '_blank');
-    new_tab.onload = () => {
-      new_tab.location = this.fileDocumento[index].urlTemp;
-    };
-    new_tab.focus();
-  }
-
-  onInputFileDocumento(event, index) {
-    const max_size = 1;
-    if (event.target.files.length > 0) {
-      const file = event.target.files[0];
-      if (file.type === 'application/pdf') {
-
-        if (file.size < max_size * 1024000) {
-
-          file.urlTemp = URL.createObjectURL(event.srcElement.files[0]);
-          file.url = this.cleanURL(file.urlTemp);
-          file.IdDocumento = 13; // tipo de documento (API documentos_crud)
-          file.file = event.target.files[0];
-          this.fileDocumento[index] = file;
-          this.Validador[index] = true;
-
-        } else {
-          (Swal as any).fire({
-            title: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.Tamaño_title'),
-            text: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.Tamaño_placeholder'),
-            type: 'warning',
-          });
-          this.Validador[index] = false;
-        }
-      } else {
-        this.Validador[index] = false;
-        this.pUpManager.showErrorAlert('error' + this.translate.instant('GLOBAL.error'));
-      }
-    }
-  }
-
-  clearFile(index) {
-    (this.firstForm.get('Formulario2') as FormArray).at(index).get('Soporte').setValue('');
-    this.fileDocumento[index] = undefined;
-    this.Validador[index] = undefined;
-  }
 
   cleanURL(oldURL: string): SafeResourceUrl {
     return this.sanitization.bypassSecurityTrustUrl(oldURL);
@@ -338,48 +294,6 @@ export class ActaEspecialComponent implements OnInit {
     });
   }
 
-  addSoportes() {
-    (this.firstForm.get('Formulario2') as FormArray).push(this.Formulario_2);
-  }
-
-  deleteSoportes(index: number) {
-    (this.firstForm.get('Formulario2') as FormArray).removeAt(index);
-  }
-
-  addTab() {
-    this.addSoportes();
-    this.searchStr2.push();
-    this.selected.setValue(this.firstForm.get('Formulario2').value.length - 1);
-  }
-
-  removeTab(i: number) {
-    this.deleteSoportes(i);
-    this.searchStr2.splice(i, 1);
-    this.selected.setValue(i - 1);
-  }
-
-  async postSoporteNuxeo(files: any) {
-    return new Promise(async (resolve, reject) => {
-      files.forEach((file) => {
-        file.Id = file.nombre;
-        file.nombre = 'soporte_' + file.IdDocumento + '_acta_recibido';
-        file.key = 'soporte_' + file.IdDocumento;
-      });
-      await this.nuxeoService.getDocumentos$(files, this.documentoService)
-        .subscribe(response => {
-          if (Object.keys(response).length === files.length) {
-            files.forEach((file, index) => {
-              this.uidDocumento[index] = file.uid;
-              this.idDocumento[index] = response[file.key].Id;
-              resolve(response[file.key].Id);
-            });
-          }
-        }, error => {
-          reject(error);
-        });
-    });
-  }
-
   async asyncForEach(array, callback) {
     for (let index = 0; index < array.length; index++) {
       await callback(array[index], index, array);
@@ -388,16 +302,10 @@ export class ActaEspecialComponent implements OnInit {
 
   async onFirstSubmit() {
     this.Registrando = true;
-    const start = async () => {
-      await this.asyncForEach(this.fileDocumento, async (file) => {
-        await this.postSoporteNuxeo([file]);
-      });
-    };
-    await start();
     this.Datos = this.firstForm.value;
     const Transaccion_Acta = new TransaccionActaRecibido();
     Transaccion_Acta.ActaRecibido = this.Registrar_Acta(this.Datos);
-    Transaccion_Acta.UltimoEstado = this.Registrar_Estado_Acta(Transaccion_Acta.ActaRecibido, EstadoActa_t.Aceptada);
+    Transaccion_Acta.UltimoEstado = this.Registrar_Estado_Acta(Transaccion_Acta.ActaRecibido, EstadoActa_t.Registrada);
     const Soportes = new Array<TransaccionSoporteActa>();
     this.Datos.Formulario2.forEach((soporte, index) => {
       Soportes.push(this.Registrar_Soporte(soporte, this.Elementos__Soporte[index], Transaccion_Acta.ActaRecibido));
@@ -502,12 +410,8 @@ export class ActaEspecialComponent implements OnInit {
     }
     return Elementos_Soporte;
   }
+  
   Pipe2Number(any: string) {
-    // if (any !== null) {
-    //   return any.replace(/[$,]/g, '');
-    // } else {
-    //   return '0';
-    // }
     return any;
   }
 
@@ -580,6 +484,7 @@ export class ActaEspecialComponent implements OnInit {
       return '0';
     }
   }
+
   Revisar_Totales2() {
     if (!this.revisorValido()) {
       return;
@@ -599,8 +504,8 @@ export class ActaEspecialComponent implements OnInit {
       }
     });
   }
+  
   usarLocalStorage() {
-    // console.log(JSON.parse(sessionStorage.Elementos_Acta_Especial))
     sessionStorage.setItem('Formulario_Acta_Especial', JSON.stringify(this.firstForm.value));
     sessionStorage.setItem('Elementos_Acta_Especial', JSON.stringify(this.Elementos__Soporte));
   }
@@ -642,30 +547,14 @@ export class ActaEspecialComponent implements OnInit {
     return true;
   }
 
-  ver2(event: any, index: number) {
+  ver2(event: any,) {
     this.DatosTotales = event;
-    if (this.Totales === undefined) {
-      this.Totales = new Array<any>(this.DatosTotales);
-    } else {
-      if (index < (this.Totales.length)) {
-        this.Totales[index] = this.DatosTotales;
-      } else {
-        this.Totales.push(this.DatosTotales);
-      }
-    }
+    this.Totales = new Array<any>(this.DatosTotales);
   }
 
-  ver(event: any, index: number) {
+  ver(event: any) {
     this.DatosElementos = event;
-    if (this.Elementos__Soporte === undefined) {
-      this.Elementos__Soporte = new Array<any>(this.DatosElementos);
-    } else {
-      if (index < (this.Elementos__Soporte.length)) {
-        this.Elementos__Soporte[index] = this.DatosElementos;
-      } else {
-        this.Elementos__Soporte.push(this.DatosElementos);
-      }
-    }
+    this.Elementos__Soporte[0] = this.DatosElementos;
   }
 
 }
