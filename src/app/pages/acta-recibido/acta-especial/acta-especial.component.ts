@@ -600,7 +600,7 @@ export class ActaEspecialComponent implements OnInit {
     });
   }
   usarLocalStorage() {
-    console.log(JSON.parse(sessionStorage.Elementos_Acta_Especial))
+    // console.log(JSON.parse(sessionStorage.Elementos_Acta_Especial))
     sessionStorage.setItem('Formulario_Acta_Especial', JSON.stringify(this.firstForm.value));
     sessionStorage.setItem('Elementos_Acta_Especial', JSON.stringify(this.Elementos__Soporte));
   }
