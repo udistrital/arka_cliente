@@ -146,10 +146,10 @@ export class ActaEspecialComponent implements OnInit {
   ngOnInit() {
     this.loadLists();
     this.searchStr2 = new Array<string>();
-    if (sessionStorage.Formulario_Registro == null) {
+    if (sessionStorage.Formulario_Acta_Especial == null) {
       this.Cargar_Formularios();
     } else {
-      const formulario = JSON.parse(sessionStorage.Formulario_Registro);
+      const formulario = JSON.parse(sessionStorage.Formulario_Acta_Especial);
 
       (Swal as any).fire({
         type: 'warning',
@@ -174,7 +174,7 @@ export class ActaEspecialComponent implements OnInit {
             cancelButtonText: 'No, Usar Anterior',
           }).then((result2) => {
             if (result2.value) {
-              sessionStorage.removeItem('Formulario_Registro');
+              sessionStorage.removeItem('Formulario_Acta_Especial');
               this.Cargar_Formularios();
             } else {
               this.cargar(formulario);
@@ -263,12 +263,6 @@ export class ActaEspecialComponent implements OnInit {
     const Form2 = this.fb.array([]);
     for (const Soporte of transaccion_.Formulario2) {
       const Formulario__2 = this.fb.group({
-        // Id: [''],
-        // Proveedor: [Soporte.Proveedor, Validators.required],
-        // Consecutivo: [Soporte.Consecutivo, Validators.required],
-        // Fecha_Factura: [Soporte.Fecha_Factura, Validators.required],
-        // Soporte: [Soporte.Soporte],
-        // Revisor: [Soporte.Revisor, Validators.required],
       });
       Form2.push(Formulario__2);
 
@@ -296,6 +290,7 @@ export class ActaEspecialComponent implements OnInit {
         this.Actas_Recibido.postRelacionSedeDependencia(transaccion).subscribe((res: any) => {
           if (Object.keys(res[0]).length !== 0) {
             this.UbicacionesForm = res[0].Relaciones;
+            this.DependenciaV = this.firstForm.get('Formulario1').get('Dependencia').value;
           }
         });
       }
@@ -311,11 +306,6 @@ export class ActaEspecialComponent implements OnInit {
   }
   get Formulario_2(): FormGroup {
     return this.fb.group({
-      // Proveedor: ['', Validators.required],
-      // Consecutivo: ['', Validators.required],
-      // Fecha_Factura: ['', Validators.required],
-      // Revisor: ['', Validators.required],
-      // Soporte: [''],
     });
   }
   get Formulario_3(): FormGroup {
@@ -407,9 +397,8 @@ export class ActaEspecialComponent implements OnInit {
       Soportes.push(this.Registrar_Soporte(soporte, this.Elementos__Soporte[index], Transaccion_Acta.ActaRecibido));
 
     });
-
+    console.log(this.firstForm.get('Formulario2').get('Elementos'))
     Transaccion_Acta.SoportesActa = Soportes;
-    // console.log(Transaccion_Acta)
       this.Actas_Recibido.postTransaccionActa(Transaccion_Acta).subscribe((res: any) => {
         if (res !== null) {
         (Swal as any).fire({
@@ -419,7 +408,7 @@ export class ActaEspecialComponent implements OnInit {
             text: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.Acta') +
               `${res.ActaRecibido.Id}` + this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.Registrada'),
           });
-          sessionStorage.removeItem('Formulario_Registro');
+          sessionStorage.removeItem('Formulario_Acta_Especial');
           this.router.navigate(['/pages/acta_recibido/consulta_acta_recibido']);
           this.Registrando = false;
         } else {
@@ -462,15 +451,14 @@ export class ActaEspecialComponent implements OnInit {
   Registrar_Soporte(Datos: any, Elementos_: any, __: ActaRecibido): TransaccionSoporteActa {
     const Soporte_Acta = new SoporteActa();
     const Transaccion = new TransaccionSoporteActa();
-    // const proveedor___ = Datos.Proveedor.split(' ');
-    Soporte_Acta.Id = null; // parseFloat(Datos.Id);
+    Soporte_Acta.Id = null;
     Soporte_Acta.ActaRecibidoId = __;
     Soporte_Acta.Activo = true;
-    Soporte_Acta.Consecutivo = '505'; // Datos.Consecutivo;
+    Soporte_Acta.Consecutivo = null;
     Soporte_Acta.FechaCreacion = new Date();
     Soporte_Acta.FechaModificacion = new Date();
-    Soporte_Acta.FechaSoporte = new Date(); // Datos.Fecha_Factura;
-    // Soporte_Acta.ProveedorId = 14860; //this.Proveedores.find(proveedor => proveedor.NumDocumento.toString() === proveedor___[0].toString()).Id;
+    Soporte_Acta.FechaSoporte = null;
+    Soporte_Acta.ProveedorId = null;
 
     Transaccion.SoporteActa = Soporte_Acta;
     Transaccion.Elementos = this.Registrar_Elementos(Elementos_, Soporte_Acta);
@@ -607,7 +595,13 @@ export class ActaEspecialComponent implements OnInit {
     });
   }
   usarLocalStorage() {
-    sessionStorage.setItem('Formulario_Registro', JSON.stringify(this.firstForm.value));
+      if (sessionStorage.Formulario_Edicion == null) {
+        sessionStorage.setItem('Formulario_Acta_Especial', JSON.stringify(this.firstForm.value));
+        sessionStorage.setItem('Elementos_Acta_Especial', JSON.stringify(this.Elementos__Soporte));
+      } else {
+        sessionStorage.setItem('Formulario_Acta_Especial', JSON.stringify(this.firstForm.value));
+        sessionStorage.setItem('Elementos_Acta_Especial', JSON.stringify(this.Elementos__Soporte));
+      }
   }
 
   cargar(formulario) {

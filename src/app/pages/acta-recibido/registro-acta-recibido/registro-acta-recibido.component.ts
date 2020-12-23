@@ -278,6 +278,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
         this.Actas_Recibido.postRelacionSedeDependencia(transaccion).subscribe((res: any) => {
           if (Object.keys(res[0]).length !== 0) {
             this.UbicacionesForm = res[0].Relaciones;
+            this.DependenciaV = this.firstForm.get('Formulario1').get('Dependencia').value;
           }
         });
       }
