@@ -26,6 +26,8 @@ import { CompleterData, CompleterService, CompleterItem } from 'ng2-completer';
 import {Observable} from 'rxjs';
 import { Row } from 'ngx-smart-table/lib/data-set/row';
 import { DatePipe } from '@angular/common';
+import { RolUsuario_t as Rol, PermisoUsuario_t as Permiso } from '../../../@core/data/models/roles/rol_usuario';
+import { UserService } from '../../../@core/data/users.service';
 
 @Component({
   selector: 'ngx-capturar-elementos',
@@ -65,6 +67,7 @@ export class CapturarElementosComponent implements OnInit {
   Devolutivo: any;
   Clases: any;
   Codigo: any;
+  displayedColumns: any[];
   checkTodos: boolean = false;
   checkParcial: boolean = false;
 
@@ -76,6 +79,7 @@ export class CapturarElementosComponent implements OnInit {
     private nuxeoService: NuxeoService,
     private documentoService: DocumentoService,
     private catalogoHelper: CatalogoElementosHelper,
+    private userService: UserService,
     private completerService: CompleterService) {
 
     this.listService.findSubgruposConsumo();
@@ -135,6 +139,46 @@ export class CapturarElementosComponent implements OnInit {
         this.dataSource.data[i].CodigoSubgrupo = '' ;
       }
     }
+    this.ReglasColumnas();
+  }
+
+  ReglasColumnas() {
+    if (this.userService.tieneAlgunRol([Rol.Proveedor])) {
+      this.displayedColumns = [
+        'AccionesMacro',
+        'Nombre',
+        'Cantidad',
+        'Marca',
+        'Serie',
+        'UnidadMedida',
+        'ValorUnitario',
+        'Subtotal',
+        'Descuento',
+        'PorcentajeIvaId',
+        'ValorIva',
+        'ValorTotal',
+        'Acciones',
+      ];
+    } else {
+      this.displayedColumns = [
+        'AccionesMacro',
+        'CodigoSubgrupo',
+        'SubgrupoCatalogoId',
+        'TipoBienId',
+        'Nombre',
+        'Cantidad',
+        'Marca',
+        'Serie',
+        'UnidadMedida',
+        'ValorUnitario',
+        'Subtotal',
+        'Descuento',
+        'PorcentajeIvaId',
+        'ValorIva',
+        'ValorTotal',
+        'Acciones',
+      ];
+    }
   }
 
   exportToExcel(json: any[], excelFileName: string) {
@@ -156,7 +200,7 @@ export class CapturarElementosComponent implements OnInit {
   }
   DescargarTabla() {
     if (this.dataSource2 === undefined) {
-      let dataexcel = new Array();
+      const dataexcel = new Array();
       for (let i = 0; i < this.dataSource.data.length; i++) {
         dataexcel[i] = {};
       }
@@ -199,8 +243,8 @@ export class CapturarElementosComponent implements OnInit {
   TraerPlantilla() {
 
     NuxeoService.nuxeo.header('X-NXDocumentProperties', '*');
-    //NuxeoService.nuxeo.request('/id/8e4d5b47-ba37-41dd-b549-4efc1777fef2')
-    NuxeoService.nuxeo.request('/id/76e0956e-1cbe-45d7-993c-1839fbbf2cfc')
+    // NuxeoService.nuxeo.request('/id/8e4d5b47-ba37-41dd-b549-4efc1777fef2') // PLANTILLA VIEJA
+    NuxeoService.nuxeo.request('/id/76e0956e-1cbe-45d7-993c-1839fbbf2cfc') // Plantilla nueva
       .get()
       .then(function (response) {
         // console.log(response)
@@ -331,24 +375,7 @@ export class CapturarElementosComponent implements OnInit {
     this.readThis();
   }
 
-  displayedColumns = [
-    'AccionesMacro',
-    'CodigoSubgrupo',
-    'SubgrupoCatalogoId',
-    'TipoBienId',
-    'Nombre',
-    'Cantidad',
-    'Marca',
-    'Serie',
-    'UnidadMedida',
-    'ValorUnitario',
-    'Subtotal',
-    'Descuento',
-    'PorcentajeIvaId',
-    'ValorIva',
-    'ValorTotal',
-    'Acciones',
-  ];
+
 
   getDescuentos() {
 
