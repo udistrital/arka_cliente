@@ -181,51 +181,6 @@ export class CapturarElementosComponent implements OnInit {
     }
   }
 
-  exportToExcel(json: any[], excelFileName: string) {
-    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(json);
-    const workbook: XLSX.WorkBook = {
-      Sheets: {'data': worksheet},
-      SheetNames: ['data'],
-    };
-    const excelBuffer: any = XLSX.write(workbook, {bookType: 'xlsx', type: 'array'});
-    this.saveAsExcel(excelBuffer, excelFileName);
-
-  }
-  saveAsExcel(buffer: any, fileName: string) {
-    const data: Blob = new Blob(
-      [buffer],
-      {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet; charset=UTF-8',
-      });
-    FileSaver.saveAs(data, fileName + '_export_' + 'xlsx');
-  }
-  DescargarTabla() {
-    if (this.dataSource2 === undefined) {
-      const dataexcel = new Array();
-      for (let i = 0; i < this.dataSource.data.length; i++) {
-        dataexcel[i] = {};
-      }
-      this.dataSource2 = new MatTableDataSource(dataexcel);
-    }
-    for (let i = 0; i < this.dataSource.data.length; i++) {
-      this.dataSource2.data[i].Codigo = this.dataSource.data[i].CodigoSubgrupo;
-      this.dataSource2.data[i].Clase = this.dataSource.data[i].NombreClase;
-      this.dataSource2.data[i].TipoBien = this.dataSource.data[i].TipoBienNombre;
-      this.dataSource2.data[i].Descripcion = this.dataSource.data[i].Nombre;
-      this.dataSource2.data[i].Cantidad = this.dataSource.data[i].Cantidad;
-      this.dataSource2.data[i].Marca = this.dataSource.data[i].Marca;
-      this.dataSource2.data[i].Serie = this.dataSource.data[i].Serie;
-      this.dataSource2.data[i].UnidadMedida = this.dataSource.data[i].UnidadMedida;
-      this.dataSource2.data[i].ValorUnitario = this.dataSource.data[i].ValorUnitario;
-      this.dataSource2.data[i].Subtotal = this.dataSource.data[i].Subtotal;
-      this.dataSource2.data[i].Descuento = this.dataSource.data[i].Descuento;
-      this.dataSource2.data[i].PorcentajeIva = this.dataSource.data[i].PorcentajeIvaId;
-      this.dataSource2.data[i].ValorIva = this.dataSource.data[i].ValorIva;
-      this.dataSource2.data[i].ValorTotal = this.dataSource.data[i].ValorTotal;
-    }
-    this.exportToExcel(this.dataSource2.data, 'prueba1');
-    // console.log(this.dataSource2.data);
-  }
-
   onSelectedClase(selected: CompleterItem, fila: number) {
     this.dataSource.data[fila].CodigoSubgrupo = selected.originalObject.SubgrupoId.Codigo;
     this.dataSource.data[fila].TipoBienId = selected.originalObject.TipoBienId.Id;
@@ -324,7 +279,6 @@ export class CapturarElementosComponent implements OnInit {
 
     const formModel: FormData = this.prepareSave();
     this.actaRecibidoHelper.postArchivo(formModel).subscribe(res => {
-
       if (res !== null) {
         if (res[0].Mensaje !== undefined) {
           (Swal as any).fire({
@@ -334,7 +288,6 @@ export class CapturarElementosComponent implements OnInit {
           });
           this.clearFile();
         } else {
-          // console.log(res);
           this.respuesta = res;
           this.dataSource.data = this.respuesta[0].Elementos;
           this.ver();
@@ -344,6 +297,7 @@ export class CapturarElementosComponent implements OnInit {
             if (this.dataSource.data[i].CodigoSubgrupo === undefined) {
               this.dataSource.data[i].CodigoSubgrupo = '' ;
               this.dataSource.data[i].TipoBienNombre = '';
+              this.dataSource.data[i].NombreClase = '';
             }
           }
           (Swal as any).fire({
