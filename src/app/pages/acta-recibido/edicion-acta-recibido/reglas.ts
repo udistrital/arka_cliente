@@ -15,7 +15,7 @@ export const permisosSeccionesActas = [
       {
         Estado: 'Registrada',
         PuedenModificar: [Rol.Admin, Rol.Secretaria, Rol.Revisor],
-        PuedenVer: [Rol.Contratista],
+        PuedenVer: [],
       },
       {
         Estado: 'En Elaboracion',

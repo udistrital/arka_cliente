@@ -105,8 +105,8 @@ export class ConsultaActaRecibidoComponent implements OnInit {
       {est: 'En Modificacion', roles: [Rol.Admin, Rol.Revisor]},
       {est: 'En verificacion', roles: [Rol.Admin, Rol.Revisor]},
       {est: 'Aceptada', roles: [Rol.Admin, Rol.Revisor]},
-      {est: 'Asociada a Entrada', roles: [Rol.Admin, Rol.Revisor]},
-      {est: 'Anulada', roles: [Rol.Admin, Rol.Revisor]},
+      {est: 'Asociada a Entrada', roles: [Rol.Admin]},
+      {est: 'Anulada', roles: [Rol.Admin]},
     ];
     // const uid = this.userService.getPersonaId();
     const uid = 2; // solo para pruebas
