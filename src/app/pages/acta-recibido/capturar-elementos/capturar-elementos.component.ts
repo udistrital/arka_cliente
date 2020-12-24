@@ -156,7 +156,7 @@ export class CapturarElementosComponent implements OnInit {
   }
   DescargarTabla() {
     if (this.dataSource2 === undefined) {
-      let dataexcel = new Array();
+      const dataexcel = new Array();
       for (let i = 0; i < this.dataSource.data.length; i++) {
         dataexcel[i] = {};
       }
@@ -199,7 +199,7 @@ export class CapturarElementosComponent implements OnInit {
   TraerPlantilla() {
 
     NuxeoService.nuxeo.header('X-NXDocumentProperties', '*');
-    //NuxeoService.nuxeo.request('/id/8e4d5b47-ba37-41dd-b549-4efc1777fef2')
+    // NuxeoService.nuxeo.request('/id/8e4d5b47-ba37-41dd-b549-4efc1777fef2')
     NuxeoService.nuxeo.request('/id/76e0956e-1cbe-45d7-993c-1839fbbf2cfc')
       .get()
       .then(function (response) {
