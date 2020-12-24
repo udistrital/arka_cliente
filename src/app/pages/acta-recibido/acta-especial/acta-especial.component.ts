@@ -305,7 +305,7 @@ export class ActaEspecialComponent implements OnInit {
     this.Datos = this.firstForm.value;
     const Transaccion_Acta = new TransaccionActaRecibido();
     Transaccion_Acta.ActaRecibido = this.Registrar_Acta(this.Datos);
-    Transaccion_Acta.UltimoEstado = this.Registrar_Estado_Acta(Transaccion_Acta.ActaRecibido, EstadoActa_t.Registrada);
+    Transaccion_Acta.UltimoEstado = this.Registrar_Estado_Acta(Transaccion_Acta.ActaRecibido, EstadoActa_t.Aceptada);
     const Soportes = new Array<TransaccionSoporteActa>();
     this.Datos.Formulario2.forEach((soporte, index) => {
       Soportes.push(this.Registrar_Soporte(soporte, this.Elementos__Soporte[index], Transaccion_Acta.ActaRecibido));
@@ -410,7 +410,7 @@ export class ActaEspecialComponent implements OnInit {
     }
     return Elementos_Soporte;
   }
-  
+
   Pipe2Number(any: string) {
     return any;
   }
@@ -504,7 +504,7 @@ export class ActaEspecialComponent implements OnInit {
       }
     });
   }
-  
+
   usarLocalStorage() {
     sessionStorage.setItem('Formulario_Acta_Especial', JSON.stringify(this.firstForm.value));
     sessionStorage.setItem('Elementos_Acta_Especial', JSON.stringify(this.Elementos__Soporte));
@@ -547,7 +547,7 @@ export class ActaEspecialComponent implements OnInit {
     return true;
   }
 
-  ver2(event: any,) {
+  ver2 (event: any) {
     this.DatosTotales = event;
     this.Totales = new Array<any>(this.DatosTotales);
   }
