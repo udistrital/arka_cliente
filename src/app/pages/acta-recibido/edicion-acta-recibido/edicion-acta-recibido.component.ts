@@ -154,7 +154,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
     this.searchStr2 = new Array<string>();
     this.DatosElementos = new Array<any>();
     this.Elementos__Soporte = new Array<any>();
-    this.TodaysDate = this.dateService.today();
+    this.TodaysDate = new Date();
   }
 
   // Los permisos dependen del estado del acta y del rol.
@@ -319,9 +319,10 @@ export class EdicionActaRecibidoComponent implements OnInit {
             Soporte.SoporteActa.ProveedorId === 0 ? this.ActaEspecial = true :
               this.Proveedores.find((proveedor) =>
                 proveedor.Id.toString() === Soporte.SoporteActa.ProveedorId.toString()).compuesto,
-          ],
+                Validators.required],
           Consecutivo: [Soporte.SoporteActa.Consecutivo, Validators.required],
-          Fecha_Factura: [Soporte.SoporteActa.FechaSoporte, Validators.required],
+          Fecha_Factura: [this.dateService.parse(Soporte.SoporteActa.FechaSoporte.toString(), 'MM dd yyyy'),
+            Validators.required],
           Soporte: [Soporte.SoporteActa.DocumentoId, Validators.required],
         });
         this.Validador[index] = true;

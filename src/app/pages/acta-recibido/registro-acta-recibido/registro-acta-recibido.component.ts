@@ -120,7 +120,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
     this.listService.findEstadosActa();
     this.listService.findEstadosElemento();
     this.listService.findTipoBien();
-    this.TodaysDate = this.dateService.today();
+    this.TodaysDate = new Date();
     this.loadLists();
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
     });
@@ -252,7 +252,8 @@ export class RegistroActaRecibidoComponent implements OnInit {
         Id: [''],
         Proveedor: [Soporte.Proveedor, Validators.required],
         Consecutivo: [Soporte.Consecutivo, Validators.required],
-        Fecha_Factura: [Soporte.Fecha_Factura, Validators.required],
+        Fecha_Factura: [this.dateService.parse(Soporte.Fecha_Factura, 'MM dd yyyy'),
+          Validators.required],
         Soporte: [Soporte.Soporte, Validators.required],
         Revisor: [Soporte.Revisor, Validators.required],
       });
