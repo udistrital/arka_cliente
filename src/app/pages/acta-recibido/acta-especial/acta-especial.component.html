@@ -64,7 +64,7 @@
                 <div>
                   <ngx-capturar-elementos *ngIf="getPermisoEditar(permisos.Elementos)" (click)="usarLocalStorage()"
                     [DatosRecibidos]="Elementos__Soporte[0]" (DatosTotales)="ver2($event)"
-                    (DatosEnviados)="ver($event)">
+                    (DatosEnviados)="ver($event)" (click)="usarLocalStorage()" (change)="usarLocalStorage()">
                   </ngx-capturar-elementos>
                 </div>
               </nb-card-body>

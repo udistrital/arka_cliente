@@ -135,9 +135,6 @@ export class CapturarElementosComponent implements OnInit {
   }
 
   onSelectedClase(selected: CompleterItem, fila: number) {
-    console.log(selected, fila)
-    selected = this.Clases[0]
-    console.log(selected)
     this.dataSource.data[fila].CodigoSubgrupo = selected.originalObject.SubgrupoId.Codigo;
     this.dataSource.data[fila].TipoBienId = selected.originalObject.TipoBienId.Id;
     this.dataSource.data[fila].SubgrupoCatalogoId = selected.originalObject.SubgrupoId.Id;
@@ -480,40 +477,30 @@ export class CapturarElementosComponent implements OnInit {
       indices.sort((a, b) => b - a);
       for (let i = 0; i < indices.length; i++) {
         data.splice((this.paginator.pageIndex * this.paginator.pageSize) + indices[i], 1);
-        console.log(this.paginator)
       }
       this.dataSource.data = data;
     }
   }
 
-  onClase(selected: any, fila: any) {
+  onClase(selected: CompleterItem) {
     const seleccionados = this.getSeleccionados();
-    console.log(selected, fila)
-    selected = this.Clases[0]
     console.log(selected)
+    // selected = this.Clases[0]
+    // console.log(selected)
     const indices = isNumeric(seleccionados) ? [seleccionados] : ( isArray(seleccionados) ? seleccionados : undefined );
     console.log(indices)
-    // if (indices) {
-    //   const data = this.dataSource.data;
-    //   indices.sort((a, b) => b - a);
-    //   for (let i = 0; i < indices.length; i++) {
-        // data.splice((this.paginator.pageIndex * this.paginator.pageSize) + indices[i], 1);
+        if (indices){
         for (let i = 0; i < indices.length; i++) {
         console.log(this.dataSource.data[i])
-        // this.dataSource.data[fila].CodigoSubgrupo = selected.originalObject.SubgrupoId.Codigo;
-            this.dataSource.data[i].CodigoSubgrupo = selected.SubgrupoId.Codigo;
-            this.dataSource.data[i].TipoBienId = selected.TipoBienId.Id;
-            this.dataSource.data[i].SubgrupoCatalogoId = selected.SubgrupoId.Id;
-            this.dataSource.data[i].TipoBienNombre = selected.TipoBienId.Nombre;
-            this.dataSource.data[i].NombreClase = selected.SubgrupoId.Nombre;
+            this.dataSource.data[indices[i]].CodigoSubgrupo = selected.originalObject.SubgrupoId.Codigo;
+            this.dataSource.data[indices[i]].TipoBienId = selected.originalObject.TipoBienId.Id;
+            this.dataSource.data[indices[i]].SubgrupoCatalogoId = selected.originalObject.SubgrupoId.Id;
+            this.dataSource.data[indices[i]].TipoBienNombre = selected.originalObject.TipoBienId.Nombre;
+            this.dataSource.data[indices[i]].NombreClase = selected.originalObject.SubgrupoId.Nombre;
+            this.dataSource.data[indices[i]].seleccionado = false;
         }
-      // }
-      // this.dataSource.data = data;
-    // }
-    // this.dataSource.data[fila].CodigoSubgrupo = selected.originalObject.SubgrupoId.Codigo;
-    // this.dataSource.data[fila].TipoBienId = selected.originalObject.TipoBienId.Id;
-    // this.dataSource.data[fila].SubgrupoCatalogoId = selected.originalObject.SubgrupoId.Id;
-    // this.dataSource.data[fila].TipoBienNombre = selected.originalObject.TipoBienId.Nombre;
+        // console.log(this.dataSource.data)
+      }
   }
 
   refrescaCheckTotal() {

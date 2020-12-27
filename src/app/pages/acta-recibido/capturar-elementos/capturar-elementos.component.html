@@ -49,8 +49,16 @@
       <div class="col">
         <input nbInput (keyup)="applyFilter($event.target.value)" class="filter" placeholder="Filtro">
       </div>
+      <div class="col">
+        <ng2-completer nbInput type="text" inputClass="cell form-control" style="border: 0rem"  
+        fieldSize="tiny" 
+        [datasource]="dataService" 
+        [minSearchLength]="4"
+        (selected)="onClase($event)"
+      ></ng2-completer>
+      </div>
     </div>
-
+    <p></p>
       <table mat-table #table [dataSource]="dataSource" matSort (keyup)="ver()">
 
         <!-- Acciones Macro/Checkbox -->
