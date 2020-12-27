@@ -42,7 +42,10 @@
     <div class="row">
       <div class="col">
         <button nbButton (click)="borraSeleccionados()">Borrar Seleccionados</button>
-      </div>
+       </div>
+       <div class="col">
+        <button nbButton (click)="onClase()">Aplicar clase</button>
+       </div>
       <div class="col">
         <input nbInput (keyup)="applyFilter($event.target.value)" class="filter" placeholder="Filtro">
       </div>

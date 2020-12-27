@@ -135,11 +135,16 @@ export class CapturarElementosComponent implements OnInit {
   }
 
   onSelectedClase(selected: CompleterItem, fila: number) {
+    console.log(selected, fila)
+    selected = this.Clases[0]
+    console.log(selected)
     this.dataSource.data[fila].CodigoSubgrupo = selected.originalObject.SubgrupoId.Codigo;
     this.dataSource.data[fila].TipoBienId = selected.originalObject.TipoBienId.Id;
     this.dataSource.data[fila].SubgrupoCatalogoId = selected.originalObject.SubgrupoId.Id;
     this.dataSource.data[fila].TipoBienNombre = selected.originalObject.TipoBienId.Nombre;
   }
+
+
 
   ver() {
     this.refrescaCheckTotal();
@@ -354,6 +359,8 @@ export class CapturarElementosComponent implements OnInit {
     }
   }
 
+
+
   getTotales() {
 
     if (this.dataSource.data.length !== 0) {
@@ -399,6 +406,28 @@ export class CapturarElementosComponent implements OnInit {
   }
 
   borraSeleccionados() {
+    const seleccionados = this.getSeleccionados();
+    console.log(seleccionados)
+    if (seleccionados.length) {
+      (Swal as any).fire({
+        title: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.EliminarVariosElementosTitle', {cantidad: seleccionados.length}),
+        text: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.EliminarVariosElementosText', {cantidad: seleccionados.length}),
+        type: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Si',
+        cancelButtonText: 'No',
+      }).then((result) => {
+        if (result.value) {
+          this._deleteElemento(seleccionados);
+          this.ver();
+        }
+      });
+    }
+  }
+
+  aplicarClase() {
     const seleccionados = this.getSeleccionados();
     if (seleccionados.length) {
       (Swal as any).fire({
@@ -451,9 +480,40 @@ export class CapturarElementosComponent implements OnInit {
       indices.sort((a, b) => b - a);
       for (let i = 0; i < indices.length; i++) {
         data.splice((this.paginator.pageIndex * this.paginator.pageSize) + indices[i], 1);
+        console.log(this.paginator)
       }
       this.dataSource.data = data;
     }
+  }
+
+  onClase(selected: any, fila: any) {
+    const seleccionados = this.getSeleccionados();
+    console.log(selected, fila)
+    selected = this.Clases[0]
+    console.log(selected)
+    const indices = isNumeric(seleccionados) ? [seleccionados] : ( isArray(seleccionados) ? seleccionados : undefined );
+    console.log(indices)
+    // if (indices) {
+    //   const data = this.dataSource.data;
+    //   indices.sort((a, b) => b - a);
+    //   for (let i = 0; i < indices.length; i++) {
+        // data.splice((this.paginator.pageIndex * this.paginator.pageSize) + indices[i], 1);
+        for (let i = 0; i < indices.length; i++) {
+        console.log(this.dataSource.data[i])
+        // this.dataSource.data[fila].CodigoSubgrupo = selected.originalObject.SubgrupoId.Codigo;
+            this.dataSource.data[i].CodigoSubgrupo = selected.SubgrupoId.Codigo;
+            this.dataSource.data[i].TipoBienId = selected.TipoBienId.Id;
+            this.dataSource.data[i].SubgrupoCatalogoId = selected.SubgrupoId.Id;
+            this.dataSource.data[i].TipoBienNombre = selected.TipoBienId.Nombre;
+            this.dataSource.data[i].NombreClase = selected.SubgrupoId.Nombre;
+        }
+      // }
+      // this.dataSource.data = data;
+    // }
+    // this.dataSource.data[fila].CodigoSubgrupo = selected.originalObject.SubgrupoId.Codigo;
+    // this.dataSource.data[fila].TipoBienId = selected.originalObject.TipoBienId.Id;
+    // this.dataSource.data[fila].SubgrupoCatalogoId = selected.originalObject.SubgrupoId.Id;
+    // this.dataSource.data[fila].TipoBienNombre = selected.originalObject.TipoBienId.Nombre;
   }
 
   refrescaCheckTotal() {
