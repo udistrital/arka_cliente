@@ -404,7 +404,6 @@ export class CapturarElementosComponent implements OnInit {
 
   borraSeleccionados() {
     const seleccionados = this.getSeleccionados();
-    console.log(seleccionados)
     if (seleccionados.length) {
       (Swal as any).fire({
         title: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.EliminarVariosElementosTitle', { cantidad: seleccionados.length }),
