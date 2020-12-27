@@ -550,11 +550,13 @@ export class ActaEspecialComponent implements OnInit {
   ver2 (event: any) {
     this.DatosTotales = event;
     this.Totales = new Array<any>(this.DatosTotales);
+    this.usarLocalStorage();
   }
 
   ver(event: any) {
     this.DatosElementos = event;
     this.Elementos__Soporte[0] = this.DatosElementos;
+    this.usarLocalStorage();
   }
 
 }
