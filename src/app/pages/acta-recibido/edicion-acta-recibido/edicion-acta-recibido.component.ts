@@ -117,7 +117,15 @@ export class EdicionActaRecibidoComponent implements OnInit {
   } = {
       Acta: Permiso.Ninguno,
       Elementos: Permiso.Ninguno,
-    };
+  };
+
+  accion: {
+    envioValidar: boolean,
+    envioProveedor: boolean,
+  } = {
+    envioValidar: false,
+    envioProveedor: false,
+  };
 
   constructor(
     private translate: TranslateService,
@@ -157,9 +165,11 @@ export class EdicionActaRecibidoComponent implements OnInit {
     this.TodaysDate = new Date();
   }
 
-  // Los permisos dependen del estado del acta y del rol.
+  // Los permisos en cada sección dependen del estado del acta y del rol.
   cargaPermisos() {
     // console.log({'this.estadoActualActa': this.estadoActa});
+
+    this.permisosRoles_eventos();
 
     // Modificar/Ver parte superior (Datos basicos y Soportes)
     let permisoActa: Permiso;
@@ -191,7 +201,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
 
   // Devuelve un objeto en que el nombre de cada propiedad es un permiso, y
   // los valores de cada propiedad son los roles que tienen dicho permiso.
-  permisosRoles_EstadoSeccion(estado: string, seccion: string) {
+  private permisosRoles_EstadoSeccion(estado: string, seccion: string) {
     let PuedenModificar: Rol[] = [];
     let PuedenVer: Rol[] = [];
 
@@ -214,6 +224,23 @@ export class EdicionActaRecibidoComponent implements OnInit {
   }
   getPermisoVer(p: Permiso): boolean {
     return p === Permiso.Ver;
+  }
+
+  // Habilitar/deshabilitar eventos en función de los roles
+  private permisosRoles_eventos() {
+
+    // Pueden enviar a Proveedor
+    this.accion.envioProveedor =
+      this.userService.tieneAlgunRol([Rol.Admin, Rol.Revisor, Rol.Secretaria])
+      && ['Registrada']
+        .some(est => this.estadoActa === est);
+
+    // Pueden enviar a Validacion
+    this.accion.envioValidar =
+      this.userService.tieneAlgunRol([Rol.Admin, Rol.Revisor, Rol.Contratista])
+      && ['En Elaboracion', 'En Modificacion']
+        .some(est => this.estadoActa === est);
+
   }
 
   Cargar_localStorage(Acta: any) {
@@ -632,12 +659,11 @@ export class EdicionActaRecibidoComponent implements OnInit {
     const Transaccion_Acta = new TransaccionActaRecibido();
     Transaccion_Acta.ActaRecibido = this.Registrar_Acta(this.Datos.Formulario1, this.Datos.Formulario3);
     Transaccion_Acta.UltimoEstado = this.Registrar_Estado_Acta(Transaccion_Acta.ActaRecibido,
-      (this.estadoActa === 'Registrada') ? EstadoActa_t.Registrada :
-        (this.estadoActa === 'Aceptada') ? EstadoActa_t.Aceptada : EstadoActa_t.EnModificacion);
+      this.Estados_Acta.find(estado => estado.Nombre === this.estadoActa).Id, // el nuevo estado es el mismo
+    );
     const Soportes = new Array<TransaccionSoporteActa>();
     this.Datos.Formulario2.forEach((soporte, index) => {
       Soportes.push(this.Registrar_Soporte(soporte, this.Elementos__Soporte[index], Transaccion_Acta.ActaRecibido));
-
     });
     Transaccion_Acta.SoportesActa = Soportes;
     // console.log(Transaccion_Acta);

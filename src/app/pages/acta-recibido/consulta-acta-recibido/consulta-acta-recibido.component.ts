@@ -89,22 +89,54 @@ export class ConsultaActaRecibidoComponent implements OnInit {
       // console.log(res);
       this.mostrar = true;
       if (res.length !== 0) {
-        let resFiltrado;
-
-        // TODO: Agregar más complejidad a esta parte, la implementación
-        // fue corta para efectos del Issue #347 ...
-        // ... Pero podría llegarse a algo similar a lo realizado
-        // // en el componente edicion-acta-recibido
-        if (this.userService.tieneAlgunRol([Rol.Secretaria])) {
-          resFiltrado = res.filter(acta => acta.Estado === 'Registrada');
-        } else if (this.userService.tieneAlgunRol([Rol.Contratista])) {
-          resFiltrado = res.filter(acta => acta.Estado === 'En Elaboracion' || acta.Estado === 'En Modificacion');
-        } else {
-          resFiltrado = res;
-        }
+        const resFiltrado = this.actasSegunRol(res);
         this.source.load(resFiltrado);
       }
     });
+  }
+
+  private actasSegunRol(actas): any {
+
+    // Los roles que se configuren en este objeto, podrán ver TODAS
+    // las actas en ese estado
+    const filtroActas = [
+      {est: 'Registrada', roles: [Rol.Admin, Rol.Revisor, Rol.Secretaria]},
+      {est: 'En Elaboracion', roles: [Rol.Admin, Rol.Revisor]},
+      {est: 'En Modificacion', roles: [Rol.Admin, Rol.Revisor]},
+      {est: 'En verificacion', roles: [Rol.Admin, Rol.Revisor]},
+      {est: 'Aceptada', roles: [Rol.Admin, Rol.Revisor]},
+      {est: 'Asociada a Entrada', roles: [Rol.Admin]},
+      {est: 'Anulada', roles: [Rol.Admin]},
+    ];
+    // const uid = this.userService.getPersonaId();
+    const uid = 2; // solo para pruebas
+    return actas
+      // TODO: Comentar/Eliminar el siguiente mapeo (y este comentario)
+      // cuando el ARKA_MID retorne en cada objeto los parámetros
+      // ContratistaId y ProveedorId (Este mapeo es SOLO para pruebas)
+      // Ver https://github.com/udistrital/arka_cliente/issues/363#issuecomment-749920165
+      .map((acta, idx) => {
+
+        // Opcion 1 de mapeo de prueba:
+        // módulo 4 para "reducir a una cuarta parte" las actas visibles
+        // acta.ContratistaId = idx % 4;
+        // acta.ProveedorId = (idx + 1) % 4;
+
+        // Opcion 2 de mapeo de prueba:
+        // "Asignando" el mismo uid, no se filtrará ningun acta
+        // si el(los) rol(es) actual solo permite actas asignadas
+        acta.ContratistaId = uid;
+        acta.ProveedorId = uid;
+        return acta;
+      })
+      .filter(acta => filtroActas.some(cond =>
+        (cond.est === acta.Estado)
+        && (
+          ((acta.Estado === 'En Elaboracion' || acta.Estado === 'En Modificacion')
+            && uid === acta.ContratistaId && this.userService.tieneAlgunRol([Rol.Contratista]))
+          || ((acta.Estado === 'En Elaboracion')
+            && uid === acta.ProveedorId && this.userService.tieneAlgunRol([Rol.Proveedor]))
+          || this.userService.tieneAlgunRol(cond.roles) ) ));
   }
 
   cargarCampos() {
@@ -114,9 +146,7 @@ export class ConsultaActaRecibidoComponent implements OnInit {
         columnTitle: 'Acciones',
         position: 'right',
         delete: false,
-      },
-      add: {
-        addButtonContent: '<i class="nb-plus" title="Registrar Acta Nueva" aria-label="Registrar Acta Nueva"></i>',
+        add: false,
       },
       edit: {
         editButtonContent: '<i class="far fa-edit" title="Editar Acta" aria-label="Editar Acta"></i>',
@@ -220,6 +250,13 @@ export class ConsultaActaRecibidoComponent implements OnInit {
       },
     };
 
+    if (this.userService.tieneAlgunRol([Rol.Secretaria, Rol.Admin, Rol.Revisor])) {
+      this.settings.add = {
+        addButtonContent: '<i class="nb-plus" title="Registrar Acta Nueva" aria-label="Registrar Acta Nueva"></i>',
+      };
+      this.settings.actions.add = true;
+    }
+
     if (this.userService.tieneAlgunRol([Rol.Admin, Rol.Revisor])) {
       this.settings.delete = {
         deleteButtonContent: '<i class="fas fa-ban" title="Anular Acta" aria-label="Anular Acta"></i>',
@@ -281,17 +318,13 @@ export class ConsultaActaRecibidoComponent implements OnInit {
       case 'Registrada':
       case 'En Elaboracion':
       case 'En Modificacion':
-        this.actaSeleccionada = `${event.data.Id}`;
-        this.estadoActaSeleccionada = `${event.data.Estado}`;
-        this.accion = '';
-        editarActa = true;
-        break;
       case 'Aceptada':
         this.actaSeleccionada = `${event.data.Id}`;
         this.estadoActaSeleccionada = `${event.data.Estado}`;
         this.accion = '';
         editarActa = true;
         break;
+
       default: {
         (Swal as any).fire({
           type: 'warning',

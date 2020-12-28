@@ -198,6 +198,7 @@ export class CapturarElementosComponent implements OnInit {
   TraerPlantilla() {
 
     NuxeoService.nuxeo.header('X-NXDocumentProperties', '*');
+
     // NuxeoService.nuxeo.request('/id/8e4d5b47-ba37-41dd-b549-4efc1777fef2') // PLANTILLA VIEJA
     NuxeoService.nuxeo.request('/id/76e0956e-1cbe-45d7-993c-1839fbbf2cfc') // Plantilla nueva
       .get()
