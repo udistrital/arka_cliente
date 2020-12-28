@@ -26,6 +26,8 @@ import { CompleterData, CompleterService, CompleterItem } from 'ng2-completer';
 import {Observable} from 'rxjs';
 import { Row } from 'ngx-smart-table/lib/data-set/row';
 import { DatePipe } from '@angular/common';
+import { RolUsuario_t as Rol, PermisoUsuario_t as Permiso } from '../../../@core/data/models/roles/rol_usuario';
+import { UserService } from '../../../@core/data/users.service';
 
 @Component({
   selector: 'ngx-capturar-elementos',
@@ -65,6 +67,7 @@ export class CapturarElementosComponent implements OnInit {
   Devolutivo: any;
   Clases: any;
   Codigo: any;
+  displayedColumns: any[];
   checkTodos: boolean = false;
   checkParcial: boolean = false;
 
@@ -76,6 +79,7 @@ export class CapturarElementosComponent implements OnInit {
     private nuxeoService: NuxeoService,
     private documentoService: DocumentoService,
     private catalogoHelper: CatalogoElementosHelper,
+    private userService: UserService,
     private completerService: CompleterService) {
 
     this.listService.findSubgruposConsumo();
@@ -135,51 +139,46 @@ export class CapturarElementosComponent implements OnInit {
         this.dataSource.data[i].CodigoSubgrupo = '' ;
       }
     }
+    this.ReglasColumnas();
   }
 
-  exportToExcel(json: any[], excelFileName: string) {
-    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(json);
-    const workbook: XLSX.WorkBook = {
-      Sheets: {'data': worksheet},
-      SheetNames: ['data'],
-    };
-    const excelBuffer: any = XLSX.write(workbook, {bookType: 'xlsx', type: 'array'});
-    this.saveAsExcel(excelBuffer, excelFileName);
-
-  }
-  saveAsExcel(buffer: any, fileName: string) {
-    const data: Blob = new Blob(
-      [buffer],
-      {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet; charset=UTF-8',
-      });
-    FileSaver.saveAs(data, fileName + '_export_' + 'xlsx');
-  }
-  DescargarTabla() {
-    if (this.dataSource2 === undefined) {
-      const dataexcel = new Array();
-      for (let i = 0; i < this.dataSource.data.length; i++) {
-        dataexcel[i] = {};
-      }
-      this.dataSource2 = new MatTableDataSource(dataexcel);
+  ReglasColumnas() {
+    if (this.userService.tieneAlgunRol([Rol.Proveedor])) {
+      this.displayedColumns = [
+        'AccionesMacro',
+        'Nombre',
+        'Cantidad',
+        'Marca',
+        'Serie',
+        'UnidadMedida',
+        'ValorUnitario',
+        'Subtotal',
+        'Descuento',
+        'PorcentajeIvaId',
+        'ValorIva',
+        'ValorTotal',
+        'Acciones',
+      ];
+    } else {
+      this.displayedColumns = [
+        'AccionesMacro',
+        'CodigoSubgrupo',
+        'SubgrupoCatalogoId',
+        'TipoBienId',
+        'Nombre',
+        'Cantidad',
+        'Marca',
+        'Serie',
+        'UnidadMedida',
+        'ValorUnitario',
+        'Subtotal',
+        'Descuento',
+        'PorcentajeIvaId',
+        'ValorIva',
+        'ValorTotal',
+        'Acciones',
+      ];
     }
-    for (let i = 0; i < this.dataSource.data.length; i++) {
-      this.dataSource2.data[i].Codigo = this.dataSource.data[i].CodigoSubgrupo;
-      this.dataSource2.data[i].Clase = this.dataSource.data[i].NombreClase;
-      this.dataSource2.data[i].TipoBien = this.dataSource.data[i].TipoBienNombre;
-      this.dataSource2.data[i].Descripcion = this.dataSource.data[i].Nombre;
-      this.dataSource2.data[i].Cantidad = this.dataSource.data[i].Cantidad;
-      this.dataSource2.data[i].Marca = this.dataSource.data[i].Marca;
-      this.dataSource2.data[i].Serie = this.dataSource.data[i].Serie;
-      this.dataSource2.data[i].UnidadMedida = this.dataSource.data[i].UnidadMedida;
-      this.dataSource2.data[i].ValorUnitario = this.dataSource.data[i].ValorUnitario;
-      this.dataSource2.data[i].Subtotal = this.dataSource.data[i].Subtotal;
-      this.dataSource2.data[i].Descuento = this.dataSource.data[i].Descuento;
-      this.dataSource2.data[i].PorcentajeIva = this.dataSource.data[i].PorcentajeIvaId;
-      this.dataSource2.data[i].ValorIva = this.dataSource.data[i].ValorIva;
-      this.dataSource2.data[i].ValorTotal = this.dataSource.data[i].ValorTotal;
-    }
-    this.exportToExcel(this.dataSource2.data, 'prueba1');
-    // console.log(this.dataSource2.data);
   }
 
   onSelectedClase(selected: CompleterItem, fila: number) {
@@ -199,8 +198,9 @@ export class CapturarElementosComponent implements OnInit {
   TraerPlantilla() {
 
     NuxeoService.nuxeo.header('X-NXDocumentProperties', '*');
-    // NuxeoService.nuxeo.request('/id/8e4d5b47-ba37-41dd-b549-4efc1777fef2')
-    NuxeoService.nuxeo.request('/id/76e0956e-1cbe-45d7-993c-1839fbbf2cfc')
+
+    // NuxeoService.nuxeo.request('/id/8e4d5b47-ba37-41dd-b549-4efc1777fef2') // PLANTILLA VIEJA
+    NuxeoService.nuxeo.request('/id/76e0956e-1cbe-45d7-993c-1839fbbf2cfc') // Plantilla nueva
       .get()
       .then(function (response) {
         // console.log(response)
@@ -280,7 +280,6 @@ export class CapturarElementosComponent implements OnInit {
 
     const formModel: FormData = this.prepareSave();
     this.actaRecibidoHelper.postArchivo(formModel).subscribe(res => {
-
       if (res !== null) {
         if (res[0].Mensaje !== undefined) {
           (Swal as any).fire({
@@ -290,7 +289,6 @@ export class CapturarElementosComponent implements OnInit {
           });
           this.clearFile();
         } else {
-          // console.log(res);
           this.respuesta = res;
           this.dataSource.data = this.respuesta[0].Elementos;
           this.ver();
@@ -300,6 +298,7 @@ export class CapturarElementosComponent implements OnInit {
             if (this.dataSource.data[i].CodigoSubgrupo === undefined) {
               this.dataSource.data[i].CodigoSubgrupo = '' ;
               this.dataSource.data[i].TipoBienNombre = '';
+              this.dataSource.data[i].NombreClase = '';
             }
           }
           (Swal as any).fire({
@@ -331,24 +330,7 @@ export class CapturarElementosComponent implements OnInit {
     this.readThis();
   }
 
-  displayedColumns = [
-    'AccionesMacro',
-    'CodigoSubgrupo',
-    'SubgrupoCatalogoId',
-    'TipoBienId',
-    'Nombre',
-    'Cantidad',
-    'Marca',
-    'Serie',
-    'UnidadMedida',
-    'ValorUnitario',
-    'Subtotal',
-    'Descuento',
-    'PorcentajeIvaId',
-    'ValorIva',
-    'ValorTotal',
-    'Acciones',
-  ];
+
 
   getDescuentos() {
 

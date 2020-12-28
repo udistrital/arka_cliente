@@ -4,7 +4,7 @@
       <nb-card-header>{{'GLOBAL.Acta_Recibido.CapturarElementos.CargaMasivaTitle' | translate }}</nb-card-header>
       <nb-card-body class="row soporte">
         <div class="form-group col-sm soporte">
-
+          <p>Archivo Carga Masiva</p>
           <button nbButton type="button" (click)="fileInputDocumento.click()">
             <i class="fas fa-file-upload fa-2x"></i>
             <input formControlname="archivo" id="archivo_icfes" #fileInputDocumento type="file"
@@ -292,40 +292,3 @@
     <mat-paginator [pageSizeOptions]="[10, 20, 30, 40, 50]"></mat-paginator>
   </nb-card-body>
 </nb-card>
-
-<div class="card-2">
-  <form [formGroup]="form" (ngSubmit)="onSubmit()">
-    <nb-card>
-      <nb-card-header>{{'GLOBAL.Acta_Recibido.CapturarElementos.CargaMasivaTitle' | translate }}</nb-card-header>
-      <nb-card-body class="row soporte">
-        <div class="form-group col-sm soporte">
-          <p>Cargar Tabla Editada</p>
-          <button nbButton type="button" (click)="fileInputDocumento.click()">
-            <i class="fas fa-file-upload fa-2x"></i>
-            <input formControlname="archivo" id="archivo_icfes" #fileInputDocumento type="file"
-              (change)="onFileChange($event)" style="display:none;" />
-          </button>
-          <p></p>
-          <p *ngIf="Validador">{{nombreArchivo}}</p>
-          <p *ngIf="!Validador">{{'GLOBAL.Acta_Recibido.CapturarElementos.ValidadorPlaceholder' | translate }}</p>
-          <button type="button" class="btn btn-primary" (click)="clearFile()" *ngIf="Validador">
-            {{'GLOBAL.Acta_Recibido.CapturarElementos.LimpiarEspacioButton' | translate }}
-          </button>
-        </div>
-        <p></p>
-        <div class="col-sm soporte">
-          <p>Descargar Tabla</p>
-          <button nbButton type="button" (click)="DescargarTabla()">
-            <i class="fas fa-file-excel fa-2x" ></i>
-          </button>
-
-        </div>
-      </nb-card-body>
-      <nb-card-footer class="soporte">
-        <button type="submit" [disabled]="!form.valid && !Validador" class="btn btn-success">
-          {{'GLOBAL.Acta_Recibido.CapturarElementos.CargarElementosButton' | translate }} <i
-            class="fa fa-spinner fa-spin fa-fw" *ngIf="loading"></i></button>
-      </nb-card-footer>
-    </nb-card>
-  </form>
-</div>
