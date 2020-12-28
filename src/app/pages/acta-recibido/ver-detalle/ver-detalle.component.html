@@ -41,7 +41,7 @@
                   {{'GLOBAL.Acta_Recibido.DetalleActa.SoporteSubTitle' | translate}} &nbsp; {{i + 1}}
                 </ng-template>
                 <div>
-                  <nb-card>
+                  <nb-card *ngIf="!ActaEspecial">
                     <nb-card-body>
                       <div class="row">
                         <div class="form-group col-sm">

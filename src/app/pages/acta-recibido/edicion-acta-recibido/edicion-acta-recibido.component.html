@@ -84,7 +84,7 @@
                     <div>
 
                       <!-- Datos básicos del Soporte -->
-                      <nb-card>
+                      <nb-card *ngIf="!ActaEspecial">
                         <nb-card-body (click)="usarLocalStorage()">
                           <div class="row">
                             <div class="col">
@@ -112,12 +112,11 @@
                               <div class="form-group col-sm">
                                 <label>{{'GLOBAL.Acta_Recibido.EdicionActa.FechaSoporte' | translate}}</label>
                                 <div class="input-group">
-                                  <input nbInput (click)="usarLocalStorage()"
-                                    placeholder="{{'GLOBAL.Acta_Recibido.EdicionActa.FechaFiltro' | translate}}"
-                                    class="form-control" [nbDatepicker]="formpicker" (keyup)="usarLocalStorage()"
-                                    formControlName="Fecha_Factura" required>
-                                  <nb-datepicker (click)="usarLocalStorage()" #formpicker></nb-datepicker>
-                                </div>
+                                  <input nbInput
+                                  placeholder="{{'GLOBAL.Acta_Recibido.EdicionActa.FechaFiltro' | translate}}"
+                                  class="form-control" [nbDatepicker]="formpicker" (keyup)="usarLocalStorage()"
+                                  formControlName="Fecha_Factura" required>
+                                  <nb-datepicker #formpicker [max]="TodaysDate" (dateChange)="usarLocalStorage()"></nb-datepicker>                                </div>
                                 <p class="campo" *ngIf="firstForm.get('Formulario2').at(i).get('Fecha_Factura').invalid">
                                   {{'GLOBAL.placeholder' | translate}}</p>
                               </div>

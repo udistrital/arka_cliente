@@ -3,7 +3,7 @@ import { Subscription, combineLatest, empty } from 'rxjs';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, FormControl, FormArray } from '@angular/forms';
 import { NuxeoService } from '../../../@core/utils/nuxeo.service';
-
+import { AuthInterceptor } from './../../../@core/_Interceptor/auth.Interceptor';
 import { MatTable } from '@angular/material';
 import 'hammerjs';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
@@ -33,6 +33,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { UserService } from '../../../@core/data/users.service';
 import { RolUsuario_t as Rol, PermisoUsuario_t as Permiso } from '../../../@core/data/models/roles/rol_usuario';
 import { permisosSeccionesActas } from './reglas';
+import { NbDateService } from '@nebular/theme';
 
 @Component({
   selector: 'ngx-edicion-acta-recibido',
@@ -67,6 +68,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
   Validador: any[] = [];
   uidDocumento: any[] = [];
   idDocumento: any[] = [];
+  ActaEspecial: boolean;
 
   // Tablas parametricas
 
@@ -96,7 +98,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
   Unidades: any;
   DatosElementos: Array<any>;
   Acta: ActaRecibido;
-
+  TodaysDate: any;
   observable: any;
 
   Proveedores: any;
@@ -132,6 +134,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
     private nuxeoService: NuxeoService,
     private documentoService: DocumentoService,
     private userService: UserService,
+    private dateService: NbDateService<Date>,
   ) {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
     });
@@ -151,6 +154,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
     this.searchStr2 = new Array<string>();
     this.DatosElementos = new Array<any>();
     this.Elementos__Soporte = new Array<any>();
+    this.TodaysDate = new Date();
   }
 
   // Los permisos dependen del estado del acta y del rol.
@@ -201,6 +205,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
             PuedenVer = PermEstado.PuedenVer;
           });
       });
+
     return { PuedenModificar, PuedenVer };
   }
 
@@ -302,8 +307,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
     }
   }
 
-  Cargar_Formularios(transaccion_: TransaccionActaRecibido) {
-
+  Cargar_Formularios( transaccion_: TransaccionActaRecibido ) {
     this.Actas_Recibido.getSedeDependencia(transaccion_.ActaRecibido.UbicacionId).subscribe(res => {
       const valor = res[0].EspacioFisicoId.Codigo.substring(0, 4); // Para algunas actas lanza error "Cannot read 'Codigo' of undefined"
       const Form2 = this.fb.array([]);
@@ -312,11 +316,13 @@ export class EdicionActaRecibidoComponent implements OnInit {
         const Formulario__2 = this.fb.group({
           Id: [Soporte.SoporteActa.Id],
           Proveedor: [
-            this.Proveedores.find(proveedor => proveedor.Id.toString() === Soporte.SoporteActa.ProveedorId.toString()).compuesto,
-            Validators.required,
-          ],
+            Soporte.SoporteActa.ProveedorId === 0 ? this.ActaEspecial = true :
+              this.Proveedores.find((proveedor) =>
+                proveedor.Id.toString() === Soporte.SoporteActa.ProveedorId.toString()).compuesto,
+                Validators.required],
           Consecutivo: [Soporte.SoporteActa.Consecutivo, Validators.required],
-          Fecha_Factura: [Soporte.SoporteActa.FechaSoporte, Validators.required],
+          Fecha_Factura: [this.dateService.parse(Soporte.SoporteActa.FechaSoporte.toString(), 'MM dd yyyy'),
+            Validators.required],
           Soporte: [Soporte.SoporteActa.DocumentoId, Validators.required],
         });
         this.Validador[index] = true;
@@ -345,6 +351,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
           }
         elementos.push(elementoSoporte);
         Form2.push(Formulario__2);
+        // }
       });
 
       this.Elementos__Soporte = elementos;
