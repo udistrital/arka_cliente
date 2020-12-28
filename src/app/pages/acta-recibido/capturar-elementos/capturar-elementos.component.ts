@@ -23,7 +23,7 @@ import { isNumeric } from 'rxjs/internal-compatibility';
 import { isArray } from 'util';
 import { MatCheckboxChange } from '@angular/material';
 import { CompleterData, CompleterService, CompleterItem } from 'ng2-completer';
-import {Observable} from 'rxjs';
+import { Observable } from 'rxjs';
 import { Row } from 'ngx-smart-table/lib/data-set/row';
 import { DatePipe } from '@angular/common';
 import { RolUsuario_t as Rol, PermisoUsuario_t as Permiso } from '../../../@core/data/models/roles/rol_usuario';
@@ -136,7 +136,7 @@ export class CapturarElementosComponent implements OnInit {
     }
     for (let i = 0; i < this.dataSource.data.length; i++) {
       if (this.dataSource.data[i].CodigoSubgrupo === undefined) {
-        this.dataSource.data[i].CodigoSubgrupo = '' ;
+        this.dataSource.data[i].CodigoSubgrupo = '';
       }
     }
     this.ReglasColumnas();
@@ -187,6 +187,8 @@ export class CapturarElementosComponent implements OnInit {
     this.dataSource.data[fila].SubgrupoCatalogoId = selected.originalObject.SubgrupoId.Id;
     this.dataSource.data[fila].TipoBienNombre = selected.originalObject.TipoBienId.Nombre;
   }
+
+
 
   ver() {
     this.refrescaCheckTotal();
@@ -263,7 +265,7 @@ export class CapturarElementosComponent implements OnInit {
           });
           this.Validador = false;
         }
-      //  console.log(this.form)
+        //  console.log(this.form)
       }
 
     } else {
@@ -296,7 +298,7 @@ export class CapturarElementosComponent implements OnInit {
           this.dataSource.sort = this.sort;
           for (let i = 0; i < this.dataSource.data.length; i++) {
             if (this.dataSource.data[i].CodigoSubgrupo === undefined) {
-              this.dataSource.data[i].CodigoSubgrupo = '' ;
+              this.dataSource.data[i].CodigoSubgrupo = '';
               this.dataSource.data[i].TipoBienNombre = '';
               this.dataSource.data[i].NombreClase = '';
             }
@@ -376,7 +378,7 @@ export class CapturarElementosComponent implements OnInit {
     }
   }
   getClasesElementos() {
-    if (this.Clases && this.Clases.length ) {
+    if (this.Clases && this.Clases.length) {
       this.dataSource.data.map((elemento) => {
         elemento.TipoBienNombre = this.Tipos_Bien.find((x) => x.Id === elemento.TipoBienId).Nombre;
         elemento.CodigoSubgrupo = this.Clases.find((x) => x.SubgrupoId.Id === elemento.SubgrupoCatalogoId).SubgrupoId.Codigo;
@@ -384,6 +386,8 @@ export class CapturarElementosComponent implements OnInit {
       });
     }
   }
+
+
 
   getTotales() {
 
@@ -433,8 +437,29 @@ export class CapturarElementosComponent implements OnInit {
     const seleccionados = this.getSeleccionados();
     if (seleccionados.length) {
       (Swal as any).fire({
-        title: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.EliminarVariosElementosTitle', {cantidad: seleccionados.length}),
-        text: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.EliminarVariosElementosText', {cantidad: seleccionados.length}),
+        title: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.EliminarVariosElementosTitle', { cantidad: seleccionados.length }),
+        text: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.EliminarVariosElementosText', { cantidad: seleccionados.length }),
+        type: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Si',
+        cancelButtonText: 'No',
+      }).then((result) => {
+        if (result.value) {
+          this._deleteElemento(seleccionados);
+          this.ver();
+        }
+      });
+    }
+  }
+
+  aplicarClase() {
+    const seleccionados = this.getSeleccionados();
+    if (seleccionados.length) {
+      (Swal as any).fire({
+        title: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.EliminarVariosElementosTitle', { cantidad: seleccionados.length }),
+        text: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.EliminarVariosElementosText', { cantidad: seleccionados.length }),
         type: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
@@ -451,7 +476,7 @@ export class CapturarElementosComponent implements OnInit {
   }
 
   getSeleccionados() {
-    return this.dataSource.data.map((elem, idx) => ({'idx_data': idx, elem}))
+    return this.dataSource.data.map((elem, idx) => ({ 'idx_data': idx, elem }))
       .filter(elem => elem.elem.seleccionado)
       .map(elem => elem.idx_data);
   }
@@ -476,7 +501,7 @@ export class CapturarElementosComponent implements OnInit {
 
   private _deleteElemento(index: any) {
     // console.log({index});
-    const indices = isNumeric(index) ? [index] : ( isArray(index) ? index : undefined );
+    const indices = isNumeric(index) ? [index] : (isArray(index) ? index : undefined);
     if (indices) {
       const data = this.dataSource.data;
       indices.sort((a, b) => b - a);
@@ -485,6 +510,19 @@ export class CapturarElementosComponent implements OnInit {
       }
       this.dataSource.data = data;
     }
+  }
+
+  onClase(selected: CompleterItem) {
+    const seleccionados = this.getSeleccionados();
+    seleccionados.forEach((index) => {
+      this.dataSource.data[index].CodigoSubgrupo = selected.originalObject.SubgrupoId.Codigo;
+      this.dataSource.data[index].TipoBienId = selected.originalObject.TipoBienId.Id;
+      this.dataSource.data[index].SubgrupoCatalogoId = selected.originalObject.SubgrupoId.Id;
+      this.dataSource.data[index].TipoBienNombre = selected.originalObject.TipoBienId.Nombre;
+      this.dataSource.data[index].NombreClase = selected.originalObject.SubgrupoId.Nombre;
+      this.dataSource.data[index].seleccionado = false;
+    });
+    this.refrescaCheckTotal();
   }
 
   refrescaCheckTotal() {

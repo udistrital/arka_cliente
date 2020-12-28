@@ -21,7 +21,7 @@
         <div class="col-sm soporte">
           <p>Descargar Plantilla</p>
           <button nbButton type="button" (click)="TraerPlantilla()">
-            <i class="fas fa-file-excel fa-2x" ></i>
+            <i class="fas fa-file-excel fa-2x"></i>
           </button>
 
         </div>
@@ -40,254 +40,257 @@
   <nb-card-body>
 
     <div class="row">
+      <button nbButton (click)="borraSeleccionados()" style="margin-left: 10px;height: 45px;">Borrar
+        Seleccionados</button>
       <div class="col">
-        <button nbButton (click)="borraSeleccionados()">Borrar Seleccionados</button>
+        <ng2-completer type="text" inputClass="cell form-control" style="height: 8px;" placeholder="Asignar clase"
+          [datasource]="dataService" [minSearchLength]="4" (selected)="onClase($event)"
+          [disableInput]="!checkParcial && !checkTodos" [clearSelected]="true" [clearUnselected]="false">
+        </ng2-completer>
       </div>
       <div class="col">
-        <input nbInput (keyup)="applyFilter($event.target.value)" class="filter" placeholder="Filtro">
+        <input nbInput (keyup)="applyFilter($event.target.value)" class="filter" placeholder="Filtro"
+          style="height: 45px;">
       </div>
     </div>
+    <p></p>
+    <table mat-table #table [dataSource]="dataSource" matSort (keyup)="ver()">
 
-      <table mat-table #table [dataSource]="dataSource" matSort (keyup)="ver()">
+      <!-- Acciones Macro/Checkbox -->
+      <ng-container matColumnDef="AccionesMacro">
+        <th mat-header-cell *matHeaderCellDef>
+          <mat-checkbox aria-label="Seleccionar/Deseleccionar Todo"
+            (change)="cambioCheckTodos($event.checked); refrescaCheckTotal()" nbPopover="Seleccionar/Deseleccionar Todo"
+            nbPopoverTrigger="hover" nbPopoverPlacement="left" [checked]="checkTodos" [indeterminate]="checkParcial">
+          </mat-checkbox>
+        </th>
+        <td mat-cell *matCellDef="let element; let rowIndex = index">
+          <nb-checkbox (change)="refrescaCheckTotal()" [(ngModel)]="element.seleccionado"></nb-checkbox>
+        </td>
+        <td mat-footer-cell *matFooterCellDef>Totales</td>
+      </ng-container>
 
-        <!-- Acciones Macro/Checkbox -->
-        <ng-container matColumnDef="AccionesMacro">
-          <th mat-header-cell *matHeaderCellDef >
-            <mat-checkbox aria-label="Seleccionar/Deseleccionar Todo" (change)="cambioCheckTodos($event.checked)"
-              nbPopover="Seleccionar/Deseleccionar Todo"
-              nbPopoverTrigger="hover" nbPopoverPlacement="left"
-              [checked]="checkTodos" [indeterminate]="checkParcial"></mat-checkbox>
-          </th>
-          <td mat-cell *matCellDef="let element; let rowIndex = index">
-            <nb-checkbox (change)="refrescaCheckTotal()"
-              [(ngModel)]="element.seleccionado"></nb-checkbox>
-          </td>
-          <td mat-footer-cell *matFooterCellDef>Totales</td>
-        </ng-container>
-
-        <!-- Codigo de Subgrupo -->
-        <ng-container matColumnDef="CodigoSubgrupo">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>
-            <!-- TODO: Revisar texto siguiente -->
-            {{ 'GLOBAL.codigo' | translate }} </th>
-          <td mat-cell *matCellDef="let element; let rowIndex = index">
-            <div>
-              <input disabled nbInput type="text" fieldSize="tiny"
-              class="cell"
-              [(value)]="element.CodigoSubgrupo" readonly>
-            </div>
-          </td>
-          <td mat-footer-cell *matFooterCellDef></td>
-        </ng-container>
-
-        <!-- Subgrupo Catalogo -->
-        <ng-container matColumnDef="SubgrupoCatalogoId">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>
-            <!-- TODO: Revisar texto siguiente -->
-            {{ 'GLOBAL.subgrupo.clase.nombre' | translate }} </th>
-          <td mat-cell *matCellDef="let element; let rowIndex = index">
-            <div style="width: 150px;">
-                <ng2-completer nbInput type="text" inputClass="cell form-control" style="border: 0rem"  
-                  fieldSize="tiny" 
-                  [datasource]="dataService" 
-                  [minSearchLength]="4"
-                  (selected)="onSelectedClase($event,rowIndex)"
-                  [(ngModel)] = "element.NombreClase"
-                ></ng2-completer>
-            </div>
-          </td>
-          <td mat-footer-cell *matFooterCellDef></td>
-        </ng-container>        
-
-        <!-- Tipo de Bien -->
-        <ng-container matColumnDef="TipoBienId">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>
-            {{'GLOBAL.Acta_Recibido.CapturarElementos.TipoBienHeader' | translate }} </th>
-          <td mat-cell *matCellDef="let element; let rowIndex = index">
-            <div>
-              <input disabled nbInput type="text" fieldSize="tiny"
-              class="cell"
-              [(ngModel)]="element.TipoBienNombre"
+      <!-- Codigo de Subgrupo -->
+      <ng-container matColumnDef="CodigoSubgrupo">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+          <!-- TODO: Revisar texto siguiente -->
+          {{ 'GLOBAL.codigo' | translate }}
+        </th>
+        <td mat-cell *matCellDef="let element; let rowIndex = index">
+          <div>
+            <input disabled nbInput type="text" fieldSize="tiny" class="cell" [(value)]="element.CodigoSubgrupo"
               readonly>
-            </div>
-          </td>
-          <td mat-footer-cell *matFooterCellDef>Totales</td>
-        </ng-container>
+          </div>
+        </td>
+        <td mat-footer-cell *matFooterCellDef></td>
+      </ng-container>
+
+      <!-- Subgrupo Catalogo -->
+      <ng-container matColumnDef="SubgrupoCatalogoId">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+          <!-- TODO: Revisar texto siguiente -->
+          {{ 'GLOBAL.subgrupo.clase.nombre' | translate }}
+        </th>
+        <td mat-cell *matCellDef="let element; let rowIndex = index">
+          <div style="width: 150px;">
+            <ng2-completer nbInput type="text" inputClass="cell form-control" style="border: 0rem" fieldSize="tiny"
+              [datasource]="dataService" [minSearchLength]="4" (selected)="onSelectedClase($event,rowIndex)"
+              [(ngModel)]="element.NombreClase"></ng2-completer>
+          </div>
+        </td>
+        <td mat-footer-cell *matFooterCellDef></td>
+      </ng-container>
+
+      <!-- Tipo de Bien -->
+      <ng-container matColumnDef="TipoBienId">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+          {{'GLOBAL.Acta_Recibido.CapturarElementos.TipoBienHeader' | translate }} </th>
+        <td mat-cell *matCellDef="let element; let rowIndex = index">
+          <div>
+            <input disabled nbInput type="text" fieldSize="tiny" class="cell" [(ngModel)]="element.TipoBienNombre"
+              readonly>
+          </div>
+        </td>
+        <td mat-footer-cell *matFooterCellDef>Totales</td>
+      </ng-container>
 
 
 
-        <!-- Nombre Catalogo -->
-        <ng-container matColumnDef="Nombre">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>
-            {{'GLOBAL.Acta_Recibido.CapturarElementos.DescripcionHeader' | translate }} </th>
-          <td mat-cell *matCellDef="let element; let rowIndex = index">
-            <input nbInput type="text" fieldSize="tiny" class="cell"
-              placeholder="{{'GLOBAL.Acta_Recibido.CapturarElementos.DescripcionHeader' | translate }}"
-              [(ngModel)]="element.Nombre" required>
-          </td>
-          <td mat-footer-cell *matFooterCellDef></td>
-        </ng-container>
+      <!-- Nombre Catalogo -->
+      <ng-container matColumnDef="Nombre">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+          {{'GLOBAL.Acta_Recibido.CapturarElementos.DescripcionHeader' | translate }} </th>
+        <td mat-cell *matCellDef="let element; let rowIndex = index">
+          <input nbInput type="text" fieldSize="tiny" class="cell"
+            placeholder="{{'GLOBAL.Acta_Recibido.CapturarElementos.DescripcionHeader' | translate }}"
+            [(ngModel)]="element.Nombre" required>
+        </td>
+        <td mat-footer-cell *matFooterCellDef></td>
+      </ng-container>
 
-        <!-- Cantidad Column -->
-        <ng-container matColumnDef="Cantidad">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>
-            {{'GLOBAL.Acta_Recibido.CapturarElementos.CantidadHeader' | translate }} </th>
-          <td mat-cell *matCellDef="let element; let rowIndex = index">
-            <input currencyMask [options]="{allowNegative: false, prefix: ''}" nbInput type="text" fieldSize="tiny"
-              class="cell-2" placeholder="{{'GLOBAL.Acta_Recibido.CapturarElementos.CantidadHeader' | translate }}"
-              (ngModelChange)="element.Subtotal = valorXcantidad(element.ValorUnitario, $event).toString();
+      <!-- Cantidad Column -->
+      <ng-container matColumnDef="Cantidad">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+          {{'GLOBAL.Acta_Recibido.CapturarElementos.CantidadHeader' | translate }} </th>
+        <td mat-cell *matCellDef="let element; let rowIndex = index">
+          <input currencyMask [options]="{allowNegative: false, prefix: ''}" nbInput type="text" fieldSize="tiny"
+            class="cell-2" placeholder="{{'GLOBAL.Acta_Recibido.CapturarElementos.CantidadHeader' | translate }}"
+            (ngModelChange)="element.Subtotal = valorXcantidad(element.ValorUnitario, $event).toString();
               element.ValorTotal = valortotal(valorXcantidad(element.ValorUnitario, $event).toString(),element.Descuento,element.ValorIva).toString();
               element.ValorIva = valor_iva(valorXcantidad(element.ValorUnitario, $event).toString(),element.Descuento,element.PorcentajeIvaId).toString();"
-              [(ngModel)]="element.Cantidad" required>
-          </td>
-          <td mat-footer-cell *matFooterCellDef></td>
-        </ng-container>
+            [(ngModel)]="element.Cantidad" required>
+        </td>
+        <td mat-footer-cell *matFooterCellDef></td>
+      </ng-container>
 
-        <!-- Marca Column -->
-        <ng-container matColumnDef="Marca">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>
-            {{'GLOBAL.Acta_Recibido.CapturarElementos.MarcaHeader' | translate }}
-          </th>
-          <td mat-cell *matCellDef="let element; let rowIndex = index">
-            <input nbInput type="text" fieldSize="tiny" class="cell"
-              placeholder="{{'GLOBAL.Acta_Recibido.CapturarElementos.MarcaHeader' | translate }}"
-              [(ngModel)]="element.Marca" required>
-          </td>
-          <td mat-footer-cell *matFooterCellDef></td>
-        </ng-container>
+      <!-- Marca Column -->
+      <ng-container matColumnDef="Marca">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+          {{'GLOBAL.Acta_Recibido.CapturarElementos.MarcaHeader' | translate }}
+        </th>
+        <td mat-cell *matCellDef="let element; let rowIndex = index">
+          <input nbInput type="text" fieldSize="tiny" class="cell"
+            placeholder="{{'GLOBAL.Acta_Recibido.CapturarElementos.MarcaHeader' | translate }}"
+            [(ngModel)]="element.Marca" required>
+        </td>
+        <td mat-footer-cell *matFooterCellDef></td>
+      </ng-container>
 
-        <!-- Serie Column -->
-        <ng-container matColumnDef="Serie">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>
-            {{'GLOBAL.Acta_Recibido.CapturarElementos.SerieHeader' | translate }}
-          </th>
-          <td mat-cell *matCellDef="let element; let rowIndex = index">
-            <input nbInput type="text" fieldSize="tiny" class="cell"
-              placeholder="{{'GLOBAL.Acta_Recibido.CapturarElementos.SerieHeader' | translate }}"
-              [(ngModel)]="element.Serie" required>
-          </td>
-          <td mat-footer-cell *matFooterCellDef></td>
-        </ng-container>
+      <!-- Serie Column -->
+      <ng-container matColumnDef="Serie">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+          {{'GLOBAL.Acta_Recibido.CapturarElementos.SerieHeader' | translate }}
+        </th>
+        <td mat-cell *matCellDef="let element; let rowIndex = index">
+          <input nbInput type="text" fieldSize="tiny" class="cell"
+            placeholder="{{'GLOBAL.Acta_Recibido.CapturarElementos.SerieHeader' | translate }}"
+            [(ngModel)]="element.Serie" required>
+        </td>
+        <td mat-footer-cell *matFooterCellDef></td>
+      </ng-container>
 
-        <!-- UnidadMedida Column -->
-        <ng-container matColumnDef="UnidadMedida">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>
-            {{'GLOBAL.Acta_Recibido.CapturarElementos.UnidadMedidaHeader' | translate }} </th>
-          <td mat-cell *matCellDef="let element; let rowIndex = index">
-            <select nbInput type="text" class="cell" [(ngModel)]="element.UnidadMedida" required>
-              <option *ngFor="let unidad of Unidades" [(value)]="unidad.Id">{{unidad.Unidad}}</option>
-            </select>
-          </td>
-          <td mat-footer-cell *matFooterCellDef></td>
-        </ng-container>
+      <!-- UnidadMedida Column -->
+      <ng-container matColumnDef="UnidadMedida">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+          {{'GLOBAL.Acta_Recibido.CapturarElementos.UnidadMedidaHeader' | translate }} </th>
+        <td mat-cell *matCellDef="let element; let rowIndex = index">
+          <select nbInput type="text" class="cell" [(ngModel)]="element.UnidadMedida" required>
+            <option *ngFor="let unidad of Unidades" [(value)]="unidad.Id">{{unidad.Unidad}}</option>
+          </select>
+        </td>
+        <td mat-footer-cell *matFooterCellDef></td>
+      </ng-container>
 
-        <!-- ValorUnitario Column -->
-        <ng-container matColumnDef="ValorUnitario">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>
-            {{'GLOBAL.Acta_Recibido.CapturarElementos.ValorUnitarioHeader' | translate }} </th>
-          <td mat-cell *matCellDef="let element; let rowIndex = index">
+      <!-- ValorUnitario Column -->
+      <ng-container matColumnDef="ValorUnitario">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+          {{'GLOBAL.Acta_Recibido.CapturarElementos.ValorUnitarioHeader' | translate }} </th>
+        <td mat-cell *matCellDef="let element; let rowIndex = index">
 
-            <input currencyMask [options]="{allowNegative: false}" nbInput type="text" fieldSize="tiny" class="cell"
-              placeholder="{{'GLOBAL.Acta_Recibido.CapturarElementos.ValorUnitarioHeader' | translate }}"
-              (ngModelChange)="element.Subtotal = valorXcantidad($event, element.Cantidad).toString();
+          <input currencyMask [options]="{allowNegative: false}" nbInput type="text" fieldSize="tiny" class="cell"
+            placeholder="{{'GLOBAL.Acta_Recibido.CapturarElementos.ValorUnitarioHeader' | translate }}"
+            (ngModelChange)="element.Subtotal = valorXcantidad($event, element.Cantidad).toString();
               element.ValorIva = valor_iva(valorXcantidad($event, element.Cantidad).toString(),element.Descuento,element.PorcentajeIvaId).toString();
-              element.ValorTotal = valortotal(valorXcantidad($event, element.Cantidad).toString(),element.Descuento,element.ValorIva).toString();"
-              [(ngModel)]="element.ValorUnitario" required>
-          </td>
-          <td mat-footer-cell *matFooterCellDef></td>
-        </ng-container>
+              element.ValorTotal = valortotal(valorXcantidad($event, element.Cantidad).toString(),element.Descuento,element.ValorIva).toString();" [(ngModel)]="element.ValorUnitario" required>
+        </td>
+        <td mat-footer-cell *matFooterCellDef></td>
+      </ng-container>
 
-        <!-- Subtotal Column -->
-        <ng-container matColumnDef="Subtotal">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>
-            {{'GLOBAL.Acta_Recibido.CapturarElementos.SubtotalHeader' | translate }} </th>
-          <td mat-cell *matCellDef="let element; let rowIndex = index">
-            <input disabled currencyMask [options]="{allowNegative: false}" nbInput type="text" fieldSize="tiny"
-              class="cell" placeholder="{{'GLOBAL.Acta_Recibido.CapturarElementos.SubtotalHeader' | translate }}"
-              [(ngModel)]="element.Subtotal" readonly>
-          </td>
-          <td mat-footer-cell *matFooterCellDef>
-            <p *ngIf="respuesta">{{ getSubtotales() | currency }}</p>
-          </td>
-        </ng-container>
+      <!-- Subtotal Column -->
+      <ng-container matColumnDef="Subtotal">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+          {{'GLOBAL.Acta_Recibido.CapturarElementos.SubtotalHeader' | translate }} </th>
+        <td mat-cell *matCellDef="let element; let rowIndex = index">
+          <input disabled currencyMask [options]="{allowNegative: false}" nbInput type="text" fieldSize="tiny"
+            class="cell" placeholder="{{'GLOBAL.Acta_Recibido.CapturarElementos.SubtotalHeader' | translate }}"
+            [(ngModel)]="element.Subtotal" readonly>
+        </td>
+        <td mat-footer-cell *matFooterCellDef>
+          <p *ngIf="respuesta">{{ getSubtotales() | currency }}</p>
+        </td>
+      </ng-container>
 
-        <!-- Descuento Column -->
-        <ng-container matColumnDef="Descuento">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>
-            {{'GLOBAL.Acta_Recibido.CapturarElementos.DescuentoHeader' | translate }} </th>
-          <td mat-cell *matCellDef="let element; let rowIndex = index">
-            <input currencyMask [options]="{allowNegative: false}" nbInput type="text" fieldSize="tiny" class="cell"
-              placeholder="{{'GLOBAL.Acta_Recibido.CapturarElementos.DescuentoHeader' | translate }}"
-              [(ngModel)]="element.Descuento" (ngModelChange)="element.ValorIva = valor_iva(element.Subtotal,$event,element.PorcentajeIvaId).toString();
+      <!-- Descuento Column -->
+      <ng-container matColumnDef="Descuento">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+          {{'GLOBAL.Acta_Recibido.CapturarElementos.DescuentoHeader' | translate }} </th>
+        <td mat-cell *matCellDef="let element; let rowIndex = index">
+          <input currencyMask [options]="{allowNegative: false}" nbInput type="text" fieldSize="tiny" class="cell"
+            placeholder="{{'GLOBAL.Acta_Recibido.CapturarElementos.DescuentoHeader' | translate }}"
+            [(ngModel)]="element.Descuento" (ngModelChange)="element.ValorIva = valor_iva(element.Subtotal,$event,element.PorcentajeIvaId).toString();
               element.ValorTotal = valortotal(element.Subtotal,$event,element.ValorIva).toString();" required>
-          </td>
-          <td mat-footer-cell *matFooterCellDef>
-            <p *ngIf="respuesta">{{ getDescuentos() | currency }}</p>
-          </td>
-        </ng-container>
+        </td>
+        <td mat-footer-cell *matFooterCellDef>
+          <p *ngIf="respuesta">{{ getDescuentos() | currency }}</p>
+        </td>
+      </ng-container>
 
-        <!-- PorcentajeIvaId Column -->
-        <ng-container matColumnDef="PorcentajeIvaId">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>
-            {{'GLOBAL.Acta_Recibido.CapturarElementos.IVAHeader' | translate }}
-          </th>
-          <td mat-cell *matCellDef="let element; let rowIndex = index">
-            <select nbInput type="text" class="cell form-control" [(ngModel)]="element.PorcentajeIvaId"
-              (ngModelChange)="element.ValorIva = valor_iva(element.Subtotal,element.Descuento,$event).toString();
+      <!-- PorcentajeIvaId Column -->
+      <ng-container matColumnDef="PorcentajeIvaId">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+          {{'GLOBAL.Acta_Recibido.CapturarElementos.IVAHeader' | translate }}
+        </th>
+        <td mat-cell *matCellDef="let element; let rowIndex = index">
+          <select nbInput type="text" class="cell form-control" [(ngModel)]="element.PorcentajeIvaId"
+            (ngModelChange)="element.ValorIva = valor_iva(element.Subtotal,element.Descuento,$event).toString();
               element.ValorTotal = valortotal(element.Subtotal,element.Descuento,valor_iva(element.Subtotal,element.Descuento,$event).toString()).toString();" required>
-              <option *ngFor="let tarifas of Tarifas_Iva" [(value)]="tarifas.Id">{{tarifas.Nombre}}</option>
-            </select>
-          </td>
-          <td mat-footer-cell *matFooterCellDef></td>
-        </ng-container>
+            <option *ngFor="let tarifas of Tarifas_Iva" [(value)]="tarifas.Id">{{tarifas.Nombre}}</option>
+          </select>
+        </td>
+        <td mat-footer-cell *matFooterCellDef></td>
+      </ng-container>
 
-        <!-- ValorIva Column -->
-        <ng-container matColumnDef="ValorIva">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>
-            {{'GLOBAL.Acta_Recibido.CapturarElementos.ValorIVAHeader' | translate }} </th>
-          <td mat-cell *matCellDef="let element; let rowIndex = index">
-            <input disabled currencyMask [options]="{allowNegative: false}" nbInput type="text" fieldSize="tiny"
-              class="cell" placeholder="{{'GLOBAL.Acta_Recibido.CapturarElementos.ValorIVAHeader' | translate }}"
-              [(ngModel)]="element.ValorIva" readonly>
-          </td>
-          <td mat-footer-cell *matFooterCellDef>
-            <p *ngIf="respuesta">{{ getIVA() | currency }}</p>
-          </td>
-        </ng-container>
+      <!-- ValorIva Column -->
+      <ng-container matColumnDef="ValorIva">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+          {{'GLOBAL.Acta_Recibido.CapturarElementos.ValorIVAHeader' | translate }} </th>
+        <td mat-cell *matCellDef="let element; let rowIndex = index">
+          <input disabled currencyMask [options]="{allowNegative: false}" nbInput type="text" fieldSize="tiny"
+            class="cell" placeholder="{{'GLOBAL.Acta_Recibido.CapturarElementos.ValorIVAHeader' | translate }}"
+            [(ngModel)]="element.ValorIva" readonly>
+        </td>
+        <td mat-footer-cell *matFooterCellDef>
+          <p *ngIf="respuesta">{{ getIVA() | currency }}</p>
+        </td>
+      </ng-container>
 
-        <!-- ValorTotal Column -->
-        <ng-container matColumnDef="ValorTotal">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>
-            {{'GLOBAL.Acta_Recibido.CapturarElementos.ValorTotalHeader' | translate }}</th>
-          <td mat-cell *matCellDef="let element; let rowIndex = index">
-            <input disabled currencyMask [options]="{allowNegative: false}" nbInput type="text" fieldSize="tiny"
-              class="cell" placeholder="{{'GLOBAL.Acta_Recibido.CapturarElementos.ValorTotalHeader' | translate }}"
-              [(ngModel)]="element.ValorTotal" readonly>
-          </td>
-          <td mat-footer-cell *matFooterCellDef>
-            <p *ngIf="respuesta">{{ getTotales() | currency }}</p>
-          </td>
-        </ng-container>
+      <!-- ValorTotal Column -->
+      <ng-container matColumnDef="ValorTotal">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+          {{'GLOBAL.Acta_Recibido.CapturarElementos.ValorTotalHeader' | translate }}</th>
+        <td mat-cell *matCellDef="let element; let rowIndex = index">
+          <input disabled currencyMask [options]="{allowNegative: false}" nbInput type="text" fieldSize="tiny"
+            class="cell" placeholder="{{'GLOBAL.Acta_Recibido.CapturarElementos.ValorTotalHeader' | translate }}"
+            [(ngModel)]="element.ValorTotal" readonly>
+        </td>
+        <td mat-footer-cell *matFooterCellDef>
+          <p *ngIf="respuesta">{{ getTotales() | currency }}</p>
+        </td>
+      </ng-container>
 
-        <!-- Acciones Column -->
-        <ng-container matColumnDef="Acciones">
-          <th mat-header-cell *matHeaderCellDef>
-            <i class="fas fa-plus-square fa-2x" (click)="addElemento()"
-              nbPopover="{{'GLOBAL.Acta_Recibido.CapturarElementos.AgregarElemento' | translate }}"
-              nbPopoverTrigger="hover" nbPopoverPlacement="top"></i>
-          </th>
-          <td mat-cell *matCellDef="let element; let rowIndex = index">
-            <i class="far fa-window-close fa-2x" (click)="deleteElemento(rowIndex)"
-              nbPopover="{{'GLOBAL.Acta_Recibido.CapturarElementos.EliminarElemento' | translate }}"
-              nbPopoverTrigger="hover" nbPopoverPlacement="top"></i>
-          </td>
-          <td mat-footer-cell *matFooterCellDef></td>
-        </ng-container>
+      <!-- Acciones Column -->
+      <ng-container matColumnDef="Acciones">
+        <th mat-header-cell *matHeaderCellDef>
+          <span class="material-icons" (click)="addElemento()"
+            nbPopover="{{'GLOBAL.Acta_Recibido.CapturarElementos.AgregarElemento' | translate }}"
+            nbPopoverTrigger="hover" nbPopoverPlacement="top" style="cursor: pointer;text-align:right;">
+            add_box
+          </span>
+        </th>
+        <td mat-cell *matCellDef="let element; let rowIndex = index">
+          <span class="material-icons" (click)="deleteElemento(rowIndex)"
+            nbPopover="{{'GLOBAL.Acta_Recibido.CapturarElementos.EliminarElemento' | translate }}"
+            nbPopoverTrigger="hover" nbPopoverPlacement="left" style="cursor: pointer;text-align:right;">
+            delete_outline          
+          </span>
+        </td>
+        <td mat-footer-cell *matFooterCellDef></td>
+      </ng-container>
 
-        <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-        <tr mat-footer-row *matFooterRowDef="displayedColumns; sticky: true"></tr>
-      </table>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      <tr mat-footer-row *matFooterRowDef="displayedColumns; sticky: true"></tr>
+    </table>
 
     <mat-paginator [pageSizeOptions]="[10, 20, 30, 40, 50]"></mat-paginator>
   </nb-card-body>
