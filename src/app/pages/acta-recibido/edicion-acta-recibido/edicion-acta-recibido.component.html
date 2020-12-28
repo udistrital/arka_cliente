@@ -194,7 +194,7 @@
                 <div class="justify-content-center">
                   <button nbButton
                     matStepperPrevious>{{'GLOBAL.Acta_Recibido.EdicionActa.AnteriorButton' | translate}}</button>
-                  <button nbButton matStepperNext (click)="Revisar_Totales(); usarLocalStorage()"
+                  <button nbButton matStepperNext (click)="usarLocalStorage()"
                     [disabled]="!firstForm.get('Formulario1').valid || !firstForm.get('Formulario2').valid"
                     class="float-right">{{'GLOBAL.Acta_Recibido.EdicionActa.SiguienteButton' | translate}}</button>
                 </div>
@@ -267,7 +267,7 @@
                 <div class="justify-content-center">
                   <button nbButton
                     matStepperPrevious>{{'GLOBAL.Acta_Recibido.EdicionActa.AnteriorButton' | translate}}</button>
-                  <button nbButton (click)="Revisar_Totales2()"
+                  <button nbButton (click)="Revisar_Totales2()" *ngIf="(permisos.Acta === 2) || (permisos.Elementos === 2)"
                     [disabled]="!firstForm.get('Formulario3').valid || !firstForm.get('Formulario2').valid || !firstForm.get('Formulario3').valid"
                     class="float-right">{{'GLOBAL.Acta_Recibido.EdicionActa.GuardarCambiosButton' | translate}}</button>
                 </div>
@@ -277,11 +277,11 @@
             <div class="justify-content-center">
               <button nbButton (click)="Revisar_Totales3()"
                 *ngIf="estadoActa === 'En Elaboracion' || estadoActa === 'En Modificacion'"
-                [disabled]="!firstForm.get('Formulario1').valid || !firstForm.get('Formulario2').valid || !firstForm.get('Formulario3').valid || verificar"
+                [disabled]="!firstForm.get('Formulario1').valid || !firstForm.get('Formulario2').valid || !firstForm.get('Formulario3').valid || !verificar"
                 class="float-right">{{'GLOBAL.Acta_Recibido.EdicionActa.VerificacionButton' | translate}}</button>
               <button nbButton
                 *ngIf="estadoActa === 'Registrada'" (click)="Revisar_Totales3()"
-                [disabled]="!firstForm.get('Formulario1').valid || !firstForm.get('Formulario2').valid || verificar"
+                [disabled]="!firstForm.get('Formulario1').valid || !firstForm.get('Formulario2').valid || !verificar"
                 class="float-right">{{'GLOBAL.Acta_Recibido.EdicionActa.EnviarProveedorButton' | translate}}</button>
             </div>
           </mat-step>

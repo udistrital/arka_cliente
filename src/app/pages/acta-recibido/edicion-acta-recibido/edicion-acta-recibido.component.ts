@@ -619,7 +619,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
 
   // Envío de Guardar Cambios
   async onFirstSubmit() {
-
     const start = async () => {
       await this.asyncForEach(this.fileDocumento, async (file) => {
         await this.postSoporteNuxeo([file]);
@@ -633,7 +632,8 @@ export class EdicionActaRecibidoComponent implements OnInit {
     const Transaccion_Acta = new TransaccionActaRecibido();
     Transaccion_Acta.ActaRecibido = this.Registrar_Acta(this.Datos.Formulario1, this.Datos.Formulario3);
     Transaccion_Acta.UltimoEstado = this.Registrar_Estado_Acta(Transaccion_Acta.ActaRecibido,
-      (this.estadoActa === 'Registrada') ? EstadoActa_t.Registrada : EstadoActa_t.EnModificacion);
+      (this.estadoActa === 'Registrada') ? EstadoActa_t.Registrada :
+        (this.estadoActa === 'Aceptada') ? EstadoActa_t.Aceptada : EstadoActa_t.EnModificacion);
     const Soportes = new Array<TransaccionSoporteActa>();
     this.Datos.Formulario2.forEach((soporte, index) => {
       Soportes.push(this.Registrar_Soporte(soporte, this.Elementos__Soporte[index], Transaccion_Acta.ActaRecibido));
@@ -652,7 +652,9 @@ export class EdicionActaRecibidoComponent implements OnInit {
             `${res.ActaRecibido.Id}` + this.translate.instant('GLOBAL.Acta_Recibido.EdicionActa.Modificada'),
         }).then((willDelete) => {
           if (willDelete.value) {
-            // window.location.reload();
+            this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+              this.router.navigateByUrl('/pages/acta_recibido/consulta_acta_recibido');
+            });
             this.verificar = false;
           }
         });
