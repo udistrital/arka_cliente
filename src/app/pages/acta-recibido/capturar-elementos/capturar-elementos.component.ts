@@ -548,18 +548,28 @@ export class CapturarElementosComponent implements OnInit {
     this.refrescaCheckTotal();
   }
 
-  private casilla: number = undefined;
+  private checkAnterior: number = undefined;
+  private estadoShift: boolean = false;
 
-  setCasilla(fila: number, evento, tipo) {
+  setCasilla(fila: number, checked: boolean) {
+    // console.log({fila, checked, 'shift': this.estadoShift});
+    if (checked) {
+      if (this.estadoShift) {
+        // Shift presionado
+      } else {
+        // Shift suelto
+      }
+    }
     this.refrescaCheckTotal();
-    // console.log({fila, evento, tipo});
   }
   keyDownTablaShift(evento) {
-    // console.log({'estadoShift': evento});
+    // console.log({'keyDownTablaShift': evento});
     this.refrescaCheckTotal();
+    this.estadoShift = true;
   }
-  keyUpTabla(evento) {
+  keyUpTabla(evento: KeyboardEvent) {
     // console.log({'keyUpTabla': evento});
+    this.estadoShift = evento.shiftKey;
     this.ver();
   }
 
