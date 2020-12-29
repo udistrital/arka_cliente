@@ -3,7 +3,7 @@ import { Subscription, combineLatest, empty } from 'rxjs';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, FormControl, FormArray } from '@angular/forms';
 import { NuxeoService } from '../../../@core/utils/nuxeo.service';
-
+import { AuthInterceptor } from './../../../@core/_Interceptor/auth.Interceptor';
 import { MatTable } from '@angular/material';
 import 'hammerjs';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
@@ -33,6 +33,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { UserService } from '../../../@core/data/users.service';
 import { RolUsuario_t as Rol, PermisoUsuario_t as Permiso } from '../../../@core/data/models/roles/rol_usuario';
 import { permisosSeccionesActas } from './reglas';
+import { NbDateService } from '@nebular/theme';
 
 @Component({
   selector: 'ngx-edicion-acta-recibido',
@@ -67,6 +68,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
   Validador: any[] = [];
   uidDocumento: any[] = [];
   idDocumento: any[] = [];
+  ActaEspecial: boolean;
 
   // Tablas parametricas
 
@@ -96,7 +98,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
   Unidades: any;
   DatosElementos: Array<any>;
   Acta: ActaRecibido;
-
+  TodaysDate: any;
   observable: any;
 
   Proveedores: any;
@@ -115,7 +117,15 @@ export class EdicionActaRecibidoComponent implements OnInit {
   } = {
       Acta: Permiso.Ninguno,
       Elementos: Permiso.Ninguno,
-    };
+  };
+
+  accion: {
+    envioValidar: boolean,
+    envioProveedor: boolean,
+  } = {
+    envioValidar: false,
+    envioProveedor: false,
+  };
 
   constructor(
     private translate: TranslateService,
@@ -132,6 +142,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
     private nuxeoService: NuxeoService,
     private documentoService: DocumentoService,
     private userService: UserService,
+    private dateService: NbDateService<Date>,
   ) {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
     });
@@ -151,11 +162,14 @@ export class EdicionActaRecibidoComponent implements OnInit {
     this.searchStr2 = new Array<string>();
     this.DatosElementos = new Array<any>();
     this.Elementos__Soporte = new Array<any>();
+    this.TodaysDate = new Date();
   }
 
-  // Los permisos dependen del estado del acta y del rol.
+  // Los permisos en cada sección dependen del estado del acta y del rol.
   cargaPermisos() {
     // console.log({'this.estadoActualActa': this.estadoActa});
+
+    this.permisosRoles_eventos();
 
     // Modificar/Ver parte superior (Datos basicos y Soportes)
     let permisoActa: Permiso;
@@ -187,7 +201,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
 
   // Devuelve un objeto en que el nombre de cada propiedad es un permiso, y
   // los valores de cada propiedad son los roles que tienen dicho permiso.
-  permisosRoles_EstadoSeccion(estado: string, seccion: string) {
+  private permisosRoles_EstadoSeccion(estado: string, seccion: string) {
     let PuedenModificar: Rol[] = [];
     let PuedenVer: Rol[] = [];
 
@@ -201,6 +215,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
             PuedenVer = PermEstado.PuedenVer;
           });
       });
+
     return { PuedenModificar, PuedenVer };
   }
 
@@ -209,6 +224,23 @@ export class EdicionActaRecibidoComponent implements OnInit {
   }
   getPermisoVer(p: Permiso): boolean {
     return p === Permiso.Ver;
+  }
+
+  // Habilitar/deshabilitar eventos en función de los roles
+  private permisosRoles_eventos() {
+
+    // Pueden enviar a Proveedor
+    this.accion.envioProveedor =
+      this.userService.tieneAlgunRol([Rol.Admin, Rol.Revisor, Rol.Secretaria])
+      && ['Registrada']
+        .some(est => this.estadoActa === est);
+
+    // Pueden enviar a Validacion
+    this.accion.envioValidar =
+      this.userService.tieneAlgunRol([Rol.Admin, Rol.Revisor, Rol.Contratista])
+      && ['En Elaboracion', 'En Modificacion']
+        .some(est => this.estadoActa === est);
+
   }
 
   Cargar_localStorage(Acta: any) {
@@ -302,8 +334,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
     }
   }
 
-  Cargar_Formularios(transaccion_: TransaccionActaRecibido) {
-
+  Cargar_Formularios( transaccion_: TransaccionActaRecibido ) {
     this.Actas_Recibido.getSedeDependencia(transaccion_.ActaRecibido.UbicacionId).subscribe(res => {
       const valor = res[0].EspacioFisicoId.Codigo.substring(0, 4); // Para algunas actas lanza error "Cannot read 'Codigo' of undefined"
       const Form2 = this.fb.array([]);
@@ -312,11 +343,13 @@ export class EdicionActaRecibidoComponent implements OnInit {
         const Formulario__2 = this.fb.group({
           Id: [Soporte.SoporteActa.Id],
           Proveedor: [
-            this.Proveedores.find(proveedor => proveedor.Id.toString() === Soporte.SoporteActa.ProveedorId.toString()).compuesto,
-            Validators.required,
-          ],
+            Soporte.SoporteActa.ProveedorId === 0 ? this.ActaEspecial = true :
+              this.Proveedores.find((proveedor) =>
+                proveedor.Id.toString() === Soporte.SoporteActa.ProveedorId.toString()).compuesto,
+                Validators.required],
           Consecutivo: [Soporte.SoporteActa.Consecutivo, Validators.required],
-          Fecha_Factura: [Soporte.SoporteActa.FechaSoporte, Validators.required],
+          Fecha_Factura: [this.dateService.parse(Soporte.SoporteActa.FechaSoporte.toString(), 'MM dd yyyy'),
+            Validators.required],
           Soporte: [Soporte.SoporteActa.DocumentoId, Validators.required],
         });
         this.Validador[index] = true;
@@ -345,6 +378,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
           }
         elementos.push(elementoSoporte);
         Form2.push(Formulario__2);
+        // }
       });
 
       this.Elementos__Soporte = elementos;
@@ -625,12 +659,11 @@ export class EdicionActaRecibidoComponent implements OnInit {
     const Transaccion_Acta = new TransaccionActaRecibido();
     Transaccion_Acta.ActaRecibido = this.Registrar_Acta(this.Datos.Formulario1, this.Datos.Formulario3);
     Transaccion_Acta.UltimoEstado = this.Registrar_Estado_Acta(Transaccion_Acta.ActaRecibido,
-      (this.estadoActa === 'Registrada') ? EstadoActa_t.Registrada :
-        (this.estadoActa === 'Aceptada') ? EstadoActa_t.Aceptada : EstadoActa_t.EnModificacion);
+      this.Estados_Acta.find(estado => estado.Nombre === this.estadoActa).Id, // el nuevo estado es el mismo
+    );
     const Soportes = new Array<TransaccionSoporteActa>();
     this.Datos.Formulario2.forEach((soporte, index) => {
       Soportes.push(this.Registrar_Soporte(soporte, this.Elementos__Soporte[index], Transaccion_Acta.ActaRecibido));
-
     });
     Transaccion_Acta.SoportesActa = Soportes;
     // console.log(Transaccion_Acta);

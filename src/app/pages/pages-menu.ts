@@ -1,6 +1,4 @@
-import { NbMenuItem } from '@nebular/theme';
-
-export const MENU_ITEMS: NbMenuItem[] = [
+export const MENU_ITEMS = [
   // {
   //   title: 'ARKA II',
   //   group: true,
@@ -42,20 +40,6 @@ export const MENU_ITEMS: NbMenuItem[] = [
   {
     title: 'Acta de Recibido',
     icon: 'nb-compose',
-    children: [
-      {
-        title: 'Consulta de Actas',
-        link: '/pages/acta_recibido/consulta_acta_recibido',
-      },
-      {
-        title: 'Registro de Acta',
-        link: '/pages/acta_recibido/registro_acta_recibido',
-      },
-      {
-        title: 'Registro de Acta Especial',
-        link: '/pages/acta_recibido/acta_especial',
-      },
-    ],
   },
   {
     title: 'Entradas',

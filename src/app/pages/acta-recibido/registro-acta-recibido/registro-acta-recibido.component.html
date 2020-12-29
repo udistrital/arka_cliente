@@ -100,7 +100,7 @@
                                     placeholder="{{'GLOBAL.Acta_Recibido.RegistroActa.FechaFiltro' | translate}}"
                                     class="form-control" [nbDatepicker]="formpicker" (keyup)="usarLocalStorage()"
                                     formControlName="Fecha_Factura" required>
-                                  <nb-datepicker #formpicker [max]="TodaysDate"></nb-datepicker>
+                                    <nb-datepicker #formpicker [max]="TodaysDate" (dateChange)="usarLocalStorage()"></nb-datepicker>
                                 </div>
                                 <p class="campo"
                                   *ngIf="firstForm.get('Formulario2').at(i).get('Fecha_Factura').invalid">
