@@ -185,7 +185,7 @@ export class ConsultaActaRecibidoComponent implements OnInit {
           },
         },
         PersonaAsignada: {
-          title: "Asignado",
+          title: 'Asignado',
           valuePrepareFunction: (value: any) => {
             return value;
           },
