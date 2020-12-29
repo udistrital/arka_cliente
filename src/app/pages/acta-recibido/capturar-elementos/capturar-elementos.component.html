@@ -294,6 +294,6 @@
       <tr mat-footer-row *matFooterRowDef="displayedColumns; sticky: true"></tr>
     </table>
 
-    <mat-paginator [pageSizeOptions]="[10, 20, 30, 40, 50]"></mat-paginator>
+    <mat-paginator [pageSizeOptions]="[10, 20, 30, 40, 50]" (page)="cambioPagina($event)"></mat-paginator>
   </nb-card-body>
 </nb-card>
