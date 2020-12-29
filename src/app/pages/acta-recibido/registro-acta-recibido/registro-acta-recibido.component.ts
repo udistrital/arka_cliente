@@ -350,7 +350,6 @@ export class RegistroActaRecibidoComponent implements OnInit {
   }
 
   async onFirstSubmit() {
-    console.log("en este punto2");
     this.Registrando = true;
     const start = async () => {
       await this.asyncForEach(this.fileDocumento, async (file) => {
@@ -361,8 +360,6 @@ export class RegistroActaRecibidoComponent implements OnInit {
     this.Datos = this.firstForm.value;
     const Transaccion_Acta = new TransaccionActaRecibido();
     Transaccion_Acta.ActaRecibido = this.Registrar_Acta(this.Datos.Formulario1);
-    console.log("en este punto2");
-    console.log(Transaccion_Acta.ActaRecibido);
     Transaccion_Acta.UltimoEstado = this.Registrar_Estado_Acta(Transaccion_Acta.ActaRecibido, EstadoActa_t.Registrada);
     const Soportes = new Array<TransaccionSoporteActa>();
     this.Datos.Formulario2.forEach((soporte, index) => {
@@ -435,8 +432,6 @@ export class RegistroActaRecibidoComponent implements OnInit {
     const Soporte_Acta = new SoporteActa();
     const Transaccion = new TransaccionSoporteActa();
 
-    console.log("Los datos");
-    console.log(Datos);
     const proveedor___ = Datos.Proveedor.split(' ');
     Soporte_Acta.Id = null;
     Soporte_Acta.ActaRecibidoId = Acta;
@@ -481,7 +476,6 @@ export class RegistroActaRecibidoComponent implements OnInit {
     if (!this.revisorValido()) {
       return;
     }
-        console.log("graba");
     (Swal as any).fire({
       title: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.DatosVeridicosTitle'),
       text: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.DatosVeridicos'),
@@ -493,7 +487,6 @@ export class RegistroActaRecibidoComponent implements OnInit {
       cancelButtonText: 'No',
     }).then((result) => {
       if (result.value) {
-        console.log("graba");
         this.onFirstSubmit();
       }
     });
