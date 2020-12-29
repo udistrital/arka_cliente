@@ -545,6 +545,7 @@ export class CapturarElementosComponent implements OnInit {
     this.dataSource.data.forEach(elem => {
       elem.seleccionado = marcar;
     });
+    this.checkAnterior = undefined;
     this.refrescaCheckTotal();
   }
 
@@ -552,18 +553,23 @@ export class CapturarElementosComponent implements OnInit {
   private estadoShift: boolean = false;
 
   setCasilla(fila: number, checked: boolean) {
-    // console.log({fila, checked, 'shift': this.estadoShift});
-    if (checked) {
-      if (this.estadoShift) {
-        // Shift presionado
+    // console.log({fila, checked, 'shift': this.estadoShift, 'anterior': this.checkAnterior});
+    if (this.estadoShift && this.checkAnterior !== undefined) { // Shift presionado
+      const menor = Math.min(this.checkAnterior, fila);
+      const mayor = Math.max(this.checkAnterior, fila);
+      this.dataSource.data
+        .map((elem, idx) => elem.seleccionado = (idx >= menor && idx <= mayor));
+    } else { // Shift suelto
+      if (checked) {
+        this.checkAnterior = fila;
       } else {
-        // Shift suelto
+        if (fila === this.checkAnterior)
+          this.checkAnterior = undefined;
       }
     }
     this.refrescaCheckTotal();
   }
-  keyDownTablaShift(evento) {
-    // console.log({'keyDownTablaShift': evento});
+  keyDownTablaShift() {
     this.refrescaCheckTotal();
     this.estadoShift = true;
   }

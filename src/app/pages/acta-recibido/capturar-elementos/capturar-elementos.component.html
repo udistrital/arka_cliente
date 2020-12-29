@@ -55,7 +55,7 @@
     </div>
     <p></p>
     <table mat-table #table class="noselect" [dataSource]="dataSource" matSort
-      (keyup)="keyUpTabla($event)" (keydown.shift)="keyDownTablaShift($event)">
+      (keyup)="keyUpTabla($event)" (keydown.shift)="keyDownTablaShift()">
 
       <!-- Acciones Macro/Checkbox -->
       <ng-container matColumnDef="AccionesMacro">
