@@ -11,5 +11,6 @@ export class ConsultaActaRecibido {
     UbicacionId: string;
     CodigoAbreviacion: string;
     Estado: string;
+    PersonaAsignada: any;
 
 }

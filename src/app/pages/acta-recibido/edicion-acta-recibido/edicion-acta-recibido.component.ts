@@ -391,6 +391,10 @@ export class EdicionActaRecibidoComponent implements OnInit {
             transaccion_.ActaRecibido.UbicacionId,
             Validators.required,
           ],
+          Revisor: [
+            this.Proveedores.find(proveedor => proveedor.Id.toString() === transaccion_.ActaRecibido.PersonaAsignada.toString()).compuesto,
+            Validators.required,
+          ],
         }),
         Formulario2: Form2,
         Formulario3: this.fb.group({
@@ -403,7 +407,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
   }
 
   Cargar_Formularios2(transaccion_: any, elementos_: any) {
-
     const Form2 = this.fb.array([]);
     const elementos = new Array<any[]>();
 
@@ -425,6 +428,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
         Sede: [transaccion_.Formulario1.Sede, Validators.required],
         Dependencia: [transaccion_.Formulario1.Dependencia, Validators.required],
         Ubicacion: [transaccion_.Formulario1.Ubicacion, Validators.required],
+        Revisor: [transaccion_.Formulario1.Revisor, Validators.required],
       }),
       Formulario2: Form2,
       Formulario3: this.fb.group({
@@ -475,6 +479,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
       Sede: ['', Validators.required],
       Dependencia: ['', Validators.required],
       Ubicacion: ['', Validators.required],
+      Revisor: ['', Validators.required],
     });
   }
   get Formulario_2(): FormGroup {
@@ -742,6 +747,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
 
     const Acta_de_Recibido = new ActaRecibido();
 
+    const revisor___ = Datos.Revisor.split(' ');
     Acta_de_Recibido.Id = parseFloat(Datos.Id);
     Acta_de_Recibido.Activo = true;
     Acta_de_Recibido.FechaCreacion = new Date();
@@ -749,6 +755,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
     Acta_de_Recibido.RevisorId = this.userService.getPersonaId();
     Acta_de_Recibido.UbicacionId = parseFloat(Datos.Ubicacion);
     Acta_de_Recibido.Observaciones = Datos2.Datos_Adicionales;
+    Acta_de_Recibido.PersonaAsignada = this.Proveedores.find(proveedor => proveedor.NumDocumento.toString() === revisor___[0].toString()).Id;
 
     return Acta_de_Recibido;
   }
