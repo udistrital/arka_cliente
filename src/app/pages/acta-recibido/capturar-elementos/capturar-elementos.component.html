@@ -54,18 +54,20 @@
       </div>
     </div>
     <p></p>
-    <table mat-table #table [dataSource]="dataSource" matSort (keyup)="ver()">
+    <table mat-table #table class="noselect" [dataSource]="dataSource" matSort
+      (keyup)="keyUpTabla($event)" (keydown.shift)="keyDownTablaShift()">
 
       <!-- Acciones Macro/Checkbox -->
       <ng-container matColumnDef="AccionesMacro">
         <th mat-header-cell *matHeaderCellDef>
           <mat-checkbox aria-label="Seleccionar/Deseleccionar Todo"
-            (change)="cambioCheckTodos($event.checked); refrescaCheckTotal()" nbPopover="Seleccionar/Deseleccionar Todo"
+            (change)="cambioCheckTodos($event.checked)" nbPopover="Seleccionar/Deseleccionar Todo"
             nbPopoverTrigger="hover" nbPopoverPlacement="left" [checked]="checkTodos" [indeterminate]="checkParcial">
           </mat-checkbox>
         </th>
         <td mat-cell *matCellDef="let element; let rowIndex = index">
-          <nb-checkbox (change)="refrescaCheckTotal()" [(ngModel)]="element.seleccionado"></nb-checkbox>
+          <nb-checkbox (change)="setCasilla(rowIndex, $event.srcElement.checked)"
+            [(ngModel)]="element.seleccionado"></nb-checkbox>
         </td>
         <td mat-footer-cell *matFooterCellDef>Totales</td>
       </ng-container>
@@ -292,6 +294,6 @@
       <tr mat-footer-row *matFooterRowDef="displayedColumns; sticky: true"></tr>
     </table>
 
-    <mat-paginator [pageSizeOptions]="[10, 20, 30, 40, 50]"></mat-paginator>
+    <mat-paginator [pageSizeOptions]="[10, 20, 30, 40, 50]" (page)="cambioPagina($event)"></mat-paginator>
   </nb-card-body>
 </nb-card>

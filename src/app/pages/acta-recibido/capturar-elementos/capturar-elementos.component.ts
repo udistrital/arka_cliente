@@ -329,6 +329,8 @@ export class CapturarElementosComponent implements OnInit {
   }
 
   onSubmit() {
+    this.checkAnterior = undefined;
+    this.basePaginas = 0;
     this.readThis();
   }
 
@@ -545,6 +547,40 @@ export class CapturarElementosComponent implements OnInit {
     this.dataSource.data.forEach(elem => {
       elem.seleccionado = marcar;
     });
+    this.checkAnterior = undefined;
+    this.refrescaCheckTotal();
+  }
+
+  cambioPagina(eventoPagina) {
+    this.basePaginas = eventoPagina.pageIndex * eventoPagina.pageSize;
+    // console.log({eventoPagina, 'base': this.basePaginas});
+  }
+
+  private checkAnterior: number = undefined;
+  private estadoShift: boolean = false;
+  private basePaginas: number = 0;
+
+  setCasilla(fila: number, checked: boolean) {
+    fila += this.basePaginas;
+    // console.log({fila, checked, 'shift': this.estadoShift, 'anterior': this.checkAnterior});
+    if (this.estadoShift && this.checkAnterior !== undefined) { // Shift presionado
+      const menor = Math.min(this.checkAnterior, fila);
+      const mayor = Math.max(this.checkAnterior, fila);
+      this.dataSource.data
+        .map((elem, idx) => elem.seleccionado = (idx >= menor && idx <= mayor));
+    } else { // Shift suelto
+      if (checked) {
+        this.checkAnterior = fila;
+      } else {
+        if (fila === this.checkAnterior)
+          this.checkAnterior = undefined;
+      }
+    }
+    this.refrescaCheckTotal();
+  }
+  setEstadoShift (shift: boolean) {
+    this.estadoShift = shift;
+    // console.log({shift});
   }
 
   valortotal(subtotal: string, descuento: string, iva: string) {
