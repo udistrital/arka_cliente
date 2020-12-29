@@ -545,6 +545,22 @@ export class CapturarElementosComponent implements OnInit {
     this.dataSource.data.forEach(elem => {
       elem.seleccionado = marcar;
     });
+    this.refrescaCheckTotal();
+  }
+
+  private casilla: number = undefined;
+
+  setCasilla(fila: number, evento, tipo) {
+    this.refrescaCheckTotal();
+    // console.log({fila, evento, tipo});
+  }
+  keyDownTablaShift(evento) {
+    // console.log({'estadoShift': evento});
+    this.refrescaCheckTotal();
+  }
+  keyUpTabla(evento) {
+    // console.log({'keyUpTabla': evento});
+    this.ver();
   }
 
   valortotal(subtotal: string, descuento: string, iva: string) {
