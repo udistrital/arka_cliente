@@ -65,6 +65,8 @@ export class ActaRecibidoHelper {
         return this.rqManager.get('acta_recibido/get_all_actas/').pipe(
             map(
                 (res) => {
+                    console.log("lo que devuelve");
+                    console.log(res);
                     if (res === 'error') {
                         this.pUpManager.showErrorAlert('No se pudo consultar las actas de recibido');
                         return undefined;
@@ -230,6 +232,7 @@ export class ActaRecibidoHelper {
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
      */
     public putTransaccionActa(Transaccion, Id) {
+        console.log("va a actualizar");
         this.rqManager.setPath('ACTA_RECIBIDO_SERVICE');
         return this.rqManager.put2('transaccion_acta_recibido', Transaccion, Id).pipe(
             map(

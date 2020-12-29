@@ -357,6 +357,10 @@ export class EdicionActaRecibidoComponent implements OnInit {
             transaccion_.ActaRecibido.UbicacionId,
             Validators.required,
           ],
+          Revisor: [
+            this.Proveedores.find(proveedor => proveedor.Id.toString() === transaccion_.ActaRecibido.PersonaAsignada.toString()).compuesto,
+            Validators.required,
+          ],
         }),
         Formulario2: Form2,
         Formulario3: this.fb.group({
@@ -369,7 +373,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
   }
 
   Cargar_Formularios2(transaccion_: any, elementos_: any) {
-
+    console.log("mira");
     const Form2 = this.fb.array([]);
     const elementos = new Array<any[]>();
 
@@ -391,6 +395,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
         Sede: [transaccion_.Formulario1.Sede, Validators.required],
         Dependencia: [transaccion_.Formulario1.Dependencia, Validators.required],
         Ubicacion: [transaccion_.Formulario1.Ubicacion, Validators.required],
+        Revisor: [transaccion_.Formulario1.Revisor, Validators.required],
       }),
       Formulario2: Form2,
       Formulario3: this.fb.group({
@@ -441,6 +446,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
       Sede: ['', Validators.required],
       Dependencia: ['', Validators.required],
       Ubicacion: ['', Validators.required],
+      Revisor: ['', Validators.required],
     });
   }
   get Formulario_2(): FormGroup {
@@ -623,6 +629,8 @@ export class EdicionActaRecibidoComponent implements OnInit {
     this.Datos = this.firstForm.value;
     const Transaccion_Acta = new TransaccionActaRecibido();
     Transaccion_Acta.ActaRecibido = this.Registrar_Acta(this.Datos.Formulario1, this.Datos.Formulario3);
+    console.log("lo que va a guardar");
+    console.log(this.Datos.Formulario1);
     Transaccion_Acta.UltimoEstado = this.Registrar_Estado_Acta(Transaccion_Acta.ActaRecibido,
       (this.estadoActa === 'Registrada') ? EstadoActa_t.Registrada :
         (this.estadoActa === 'Aceptada') ? EstadoActa_t.Aceptada : EstadoActa_t.EnModificacion);
@@ -704,8 +712,11 @@ export class EdicionActaRecibidoComponent implements OnInit {
 
   Registrar_Acta(Datos: any, Datos2: any): ActaRecibido {
 
+    console.log("llega "); 
+    console.log(Datos);
     const Acta_de_Recibido = new ActaRecibido();
 
+    const revisor___ = Datos.Revisor.split(' ');
     Acta_de_Recibido.Id = parseFloat(Datos.Id);
     Acta_de_Recibido.Activo = true;
     Acta_de_Recibido.FechaCreacion = new Date();
@@ -713,6 +724,9 @@ export class EdicionActaRecibidoComponent implements OnInit {
     Acta_de_Recibido.RevisorId = this.userService.getPersonaId();
     Acta_de_Recibido.UbicacionId = parseFloat(Datos.Ubicacion);
     Acta_de_Recibido.Observaciones = Datos2.Datos_Adicionales;
+    Acta_de_Recibido.PersonaAsignada = this.Proveedores.find(proveedor => proveedor.NumDocumento.toString() === revisor___[0].toString()).Id;
+    console.log("antes de");
+    console.log(Acta_de_Recibido);
 
     return Acta_de_Recibido;
   }
@@ -942,6 +956,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
   }
   usarLocalStorage() {
 
+    console.log("entra aqui");
     if (sessionStorage.Formulario_Edicion == null) {
       sessionStorage.setItem('Formulario_Edicion', JSON.stringify(this.firstForm.value));
       sessionStorage.setItem('Elementos_Formulario_Edicion', JSON.stringify(this.Elementos__Soporte));

@@ -254,7 +254,6 @@ export class RegistroActaRecibidoComponent implements OnInit {
         Consecutivo: [Soporte.Consecutivo, Validators.required],
         Fecha_Factura: [Soporte.Fecha_Factura, Validators.required],
         Soporte: [Soporte.Soporte, Validators.required],
-        Revisor: [Soporte.Revisor, Validators.required],
       });
       Form2.push(Formulario__2);
     }
@@ -265,6 +264,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
         Sede: [transaccion_.Formulario1.Sede, Validators.required],
         Dependencia: [transaccion_.Formulario1.Dependencia, Validators.required],
         Ubicacion: [transaccion_.Formulario1.Ubicacion, Validators.required],
+        Revisor: [transaccion_.Formulario1.PersonaAsignada, Validators.required],
       }),
       Formulario2: Form2,
     });
@@ -289,6 +289,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
       Sede: ['', Validators.required],
       Dependencia: ['', Validators.required],
       Ubicacion: ['', Validators.required],
+      Revisor: ['', Validators.required],
     });
   }
   get Formulario_2(): FormGroup {
@@ -296,7 +297,6 @@ export class RegistroActaRecibidoComponent implements OnInit {
       Proveedor: ['', Validators.required],
       Consecutivo: ['', Validators.required],
       Fecha_Factura: ['', Validators.required],
-      Revisor: ['', Validators.required],
       Soporte: ['', Validators.required],
     });
   }
@@ -350,6 +350,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
   }
 
   async onFirstSubmit() {
+    console.log("en este punto2");
     this.Registrando = true;
     const start = async () => {
       await this.asyncForEach(this.fileDocumento, async (file) => {
@@ -360,6 +361,8 @@ export class RegistroActaRecibidoComponent implements OnInit {
     this.Datos = this.firstForm.value;
     const Transaccion_Acta = new TransaccionActaRecibido();
     Transaccion_Acta.ActaRecibido = this.Registrar_Acta(this.Datos.Formulario1);
+    console.log("en este punto2");
+    console.log(Transaccion_Acta.ActaRecibido);
     Transaccion_Acta.UltimoEstado = this.Registrar_Estado_Acta(Transaccion_Acta.ActaRecibido, EstadoActa_t.Registrada);
     const Soportes = new Array<TransaccionSoporteActa>();
     this.Datos.Formulario2.forEach((soporte, index) => {
@@ -400,6 +403,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
   Registrar_Acta(Datos: any): ActaRecibido {
 
     const Acta_de_Recibido = new ActaRecibido();
+    const revisor___ = Datos.Revisor.split(' ');
     Acta_de_Recibido.Id = null;
     Acta_de_Recibido.Activo = true;
     Acta_de_Recibido.FechaCreacion = new Date();
@@ -407,6 +411,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
     Acta_de_Recibido.RevisorId = this.userService.getPersonaId();
     Acta_de_Recibido.UbicacionId = parseFloat(Datos.Ubicacion);
     Acta_de_Recibido.Observaciones = '';
+    Acta_de_Recibido.PersonaAsignada = this.Proveedores.find(proveedor => proveedor.NumDocumento.toString() === revisor___[0].toString()).Id;
 
     return Acta_de_Recibido;
   }
@@ -430,6 +435,8 @@ export class RegistroActaRecibidoComponent implements OnInit {
     const Soporte_Acta = new SoporteActa();
     const Transaccion = new TransaccionSoporteActa();
 
+    console.log("Los datos");
+    console.log(Datos);
     const proveedor___ = Datos.Proveedor.split(' ');
     Soporte_Acta.Id = null;
     Soporte_Acta.ActaRecibidoId = Acta;
@@ -439,6 +446,9 @@ export class RegistroActaRecibidoComponent implements OnInit {
     Soporte_Acta.FechaModificacion = new Date();
     Soporte_Acta.FechaSoporte = Datos.Fecha_Factura;
     Soporte_Acta.ProveedorId = this.Proveedores.find(proveedor => proveedor.NumDocumento.toString() === proveedor___[0].toString()).Id;
+
+
+
     Soporte_Acta.DocumentoId = this.idDocumento[index];
 
     Transaccion.SoporteActa = Soporte_Acta;
@@ -471,6 +481,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
     if (!this.revisorValido()) {
       return;
     }
+        console.log("graba");
     (Swal as any).fire({
       title: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.DatosVeridicosTitle'),
       text: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.DatosVeridicos'),
@@ -482,6 +493,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
       cancelButtonText: 'No',
     }).then((result) => {
       if (result.value) {
+        console.log("graba");
         this.onFirstSubmit();
       }
     });

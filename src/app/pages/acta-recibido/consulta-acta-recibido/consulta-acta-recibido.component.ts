@@ -184,6 +184,12 @@ export class ConsultaActaRecibidoComponent implements OnInit {
             return value;
           },
         },
+        PersonaAsignada: {
+          title: "Asignado",
+          valuePrepareFunction: (value: any) => {
+            return value;
+          },
+        },
         Estado: {
           title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.EstadoHeader'),
           valuePrepareFunction: (value: any) => {
