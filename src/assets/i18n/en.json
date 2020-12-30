@@ -366,6 +366,13 @@
     "Crear_Movimientos_placeholder": "Are you sure about create this accounts?",
     "Creado_Movimientos_placeholder": "Accounts successfully created",
 
+    "notificaciones": {
+      "t_restante": "This session will expire on {{MINUTES}} minute(s)",
+      "t_restante_titulo": "This session will soon expire",
+      "t_restante_alerta": "Less than {{MINUTES}} minute(s) left. Please save your pending work"
+    },
+
+    "info": "Información",
     "Detalle": "Detail",
     "placeholder": "This field is mandatory",
     "search": "Search",
