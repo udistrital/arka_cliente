@@ -4,8 +4,14 @@ import { NbMenuItem } from '@nebular/theme';
 import { UserService } from '../@core/data/users.service';
 import { RolUsuario_t as Rol } from '../@core/data/models/roles/rol_usuario';
 import { AutenticationService } from '../@core/utils/authentication.service';
+import { PopUpManager } from '../managers/popUpManager';
 
 import { MENU_ITEMS } from './pages-menu';
+
+/**
+ * Tiempo antes que expire el token, en milisegundos
+ */
+const T_ADV_TIMEOUT: number = 1 * 60 * 1000;
 
 @Component({
   selector: 'ngx-pages',
@@ -26,6 +32,7 @@ export class PagesComponent {
     private translate: TranslateService,
     private user: UserService,
     private auth: AutenticationService,
+    private pUpManager: PopUpManager,
   ) {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
     });
@@ -34,7 +41,18 @@ export class PagesComponent {
     this.moduloActa(menu);
 
     this.menu = <NbMenuItem[]>menu.filter(modulo => (modulo.children && modulo.children.length));
-    // console.log({'queda': this.auth.remains(), 'expiro': this.auth.expired()});
+
+    const queda = this.auth.remains();
+    // console.log({queda});
+
+    // Mostrar el tiempo de la sesion
+    window.setTimeout(() => {
+      this.pUpManager.showInfoToast('La sesion expira en ' + Math.trunc(queda / 1000 / 60) + ' minuto(s)', 10000);
+    });
+    // Registrar la notificación cuando esté por expirar el token
+    window.setTimeout(() => {
+      this.pUpManager.showAlert('warning', 'Queda(n) ' + Math.trunc(T_ADV_TIMEOUT / 1000 / 60) +  ' minuto(s). Por favor guarde los cambios que tenga pendientes', 'titulocochon');
+    }, queda - T_ADV_TIMEOUT);
   }
 
   private moduloActa(menu: any) {
