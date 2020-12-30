@@ -37,11 +37,18 @@ export class PagesComponent {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
     });
 
+    this.construirMenu();
+    this.ajustarNotificacionesTimeoutToken();
+  }
+
+  private construirMenu (): void {
     const menu = MENU_ITEMS;
     this.moduloActa(menu);
 
     this.menu = <NbMenuItem[]>menu.filter(modulo => (modulo.children && modulo.children.length));
+  }
 
+  private ajustarNotificacionesTimeoutToken() {
     const queda = this.auth.remains();
     // console.log({queda});
 
