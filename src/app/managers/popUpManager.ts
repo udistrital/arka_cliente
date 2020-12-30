@@ -24,9 +24,8 @@ export class PopUpManager {
         this.toast.show(message, this.translate.instant('GLOBAL.error'), { status });
     }
 
-    public showInfoToast(message: string) {
+    public showInfoToast(message: string, duration: number = 0) {
         const status: any = 'info';
-        const duration: any = 0;
         this.toast.show(message, this.translate.instant('GLOBAL.info'), { status, duration });
     }
 
@@ -35,10 +34,10 @@ export class PopUpManager {
         this.toast.show(message, this.translate.instant('GLOBAL.info'), { status });
     }
 
-    public showAlert(status, text) {
+    public showAlert(status: string, text: string, titulo: string = status) {
         (Swal as any).fire({
             type: status,
-            title: status,
+            title: titulo,
             text: text,
             confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
         });

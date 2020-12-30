@@ -373,6 +373,13 @@
     "Crear_Movimientos_placeholder":"Está seguro de crear las cuentas?",
     "Creado_Movimientos_placeholder":"Cuentas creadas exitosamente",
 
+    "notificaciones": {
+      "t_restante": "La sesion expirará en {{MINUTES}} minuto(s)",
+      "t_restante_titulo": "La sesión está por expirar",
+      "t_restante_alerta": "Queda(n) menos de {{MINUTES}} minuto(s). Por favor guarde los cambios que tenga pendientes"
+    },
+
+    "info": "Información",
     "Detalle":"Detalle",
     "placeholder":"Este Campo es Obligatorio",
     "search": "Buscar",

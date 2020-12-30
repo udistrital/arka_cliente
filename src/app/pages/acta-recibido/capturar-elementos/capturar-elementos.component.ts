@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, Input, Output, EventEmitter, OnChanges, SimpleChanges, HostListener } from '@angular/core';
 import * as XLSX from 'xlsx';
 import * as FileSaver from 'file-saver';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
@@ -21,7 +21,7 @@ import { NuxeoService } from '../../../@core/utils/nuxeo.service';
 import { DocumentoService } from '../../../@core/data/documento.service';
 import { isNumeric } from 'rxjs/internal-compatibility';
 import { isArray } from 'util';
-import { MatCheckboxChange } from '@angular/material';
+import { MatCheckbox } from '@angular/material';
 import { CompleterData, CompleterService, CompleterItem } from 'ng2-completer';
 import { Observable } from 'rxjs';
 import { Row } from 'ngx-smart-table/lib/data-set/row';
@@ -50,6 +50,7 @@ export class CapturarElementosComponent implements OnInit {
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatTable) table: MatTable<any>;
   @ViewChild('fileInput') fileInput: ElementRef;
+  @ViewChild('checkTodoInput') checkDummy: MatCheckbox;
   dataSource: MatTableDataSource<any>;
   dataSource2: MatTableDataSource<any>;
 
@@ -70,6 +71,7 @@ export class CapturarElementosComponent implements OnInit {
   displayedColumns: any[];
   checkTodos: boolean = false;
   checkParcial: boolean = false;
+  Proveedor: boolean;
 
   constructor(private fb: FormBuilder,
     private translate: TranslateService,
@@ -144,6 +146,7 @@ export class CapturarElementosComponent implements OnInit {
 
   ReglasColumnas() {
     if (this.userService.tieneAlgunRol([Rol.Proveedor])) {
+      this.Proveedor = true;
       this.displayedColumns = [
         'AccionesMacro',
         'Nombre',
@@ -382,9 +385,12 @@ export class CapturarElementosComponent implements OnInit {
   getClasesElementos() {
     if (this.Clases && this.Clases.length) {
       this.dataSource.data.map((elemento) => {
-        elemento.TipoBienNombre = this.Tipos_Bien.find((x) => x.Id === elemento.TipoBienId).Nombre;
-        elemento.CodigoSubgrupo = this.Clases.find((x) => x.SubgrupoId.Id === elemento.SubgrupoCatalogoId).SubgrupoId.Codigo;
-        elemento.NombreClase = this.Clases.find((x) => x.SubgrupoId.Id === elemento.SubgrupoCatalogoId).SubgrupoId.Nombre;
+        elemento.TipoBienNombre = elemento.TipoBienId !== 0 ?
+          this.Tipos_Bien.find((x) => x.Id === elemento.TipoBienId).Nombre : '';
+        elemento.CodigoSubgrupo = elemento.TipoBienId !== 0 ?
+        this.Clases.find((x) => x.SubgrupoId.Id === elemento.SubgrupoCatalogoId).SubgrupoId.Codigo : '';
+        elemento.NombreClase = elemento.TipoBienId !== 0 ?
+        this.Clases.find((x) => x.SubgrupoId.Id === elemento.SubgrupoCatalogoId).SubgrupoId.Nombre : '';
       });
     }
   }
@@ -554,6 +560,7 @@ export class CapturarElementosComponent implements OnInit {
   cambioPagina(eventoPagina) {
     this.basePaginas = eventoPagina.pageIndex * eventoPagina.pageSize;
     // console.log({eventoPagina, 'base': this.basePaginas});
+    this.checkDummy.focus();
   }
 
   private checkAnterior: number = undefined;
@@ -578,9 +585,16 @@ export class CapturarElementosComponent implements OnInit {
     }
     this.refrescaCheckTotal();
   }
-  setEstadoShift (shift: boolean) {
-    this.estadoShift = shift;
-    // console.log({shift});
+
+  keyDownTablaShift() {
+    // console.log('shiftDown');
+    this.refrescaCheckTotal();
+    this.estadoShift = true;
+  }
+  keyUpTabla(evento: KeyboardEvent) {
+    // console.log({'keyUpTabla': evento});
+    this.estadoShift = evento.shiftKey;
+    this.ver();
   }
 
   valortotal(subtotal: string, descuento: string, iva: string) {

@@ -184,7 +184,7 @@ export class VerDetalleComponent implements OnInit {
           const Elemento___ = this.fb.group({
             Id: [_Elemento.Id],
             TipoBienId: [
-              this.Tipos_Bien.find(bien => bien.Id.toString() === _Elemento.TipoBienId.Id.toString()).Nombre,
+              _Elemento.TipoBienId !== null ? this.Tipos_Bien.find(bien => bien.Id.toString() === _Elemento.TipoBienId.Id.toString()).Nombre : '',
             ],
             SubgrupoCatalogoId: [_Elemento.SubgrupoCatalogoId],
             Nombre: [_Elemento.Nombre],
