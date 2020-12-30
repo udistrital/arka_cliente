@@ -61,7 +61,7 @@
       <ng-container matColumnDef="AccionesMacro">
         <th mat-header-cell *matHeaderCellDef>
           <mat-checkbox aria-label="Seleccionar/Deseleccionar Todo"
-            (change)="cambioCheckTodos($event.checked)" nbPopover="Seleccionar/Deseleccionar Todo"
+            (change)="cambioCheckTodos($event.checked)" nbPopover="Seleccionar/Deseleccionar Todo" #checkTodoInput
             nbPopoverTrigger="hover" nbPopoverPlacement="left" [checked]="checkTodos" [indeterminate]="checkParcial">
           </mat-checkbox>
         </th>
@@ -283,7 +283,7 @@
           <span class="material-icons" (click)="deleteElemento(rowIndex)"
             nbPopover="{{'GLOBAL.Acta_Recibido.CapturarElementos.EliminarElemento' | translate }}"
             nbPopoverTrigger="hover" nbPopoverPlacement="left" style="cursor: pointer;text-align:right;">
-            delete_outline          
+            delete_outline
           </span>
         </td>
         <td mat-footer-cell *matFooterCellDef></td>
