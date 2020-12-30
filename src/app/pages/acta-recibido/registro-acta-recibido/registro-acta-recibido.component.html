@@ -13,6 +13,8 @@
       <nb-card-header>{{'GLOBAL.Acta_Recibido.RegistroActa.Title' | translate}}</nb-card-header>
       <nb-card-body [nbSpinner]="Registrando">
         <mat-vertical-stepper [linear]="true" #stepper>
+
+          <!-- Datos iniciales -->
           <mat-step label="{{'GLOBAL.Acta_Recibido.RegistroActa.DatosTitle' | translate}}" formGroupName="Formulario1">
             <nb-card [nbSpinner]="!Sedes || !Dependencias">
               <nb-card-body class="bla">
@@ -69,16 +71,20 @@
               </nb-card-footer>
             </nb-card>
           </mat-step>
+
+          <!-- Soportes -->
           <mat-step label="{{'GLOBAL.Acta_Recibido.RegistroActa.SoporteTitle' | translate}}"
             formArrayName="Formulario2">
             <nb-card>
               <nb-card-body>
                 <mat-tab-group [selectedIndex]="selected.value" (selectedIndexChange)="selected.setValue($event)">
+
+                  <!-- cada soporte -->
                   <mat-tab *ngFor="let soporte of firstForm.get('Formulario2').controls; let i = index"
                     [formGroupName]="i">
                     <ng-template mat-tab-label>
                       {{'GLOBAL.Acta_Recibido.RegistroActa.SoporteSubTitle' | translate}} &nbsp; {{i + 1}} &nbsp; &nbsp;
-                      &nbsp; &nbsp;<i class="fas fa-window-close" (click)="removeTab(i); usarLocalStorage()"></i>
+                      &nbsp; &nbsp;<i class="fas fa-window-close" (click)="removeTab(i); usarLocalStorage()" *ngIf="false"></i>
                     </ng-template>
                     <div>
                       <nb-card>
@@ -164,7 +170,7 @@
                       </nb-card>
                     </div>
                   </mat-tab>
-                  <mat-tab [disabled]="true">
+                  <mat-tab [disabled]="true" *ngIf="false">
                     <ng-template mat-tab-label>
                       <i class="fas fa-plus-square fa-2x" (click)="addTab(); usarLocalStorage()"></i>
                     </ng-template>

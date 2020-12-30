@@ -107,7 +107,7 @@
                     [formGroupName]="i">
                     <ng-template mat-tab-label>
                       {{'GLOBAL.Acta_Recibido.EdicionActa.SoporteSubTitle' | translate}} &nbsp; {{i + 1}} &nbsp; &nbsp;
-                      &nbsp; &nbsp;<i class="fas fa-window-close" (click)="removeTab(i); usarLocalStorage()" *ngIf="getPermisoEditar(permisos.Acta)"></i>
+                      &nbsp; &nbsp;<i class="fas fa-window-close" (click)="removeTab(i); usarLocalStorage()" *ngIf="false && getPermisoEditar(permisos.Acta)"></i>
                     </ng-template>
                     <div>
 
@@ -254,7 +254,7 @@
 
                     </div>
                   </mat-tab>
-                  <mat-tab [disabled]="true" *ngIf="getPermisoEditar(permisos.Acta)">
+                  <mat-tab [disabled]="true" *ngIf="false && getPermisoEditar(permisos.Acta)">
                     <ng-template mat-tab-label>
                       <i class="fas fa-plus-square fa-2x" (click)="addTab(); usarLocalStorage()"></i>
                     </ng-template>
