@@ -360,7 +360,8 @@ export class EdicionActaRecibidoComponent implements OnInit {
 
             const Elemento___ = {
               Id: _Elemento.Id,
-              TipoBienId: this.Tipos_Bien.find(tipo => tipo.Id.toString() === _Elemento.TipoBienId.Id.toString()).Id,
+              TipoBienId: _Elemento.TipoBienId !== null ?
+                this.Tipos_Bien.find(tipo => tipo.Id.toString() === _Elemento.TipoBienId.Id.toString()).Id : 0,
               SubgrupoCatalogoId: _Elemento.SubgrupoCatalogoId,
               Nombre: _Elemento.Nombre,
               Cantidad: _Elemento.Cantidad,
@@ -392,7 +393,8 @@ export class EdicionActaRecibidoComponent implements OnInit {
             Validators.required,
           ],
           Revisor: [
-            this.Proveedores.find(proveedor => proveedor.Id.toString() === transaccion_.ActaRecibido.PersonaAsignada.toString()).compuesto,
+            this.Proveedores.find(proveedor =>
+              proveedor.Id.toString() === transaccion_.ActaRecibido.PersonaAsignada.toString() || { proveedor : 0 }).compuesto,
             Validators.required,
           ],
         }),

@@ -70,6 +70,7 @@ export class CapturarElementosComponent implements OnInit {
   displayedColumns: any[];
   checkTodos: boolean = false;
   checkParcial: boolean = false;
+  Proveedor: boolean;
 
   constructor(private fb: FormBuilder,
     private translate: TranslateService,
@@ -144,6 +145,7 @@ export class CapturarElementosComponent implements OnInit {
 
   ReglasColumnas() {
     if (this.userService.tieneAlgunRol([Rol.Proveedor])) {
+      this.Proveedor = true;
       this.displayedColumns = [
         'AccionesMacro',
         'Nombre',
@@ -382,9 +384,12 @@ export class CapturarElementosComponent implements OnInit {
   getClasesElementos() {
     if (this.Clases && this.Clases.length) {
       this.dataSource.data.map((elemento) => {
-        elemento.TipoBienNombre = this.Tipos_Bien.find((x) => x.Id === elemento.TipoBienId).Nombre;
-        elemento.CodigoSubgrupo = this.Clases.find((x) => x.SubgrupoId.Id === elemento.SubgrupoCatalogoId).SubgrupoId.Codigo;
-        elemento.NombreClase = this.Clases.find((x) => x.SubgrupoId.Id === elemento.SubgrupoCatalogoId).SubgrupoId.Nombre;
+        elemento.TipoBienNombre = elemento.TipoBienId !== 0 ?
+          this.Tipos_Bien.find((x) => x.Id === elemento.TipoBienId).Nombre : '';
+        elemento.CodigoSubgrupo = elemento.TipoBienId !== 0 ?
+        this.Clases.find((x) => x.SubgrupoId.Id === elemento.SubgrupoCatalogoId).SubgrupoId.Codigo : '';
+        elemento.NombreClase = elemento.TipoBienId !== 0 ?
+        this.Clases.find((x) => x.SubgrupoId.Id === elemento.SubgrupoCatalogoId).SubgrupoId.Nombre : '';
       });
     }
   }

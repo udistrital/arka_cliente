@@ -40,10 +40,10 @@
   <nb-card-body>
 
     <div class="row">
-      <button nbButton (click)="borraSeleccionados()" style="margin-left: 10px;height: 45px;">Borrar
+      <button nbButton [disabled]="!checkParcial && !checkTodos"  (click)="borraSeleccionados()" style="margin-left: 10px;height: 45px;">Borrar
         Seleccionados</button>
       <div class="col">
-        <ng2-completer type="text" inputClass="cell form-control" style="height: 8px;" placeholder="Asignar clase"
+        <ng2-completer *ngIf="!Proveedor" type="text" inputClass="cell form-control" style="height: 8px;" placeholder="Asignar clase"
           [datasource]="dataService" [minSearchLength]="4" (selected)="onClase($event)"
           [disableInput]="!checkParcial && !checkTodos" [clearSelected]="true" [clearUnselected]="false">
         </ng2-completer>

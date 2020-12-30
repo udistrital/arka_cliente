@@ -266,7 +266,7 @@
                   <button nbButton
                     matStepperPrevious>{{'GLOBAL.Acta_Recibido.EdicionActa.AnteriorButton' | translate}}</button>
                   <button nbButton matStepperNext (click)="usarLocalStorage()"
-                    [disabled]="!firstForm.get('Formulario1').valid || !firstForm.get('Formulario2').valid"
+                    [disabled]="!firstForm.get('Formulario1').valid || (!firstForm.get('Formulario2').valid && !ActaEspecial)"
                     class="float-right">{{'GLOBAL.Acta_Recibido.EdicionActa.SiguienteButton' | translate}}</button>
                 </div>
               </nb-card-footer>
