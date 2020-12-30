@@ -287,8 +287,8 @@
     "cuenta_debito": "Debit",
     "placeholder_cuenta_credito": "Credit",
     "placeholder_cuenta_debito": "Debit",
-    "Entradas": "Entry",
-    "Salidas": "Output",
+    "Entradas": "Entries",
+    "Salidas": "Outputs",
     "Depreciación": "Depreciation",
     "Valorización": "Valorization",
     "Salida de Almacen": "Output",
@@ -300,6 +300,12 @@
     "Sobrante": "Surplus",
     "Terceros": "Terceros",
     "Elaboracion Propia": "Self Elaboration",
+    "Caja menor": "MInor cash",
+    "Compras extranjeras": "Foreign purchase",
+    "Aprovechamientos": "Exploitations",
+    "Adiciones y mejoras": "Additions and improvements",
+    "Intangibles": "Inmaterial assets",
+    "Provisional": "Provisions",
 
     "Nombre": "Name",
     "Descripcion": "Description",
@@ -366,6 +372,13 @@
     "Crear_Movimientos_placeholder": "Are you sure about create this accounts?",
     "Creado_Movimientos_placeholder": "Accounts successfully created",
 
+    "notificaciones": {
+      "t_restante": "This session will expire on {{MINUTES}} minute(s)",
+      "t_restante_titulo": "This session will soon expire",
+      "t_restante_alerta": "Less than {{MINUTES}} minute(s) left. Please save your pending work"
+    },
+
+    "info": "Información",
     "Detalle": "Detail",
     "placeholder": "This field is mandatory",
     "search": "Search",

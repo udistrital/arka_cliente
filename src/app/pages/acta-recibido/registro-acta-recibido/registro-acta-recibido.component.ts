@@ -255,7 +255,6 @@ export class RegistroActaRecibidoComponent implements OnInit {
         Fecha_Factura: [this.dateService.parse(Soporte.Fecha_Factura, 'MM dd yyyy'),
           Validators.required],
         Soporte: [Soporte.Soporte, Validators.required],
-        Revisor: [Soporte.Revisor, Validators.required],
       });
       Form2.push(Formulario__2);
     }
@@ -266,6 +265,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
         Sede: [transaccion_.Formulario1.Sede, Validators.required],
         Dependencia: [transaccion_.Formulario1.Dependencia, Validators.required],
         Ubicacion: [transaccion_.Formulario1.Ubicacion, Validators.required],
+        Revisor: [transaccion_.Formulario1.PersonaAsignada, Validators.required],
       }),
       Formulario2: Form2,
     });
@@ -291,6 +291,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
       Sede: ['', Validators.required],
       Dependencia: ['', Validators.required],
       Ubicacion: ['', Validators.required],
+      Revisor: ['', Validators.required],
     });
   }
   get Formulario_2(): FormGroup {
@@ -298,7 +299,6 @@ export class RegistroActaRecibidoComponent implements OnInit {
       Proveedor: ['', Validators.required],
       Consecutivo: ['', Validators.required],
       Fecha_Factura: ['', Validators.required],
-      Revisor: ['', Validators.required],
       Soporte: ['', Validators.required],
     });
   }
@@ -402,6 +402,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
   Registrar_Acta(Datos: any): ActaRecibido {
 
     const Acta_de_Recibido = new ActaRecibido();
+    const revisor___ = Datos.Revisor.split(' ');
     Acta_de_Recibido.Id = null;
     Acta_de_Recibido.Activo = true;
     Acta_de_Recibido.FechaCreacion = new Date();
@@ -409,6 +410,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
     Acta_de_Recibido.RevisorId = this.userService.getPersonaId();
     Acta_de_Recibido.UbicacionId = parseFloat(Datos.Ubicacion);
     Acta_de_Recibido.Observaciones = '';
+    Acta_de_Recibido.PersonaAsignada = this.Proveedores.find(proveedor => proveedor.NumDocumento.toString() === revisor___[0].toString()).Id;
 
     return Acta_de_Recibido;
   }
@@ -441,6 +443,9 @@ export class RegistroActaRecibidoComponent implements OnInit {
     Soporte_Acta.FechaModificacion = new Date();
     Soporte_Acta.FechaSoporte = Datos.Fecha_Factura;
     Soporte_Acta.ProveedorId = this.Proveedores.find(proveedor => proveedor.NumDocumento.toString() === proveedor___[0].toString()).Id;
+
+
+
     Soporte_Acta.DocumentoId = this.idDocumento[index];
 
     Transaccion.SoporteActa = Soporte_Acta;

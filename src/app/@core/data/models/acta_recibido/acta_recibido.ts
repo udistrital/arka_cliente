@@ -10,6 +10,7 @@ export class ActaRecibido {
     RevisorId: number;
     UbicacionId: number;
     CodigoAbreviacion: string;
+    PersonaAsignada: number;
 }
 
 export class ActaRecibidoUbicacion {
