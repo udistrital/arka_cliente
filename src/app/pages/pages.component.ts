@@ -3,6 +3,7 @@ import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { NbMenuItem } from '@nebular/theme';
 import { UserService } from '../@core/data/users.service';
 import { RolUsuario_t as Rol } from '../@core/data/models/roles/rol_usuario';
+import { AutenticationService } from '../@core/utils/authentication.service';
 
 import { MENU_ITEMS } from './pages-menu';
 
@@ -24,6 +25,7 @@ export class PagesComponent {
   constructor(
     private translate: TranslateService,
     private user: UserService,
+    private auth: AutenticationService,
   ) {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
     });
@@ -32,6 +34,7 @@ export class PagesComponent {
     this.moduloActa(menu);
 
     this.menu = <NbMenuItem[]>menu.filter(modulo => (modulo.children && modulo.children.length));
+    // console.log({'queda': this.auth.remains(), 'expiro': this.auth.expired()});
   }
 
   private moduloActa(menu: any) {
