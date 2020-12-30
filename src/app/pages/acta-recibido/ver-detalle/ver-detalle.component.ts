@@ -372,7 +372,4 @@ export class VerDetalleComponent implements OnInit {
       return '0';
     }
   }
-  volver() {
-    window.location.reload();
-  }
 }
