@@ -66,7 +66,7 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
     this.listService.findPlanCuentasDebito();
     this.listService.findPlanCuentasCredito();
     this.catalogoElementosService.getTiposMovimientoKronos().subscribe((res: any[]) => {
-      console.log(res);
+      // console.log(res);
       this.Movimientos_Entradas = res.filter((x: any) => x.Descripcion.indexOf('Entrada') !== -1);
       this.Movimientos_Salidas = res.filter((x: any) => x.Descripcion.indexOf('Salida') !== -1);
       this.Movimientos_Depreciacion = res.filter((x: any) => x.Descripcion.indexOf('Depreciacion') !== -1);

@@ -108,7 +108,7 @@ export class CapturarElementosComponent implements OnInit {
         this.Tarifas_Iva = list.listIVA[0];
         this.Clases = list.listClases[0];
         this.dataService = this.completerService.local(this.Clases, 'SubgrupoId.Nombre', 'SubgrupoId.Nombre');
-        // console.log({pollito:this.Clases})
+        // console.log({pollito:this.Tarifas_Iva})
       },
     );
   }
@@ -129,7 +129,6 @@ export class CapturarElementosComponent implements OnInit {
       this.getIVA();
       this.getTotales();
       this.getClasesElementos();
-      // this.dataSource.data[0].TipoBienNombre = this.Tipos_Bien[2].Nombre;
       this.ver();
     } else {
       this.dataSource = new MatTableDataSource();
@@ -198,6 +197,7 @@ export class CapturarElementosComponent implements OnInit {
     // console.log(this.DatosEnviados)
     this.DatosEnviados.emit(this.dataSource.data);
     this.DatosTotales.emit(this.Totales);
+    // console.log(this.dataSource.data)
   }
 
   TraerPlantilla() {
@@ -299,13 +299,7 @@ export class CapturarElementosComponent implements OnInit {
           this.ver();
           this.dataSource.paginator = this.paginator;
           this.dataSource.sort = this.sort;
-          for (let i = 0; i < this.dataSource.data.length; i++) {
-            if (this.dataSource.data[i].CodigoSubgrupo === undefined) {
-              this.dataSource.data[i].CodigoSubgrupo = '';
-              this.dataSource.data[i].TipoBienNombre = '';
-              this.dataSource.data[i].NombreClase = '';
-            }
-          }
+          this.validarCargaMasiva();
           (Swal as any).fire({
             type: 'success',
             title: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.ElementosCargadosTitleOK'),
@@ -323,6 +317,23 @@ export class CapturarElementosComponent implements OnInit {
         this.clearFile();
       }
     });
+  }
+
+  validarCargaMasiva() {
+    for (let i = 0; i < this.dataSource.data.length; i++) {
+      if (this.dataSource.data[i].CodigoSubgrupo === undefined) {
+        this.dataSource.data[i].CodigoSubgrupo = '';
+        this.dataSource.data[i].TipoBienNombre = '';
+        this.dataSource.data[i].NombreClase = '';
+      }
+      if (this.dataSource.data[i].PorcentajeIvaId.length !== 1) {
+        this.dataSource.data[i].PorcentajeIvaId = this.Tarifas_Iva.find((x) => x.Nombre === '0% Excluido').Id;
+      }
+      if (this.dataSource.data[i].UnidadMedida.length !== 1) {
+        this.dataSource.data[i].UnidadMedida = this.Unidades.find((x) => x.Unidad === 'UNIDAD').Id;
+      }
+    }
+    // console.log(this.Unidades)
   }
 
   clearFile() {
@@ -420,7 +431,7 @@ export class CapturarElementosComponent implements OnInit {
       Descuento: '0',
       Marca: '',
       NivelInventariosId: '1',
-      PorcentajeIvaId: '3',
+      PorcentajeIvaId: '0',
       Serie: '',
       SubgrupoCatalogoId: '',
       CodigoSubgrupo: '',
