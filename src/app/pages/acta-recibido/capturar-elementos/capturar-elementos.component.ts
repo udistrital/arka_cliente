@@ -332,8 +332,12 @@ export class CapturarElementosComponent implements OnInit {
       if (this.dataSource.data[i].UnidadMedida.length !== 1) {
         this.dataSource.data[i].UnidadMedida = this.Unidades.find((x) => x.Unidad === 'UNIDAD').Id;
       }
+      if (this.dataSource.data[i].Nombre === "") {
+        this.dataSource.data[i].Nombre = "N/A";
+        console.log("QUEPAJO");
+      }
     }
-    // console.log(this.Unidades)
+    console.log(this.dataSource.data)
   }
 
   clearFile() {
