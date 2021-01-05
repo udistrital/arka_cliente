@@ -300,9 +300,8 @@ export class CapturarElementosComponent implements OnInit {
           this.ver();
           this.dataSource.paginator = this.paginator;
           this.dataSource.sort = this.sort;
-          const validacion = this.validarCargaMasiva()
-          if (validacion.valid)
-          { 
+          const validacion = this.validarCargaMasiva();
+          if (validacion.valid) {
             (Swal as any).fire({
               type: 'success',
               title: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.ElementosCargadosTitleOK'),
@@ -311,11 +310,10 @@ export class CapturarElementosComponent implements OnInit {
             this.ErroresCarga = validacion.errores[4];
             this.clearFile();
           } else {
-            console.log({errores:validacion.errores});
             (Swal as any).fire({
               type: 'warning',
               title: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.ValidacionCargaMasivaTitle'),
-              text: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.ValidacionCargaMasivaText',{cantidad:validacion.cont_err}),
+              text: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.ValidacionCargaMasivaText', {cantidad: validacion.cont_err}),
             });
             this.ErroresCarga = '';
             this.clearFile();
@@ -333,11 +331,11 @@ export class CapturarElementosComponent implements OnInit {
     });
   }
 
-  validarCargaMasiva():{valid: boolean, errores: any[], cont_err: number} {
+  validarCargaMasiva(): {valid: boolean, errores: any[], cont_err: number} {
     let valido = true;
     let conteo = 0;
-    let error = [];
-    console.log(this.dataSource)
+    const error = [];
+    const validar_iva = true;
     for (let i = 0; i < this.dataSource.data.length; i++) {
       let errorfila = '';
       if (this.dataSource.data[i].CodigoSubgrupo === undefined) {
@@ -345,48 +343,46 @@ export class CapturarElementosComponent implements OnInit {
         this.dataSource.data[i].TipoBienNombre = '';
         this.dataSource.data[i].NombreClase = '';
       }
-      // this.Tarifas_Iva.some((tarifa) => tarifa.Id === this.dataSource.data[i].PorcentajeIvaId)
-      // console.log({porcentajeid:this.dataSource.data[i].PorcentajeIvaId,Tarifas:this.Tarifas_Iva,AVER:this.Tarifas_Iva.some((tarifa) => tarifa.Id === this.dataSource.data[i].PorcentajeIvaId)});
-      if (this.Tarifas_Iva.some((tarifa) => tarifa.Id.toString() === this.dataSource.data[i].PorcentajeIvaId) !== true) {
+      if (
+        this.Tarifas_Iva.some((tarifa) => tarifa.Id.toString() === this.dataSource.data[i].PorcentajeIvaId) !== true) {
         this.dataSource.data[i].PorcentajeIvaId = this.Tarifas_Iva.find((x) => x.Nombre === '0% Excluido').Id;
         valido = false;
         conteo ++;
-        errorfila=errorfila+i+'PorcentajeIVA,';
+        errorfila = errorfila + i + 'PorcentajeIVA,';
       }
-      console.log({unidades:this.Unidades,Unidaddata: this.dataSource.data[i].UnidadMedida})
       if (this.Unidades.some((unidad) => unidad.Id.toString() === this.dataSource.data[i].UnidadMedida ) !== true) {
         this.dataSource.data[i].UnidadMedida = this.Unidades.find((x) => x.Unidad === 'UNIDAD').Id;
         valido = false;
         conteo ++;
-        errorfila=errorfila+'UnidadMedida,';
+        errorfila = errorfila + 'UnidadMedida,';
       }
       if (this.dataSource.data[i].Nombre === '') {
         this.dataSource.data[i].Nombre = 'N/A';
         valido = false;
         conteo ++;
-        errorfila=errorfila+'Nombre,';
+        errorfila = errorfila + 'Nombre,';
       }
       if (this.dataSource.data[i].Marca === '') {
         this.dataSource.data[i].Marca = 'N/A';
         valido = false;
         conteo ++;
-        errorfila=errorfila+'Marca,';
+        errorfila = errorfila + 'Marca,';
       }
       if (this.dataSource.data[i].Serie === '') {
         this.dataSource.data[i].Serie = 'N/A';
         valido = false;
         conteo ++;
-        errorfila=errorfila+'Serie,';
+        errorfila = errorfila + 'Serie,';
       }
       if (this.dataSource.data[i].Cantidad === '') {
         this.dataSource.data[i].Cantidad = '1';
         valido = false;
         conteo ++;
-        errorfila=errorfila+'Cantidad,';
+        errorfila = errorfila + 'Cantidad,';
       }
-      error[i]= errorfila;
+      error[i] = errorfila;
     }
-    return{ valid:valido, errores:error, cont_err:conteo }
+    return{ valid: valido, errores: error, cont_err: conteo };
   }
 
   clearFile() {
