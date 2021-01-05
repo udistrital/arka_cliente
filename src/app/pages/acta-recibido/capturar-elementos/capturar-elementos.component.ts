@@ -72,6 +72,7 @@ export class CapturarElementosComponent implements OnInit {
   checkTodos: boolean = false;
   checkParcial: boolean = false;
   Proveedor: boolean;
+  ErroresCarga: string = '';
 
   constructor(private fb: FormBuilder,
     private translate: TranslateService,
@@ -299,13 +300,26 @@ export class CapturarElementosComponent implements OnInit {
           this.ver();
           this.dataSource.paginator = this.paginator;
           this.dataSource.sort = this.sort;
-          this.validarCargaMasiva();
-          (Swal as any).fire({
-            type: 'success',
-            title: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.ElementosCargadosTitleOK'),
-            text: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.ElementosCargadosTextOK'),
-          });
-          this.clearFile();
+          const validacion = this.validarCargaMasiva()
+          if (validacion.valid)
+          { 
+            (Swal as any).fire({
+              type: 'success',
+              title: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.ElementosCargadosTitleOK'),
+              text: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.ElementosCargadosTextOK'),
+            });
+            this.ErroresCarga = validacion.errores[4];
+            this.clearFile();
+          } else {
+            console.log({errores:validacion.errores});
+            (Swal as any).fire({
+              type: 'warning',
+              title: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.ValidacionCargaMasivaTitle'),
+              text: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.ValidacionCargaMasivaText',{cantidad:validacion.cont_err}),
+            });
+            this.ErroresCarga = '';
+            this.clearFile();
+          }
         }
 
       } else {
@@ -319,36 +333,60 @@ export class CapturarElementosComponent implements OnInit {
     });
   }
 
-  validarCargaMasiva() {
+  validarCargaMasiva():{valid: boolean, errores: any[], cont_err: number} {
+    let valido = true;
+    let conteo = 0;
+    let error = [];
+    console.log(this.dataSource)
     for (let i = 0; i < this.dataSource.data.length; i++) {
+      let errorfila = '';
       if (this.dataSource.data[i].CodigoSubgrupo === undefined) {
         this.dataSource.data[i].CodigoSubgrupo = '';
         this.dataSource.data[i].TipoBienNombre = '';
         this.dataSource.data[i].NombreClase = '';
       }
-      if (this.dataSource.data[i].PorcentajeIvaId.length !== 1) {
+      // this.Tarifas_Iva.some((tarifa) => tarifa.Id === this.dataSource.data[i].PorcentajeIvaId)
+      // console.log({porcentajeid:this.dataSource.data[i].PorcentajeIvaId,Tarifas:this.Tarifas_Iva,AVER:this.Tarifas_Iva.some((tarifa) => tarifa.Id === this.dataSource.data[i].PorcentajeIvaId)});
+      if (this.Tarifas_Iva.some((tarifa) => tarifa.Id.toString() === this.dataSource.data[i].PorcentajeIvaId) !== true) {
         this.dataSource.data[i].PorcentajeIvaId = this.Tarifas_Iva.find((x) => x.Nombre === '0% Excluido').Id;
+        valido = false;
+        conteo ++;
+        errorfila=errorfila+i+'PorcentajeIVA,';
       }
-      if (this.dataSource.data[i].UnidadMedida.length !== 1) {
+      console.log({unidades:this.Unidades,Unidaddata: this.dataSource.data[i].UnidadMedida})
+      if (this.Unidades.some((unidad) => unidad.Id.toString() === this.dataSource.data[i].UnidadMedida ) !== true) {
         this.dataSource.data[i].UnidadMedida = this.Unidades.find((x) => x.Unidad === 'UNIDAD').Id;
+        valido = false;
+        conteo ++;
+        errorfila=errorfila+'UnidadMedida,';
       }
       if (this.dataSource.data[i].Nombre === '') {
         this.dataSource.data[i].Nombre = 'N/A';
+        valido = false;
+        conteo ++;
+        errorfila=errorfila+'Nombre,';
       }
       if (this.dataSource.data[i].Marca === '') {
         this.dataSource.data[i].Marca = 'N/A';
-      }
-      if (this.dataSource.data[i].Marca === '') {
-        this.dataSource.data[i].Marca = 'N/A';
+        valido = false;
+        conteo ++;
+        errorfila=errorfila+'Marca,';
       }
       if (this.dataSource.data[i].Serie === '') {
         this.dataSource.data[i].Serie = 'N/A';
+        valido = false;
+        conteo ++;
+        errorfila=errorfila+'Serie,';
       }
       if (this.dataSource.data[i].Cantidad === '') {
         this.dataSource.data[i].Cantidad = '1';
+        valido = false;
+        conteo ++;
+        errorfila=errorfila+'Cantidad,';
       }
+      error[i]= errorfila;
     }
-    console.log(this.dataSource.data)
+    return{ valid:valido, errores:error, cont_err:conteo }
   }
 
   clearFile() {
