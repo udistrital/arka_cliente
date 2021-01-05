@@ -332,9 +332,20 @@ export class CapturarElementosComponent implements OnInit {
       if (this.dataSource.data[i].UnidadMedida.length !== 1) {
         this.dataSource.data[i].UnidadMedida = this.Unidades.find((x) => x.Unidad === 'UNIDAD').Id;
       }
-      if (this.dataSource.data[i].Nombre === "") {
-        this.dataSource.data[i].Nombre = "N/A";
-        console.log("QUEPAJO");
+      if (this.dataSource.data[i].Nombre === '') {
+        this.dataSource.data[i].Nombre = 'N/A';
+      }
+      if (this.dataSource.data[i].Marca === '') {
+        this.dataSource.data[i].Marca = 'N/A';
+      }
+      if (this.dataSource.data[i].Marca === '') {
+        this.dataSource.data[i].Marca = 'N/A';
+      }
+      if (this.dataSource.data[i].Serie === '') {
+        this.dataSource.data[i].Serie = 'N/A';
+      }
+      if (this.dataSource.data[i].Cantidad === '') {
+        this.dataSource.data[i].Cantidad = '1';
       }
     }
     console.log(this.dataSource.data)
