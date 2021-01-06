@@ -11,6 +11,7 @@ import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoH
 import { TipoEntrada } from '../../../@core/data/models/entrada/tipo_entrada';
 import { Router, NavigationExtras } from '@angular/router';
 import { NbStepperComponent } from '@nebular/theme';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'ngx-adquisicion',
@@ -244,6 +245,7 @@ export class AdquisicionComponent implements OnInit {
   getFormatoEntrada() {
     this.entradasHelper.getFormatoEntradaByName('Adquisición').subscribe(res => {
       if (res !== null) {
+        console.log(res)
         this.formatoTipoMovimiento = res;
       }
     });
@@ -261,9 +263,10 @@ export class AdquisicionComponent implements OnInit {
    */
   onSubmit() {
     if (this.validar) {
+      console.log(this.facturaForm)
       const detalle = {
         acta_recibido_id: +this.actaRecibidoId,
-        consecutivo: 'P8-1-2019', // REVISAR
+        consecutivo: this.soportes[0].Consecutivo,//this.facturaForm.value.facturaCtrl, //'P8-1-2019', // REVISAR
         documento_contable_id: 1, // REVISAR
         contrato_id: +this.contratoEspecifico.NumeroContratoSuscrito,
         vigencia_contrato: this.contratoForm.value.vigenciaCtrl,
@@ -277,17 +280,23 @@ export class AdquisicionComponent implements OnInit {
           Id: this.formatoTipoMovimiento[0].Id,
         },
         EstadoMovimientoId: {
-          Id: 2, // REVISAR
+          Id: 2, // Movimiento adecuado para registrar una entrada aceptada                                                                                                                                                              trrr una entrada como aprobada
         },
         SoporteMovimientoId: 0,
         IdTipoMovimiento: this.tipoEntrada.Id,
       };
-
+      // this.pUpManager.showSuccesToast('Registro Exitoso');
+      // this.pUpManager.showSuccessAlert('Entrada N°:'
+      // + `${this.soportes[0].Consecutivo}` + 'Registrada'); // SE DEBE MOSTRAR EL CONSECUTIVO REAL
+      console.log(movimientoAdquisicion)
       this.entradasHelper.postEntrada(movimientoAdquisicion).subscribe((res: any) => {
         if (res !== null) {
-          this.pUpManager.showSuccesToast('Registro Exitoso');
-          this.pUpManager.showSuccessAlert('Entrada registrada satisfactoriamente!' +
-            '\n ENTRADA N°: P8-1-2019'); // SE DEBE MOSTRAR EL CONSECUTIVO REAL
+          console.log(res);
+          (Swal as any).fire({
+            type: 'success',
+            title: 'Entrada N° ' + `${res.Id}` + ' Registrada',
+            text: 'La Entrada N° ' + `${res.Id}` + ' ha sido registrada de forma exitosa',
+          });
           const navigationExtras: NavigationExtras = { state: { consecutivo: res.Id } };
           this.router.navigate(['/pages/reportes/registro-entradas'], navigationExtras);
         } else {
