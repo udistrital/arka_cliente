@@ -97,7 +97,13 @@ export class TablaElementosAsignadosComponent implements OnInit {
 
   }
   ngOnInit() {
-
+    this.respuesta = undefined;
+    this.source = new LocalDataSource(); // create the source
+    this.source2 = new LocalDataSource();
+    this.elementos = new Array<Elemento>();
+    this.Datos2 = new Array<any>();
+    this.cargarCampos();
+    this.loadLists();
   }
   initialiseInvites() {
     // Set default values and re-fetch any data you need.
