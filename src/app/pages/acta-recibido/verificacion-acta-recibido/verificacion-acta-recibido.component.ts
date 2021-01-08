@@ -321,7 +321,9 @@ export class VerificacionActaRecibidoComponent implements OnInit {
             `${res.ActaRecibido.Id}` + this.translate.instant('GLOBAL.Acta_Recibido.VerificacionActa.Verificada'),
         }).then((willDelete) => {
           if (willDelete.value) {
-            window.location.reload();
+            this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+              this.router.navigateByUrl('/pages/acta_recibido/consulta_acta_recibido');
+            });
           }
         });
       } else {
@@ -356,7 +358,9 @@ export class VerificacionActaRecibidoComponent implements OnInit {
             `${res.ActaRecibido.Id}` + this.translate.instant('GLOBAL.Acta_Recibido.VerificacionActa.Rechazada'),
         }).then((willDelete) => {
           if (willDelete.value) {
-            window.location.reload();
+            this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+              this.router.navigateByUrl('/pages/acta_recibido/consulta_acta_recibido');
+            });
           }
         });
       } else {
