@@ -58,6 +58,12 @@
             </div>
           </div>
 
+          <div class="justify-content-center">
+            <button type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off">
+              Añadir Elemento
+            </button>
+          </div>
+
         </nb-card-body>
       </nb-card>
 
@@ -70,6 +76,8 @@
               <tr>
                 <th scope="col">Número Salida y/o Vigencia</th>
                 <th scope="col">Número Placa</th>
+                <th scope="col">Entrada</th>
+                <th scope="col">Salida</th>
                 <th scope="col">Descripción</th>
                 <th scope="col">ID Funcionario</th>
                 <th scope="col">Nombre Funcionario</th>
@@ -78,6 +86,7 @@
                 <th scope="col">Ubicación</th>
                 <th scope="col">Estado</th>
                 <th scope="col">Tipo Baja</th>
+                <th scope="col">Soporte</th>
                 <th scope="col">Solicitar Baja</th>
               </tr>
             </thead>
@@ -85,6 +94,8 @@
               <tr>
                 <td>9080-(2011)</td>
                 <td>401215</td>
+                <td>00-123</td>
+                <td>00-123</td>
                 <td>Monitor HP</td>
                 <td>99999999</td>
                 <td>Nombre Apellido</td>
@@ -97,6 +108,12 @@
                     <option>Reporte Hurto</option>
                     <option>Inservible y/o Daño</option>
                   </select>
+                </td>
+                <td>
+                  <button type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false"
+                    autocomplete="off">
+                    Cargar
+                  </button>
                 </td>
                 <td>
                   <nb-checkbox status="success"></nb-checkbox>

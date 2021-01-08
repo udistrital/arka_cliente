@@ -4,27 +4,29 @@
 @import '~@nebular/theme/styles/themes';
 
 // which themes you what to enable (empty to enable all)
-$nb-enabled-themes: (default, cosmic, corporate, ud);
+$nb-enabled-themes: (default, cosmic, corporate, arka2);
 
 $nb-themes: nb-register-theme((
  // app wise variables for each theme
-  sidebar-header-gap: 2rem,
+  sidebar-header-gap: 1rem,
   sidebar-header-height: initial,
-  layout-content-width: 1400px,
+  layout-content-width: 1000px,
+  footer-height: auto,
+
 
   font-main: Roboto,
   font-secondary: Exo,
 
   switcher-background: #ebeff5,
   switcher-background-percentage: 50%,
-  drops-icon-line-gadient: -webkit-linear-gradient(#01dbb5, #0bbb79),
+  drops-icon-line-gadient: -webkit-linear-gradient( #6f613f, #991c1a),
 
   list-item-border-width: 1px,
 
   slide-out-container-width: 30%,
-  slide-out-background: linear-gradient(270deg, #f7fafb 0%, #ecf2f5 100%),
-  slide-out-shadow-color: 0 4px 14px 0 #a2d2c8,
-  slide-out-shadow-color-rtl: 0 4px 14px 0 #a2d2c8,
+  // slide-out-background: linear-gradient(270deg, #f7fafb 0%, #ecf2f5 100%),
+  // slide-out-shadow-color: 0 4px 14px 0 #a2d2c8,
+  // slide-out-shadow-color-rtl: 0 4px 14px 0 #a2d2c8,
 
   chart-panel-summary-box-shadow: none,
   chart-panel-summary-background-color: #ecf2f5,
@@ -33,7 +35,22 @@ $nb-themes: nb-register-theme((
 
   ecommerce-card-border-width: 1px,
 
-  progress-bar-background: linear-gradient(90deg, #3edd81 0%, #3bddaf 100%),
+  progress-bar-background: linear-gradient(90deg, #991c1a 0%, #a83121 100%),
+  layout-padding-top: 2.25rem,
+
+  menu-item-icon-margin: 0 0.5rem 0 0,
+  card-height-tiny: 13.5rem,
+  card-height-small: 21.1875rem,
+  card-height-medium: 28.875rem,
+  card-height-large: 36.5625rem,
+  card-height-giant: 44.25rem,
+  card-margin-bottom: 1.875rem,
+  card-header-with-select-padding-top: 0.5rem,
+  card-header-with-select-padding-bottom: 0.5rem,
+  select-min-width: 6rem,
+  slide-out-background: #f7f9fc,
+  slide-out-shadow-color: 0 4px 14px 0 #8f9bb3,
+  slide-out-shadow-color-rtl: 0 4px 14px 0 #8f9bb3,
 ), default, default);
 
 $nb-themes: nb-register-theme((
@@ -172,3 +189,93 @@ $nb-themes: nb-register-theme((
   switcher-background-percentage: 14%,
   drops-icon-line-gadient: -webkit-linear-gradient(#db3401, #bb0b0b),
 ), ud, default);
+
+$nb-themes: nb-register-theme((
+  
+  // General
+  
+  // font-main: OpenSans,
+
+  color-bg: #ffffff,
+  color-bg-active: #a83121,
+  color-fg: #991c1a,
+  color-fg-heading: #6f613f,
+  color-fg-text: #000000,
+  color-fg-highlight: #c2aa73,
+  color-white: #ffffff,
+  color-primary: #991c1a,
+  color-success: #a61e1c,
+  color-info: #a83121,
+  color-warning: #ba4a3a,
+  color-danger: #6f613f,
+
+  // Scrollbar
+  scrollbar-fg: #6f613f,
+  scrollbar-bg: #ffffff,
+
+  // Card
+  card-fg: #ffffff,
+  card-fg-text: #6f613f,
+  card-fg-heading: #6f613f,
+  card-bg: #ffffff,
+  card-border-color: #ba4a3a,
+  card-separator: #ffffff73,
+  card-header-fg: #6f613f,
+  card-header-fg-heading: #6f613f,
+  // card-header-active-bg: ,
+  // card-header-active-fg: ,
+  // card-header-primary-bg: ,
+  // card-header-info-bg: ,
+  // card-header-success-bg: ,
+  // card-header-warning-bg: ,
+  // card-header-danger-bg: ,
+
+  smart-table-bg-active: #ffecbf,
+  smart-table-bg-even: #ffffff79,
+  smart-table-header-fg: #991c1a,
+  // smart-table-header-bg:  #991c1a,
+  smart-table-fg: #000000,
+  // smart-table-separator: #c2aa73,
+  // smart-table-fg-secondary: #c2aa73,
+  // header-fg: ,
+  // header-bg: #ffffff00,
+  // footer-fg: ,
+  // footer-fg-highlight: ,
+
+  layout-window-shadow:#ffffff79,
+  // layout-fg
+  // layout-bg: #ffffff79,
+  // layout-window-mode-bg
+
+  // // Sidebar
+  // sidebar-fg: ,
+  sidebar-bg: #991c1a,
+  // sidebar-shadow: ,
+
+  // // Menu
+  menu-fg: #ffffff73,
+  menu-bg: #991c1a,
+  menu-active-fg: #ffffff,
+  menu-active-bg: #991c1a,
+  menu-submenu-bg: #991c1a,
+  menu-submenu-fg: #ffffff73,
+  menu-submenu-active-fg: #ffffff,
+  menu-submenu-active-bg: #991c1a,
+  menu-submenu-active-border-color: #6f613f,
+  menu-submenu-hover-fg: #ffffff,
+  menu-submenu-hover-bg: #991c1a,
+  menu-group-fg: #991c1a,
+  menu-item-separator: #ffffff73,
+  menu-icon-color: #ffffff73,
+  menu-icon-active-color: #ffffff,
+
+  // // Form Control
+  // form-control-border-color: ,
+  // form-control-selected-border-color: ,
+  // form-control-info-border-color: ,
+  // form-control-success-border-color: ,
+  // form-control-danger-border-color: ,
+  // form-control-warning-border-color: ,
+  form-control-placeholder-color:#6f613f,
+  form-control-text-primary-color:#000000,
+) , arka2 ,default);

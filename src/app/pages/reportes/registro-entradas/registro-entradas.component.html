@@ -1,0 +1,19 @@
+<toaster-container [toasterconfig]="config"></toaster-container>
+<nb-card>
+    <div class="dinamic-form">
+        <fieldset [ngClass]="{'fieldseter':true}">
+            <legend align="left">
+                <small>Reporte de entrada</small>
+                <!-- <small>{{'reporte.entrada' | translate}}</small> -->
+            </legend>
+            <div #spagoBIDocumentArea></div>
+        </fieldset>
+    </div>
+</nb-card>
+
+<div class="justify-content-center float-left pt-4" *ngIf="!detalle">
+    <button type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off"
+        (click)="onRegister()">
+        Registrar Nueva Entrada
+    </button>
+</div>

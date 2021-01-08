@@ -1,357 +1,169 @@
-<div class="col-lg-12">
+<div *ngIf="!firstForm" [nbSpinner]="!firstForm">
   <nb-card>
-    <nb-card-header>Registrar Acta Recibido</nb-card-header>
+    <nb-card-header>
+
+    </nb-card-header>
     <nb-card-body>
-
-      <nb-card>
-        <nb-card-header>Datos Iniciales de Recibido</nb-card-header>
-        <nb-card-body>
-          <div class="row">
-            <div class="form-group col-sm">
-              <label>Sede</label>
-              <select class="form-control">
-                <option>Sede 1</option>
-                <option>Sede 2</option>
-                <option>Sede 3</option>
-                <option>Sede 4</option>
-                <option>Sede 5</option>
-              </select>
-            </div>
-            <div class="form-group col-sm">
-              <label>Dependencia</label>
-              <select class="form-control">
-                <option>Dependencia 1</option>
-                <option>Dependencia 2</option>
-                <option>Dependencia 3</option>
-                <option>Dependencia 4</option>
-                <option>Dependencia 5</option>
-              </select>
-            </div>
-            <div class="form-group col-sm">
-              <label>Ubicación</label>
-              <select class="form-control">
-                <option>Ubicación 1</option>
-                <option>Ubicación 2</option>
-                <option>Ubicación 3</option>
-                <option>Ubicación 4</option>
-                <option>Ubicación 5</option>
-              </select>
-            </div>
-          </div>
-
-        </nb-card-body>
-      </nb-card>
-
-
-      <nb-tabset>
-        <nb-tab tabTitle="Soporte 1">
-          <nb-card>
-            <nb-card-body>
-                <nb-card>
-                    <nb-card-header>Datos de Soporte</nb-card-header>
-                    <nb-card-body>
-                      <div class="row">
-                        <div class="form-group col-sm">
-                          <label>Proveedor</label>
-                          <div class="input-group">
-                            <input type="text" placeholder="NIT o Razón social" class="form-control" />
-                          </div>
-                        </div>
-                        <div class="form-group col-sm">
-                          <label>Consecutivo de Factura o de Soporte</label>
-                          <div class="input-group">
-                            <input nbInput type="text" placeholder="Consecutivo" class="form-control" />
-                          </div>
-                        </div>
-                      </div>
-                      <div class="row">
-                        <div class="form-group col-sm">
-                          <label>Fecha de Factura o de Soporte</label>
-                          <div class="input-group">
-                            <input nbInput placeholder="Selecciona la Fecha" class="form-control" [nbDatepicker]="formpicker">
-                            <nb-datepicker #formpicker></nb-datepicker>
-                          </div>
-                        </div>
-                        <div class="form-group col-sm">
-                          <label>Factura o Soporte a Relacionar</label>
-                          <input nbInput type="file" class="form-control-file" id="factura">
-                        </div>
-                      </div>
-                    </nb-card-body>
-                  </nb-card>
-                  <nb-card>
-                    <nb-card-header>Carga Masiva</nb-card-header>
-                    <nb-card-body>
-                      <div class="form-group col-sm">
-                        <label>Archivo</label>
-                        <input nbInput type="file" class="form-control-file" id="factura">
-                      </div>
-            
-                    </nb-card-body>
-                  </nb-card>
-                  <nb-card>
-                    <nb-card-header>Articulos Relacionados</nb-card-header>
-                    <nb-card-body>
-            
-                      <table class="table text-center">
-                        <thead class="thead-dark">
-                          <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">Tipo de Bien</th>
-                            <th scope="col">Subgrupo</th>
-                            <th scope="col">Descripcion</th>
-                            <th scope="col">Cantidad</th>
-                            <th scope="col">Marca</th>
-                            <th scope="col">Serie</th>
-                            <th scope="col">Unidad</th>
-                            <th scope="col">Valor Unitario</th>
-                            <th scope="col">Valor por Cantidad</th>
-                            <th scope="col">Descuento</th>
-                            <th scope="col"> % IVA</th>
-                            <th scope="col">Valor IVA</th>
-                            <th scope="col">Valor Total</th>
-                            <th scope="col">Acciónes</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr>
-                            <th scope="row">1</th>
-                            <td>
-                              <select class="form-control">
-                                <option>Consumo</option>
-                                <option>Consumo Controlado</option>
-                                <option>Devolutivo</option>
-                              </select>
-                            </td>
-                            <td>235-Equipo y Maquinaria</td>
-                            <td>Computador HP</td>
-                            <td>1</td>
-                            <td>Compaq</td>
-                            <td>1212-2017</td>
-                            <td>Unidades</td>
-                            <td>4'000.000</td>
-                            <td>4'000.000</td>
-                            <td>0</td>
-                            <td>
-                              <select class="form-control">
-                                <option>0%</option>
-                                <option>16%</option>
-                                <option>19%</option>
-                                <option>20%</option>
-                              </select>
-                            </td>
-                            <td>200.000</td>
-                            <td>4'200.000</td>
-                            <td>
-                              <i class="fas fa-check"></i>
-                            </td>
-                          </tr>
-                          <tr>
-                            <th scope="row">1</th>
-                            <td>
-                              <select class="form-control">
-                                <option>Consumo</option>
-                                <option>Consumo Controlado</option>
-                                <option>Devolutivo</option>
-                              </select>
-                            </td>
-                            <td>235-Equipo y Maquinaria</td>
-                            <td>Computador HP</td>
-                            <td>1</td>
-                            <td>Compaq</td>
-                            <td>1212-2017</td>
-                            <td>Unidades</td>
-                            <td>4'000.000</td>
-                            <td>4'000.000</td>
-                            <td>0</td>
-                            <td>
-                              <select class="form-control">
-                                <option>0%</option>
-                                <option>16%</option>
-                                <option>19%</option>
-                                <option>20%</option>
-                              </select>
-                            </td>
-                            <td>200.000</td>
-                            <td>4'200.000</td>
-                            <td>
-                              <i class="fas fa-check"></i>
-                            </td>
-                          </tr>
-                          <tr>
-                            <th scope="row">1</th>
-                            <td>
-                              <select class="form-control">
-                                <option>Consumo</option>
-                                <option>Consumo Controlado</option>
-                                <option>Devolutivo</option>
-                              </select>
-                            </td>
-                            <td>235-Equipo y Maquinaria</td>
-                            <td>Computador HP</td>
-                            <td>1</td>
-                            <td>Compaq</td>
-                            <td>1212-2017</td>
-                            <td>Unidades</td>
-                            <td>4'000.000</td>
-                            <td>4'000.000</td>
-                            <td>0</td>
-                            <td>
-                              <select class="form-control">
-                                <option>0%</option>
-                                <option>16%</option>
-                                <option>19%</option>
-                                <option>20%</option>
-                              </select>
-                            </td>
-                            <td>200.000</td>
-                            <td>4'200.000</td>
-                            <td>
-                              <i class="fas fa-check"></i>
-                            </td>
-                          </tr>
-                          <tr>
-                            <th scope="row">1</th>
-                            <td>
-                              <select class="form-control">
-                                <option>Consumo</option>
-                                <option>Consumo Controlado</option>
-                                <option>Devolutivo</option>
-                              </select>
-                            </td>
-                            <td>235-Equipo y Maquinaria</td>
-                            <td>Computador HP</td>
-                            <td>1</td>
-                            <td>Compaq</td>
-                            <td>1212-2017</td>
-                            <td>Unidades</td>
-                            <td>4'000.000</td>
-                            <td>4'000.000</td>
-                            <td>0</td>
-                            <td>
-                              <select class="form-control">
-                                <option>0%</option>
-                                <option>16%</option>
-                                <option>19%</option>
-                                <option>20%</option>
-                              </select>
-                            </td>
-                            <td>200.000</td>
-                            <td>4'200.000</td>
-                            <td>
-                              <i class="fas fa-check"></i>
-                            </td>
-                          </tr>
-                          <tr>
-                            <th scope="row"></th>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td>Subtotal</td>
-                            <td>14'400.000</td>
-                            <td></td>
-                          </tr>
-                          <tr>
-                            <th scope="row"></th>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td>IVA</td>
-                            <td>1'080.000</td>
-                            <td></td>
-                          </tr>
-                          <tr>
-                            <th scope="row"></th>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                            <td>Total</td>
-                            <td>15'480.000</td>
-                            <td></td>
-                          </tr>
-                        </tbody>
-                      </table>
-            
-                    </nb-card-body>
-                  </nb-card>
-            </nb-card-body>
-          </nb-card>
-
-        </nb-tab>
-        <nb-tab tabTitle="+">
-
-        </nb-tab>
-      </nb-tabset>
-      <nb-card>
-          <nb-card-body>
-            <table class="table text-center center">
-              <tr>
-                <td class="thead-dark">Gran Subtotal</td>
-                <td>14'000.000</td>
-              </tr>
-              <tr>
-                <td class="thead-dark">Gran Descuentos</td>
-                <td>0</td>
-              </tr>
-              <tr>
-                <td class="thead-dark">Gran IVA</td>
-                <td>1'900.000</td>
-              </tr>
-              <tr>
-                <td class="thead-dark">Gran Total</td>
-                <td>15'900.000</td>
-              </tr>
-            </table>
-  
-          </nb-card-body>
-        </nb-card>
-      
-
-      <nb-card>
-        <nb-card-header>Datos Adicionales</nb-card-header>
-        <nb-card-body>
-
-          <div class="form-group  col-lg-12">
-            <label>Observaciones</label>
-            <div class="input-group">
-              <textarea rows="5" placeholder="Proporciona datos adicionales que no se pueden expresar en el formulario"
-                class="form-control"></textarea>
-            </div>
-          </div>
-
-        </nb-card-body>
-      </nb-card>
-
-      <div class="justify-content-center">
-        <button type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off">
-          Verificar Acta de Recibido
-        </button>
-      </div>
 
     </nb-card-body>
   </nb-card>
+</div>
+<div class="col-lg-12">
+  <form [formGroup]="firstForm" #fform="ngForm" class="step-container" *ngIf="firstForm">
+    <nb-card>
+      <nb-card-header>{{'GLOBAL.Acta_Recibido.VerificacionActa.Title' | translate}}</nb-card-header>
+      <nb-card-body>
+        <nb-card formGroupName="Formulario1">
+          <nb-card-header>{{'GLOBAL.Acta_Recibido.VerificacionActa.DatosTitle' | translate}}</nb-card-header>
+          <nb-card-body>
+            <div class="row">
+              <div class="form-group col-sm">
+                <label>{{'GLOBAL.Acta_Recibido.VerificacionActa.Sede' | translate}}</label>
+                <input class="form-control" formControlName="Sede" readonly>
+              </div>
+              <div class="form-group col-sm">
+                <label>{{'GLOBAL.Acta_Recibido.VerificacionActa.Dependencia' | translate}}</label>
+                <input class="form-control" formControlName="Dependencia" readonly>
+              </div>
+              <div class="form-group col-sm">
+                <label>{{'GLOBAL.Acta_Recibido.VerificacionActa.Ubicacion' | translate}}</label>
+                <input class="form-control" formControlName="Ubicacion" readonly>
+              </div>
+            </div>
+          </nb-card-body>
+        </nb-card>
+        <nb-card formArrayName="Formulario2">
+          <nb-card-header>{{'GLOBAL.Acta_Recibido.VerificacionActa.SoporteTitle' | translate}}</nb-card-header>
+          <nb-card-body>
+            <mat-tab-group [selectedIndex]="selected.value" (selectedIndexChange)="selected.setValue($event)">
+              <mat-tab *ngFor="let soporte of firstForm.get('Formulario2').controls; let i = index" [formGroupName]="i">
+                <ng-template mat-tab-label>
+                  {{'GLOBAL.Acta_Recibido.VerificacionActa.SoporteSubTitle' | translate}} &nbsp; {{i + 1}}
+                </ng-template>
+                <div>
+                  <nb-card>
+                    <nb-card-body>
+                      <div class="row">
+                        <div class="form-group col-sm">
+                          <label>{{'GLOBAL.Acta_Recibido.VerificacionActa.Proveedor' | translate}}</label>
+                          <div class="input-group">
+                            <input type="text" placeholder="NIT o Razón social" class="form-control"
+                              formControlName="Proveedor" readonly>
+                          </div>
+                        </div>
+                        <div class="form-group col-sm">
+                          <label>{{'GLOBAL.Acta_Recibido.VerificacionActa.Consecutivo' | translate}}</label>
+                          <div class="input-group">
+                            <input nbInput type="text" placeholder="Consecutivo" class="form-control"
+                              formControlName="Consecutivo" readonly>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="form-group col-sm">
+                          <label>{{'GLOBAL.Acta_Recibido.VerificacionActa.FechaSoporte' | translate}}</label>
+                          <div class="input-group">
+                            <input nbInput placeholder="Selecciona la Fecha" class="form-control"
+                              [nbDatepicker]="formpicker" formControlName="Fecha_Factura" readonly disabled>
+                            <nb-datepicker #formpicker readonly disabled></nb-datepicker>
+                          </div>
+                        </div>
+                        <div class="form-group col-sm">
+                          <label>{{'GLOBAL.Acta_Recibido.VerificacionActa.Soporte' | translate}}</label>
+                          <nb-card>
+                            <nb-card-body>
+                              <div class="col-sm soporte">
+                                  <button nbButton type="button" (click)="downloadFile(i)">
+                                    <i class="fas fa-eye fa-2x"></i>
+                                  </button>
+                              </div>
+                            </nb-card-body>
+                          </nb-card>
+                        </div>
+                      </div>
+                    </nb-card-body>
+                  </nb-card>
+                  <nb-card>
+                    <nb-card-header>{{'GLOBAL.Acta_Recibido.VerificacionActa.ArticulosRelacionadosTitle' | translate}}
+                    </nb-card-header>
+                    <nb-card-body>
+                      <div class="pre-scrollable">
+                        <ngx-verificacion-elementos [DatosRecibidos]='soporte.get("Elementos").value' [mode]='"multi"' (DatosEnviados)="Verificar_Tabla($event, i)"></ngx-verificacion-elementos>
+                      </div>
+                      
+                    </nb-card-body>
+                  </nb-card>
+                </div>
+              </mat-tab>
+
+            </mat-tab-group>
+          </nb-card-body>
+        </nb-card>
+        <nb-card>
+          <nb-card-header>{{'GLOBAL.Acta_Recibido.VerificacionActa.Consolidado' | translate}}</nb-card-header>
+          <nb-card-body>
+            <table class="table text-center">
+              <tr>
+                <td class="cell-3"></td>
+                <td class="cell-3"></td>
+                <td class="cell-3">{{'GLOBAL.Acta_Recibido.VerificacionActa.Subtotal' | translate}}</td>
+                <td class="cell-3"></td>
+                <td class="cell-3">{{getGranSubtotal() | currency}}</td>
+                <td class="cell-3"></td>
+                <td class="cell-3"></td>
+              </tr>
+              <tr>
+                <td class="cell-3"></td>
+                <td class="cell-3"></td>
+                <td class="cell-3">{{'GLOBAL.Acta_Recibido.VerificacionActa.Descuento' | translate}}</td>
+                <td class="cell-3"></td>
+                <td class="cell-3">{{getGranDescuentos() | currency}}</td>
+                <td class="cell-3"></td>
+                <td class="cell-3"></td>
+              </tr>
+              <tr>
+                <td class="cell-3"></td>
+                <td class="cell-3"></td>
+                <td class="cell-3">{{'GLOBAL.Acta_Recibido.VerificacionActa.ValorIva' | translate}}</td>
+                <td class="cell-3"></td>
+                <td class="cell-3">{{getGranValorIva() | currency}}</td>
+                <td class="cell-3"></td>
+                <td class="cell-3"></td>
+              </tr>
+              <tr>
+                <td class="cell-3"></td>
+                <td class="cell-3"></td>
+                <td class="cell-3">{{'GLOBAL.Acta_Recibido.VerificacionActa.Total' | translate}}</td>
+                <td class="cell-3"></td>
+                <td class="cell-3">{{getGranTotal() | currency}}</td>
+                <td class="cell-3"></td>
+                <td class="cell-3"></td>
+              </tr>
+            </table>
+          </nb-card-body>
+        </nb-card>
+        <nb-card formGroupName="Formulario3">
+          <nb-card-header>{{'GLOBAL.Acta_Recibido.VerificacionActa.DatosAdicionales' | translate}}</nb-card-header>
+          <nb-card-body>
+            <div class="form-group  col-lg-12">
+              <label>{{'GLOBAL.Acta_Recibido.VerificacionActa.Observaciones' | translate}}</label>
+              <div class="input-group">
+                <textarea rows="5"
+                  placeholder="Proporciona datos adicionales que no se pueden expresar en el formulario"
+                  class="form-control" formControlName="Datos_Adicionales" required></textarea>
+              </div>
+            </div>
+          </nb-card-body>
+          <nb-card-footer>
+            <div class="justify-content-center">
+              <button nbButton
+                (click)="Revisar_Totales2()">{{'GLOBAL.Acta_Recibido.VerificacionActa.Rechazar' | translate}}</button>
+              <button nbButton [disabled]="!bandera2" (click)="Revisar_Totales()"
+                class="float-right">{{'GLOBAL.Acta_Recibido.VerificacionActa.Verificar' | translate}}</button>
+            </div>
+          </nb-card-footer>
+        </nb-card>
+      </nb-card-body>
+    </nb-card>
+  </form>
 </div>

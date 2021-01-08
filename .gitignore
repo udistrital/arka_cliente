@@ -5,6 +5,7 @@
 
 # dependencies
 /node_modules
+/ngxGenerator
 
 # IDEs and editors
 /.idea
@@ -14,6 +15,7 @@
 *.launch
 .settings/
 *.sublime-workspace
+tmpnodejsnpm-cache
 
 # IDE - VSCode
 .vscode/*

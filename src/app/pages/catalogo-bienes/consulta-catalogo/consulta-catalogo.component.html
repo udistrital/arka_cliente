@@ -1,0 +1,16 @@
+<nb-card>
+  <nb-card-header>
+    <h1>{{'GLOBAL.consultar_catalogo' | translate}}</h1>
+  </nb-card-header>
+  <nb-card-body>
+
+    <h5>{{'GLOBAL.catalogo' | translate}}</h5>
+    <select class="form-control mb-4" (change)="onChange($event.target.value)">
+      <option disabled selected>{{'GLOBAL.seleccionar' | translate}}...</option>
+      <option *ngFor="let item of catalogos" value="{{ item.Id }}">{{ item.Nombre }}</option>
+    </select>
+
+    <ngx-arbol *ngIf="catalogoId !== 0" [catalogoId]="catalogoId" [updateSignal]="eventChange"></ngx-arbol>
+
+  </nb-card-body>
+</nb-card>

@@ -37,7 +37,6 @@
               "node_modules/nebular-icons/scss/nebular-icons.scss",
               "node_modules/angular-tree-component/dist/angular-tree-component.css",
               "node_modules/pace-js/templates/pace-theme-flash.tmpl.css",
-              "node_modules/leaflet/dist/leaflet.css",
               "src/app/@theme/styles/styles.scss"
             ],
             "scripts": [
@@ -49,7 +48,8 @@
               "node_modules/tinymce/plugins/table/plugin.min.js",
               "node_modules/echarts/dist/echarts.min.js",
               "node_modules/echarts/dist/extension/bmap.min.js",
-              "node_modules/chart.js/dist/Chart.min.js"
+              "node_modules/chart.js/dist/Chart.min.js",
+              "src/app/@core/utils/spagoBIAPI/spagoBISDK/sbisdk-all-production.js"
             ]
           },
           "configurations": {
@@ -67,6 +67,40 @@
                 {
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.prod.ts"
+                }
+              ]
+            },
+            "test": {
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "extractCss": true,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.test.ts"
+                }
+              ]
+            },
+            "dev": {
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "extractCss": true,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.dev.ts"
                 }
               ]
             }
@@ -170,11 +204,8 @@
   "defaultProject": "ngx-admin-demo",
   "schematics": {
     "@schematics/angular:component": {
-      "prefix": "ngx",
       "styleext": "scss"
     },
-    "@schematics/angular:directive": {
-      "prefix": "ngx"
-    }
+    "@schematics/angular:directive": {}
   }
 }

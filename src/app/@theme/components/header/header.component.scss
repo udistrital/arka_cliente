@@ -21,7 +21,6 @@
   .logo-containter {
     display: flex;
     align-items: center;
-    width: calc(#{nb-theme(sidebar-width)} - #{nb-theme(header-padding)});
   }
 
   .control-item {
@@ -31,7 +30,6 @@
   .header-container {
     display: flex;
     align-items: center;
-    width: auto;
 
     .navigation {
       @include nb-ltr(padding-right, nb-theme(padding));
@@ -49,8 +47,6 @@
       padding: 0 nb-theme(padding);
       font-size: 1.75rem;
       font-weight: nb-theme(font-weight-bolder);
-      @include nb-ltr(border-left, 1px solid nb-theme(separator));
-      @include nb-rtl(border-right, 1px solid nb-theme(separator));
       white-space: nowrap;
 
       span {
@@ -204,6 +200,22 @@
     }
   }
 
+  .logo-kronos {
+    height: 45px;
+  }
+  .card-imageContainer {
+    padding-right: 2px;
+    object-fit: cover;
+    border-right: 0.1rem solid #a83121;
+    align-self: center;
+  }
+  .logo-kronos_2 {
+    height: 50px;
+    padding-left: 15px;
+  }
+  .icono {
+    color:  #991c1a;
+  }
   @include media-breakpoint-down(xs) {
     .right /deep/ {
       display: none;

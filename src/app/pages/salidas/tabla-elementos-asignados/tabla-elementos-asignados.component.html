@@ -1,0 +1,42 @@
+<nb-card>
+  <nb-card-header>
+    Registrar Elementos
+  </nb-card-header>
+  <nb-card-body>
+    <mat-tab-group mat-stretch-tabs [selectedIndex]="selected.value" (selectedIndexChange)="selected.setValue($event)">
+      <mat-tab>
+        <ng-template mat-tab-label>
+          Elementos Devolutivos y de Consumo Controlado
+        </ng-template>
+        <ng2-smart-table [settings]="settings" [source]="source" (delete)="onDelete($event)"
+          (rowSelect)="itemselec($event)" (edit)="onEdit($event)" (create)="onCreate($event)"
+          (userRowSelect)="onRowSelect($event)">
+        </ng2-smart-table>
+      </mat-tab>
+      <mat-tab>
+        <ng-template mat-tab-label>
+          Elementos de Consumo
+        </ng-template>
+        <ng2-smart-table [settings]="settings2" [source]="source2">
+        </ng2-smart-table>
+      </mat-tab>
+    </mat-tab-group>
+    <nb-card>
+      <nb-card-body>
+        <div class="form-group  col-lg-12">
+          <label>{{'GLOBAL.Acta_Recibido.EdicionActa.Observaciones' | translate}}</label>
+          <div class="input-group">
+            <textarea rows="5" [(ngModel)]="Observaciones"
+              placeholder="Proporciona datos adicionales que no se pueden expresar en el formulario"
+              class="form-control" required></textarea>
+          </div>
+        </div>
+      </nb-card-body>
+    </nb-card>
+  </nb-card-body>
+  <nb-card-footer>
+    <button nbButton [disabled]="!bandera2" (click)="onSubmit()" class="float-right">Asignar</button>
+  </nb-card-footer>
+</nb-card>
+<ngx-form-elementos-seleccionados *ngIf="formulario" [Datos]="DatosSeleccionados"
+  (DatosEnviados)="AjustarDatos2($event)"></ngx-form-elementos-seleccionados>

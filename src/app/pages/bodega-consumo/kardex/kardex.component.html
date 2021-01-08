@@ -1,0 +1,55 @@
+<div class="col-12 ">
+  <p-table class="table table-striped table-bordered d-flex justify-content-xl-center" [value]="kardex">
+    <ng-template pTemplate="header">
+      <tr>
+        <th class="align-middle" rowspan="2"><strong>Fecha</strong></th>
+        <th class="align-middle" rowspan="2"><strong>Detalle</strong> </th>
+        <!-- <th class="align-middle" colspan="3"><strong>Saldos Iniciales</strong> </th> -->
+        <th class="align-middle" colspan="3"><strong>Entradas</strong> </th>
+        <th class="align-middle" colspan="3"><strong>Salidas</strong> </th>
+        <th class="align-middle" colspan="3"><strong>Saldo</strong></th>
+
+      </tr>
+      <tr>
+        <th>Unidades</th>
+        <th>V. Unitario</th>
+        <th>V. Total</th>
+
+        <th>Unidades</th>
+        <th>V. Unitario</th>
+        <th>V. Total</th>
+
+        <th>Unidades</th>
+        <th>V. Unitario</th>
+        <th>V. Total</th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-kardex>
+      <tr>
+        <td class="align-middle">{{kardex.FechaCreacion | date : 'shortDate'}}</td>
+        <td class="align-middle">{{kardex.MovimientoId.Observacion}}</td>
+        <!-- <td class="align-middle">{{kardex.saldoInicialUnidad}}</td>
+              <td class="align-middle">{{kardex.saldoInicialVUnitario}}</td>
+              <td class="align-middle">{{kardex.saldoInicialVTotal}}</td> -->
+        <td class="align-middle">{{kardex.Unidad_E }}</td>
+        <td class="align-middle">{{kardex.ValorUnitario_E | currencycustom }}</td>
+        <td class="align-middle">{{kardex.ValorTotal_E | currencycustom }}</td>
+        <td class="align-middle">{{kardex.Unidad_S}}</td>
+        <td class="align-middle">{{kardex.ValorUnitario_S | currencycustom }}</td>
+        <td class="align-middle">{{kardex.ValorTotal_S | currencycustom }}</td>
+        <td class="align-middle">{{kardex.SaldoCantidad}}</td>
+        <td class="align-middle">{{kardex.SaldoValorUnitario | currencycustom }}</td>
+        <td class="align-middle">{{kardex.SaldoValor | currencycustom }}</td>
+
+      </tr>
+    </ng-template>
+    <!-- <ng-template pTemplate="footer">
+            <tr>
+              <td><strong> 01/01/2020</strong></td>
+              <td class="text-center" colspan="10"><strong>Inventario Final</strong></td>
+              <td><strong>$506,202</strong></td>
+              <td><strong>$531,020</strong></td>
+            </tr>
+          </ng-template> -->
+  </p-table>
+</div>

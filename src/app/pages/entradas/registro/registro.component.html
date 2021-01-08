@@ -1,32 +1,36 @@
 <div class="col-lg-12">
   <nb-card>
-    <nb-card-header>Registrar Entrada</nb-card-header>
+    <nb-card-header>
+      <h1>{{'GLOBAL.registrar_entrada' | translate}}</h1>
+    </nb-card-header>
     <nb-card-body>
 
-      <nb-card>
-        <nb-card-header>Tipo Entrada</nb-card-header>
-        <nb-card-body>
+      <p class="h4 pb-4" *ngIf="actaSeleccionada === ''">{{'GLOBAL.mensaje_registrar_entrada' | translate}}</p>
 
-          <div class="form-group col-sm">
-            <select class="form-control" [(ngModel)]="opcionEntrada">
-              <option>Adquisición</option>
-              <option>Reposición</option>
-              <option>Elaboración Propia</option>
-              <option>Donación</option>
-              <option>Sobrante de Inventario</option>
-              <option>Terceros</option>
-            </select>
-          </div>
+      <ng2-smart-table [settings]="settings" [source]="source" (custom)="onCustom($event)"
+        *ngIf="actaSeleccionada === ''"></ng2-smart-table>
 
-        </nb-card-body>
-      </nb-card>
+      <p class="h4 pb-4" *ngIf="actaSeleccionada != ''">{{'GLOBAL.mensaje_seleccionar_entrada' | translate}}</p>
 
-      <ngx-adquisicion *ngIf="opcionEntrada==='Adquisición'"></ngx-adquisicion>
-      <ngx-reposicion *ngIf="opcionEntrada==='Reposición'"></ngx-reposicion>
-      <ngx-elaboracion-propia *ngIf="opcionEntrada==='Elaboración Propia'"></ngx-elaboracion-propia>
-      <ngx-donacion *ngIf="opcionEntrada==='Donación'"></ngx-donacion>
-      <ngx-sobrante *ngIf="opcionEntrada==='Sobrante de Inventario'"></ngx-sobrante>
-      <ngx-terceros *ngIf="opcionEntrada==='Terceros'"></ngx-terceros>
+      <h5 *ngIf="actaSeleccionada != ''">{{'GLOBAL.tipo_entrada' | translate}}</h5>
+
+      <select class="form-control mb-4" [(ngModel)]="opcionEntrada" *ngIf="actaSeleccionada != ''">
+        <option>Adquisición</option>
+        <option>Reposición</option>
+        <option>Elaboración Propia</option>
+        <option>Donación</option>
+        <option>Sobrante de Inventario</option>
+        <option>Terceros</option>
+      </select>
+
+      <ngx-adquisicion *ngIf="opcionEntrada === 'Adquisición'" [actaRecibidoId]="actaSeleccionada"></ngx-adquisicion>
+      <ngx-reposicion *ngIf="opcionEntrada === 'Reposición'" [actaRecibidoId]="actaSeleccionada"></ngx-reposicion>
+      <ngx-elaboracion-propia *ngIf="opcionEntrada === 'Elaboración Propia'" [actaRecibidoId]="actaSeleccionada">
+      </ngx-elaboracion-propia>
+      <ngx-donacion *ngIf="opcionEntrada === 'Donación'" [actaRecibidoId]="actaSeleccionada"></ngx-donacion>
+      <ngx-sobrante *ngIf="opcionEntrada === 'Sobrante de Inventario'" [actaRecibidoId]="actaSeleccionada">
+      </ngx-sobrante>
+      <ngx-terceros *ngIf="opcionEntrada === 'Terceros'" [actaRecibidoId]="actaSeleccionada"></ngx-terceros>
 
     </nb-card-body>
   </nb-card>

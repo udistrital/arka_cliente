@@ -1,230 +1,129 @@
-<nb-card>
-  <nb-card-header>Entrada por Reposición</nb-card-header>
-  <nb-card-body>
+<h3 class="pt-4 pb-2">{{'GLOBAL.entrada_reposicion' | translate}}</h3>
+<p class="font-weight-bold font-italic pb-2">{{'GLOBAL.acta_recibido' | translate}} # {{ actaRecibidoId }}</p>
 
-    <nb-card>
-      <nb-card-header>Consultar Acta de Recibido</nb-card-header>
-      <nb-card-body>
+<!-- FORMULARIO -->
+<nb-stepper #stepper orientation="horizontal">
 
+  <!-- DATOS DE ELEMENTO HURTADO -->
+  <nb-step [stepControl]="elementoForm" label="Elemento">
+    <h5>Elemento</h5>
+    <form [formGroup]="elementoForm" (ngSubmit)="onElementoSubmit()" class="step-container">
+      <div class="row">
+        <div class="form-group col-sm">
+          <label>Placa Hurtada</label>
+          <div class="input-group">
+            <input type="text" placeholder="Placa Elemento Hurtado" class="form-control" formControlName="elementoCtrl" (input)="changePlacaElemento($event)"
+              [ngClass]="{'form-control-danger': elementoForm.invalid && (elementoForm.dirty || elementoForm.touched)}" list="elementosList" 
+              />
+          </div>
+          <datalist id="elementosList">  
+            <option value="sleccione un valor" selected disabled></option>          
+            <option *ngFor="let item of elementos" value='{{ item }}'></option>
+          </datalist>
+        </div>
+        <div class="form-group col-sm">
+          <label>Encargado</label>
+          <div class="input-group">
+            <input nbInput type="text" placeholder="{{'GLOBAL.asignacion' | translate}}" class="form-control"
+              formControlName="encargadoCtrl"  [readonly]="true" value="{{ encargado }}"
+              />             
+          </div>
+        </div>
+      </div>
+      <button type="button" (click)="onElementoSubmit()" nbButton
+      nbStepperNext>{{'GLOBAL.siguiente' | translate}}</button>
+    </form>
+  </nb-step>
+
+  <!-- FACTURA -->
+  <nb-step [stepControl]="facturaForm" label="{{'GLOBAL.factura' | translate}}">
+      <form [formGroup]="facturaForm" class="step-container">
+        <h5>{{'GLOBAL.factura' | translate}}</h5>
         <div class="row">
           <div class="form-group col-sm">
-            <label>Número de Acta</label>
-            <select class="form-control">
-              <option>1234</option>
-              <option>5678</option>
-              <option>9012</option>
-            </select>
-          </div>
-          <div class="form-group col-sm">
-            <label>NIT y/o Proveedor</label>
+            <label>{{'GLOBAL.numero_factura' | translate}}</label>
             <div class="input-group">
-              <input type="text" placeholder="NIT y/o Proveedor" class="form-control" />
+              <select class="form-control" (change)="changeSelectSoporte($event)">
+                <option disabled selected>{{'GLOBAL.seleccionar' | translate}}...</option>
+                <option *ngFor="let item of soportes" value="{{ item.Id }}">{{ item.Consecutivo }}</option>
+              </select>
             </div>
           </div>
           <div class="form-group col-sm">
-            <label>Fecha de Registro</label>
+            <label>{{'GLOBAL.proveedor' | translate}}</label>
             <div class="input-group">
-              <input nbInput placeholder="Selecciona la Fecha" class="form-control" [nbDatepicker]="formpicker">
-              <nb-datepicker #formpicker></nb-datepicker>
+              <input nbInput type="text" shape="semi-round" placeholder="{{'GLOBAL.razon_social' | translate}}"
+                class="form-control" value="{{proveedor}}" [readonly]="true" />
+            </div>
+          </div>
+          <div class="form-group col-sm">
+            <label>{{'GLOBAL.fecha_factura' | translate}}</label>
+            <div class="input-group">
+              <input nbInput type="text" shape="semi-round" placeholder="{{'GLOBAL.fecha_factura' | translate}}"
+                class="form-control" value="{{ fechaFactura }}" [readonly]="true">
             </div>
           </div>
         </div>
-
-      </nb-card-body>
-    </nb-card>
-
-    <nb-card>
-      <nb-card-header>Elemento</nb-card-header>
-      <nb-card-body>
-
         <div class="row">
           <div class="form-group col-sm">
-            <label>Placa Hurtada</label>
+            <label>{{'GLOBAL.importacion' | translate}}</label>
             <div class="input-group">
-              <input type="text" placeholder="NIT y/o Proveedor" class="form-control" />
+              <nb-checkbox status="success" (change)="changeCheck()"></nb-checkbox>
             </div>
-          </div>
-          <div class="form-group col-sm">
-            <label>Encargado</label>
-            <div class="input-group">
-              <input type="text" placeholder="Digite al menos 3 carácteres de búsqueda" class="form-control" />
-            </div>
-          </div>
-          <div class="form-group col-sm">
-            <label>Oficio de Reposición</label>
-            <input nbInput type="file" class="form-control-file" id="soporte">
           </div>
         </div>
-
-      </nb-card-body>
-    </nb-card>
-
-    <nb-card>
-      <nb-card-header>Datos Elemento</nb-card-header>
-      <nb-card-body>
-
-        <table class="table text-center">
-          <thead class="thead-dark">
-            <tr>
-              <th scope="col">#</th>
-              <th scope="col">Tipo de Bien</th>
-              <th scope="col">Subgrupo</th>
-              <th scope="col">Descripcion</th>
-              <th scope="col">Cantidad</th>
-              <th scope="col">Marca</th>
-              <th scope="col">Serie</th>
-              <th scope="col">Unidad de Medida</th>
-              <th scope="col">Valor Unitario</th>
-              <th scope="col">Valor por Cantidad</th>
-              <th scope="col">Descuento</th>
-              <th scope="col"> % IVA</th>
-              <th scope="col">Valor IVA</th>
-              <th scope="col">Valor Total</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <th scope="row">1</th>
-              <td>Consumo Controlado</td>
-              <td>235-Equipo y Maquinaria</td>
-              <td>Computador HP</td>
-              <td>1</td>
-              <td>Compaq</td>
-              <td>1212-2017</td>
-              <td>Unidades</td>
-              <td>4'000.000</td>
-              <td>4'000.000</td>
-              <td>0</td>
-              <td>10%</td>
-              <td>200.000</td>
-              <td>4'200.000</td>
-            </tr>
-            <tr>
-              <th scope="row">2</th>
-              <td>Consumo Controlado</td>
-              <td>235-Equipo y Maquinaria</td>
-              <td>Computador HP</td>
-              <td>1</td>
-              <td>Compaq</td>
-              <td>1212-2017</td>
-              <td>Unidades</td>
-              <td>4'000.000</td>
-              <td>4'000.000</td>
-              <td>0</td>
-              <td>10%</td>
-              <td>200.000</td>
-              <td>4'200.000</td>
-            </tr>
-            <tr>
-              <th scope="row">3</th>
-              <td>Consumo Controlado</td>
-              <td>235-Equipo y Maquinaria</td>
-              <td>Computador HP</td>
-              <td>1</td>
-              <td>Compaq</td>
-              <td>1212-2017</td>
-              <td>Unidades</td>
-              <td>4'000.000</td>
-              <td>4'000.000</td>
-              <td>0</td>
-              <td>10%</td>
-              <td>200.000</td>
-              <td>4'200.000</td>
-            </tr>
-            <tr>
-              <th scope="row">4</th>
-              <td>Consumo Controlado</td>
-              <td>235-Equipo y Maquinaria</td>
-              <td>Computador HP</td>
-              <td>1</td>
-              <td>Compaq</td>
-              <td>1212-2017</td>
-              <td>Unidades</td>
-              <td>4'000.000</td>
-              <td>4'000.000</td>
-              <td>0</td>
-              <td>10%</td>
-              <td>200.000</td>
-              <td>4'200.000</td>
-            </tr>
-            <tr>
-              <th scope="row"></th>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td>Subtotal</td>
-              <td>14'400.000</td>
-              <td></td>
-            </tr>
-            <tr>
-              <th scope="row"></th>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td>IVA</td>
-              <td>1'080.000</td>
-              <td></td>
-            </tr>
-            <tr>
-              <th scope="row"></th>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td>Total</td>
-              <td>15'480.000</td>
-              <td></td>
-            </tr>
-          </tbody>
-        </table>
-
-        <nb-card>
-          <nb-card-header>Observaciones</nb-card-header>
-          <nb-card-body>
-
-            <div class="row">
-              <div class="form-group  col-lg-12">
-                <div class="input-group">
-                  <textarea rows="5" placeholder="Observaciones" class="form-control"></textarea>
-                </div>
-              </div>
-            </div>
-
-          </nb-card-body>
-        </nb-card>
-
-      </nb-card-body>
-    </nb-card>
-
-    <div class="justify-content-center">
-      <button type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off">
-        Registrar Entrada
-      </button>
+        <button nbButton nbStepperPrevious>{{'GLOBAL.anterior' | translate}}</button>
+        <button type="button" nbButton nbStepperNext>{{'GLOBAL.siguiente' | translate}}</button>
+      </form>
+    </nb-step>
+  
+  <!-- SOPORTE -->
+  <nb-step [stepControl]="soporteForm" label="Soporte">
+      <h5>{{'GLOBAL.soporte' | translate}}</h5>
+      <form [formGroup]="soporteForm" class="step-container">
+        <div class="pb-3">
+          <label>Oficio de Reposición</label>
+          <input nbInput type="file" class="form-control-file" #file id="soporte" formControlName="soporteCtrl"
+            [ngClass]="{'form-control-danger': soporteForm.invalid && (soporteForm.dirty || soporteForm.touched)}"
+            (change)="getSoporte($event)" accept=".pdf" data-max-size="5120"
+            >
+        </div>
+        <button nbButton nbStepperPrevious>{{'GLOBAL.anterior' | translate}}</button>
+        <button (click)="onSoporteSubmit()" nbButton nbStepperNext>{{'GLOBAL.siguiente' | translate}}</button>
+      </form>
+      
+    </nb-step>
+  <!-- OBSERVACIONES -->
+  <nb-step [stepControl]="observacionForm" label="Observaciones">
+    <h5>Observaciones</h5>
+    <div class="row">
+      <div class="form-group  col-lg-12">
+        <div class="input-group">
+          <textarea rows="5" placeholder="Observaciones" class="form-control"></textarea>
+        </div>
+      </div>
     </div>
+    <button nbButton nbStepperPrevious>Anterior</button>
+    <button nbButton nbStepperNext>Siguiente</button>
+  </nb-step>
 
+   <!-- FINALIZAR -->
+   <nb-step [hidden]="true">
+      <div class="step-container d-flex justify-content-center">
+        <h3>{{'GLOBAL.datos_correctos' | translate}}!</h3>
+      </div>
+      <div class="step-container d-flex justify-content-center">
+        <p>{{'GLOBAL.mensaje_registrar' | translate}}</p>
+      </div>
+    </nb-step>
+</nb-stepper>
 
-  </nb-card-body>
-</nb-card>
+<h5 class="pt-4">{{'GLOBAL.elementos_entrada' | translate}}</h5>
+<ngx-tabla-entradas [actaRecibidoId]="actaRecibidoId"></ngx-tabla-entradas>
+
+<div class="justify-content-center float-right pt-4">
+  <button type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off"
+    [disabled]="!validar" (click)="onSubmit()">
+    {{'GLOBAL.registrar_entrada' | translate}}
+  </button>
+</div>

@@ -1,218 +1,99 @@
-<nb-card>
-  <nb-card-header>Entrada por Sobrante de Inventario</nb-card-header>
-  <nb-card-body>
+<h3 class="pt-4 pb-4">Entrada por Sobrante de Inventario</h3>
+<p class="font-weight-bold font-italic pb-2">Acta de recibido # {{ actaRecibidoId }}</p>
 
-    <nb-card>
-      <nb-card-header>Consultar Acta de Recibido</nb-card-header>
-      <nb-card-body>
+<!-- FORMULARIO -->
+<nb-stepper #stepper orientation="horizontal">
 
-        <div class="row">
-          <div class="form-group col-sm">
-            <label>Número de Acta</label>
-            <select class="form-control">
-              <option>1234</option>
-              <option>5678</option>
-              <option>9012</option>
-            </select>
-          </div>
-          <div class="form-group col-sm">
-            <label>Fecha de Registro</label>
-            <div class="input-group">
-              <input nbInput placeholder="Selecciona la Fecha" class="form-control" [nbDatepicker]="formpicker">
-              <nb-datepicker #formpicker></nb-datepicker>
-            </div>
+  <!-- SOLICITANTE -->
+  <nb-step [stepControl]="solicitanteForm" label="{{'GLOBAL.solicitante' | translate}}">
+    <h5>{{'GLOBAL.solicitante' | translate}}</h5>
+    <form [formGroup]="solicitanteForm" class="step-container">
+      <div class="row">
+        <div class="form-group col-sm">
+          <label>{{'GLOBAL.vigencia' | translate}}</label>
+          <div class="input-group">
+            <input nbInput shape="semi-round" placeholder="{{'GLOBAL.placeholder_fecha' | translate}}"
+              formControlName="fechaCtrl" class="form-control" [nbDatepicker]="formpicker" required>
+            <nb-datepicker (dateChange)="changeSolicitante($event)" #formpicker></nb-datepicker>
           </div>
         </div>
-
-      </nb-card-body>
-    </nb-card>
-
-    <nb-card>
-      <nb-card-header>Solicitante</nb-card-header>
-      <nb-card-body>
-
-        <div class="row">
-          <div class="form-group col-sm">
-            <label>Nombres y Apellidos</label>
-            <div class="input-group">
-              <input type="text" placeholder="Digite al menos 3 carácteres de búsqueda" class="form-control" />
-            </div>
-          </div>
-          <div class="form-group col-lg-4">
-            <label>Acta de Oficio</label>
-            <input nbInput type="file" class="form-control-file" id="soporte">
+        <div class="form-group col-sm">
+          <label>{{'GLOBAL.ordenador_gasto' | translate}}</label>
+          <div class="input-group">
+            <input nbInput (change)="changeOrdenador()" type="text" shape="semi-round"
+              placeholder="{{'GLOBAL.ordenador_gasto' | translate}}" class="form-control"
+              [readonly]="!solicitanteSelect" list="solicitanteList" formControlName="solicitanteCtrl"
+              [ngClass]="{'form-control-danger': solicitanteForm.invalid && (solicitanteForm.dirty || solicitanteForm.touched)}" />
           </div>
         </div>
+        <datalist id="solicitanteList">
+          <option *ngFor="let item of ordenadores" value='{{ item.NombreOrdenador }}'></option>
+        </datalist>
+        <div class="form-group col-sm">
+          <label>{{'GLOBAL.asignacion' | translate}}</label>
+          <div class="input-group">
+            <input nbInput shape="semi-round" type="text" placeholder="{{'GLOBAL.asignacion' | translate}}"
+              value="{{ cargoOrdenador }}" class="form-control" [readonly]="true" />
+          </div>
+        </div>
+      </div>
+      <button type="button" (click)="onSolicitanteSubmit()" nbButton
+        nbStepperNext>{{'GLOBAL.siguiente' | translate}}</button>
+    </form>
+  </nb-step>
 
-      </nb-card-body>
-    </nb-card>
+  <!-- SOPORTE -->
+  <nb-step [stepControl]="soporteForm" label="{{'GLOBAL.soporte' | translate}}">
+    <h5>{{'GLOBAL.soporte' | translate}}</h5>
+    <form [formGroup]="soporteForm" class="step-container">
+      <div class="pb-3">
+        <label>{{'GLOBAL.acta_produccion' | translate}}</label>
+        <input nbInput type="file" class="form-control-file" id="soporte" formControlName="soporteCtrl"
+          [ngClass]="{'form-control-danger': soporteForm.invalid && (soporteForm.dirty || soporteForm.touched)}"
+          (change)="getSoporte($event)" accept="application/pdf" data-max-size="5120">
+      </div>
+      <button nbButton nbStepperPrevious>{{'GLOBAL.anterior' | translate}}</button>
+      <button type="button" (click)="onSoporteSubmit()" nbButton
+        nbStepperNext>{{'GLOBAL.siguiente' | translate}}</button>
+    </form>
+  </nb-step>
 
-    <nb-card>
-      <nb-card-header>Datos Elemento</nb-card-header>
-      <nb-card-body>
+  <!-- OBSERVACIONES -->
+  <nb-step [stepControl]="observacionForm" label="{{'GLOBAL.observaciones' | translate}}">
+    <form [formGroup]="observacionForm" class="step-container">
+      <h5>{{'GLOBAL.observaciones' | translate}}</h5>
+      <div class="row">
+        <div class="form-group  col-lg-12">
+          <div class="input-group">
+            <textarea rows="5" shape="semi-round" placeholder="{{'GLOBAL.observaciones' | translate}}"
+              class="form-control" formControlName="observacionCtrl"></textarea>
+          </div>
+        </div>
+      </div>
+      <button nbButton nbStepperPrevious>{{'GLOBAL.anterior' | translate}}</button>
+      <button type="button" (click)="onObservacionSubmit()" nbButton
+        nbStepperNext>{{'GLOBAL.siguiente' | translate}}</button>
+    </form>
+  </nb-step>
 
-        <table class="table text-center">
-          <thead class="thead-dark">
-            <tr>
-              <th scope="col">#</th>
-              <th scope="col">Tipo de Bien</th>
-              <th scope="col">Subgrupo</th>
-              <th scope="col">Descripcion</th>
-              <th scope="col">Cantidad</th>
-              <th scope="col">Marca</th>
-              <th scope="col">Serie</th>
-              <th scope="col">Unidad de Medida</th>
-              <th scope="col">Valor Unitario</th>
-              <th scope="col">Valor por Cantidad</th>
-              <th scope="col">Descuento</th>
-              <th scope="col"> % IVA</th>
-              <th scope="col">Valor IVA</th>
-              <th scope="col">Valor Total</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <th scope="row">1</th>
-              <td>Consumo Controlado</td>
-              <td>235-Equipo y Maquinaria</td>
-              <td>Computador HP</td>
-              <td>1</td>
-              <td>Compaq</td>
-              <td>1212-2017</td>
-              <td>Unidades</td>
-              <td>4'000.000</td>
-              <td>4'000.000</td>
-              <td>0</td>
-              <td>10%</td>
-              <td>200.000</td>
-              <td>4'200.000</td>
-            </tr>
-            <tr>
-              <th scope="row">2</th>
-              <td>Consumo Controlado</td>
-              <td>235-Equipo y Maquinaria</td>
-              <td>Computador HP</td>
-              <td>1</td>
-              <td>Compaq</td>
-              <td>1212-2017</td>
-              <td>Unidades</td>
-              <td>4'000.000</td>
-              <td>4'000.000</td>
-              <td>0</td>
-              <td>10%</td>
-              <td>200.000</td>
-              <td>4'200.000</td>
-            </tr>
-            <tr>
-              <th scope="row">3</th>
-              <td>Consumo Controlado</td>
-              <td>235-Equipo y Maquinaria</td>
-              <td>Computador HP</td>
-              <td>1</td>
-              <td>Compaq</td>
-              <td>1212-2017</td>
-              <td>Unidades</td>
-              <td>4'000.000</td>
-              <td>4'000.000</td>
-              <td>0</td>
-              <td>10%</td>
-              <td>200.000</td>
-              <td>4'200.000</td>
-            </tr>
-            <tr>
-              <th scope="row">4</th>
-              <td>Consumo Controlado</td>
-              <td>235-Equipo y Maquinaria</td>
-              <td>Computador HP</td>
-              <td>1</td>
-              <td>Compaq</td>
-              <td>1212-2017</td>
-              <td>Unidades</td>
-              <td>4'000.000</td>
-              <td>4'000.000</td>
-              <td>0</td>
-              <td>10%</td>
-              <td>200.000</td>
-              <td>4'200.000</td>
-            </tr>
-            <tr>
-              <th scope="row"></th>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td>Subtotal</td>
-              <td>14'400.000</td>
-              <td></td>
-            </tr>
-            <tr>
-              <th scope="row"></th>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td>IVA</td>
-              <td>1'080.000</td>
-              <td></td>
-            </tr>
-            <tr>
-              <th scope="row"></th>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td></td>
-              <td>Total</td>
-              <td>15'480.000</td>
-              <td></td>
-            </tr>
-          </tbody>
-        </table>
-
-        <nb-card>
-          <nb-card-header>Observaciones</nb-card-header>
-          <nb-card-body>
-
-            <div class="row">
-              <div class="form-group  col-lg-12">
-                <div class="input-group">
-                  <textarea rows="5" placeholder="Observaciones" class="form-control"></textarea>
-                </div>
-              </div>
-            </div>
-
-          </nb-card-body>
-        </nb-card>
-
-      </nb-card-body>
-    </nb-card>
-
-    <div class="justify-content-center">
-      <button type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off">
-        Registrar Entrada
-      </button>
+  <!-- FINALIZAR -->
+  <nb-step [hidden]="true">
+    <div class="step-container d-flex justify-content-center">
+      <h3>{{'GLOBAL.datos_correctos' | translate}}!</h3>
     </div>
+    <div class="step-container d-flex justify-content-center">
+      <p>{{'GLOBAL.mensaje_registrar' | translate}}</p>
+    </div>
+  </nb-step>
 
+</nb-stepper>
 
-  </nb-card-body>
-</nb-card>
+<h5 class="pt-4">{{'GLOBAL.elementos_entrada' | translate}}</h5>
+<ngx-tabla-entradas [actaRecibidoId]="actaRecibidoId"></ngx-tabla-entradas>
+
+<div class="justify-content-center float-right pt-4">
+  <button type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off"
+    [disabled]="!validar" (click)="onSubmit()">
+    {{'GLOBAL.registrar_entrada' | translate}}
+  </button>
+</div>

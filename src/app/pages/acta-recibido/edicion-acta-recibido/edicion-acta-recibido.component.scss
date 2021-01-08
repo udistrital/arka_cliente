@@ -1,0 +1,51 @@
+:host /deep/ ng2-st-tbody-edit-delete {
+    display: flex !important;
+    height: 0 !important;
+  }
+  
+  :host /deep/ ng2-st-tbody-custom a.ng2-smart-action.ng2-smart-action-custom-custom {
+    display: inline-block;
+    width: 30px;
+    text-align: center;
+    font-size: 1.1em;
+  }
+  
+  :host /deep/ ng2-st-tbody-custom a.ng2-smart-action.ng2-smart-action-custom-custom:hover {
+    color: #5dcfe3;
+  }
+  :host /deep/ .material-icons {
+    font-family: 'Material Icons' !important;
+  }
+  .example-container {
+    height: 400px;
+    overflow: auto;
+  }
+  .cell {
+    height: 50px;
+    width: 150px;
+    text-align: right;
+  }
+  .cell-2 {
+    height: 50px;
+    width: 150px;
+    text-align: left;
+  }
+  .cell-3 {
+    height: 40px;
+    width: 150px;
+    text-align: right;
+  }
+  table {
+    width: 100%;
+    text-align: center;
+  }
+  .campo {
+    color:#a61e1c;
+    text-decoration-color: #a61e1c;
+    text-decoration-line: underline;
+  }
+  .soporte {
+    float: none;
+    text-align: center;
+  }
+  

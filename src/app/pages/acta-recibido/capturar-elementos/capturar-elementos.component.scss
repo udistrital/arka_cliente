@@ -1,0 +1,85 @@
+.filter {
+  width: 100%;
+}
+.mat-form-field {
+  font-size: 14px;
+  width: 100%;
+}
+
+:host /deep/ ng2-st-tbody-edit-delete {
+  display: flex !important;
+  height: 0 !important;
+}
+
+:host /deep/ ng2-st-tbody-custom a.ng2-smart-action.ng2-smart-action-custom-custom {
+  display: inline-block;
+  width: 30px;
+  text-align: center;
+  font-size: 1.1em;
+}
+
+:host /deep/ ng2-st-tbody-custom a.ng2-smart-action.ng2-smart-action-custom-custom:hover {
+  color: #5dcfe3;
+}
+:host /deep/ .material-icons {
+  font-family: "Material Icons" !important;
+}
+.example-container {
+  height: 400px;
+  overflow: auto;
+}
+.cell {
+  height: 50px;
+  width: 150px;
+  text-align: left;
+}
+.bla {
+  scrollbar-width: 1rem;
+}
+.cell-2 {
+  height: 50px;
+  width: 150px;
+  text-align: right;
+}
+table {
+  width: 100%;
+  text-align: center;
+}
+th,
+td {
+  width: 160px;
+  text-align: right;
+}
+tr.mat-footer-row {
+  font-weight: bold;
+}
+
+.mat-table-sticky {
+  border-top: 1px solid #e0e0e0;
+}
+.card-2 {
+
+    display: flex;
+    width: center;
+  }
+.card-2 {
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.soporte {
+  float: none;
+  text-align: center;
+}
+
+/* Desactivar seleccion de texto */
+.noselect {
+  -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Old versions of Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome, Edge, Opera and Firefox */
+}

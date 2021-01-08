@@ -6,7 +6,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class EntradasComponent implements OnInit {
 
-  opcionEntrada: any;
+  opcionEntrada: string;
 
   constructor() { }
 
