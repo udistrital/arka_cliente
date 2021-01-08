@@ -58,21 +58,17 @@ export class CrudSubgrupoComponent implements OnInit, AfterViewInit {
     // });
     // console.log({'campos requeridos':this.campos_detalle_requeridos});
 
-    this.formSubgrupo = FORM_SUBGRUPO;
     this.construirForm();
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
-    this.construirForm();
+      this.construirForm();
     });
     this.loadOptionsCatalogo();
   }
 
   construirForm() {
-    // TODO: Actualizar dinamicamente este texto segun el nivel:
-    this.formSubgrupo.titulo = this.translate.instant('GLOBAL.subgrupo.segmento.nombre');
+    this.formSubgrupo = FORM_SUBGRUPO;
     this.formSubgrupo.btn = this.translate.instant('GLOBAL.guardar');
-
     for (let i = 0; i < this.formSubgrupo.campos.length; i++) {
-      // TODO: Ocultar dinamicamente alguno de estos campos segun el nivel:
       this.formSubgrupo.campos[i].label = this.translate.instant('GLOBAL.' + this.formSubgrupo.campos[i].label_i18n);
       this.formSubgrupo.campos[i].placeholder = this.translate.instant('GLOBAL.placeholder_' + this.formSubgrupo.campos[i].label_i18n);
     }

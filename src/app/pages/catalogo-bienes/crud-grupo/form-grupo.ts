@@ -1,5 +1,5 @@
 
-export let FORM_GRUPO = {
+export const FORM_GRUPO = {
     titulo: 'Grupo',
     tipo_formulario: 'mini',
     btn: 'Guardar',
