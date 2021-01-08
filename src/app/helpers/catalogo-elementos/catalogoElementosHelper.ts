@@ -731,7 +731,7 @@ export class CatalogoElementosHelper {
     public getClasesTipoBien(TipoBienId) {
         this.rqManager.setPath('CATALOGO_ELEMENTOS_SERVICE');
         // return this.rqManager.get('subgrupo?query=TipoNivelId.Id:4&fields=Id,Nombre,Codigo,Activo&limit=-1').pipe(
-        return this.rqManager.get('detalle_subgrupo?query=TipoBienId.Id:'+TipoBienId+'&fields=SubgrupoId,TipoBienId&limit=-1').pipe(
+        return this.rqManager.get('detalle_subgrupo?query=TipoBienId.Id:' + TipoBienId + '&fields=SubgrupoId,TipoBienId&limit=-1').pipe(
             map(
                 (res) => {
                     if (res === 'error') {

@@ -40,7 +40,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
   Sedes: any;
   Dependencias: any;
   ConsumoControlado: any;
-  Clases:any;
+  Clases: any;
   Devolutivo: any;
   DatosSeleccionados: any;
   formulario: boolean;
@@ -440,15 +440,15 @@ export class TablaElementosAsignadosComponent implements OnInit {
         elemento.Ubicacion = null;
         // console.log({Consumo:this.Consumo, ConsumoCon:this.ConsumoControlado});
         if (datos[index].TipoBienId.Id === 1 && Object.keys(this.Consumo[0]).length !== 0) {
-          elemento.SubgrupoCatalogoId = this.Consumo.find(x => x.SubgrupoId.Id === datos[index].SubgrupoCatalogoId).SubgrupoId.Id;
+          elemento.SubgrupoCatalogoId = this.Consumo.find(x => x.SubgrupoId.Id === datos[index].SubgrupoCatalogoId).SubgrupoId;
         }
         if (datos[index].TipoBienId.Id === 2 && Object.keys(this.ConsumoControlado[0]).length !== 0) {
-          elemento.SubgrupoCatalogoId = this.ConsumoControlado.find(x => x.SubgrupoId.Id === datos[index].SubgrupoCatalogoId).SubgrupoId.Id;
+          elemento.SubgrupoCatalogoId = this.ConsumoControlado.find(x => x.SubgrupoId.Id === datos[index].SubgrupoCatalogoId).SubgrupoId;
         }
         if (datos[index].TipoBienId.Id === 3 && Object.keys(this.Devolutivo[0]).length !== 0) {
           elemento.SubgrupoCatalogoId = this.Devolutivo.find(x => x.Id === datos[index].SubgrupoCatalogoId);
         }
-        //console.log(elemento);
+        // console.log(elemento);
         if (datos[index].TipoBienId.Id === 1) {
           this.DatosConsumo.push(elemento);
         } else {
@@ -470,6 +470,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
         this.bandera2 = true;
       }
       this.source.load(this.Datos);
+      // console.log(this.source)
     }
   }
   AjustarDatos2(datos: any[]) {
@@ -509,15 +510,15 @@ export class TablaElementosAsignadosComponent implements OnInit {
           }
         }
         if (datos[index].TipoBienId.Id === 1 && Object.keys(this.Consumo[0]).length !== 0) {
-          elemento.SubgrupoCatalogoId = this.Consumo.find(x => x.SubgrupoId.Id === datos[index].SubgrupoCatalogoId).SubgrupoId.Id;
+          elemento.SubgrupoCatalogoId = this.Consumo.find(x => x.SubgrupoId.Id === datos[index].SubgrupoCatalogoId).SubgrupoId;
         }
         if (datos[index].TipoBienId.Id === 2 && Object.keys(this.ConsumoControlado[0]).length !== 0) {
-          elemento.SubgrupoCatalogoId = this.ConsumoControlado.find(x => x.SubgrupoId.Id === datos[index].SubgrupoCatalogoId).SubgrupoId.Id;
+          elemento.SubgrupoCatalogoId = this.ConsumoControlado.find(x => x.SubgrupoId.Id === datos[index].SubgrupoCatalogoId).SubgrupoId;
         }
         if (datos[index].TipoBienId.Id === 3 && Object.keys(this.Devolutivo[0]).length !== 0) {
           elemento.SubgrupoCatalogoId = this.Devolutivo.find(x => x.Id === datos[index].SubgrupoCatalogoId);
         }
-        elemento.SubgrupoCatalogoId = datos[index].SubgrupoCatalogoId;
+        // elemento.SubgrupoCatalogoId = datos[index].SubgrupoCatalogoId;
         datos2.push(elemento);
       }
     }
@@ -531,7 +532,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
 
   checkElementosAsignados() {
     this.bandera = false;
-    console.log(this.source);
+    // console.log(this.source);
     for (const datos of this.source.data) {
       if (datos.Asignado !== true) {
         this.bandera = true;
