@@ -713,8 +713,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
       Soportes.push(this.Registrar_Soporte(soporte, this.Elementos__Soporte[index], Transaccion_Acta.ActaRecibido));
     });
     Transaccion_Acta.SoportesActa = Soportes;
-    // console.log({'this.estadoActa': this.estadoActa, Transaccion_Acta});
-
     const L10n_base = 'GLOBAL.Acta_Recibido.EdicionActa.';
     const resultadoL10n_titulo = L10n_base + 'VerificadaTitle2';
     const resultadoL10n_desc = L10n_base + ((this.estadoActa === 'Registrada') ? 'Verificada3' : 'Verificada2');
@@ -817,7 +815,9 @@ export class EdicionActaRecibidoComponent implements OnInit {
       Elemento__.SubgrupoCatalogoId = parseFloat(datos.SubgrupoCatalogoId);
       Elemento__.Verificado = false;
       Elemento__.TipoBienId = this.Tipos_Bien.find(bien => bien.Id === parseFloat(datos.TipoBienId));
-      Elemento__.EstadoElementoId = this.Estados_Acta.find(estado => estado.Id === 1);
+      Elemento__.EstadoElementoId = this.estadoActa === 'Aceptada' ?
+        this.Estados_Acta.find(estado => estado.Id === 2) :
+          this.Estados_Acta.find(estado => estado.Id === 1);
       Elemento__.SoporteActaId = Soporte;
       Elemento__.Activo = true;
       Elemento__.FechaCreacion = new Date();
@@ -872,7 +872,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
         this.Elementos__Soporte.push(this.DatosElementos);
       }
     }
-    // console.log(this.Elementos__Soporte);
   }
   ver2(event: any, index: number) {
     this.DatosTotales = event;
