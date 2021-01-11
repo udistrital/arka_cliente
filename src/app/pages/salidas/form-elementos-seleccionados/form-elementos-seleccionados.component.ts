@@ -85,19 +85,23 @@ export class FormElementosSeleccionadosComponent implements OnInit {
     // this.listService.findProveedores();
     this.listService.findDependencias();
     this.listService.findSedes();
+    this.listService.findProveedores();
     // this.listService.findUbicaciones();
     this.loadLists();
   }
 
   ngOnInit() {
     this.form_salida = this.Formulario;
+    this.loadLists
   }
   public loadLists() {
     this.store.select((state) => state).subscribe(
       (list) => {
         this.Dependencias = list.listDependencias[0];
+        this.Proveedores = list.listProveedores[0];
         // this.Ubicaciones = list.listUbicaciones[0];
         this.Sedes = list.listSedes[0];
+        this.dataService2 = this.completerService.local(this.Proveedores, 'compuesto', 'compuesto');
         this.dataService3 = this.completerService.local(this.Dependencias, 'Nombre', 'Nombre');
         // this.dataService = this.completerService.local(this.Ubicaciones, 'Nombre', 'Nombre');
       },
@@ -114,12 +118,11 @@ export class FormElementosSeleccionadosComponent implements OnInit {
   Traer_Relacion_Ubicaciones() {
     const sede = this.form_salida.get('Sede').value;
     const dependencia = this.form_salida.get('Dependencia').value;
-
     if (this.form_salida.get('Sede').valid || this.form_salida.get('Dependencia').valid) {
       const transaccion: any = {};
       transaccion.Sede = this.Sedes.find((x) => x.Id === parseFloat(sede));
       transaccion.Dependencia = this.Dependencias.find((x) => x.Nombre === dependencia);
-      // console.log(this.Sedes);
+      // console.log({Sede:this.form_salida.get('Sede'),Dep:this.form_salida.get('Dependencia')})
       if (transaccion.Sede !== undefined && transaccion.Dependencia !== undefined) {
         this.Actas_Recibido.postRelacionSedeDependencia(transaccion).subscribe((res: any) => {
           // console.log(res)
@@ -191,6 +194,7 @@ export class FormElementosSeleccionadosComponent implements OnInit {
   }
 // MÉTODO PARA VERIFICAR QUE EL DATO EN EL INPUT CORRESPONDA CON UNO EN LA LISTA
   verfificarProveedor() {
+    console.log(this.elementos)
     if (this.elementos.length > 0) {
 
       if (this.proveedorfiltro !== '') {
