@@ -340,6 +340,8 @@ export class EdicionActaRecibidoComponent implements OnInit {
       const Form2 = this.fb.array([]);
       const elementos = new Array<any[]>();
       transaccion_.SoportesActa.forEach((Soporte, index) => {
+        this.ActaEspecial = Soporte.SoporteActa.Consecutivo.toString() === '' ? true :
+        Soporte.SoporteActa.Consecutivo.toString() === 'N/A' ? true : false;
         const Formulario__2 = this.fb.group({
           Id: [Soporte.SoporteActa.Id],
           Proveedor: [
@@ -352,7 +354,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
             Validators.required],
           Soporte: [Soporte.SoporteActa.DocumentoId, Validators.required],
         });
-        Formulario__2.controls.Consecutivo.value === '' ? this.ActaEspecial = true : null;
         this.Validador[index] = true;
         this.uidDocumento[index] = Soporte.SoporteActa.DocumentoId;
         const elementoSoporte = [];
