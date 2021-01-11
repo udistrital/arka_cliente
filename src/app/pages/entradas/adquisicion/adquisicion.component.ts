@@ -264,7 +264,7 @@ export class AdquisicionComponent implements OnInit {
     if (this.validar) {
       const detalle = {
         acta_recibido_id: +this.actaRecibidoId,
-        consecutivo: this.soportes[0].Consecutivo, // this.facturaForm.value.facturaCtrl, //'P8-1-2019', // REVISAR
+        consecutivo: 'P1-' + this.actaRecibidoId + '-' + new Date().getFullYear(),
         documento_contable_id: 1, // REVISAR
         contrato_id: +this.contratoEspecifico.NumeroContratoSuscrito,
         vigencia_contrato: this.contratoForm.value.vigenciaCtrl,
@@ -287,8 +287,8 @@ export class AdquisicionComponent implements OnInit {
         if (res !== null) {
           (Swal as any).fire({
             type: 'success',
-            title: 'Entrada N° ' + `${res.Id}` + ' Registrada',
-            text: 'La Entrada N° ' + `${res.Id}` + ' ha sido registrada de forma exitosa',
+            title: 'Entrada N° ' + `${detalle.consecutivo}` + ' Registrada',
+            text: 'La Entrada N° ' + `${detalle.consecutivo}` + ' ha sido registrada de forma exitosa',
           });
           const navigationExtras: NavigationExtras = { state: { consecutivo: res.Id } };
           this.router.navigate(['/pages/reportes/registro-entradas'], navigationExtras);
