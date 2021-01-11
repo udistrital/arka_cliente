@@ -525,7 +525,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
           elemento.SubgrupoCatalogoId = this.Devolutivo.find(x => x.Id === datos[index].SubgrupoCatalogoId.Id).SubgrupoId;
         }
         // elemento.SubgrupoCatalogoId = datos[index].SubgrupoCatalogoId;
-        console.log(elemento)
+        // console.log(elemento);
         datos2.push(elemento);
       }
     }

@@ -92,7 +92,7 @@ export class FormElementosSeleccionadosComponent implements OnInit {
 
   ngOnInit() {
     this.form_salida = this.Formulario;
-    this.loadLists
+    this.loadLists;
   }
   public loadLists() {
     this.store.select((state) => state).subscribe(
@@ -127,7 +127,7 @@ export class FormElementosSeleccionadosComponent implements OnInit {
         this.Actas_Recibido.postRelacionSedeDependencia(transaccion).subscribe((res: any) => {
           if (Object.keys(res[0]).length !== 0) {
             this.Ubicaciones = res[0].Relaciones;
-            console.log(res[0].Relaciones);
+            // console.log(res[0].Relaciones);
           } else {
             this.Ubicaciones = undefined;
           }
@@ -143,7 +143,7 @@ export class FormElementosSeleccionadosComponent implements OnInit {
     if (Object.keys(this.Datos.selected).length !== 0) {
       const seleccionados = this.Datos.selected;
       const datos = this.Datos.source.data;
-      console.log({OJO:form.Ubicacion});
+      // console.log({OJO:form.Dependencia});
       seleccionados.forEach((elemento) => {
         // elemento.Funcionario = this.elementos2;
         elemento.Funcionario = this.Proveedores.find(z => z.compuesto === form.Proveedor);
