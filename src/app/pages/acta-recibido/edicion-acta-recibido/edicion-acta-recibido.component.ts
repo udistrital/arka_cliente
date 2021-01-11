@@ -380,7 +380,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
           }
         elementos.push(elementoSoporte);
         Form2.push(Formulario__2);
-        // }
       });
 
       this.Elementos__Soporte = elementos;
@@ -783,8 +782,8 @@ export class EdicionActaRecibidoComponent implements OnInit {
     Soporte_Acta.FechaCreacion = new Date();
     Soporte_Acta.FechaModificacion = new Date();
     Soporte_Acta.FechaSoporte = Datos.Fecha_Factura;
-    Soporte_Acta.ProveedorId = !this.ActaEspecial ? 
-      this.Proveedores.find(proveedor => 
+    Soporte_Acta.ProveedorId = !this.ActaEspecial ?
+      this.Proveedores.find(proveedor =>
         proveedor.NumDocumento.toString() === Datos.Proveedor.split(' ')[0].toString()).Id : 14846;
     Transaccion.SoporteActa = Soporte_Acta;
     Transaccion.Elementos = this.Registrar_Elementos(Elementos_, Soporte_Acta);
