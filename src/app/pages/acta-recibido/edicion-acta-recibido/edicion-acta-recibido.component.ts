@@ -815,9 +815,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
       Elemento__.SubgrupoCatalogoId = parseFloat(datos.SubgrupoCatalogoId);
       Elemento__.Verificado = false;
       Elemento__.TipoBienId = this.Tipos_Bien.find(bien => bien.Id === parseFloat(datos.TipoBienId));
-      Elemento__.EstadoElementoId = this.estadoActa === 'Aceptada' ?
-        this.Estados_Acta.find(estado => estado.Id === 2) :
-          this.Estados_Acta.find(estado => estado.Id === 1);
+      Elemento__.EstadoElementoId = this.Estados_Acta.find(estado => estado.Id === 1);
       Elemento__.SoporteActaId = Soporte;
       Elemento__.Activo = true;
       Elemento__.FechaCreacion = new Date();
