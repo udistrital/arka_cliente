@@ -112,11 +112,11 @@
                     <div>
 
                       <!-- Datos básicos del Soporte -->
-                      <nb-card *ngIf="!ActaEspecial">
+                      <nb-card>
                         <nb-card-body (click)="usarLocalStorage()">
                           <div class="row">
 
-                            <div class="col">
+                            <div class="col" *ngIf="!ActaEspecial">
                               <div class="form-group col-sm">
                                 <label>{{'GLOBAL.Acta_Recibido.EdicionActa.Proveedor' | translate}}</label>
                                 <ng2-completer style="border: 0rem" inputClass="form-control" (keyup)="usarLocalStorage()"
@@ -339,7 +339,7 @@
                   <button nbButton
                     matStepperPrevious>{{'GLOBAL.Acta_Recibido.EdicionActa.AnteriorButton' | translate}}</button>
                   <button nbButton (click)="Revisar_Totales2()" *ngIf="(permisos.Acta === 2) || (permisos.Elementos === 2)"
-                    [disabled]="!firstForm.get('Formulario3').valid || !firstForm.get('Formulario2').valid || !firstForm.get('Formulario3').valid"
+                    [disabled]="!firstForm.get('Formulario3').valid || (!firstForm.get('Formulario2').valid && !ActaEspecial) || !firstForm.get('Formulario3').valid"
                     class="float-right">{{'GLOBAL.Acta_Recibido.EdicionActa.GuardarCambiosButton' | translate}}</button>
                 </div>
               </nb-card-footer>
