@@ -125,9 +125,9 @@ export class FormElementosSeleccionadosComponent implements OnInit {
       // console.log({Sede:this.form_salida.get('Sede'),Dep:this.form_salida.get('Dependencia')})
       if (transaccion.Sede !== undefined && transaccion.Dependencia !== undefined) {
         this.Actas_Recibido.postRelacionSedeDependencia(transaccion).subscribe((res: any) => {
-          // console.log(res)
           if (Object.keys(res[0]).length !== 0) {
             this.Ubicaciones = res[0].Relaciones;
+            console.log(res[0].Relaciones);
           } else {
             this.Ubicaciones = undefined;
           }
@@ -143,19 +143,18 @@ export class FormElementosSeleccionadosComponent implements OnInit {
     if (Object.keys(this.Datos.selected).length !== 0) {
       const seleccionados = this.Datos.selected;
       const datos = this.Datos.source.data;
-
+      console.log({OJO:form.Ubicacion});
       seleccionados.forEach((elemento) => {
-        elemento.Funcionario = this.elementos2;
-        // elemento.Funcionario = this.Proveedores.find(z => z.compuesto === form.Proveedor);
+        // elemento.Funcionario = this.elementos2;
+        elemento.Funcionario = this.Proveedores.find(z => z.compuesto === form.Proveedor);
         elemento.Sede = this.Sedes.find(y => y.Id === parseFloat(form.Sede));
         elemento.Dependencia = this.Dependencias.find(y => y.Nombre === form.Dependencia);
-        elemento.Ubicacion = this.Ubicaciones.find(w => w.Id === parseFloat(form.Ubicacion));
+        elemento.Ubicacion = this.Ubicaciones.find(w => w.EspacioFisicoId.Id === parseFloat(form.Ubicacion));
         elemento.Asignado = true;
         datos.find(element => {
           if (element.Id === elemento.Id) {
             element = elemento;
           }
-          // console.log(element);
         });
       });
       this.DatosEnviados.emit(datos);
@@ -194,8 +193,7 @@ export class FormElementosSeleccionadosComponent implements OnInit {
   }
 // MÉTODO PARA VERIFICAR QUE EL DATO EN EL INPUT CORRESPONDA CON UNO EN LA LISTA
   verfificarProveedor() {
-    console.log(this.elementos)
-    if (this.elementos.length > 0) {
+    if (this.elementos.length === 0) {
 
       if (this.proveedorfiltro !== '') {
         if (!this.elementos.find(element => element === this.proveedorfiltro)) {
@@ -205,6 +203,7 @@ export class FormElementosSeleccionadosComponent implements OnInit {
           this.onSubmit();
         }
       }
+      this.onSubmit();
     }
   }
 }

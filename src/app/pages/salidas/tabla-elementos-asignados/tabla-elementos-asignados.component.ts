@@ -240,7 +240,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
           title: 'Funcionario',
           valuePrepareFunction: (value: any) => {
             if (value !== null) {
-              return value.NombreCompleto;
+              return value.NomProveedor;
             } else {
               return '';
             }
@@ -516,15 +516,16 @@ export class TablaElementosAsignadosComponent implements OnInit {
           }
         }
         if (datos[index].TipoBienId.Id === 1 && Object.keys(this.Consumo[0]).length !== 0) {
-          elemento.SubgrupoCatalogoId = this.Consumo.find(x => x.SubgrupoId.Id === datos[index].SubgrupoCatalogoId).SubgrupoId;
+          elemento.SubgrupoCatalogoId = this.Consumo.find(x => x.SubgrupoId.Id === datos[index].SubgrupoCatalogoId.Id).SubgrupoId;
         }
         if (datos[index].TipoBienId.Id === 2 && Object.keys(this.ConsumoControlado[0]).length !== 0) {
-          elemento.SubgrupoCatalogoId = this.ConsumoControlado.find(x => x.SubgrupoId.Id === datos[index].SubgrupoCatalogoId).SubgrupoId;
+          elemento.SubgrupoCatalogoId = this.ConsumoControlado.find(x => x.SubgrupoId.Id === datos[index].SubgrupoCatalogoId.Id).SubgrupoId;
         }
         if (datos[index].TipoBienId.Id === 3 && Object.keys(this.Devolutivo[0]).length !== 0) {
-          elemento.SubgrupoCatalogoId = this.Devolutivo.find(x => x.Id === datos[index].SubgrupoCatalogoId);
+          elemento.SubgrupoCatalogoId = this.Devolutivo.find(x => x.Id === datos[index].SubgrupoCatalogoId.Id).SubgrupoId;
         }
         // elemento.SubgrupoCatalogoId = datos[index].SubgrupoCatalogoId;
+        console.log(elemento)
         datos2.push(elemento);
       }
     }
