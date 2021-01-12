@@ -65,12 +65,12 @@
               [datasource]="dataService" formControlName="Ubicacion" [minSearchLength]="3"
               placeholder="{{'GLOBAL.Acta_Recibido.RegistroActa.SeleccioneFiltro' | translate}}">
             </ng2-completer> -->
-            <select nbInput type="text" class="form-control" formControlName="Ubicacion">
+            <select nbInput type="text" class="form-control" formControlName="Ubicacion"
+              (click)="Traer_Relacion_Ubicaciones();" required>
+              <option value=""></option>
               <option *ngFor="let ubicacion of Ubicaciones" [(value)]="ubicacion.Id">{{ubicacion.Nombre}}
               </option>
             </select>
-            <!-- <p class="campo" *ngIf="firstForm.get('Formulario1').get('Ubicacion').invalid">
-                {{'GLOBAL.placeholder' | translate}}</p> -->
           </div>
         </div>
       </div>
