@@ -145,8 +145,8 @@ export class FormElementosSeleccionadosComponent implements OnInit {
       const datos = this.Datos.source.data;
       // console.log({OJO:this.form_salida.get('Ubicacion')});
       seleccionados.forEach((elemento) => {
-        // elemento.Funcionario = this.elementos2;
-        elemento.Funcionario = this.Proveedores.find(z => z.compuesto === form.Proveedor);
+        elemento.Funcionario = this.elementos2;
+        //elemento.Funcionario = this.Proveedores.find(z => z.compuesto === form.Proveedor);
         elemento.Sede = this.Sedes.find(y => y.Id === parseFloat(form.Sede));
         elemento.Dependencia = this.Dependencias.find(y => y.Nombre === form.Dependencia);
         elemento.Ubicacion = this.Ubicaciones.find(w => w.Id === parseFloat(form.Ubicacion));
@@ -157,6 +157,7 @@ export class FormElementosSeleccionadosComponent implements OnInit {
           }
         });
       });
+      console.log(datos)
       this.DatosEnviados.emit(datos);
     }
 
@@ -173,6 +174,7 @@ export class FormElementosSeleccionadosComponent implements OnInit {
           }
           if (Object.keys(res).length === 1) {
             this.elementos2 = res[0];
+            console.log(res[0])
           }
           for (const index of Object.keys(res)) {
             if (res[index].NombreCompleto != null) {
@@ -193,7 +195,7 @@ export class FormElementosSeleccionadosComponent implements OnInit {
   }
 // MÉTODO PARA VERIFICAR QUE EL DATO EN EL INPUT CORRESPONDA CON UNO EN LA LISTA
   verfificarProveedor() {
-    if (this.elementos.length === 0) {
+    if (this.elementos.length !== 0) {
 
       if (this.proveedorfiltro !== '') {
         if (!this.elementos.find(element => element === this.proveedorfiltro)) {
@@ -203,7 +205,6 @@ export class FormElementosSeleccionadosComponent implements OnInit {
           this.onSubmit();
         }
       }
-      this.onSubmit();
     }
   }
 }
