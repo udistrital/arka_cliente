@@ -258,7 +258,7 @@ export class ListService {
     this.store.select(REDUCER_LIST.Consumo).subscribe(
       (list: any) => {
         if (!list || list.length === 0) {
-          this.CatalogoElementos.getSubgrupoTipoBien(1)
+          this.CatalogoElementos.getClasesTipoBien(1)
             .subscribe(
               (res: any[]) => {
                 // console.log(res)
@@ -277,7 +277,7 @@ export class ListService {
     this.store.select(REDUCER_LIST.ConsumoControlado).subscribe(
       (list: any) => {
         if (!list || list.length === 0) {
-          this.CatalogoElementos.getSubgrupoTipoBien(2)
+          this.CatalogoElementos.getClasesTipoBien(2)
             .subscribe(
               (res: any[]) => {
                 // console.log(res)
@@ -296,7 +296,7 @@ export class ListService {
     this.store.select(REDUCER_LIST.Devolutivo).subscribe(
       (list: any) => {
         if (!list || list.length === 0) {
-          this.CatalogoElementos.getSubgrupoTipoBien(3)
+          this.CatalogoElementos.getClasesTipoBien(3)
             .subscribe(
               (res: any[]) => {
                 // console.log(res)

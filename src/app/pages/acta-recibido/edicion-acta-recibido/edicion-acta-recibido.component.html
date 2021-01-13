@@ -338,7 +338,7 @@
                 <div class="justify-content-center">
                   <button nbButton
                     matStepperPrevious>{{'GLOBAL.Acta_Recibido.EdicionActa.AnteriorButton' | translate}}</button>
-                  <button nbButton (click)="Revisar_Totales2()" *ngIf="(permisos.Acta === 2) || (permisos.Elementos === 2)"
+                  <button nbButton (click)="Revisar_Totales2()" *ngIf="getPermisoEditar(permisos.Acta) || getPermisoEditar(permisos.Elementos)"
                     [disabled]="!firstForm.get('Formulario3').valid || !firstForm.get('Formulario2').valid || !firstForm.get('Formulario3').valid"
                     class="float-right">{{'GLOBAL.Acta_Recibido.EdicionActa.GuardarCambiosButton' | translate}}</button>
                 </div>
@@ -346,12 +346,8 @@
             </nb-card>
 
             <div class="justify-content-center">
-              <button nbButton (click)="Revisar_Totales3()" *ngIf="accion.envioValidar"
-                [disabled]="!firstForm.get('Formulario1').valid || !firstForm.get('Formulario2').valid || !firstForm.get('Formulario3').valid || !verificar"
-                class="float-right">{{'GLOBAL.Acta_Recibido.EdicionActa.VerificacionButton' | translate}}</button>
-              <button nbButton (click)="Revisar_Totales3()" *ngIf="accion.envioProveedor"
-                [disabled]="!firstForm.get('Formulario1').valid || !firstForm.get('Formulario2').valid || !verificar"
-                class="float-right">{{'GLOBAL.Acta_Recibido.EdicionActa.EnviarProveedorButton' | translate}}</button>
+              <button nbButton (click)="Revisar_Totales3()" *ngIf="accion.envHabilitado" [disabled]="formNoValido()"
+                class="float-right">{{ accion.envTexto }}</button>
             </div>
           </mat-step>
         </mat-vertical-stepper>
