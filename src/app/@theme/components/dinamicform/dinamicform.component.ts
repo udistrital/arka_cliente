@@ -90,6 +90,9 @@ export class DinamicformComponent implements OnInit, OnChanges {
                             if (e1.Id === this.modeloData[i].Id) {
                               element.valor = e1[element.key];
                             }
+                            if (e1.Codigo !== undefined && e1.Codigo !== null && e1.Codigo === this.modeloData[i].Id) {
+                              element.valor = e1[element.key];
+                            }
                           }
                         });
                       }

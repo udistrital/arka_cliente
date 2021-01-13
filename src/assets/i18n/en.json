@@ -67,7 +67,9 @@
         "EliminarElementosTitle": "Are you Sure?",
         "EliminarElementosText": "Are you sure about remove the selected item?",
         "EliminarVariosElementosTitle":"Delete {{cantidad}} element(s)?",
-        "EliminarVariosElementosText":"Are you sure to delete {{cantidad}} element(s)?"
+        "EliminarVariosElementosText":"Are you sure to delete {{cantidad}} element(s)?",
+        "ValidacionCargaMasivaTitle": "Some errors found at massive  charge",
+        "ValidacionCargaMasivaText": "There are {{cantidad}} error(s) at massive charge, check them at table"
       },
       "ConsultaActas": {
         "Title": "Receipt Certificates",
