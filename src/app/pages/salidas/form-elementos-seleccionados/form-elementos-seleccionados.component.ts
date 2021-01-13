@@ -85,19 +85,23 @@ export class FormElementosSeleccionadosComponent implements OnInit {
     // this.listService.findProveedores();
     this.listService.findDependencias();
     this.listService.findSedes();
+    this.listService.findProveedores();
     // this.listService.findUbicaciones();
     this.loadLists();
   }
 
   ngOnInit() {
     this.form_salida = this.Formulario;
+    this.loadLists;
   }
   public loadLists() {
     this.store.select((state) => state).subscribe(
       (list) => {
         this.Dependencias = list.listDependencias[0];
+        this.Proveedores = list.listProveedores[0];
         // this.Ubicaciones = list.listUbicaciones[0];
         this.Sedes = list.listSedes[0];
+        this.dataService2 = this.completerService.local(this.Proveedores, 'compuesto', 'compuesto');
         this.dataService3 = this.completerService.local(this.Dependencias, 'Nombre', 'Nombre');
         // this.dataService = this.completerService.local(this.Ubicaciones, 'Nombre', 'Nombre');
       },
@@ -114,17 +118,16 @@ export class FormElementosSeleccionadosComponent implements OnInit {
   Traer_Relacion_Ubicaciones() {
     const sede = this.form_salida.get('Sede').value;
     const dependencia = this.form_salida.get('Dependencia').value;
-
     if (this.form_salida.get('Sede').valid || this.form_salida.get('Dependencia').valid) {
       const transaccion: any = {};
       transaccion.Sede = this.Sedes.find((x) => x.Id === parseFloat(sede));
       transaccion.Dependencia = this.Dependencias.find((x) => x.Nombre === dependencia);
-      // console.log(this.Sedes);
+      // console.log({Sede:this.form_salida.get('Sede'),Dep:this.form_salida.get('Dependencia')})
       if (transaccion.Sede !== undefined && transaccion.Dependencia !== undefined) {
         this.Actas_Recibido.postRelacionSedeDependencia(transaccion).subscribe((res: any) => {
-          // console.log(res)
           if (Object.keys(res[0]).length !== 0) {
             this.Ubicaciones = res[0].Relaciones;
+            // console.log(res[0].Relaciones);
           } else {
             this.Ubicaciones = undefined;
           }
@@ -140,7 +143,7 @@ export class FormElementosSeleccionadosComponent implements OnInit {
     if (Object.keys(this.Datos.selected).length !== 0) {
       const seleccionados = this.Datos.selected;
       const datos = this.Datos.source.data;
-
+      // console.log({OJO:this.form_salida.get('Ubicacion')});
       seleccionados.forEach((elemento) => {
         elemento.Funcionario = this.elementos2;
         // elemento.Funcionario = this.Proveedores.find(z => z.compuesto === form.Proveedor);
@@ -152,9 +155,9 @@ export class FormElementosSeleccionadosComponent implements OnInit {
           if (element.Id === elemento.Id) {
             element = elemento;
           }
-          // console.log(element);
         });
       });
+      // console.log(datos)
       this.DatosEnviados.emit(datos);
     }
 
@@ -171,6 +174,7 @@ export class FormElementosSeleccionadosComponent implements OnInit {
           }
           if (Object.keys(res).length === 1) {
             this.elementos2 = res[0];
+            // console.log(res[0]);
           }
           for (const index of Object.keys(res)) {
             if (res[index].NombreCompleto != null) {
@@ -191,7 +195,7 @@ export class FormElementosSeleccionadosComponent implements OnInit {
   }
 // MÉTODO PARA VERIFICAR QUE EL DATO EN EL INPUT CORRESPONDA CON UNO EN LA LISTA
   verfificarProveedor() {
-    if (this.elementos.length > 0) {
+    if (this.elementos.length !== 0) {
 
       if (this.proveedorfiltro !== '') {
         if (!this.elementos.find(element => element === this.proveedorfiltro)) {
