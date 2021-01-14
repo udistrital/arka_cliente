@@ -166,8 +166,7 @@ export class VerDetalleComponent implements OnInit {
       const Form2 = this.fb.array([]);
 
       for (const Soporte of transaccion_.SoportesActa) {
-        this.ActaEspecial = Soporte.SoporteActa.Consecutivo.toString() === '' ? true :
-        Soporte.SoporteActa.Consecutivo.toString() === 'N/A' ? true : false;
+        this.ActaEspecial = Soporte.SoporteActa.Consecutivo.toString() === '' ? true : false;
         const Formulario__2 = this.fb.group({
           Id: [Soporte.SoporteActa.Id],
           Proveedor: [

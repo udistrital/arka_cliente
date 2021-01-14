@@ -340,8 +340,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
       const Form2 = this.fb.array([]);
       const elementos = new Array<any[]>();
       transaccion_.SoportesActa.forEach((Soporte, index) => {
-        this.ActaEspecial = Soporte.SoporteActa.Consecutivo.toString() === '' ? true :
-        Soporte.SoporteActa.Consecutivo.toString() === 'N/A' ? true : false;
+        this.ActaEspecial = Soporte.SoporteActa.Consecutivo.toString() === '' ? true : false;
         const Formulario__2 = this.fb.group({
           Id: [Soporte.SoporteActa.Id],
           Proveedor: [
@@ -785,7 +784,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
     Soporte_Acta.FechaSoporte = Datos.Fecha_Factura;
     Soporte_Acta.ProveedorId = !this.ActaEspecial ?
       this.Proveedores.find(proveedor =>
-        proveedor.NumDocumento.toString() === Datos.Proveedor.split(' ')[0].toString()).Id : 14846;
+        proveedor.NumDocumento.toString() === Datos.Proveedor.split(' ')[0].toString()).Id : 0;
     Transaccion.SoporteActa = Soporte_Acta;
     Transaccion.Elementos = this.Registrar_Elementos(Elementos_, Soporte_Acta);
 

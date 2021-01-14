@@ -367,11 +367,11 @@ export class ActaEspecialComponent implements OnInit {
     Soporte_Acta.Id = null;
     Soporte_Acta.ActaRecibidoId = __;
     Soporte_Acta.Activo = true;
-    Soporte_Acta.Consecutivo = 'N/A';
+    Soporte_Acta.Consecutivo = '';
     Soporte_Acta.FechaCreacion = new Date();
     Soporte_Acta.FechaModificacion = new Date();
     Soporte_Acta.FechaSoporte = null;
-    Soporte_Acta.ProveedorId = null;
+    Soporte_Acta.ProveedorId = 0;
 
     Transaccion.SoporteActa = Soporte_Acta;
     Transaccion.Elementos = this.Registrar_Elementos(Elementos_, Soporte_Acta);
