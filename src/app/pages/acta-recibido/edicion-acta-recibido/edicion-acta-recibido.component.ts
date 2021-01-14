@@ -672,6 +672,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
     await start();
     this.Datos = this.firstForm.value;
     // console.log(this.Elementos__Soporte);
+    // console.log({Datos: this.Datos});
     const Transaccion_Acta = new TransaccionActaRecibido();
     Transaccion_Acta.ActaRecibido = this.Registrar_Acta(this.Datos.Formulario1, this.Datos.Formulario3);
     Transaccion_Acta.UltimoEstado = this.Registrar_Estado_Acta(Transaccion_Acta.ActaRecibido,
@@ -682,7 +683,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
       Soportes.push(this.Registrar_Soporte(soporte, this.Elementos__Soporte[index], Transaccion_Acta.ActaRecibido));
     });
     Transaccion_Acta.SoportesActa = Soportes;
-    // console.log(Transaccion_Acta);
+    // console.log({Transaccion_Acta});
     this.Actas_Recibido.putTransaccionActa(Transaccion_Acta, Transaccion_Acta.ActaRecibido.Id).subscribe((res: any) => {
       // console.log(res);
       if (res !== null) {
