@@ -37,8 +37,8 @@
           </div>
         </div>
       </div>
-      <button type="button" (click)="onSolicitanteSubmit()" nbButton
-        nbStepperNext>{{'GLOBAL.siguiente' | translate}}</button>
+      <button type="button" (click)="onSolicitanteSubmit()" nbButton nbStepperNext>{{'GLOBAL.siguiente' |
+        translate}}</button>
     </form>
   </nb-step>
 
@@ -52,9 +52,16 @@
           [ngClass]="{'form-control-danger': soporteForm.invalid && (soporteForm.dirty || soporteForm.touched)}"
           (change)="getSoporte($event)" accept="application/pdf" data-max-size="5120">
       </div>
-      <button nbButton nbStepperPrevious>{{'GLOBAL.anterior' | translate}}</button>
-      <button type="button" (click)="onSoporteSubmit()" nbButton
-        nbStepperNext>{{'GLOBAL.siguiente' | translate}}</button>
+      <div class="row">
+        <div class="col">
+          <button nbButton nbStepperPrevious>{{'GLOBAL.anterior' | translate}}</button>
+        </div>
+        <div class="col" align="end">
+          <button type="button" (click)="onSoporteSubmit()" nbButton nbStepperNext>{{'GLOBAL.siguiente' |
+            translate}}
+          </button>
+        </div>
+      </div>
     </form>
   </nb-step>
 
@@ -70,9 +77,15 @@
           </div>
         </div>
       </div>
-      <button nbButton nbStepperPrevious>{{'GLOBAL.anterior' | translate}}</button>
-      <button type="button" (click)="onObservacionSubmit()" nbButton
-        nbStepperNext>{{'GLOBAL.siguiente' | translate}}</button>
+      <div class="row">
+        <div class="col">
+          <button nbButton nbStepperPrevious>{{'GLOBAL.anterior' | translate}}</button>
+        </div>
+        <div class="col" align="end">
+          <button type="button" (click)="onObservacionSubmit()" nbButton nbStepperNext>{{'GLOBAL.siguiente' |
+            translate}}</button>
+        </div>
+      </div>
     </form>
   </nb-step>
 

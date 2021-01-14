@@ -349,10 +349,11 @@ export class EdicionActaRecibidoComponent implements OnInit {
       const Form2 = this.fb.array([]);
       const elementos = new Array<any[]>();
       transaccion_.SoportesActa.forEach((Soporte, index) => {
+        this.ActaEspecial = Soporte.SoporteActa.Consecutivo.toString() === '' ? true : false;
         const Formulario__2 = this.fb.group({
           Id: [Soporte.SoporteActa.Id],
           Proveedor: [
-            Soporte.SoporteActa.ProveedorId === 0 ? this.ActaEspecial = true :
+            Soporte.SoporteActa.ProveedorId === 0 ? null :
               this.Proveedores.find((proveedor) =>
                 proveedor.Id.toString() === Soporte.SoporteActa.ProveedorId.toString()).compuesto,
                 Validators.required],
@@ -388,7 +389,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
           }
         elementos.push(elementoSoporte);
         Form2.push(Formulario__2);
-        // }
       });
 
       this.Elementos__Soporte = elementos;
@@ -683,7 +683,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
       Soportes.push(this.Registrar_Soporte(soporte, this.Elementos__Soporte[index], Transaccion_Acta.ActaRecibido));
     });
     Transaccion_Acta.SoportesActa = Soportes;
-    // console.log({Transaccion_Acta});
     this.Actas_Recibido.putTransaccionActa(Transaccion_Acta, Transaccion_Acta.ActaRecibido.Id).subscribe((res: any) => {
       // console.log(res);
       if (res !== null) {
@@ -723,8 +722,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
       Soportes.push(this.Registrar_Soporte(soporte, this.Elementos__Soporte[index], Transaccion_Acta.ActaRecibido));
     });
     Transaccion_Acta.SoportesActa = Soportes;
-    // console.log({'this.estadoActa': this.estadoActa, Transaccion_Acta});
-
     const L10n_base = 'GLOBAL.Acta_Recibido.EdicionActa.';
     const resultadoL10n_titulo = L10n_base + 'VerificadaTitle2';
     const resultadoL10n_desc = L10n_base + ((this.estadoActa === 'Registrada') ? 'Verificada3' : 'Verificada2');
@@ -788,7 +785,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
 
     const Soporte_Acta = new SoporteActa();
     const Transaccion = new TransaccionSoporteActa();
-    const proveedor___ = Datos.Proveedor.split(' ');
     Soporte_Acta.Id = parseFloat(Datos.Id);
     Soporte_Acta.ActaRecibidoId = __;
     Soporte_Acta.Activo = true;
@@ -796,8 +792,9 @@ export class EdicionActaRecibidoComponent implements OnInit {
     Soporte_Acta.FechaCreacion = new Date();
     Soporte_Acta.FechaModificacion = new Date();
     Soporte_Acta.FechaSoporte = Datos.Fecha_Factura;
-    Soporte_Acta.ProveedorId = this.Proveedores.find(proveedor => proveedor.NumDocumento.toString() === proveedor___[0].toString()).Id;
-
+    Soporte_Acta.ProveedorId = !this.ActaEspecial ?
+      this.Proveedores.find(proveedor =>
+        proveedor.NumDocumento.toString() === Datos.Proveedor.split(' ')[0].toString()).Id : 0;
     Transaccion.SoporteActa = Soporte_Acta;
     Transaccion.Elementos = this.Registrar_Elementos(Elementos_, Soporte_Acta);
 
@@ -882,7 +879,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
         this.Elementos__Soporte.push(this.DatosElementos);
       }
     }
-    // console.log(this.Elementos__Soporte);
   }
   ver2(event: any, index: number) {
     this.DatosTotales = event;
