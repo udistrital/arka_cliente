@@ -75,6 +75,35 @@ export class ActaRecibidoHelper {
         );
     }
 
+    public getActasRecibidoPorEstados(estados: string[]) {
+        this.rqManager.setPath('ARKA_SERVICE');
+        return this.rqManager.get('acta_recibido/get_all_actas?states=' + estados.join()).pipe(
+            map(
+                (res) => {
+                    if (res === 'error') {
+                        this.pUpManager.showErrorAlert('No se pudo consultar las actas de recibido');
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
+
+    public getActasRecibidoUsuario(usuario: string) {
+        this.rqManager.setPath('ARKA_SERVICE');
+        return this.rqManager.get('acta_recibido/get_all_actas?u=' + usuario).pipe(
+            map(
+                (res) => {
+                    if (res === 'error') {
+                        this.pUpManager.showErrorAlert('No se pudo consultar las actas de recibido');
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
 
     /**
      * Elementos Acta Get

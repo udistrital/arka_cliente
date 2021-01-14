@@ -120,11 +120,11 @@ export class EdicionActaRecibidoComponent implements OnInit {
   };
 
   accion: {
-    envioValidar: boolean,
-    envioProveedor: boolean,
+    envHabilitado: boolean,
+    envTexto: string,
   } = {
-    envioValidar: false,
-    envioProveedor: false,
+    envHabilitado: false,
+    envTexto: '',
   };
 
   constructor(
@@ -230,16 +230,25 @@ export class EdicionActaRecibidoComponent implements OnInit {
   private permisosRoles_eventos() {
 
     // Pueden enviar a Proveedor
-    this.accion.envioProveedor =
+    const envioProveedor =
       this.userService.tieneAlgunRol([Rol.Admin, Rol.Revisor, Rol.Secretaria])
       && ['Registrada']
         .some(est => this.estadoActa === est);
 
     // Pueden enviar a Validacion
-    this.accion.envioValidar =
+    const envioValidar =
       this.userService.tieneAlgunRol([Rol.Admin, Rol.Revisor, Rol.Contratista])
       && ['En Elaboracion', 'En Modificacion']
         .some(est => this.estadoActa === est);
+
+    this.accion.envHabilitado = envioProveedor || envioValidar;
+
+    // Texto del botón según el estado
+    if (envioProveedor) {
+      this.accion.envTexto = this.translate.instant('GLOBAL.Acta_Recibido.EdicionActa.EnviarProveedorButton');
+    } else if (envioValidar) {
+      this.accion.envTexto = this.translate.instant('GLOBAL.Acta_Recibido.EdicionActa.VerificacionButton');
+    }
 
   }
 
@@ -663,6 +672,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
     await start();
     this.Datos = this.firstForm.value;
     // console.log(this.Elementos__Soporte);
+    // console.log({Datos: this.Datos});
     const Transaccion_Acta = new TransaccionActaRecibido();
     Transaccion_Acta.ActaRecibido = this.Registrar_Acta(this.Datos.Formulario1, this.Datos.Formulario3);
     Transaccion_Acta.UltimoEstado = this.Registrar_Estado_Acta(Transaccion_Acta.ActaRecibido,
@@ -925,6 +935,14 @@ export class EdicionActaRecibidoComponent implements OnInit {
         this.onFirstSubmit();
       }
     });
+  }
+
+  formNoValido(): boolean {
+    return (
+      !this.firstForm.get('Formulario1').valid
+      || !this.firstForm.get('Formulario2').valid
+      || !this.firstForm.get('Formulario3').valid
+      || !this.verificar);
   }
 
   // Enviar a revisor/proveedor?
