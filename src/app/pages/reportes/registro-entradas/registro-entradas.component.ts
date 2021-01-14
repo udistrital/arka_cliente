@@ -35,7 +35,8 @@ export class RegistroEntradasComponent implements OnInit {
   initReportConfig() {
     if (this.consecutivo === '') {
       this.reportConfig = {
-        documentLabel: 'prueba_arka',
+        // documentLabel: 'ARKA reporte entrada', // Prod
+        documentLabel: 'prueba_arka', // Dev
         executionRole: '/spagobi/user/admin',
         displayToolbar: true,
         displaySliders: true,
@@ -48,7 +49,8 @@ export class RegistroEntradasComponent implements OnInit {
     } else {
       const parametros = 'consecutivo=' + this.consecutivo + '&outputType=PDF';
       this.reportConfig = {
-        documentLabel: 'prueba_arka',
+        // documentLabel: 'ARKA reporte entrada', // Prod
+        documentLabel: 'prueba_arka', // Dev
         eecutionRole: '/spagobi/user/admin',
         // parameters: {'PARAMETERS': 'param_1=1&param_2=2'},
         parameters: { 'PARAMETERS': parametros },
