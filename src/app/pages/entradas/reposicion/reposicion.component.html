@@ -72,8 +72,14 @@
             </div>
           </div>
         </div>
-        <button nbButton nbStepperPrevious>{{'GLOBAL.anterior' | translate}}</button>
-        <button type="button" nbButton nbStepperNext>{{'GLOBAL.siguiente' | translate}}</button>
+        <div class="row">
+          <div class="col">
+            <button nbButton nbStepperPrevious>{{'GLOBAL.anterior' | translate}}</button>
+          </div>
+          <div class="col" align="end">
+            <button type="button" nbButton nbStepperNext>{{'GLOBAL.siguiente' | translate}}</button>
+          </div>
+        </div>
       </form>
     </nb-step>
   
@@ -88,8 +94,14 @@
             (change)="getSoporte($event)" accept=".pdf" data-max-size="5120"
             >
         </div>
-        <button nbButton nbStepperPrevious>{{'GLOBAL.anterior' | translate}}</button>
-        <button (click)="onSoporteSubmit()" nbButton nbStepperNext>{{'GLOBAL.siguiente' | translate}}</button>
+        <div class="row">
+          <div class="col">
+            <button nbButton nbStepperPrevious>{{'GLOBAL.anterior' | translate}}</button>
+          </div>
+          <div class="col" align="end">
+            <button (click)="onSoporteSubmit()" nbButton nbStepperNext>{{'GLOBAL.siguiente' | translate}}</button>
+          </div>
+        </div>
       </form>
       
     </nb-step>
@@ -103,8 +115,14 @@
         </div>
       </div>
     </div>
-    <button nbButton nbStepperPrevious>Anterior</button>
-    <button nbButton nbStepperNext>Siguiente</button>
+    <div class="row">
+      <div class="col">
+        <button nbButton nbStepperPrevious>{{'GLOBAL.anterior' | translate}}</button>
+      </div>
+      <div class="col" align="end">
+        <button type="button" nbButton nbStepperNext>{{'GLOBAL.siguiente' | translate}}</button>
+      </div>
+    </div>
   </nb-step>
 
    <!-- FINALIZAR -->
