@@ -4,7 +4,6 @@ import { TranslateService } from '@ngx-translate/core';
 import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
 import { BodegaConsumoHelper } from '../../../helpers/bodega_consumo/bodegaConsumoHelper';
 
-
 @Component({
   selector: 'ngx-consulta-solicitud',
   templateUrl: './consulta-solicitud.component.html',
@@ -25,21 +24,18 @@ export class ConsultaSolicitudComponent implements OnInit {
     this.Editar = edit;
   }
 
-  constructor(private translate: TranslateService,
-    private bodegaHelper: BodegaConsumoHelper, private tercerosHelper: TercerosHelper) {
+  constructor(
+    private translate: TranslateService,
+    private bodegaHelper: BodegaConsumoHelper,
+    private tercerosHelper: TercerosHelper,
+  ) {
     this.source = new LocalDataSource();
-
-
-
   }
 
   ngOnInit() {
     this.loadTablaSettings();
     this.loadSalidas();
   }
-
-
-
 
   loadTablaSettings() {
     this.listColumns = {
