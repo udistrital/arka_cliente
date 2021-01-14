@@ -193,7 +193,6 @@ export class AdquisicionComponent implements OnInit {
       this.tipoContratoSelect = !this.tipoContratoSelect;
     }
     this.opcionTipoContrato = event.target.options[event.target.options.selectedIndex].value;
-    console.log(this.opcionTipoContrato)
     this.loadContratos();
   }
 

@@ -310,6 +310,8 @@ export class DonacionComponent implements OnInit {
         vigencia_contrato: this.contratoForm.value.vigenciaCtrl,
         vigencia_solicitante: this.solicitanteForm.value.fechaCtrl,
         ordenador_gasto_id: +this.ordenadorId,
+        tipo_contrato: this.opcionTipoContrato === '14' ? 'Orden de Servicios' :
+        this.opcionTipoContrato === '15' ? 'Orden de Compra' : '',
       };
       const movimientoAdquisicion = {
         Observacion: this.observacionForm.value.observacionCtrl,
@@ -332,7 +334,7 @@ export class DonacionComponent implements OnInit {
             title: 'Entrada N° ' + `${detalle.consecutivo}` + ' Registrada',
             text: 'La Entrada N° ' + `${detalle.consecutivo}` + ' ha sido registrada de forma exitosa',
           });
-          const navigationExtras: NavigationExtras = { state: { consecutivo: res.Id } };
+          const navigationExtras: NavigationExtras = { state: { consecutivo: detalle.consecutivo } };
           this.router.navigate(['/pages/reportes/registro-entradas'], navigationExtras);
         } else {
           this.pUpManager.showErrorAlert('No es posible hacer el registro.');
