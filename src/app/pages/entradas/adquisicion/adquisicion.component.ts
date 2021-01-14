@@ -193,6 +193,7 @@ export class AdquisicionComponent implements OnInit {
       this.tipoContratoSelect = !this.tipoContratoSelect;
     }
     this.opcionTipoContrato = event.target.options[event.target.options.selectedIndex].value;
+    console.log(this.opcionTipoContrato)
     this.loadContratos();
   }
 
@@ -269,6 +270,8 @@ export class AdquisicionComponent implements OnInit {
         contrato_id: +this.contratoEspecifico.NumeroContratoSuscrito,
         vigencia_contrato: this.contratoForm.value.vigenciaCtrl,
         importacion: this.checked,
+        tipo_contrato: this.opcionTipoContrato === '14' ? 'Orden de Servicios' :
+        this.opcionTipoContrato === '15' ? 'Orden de Compra' : '',
       };
       const movimientoAdquisicion = {
         Observacion: this.observacionForm.value.observacionCtrl,
@@ -290,7 +293,7 @@ export class AdquisicionComponent implements OnInit {
             title: 'Entrada N° ' + `${detalle.consecutivo}` + ' Registrada',
             text: 'La Entrada N° ' + `${detalle.consecutivo}` + ' ha sido registrada de forma exitosa',
           });
-          const navigationExtras: NavigationExtras = { state: { consecutivo: res.Id } };
+          const navigationExtras: NavigationExtras = { state: { consecutivo: detalle.consecutivo } };
           this.router.navigate(['/pages/reportes/registro-entradas'], navigationExtras);
         } else {
           this.pUpManager.showErrorAlert('No es posible hacer el registro.');
