@@ -31,6 +31,7 @@ export class BodegaSinAsignarComponent implements OnInit {
   entradaEspecifica: Entrada;
   contrato: Contrato;
   settings: any;
+  mostrar: boolean;
   documentoId: boolean;
   settings2: any;
 
@@ -121,6 +122,7 @@ export class BodegaSinAsignarComponent implements OnInit {
 
   ElementosSinAsignar(): void {
     this.salidasHelper.getElementos2().subscribe((res: any) => {
+      this.mostrar = true;
       // console.log(res);
       this.source.load(res);
     });
