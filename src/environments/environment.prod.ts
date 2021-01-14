@@ -34,6 +34,7 @@ export const environment = {
     CONTEXTPATH: 'SpagoBI',
     USER: 'sergio_orjuela',
     PASSWORD: 'sergio_orjuela',
+    DOCUMENTLABEL: 'ARKA reporte entrada',
   },
   TOKEN: {
     AUTORIZATION_URL: 'https://autenticacion.portaloas.udistrital.edu.co/oauth2/authorize',
