@@ -33,6 +33,7 @@ export class AgregarElementosComponent implements OnInit {
   settings: any;
   documentoId: boolean;
   DatosEnviados: any;
+  mostrar: boolean;
   settings2: any;
 
   constructor(private router: Router,
@@ -106,6 +107,7 @@ export class AgregarElementosComponent implements OnInit {
   loadEntradas(): void {
     this.bodegaConsumo.getExistenciasKardex().subscribe((res: any) => {
       if (Object.keys(res).length !== 0) {
+        this.mostrar = true;
         // console.log(res);
         this.source.load(res);
         // res.forEach(element => {
