@@ -96,6 +96,7 @@ export class ConsultaActaRecibidoComponent implements OnInit {
     });
   }
 
+
   cargarCampos() {
     this.settings = {
       noDataMessage: 'No se encontraron elementos asociados.',
