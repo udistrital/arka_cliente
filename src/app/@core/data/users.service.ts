@@ -20,11 +20,14 @@ export class UserService {
   private user$ = new Subject<[object]>();
   public user: any;
   private roles: RolUsuario_t[] = [];
+  private tokenData: any;
+  private terceroId: number = 0;
 
   constructor(private http: HttpClient) {
     if (window.localStorage.getItem('id_token') !== null && window.localStorage.getItem('id_token') !== undefined) {
       const id_token = window.localStorage.getItem('id_token').split('.');
       const payload = JSON.parse(atob(id_token[1]));
+      this.tokenData = payload;
       window.localStorage.setItem('usuario', payload.sub);
       // this.roles = [RolUsuario_t.Secretaria];
       // this.roles = [RolUsuario_t.Proveedor];
@@ -41,7 +44,7 @@ export class UserService {
             this.user = res[0];
             this.user$.next(this.user);
             // window.localStorage.setItem('ente', res[0].Ente);
-            window.localStorage.setItem('persona_id', res[0].Id);
+            this.terceroId = parseInt(res[0].Id, 10); // window.localStorage.setItem('persona_id', res[0].Id);
           }
         });
     }
@@ -60,15 +63,19 @@ export class UserService {
   }
 
   public getUsuario(): string {
-    return window.localStorage.getItem('usuario').toString() ;
+    return this.tokenData.sub; // window.localStorage.getItem('usuario').toString() ;
   }
 
   public getPersonaId(): number {
-    return parseInt(window.localStorage.getItem('persona_id'), 10);
+    return this.terceroId;
   }
 
   public getUser() {
     return this.user$.asObservable();
+  }
+
+  public getTokenData() {
+    return this.tokenData;
   }
 
 }
