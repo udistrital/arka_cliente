@@ -10,7 +10,7 @@ import { Router } from '@angular/router';
   styleUrls: ['./registro-entradas.component.scss'],
 })
 export class RegistroEntradasComponent implements OnInit {
-
+  url = '';
   config: ToasterConfig;
   consecutivo: string;
   detalle: boolean;
@@ -26,16 +26,17 @@ export class RegistroEntradasComponent implements OnInit {
   loadParametros() {
     const navigation = this.router.getCurrentNavigation();
     this.consecutivo = '';
-    if (navigation.extras.state) {
-      const state = navigation.extras.state as { consecutivo: number };
-      this.consecutivo = (state.consecutivo).toString();
-    }
+     if (navigation.extras.state) {
+       const state = navigation.extras.state as { consecutivo: number };
+       this.consecutivo = (state.consecutivo).toString();
+     }
   }
 
   initReportConfig() {
     if (this.consecutivo === '') {
       this.reportConfig = {
-        documentLabel: 'prueba_arka',
+        // documentLabel: 'ARKA reporte entrada', // Prod
+        documentLabel: 'prueba_arka', // Dev
         executionRole: '/spagobi/user/admin',
         displayToolbar: true,
         displaySliders: true,
@@ -48,8 +49,9 @@ export class RegistroEntradasComponent implements OnInit {
     } else {
       const parametros = 'consecutivo=' + this.consecutivo + '&outputType=PDF';
       this.reportConfig = {
-        documentLabel: 'prueba_arka',
-        executionRole: '/spagobi/user/admin',
+        // documentLabel: 'ARKA reporte entrada', // Prod
+        documentLabel: 'prueba_arka', // Dev
+        eecutionRole: '/spagobi/user/admin',
         // parameters: {'PARAMETERS': 'param_1=1&param_2=2'},
         parameters: { 'PARAMETERS': parametros },
         displayToolbar: true,
@@ -65,8 +67,11 @@ export class RegistroEntradasComponent implements OnInit {
 
   callbackFunction(result, args, success) {
     if (success === true) {
-      const html = spagoBIService.getDocumentHtml(this.reportConfig);
-      this.spagoBIDocumentArea.nativeElement.innerHTML = html;
+
+      const iframeSpago = spagoBIService.getDocumentHtml(this.reportConfig);
+      this.url = iframeSpago.split('"')[3];
+      // debugger;
+      // this.spagoBIDocumentArea.nativeElement.innerHTML = html;
     } else {
       // console.info('ERROR: authentication failed! Invalid username and/or password ');
       const message = this.translate.instant('reportes.error_obteniendo_reporte');

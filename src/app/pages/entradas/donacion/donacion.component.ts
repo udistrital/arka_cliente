@@ -11,6 +11,7 @@ import { Entrada } from '../../../@core/data/models/entrada/entrada';
 import { TipoEntrada } from '../../../@core/data/models/entrada/tipo_entrada';
 import { NavigationExtras, Router } from '@angular/router';
 import { NbStepperComponent } from '@nebular/theme';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'ngx-donacion',
@@ -303,12 +304,14 @@ export class DonacionComponent implements OnInit {
     if (this.validar) {
       const detalle = {
         acta_recibido_id: +this.actaRecibidoId,
-        consecutivo: 'P8-1-2019', // REVISAR
+        consecutivo: 'P4-' + this.actaRecibidoId + '-' + new Date().getFullYear(),
         documento_contable_id: 1, // REVISAR
         contrato_id: +this.contratoEspecifico.NumeroContratoSuscrito,
         vigencia_contrato: this.contratoForm.value.vigenciaCtrl,
         vigencia_solicitante: this.solicitanteForm.value.fechaCtrl,
         ordenador_gasto_id: +this.ordenadorId,
+        tipo_contrato: this.opcionTipoContrato === '14' ? 'Orden de Servicios' :
+        this.opcionTipoContrato === '15' ? 'Orden de Compra' : '',
       };
       const movimientoAdquisicion = {
         Observacion: this.observacionForm.value.observacionCtrl,
@@ -326,11 +329,12 @@ export class DonacionComponent implements OnInit {
 
       this.entradasHelper.postEntrada(movimientoAdquisicion).subscribe((res: any) => {
         if (res !== null) {
-          this.pUpManager.showSuccesToast('Registro Exitoso');
-          this.pUpManager.showSuccessAlert('Entrada registrada satisfactoriamente!' +
-            '\n ENTRADA N°: P8-3-2019'); // SE DEBE MOSTRAR EL CONSECUTIVO REAL
-
-          const navigationExtras: NavigationExtras = { state: { consecutivo: res.Id } }; // REVISAR POR QUÉ RES LLEGA 0
+          (Swal as any).fire({
+            type: 'success',
+            title: 'Entrada N° ' + `${detalle.consecutivo}` + ' Registrada',
+            text: 'La Entrada N° ' + `${detalle.consecutivo}` + ' ha sido registrada de forma exitosa',
+          });
+          const navigationExtras: NavigationExtras = { state: { consecutivo: detalle.consecutivo } };
           this.router.navigate(['/pages/reportes/registro-entradas'], navigationExtras);
         } else {
           this.pUpManager.showErrorAlert('No es posible hacer el registro.');

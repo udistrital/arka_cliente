@@ -18,6 +18,7 @@ export class ConsultaSolicitudComponent implements OnInit {
   detalle: boolean;
   listColumns: object;
   salidaId: any;
+  mostrar: boolean;
   Editar: boolean = false;
   @Input('Editar')
   set name(edit: boolean){
@@ -94,6 +95,7 @@ export class ConsultaSolicitudComponent implements OnInit {
     if (this.Editar) {
       this.bodegaHelper.getSolicitudesBodegaPendiente().subscribe(res => {
         if (res !== null) {
+          this.mostrar = true;
           // console.log(res)
           let detalle: any;
           res.forEach(elemento => {
@@ -118,6 +120,7 @@ export class ConsultaSolicitudComponent implements OnInit {
       this.bodegaHelper.getSolicitudesBodega().subscribe(res => {
         if (Object.keys(res[0]).length !== 0) {
           // console.log(res)
+          this.mostrar = true;
           let detalle: any;
           res.forEach(elemento => {
             detalle = JSON.parse(elemento.Detalle);
