@@ -1,6 +1,3 @@
-<p>
-  caja-menor works!
-</p>
 <h3 class="pt-4 pb-4">Entrada por Adquisión Caja Menor</h3>
 <p class="font-weight-bold font-italic pb-2">Acta de recibido # {{ actaRecibidoId }}</p>
 
@@ -78,7 +75,40 @@
       <button nbButton nbStepperNext>{{'GLOBAL.siguiente' | translate}}</button>
     </form>
   </nb-step>
-
+  
+  <!-- FACTURA -->
+  <nb-step [stepControl]="facturaForm" label="{{'GLOBAL.factura' | translate}}">
+    <form [formGroup]="facturaForm" class="step-container">
+      <h5>{{'GLOBAL.factura' | translate}}</h5>
+      <div class="row">
+        <div class="form-group col-sm">
+          <label>{{'GLOBAL.numero_factura' | translate}}</label>
+          <div class="input-group">
+            <select class="form-control" (change)="changeSelectSoporte($event)">
+              <option disabled selected>{{'GLOBAL.seleccionar' | translate}}...</option>
+              <option *ngFor="let item of soportes" value="{{ item.Id }}">{{ item.Consecutivo }}</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group col-sm">
+          <label>{{'GLOBAL.proveedor' | translate}}</label>
+          <div class="input-group">
+            <input nbInput type="text" shape="semi-round" placeholder="{{'GLOBAL.razon_social' | translate}}"
+              class="form-control" value="{{proveedor}}" [readonly]="true" />
+          </div>
+        </div>
+        <div class="form-group col-sm">
+          <label>{{'GLOBAL.fecha_factura' | translate}}</label>
+          <div class="input-group">
+            <input nbInput type="text" shape="semi-round" placeholder="{{'GLOBAL.fecha_factura' | translate}}"
+              class="form-control" value="{{ fechaFactura }}" [readonly]="true">
+          </div>
+        </div>
+      </div>
+      <button nbButton nbStepperPrevious>{{'GLOBAL.anterior' | translate}}</button>
+      <button type="button" nbButton nbStepperNext>{{'GLOBAL.siguiente' | translate}}</button>
+    </form>
+  </nb-step>
   <!-- SOPORTE -->
   <nb-step [stepControl]="soporteForm" label="{{'GLOBAL.soporte' | translate}}">
     <h5>{{'GLOBAL.soporte' | translate}}</h5>
