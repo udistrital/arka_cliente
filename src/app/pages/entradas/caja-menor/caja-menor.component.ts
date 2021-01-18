@@ -45,7 +45,7 @@ export class CajaMenorComponent implements OnInit {
 
   @Input() actaRecibidoId: string;
 
-  constructor(private router: Router, private entradasHelper: EntradaHelper, private pUpManager: PopUpManager, 
+  constructor(private router: Router, private entradasHelper: EntradaHelper, private pUpManager: PopUpManager,
     private actaRecibidoHelper: ActaRecibidoHelper, private fb: FormBuilder,
     private nuxeoService: NuxeoService, private sanitization: DomSanitizer, private documentoService: DocumentoService,
     private translate: TranslateService) {
