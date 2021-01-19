@@ -46,6 +46,7 @@
           <div class="form-group col-sm">
             <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Ubicacion' | translate}}</label>
             <select nbInput type="text" class="form-control" formControlName="Ubicacion">
+              <option value=""></option>
               <option *ngFor="let ubicacion of Ubicaciones" [(value)]="ubicacion.Id">{{ubicacion.Nombre}}
               </option>
             </select>
