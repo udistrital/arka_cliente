@@ -40,6 +40,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
   Sedes: any;
   Dependencias: any;
   ConsumoControlado: any;
+  Clases: any;
   Devolutivo: any;
   DatosSeleccionados: any;
   formulario: boolean;
@@ -75,6 +76,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
     this.listService.findSubgruposDevolutivo();
     this.listService.findDependencias();
     this.listService.findSedes();
+    this.listService.findClases();
     this.navigationSubscription = this.router.events.subscribe((e: any) => {
       // If it is a NavigationEnd event re-initalise the component
       if (e instanceof NavigationEnd) {
@@ -95,7 +97,13 @@ export class TablaElementosAsignadosComponent implements OnInit {
 
   }
   ngOnInit() {
-
+    this.respuesta = undefined;
+    this.source = new LocalDataSource(); // create the source
+    this.source2 = new LocalDataSource();
+    this.elementos = new Array<Elemento>();
+    this.Datos2 = new Array<any>();
+    this.cargarCampos();
+    this.loadLists();
   }
   initialiseInvites() {
     // Set default values and re-fetch any data you need.
@@ -436,11 +444,12 @@ export class TablaElementosAsignadosComponent implements OnInit {
         elemento.Asignado = false;
         elemento.Dependencia = null;
         elemento.Ubicacion = null;
+        // console.log({Consumo:this.Consumo, ConsumoCon:this.ConsumoControlado});
         if (datos[index].TipoBienId.Id === 1 && Object.keys(this.Consumo[0]).length !== 0) {
-          elemento.SubgrupoCatalogoId = this.Consumo.find(x => x.Id === datos[index].SubgrupoCatalogoId);
+          elemento.SubgrupoCatalogoId = this.Consumo.find(x => x.SubgrupoId.Id === datos[index].SubgrupoCatalogoId).SubgrupoId;
         }
         if (datos[index].TipoBienId.Id === 2 && Object.keys(this.ConsumoControlado[0]).length !== 0) {
-          elemento.SubgrupoCatalogoId = this.ConsumoControlado.find(x => x.Id === datos[index].SubgrupoCatalogoId);
+          elemento.SubgrupoCatalogoId = this.ConsumoControlado.find(x => x.SubgrupoId.Id === datos[index].SubgrupoCatalogoId).SubgrupoId;
         }
         if (datos[index].TipoBienId.Id === 3 && Object.keys(this.Devolutivo[0]).length !== 0) {
           elemento.SubgrupoCatalogoId = this.Devolutivo.find(x => x.Id === datos[index].SubgrupoCatalogoId);
@@ -467,6 +476,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
         this.bandera2 = true;
       }
       this.source.load(this.Datos);
+      // console.log(this.source)
     }
   }
   AjustarDatos2(datos: any[]) {
@@ -506,15 +516,16 @@ export class TablaElementosAsignadosComponent implements OnInit {
           }
         }
         if (datos[index].TipoBienId.Id === 1 && Object.keys(this.Consumo[0]).length !== 0) {
-          elemento.SubgrupoCatalogoId = this.Consumo.find(x => x.Id === datos[index].SubgrupoCatalogoId);
+          elemento.SubgrupoCatalogoId = this.Consumo.find(x => x.SubgrupoId.Id === datos[index].SubgrupoCatalogoId.Id).SubgrupoId;
         }
         if (datos[index].TipoBienId.Id === 2 && Object.keys(this.ConsumoControlado[0]).length !== 0) {
-          elemento.SubgrupoCatalogoId = this.ConsumoControlado.find(x => x.Id === datos[index].SubgrupoCatalogoId);
+          elemento.SubgrupoCatalogoId = this.ConsumoControlado.find(x => x.SubgrupoId.Id === datos[index].SubgrupoCatalogoId.Id).SubgrupoId;
         }
         if (datos[index].TipoBienId.Id === 3 && Object.keys(this.Devolutivo[0]).length !== 0) {
-          elemento.SubgrupoCatalogoId = this.Devolutivo.find(x => x.Id === datos[index].SubgrupoCatalogoId);
+          elemento.SubgrupoCatalogoId = this.Devolutivo.find(x => x.Id === datos[index].SubgrupoCatalogoId.Id).SubgrupoId;
         }
-        elemento.SubgrupoCatalogoId = datos[index].SubgrupoCatalogoId;
+        // elemento.SubgrupoCatalogoId = datos[index].SubgrupoCatalogoId;
+        // console.log(elemento);
         datos2.push(elemento);
       }
     }
