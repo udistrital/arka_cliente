@@ -109,21 +109,6 @@
       <button type="button" nbButton nbStepperNext>{{'GLOBAL.siguiente' | translate}}</button>
     </form>
   </nb-step>
-  <!-- SOPORTE -->
-  <nb-step [stepControl]="soporteForm" label="{{'GLOBAL.soporte' | translate}}">
-    <h5>{{'GLOBAL.soporte' | translate}}</h5>
-    <form [formGroup]="soporteForm" class="step-container">
-      <div class="pb-3">
-        <label>{{'GLOBAL.acta_produccion' | translate}}</label>
-        <input nbInput type="file" class="form-control-file" id="soporte" formControlName="soporteCtrl"
-          [ngClass]="{'form-control-danger': soporteForm.invalid && (soporteForm.dirty || soporteForm.touched)}"
-          (change)="getSoporte($event)" accept="application/pdf" data-max-size="5120">
-      </div>
-      <button nbButton nbStepperPrevious>{{'GLOBAL.anterior' | translate}}</button>
-      <button type="button" (click)="onSoporteSubmit()" nbButton
-        nbStepperNext>{{'GLOBAL.siguiente' | translate}}</button>
-    </form>
-  </nb-step>
 
   <!-- OBSERVACIONES -->
   <nb-step [stepControl]="observacionForm" label="{{'GLOBAL.observaciones' | translate}}">

@@ -216,7 +216,7 @@ export class ElaboracionPropiaComponent implements OnInit {
 
       const detalle = {
         acta_recibido_id: +this.actaRecibidoId,
-        consecutivo: 'P8-2-2019', // REVISAR
+        consecutivo: 'P8-1-2019', // REVISAR
         documento_contable_id: 1, // REVISAR
         vigencia_ordenador: this.fechaSolicitante,
         ordenador_gasto_id: +this.ordenadorId,

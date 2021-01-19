@@ -162,49 +162,8 @@ changeSolicitante(event) {
     this.validar = true;
   }
 
-
-  // MÉTODOS PARA CARGAR SOPORTES
-  getSoporte(event) {
-    if (event.target.files.length > 0) {
-      const file = event.target.files[0];
-      if (file.type === 'application/pdf') {
-        file.urlTemp = URL.createObjectURL(event.srcElement.files[0]);
-        file.url = this.cleanURL(file.urlTemp);
-        file.IdDocumento = 12; // tipo de documento (API documentos_crud)
-        file.file = event.target.files[0];
-        this.fileDocumento = file;
-      } else {
-        this.pUpManager.showToast('error', this.translate.instant('GLOBAL.error'), this.translate.instant('ERROR.formato_documento_pdf'));
-      }
-    }
-  }
-
   cleanURL(oldURL: string): SafeResourceUrl {
     return this.sanitization.bypassSecurityTrustUrl(oldURL);
-  }
-
-  postSoporteNuxeo(files) {
-    return new Promise((resolve, reject) => {
-      files.forEach((file) => {
-        file.Id = file.nombre;
-        file.nombre = 'soporte_' + file.IdDocumento + '_entradas';
-        // file.key = file.Id;
-        file.key = 'soporte_' + file.IdDocumento;
-      });
-      this.nuxeoService.getDocumentos$(files, this.documentoService)
-        .subscribe(response => {
-          if (Object.keys(response).length === files.length) {
-            // console.log("response", response);
-            files.forEach((file) => {
-              this.uidDocumento = file.uid;
-              this.idDocumento = response[file.key].Id;
-            });
-            resolve(true);
-          }
-        }, error => {
-          reject(error);
-        });
-    });
   }
 
   /**
@@ -228,7 +187,7 @@ changeSolicitante(event) {
   }
 
   getFormatoEntrada() {
-    this.entradasHelper.getFormatoEntradaByName('Elaboración Propia').subscribe(res => {
+    this.entradasHelper.getFormatoEntradaByName('Caja Menor').subscribe(res => {
       if (res !== null) {
         this.formatoTipoMovimiento = res;
       }
@@ -251,11 +210,9 @@ changeSolicitante(event) {
    */
   async onSubmit() {
     if (this.validar) {
-      await this.postSoporteNuxeo([this.fileDocumento]);
-
       const detalle = {
         acta_recibido_id: +this.actaRecibidoId,
-        consecutivo: 'P8-2-2019', // REVISAR
+        consecutivo: 'P8-5-2019', // REVISAR
         documento_contable_id: 1, // REVISAR
         vigencia_ordenador: this.fechaSolicitante,
         ordenador_gasto_id: +this.ordenadorId,
@@ -279,7 +236,7 @@ changeSolicitante(event) {
         if (res !== null) {
           this.pUpManager.showSuccesToast('Registro Exitoso');
           this.pUpManager.showSuccessAlert('Entrada registrada satisfactoriamente!' +
-            '\n ENTRADA N°: P8-2-2019'); // SE DEBE MOSTRAR EL CONSECUTIVO REAL
+            '\n ENTRADA N°: P8-5-2019'); // SE DEBE MOSTRAR EL CONSECUTIVO REAL
 
           const navigationExtras: NavigationExtras = { state: { consecutivo: res.Id } }; // REVISAR POR QUÉ RES LLEGA 0
           this.router.navigate(['/pages/reportes/registro-entradas'], navigationExtras);
