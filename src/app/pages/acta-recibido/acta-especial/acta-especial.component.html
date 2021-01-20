@@ -61,10 +61,62 @@
             formArrayName="Formulario2">
             <nb-card>
               <nb-card-body>
+                <mat-tab-group [selectedIndex]="selected.value" (selectedIndexChange)="selected.setValue($event)">
+                  <mat-tab *ngFor="let soporte of firstForm.get('Formulario2').controls; let i = index"
+                  [formGroupName]="i">
+                <div class="col">
+                  <div class="form-group col-sm">
+                    <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Soporte' | translate}}</label>
+                    <nb-card>
+                      <nb-card-body>
+                        <div class="col-sm soporte">
+                          <div>
+                            <button nbButton type="button" (click)="fileInputDocumento.click()"
+                              *ngIf="getPermisoEditar(permisos.Acta)">
+                              <i class="fas fa-file-upload fa-2x"></i>
+                              <input #fileInputDocumento type="file" (change)="onInputFileDocumento($event, i)"
+                                style="display:none;" accept="application/pdf" data-max-size="5120" />
+                            </button>
+                          </div>
+                          <p></p>
+                          <p *ngIf="Validador[i] && fileDocumento[i]">{{fileDocumento[i].name}}</p>
+                          <p *ngIf="!Validador[i]">
+                            {{'GLOBAL.Acta_Recibido.CapturarElementos.ValidadorPlaceholder2' | translate }}
+                          </p>
+                          <div>
+                            <button nbButton type="button" *ngIf="fileDocumento[i]" target="_blank"
+                              (click)="download(i)">
+                              Ver
+                            </button>
+                            <button nbButton type="button" *ngIf="fileDocumento[i] === undefined" target="_blank"
+                              (click)="downloadFile(uidDocumento[i])">
+                              Ver
+                            </button>
+                          </div>
+                          <p></p>
+                          <div>
+                            <button type="button" *ngIf="Validador[i] && getPermisoEditar(permisos.Acta)"
+                              class="btn btn-primary" (click)="clearFile(i)">
+                              {{'GLOBAL.Acta_Recibido.CapturarElementos.LimpiarEspacioButton' | translate }}
+                            </button>
+                          </div>
+                        </div>
+                      </nb-card-body>
+                    </nb-card>
+
+                  </div>
+                </div>
+              </mat-tab>
+                </mat-tab-group>
+              </nb-card-body>
+            </nb-card>
+
+            <nb-card>
+              <nb-card-body>
                 <div>
                   <ngx-capturar-elementos *ngIf="getPermisoEditar(permisos.Elementos)" (click)="usarLocalStorage()"
-                    [DatosRecibidos]="Elementos__Soporte[0]" (DatosTotales)="ver2($event)"
-                    (DatosEnviados)="ver($event)" (click)="usarLocalStorage()" (change)="usarLocalStorage()">
+                    [DatosRecibidos]="Elementos__Soporte[0]" (DatosTotales)="ver2($event)" (DatosEnviados)="ver($event)"
+                    (click)="usarLocalStorage()" (change)="usarLocalStorage()">
                   </ngx-capturar-elementos>
                 </div>
               </nb-card-body>
