@@ -215,7 +215,8 @@ export class ConsultaSalidasComponent implements OnInit {
   loadSalidas(): void {
 
     this.salidasHelper.getSalidas().subscribe(res1 => {
-      if (res1[0]) {
+      this.mostrar = true;
+      if (res1[0] !== undefined && res1[0] !== null) {
         if (Object.keys(res1[0]).length !== 0) {
           this.source.load(res1);
         }
