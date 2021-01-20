@@ -215,12 +215,12 @@ export class ConsultaSalidasComponent implements OnInit {
   loadSalidas(): void {
 
     this.salidasHelper.getSalidas().subscribe(res1 => {
-      this.mostrar = true;
-      // console.log(res1);
-      if (Object.keys(res1[0]).length !== 0) {
-        this.source.load(res1);
-      }
+      if (res1[0]) {
+        if (Object.keys(res1[0]).length !== 0) {
+          this.source.load(res1);
+        }
 
+      }
     });
   }
   onCustom(event) {
