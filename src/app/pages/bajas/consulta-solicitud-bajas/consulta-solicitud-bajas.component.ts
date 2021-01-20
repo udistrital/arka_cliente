@@ -30,7 +30,7 @@ export class ConsultaSolicitudBajasComponent implements OnInit {
     this.source = new LocalDataSource();
     this.bajasHelper.getSolicitudes().subscribe((res: any) => {
       // console.log(res);
-      if (res !== "200" && Object.keys(res[0]).length !== 0) {
+      if (res !== '200' && Object.keys(res[0]).length !== 0) {
         this.source.load(res);
       }
     });
