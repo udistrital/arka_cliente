@@ -115,14 +115,14 @@ export class VerificacionElementosComponent implements OnInit {
       },
       mode: 'external',
       columns: {
-        TipoBienId: {
-          title: 'Tipo de Bien',
+        SubgrupoCatalogoId: {
+          title: 'Clase',
           valuePrepareFunction: (value: any) => {
-            return value;
+            return value.Nombre;
           },
         },
-        SubgrupoCatalogoId: {
-          title: 'Subgrupo',
+        TipoBienId: {
+          title: 'Tipo de Bien',
           valuePrepareFunction: (value: any) => {
             return value;
           },
@@ -221,15 +221,16 @@ export class VerificacionElementosComponent implements OnInit {
         elemento.UnidadMedida = datos[index].UnidadMedida;
         elemento.ValorIva = datos[index].ValorIva;
         elemento.PorcentajeIvaId = datos[index].PorcentajeIvaId;
+        // console.log(datos[index])
 
         if (datos[index].TipoBienId === 'Consumo' && Object.keys(this.Consumo[0]).length !== 0) {
-          elemento.SubgrupoCatalogoId = this.Consumo.find(x => x.Id === datos[index].SubgrupoCatalogoId).Nombre;
+          elemento.SubgrupoCatalogoId = this.Consumo.find(x => x.SubgrupoId.Id === datos[index].SubgrupoCatalogoId).SubgrupoId;
         }
         if (datos[index].TipoBienId === 'Consumo Controlado' && Object.keys(this.ConsumoControlado[0]).length !== 0) {
-          elemento.SubgrupoCatalogoId = this.ConsumoControlado.find(x => x.Id === datos[index].SubgrupoCatalogoId).Nombre;
+          elemento.SubgrupoCatalogoId = this.ConsumoControlado.find(x => x.SubgrupoId.Id === datos[index].SubgrupoCatalogoId).SubgrupoId;
         }
-        if (datos[index].TipoBienId === 'Devolutivo' && Object.keys(this.Devolutivo[0]).length !== 0) {
-          elemento.SubgrupoCatalogoId = this.Devolutivo.find(x => x.Id === datos[index].SubgrupoCatalogoId).Nombre;
+        if (datos[index].TipoBienId.Id === 'Devolutivo' && Object.keys(this.Devolutivo[0]).length !== 0) {
+          elemento.SubgrupoCatalogoId = this.Devolutivo.find(x => x.SubgrupoId.Id === datos[index].SubgrupoCatalogoId).SubgrupoId;
         }
         this.Datos.push(elemento);
       }
