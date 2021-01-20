@@ -1,4 +1,4 @@
-import { Subgrupo } from './subgrupo';
+import { SubgrupoID } from './jerarquia';
 
 export class Elemento {
     Id: number;
@@ -9,5 +9,5 @@ export class Elemento {
     FechaCreacion: Date;
     FechaModificacion: Date;
     Activo: boolean;
-    SubgrupoId: Subgrupo;
+    SubgrupoId: SubgrupoID;
 }

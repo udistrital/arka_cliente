@@ -175,6 +175,18 @@ export class AutenticationService {
 
     expired() {
         return (new Date(window.sessionStorage.getItem('expires_at')) < new Date());
+        // return (this.remains() > 0.0);
+    }
+
+    /**
+     * Tiempo antes que expire el token, en milisegundos.
+     */
+    remains(): number {
+        const vence = new Date(window.localStorage.getItem('expires_at'));
+        const ahora = new Date();
+        const diff = vence.getTime() - ahora.getTime();
+        // console.log({ahora,vence, diff});
+        return diff;
     }
 
     private generateState() {

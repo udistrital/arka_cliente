@@ -12,7 +12,7 @@ import { Elemento, Impuesto } from '../../../@core/data/models/acta_recibido/ele
 import { TipoBien } from '../../../@core/data/models/acta_recibido/tipo_bien';
 import { SoporteActa, Ubicacion } from '../../../@core/data/models/acta_recibido/soporte_acta';
 import { Proveedor } from '../../../@core/data/models/acta_recibido/Proveedor';
-import { EstadoActa } from '../../../@core/data/models/acta_recibido/estado_acta';
+import { EstadoActa_t } from '../../../@core/data/models/acta_recibido/estado_acta';
 import { EstadoElemento } from '../../../@core/data/models/acta_recibido/estado_elemento';
 import { HistoricoActa } from '../../../@core/data/models/acta_recibido/historico_acta';
 import { TransaccionSoporteActa, TransaccionActaRecibido } from '../../../@core/data/models/acta_recibido/transaccion_acta_recibido';
@@ -298,16 +298,19 @@ export class VerificacionActaRecibidoComponent implements OnInit {
         });
   }
 
+  // Acta Verificada
   onFirstSubmit() {
     this.Datos = this.firstForm.value;
     const Transaccion_Acta = new TransaccionActaRecibido();
     Transaccion_Acta.ActaRecibido = this.Registrar_Acta(this.Datos.Formulario1, this.Datos.Formulario3);
-    Transaccion_Acta.UltimoEstado = this.Registrar_Estado_Acta(Transaccion_Acta.ActaRecibido, 5);
+    Transaccion_Acta.UltimoEstado = this.Registrar_Estado_Acta(Transaccion_Acta.ActaRecibido, EstadoActa_t.Aceptada);
+
     const Soportes = new Array<TransaccionSoporteActa>();
     for (const soporte of this.Datos.Formulario2) {
       Soportes.push(this.Registrar_Soporte(soporte, soporte.Elementos, Transaccion_Acta.ActaRecibido));
     }
     Transaccion_Acta.SoportesActa = Soportes;
+
     this.Actas_Recibido.putTransaccionActa(Transaccion_Acta, Transaccion_Acta.ActaRecibido.Id).subscribe((res: any) => {
       if (res !== null) {
         (Swal as any).fire({
@@ -318,7 +321,9 @@ export class VerificacionActaRecibidoComponent implements OnInit {
             `${res.ActaRecibido.Id}` + this.translate.instant('GLOBAL.Acta_Recibido.VerificacionActa.Verificada'),
         }).then((willDelete) => {
           if (willDelete.value) {
-            window.location.reload();
+            this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+              this.router.navigateByUrl('/pages/acta_recibido/consulta_acta_recibido');
+            });
           }
         });
       } else {
@@ -331,12 +336,13 @@ export class VerificacionActaRecibidoComponent implements OnInit {
     });
   }
 
+  // Acta rechazada
   onFirstSubmit2() {
 
     this.Datos = this.firstForm.value;
     const Transaccion_Acta = new TransaccionActaRecibido();
     Transaccion_Acta.ActaRecibido = this.Registrar_Acta(this.Datos.Formulario1, this.Datos.Formulario3);
-    Transaccion_Acta.UltimoEstado = this.Registrar_Estado_Acta(Transaccion_Acta.ActaRecibido, 3);
+    Transaccion_Acta.UltimoEstado = this.Registrar_Estado_Acta(Transaccion_Acta.ActaRecibido, EstadoActa_t.EnModificacion);
     const Soportes = new Array<TransaccionSoporteActa>();
     for (const soporte of this.Datos.Formulario2) {
       Soportes.push(this.Registrar_Soporte(soporte, soporte.Elementos, Transaccion_Acta.ActaRecibido));
@@ -352,7 +358,9 @@ export class VerificacionActaRecibidoComponent implements OnInit {
             `${res.ActaRecibido.Id}` + this.translate.instant('GLOBAL.Acta_Recibido.VerificacionActa.Rechazada'),
         }).then((willDelete) => {
           if (willDelete.value) {
-            window.location.reload();
+            this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+              this.router.navigateByUrl('/pages/acta_recibido/consulta_acta_recibido');
+            });
           }
         });
       } else {
@@ -374,7 +382,7 @@ export class VerificacionActaRecibidoComponent implements OnInit {
     Acta_de_Recibido.FechaCreacion = new Date();
     Acta_de_Recibido.FechaModificacion = new Date();
     Acta_de_Recibido.FechaVistoBueno =  new Date();
-    Acta_de_Recibido.RevisorId = parseInt(window.localStorage.getItem('persona_id'), 10);
+    Acta_de_Recibido.RevisorId = this.userService.getPersonaId();
     Acta_de_Recibido.UbicacionId = this.Ubicaciones.find(ubicacion => ubicacion.Nombre === Datos.Ubicacion).Id;
     Acta_de_Recibido.Observaciones = Datos2.Datos_Adicionales;
 
@@ -478,7 +486,28 @@ export class VerificacionActaRecibidoComponent implements OnInit {
   valor_iva(subtotal: string, descuento: string, porcentaje_iva: string) {
     return ((parseFloat(subtotal) - parseFloat(descuento)) * parseFloat(porcentaje_iva) / 100);
   }
+
+  revisorValido(): boolean {
+    if (!this.userService.getPersonaId()) {
+      (Swal as any).fire({
+        title: this.translate.instant('GLOBAL.error'),
+        text: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.ErrorRevisorMsg'),
+        type: 'error',
+        showCancelButton: false,
+        confirmButtonColor: '#3085d6',
+        confirmButtonText: 'Ok',
+      });
+      return false;
+    } else {
+      return true;
+    }
+  }
+
+  // Validar Acta? (Aprobar?)
   Revisar_Totales() {
+    if (!this.revisorValido()) {
+      return;
+    }
 
     (Swal as any).fire({
       title: this.translate.instant('GLOBAL.Acta_Recibido.VerificacionActa.DatosVeridicosTitle'),
@@ -495,7 +524,12 @@ export class VerificacionActaRecibidoComponent implements OnInit {
       }
     });
   }
+
+  // Rechazar Acta?
   Revisar_Totales2() {
+    if (!this.revisorValido()) {
+      return;
+    }
 
     (Swal as any).fire({
       title: this.translate.instant('GLOBAL.Acta_Recibido.VerificacionActa.DatosVeridicosTitle'),

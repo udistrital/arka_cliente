@@ -28,11 +28,14 @@ export const environment = {
   FINANCIERA_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/financiera_crud_api/v1/',
   MOVIMIENTOS_KRONOS_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/movimientos_crud/v1/',
   ARKA_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/arka_mid/v1/',
-  // ARKA_SERVICE: 'http://10.20.2.143:8084/v1/',
+  CUENTAS_CONTABLES_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/cuentas_contables_crud/',
+  // CUENTAS_CONTABLES_SERVICE: 'http://pruebasapi.intranetoas.udistrital.edu.co:8209/v1/',
+  // ARKA_SERVICE: 'http://10.20.2.238:8080/v1/',
   UNIDADES_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/administrativa_amazon_api/v1/',
   MOVIMIENTOS_ARKA_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/movimientos_arka_crud/v1/',
   // MOVIMIENTOS_ARKA_SERVICE: 'http://10.20.2.143:8090/v1/',
   CATALOGO_ELEMENTOS_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/catalogo_elementos_crud/v1/',
+  // CATALOGO_ELEMENTOS_SERVICE: 'http://pruebasapi.intranetoas.udistrital.edu.co:8120/v1/',
   // CATALOGO_ELEMENTOS_SERVICE: 'http://10.20.2.143:8087/v1/',
   TERCEROS_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/terceros_crud/v1/',
   SPAGOBI: {
@@ -42,6 +45,7 @@ export const environment = {
     CONTEXTPATH: 'SpagoBI',
     USER: 'sergio_orjuela',
     PASSWORD: 'sergio_orjuela',
+    DOCUMENTLABEL: 'prueba_arka',
   },
   TOKEN: {
     AUTORIZATION_URL: 'https://autenticacion.portaloas.udistrital.edu.co/oauth2/authorize',

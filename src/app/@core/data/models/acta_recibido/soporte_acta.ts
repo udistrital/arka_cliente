@@ -3,7 +3,7 @@ import { Proveedor } from './Proveedor';
 
 export class SoporteActa {
     Id: number;
-    Consecutivo: number;
+    Consecutivo: string;
     ProveedorId: number; // CAMBIAR POR MODELO CUANDO SE PUEDA CONSULTAR
     FechaSoporte: Date;
     DocumentoId: number;
@@ -28,7 +28,7 @@ export class Dependencia {
 
 export class SoporteActaProveedor {
     Id: number;
-    Consecutivo: number;
+    Consecutivo: string;
     Proveedor: Proveedor; // CAMBIAR POR MODELO CUANDO SE PUEDA CONSULTAR
     FechaSoporte: Date;
     ActaRecibidoId: ActaRecibido;

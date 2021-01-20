@@ -1,259 +1,197 @@
 <div *ngIf="!firstForm" [nbSpinner]="!firstForm">
   <nb-card>
     <nb-card-header>
-
     </nb-card-header>
     <nb-card-body>
-
     </nb-card-body>
   </nb-card>
 </div>
 
 <div class="col-lg-12" *ngIf="firstForm">
-
   <form [formGroup]="firstForm" #fform="ngForm" class="step-container">
     <nb-card>
       <nb-card-header>{{'GLOBAL.Acta_Recibido.RegistroActa.Title' | translate}}</nb-card-header>
-        <nb-card-body>
-          <mat-vertical-stepper [linear]="true" #stepper>
-            <mat-step label="{{'GLOBAL.Acta_Recibido.RegistroActa.DatosTitle' | translate}}" formGroupName="Formulario1">
-                <nb-card [nbSpinner]="!Sedes">
-                  <nb-card-body class="bla">
-                    <div class="row" (click)="usarLocalStorage()">
-                      <div class="form-group col-sm">
-                        <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Sede' | translate}}</label>
-                          <select nbInput type="text" class="form-control" formControlName="Sede"
-                          (click)="usarLocalStorage(); Traer_Relacion_Ubicaciones();" required>
-                            <option *ngFor="let sede of Sedes" [(value)]="sede.Id">{{sede.Nombre}}</option>
-                          </select>
-                        <p class="campo" *ngIf="firstForm.get('Formulario1').get('Sede').invalid">
-                          {{'GLOBAL.placeholder' | translate}}</p>
-                    </div>
-                      <div class="form-group col-sm">
-                        <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Dependencia' | translate}}</label>
-                          <ng2-completer style="border: 0rem" inputClass="form-control" nbInput (keyup)="usarLocalStorage(); Traer_Relacion_Ubicaciones;"
-                          [datasource]="dataService3" formControlName="Dependencia" [minSearchLength]="2"
-                          (change)="Traer_Relacion_Ubicaciones()"
-                          placeholder="{{'GLOBAL.Acta_Recibido.RegistroActa.SeleccioneFiltro' | translate}}">
-                          </ng2-completer>
-                          <p class="campo" *ngIf="firstForm.get('Formulario1').get('Dependencia').invalid">
-                          {{'GLOBAL.placeholder' | translate}}</p>
-                    </div>
-                      <div class="form-group col-sm">
-                        <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Ubicacion' | translate}}</label>
-                          <select nbInput type="text" class="form-control" formControlName="Ubicacion" (click)="Traer_Relacion_Ubicaciones();" required>
-                            <option value="" selected></option>
-                            <option *ngFor="let ubicacion of UbicacionesForm" [(value)]="ubicacion.Id">{{ubicacion.Nombre}}</option>
-                          </select>
-                        <p class="campo" *ngIf="firstForm.get('Formulario1').get('Ubicacion').invalid">
-                        {{'GLOBAL.placeholder' | translate}}</p>
-                      </div>
-                    </div>
-                  </nb-card-body>
-                <nb-card-footer>
-                  <button nbButton matStepperNext [disabled]="!firstForm.get('Formulario1').valid" (click)="usarLocalStorage()"
-                  class="float-right">{{'GLOBAL.Acta_Recibido.RegistroActa.SiguienteButton' | translate}}</button>
-                </nb-card-footer>
-              </nb-card>
-            </mat-step>
+      <nb-card-body [nbSpinner]="Registrando">
+        <mat-vertical-stepper [linear]="true" #stepper>
 
-            <mat-step label="{{'GLOBAL.Acta_Recibido.RegistroActa.SoporteTitle' | translate}}"
-              formArrayName="Formulario2">
-              <nb-card>
-                <nb-card-body>
-                  <mat-tab-group [selectedIndex]="selected.value" (selectedIndexChange)="selected.setValue($event)">
-                    <mat-tab *ngFor="let soporte of firstForm.get('Formulario2').controls; let i = index"
-                      [formGroupName]="i">
-                      <ng-template mat-tab-label>
-                        {{'GLOBAL.Acta_Recibido.RegistroActa.SoporteSubTitle' | translate}} &nbsp; {{i + 1}} &nbsp; &nbsp;
-                        &nbsp; &nbsp;<i class="fas fa-window-close" (click)="removeTab(i); usarLocalStorage()"></i>
-                      </ng-template>
-                      <div>
-                        <nb-card>
-                          <nb-card-body (click)="usarLocalStorage()">
-                            <div class="row">
-                              <div class="col">
-                                <div class="form-group col-sm">
-                                  <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Proveedor' | translate}}</label>
-                                  <ng2-completer style="border: 0rem" inputClass="form-control" [clearUnselected]="true"
-                                    placeholder="{{'GLOBAL.Acta_Recibido.RegistroActa.SeleccioneFiltro' | translate}}"
-                                    nbInput [datasource]="dataService2" formControlName="Proveedor"
-                                    (keyup)="usarLocalStorage()" [minSearchLength]="3">
-                                  </ng2-completer>
-                                  <p class="campo" *ngIf="firstForm.get('Formulario2').at(i).get('Proveedor').invalid">
-                                    {{'GLOBAL.placeholder' | translate}}</p>
-                                </div>
-                                <div class="form-group col-sm">
-                                  <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Consecutivo' | translate}}</label>
-                                  <div class="input-group">
-                                    <input nbInput type="text"
-                                      placeholder="{{'GLOBAL.Acta_Recibido.RegistroActa.SeleccioneFiltro' | translate}}"
-                                      class="form-control" formControlName="Consecutivo" (keyup)="usarLocalStorage()"
-                                      required>
-                                  </div>
-                                  <p class="campo" *ngIf="firstForm.get('Formulario2').at(i).get('Consecutivo').invalid">
-                                    {{'GLOBAL.placeholder' | translate}}</p>
-                                </div>
-                                <div class="form-group col-sm">
-                                  <label>{{'GLOBAL.Acta_Recibido.RegistroActa.FechaSoporte' | translate}}</label>
-                                  <div class="input-group">
-                                    <input nbInput
-                                      placeholder="{{'GLOBAL.Acta_Recibido.RegistroActa.FechaFiltro' | translate}}"
-                                      class="form-control" [nbDatepicker]="formpicker" (keyup)="usarLocalStorage()"
-                                      formControlName="Fecha_Factura" required>
-                                    <nb-datepicker #formpicker></nb-datepicker>
-                                  </div>
-                                  <p class="campo" *ngIf="firstForm.get('Formulario2').at(i).get('Fecha_Factura').invalid">
-                                    {{'GLOBAL.placeholder' | translate}}</p>
-                                </div>
-                              </div>
-                              <div class="col">
-                                
-                                <div class="form-group col-sm">
-                                  <!-- <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Soporte' | translate}}</label>
-                                  <input nbInput type="file" class="form-control-file"(keyup)="usarLocalStorage()" id="factura"
-                                    formControlName="Soporte" required>
-                                    <p class="campo" *ngIf="firstForm.get('Formulario2').at(i).get('Soporte').invalid">{{'GLOBAL.placeholder' | translate}}</p> -->
-    
-                                  <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Soporte' | translate}}</label>
-                                  <nb-card>
-    
-                                    <nb-card-body>
-                                      <div class="col-sm soporte">
-                                        <div>
-                                          <button nbButton type="button" (click)="fileInputDocumento.click()">
-                                            <i class="fas fa-file-upload fa-2x"></i>
-                                            <input #fileInputDocumento formControlName="Soporte" type="file"
-                                              (change)="onInputFileDocumento($event, i)" style="display:none;"
-                                              accept="application/pdf" data-max-size="5120" />
-                                          </button>
-                                        </div>
-                                        <p></p>
-                                        <p *ngIf="Validador[i]">{{fileDocumento[i].name}}</p>
-                                        <p *ngIf="!Validador[i]">
-                                          {{'GLOBAL.Acta_Recibido.CapturarElementos.ValidadorPlaceholder2' | translate }}</p>
-                                        <div>
-                                          <button nbButton type="button" *ngIf="fileDocumento[i]" target="_blank"
-                                            (click)="download(i)">
-                                            Ver
-                                          </button>
-                                        </div>
-                                        <p></p>
-                                        <div>
-                                          <button type="button" *ngIf="Validador[i]" class="btn btn-primary" (click)="clearFile(i)">
-                                            {{'GLOBAL.Acta_Recibido.CapturarElementos.LimpiarEspacioButton' | translate }}
-                                          </button>
-                                        </div>
-    
-                                      </div>
-                                    </nb-card-body>
-                                  </nb-card>
-    
-                                </div>
-                              </div>
-                            </div>
-                            
-                          </nb-card-body>
-                        </nb-card>
-
-                        <ngx-capturar-elementos (click)="usarLocalStorage()" [DatosRecibidos]="Elementos__Soporte[i]"
-                          (DatosTotales)="ver2($event,i)" (DatosEnviados)="ver($event, i)">
-                        </ngx-capturar-elementos>
-
-                      </div>
-                    </mat-tab>
-                    <mat-tab [disabled]="true">
-                      <ng-template mat-tab-label>
-                        <i class="fas fa-plus-square fa-2x" (click)="addTab(); usarLocalStorage()"></i>
-                      </ng-template>
-                    </mat-tab>
-                  </mat-tab-group>
-                </nb-card-body>
-                <nb-card-footer>
-                  <div class="justify-content-center">
-                    <button nbButton
-                      matStepperPrevious>{{'GLOBAL.Acta_Recibido.RegistroActa.AnteriorButton' | translate}}</button>
-                    <button nbButton matStepperNext (click)="Revisar_Totales(); usarLocalStorage()"
-                      [disabled]="!firstForm.get('Formulario1').valid || !firstForm.get('Formulario2').valid"
-                      class="float-right">{{'GLOBAL.Acta_Recibido.RegistroActa.SiguienteButton' | translate}}</button>
-                  </div>
-                </nb-card-footer>
-              </nb-card>
-
-            </mat-step>
-            <mat-step label="{{'GLOBAL.Acta_Recibido.RegistroActa.DatosAdicionales' | translate}}"
-              formGroupName="Formulario3">
-              <nb-card *ngIf="Totales">
-                <nb-card-header>{{'GLOBAL.Acta_Recibido.RegistroActa.Consolidado' | translate}}</nb-card-header>
-                <nb-card-body>
-                  <table>
-                    <tr>
-                      <td class="cell-3"></td>
-                      <td class="cell-3"></td>
-                      <td class="cell-3">{{'GLOBAL.Acta_Recibido.RegistroActa.Subtotal' | translate}}</td>
-                      <td class="cell-3"></td>
-                      <td class="cell-3">{{getGranSubtotal() | currency}}</td>
-                      <td class="cell-3"></td>
-                      <td class="cell-3"></td>
-                    </tr>
-                    <tr>
-                      <td class="cell-3"></td>
-                      <td class="cell-3"></td>
-                      <td class="cell-3">{{'GLOBAL.Acta_Recibido.RegistroActa.Descuento' | translate}}</td>
-                      <td class="cell-3"></td>
-                      <td class="cell-3">{{getGranDescuentos() | currency}}</td>
-                      <td class="cell-3"></td>
-                      <td class="cell-3"></td>
-                    </tr>
-                    <tr>
-                      <td class="cell-3"></td>
-                      <td class="cell-3"></td>
-                      <td class="cell-3">{{'GLOBAL.Acta_Recibido.RegistroActa.ValorIva' | translate}}</td>
-                      <td class="cell-3"></td>
-                      <td class="cell-3">{{getGranValorIva() | currency}}</td>
-                      <td class="cell-3"></td>
-                      <td class="cell-3"></td>
-                    </tr>
-                    <tr>
-                      <td class="cell-3"></td>
-                      <td class="cell-3"></td>
-                      <td class="cell-3">{{'GLOBAL.Acta_Recibido.RegistroActa.Total' | translate}}</td>
-                      <td class="cell-3"></td>
-                      <td class="cell-3">{{getGranTotal() | currency}}</td>
-                      <td class="cell-3"></td>
-                      <td class="cell-3"></td>
-                    </tr>
-                  </table>
-                </nb-card-body>
-              </nb-card>
-              <nb-card>
-                <nb-card-header>{{'GLOBAL.Acta_Recibido.RegistroActa.DatosAdicionales' | translate}}</nb-card-header>
-                <nb-card-body>
-                  <div class="form-group  col-lg-12">
-                    <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Observaciones' | translate}}</label>
-                    <div class="input-group">
-                      <textarea rows="5" placeholder="{{'GLOBAL.Acta_Recibido.RegistroActa.Observaciones2' | translate}}"
-                        class="form-control" formControlName="Datos_Adicionales" (keyup)="usarLocalStorage()"
-                        required></textarea>
-                    </div>
-                    <p class="campo" *ngIf="firstForm.get('Formulario3').get('Datos_Adicionales').invalid">
+          <!-- Datos iniciales -->
+          <mat-step label="{{'GLOBAL.Acta_Recibido.RegistroActa.DatosTitle' | translate}}" formGroupName="Formulario1">
+            <nb-card [nbSpinner]="!Sedes || !Dependencias">
+              <nb-card-body class="bla">
+                <div class="row" (click)="usarLocalStorage()">
+                  <div class="form-group col-sm">
+                    <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Sede' | translate}}</label>
+                    <select nbInput type="text" class="form-control" formControlName="Sede"
+                      (click)="usarLocalStorage(); Traer_Relacion_Ubicaciones();" required>
+                      <option *ngFor="let sede of Sedes" [(value)]="sede.Id">{{sede.Nombre}}</option>
+                    </select>
+                    <p class="campo" *ngIf="firstForm.get('Formulario1').get('Sede').invalid">
                       {{'GLOBAL.placeholder' | translate}}</p>
                   </div>
-                </nb-card-body>
-                <nb-card-footer>
-                  <div class="justify-content-center">
-                    <button nbButton
-                      matStepperPrevious>{{'GLOBAL.Acta_Recibido.RegistroActa.AnteriorButton' | translate}}</button>
-                    <button nbButton matStepperNext (click)="Revisar_Totales2()"
-                      [disabled]="!firstForm.get('Formulario3').valid || !firstForm.get('Formulario2').valid || !firstForm.get('Formulario3').valid"
-                      class="float-right">{{'GLOBAL.Acta_Recibido.RegistroActa.GuardarCambiosButton' | translate}}</button>
+                  <div class="form-group col-sm">
+                    <label id="lbl-dependencia">{{'GLOBAL.Acta_Recibido.RegistroActa.Dependencia' | translate}}</label>
+                    <ng2-completer style="border: 0rem" inputClass="form-control" nbInput
+                      (keyup)="usarLocalStorage(); Traer_Relacion_Ubicaciones;" [datasource]="dataService3"
+                      formControlName="Dependencia" [minSearchLength]="2" (change)="usarLocalStorage(); Traer_Relacion_Ubicaciones();"
+                      placeholder="{{'GLOBAL.Acta_Recibido.RegistroActa.SeleccioneFiltro' | translate}}">
+                    </ng2-completer>
+                    <p class="campo" *ngIf="firstForm.get('Formulario1').get('Dependencia').invalid">
+                      {{'GLOBAL.placeholder' | translate}}</p>
                   </div>
-                </nb-card-footer>
-              </nb-card>
+                  <div class="form-group col-sm">
+                    <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Ubicacion' | translate}}</label>
+                    <select nbInput type="text" class="form-control" formControlName="Ubicacion"
+                      (click)="usarLocalStorage(); Traer_Relacion_Ubicaciones();" required>
+                      <option value=""></option>
+                      <option *ngFor="let ubicacion of UbicacionesForm" [(value)]="ubicacion.Id">{{ubicacion.Nombre}}
+                      </option>
+                    </select>
+                    <p class="campo" *ngIf="firstForm.get('Formulario1').get('Ubicacion').invalid">
+                      {{'GLOBAL.placeholder' | translate}}</p>
+                  </div>
 
-            </mat-step>
-          </mat-vertical-stepper>
-        </nb-card-body>
+                  <div class="form-group col-sm">
+                      <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Revisor' | translate}}</label>
+                      <ng2-completer style="border: 0rem" inputClass="form-control" [clearUnselected]="true"
+                      placeholder="{{'GLOBAL.Acta_Recibido.RegistroActa.SeleccioneFiltro' | translate}}"
+                      nbInput [datasource]="dataService2" formControlName="Revisor"
+                      (keyup)="usarLocalStorage()" [minSearchLength]="3">
+                      </ng2-completer>
+                      <p class="campo" *ngIf="firstForm.get('Formulario1').get('Revisor').invalid">
+                         {{'GLOBAL.placeholder' | translate}}</p>
+                  </div>
+
+
+                </div>
+              </nb-card-body>
+              <nb-card-footer>
+                <button nbButton matStepperNext [disabled]="!firstForm.get('Formulario1').valid"
+                  (click)="usarLocalStorage()"
+                  class="float-right">{{'GLOBAL.Acta_Recibido.RegistroActa.SiguienteButton' | translate}}</button>
+              </nb-card-footer>
+            </nb-card>
+          </mat-step>
+
+          <!-- Soportes -->
+          <mat-step label="{{'GLOBAL.Acta_Recibido.RegistroActa.SoporteTitle' | translate}}"
+            formArrayName="Formulario2">
+            <nb-card>
+              <nb-card-body>
+                <mat-tab-group [selectedIndex]="selected.value" (selectedIndexChange)="selected.setValue($event)">
+
+                  <!-- cada soporte -->
+                  <mat-tab *ngFor="let soporte of firstForm.get('Formulario2').controls; let i = index"
+                    [formGroupName]="i">
+                    <ng-template mat-tab-label>
+                      {{'GLOBAL.Acta_Recibido.RegistroActa.SoporteSubTitle' | translate}} &nbsp; {{i + 1}} &nbsp; &nbsp;
+                      &nbsp; &nbsp;<i class="fas fa-window-close" (click)="removeTab(i); usarLocalStorage()" *ngIf="false"></i>
+                    </ng-template>
+                    <div>
+                      <nb-card>
+                        <nb-card-body (click)="usarLocalStorage()">
+                          <div class="row">
+                            <div class="col">
+                              <div class="form-group col-sm">
+                                <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Proveedor' | translate}}</label>
+                                <ng2-completer style="border: 0rem" inputClass="form-control" [clearUnselected]="true"
+                                  placeholder="{{'GLOBAL.Acta_Recibido.RegistroActa.SeleccioneFiltro' | translate}}"
+                                  nbInput [datasource]="dataService2" formControlName="Proveedor"
+                                  (keyup)="usarLocalStorage()" [minSearchLength]="3">
+                                </ng2-completer>
+                                <p class="campo" *ngIf="firstForm.get('Formulario2').at(i).get('Proveedor').invalid">
+                                  {{'GLOBAL.placeholder' | translate}}</p>
+                              </div>
+                              <div class="form-group col-sm">
+                                <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Consecutivo' | translate}}</label>
+                                <div class="input-group">
+                                  <input nbInput type="text"
+                                    placeholder="{{'GLOBAL.Acta_Recibido.RegistroActa.SeleccioneFiltro' | translate}}"
+                                    class="form-control" formControlName="Consecutivo" (keyup)="usarLocalStorage()"
+                                    required>
+                                </div>
+                                <p class="campo" *ngIf="firstForm.get('Formulario2').at(i).get('Consecutivo').invalid">
+                                  {{'GLOBAL.placeholder' | translate}}</p>
+                              </div>
+                              <div class="form-group col-sm">
+                                <label>{{'GLOBAL.Acta_Recibido.RegistroActa.FechaSoporte' | translate}}</label>
+                                <div class="input-group">
+                                  <input nbInput
+                                    placeholder="{{'GLOBAL.Acta_Recibido.RegistroActa.FechaFiltro' | translate}}"
+                                    class="form-control" [nbDatepicker]="formpicker" (keyup)="usarLocalStorage()"
+                                    formControlName="Fecha_Factura" required>
+                                    <nb-datepicker #formpicker [max]="TodaysDate" (dateChange)="usarLocalStorage()"></nb-datepicker>
+                                </div>
+                                <p class="campo"
+                                  *ngIf="firstForm.get('Formulario2').at(i).get('Fecha_Factura').invalid">
+                                  {{'GLOBAL.placeholder' | translate}}</p>
+                              </div>
+
+
+                            </div>
+                            <div class="col">
+                              <div class="form-group col-sm">
+                                <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Soporte' | translate}}</label>
+                                <nb-card>
+                                  <nb-card-body>
+                                    <div class="col-sm soporte">
+                                      <div>
+                                        <button nbButton type="button" (click)="fileInputDocumento.click();">
+                                          <i class="fas fa-file-upload fa-2x"></i>
+                                          <input #fileInputDocumento formControlName="Soporte" type="file"
+                                            (change)="onInputFileDocumento($event, i)" style="display:none;"
+                                            accept="application/pdf" data-max-size="5120" />
+                                        </button>
+                                      </div>
+                                      <p></p>
+                                      <p *ngIf="Validador[i]">{{fileDocumento[i].name}}</p>
+                                      <p *ngIf="!Validador[i]">
+                                        {{'GLOBAL.Acta_Recibido.CapturarElementos.ValidadorPlaceholder2' | translate }}
+                                      </p>
+                                      <div>
+                                        <button nbButton type="button" *ngIf="fileDocumento[i]" target="_blank"
+                                          (click)="download(i)">
+                                          Ver
+                                        </button>
+                                      </div>
+                                      <p></p>
+                                      <div>
+                                        <button type="button" *ngIf="Validador[i]" class="btn btn-primary"
+                                          (click)="clearFile(i)">
+                                          {{'GLOBAL.Acta_Recibido.CapturarElementos.LimpiarEspacioButton' | translate }}
+                                        </button>
+                                      </div>
+                                    </div>
+                                  </nb-card-body>
+                                </nb-card>
+                              </div>
+                            </div>
+                          </div>
+                        </nb-card-body>
+                      </nb-card>
+                    </div>
+                  </mat-tab>
+                  <mat-tab [disabled]="true" *ngIf="false">
+                    <ng-template mat-tab-label>
+                      <i class="fas fa-plus-square fa-2x" (click)="addTab(); usarLocalStorage()"></i>
+                    </ng-template>
+                  </mat-tab>
+                </mat-tab-group>
+              </nb-card-body>
+              <nb-card-footer>
+                <div class="justify-content-center">
+                  <button nbButton matStepperPrevious>
+                    {{'GLOBAL.Acta_Recibido.RegistroActa.AnteriorButton' | translate}}
+                  </button>
+                  <button nbButton matStepperNext (click)="Revisar_Totales()"
+                    [disabled]="!firstForm.get('Formulario1').valid || !firstForm.get('Formulario2').valid"
+                    class="float-right">{{'GLOBAL.Acta_Recibido.RegistroActa.GuardarCambiosButton' | translate}}
+                  </button>
+                </div>
+              </nb-card-footer>
+            </nb-card>
+          </mat-step>
+        </mat-vertical-stepper>
+      </nb-card-body>
     </nb-card>
   </form>
 </div>

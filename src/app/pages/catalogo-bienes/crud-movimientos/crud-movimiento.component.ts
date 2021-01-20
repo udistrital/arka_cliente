@@ -1,6 +1,6 @@
 import { Catalogo } from '../../../@core/data/models/catalogo/catalogo';
-import { Grupo, GrupoTransaccion } from '../../../@core/data/models/catalogo/grupo';
-import { Component, OnInit, Input, Output, EventEmitter, ViewChild, AfterViewInit, OnChanges } from '@angular/core';
+import { Grupo, Subgrupo } from '../../../@core/data/models/catalogo/jerarquia';
+import { Component, OnInit, Input, Output, EventEmitter, ElementRef, ViewChildren, AfterViewInit, OnChanges } from '@angular/core';
 import { TipoBien } from '../../../@core/data/models/acta_recibido/tipo_bien';
 import { FORM_MOVIMIENTO } from './form-movimiento';
 import { ToasterService, ToasterConfig, Toast, BodyOutputType } from 'angular2-toaster';
@@ -13,8 +13,21 @@ import { Cuenta } from '../../../@core/data/models/catalogo/cuenta_contable';
 import { Store } from '@ngrx/store';
 import { IAppState } from '../../../@core/store/app.state';
 import { ListService } from '../../../@core/store/services/list.service';
-import { Subgrupo } from '../../../@core/data/models/catalogo/subgrupo';
+import { GrupoTransaccion } from '../../../@core/data/models/catalogo/transacciones';
 import { DinamicformComponent } from '../../../@theme/components';
+import {
+  trigger,
+  state,
+  style,
+  animate,
+  transition } from '@angular/animations';
+import {
+    NbGetters,
+    NbSortDirection,
+    NbTreeGridRowComponent,
+    NbTreeGridDataSource,
+    NbTreeGridDataSourceBuilder,
+  } from '@nebular/theme';
 
 
 @Component({
@@ -50,10 +63,20 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
   @Output() eventChange = new EventEmitter();
   @Output() formulario = new EventEmitter();
 
+  @Output() columns: any;
+
+  @ViewChildren(NbTreeGridRowComponent, { read: ElementRef }) treeNodes: ElementRef[];
+
   info_movimiento: CuentasFormulario;
   formMovimiento: any;
   regMovimiento: any;
   clean: boolean;
+
+  stateHighlight: string = 'initial';
+  animationCuenta: string;
+  searchValue: string;
+  sortDirection: NbSortDirection = NbSortDirection.NONE;
+  private data: [];
 
   constructor(
     private translate: TranslateService,
@@ -107,12 +130,13 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
   }
 
   public loadLists() {
-    this.store.select((state) => state).subscribe(
+    this.store.select((stte) => stte).subscribe(
       (list) => {
         if (list.listPlanCuentasCredito !== undefined || list.listPlanCuentasDebito !== undefined) {
 
           this.formMovimiento.campos[this.getIndexForm('CuentaDebitoId')].opciones = list.listPlanCuentasDebito[0];
           this.formMovimiento.campos[this.getIndexForm('CuentaCreditoId')].opciones = list.listPlanCuentasCredito[0];
+          // console.log(list.listPlanCuentasCredito[0]);
         }
       },
     );
@@ -149,7 +173,7 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
       // console.log(this.movimiento_id);
       this.catalogoElementosService.getMovimiento(this.subgrupo_id.Id, this.movimiento_id.Id)
         .subscribe(res => {
-          // console.log(res[0].CuentaCreditoId);
+          // console.log(res);
           if (Object.keys(res[0]).length !== 0) {
             const cuentasAsociadas = new CuentasFormulario();
             this.respuesta = <CuentaGrupo>res[0];
@@ -160,8 +184,6 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
             cuentasAsociadas.CuentaCreditoId = cuentaCredito;
             cuentasAsociadas.CuentaDebitoId = cuentaDebito;
             this.info_movimiento = cuentasAsociadas;
-            // console.log(this.info_movimiento);
-
           } else {
             const cuentasAsociadas = new CuentasFormulario();
             const cuentaCredito = new Cuenta();
@@ -171,7 +193,7 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
             cuentasAsociadas.CuentaCreditoId = cuentaCredito;
             cuentasAsociadas.CuentaDebitoId = cuentaDebito;
             this.info_movimiento = cuentasAsociadas;
-
+            // console.log(this.info_movimiento);
             this.clean = !this.clean;
             this.respuesta = undefined;
           }
@@ -192,24 +214,23 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
   }
 
   validarForm(event) {
-    // console.log(this.respuesta)
+    // console.log(event)
     if (event.valid) {
       if (this.respuesta !== undefined) {
         const cuentaDebito = event.data.CuentasFormulario.CuentaDebitoId;
         const cuentaCredito = event.data.CuentasFormulario.CuentaCreditoId;
-        this.respuesta.CuentaCreditoId = cuentaCredito.Id;
-        this.respuesta.CuentaDebitoId = cuentaDebito.Id;
+        this.respuesta.CuentaCreditoId = cuentaCredito.Codigo;
+        this.respuesta.CuentaDebitoId = cuentaDebito.Codigo;
         this.formulario.emit(this.respuesta);
       } else {
         const cuentaDebito = event.data.CuentasFormulario.CuentaDebitoId;
         const cuentaCredito = event.data.CuentasFormulario.CuentaCreditoId;
         this.respuesta2 = {};
         this.respuesta2.SubgrupoId = this.subgrupo_id;
-        this.respuesta2.CuentaCreditoId = cuentaCredito.Id;
-        this.respuesta2.CuentaDebitoId = cuentaDebito.Id;
+        this.respuesta2.CuentaCreditoId = cuentaCredito.Codigo;
+        this.respuesta2.CuentaDebitoId = cuentaDebito.Codigo;
         this.respuesta2.SubtipoMovimientoId = this.movimiento_id.Id;
         this.formulario.emit(this.respuesta2);
-        // console.log(this.respuesta2);
       }
     }
 

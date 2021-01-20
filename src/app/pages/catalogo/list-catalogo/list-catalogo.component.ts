@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Catalogo } from '../../../@core/data/models/catalogo';
+import { Catalogo } from '../../../@core/data/models/catalogo/catalogo';
 import { LocalDataSource } from 'ngx-smart-table';
 import { ToasterService, ToasterConfig, Toast, BodyOutputType } from 'angular2-toaster';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
@@ -65,7 +65,7 @@ export class ListCatalogoComponent implements OnInit {
         // },
         Nombre: {
           title: this.translate.instant('GLOBAL.nombre'),
-          width: '20%',
+          width: '40%',
           // type: 'string;',
           valuePrepareFunction: (value) => {
             return value;
@@ -73,13 +73,13 @@ export class ListCatalogoComponent implements OnInit {
         },
         Descripcion: {
           title: this.translate.instant('GLOBAL.descripcion'),
-          width: '20%',
+          width: '40%',
           // type: 'string;',
           valuePrepareFunction: (value) => {
             return value;
           },
         },
-        FechaInicio: {
+/*        FechaInicio: {
           title: this.translate.instant('GLOBAL.fechainicio'),
           width: '20%',
           // type: 'Date;',
@@ -112,7 +112,7 @@ export class ListCatalogoComponent implements OnInit {
               },
             },
           },
-        },
+        },*/
         Activo: {
           title: this.translate.instant('GLOBAL.activo'),
           width: '10%',

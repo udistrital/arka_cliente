@@ -1,5 +1,15 @@
-<div class="col-lg-12">
+<div *ngIf="!mostrar" [nbSpinner]="!mostrar">
   <nb-card>
+    <nb-card-header>
+
+    </nb-card-header>
+    <nb-card-body>
+
+    </nb-card-body>
+  </nb-card>
+</div>
+<div class="col-lg-12">
+  <nb-card *ngIf="mostrar">
     <nb-card-header>
       <!-- <h1>{{'GLOBAL.consultar_entrada' | translate}}</h1> -->
       Consultar Salidas

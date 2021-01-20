@@ -85,6 +85,7 @@ export class VerDetalleComponent implements OnInit {
   fileDocumento: any;
   Dependencias: any;
   Sedes: any;
+  ActaEspecial: boolean;
 
   constructor(
     private translate: TranslateService,
@@ -165,10 +166,14 @@ export class VerDetalleComponent implements OnInit {
       const Form2 = this.fb.array([]);
 
       for (const Soporte of transaccion_.SoportesActa) {
-
+        this.ActaEspecial = Soporte.SoporteActa.Consecutivo.toString() === '' ? true : false;
         const Formulario__2 = this.fb.group({
           Id: [Soporte.SoporteActa.Id],
-          Proveedor: [this.Proveedores.find(proveedor => proveedor.Id === Soporte.SoporteActa.ProveedorId).compuesto],
+          Proveedor: [
+            Soporte.SoporteActa.ProveedorId === 0 ? null :
+              this.Proveedores.find((proveedor) =>
+                proveedor.Id.toString() === Soporte.SoporteActa.ProveedorId.toString()).compuesto,
+                Validators.required],
           Consecutivo: [Soporte.SoporteActa.Consecutivo],
           Fecha_Factura: [Soporte.SoporteActa.FechaSoporte],
           Soporte: [Soporte.SoporteActa.DocumentoId],
@@ -179,7 +184,7 @@ export class VerDetalleComponent implements OnInit {
           const Elemento___ = this.fb.group({
             Id: [_Elemento.Id],
             TipoBienId: [
-              this.Tipos_Bien.find(bien => bien.Id.toString() === _Elemento.TipoBienId.Id.toString()).Nombre,
+              _Elemento.TipoBienId !== null ? this.Tipos_Bien.find(bien => bien.Id.toString() === _Elemento.TipoBienId.Id.toString()).Nombre : '',
             ],
             SubgrupoCatalogoId: [_Elemento.SubgrupoCatalogoId],
             Nombre: [_Elemento.Nombre],
@@ -366,8 +371,5 @@ export class VerDetalleComponent implements OnInit {
     } else {
       return '0';
     }
-  }
-  volver() {
-    window.location.reload();
   }
 }

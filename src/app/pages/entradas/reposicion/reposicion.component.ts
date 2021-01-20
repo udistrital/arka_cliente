@@ -10,10 +10,7 @@ import { DocumentoService } from '../../../@core/data/documento.service';
 import { SafeResourceUrl, DomSanitizer } from '@angular/platform-browser';
 import { SoporteActaProveedor } from '../../../@core/data/models/acta_recibido/soporte_acta';
 import { Router, NavigationExtras } from '@angular/router';
-
-
-
-
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'ngx-reposicion',
@@ -233,7 +230,7 @@ export class ReposicionComponent implements OnInit {
         await this.postSoporteNuxeo([this.fileDocumento]);
       const detalle = {
         acta_recibido_id: +this.actaRecibidoId,
-        consecutivo: 'P8-2-2019', // REVISAR
+        consecutivo: 'P2-' + this.actaRecibidoId + '-' + new Date().getFullYear(),
         documento_contable_id: 1, // REVISAR
         placa_id: this.placa,
         encargado_id: this.encargadoId,
@@ -254,9 +251,11 @@ export class ReposicionComponent implements OnInit {
 
       this.entradasHelper.postEntrada(movimientoReposicion).subscribe((res: any) => {
         if (res !== null) {
-          this.pUpManager.showSuccesToast('Registro Exitoso');
-          this.pUpManager.showSuccessAlert('Entrada registrada satisfactoriamente!' +
-            '\n ENTRADA N°: P8-1-2019'); // SE DEBE MOSTRAR EL CONSECUTIVO REAL
+          (Swal as any).fire({
+            type: 'success',
+            title: 'Entrada N° ' + `${detalle.consecutivo}` + ' Registrada',
+            text: 'La Entrada N° ' + `${detalle.consecutivo}` + ' ha sido registrada de forma exitosa',
+          });
           const navigationExtras: NavigationExtras = { state: { consecutivo: res.Id } };
           this.router.navigate(['/pages/reportes/registro-entradas'], navigationExtras);
         } else {

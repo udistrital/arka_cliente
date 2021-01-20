@@ -39,6 +39,7 @@ export class ConsultaSalidasComponent implements OnInit {
   Proveedores: any;
   Dependencias: any;
   Sedes: any;
+  mostrar: boolean;
 
   constructor(
     private router: Router,
@@ -218,6 +219,7 @@ export class ConsultaSalidasComponent implements OnInit {
         if (Object.keys(res1[0]).length !== 0) {
           this.source.load(res1);
         }
+
       }
     });
   }

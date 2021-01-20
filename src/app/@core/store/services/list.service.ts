@@ -69,7 +69,7 @@ export class ListService {
     this.store.select(REDUCER_LIST.PlanCuentasDebito).subscribe(
       (list: any) => {
         if (!list || list.length === 0) {
-          this.CatalogoElementos.getPlanCuentas('credito') // tema de base financiera desplegada debito
+          this.CatalogoElementos.getPlanCuentas('debito') // tema de base financiera desplegada debito
             .subscribe(
               (res: any[]) => {
 
@@ -258,7 +258,7 @@ export class ListService {
     this.store.select(REDUCER_LIST.Consumo).subscribe(
       (list: any) => {
         if (!list || list.length === 0) {
-          this.CatalogoElementos.getSubgrupoTipoBien(1)
+          this.CatalogoElementos.getClasesTipoBien(1)
             .subscribe(
               (res: any[]) => {
                 // console.log(res)
@@ -277,7 +277,7 @@ export class ListService {
     this.store.select(REDUCER_LIST.ConsumoControlado).subscribe(
       (list: any) => {
         if (!list || list.length === 0) {
-          this.CatalogoElementos.getSubgrupoTipoBien(2)
+          this.CatalogoElementos.getClasesTipoBien(2)
             .subscribe(
               (res: any[]) => {
                 // console.log(res)
@@ -296,7 +296,7 @@ export class ListService {
     this.store.select(REDUCER_LIST.Devolutivo).subscribe(
       (list: any) => {
         if (!list || list.length === 0) {
-          this.CatalogoElementos.getSubgrupoTipoBien(3)
+          this.CatalogoElementos.getClasesTipoBien(3)
             .subscribe(
               (res: any[]) => {
                 // console.log(res)
@@ -367,6 +367,26 @@ export class ListService {
               },
               error => {
                 this.addList(REDUCER_LIST.FormatosMovimiento, []);
+              },
+            );
+        }
+      },
+    );
+  }
+
+  public findClases() {
+
+    this.store.select(REDUCER_LIST.Clases).subscribe(
+      (list: any) => {
+        if (!list || list.length === 0) {
+          this.CatalogoElementos.getClases()
+            .subscribe(
+              (res: any[]) => {
+                // console.log(res)
+                this.addList(REDUCER_LIST.Clases, res);
+              },
+              error => {
+                this.addList(REDUCER_LIST.Clases, []);
               },
             );
         }

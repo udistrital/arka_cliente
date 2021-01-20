@@ -3,10 +3,10 @@ import { TranslateService } from '@ngx-translate/core';
 import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/catalogoElementosHelper';
 import { ToasterService } from 'angular2-toaster';
 import { PopUpManager } from '../../../managers/popUpManager';
-import { Catalogo } from '../../../@core/data/models/catalogo';
+import { Catalogo } from '../../../@core/data/models/catalogo/catalogo';
 import { FORM_ELEMENTO } from './form-elemento';
 import { Elemento } from '../../../@core/data/models/catalogo/elemento';
-import { Subgrupo } from '../../../@core/data/models/catalogo/subgrupo';
+import { Subgrupo } from '../../../@core/data/models/catalogo/jerarquia';
 
 @Component({
   selector: 'ngx-registro-elementos',

@@ -6,7 +6,7 @@ import { EstadoElemento } from '../data/models/acta_recibido/estado_elemento';
 import { TipoBien } from '../data/models/acta_recibido/tipo_bien';
 import { Impuesto } from '../data/models/parametros_gobierno/impuesto';
 import { Unidad } from '../data/models/acta_recibido/unidades';
-import { Subgrupo } from '../data/models/catalogo/subgrupo';
+import { Subgrupo } from '../data/models/catalogo/jerarquia';
 
 export interface IAppState {
   listProveedores: Proveedor[];
@@ -26,4 +26,5 @@ export interface IAppState {
   listFormatosKardex: any[];
   listEstadosMovimiento: any[];
   listFormatosMovimiento: any[];
+  listClases: Subgrupo[];
 }

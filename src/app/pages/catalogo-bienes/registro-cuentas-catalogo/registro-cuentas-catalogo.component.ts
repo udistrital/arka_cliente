@@ -1,9 +1,9 @@
 import { Component, OnInit, Input, Output, EventEmitter, ViewChild, QueryList, ViewChildren } from '@angular/core';
-import { Subgrupo } from '../../../@core/data/models/catalogo/subgrupo';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/catalogoElementosHelper';
-import { Grupo } from '../../../@core/data/models/catalogo/grupo';
-import { Catalogo } from '../../../@core/data/models/catalogo';
+import { Grupo, Subgrupo } from '../../../@core/data/models/catalogo/jerarquia';
+import { Nivel_t } from '../../../@core/data/models/catalogo/tipo_nivel';
+import { Catalogo } from '../../../@core/data/models/catalogo/catalogo';
 import Swal from 'sweetalert2';
 import { Store } from '@ngrx/store';
 import { IAppState } from '../../../@core/store/app.state';
@@ -66,7 +66,6 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
     this.listService.findPlanCuentasDebito();
     this.listService.findPlanCuentasCredito();
     this.catalogoElementosService.getTiposMovimientoKronos().subscribe((res: any[]) => {
-      // console.log(res)
       this.Movimientos_Entradas = res.filter((x: any) => x.Descripcion.indexOf('Entrada') !== -1);
       this.Movimientos_Salidas = res.filter((x: any) => x.Descripcion.indexOf('Salida') !== -1);
       this.Movimientos_Depreciacion = res.filter((x: any) => x.Descripcion.indexOf('Depreciacion') !== -1);
@@ -79,8 +78,9 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
 
   ngOnInit() {
   }
-
+  // Se ve si ya tiene cuentas asignadas para mostrarlas en el formulario
   ver3(event) {
+    // console.log(event); REVISAR AQUI
     let mov_existente: boolean;
     if (event.Id === undefined) {
       this.Movimientos.forEach((element1: CuentaGrupo) => {
@@ -96,6 +96,7 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
 
     } else {
       this.Movimientos.forEach((element2: CuentaGrupo) => {
+        // console.log(element2)
         if (element2.Id === event.Id) {
           element2.CuentaCreditoId = event.CuentaCreditoId;
           element2.CuentaDebitoId = event.CuentaDebitoId;
@@ -151,37 +152,40 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
       text: this.translate.instant('Revisar las caracteristicas del catalogo'),
       type: 'warning',
     };
-    this.catalogoElementosService.getGrupoById(event.Id).subscribe(
+    this.catalogoElementosService.getSubgrupoById(event.Id).subscribe(
       res => {
-        // console.log(res[0]);
-        if (Object.keys(res[0]).length !== 0) {
-          this.catalogoElementosService.getDetalleSubgrupo(event.Id).subscribe(res2 => {
-            if (Object.keys(res2[0]).length !== 0) {
-              this.Movimientos = [];
-              this.depreciacion_ok = res2[0].Depreciacion;
-              this.valorizacion_ok = res2[0].Valorizacion;
-              this.Total_Movimientos();
-              // console.log(this.all_mov);
-              this.uid_1 = event;
-              this.uid_2 = undefined;
-            } else {
-              this.Movimientos = [];
-              this.depreciacion_ok = false;
-              this.valorizacion_ok = false;
-              this.Total_Movimientos();
-              this.uid_1 = event;
-              this.uid_2 = undefined;
-              (Swal as any).fire(opt);
-            }
-          });
-        } else {
-          this.Movimientos = [];
-          this.depreciacion_ok = false;
-          this.valorizacion_ok = false;
-          this.Total_Movimientos();
-          this.uid_1 = undefined;
-          this.uid_2 = event;
-          (Swal as any).fire(opt);
+
+        if (event.TipoNivelId.Id === Nivel_t.Clase) {
+          // console.log(event.TipoNivelId.Id);
+          if (Object.keys(res[0]).length !== 0) {
+            this.catalogoElementosService.getDetalleSubgrupo(event.Id).subscribe(res2 => {
+              if (Object.keys(res2[0]).length !== 0) {
+                this.Movimientos = [];
+                this.depreciacion_ok = res2[0].Depreciacion;
+                this.valorizacion_ok = res2[0].Valorizacion;
+                this.Total_Movimientos();
+                // console.log(this.all_mov);
+                this.uid_1 = event;
+                this.uid_2 = undefined;
+              } else {
+                this.Movimientos = [];
+                this.depreciacion_ok = false;
+                this.valorizacion_ok = false;
+                this.Total_Movimientos();
+                this.uid_1 = event;
+                this.uid_2 = undefined;
+                (Swal as any).fire(opt);
+              }
+            });
+          } else {
+            this.Movimientos = [];
+            this.depreciacion_ok = false;
+            this.valorizacion_ok = false;
+            this.Total_Movimientos();
+            this.uid_1 = undefined;
+            this.uid_2 = event;
+            (Swal as any).fire(opt);
+          }
         }
       });
     // console.log(event);
@@ -189,7 +193,8 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
   onSubmit() {
     let mov_existente: boolean;
     this.Movimientos.forEach((element3: CuentaGrupo) => {
-      if (element3.Id !== null) {
+      // console.log(element3)
+      if (element3.Id !== null && element3.Id !== undefined) {
         mov_existente = true;
       }
     });
@@ -245,7 +250,7 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
         if (willDelete.value) {
           const mov: any = {};
           mov['Cuentas'] = subgrupo;
-          // console.log(mov)
+          // console.log(mov['Cuentas'])
           this.catalogoElementosService.postTransaccionCuentasSubgrupo(mov)
             .subscribe(res => {
               // console.log(res);

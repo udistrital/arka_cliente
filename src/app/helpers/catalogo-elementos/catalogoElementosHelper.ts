@@ -206,7 +206,7 @@ export class CatalogoElementosHelper {
      */
     public putGrupo(Transaccion, Id) {
         this.rqManager.setPath('CATALOGO_ELEMENTOS_SERVICE');
-        return this.rqManager.put2('tr_grupo', Transaccion, Id).pipe(
+        return this.rqManager.put2('subgrupo', Transaccion, Id).pipe(
             map(
                 (res) => {
                     if (res['Type'] === 'error') {
@@ -268,7 +268,7 @@ export class CatalogoElementosHelper {
      */
     public getSubgrupoById(subgrupoId) {
         this.rqManager.setPath('CATALOGO_ELEMENTOS_SERVICE');
-        return this.rqManager.get('subgrupo_subgrupo?query=Activo:True,SubgrupoHijoId.Id:' + subgrupoId).pipe(
+        return this.rqManager.get('tr_subgrupo/' + subgrupoId).pipe(
             map(
                 (res) => {
                     if (res === 'error') {
@@ -310,7 +310,7 @@ export class CatalogoElementosHelper {
      */
     public putSubgrupo(Transaccion, Id) {
         this.rqManager.setPath('CATALOGO_ELEMENTOS_SERVICE');
-        return this.rqManager.put2('subgrupo', Transaccion, Id).pipe(
+        return this.rqManager.put2('tr_subgrupo', Transaccion, Id).pipe(
             map(
                 (res) => {
                     if (res['Type'] === 'error') {
@@ -394,9 +394,8 @@ export class CatalogoElementosHelper {
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
      */
     public getPlanCuentas(naturaleza) {
-        this.rqManager.setPath('FINANCIERA_SERVICE');
-        return this.rqManager.get('cuenta_contable?query=Naturaleza:' + naturaleza +
-            ',NivelClasificacion.Id:5&fields=Id,Nombre,Naturaleza,Descripcion,Codigo&limit=-1').pipe(
+        this.rqManager.setPath('CUENTAS_CONTABLES_SERVICE');
+                return this.rqManager.get('nodo_cuenta_contable/getNodosCuentasArka/' + naturaleza).pipe(
                 map(
                     (res) => {
                         if (res === 'error') {
@@ -702,5 +701,48 @@ export class CatalogoElementosHelper {
             ),
         );
     }
+    /**
+     * Subgrupo Get
+     * If the response has errors in the OAS API it should show a popup message with an error.
+     * If the response is successs, it returns the object's data.
+     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
+     */
+    public getClases() {
+        this.rqManager.setPath('CATALOGO_ELEMENTOS_SERVICE');
+        // return this.rqManager.get('subgrupo?query=TipoNivelId.Id:4&fields=Id,Nombre,Codigo,Activo&limit=-1').pipe(
+        return this.rqManager.get('detalle_subgrupo?fields=SubgrupoId,TipoBienId&limit=-1').pipe(
+            map(
+                (res) => {
+                    if (res === 'error') {
+                        this.pUpManager.showErrorAlert('No se pudo consultar el catálogo de bienes');
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
+    /**
+     * Subgrupo Get
+     * If the response has errors in the OAS API it should show a popup message with an error.
+     * If the response is successs, it returns the object's data.
+     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
+     */
+    public getClasesTipoBien(TipoBienId) {
+        this.rqManager.setPath('CATALOGO_ELEMENTOS_SERVICE');
+        // return this.rqManager.get('subgrupo?query=TipoNivelId.Id:4&fields=Id,Nombre,Codigo,Activo&limit=-1').pipe(
+        return this.rqManager.get('detalle_subgrupo?query=TipoBienId.Id:' + TipoBienId + '&fields=SubgrupoId,TipoBienId&limit=-1').pipe(
+            map(
+                (res) => {
+                    if (res === 'error') {
+                        this.pUpManager.showErrorAlert('No se pudo consultar el catálogo de bienes');
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
+
 
 }
