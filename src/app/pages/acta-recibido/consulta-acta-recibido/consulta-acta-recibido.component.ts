@@ -89,7 +89,7 @@ export class ConsultaActaRecibidoComponent implements OnInit {
     // this.actaRecibidoHelper.getActasRecibidoPorEstados(estados).subscribe((res: any) => {
     this.actaRecibidoHelper.getActasRecibidoUsuario(usuario).subscribe((res: any) => {
       // console.log(res);
-      if (res.length !== 0) {
+      if (Array.isArray(res) && res.length !== 0) {
         this.source.load(res);
       }
       this.mostrar = true;
