@@ -236,7 +236,7 @@
           <select nbInput type="text" class="cell form-control" [(ngModel)]="element.PorcentajeIvaId"
             (ngModelChange)="element.ValorIva = valor_iva(element.Subtotal,element.Descuento,$event).toString();
               element.ValorTotal = valortotal(element.Subtotal,element.Descuento,valor_iva(element.Subtotal,element.Descuento,$event).toString()).toString();" required>
-            <option *ngFor="let tarifas of Tarifas_Iva" [(value)]="tarifas.Id">{{tarifas.Nombre}}</option>
+            <option *ngFor="let tarifas of Tarifas_Iva" [(value)]="tarifas.Tarifa">{{tarifas.Nombre}}</option>
           </select>
         </td>
         <td mat-footer-cell *matFooterCellDef></td>

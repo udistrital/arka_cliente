@@ -343,8 +343,7 @@ export class CapturarElementosComponent implements OnInit {
         this.dataSource.data[i].TipoBienNombre = '';
         this.dataSource.data[i].NombreClase = '';
       }
-      if (
-        this.Tarifas_Iva.some((tarifa) => tarifa.Id.toString() === this.dataSource.data[i].PorcentajeIvaId) !== true) {
+      if ( this.Tarifas_Iva.some((tarifa) => +tarifa.Tarifa === +this.dataSource.data[i].PorcentajeIvaId) !== true) {
         this.dataSource.data[i].PorcentajeIvaId = this.Tarifas_Iva.find((x) => x.Nombre === '0% Excluido').Id;
         valido = false;
         conteo ++;
@@ -674,8 +673,8 @@ export class CapturarElementosComponent implements OnInit {
     }
   }
   valor_iva(subtotal: string, descuento: string, porcentaje_iva: number) {
-    const tarifa = porcentaje_iva;
-    const impuesto = this.Tarifas_Iva.find(tarifa_ => tarifa_.Id.toString() === tarifa.toString()).Tarifa;
+    const tarifa = +porcentaje_iva;
+    const impuesto = this.Tarifas_Iva.find(tarifa_ => tarifa_.Tarifa === tarifa).Tarifa;
     const total = ((parseFloat(subtotal) - parseFloat(descuento)) * impuesto / 100);
     if (total >= 0.00) {
       return total;
