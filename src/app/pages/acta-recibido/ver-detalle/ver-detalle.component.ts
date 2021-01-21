@@ -179,7 +179,7 @@ export class VerDetalleComponent implements OnInit {
           Soporte: [Soporte.SoporteActa.DocumentoId],
           Elementos: this.fb.array([]),
         });
-        for (const _Elemento of Soporte.Elementos) {          
+        for (const _Elemento of Soporte.Elementos) {
           const Elemento___ = this.fb.group({
             Id: [_Elemento.Id],
             TipoBienId: [
