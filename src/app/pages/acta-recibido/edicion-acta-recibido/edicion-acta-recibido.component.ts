@@ -381,7 +381,8 @@ export class EdicionActaRecibidoComponent implements OnInit {
               ValorUnitario: _Elemento.ValorUnitario,
               Subtotal: _Elemento.ValorTotal,
               Descuento: _Elemento.Descuento,
-              PorcentajeIvaId: this.Tarifas_Iva.find(tarifa => tarifa.Id.toString() === _Elemento.PorcentajeIvaId.toString()).Id,
+              PorcentajeIvaId: this.Tarifas_Iva.find(tarifa => tarifa.Tarifa === _Elemento.PorcentajeIvaId) ?
+                                this.Tarifas_Iva.find(tarifa => tarifa.Tarifa === _Elemento.PorcentajeIvaId).Tarifa : '',
               ValorIva: _Elemento.ValorIva,
               ValorTotal: _Elemento.ValorFinal,
             };

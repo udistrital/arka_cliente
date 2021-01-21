@@ -235,7 +235,7 @@ export class ListService {
                     for (const index2 in res[index].IVA) {
                       if (true) {
                         res[index].IVA[index2].Nombre = res[index].IVA[index2].Tarifa.toString() + '% ' +
-                        res[index].IVA[index2].ImpuestoId.CodigoAbreviacion;
+                        res[index].IVA[index2].CodigoAbreviacion;
                       }
                     }
                     // console.log(res[index].IVA)
