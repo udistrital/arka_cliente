@@ -216,7 +216,8 @@ export class VerificacionActaRecibidoComponent implements OnInit {
             Subtotal: [this.T_V(_Elemento.ValorTotal.toString())],
             Descuento: [this.T_V(_Elemento.Descuento.toString())],
             PorcentajeIvaId: [
-              this.Tarifas_Iva.find(iva => iva.Id.toString() === _Elemento.PorcentajeIvaId.toString()).Nombre,
+              this.Tarifas_Iva.find(iva => +iva.Tarifa === +_Elemento.PorcentajeIvaId) ?
+              this.Tarifas_Iva.find(iva => +iva.Tarifa === +_Elemento.PorcentajeIvaId).Nombre : '',
             ],
             ValorIva: [this.T_V(_Elemento.ValorIva.toString())],
             ValorTotal: [this.T_V(_Elemento.ValorFinal.toString())],

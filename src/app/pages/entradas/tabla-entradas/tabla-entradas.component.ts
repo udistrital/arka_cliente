@@ -49,7 +49,6 @@ export class TablaEntradasComponent implements OnInit {
             elemento.ValorTotal = data[datos].ValorTotal;
 
             elemento.PorcentajeIvaId = data[datos].PorcentajeIvaId;
-
             elemento.ValorIva = data[datos].ValorIva;
             elemento.ValorFinal = data[datos].ValorFinal;
             elemento.Descuento = data[datos].Descuento;
@@ -157,7 +156,7 @@ export class TablaEntradasComponent implements OnInit {
         PorcentajeIvaId: {
           title: '%' + this.translate.instant('GLOBAL.iva'),
           valuePrepareFunction: (value: any) => {
-            return value.Tarifa;
+            return value;
           },
         },
         ValorIva: {
