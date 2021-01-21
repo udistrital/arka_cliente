@@ -229,15 +229,14 @@ export class ConsultaActaRecibidoComponent implements OnInit {
     }
   }
 
-  anularActa(id: number) {
+  anularActa(id: number, obs: string) {
     // console.log({'idActa': id});
 
     // 1. Traer acta tal cual está
     this.actaRecibidoHelper.getTransaccionActa(id).subscribe(acta => {
       // console.log({'actaHelper': acta});
-
       // 2. Crear estado "Anulada"
-      // const Transaccion_Acta = new TransaccionActaRecibido();
+
       const Transaccion_Acta = <TransaccionActaRecibido>acta[0];
       const nuevoEstado = <HistoricoActa>{
         Id: null,
@@ -248,7 +247,7 @@ export class ConsultaActaRecibidoComponent implements OnInit {
         FechaModificacion: new Date(),
       };
       Transaccion_Acta.UltimoEstado = nuevoEstado;
-      // console.log({Transaccion_Acta});
+      Transaccion_Acta.ActaRecibido.Observaciones += ' // Razon de anulación: ' + obs;
 
       // 3. Anular acta
       this.actaRecibidoHelper.putTransaccionActa(Transaccion_Acta, id)
@@ -320,7 +319,6 @@ export class ConsultaActaRecibidoComponent implements OnInit {
   }
 
   onDelete(event): void {
-    // console.log({'Anular': event});
     switch (event.data.Estado) {
 
       case 'Registrada':
@@ -339,7 +337,21 @@ export class ConsultaActaRecibidoComponent implements OnInit {
           cancelButtonText: 'Cancelar',
         }).then((result) => {
           if (result.value) {
-            this.anularActa(event.data.Id);
+            (Swal as any).mixin({
+              input: 'text',
+              confirmButtonText: 'Anular',
+              showCancelButton: true,
+              progressSteps: ['1'],
+            }).queue([
+              {
+                title: 'Observaciones',
+                text: 'Inserte la razon de la anulación',
+              },
+            ]).then((result2) => {
+              if (result2.value) {
+                this.anularActa(event.data.Id, result2.value);
+              }
+            });
           }
         });
         this.ngOnInit();
