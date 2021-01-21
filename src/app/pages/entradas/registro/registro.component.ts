@@ -110,7 +110,7 @@ export class RegistroComponent implements OnInit {
 
   loadActas(): void {
     this.actaRecibidoHelper.getActasRecibido().subscribe(res => {
-      if (res !== null) {
+      if (Array.isArray(res) && res.length !== 0) {
         const data = <Array<ActaRecibidoUbicacion>>res;
         this.source.load(data);
       }
