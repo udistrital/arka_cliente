@@ -21,6 +21,7 @@
         <option>Donación</option>
         <option>Sobrante de Inventario</option>
         <option>Terceros</option>
+        <option>Caja Menor</option>
       </select>
 
       <ngx-adquisicion *ngIf="opcionEntrada === 'Adquisición'" [actaRecibidoId]="actaSeleccionada"></ngx-adquisicion>
@@ -31,6 +32,8 @@
       <ngx-sobrante *ngIf="opcionEntrada === 'Sobrante de Inventario'" [actaRecibidoId]="actaSeleccionada">
       </ngx-sobrante>
       <ngx-terceros *ngIf="opcionEntrada === 'Terceros'" [actaRecibidoId]="actaSeleccionada"></ngx-terceros>
+      <ngx-caja-menor *ngIf="opcionEntrada === 'Caja Menor'" [actaRecibidoId]="actaSeleccionada"></ngx-caja-menor>
+
 
     </nb-card-body>
   </nb-card>

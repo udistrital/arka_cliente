@@ -15,6 +15,7 @@ import { ConsultaEntradaComponent } from './consulta-entrada/consulta-entrada.co
 import { Ng2SmartTableModule } from 'ngx-smart-table';
 import { OwlDateTimeModule, OwlNativeDateTimeModule } from 'ng-pick-datetime';
 import { TablaEntradasComponent } from './tabla-entradas/tabla-entradas.component';
+import { CajaMenorComponent } from './caja-menor/caja-menor.component';
 
 @NgModule({
   declarations: [
@@ -29,6 +30,7 @@ import { TablaEntradasComponent } from './tabla-entradas/tabla-entradas.componen
     TercerosComponent,
     ConsultaEntradaComponent,
     TablaEntradasComponent,
+    CajaMenorComponent,
   ],
   imports: [
     CommonModule,
