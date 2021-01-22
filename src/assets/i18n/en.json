@@ -38,6 +38,10 @@
       "ErrorAnularMsg": "The Act {{ACTA}} cannot be voided by having state \"{{ESTADO}}\"",
       "AnuladaOkTitulo":"Act {{ACTA}} Voided",
       "AnuladaOkMsg":"The Act {{ACTA}} was successfully Voided",
+      "una": "Receipt Certificate",
+      "varias": "Receipt Certificates",
+      "id_forma1": "Receipt Certificate #{{ID}}",
+      "id_forma2": "Certificate N° {{ID}}",
       "CapturarElementos": {
         "CargaMasivaTitle": "Masive Load",
         "ValidadorPlaceholder": "The file have xlsx extension (*.xlsx)",
@@ -72,7 +76,6 @@
         "ValidacionCargaMasivaText": "There are {{cantidad}} error(s) at massive charge, check them at table"
       },
       "ConsultaActas": {
-        "Title": "Receipt Certificates",
         "NuevaActa": "Register New Certificate",
         "ConsecutivoHeader": "Consecutive",
         "FechaCreacionHeader": "Creation Date",
@@ -124,9 +127,8 @@
         "DatosVeridicosTitle": "Are You Sure?",
         "CargaElementosTitle": "Elements Load",
         "CargaElementos": "Please verify the load of elements, values ​​and totals associated with the support before generating the record",
-        "RegistradaTitle": " Registered",
-        "Acta": "Certificate N° ",
-        "Registrada": " has been succesfully registered",
+        "RegistradaTitle": "Receipt Certificate N° {{ID}} Registered",
+        "Registrada": "Receipt Certificate N° {{ID}} has been succesfully registered",
         "RegistradaTitleNO": "Unregistered Certificate",
         "RegistradaNO": "The Certificate hasn't been succesfully registered, try again later",
         "ErrorRevisorMsg": "The assigned reviewer is not registered in the Third-Party Database. Please grab a registered reviewer and Try Again"
@@ -162,19 +164,16 @@
         "DatosVeridicosTitle": "Are You Sure?",
         "CargaElementosTitle": "Elements Load",
         "CargaElementos": "Please verify the load of elements, values ​​and totals associated with the support before generating the record",
-        "ModificadaTitle": " Modified",
-        "Acta": "Certificate N° ",
-        "Modificada": " has been succesfully modified",
+        "ModificadaTitle": "Certificate N° {{ID}} Modified",
         "Modificada2":"Certificate N° {{id}} has been succesfully modified",
         "ModificadaTitleNO": "Unmodified Certificate",
         "ModificadaNO": "The Certificate hasn't been modified, try again later",
-        "VerificadaTitle": " Sent",
         "VerificadaTitle2":"Certificate N° {{id}} Sent",
-        "Verificada": " has been succesfully sent",
         "Verificada2":"Certificate N° {{id}} has been successfully sent to Verification",
         "Verificada3":"Certificate N° {{id}} has been successfully sent to Supplier",
         "VerificadaTitleNO": "Certificate Not Sent!",
         "VerificadaNO": "The Certificate hasn't been succesfully sent to verify. Try again later",
+        "ProveedorNO":"The Act has NOT been sent to supplier. Try again later",
         "VerificacionButton": "Send to Verification",
         "EnviarProveedorButton": "Send to Supplier"
       },
@@ -258,16 +257,15 @@
         "Verificar": "Verifify",
         "Rechazar": "Reject",
         "Volver": "Back",
-        "Acta": "Certificate N° ",
         "DatosVeridicosTitle": "Are You Sure?",
         "VerificadaPre": "Are you sure you want to verify this certificate?",
         "RechazadaPre": "Are you sure you want to reject this certificate?",
-        "VerificadaTitle": " Verified",
-        "Verificada": " has been succesfully verified",
+        "VerificadaTitle": "Certificate N° {{ID}} Verified",
+        "Verificada": "Certificate N° {{ID}} has been succesfully verified",
         "VerificadaTitleNO": "Unverified Certificate",
         "VerificadaNO": "The Certificate hasn't been succesfully verified, try again later",
-        "RechazadaTitle": " Reject",
-        "Rechazada": " has been succesfully rejected",
+        "RechazadaTitle": "Certificate N° {{ID}} Rejected",
+        "Rechazada": "Certificate N° {{ID}} has been succesfully rejected",
         "RechazadaTitleNO": "Unrejected Certificate",
         "RechazadaNO": "The Certificate hasn't been succesfully rejected, try again later"
       }
@@ -296,15 +294,6 @@
     "Salida de Almacen": "Output",
     "Depreciacion Almacen": "Depreciation",
     "Valorizacion Almacen": "Valorization",
-    "Adquisición": "Acquisition",
-    "Donación": "Donation",
-    "Reposición": "Replacement",
-    "Sobrante": "Surplus",
-    "Terceros": "Terceros",
-    "Elaboracion Propia": "Self Elaboration",
-    "Caja menor": "MInor cash",
-    "Compras extranjeras": "Foreign purchase",
-    "Aprovechamientos": "Exploitations",
     "Adiciones y mejoras": "Additions and improvements",
     "Intangibles": "Inmaterial assets",
     "Provisional": "Provisions",
@@ -477,7 +466,6 @@
     "consultar_entrada": "View Entries",
     "mensaje_consulta_entrada": "List of entries made. To see the detail of the entry press the action icon located on the right side of the table.",
     "consecutivo": "Consecutive",
-    "acta_recibido": "Received Document",
     "fecha_entrada": "Entry Date",
     "tipo_entrada": "Entry Type",
     "detalle": "Detail",
@@ -506,14 +494,50 @@
     "ubicacion": "Location",
     "acciones": "Actions",
     "observaciones": "comments",
+
+    "entradas": {
+      "tipo": {
+        "EA": {
+          "nombre": "Acquisition",
+          "descripcion": "Acquisition Input"
+        },
+        "EEP": {
+          "nombre": "Elaboración Propia",
+          "descripcion": "Self-made Input"
+        },
+        "ED": {
+          "nombre": "Donation",
+          "descripcion": "Donation Input"
+        },
+        "ESI": {
+          "nombre": "Surplus",
+          "descripcion": "Surplus Input"
+        },
+        "ET": {
+          "nombre": "Third party",
+          "descripcion": "Third Party Input"
+        },
+        "EPR": {
+          "nombre": "Replacement",
+          "descripcion": "Replacement Input"
+        },
+        "ECM": {
+          "nombre": "Petty Cash",
+          "descripcion": "Petty Cash Input"
+        },
+        "ECE": {
+          "nombre": "Foreign Purchase",
+          "descripcion": "Foreign Purchase Input"
+        },
+        "EPPA": {
+          "nombre": "Use of Parts",
+          "descripcion": "Input by Use of Parts"
+        }
+      }
+    },
+
     "registrar_entrada": "Register Entry",
     "mensaje_registrar_entrada": "Select the received report to which you wish to make an entry by clicking on the actions icon located on the right side of the table.",
-    "entrada_adquisicion": "Acquisition Entry",
-    "entrada_reposicion": "Replacement Entry",
-    "entrada_elaboracion_propia": "Own Elaboration Entry",
-    "entrada_donacion": "Donation Entry",
-    "entrada_sobrante": "Leftover Inventory Entry",
-    "entrada_terceros": "Entry of Third Party Assets",
     "datos_contrato": "Contract Data",
     "ordenador_gasto": "Spending Authorizer",
     "supervisor": "Supervisory",

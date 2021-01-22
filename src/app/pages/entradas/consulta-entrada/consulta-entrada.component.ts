@@ -67,7 +67,7 @@ export class ConsultaEntradaComponent implements OnInit {
           title: this.translate.instant('GLOBAL.consecutivo'),
         },
         ActaRecibidoId: {
-          title: this.translate.instant('GLOBAL.acta_recibido'),
+          title: this.translate.instant('GLOBAL.Acta_Recibido.una'),
         },
         FechaCreacion: {
           title: this.translate.instant('GLOBAL.fecha_entrada'),

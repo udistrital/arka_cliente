@@ -326,10 +326,8 @@ export class ActaEspecialComponent implements OnInit {
       if (res !== null) {
         (Swal as any).fire({
           type: 'success',
-          title: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.Acta') +
-            `${res.ActaRecibido.Id}` + this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.RegistradaTitle'),
-          text: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.Acta') +
-            `${res.ActaRecibido.Id}` + this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.Registrada'),
+          title: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.RegistradaTitle', {ID: res.ActaRecibido.Id}),
+          text: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.Registrada', {ID: res.ActaRecibido.Id}),
         });
         sessionStorage.removeItem('Formulario_Acta_Especial');
         this.router.navigate(['/pages/acta_recibido/consulta_acta_recibido']);

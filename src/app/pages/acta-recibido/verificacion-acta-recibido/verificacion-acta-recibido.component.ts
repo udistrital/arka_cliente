@@ -316,10 +316,8 @@ export class VerificacionActaRecibidoComponent implements OnInit {
       if (res !== null) {
         (Swal as any).fire({
           type: 'success',
-          title: this.translate.instant('GLOBAL.Acta_Recibido.VerificacionActa.Acta') +
-            `${res.ActaRecibido.Id}` + this.translate.instant('GLOBAL.Acta_Recibido.VerificacionActa.VerificadaTitle'),
-          text: this.translate.instant('GLOBAL.Acta_Recibido.VerificacionActa.Acta') +
-            `${res.ActaRecibido.Id}` + this.translate.instant('GLOBAL.Acta_Recibido.VerificacionActa.Verificada'),
+          title: this.translate.instant('GLOBAL.Acta_Recibido.VerificacionActa.VerificadaTitle', {ID: res.ActaRecibido.Id}),
+          text: this.translate.instant('GLOBAL.Acta_Recibido.VerificacionActa.Verificada', {ID: res.ActaRecibido.Id}),
         }).then((willDelete) => {
           if (willDelete.value) {
             this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
@@ -353,10 +351,8 @@ export class VerificacionActaRecibidoComponent implements OnInit {
       if (res !== null) {
         (Swal as any).fire({
           type: 'success',
-          title: this.translate.instant('GLOBAL.Acta_Recibido.VerificacionActa.Acta') +
-            `${res.ActaRecibido.Id}` + this.translate.instant('GLOBAL.Acta_Recibido.VerificacionActa.RechazadaTitle'),
-          text: this.translate.instant('GLOBAL.Acta_Recibido.VerificacionActa.Acta') +
-            `${res.ActaRecibido.Id}` + this.translate.instant('GLOBAL.Acta_Recibido.VerificacionActa.Rechazada'),
+          title: this.translate.instant('GLOBAL.Acta_Recibido.VerificacionActa.RechazadaTitle', {ID: res.ActaRecibido.Id}),
+          text: this.translate.instant('GLOBAL.Acta_Recibido.VerificacionActa.Rechazada', {ID: res.ActaRecibido.Id}),
         }).then((willDelete) => {
           if (willDelete.value) {
             this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {

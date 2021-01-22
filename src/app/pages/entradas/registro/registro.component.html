@@ -14,26 +14,21 @@
 
       <h5 *ngIf="actaSeleccionada != ''">{{'GLOBAL.tipo_entrada' | translate}}</h5>
 
-      <select class="form-control mb-4" [(ngModel)]="opcionEntrada" *ngIf="actaSeleccionada != ''">
-        <option>Adquisición</option>
-        <option>Reposición</option>
-        <option>Elaboración Propia</option>
-        <option>Donación</option>
-        <option>Sobrante de Inventario</option>
-        <option>Terceros</option>
-        <option>Caja Menor</option>
+      <select class="form-control mb-4" [(ngModel)]="opcionEntrada" *ngIf="actaSeleccionada != ''" >
+        <option *ngFor="let entrada of tiposDeEntradas" [value]="entrada">
+          {{ 'GLOBAL.entradas.tipo.'+entrada+'.nombre' | translate }}
+        </option>
       </select>
 
-      <ngx-adquisicion *ngIf="opcionEntrada === 'Adquisición'" [actaRecibidoId]="actaSeleccionada"></ngx-adquisicion>
-      <ngx-reposicion *ngIf="opcionEntrada === 'Reposición'" [actaRecibidoId]="actaSeleccionada"></ngx-reposicion>
-      <ngx-elaboracion-propia *ngIf="opcionEntrada === 'Elaboración Propia'" [actaRecibidoId]="actaSeleccionada">
+      <ngx-adquisicion *ngIf="opcionEntrada === 'EA'" [actaRecibidoId]="actaSeleccionada"></ngx-adquisicion>
+      <ngx-reposicion *ngIf="opcionEntrada === 'EPR'" [actaRecibidoId]="actaSeleccionada"></ngx-reposicion>
+      <ngx-elaboracion-propia *ngIf="opcionEntrada === 'EEP'" [actaRecibidoId]="actaSeleccionada">
       </ngx-elaboracion-propia>
-      <ngx-donacion *ngIf="opcionEntrada === 'Donación'" [actaRecibidoId]="actaSeleccionada"></ngx-donacion>
-      <ngx-sobrante *ngIf="opcionEntrada === 'Sobrante de Inventario'" [actaRecibidoId]="actaSeleccionada">
+      <ngx-donacion *ngIf="opcionEntrada === 'ED'" [actaRecibidoId]="actaSeleccionada"></ngx-donacion>
+      <ngx-sobrante *ngIf="opcionEntrada === 'ESI'" [actaRecibidoId]="actaSeleccionada">
       </ngx-sobrante>
-      <ngx-terceros *ngIf="opcionEntrada === 'Terceros'" [actaRecibidoId]="actaSeleccionada"></ngx-terceros>
-      <ngx-caja-menor *ngIf="opcionEntrada === 'Caja Menor'" [actaRecibidoId]="actaSeleccionada"></ngx-caja-menor>
-
+      <ngx-terceros *ngIf="opcionEntrada === 'ET'" [actaRecibidoId]="actaSeleccionada"></ngx-terceros>
+      <ngx-caja-menor *ngIf="opcionEntrada === 'ECM'" [actaRecibidoId]="actaSeleccionada"></ngx-caja-menor>
 
     </nb-card-body>
   </nb-card>

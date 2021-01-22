@@ -1,5 +1,5 @@
-<h3 class="pt-4 pb-2">{{'GLOBAL.entrada_reposicion' | translate}}</h3>
-<p class="font-weight-bold font-italic pb-2">{{'GLOBAL.acta_recibido' | translate}} # {{ actaRecibidoId }}</p>
+<h3 class="pt-4 pb-2">{{'GLOBAL.entradas.tipo.EPR.descripcion' | translate}}</h3>
+<p class="font-weight-bold font-italic pb-2">{{ 'GLOBAL.Acta_Recibido.id_forma1' | translate : {ID: actaRecibidoId} }}</p>
 
 <!-- FORMULARIO -->
 <nb-stepper #stepper orientation="horizontal">
@@ -13,11 +13,11 @@
           <label>Placa Hurtada</label>
           <div class="input-group">
             <input type="text" placeholder="Placa Elemento Hurtado" class="form-control" formControlName="elementoCtrl" (input)="changePlacaElemento($event)"
-              [ngClass]="{'form-control-danger': elementoForm.invalid && (elementoForm.dirty || elementoForm.touched)}" list="elementosList" 
+              [ngClass]="{'form-control-danger': elementoForm.invalid && (elementoForm.dirty || elementoForm.touched)}" list="elementosList"
               />
           </div>
-          <datalist id="elementosList">  
-            <option value="sleccione un valor" selected disabled></option>          
+          <datalist id="elementosList">
+            <option value="sleccione un valor" selected disabled></option>
             <option *ngFor="let item of elementos" value='{{ item }}'></option>
           </datalist>
         </div>
@@ -26,7 +26,7 @@
           <div class="input-group">
             <input nbInput type="text" placeholder="{{'GLOBAL.asignacion' | translate}}" class="form-control"
               formControlName="encargadoCtrl"  [readonly]="true" value="{{ encargado }}"
-              />             
+              />
           </div>
         </div>
       </div>
@@ -82,7 +82,7 @@
         </div>
       </form>
     </nb-step>
-  
+
   <!-- SOPORTE -->
   <nb-step [stepControl]="soporteForm" label="Soporte">
       <h5>{{'GLOBAL.soporte' | translate}}</h5>
@@ -103,7 +103,7 @@
           </div>
         </div>
       </form>
-      
+
     </nb-step>
   <!-- OBSERVACIONES -->
   <nb-step [stepControl]="observacionForm" label="Observaciones">

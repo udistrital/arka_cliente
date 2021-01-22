@@ -689,10 +689,8 @@ export class EdicionActaRecibidoComponent implements OnInit {
       if (res !== null) {
         (Swal as any).fire({
           type: 'success',
-          title: this.translate.instant('GLOBAL.Acta_Recibido.EdicionActa.Acta') +
-            `${res.ActaRecibido.Id}` + this.translate.instant('GLOBAL.Acta_Recibido.EdicionActa.ModificadaTitle'),
-          text: this.translate.instant('GLOBAL.Acta_Recibido.EdicionActa.Acta') +
-            `${res.ActaRecibido.Id}` + this.translate.instant('GLOBAL.Acta_Recibido.EdicionActa.Modificada'),
+          title: this.translate.instant('GLOBAL.Acta_Recibido.EdicionActa.ModificadaTitle', {ID: res.ActaRecibido.Id}),
+          text: this.translate.instant('GLOBAL.Acta_Recibido.EdicionActa.Modificada2', {id: res.ActaRecibido.Id}),
         }).then((willDelete) => {
           if (willDelete.value) {
             this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {

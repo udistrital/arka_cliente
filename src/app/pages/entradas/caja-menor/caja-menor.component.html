@@ -1,5 +1,5 @@
-<h3 class="pt-4 pb-4">Entrada por Adquisión Caja Menor</h3>
-<p class="font-weight-bold font-italic pb-2">Acta de recibido # {{ actaRecibidoId }}</p>
+<h3 class="pt-4 pb-4">{{'GLOBAL.entradas.tipo.ECM.descripcion' | translate}}</h3>
+<p class="font-weight-bold font-italic pb-2">{{ 'GLOBAL.Acta_Recibido.id_forma1' | translate : {ID: actaRecibidoId} }}</p>
 
 <!-- FORMULARIO -->
 <nb-stepper #stepper orientation="horizontal">
@@ -75,7 +75,7 @@
       <button nbButton nbStepperNext>{{'GLOBAL.siguiente' | translate}}</button>
     </form>
   </nb-step>
-  
+
   <!-- FACTURA -->
   <nb-step [stepControl]="facturaForm" label="{{'GLOBAL.factura' | translate}}">
     <form [formGroup]="facturaForm" class="step-container">
