@@ -216,7 +216,8 @@ export class VerificacionActaRecibidoComponent implements OnInit {
             Subtotal: [this.T_V(_Elemento.ValorTotal.toString())],
             Descuento: [this.T_V(_Elemento.Descuento.toString())],
             PorcentajeIvaId: [
-              this.Tarifas_Iva.find(iva => iva.Id.toString() === _Elemento.PorcentajeIvaId.toString()).Nombre,
+              this.Tarifas_Iva.find(iva => +iva.Tarifa === +_Elemento.PorcentajeIvaId) ?
+              this.Tarifas_Iva.find(iva => +iva.Tarifa === +_Elemento.PorcentajeIvaId).Nombre : '',
             ],
             ValorIva: [this.T_V(_Elemento.ValorIva.toString())],
             ValorTotal: [this.T_V(_Elemento.ValorFinal.toString())],
@@ -321,7 +322,9 @@ export class VerificacionActaRecibidoComponent implements OnInit {
             `${res.ActaRecibido.Id}` + this.translate.instant('GLOBAL.Acta_Recibido.VerificacionActa.Verificada'),
         }).then((willDelete) => {
           if (willDelete.value) {
-            window.location.reload();
+            this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+              this.router.navigateByUrl('/pages/acta_recibido/consulta_acta_recibido');
+            });
           }
         });
       } else {
@@ -356,7 +359,9 @@ export class VerificacionActaRecibidoComponent implements OnInit {
             `${res.ActaRecibido.Id}` + this.translate.instant('GLOBAL.Acta_Recibido.VerificacionActa.Rechazada'),
         }).then((willDelete) => {
           if (willDelete.value) {
-            window.location.reload();
+            this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+              this.router.navigateByUrl('/pages/acta_recibido/consulta_acta_recibido');
+            });
           }
         });
       } else {

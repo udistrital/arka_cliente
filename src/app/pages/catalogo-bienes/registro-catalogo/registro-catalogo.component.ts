@@ -84,6 +84,7 @@ export class RegistroCatalogoComponent implements OnInit {
 
   onChange(catalogo) {
     this.catalogoId = catalogo;
+    this.QuitarVista();
   }
 
   AgregarGrupo(id: number) {

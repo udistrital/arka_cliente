@@ -225,6 +225,7 @@ export class ActaEspecialComponent implements OnInit {
     const Form2 = this.fb.array([]);
     for (const Soporte of transaccion_.Formulario2) {
       const Formulario__2 = this.fb.group({
+        Soporte: [Soporte.Soporte, Validators.required],
       });
       Form2.push(Formulario__2);
     }
@@ -268,6 +269,9 @@ export class ActaEspecialComponent implements OnInit {
   }
   get Formulario_2(): FormGroup {
     return this.fb.group({
+      Id: [0],
+      Soporte: ['', Validators.required],
+      Elementos: this.fb.array([this.Elementos]),
     });
   }
   get Formulario_3(): FormGroup {
@@ -302,6 +306,12 @@ export class ActaEspecialComponent implements OnInit {
 
   async onFirstSubmit() {
     this.Registrando = true;
+    const start = async () => {
+      await this.asyncForEach(this.fileDocumento, async (file) => {
+        await this.postSoporteNuxeo([file]);
+      });
+    };
+    await start();
     this.Datos = this.firstForm.value;
     const Transaccion_Acta = new TransaccionActaRecibido();
     Transaccion_Acta.ActaRecibido = this.Registrar_Acta(this.Datos);
@@ -367,12 +377,12 @@ export class ActaEspecialComponent implements OnInit {
     Soporte_Acta.Id = null;
     Soporte_Acta.ActaRecibidoId = __;
     Soporte_Acta.Activo = true;
-    Soporte_Acta.Consecutivo = null;
+    Soporte_Acta.Consecutivo = '';
     Soporte_Acta.FechaCreacion = new Date();
     Soporte_Acta.FechaModificacion = new Date();
     Soporte_Acta.FechaSoporte = null;
-    Soporte_Acta.ProveedorId = null;
-
+    Soporte_Acta.ProveedorId = 0;
+    Soporte_Acta.DocumentoId = this.idDocumento[0];
     Transaccion.SoporteActa = Soporte_Acta;
     Transaccion.Elementos = this.Registrar_Elementos(Elementos_, Soporte_Acta);
     return Transaccion;
@@ -557,6 +567,106 @@ export class ActaEspecialComponent implements OnInit {
     this.DatosElementos = event;
     this.Elementos__Soporte[0] = this.DatosElementos;
     this.usarLocalStorage();
+  }
+
+  onInputFileDocumento(event, index) {
+    // console.log(event.target.files);
+    // console.log(event.srcElement.files);
+    const max_size = 1;
+
+    if (event.target.files.length > 0) {
+      const file = event.target.files[0];
+      if (file.type === 'application/pdf') {
+
+        if (file.size < max_size * 1024000) {
+
+          file.urlTemp = URL.createObjectURL(event.srcElement.files[0]);
+          file.url = this.cleanURL(file.urlTemp);
+          file.IdDocumento = 13; // tipo de documento (API documentos_crud)
+          file.file = event.target.files[0];
+          (this.firstForm.get('Formulario2') as FormArray).at(index).get('Soporte').setValue(file.name);
+          this.fileDocumento[index] = file;
+          this.Validador[index] = true;
+          this.uidDocumento[index] = undefined;
+
+        } else {
+          (Swal as any).fire({
+            title: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.Tamaño_title'),
+            text: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.Tamaño_placeholder'),
+            type: 'warning',
+          });
+          this.Validador[index] = false;
+        }
+        // console.log(file);
+        // console.log(this.fileDocumento);
+
+      } else {
+        this.Validador[index] = false;
+        this.pUpManager.showErrorAlert('error' + this.translate.instant('GLOBAL.error'));
+      }
+    }
+  }
+  download(index) {
+
+    const new_tab = window.open(this.fileDocumento[index].urlTemp, this.fileDocumento[index].urlTemp, '_blank');
+    new_tab.onload = () => {
+      new_tab.location = this.fileDocumento[index].urlTemp;
+    };
+    new_tab.focus();
+  }
+  downloadFile(id_documento: any) {
+    const filesToGet = [
+      {
+        Id: id_documento,
+        key: id_documento,
+      },
+    ];
+    this.nuxeoService.getDocumentoById$(filesToGet, this.documentoService)
+      .subscribe(response => {
+        const filesResponse = <any>response;
+        if (Object.keys(filesResponse).length === filesToGet.length) {
+          // console.log("files", filesResponse);
+          filesToGet.forEach((file: any) => {
+            const url = filesResponse[file.Id];
+            window.open(url);
+          });
+        }
+      },
+        (error: HttpErrorResponse) => {
+          Swal({
+            type: 'error',
+            title: error.status + '',
+            text: this.translate.instant('ERROR.' + error.status),
+            confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
+          });
+        });
+  }
+  clearFile(index) {
+    (this.firstForm.get('Formulario2') as FormArray).at(index).get('Soporte').setValue('');
+    this.fileDocumento[index] = undefined;
+    this.Validador[index] = undefined;
+    this.uidDocumento[index] = undefined;
+  }
+  async postSoporteNuxeo(files: any) {
+    return new Promise(async (resolve, reject) => {
+      files.forEach((file) => {
+        file.Id = file.nombre;
+        file.nombre = 'soporte_' + file.IdDocumento + '_acta_recibido';
+        file.key = 'soporte_' + file.IdDocumento;
+      });
+      await this.nuxeoService.getDocumentos$(files, this.documentoService)
+        .subscribe(response => {
+          if (Object.keys(response).length === files.length) {
+            files.forEach((file, index) => {
+              this.uidDocumento[index] = file.uid;
+              this.idDocumento[index] = response[file.key].Id;
+              resolve(response[file.key].Id);
+            });
+          }
+        }, error => {
+          reject(error);
+        });
+    });
   }
 
 }

@@ -10,6 +10,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { SafeResourceUrl, DomSanitizer } from '@angular/platform-browser';
 import { NuxeoService } from '../../../@core/utils/nuxeo.service';
 import { DocumentoService } from '../../../@core/data/documento.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'ngx-sobrante',
@@ -200,7 +201,7 @@ export class SobranteComponent implements OnInit {
 
       const detalle = {
         acta_recibido_id: +this.actaRecibidoId,
-        consecutivo: 'P8-2-2019', // REVISAR
+        consecutivo: 'P5-' + this.actaRecibidoId + '-' + new Date().getFullYear(),
         documento_contable_id: 1, // REVISAR
         vigencia_ordenador: this.fechaSolicitante,
         ordenador_gasto_id: +this.ordenadorId,
@@ -221,10 +222,11 @@ export class SobranteComponent implements OnInit {
 
       this.entradasHelper.postEntrada(movimientoAdquisicion).subscribe((res: any) => {
         if (res !== null) {
-          this.pUpManager.showSuccesToast('Registro Exitoso');
-          this.pUpManager.showSuccessAlert('Entrada registrada satisfactoriamente!' +
-            '\n ENTRADA N°: P8-1-2019'); // SE DEBE MOSTRAR EL CONSECUTIVO REAL
-
+          (Swal as any).fire({
+            type: 'success',
+            title: 'Entrada N° ' + `${detalle.consecutivo}` + ' Registrada',
+            text: 'La Entrada N° ' + `${detalle.consecutivo}` + ' ha sido registrada de forma exitosa',
+          });
           const navigationExtras: NavigationExtras = { state: { consecutivo: res.Id } }; // REVISAR POR QUÉ RES LLEGA 0
           this.router.navigate(['/pages/reportes/registro-entradas'], navigationExtras);
         } else {

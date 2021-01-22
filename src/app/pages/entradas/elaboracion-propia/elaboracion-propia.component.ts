@@ -10,6 +10,7 @@ import { DocumentoService } from '../../../@core/data/documento.service';
 import { TranslateService } from '@ngx-translate/core';
 import { Entrada } from '../../../@core/data/models/entrada/entrada';
 import { TipoEntrada } from '../../../@core/data/models/entrada/tipo_entrada';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'ngx-elaboracion-propia',
@@ -216,7 +217,7 @@ export class ElaboracionPropiaComponent implements OnInit {
 
       const detalle = {
         acta_recibido_id: +this.actaRecibidoId,
-        consecutivo: 'P8-1-2019', // REVISAR
+        consecutivo: 'P3-' + this.actaRecibidoId + '-' + new Date().getFullYear(),
         documento_contable_id: 1, // REVISAR
         vigencia_ordenador: this.fechaSolicitante,
         ordenador_gasto_id: +this.ordenadorId,
@@ -238,11 +239,12 @@ export class ElaboracionPropiaComponent implements OnInit {
 
       this.entradasHelper.postEntrada(movimientoAdquisicion).subscribe((res: any) => {
         if (res !== null) {
-          this.pUpManager.showSuccesToast('Registro Exitoso');
-          this.pUpManager.showSuccessAlert('Entrada registrada satisfactoriamente!' +
-            '\n ENTRADA N°: P8-1-2019'); // SE DEBE MOSTRAR EL CONSECUTIVO REAL
-
-          const navigationExtras: NavigationExtras = { state: { consecutivo: res.Id } }; // REVISAR POR QUÉ RES LLEGA 0
+          (Swal as any).fire({
+            type: 'success',
+            title: 'Entrada N° ' + `${detalle.consecutivo}` + ' Registrada',
+            text: 'La Entrada N° ' + `${detalle.consecutivo}` + ' ha sido registrada de forma exitosa',
+          });
+          const navigationExtras: NavigationExtras = { state: { consecutivo: res.Id } };
           this.router.navigate(['/pages/reportes/registro-entradas'], navigationExtras);
         } else {
           this.pUpManager.showErrorAlert('No es posible hacer el registro.');

@@ -41,9 +41,9 @@
                   {{'GLOBAL.Acta_Recibido.DetalleActa.SoporteSubTitle' | translate}} &nbsp; {{i + 1}}
                 </ng-template>
                 <div>
-                  <nb-card *ngIf="!ActaEspecial">
+                  <nb-card>
                     <nb-card-body>
-                      <div class="row">
+                      <div class="row"  *ngIf="!ActaEspecial">
                         <div class="form-group col-sm">
                           <label>{{'GLOBAL.Acta_Recibido.DetalleActa.Proveedor' | translate}}</label>
                           <div class="input-group">
@@ -60,7 +60,7 @@
                         </div>
                       </div>
                       <div class="row">
-                        <div class="form-group col-sm">
+                        <div class="form-group col-sm" *ngIf="!ActaEspecial">
                           <label>{{'GLOBAL.Acta_Recibido.DetalleActa.FechaSoporte' | translate}}</label>
                           <div class="input-group">
                             <input nbInput placeholder="Selecciona la Fecha" class="form-control"

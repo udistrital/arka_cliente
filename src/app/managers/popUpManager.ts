@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 import { NbToastrService } from '@nebular/theme';
+import { NbToastrConfig } from '@nebular/theme/components/toastr/toastr-config';
+import { NbToastStatus as s } from '@nebular/theme/components/toastr/model';
 import Swal from 'sweetalert2';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -12,24 +14,26 @@ export class PopUpManager {
         private toast: NbToastrService,
         private translate: TranslateService,
     ) { }
+
     /**
      * showToast
      */
-    public showToast(status, message: string, tittle = '') {
-        this.toast.show(message, tittle, { status });
+    public showToast(config: Partial<NbToastrConfig> | string, message: string, tittle = '') {
+        if (typeof config === 'string')
+            config = {status: <s>config};
+        this.toast.show(message, tittle, config);
     }
 
     public showErrorToast(message: string) {
-        const status: any = 'danger';
-        this.toast.show(message, this.translate.instant('GLOBAL.error'), { status });
+        this.showToast({status: s.DANGER}, message, this.translate.instant('GLOBAL.error'));
     }
 
     public showInfoToast(message: string, duration: number = 0) {
-        const status: any = 'info';
-        this.toast.show(message, this.translate.instant('GLOBAL.info'), { status, duration });
+        this.showToast({status: s.INFO, duration}, message, this.translate.instant('GLOBAL.info'));
     }
 
     public showSuccesToast(message: string) {
+        this.showToast({status: s.SUCCESS}, message, this.translate.instant('GLOBAL.info'));
         const status: any = 'success';
         this.toast.show(message, this.translate.instant('GLOBAL.info'), { status });
     }
@@ -44,20 +48,12 @@ export class PopUpManager {
     }
 
     public showSuccessAlert(text) {
-        (Swal as any).fire({
-            type: 'success',
-            title: this.translate.instant('GLOBAL.operacion_exitosa'),
-            text: text,
-            confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
-        });
+        this.showAlert('success', text,
+            this.translate.instant('GLOBAL.operacion_exitosa'));
     }
 
     public showErrorAlert(text) {
-        (Swal as any).fire({
-            type: 'error',
-            title: this.translate.instant('GLOBAL.error'),
-            text: text,
-            confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
-        });
+        this.showAlert('error', text,
+            this.translate.instant('GLOBAL.error'));
     }
 }

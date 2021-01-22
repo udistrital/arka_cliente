@@ -166,21 +166,20 @@ export class VerDetalleComponent implements OnInit {
       const Form2 = this.fb.array([]);
 
       for (const Soporte of transaccion_.SoportesActa) {
-
+        this.ActaEspecial = Soporte.SoporteActa.Consecutivo.toString() === '' ? true : false;
         const Formulario__2 = this.fb.group({
           Id: [Soporte.SoporteActa.Id],
           Proveedor: [
-            Soporte.SoporteActa.ProveedorId === 0 ? this.ActaEspecial = true :
+            Soporte.SoporteActa.ProveedorId === 0 ? null :
               this.Proveedores.find((proveedor) =>
                 proveedor.Id.toString() === Soporte.SoporteActa.ProveedorId.toString()).compuesto,
-          ],
+                Validators.required],
           Consecutivo: [Soporte.SoporteActa.Consecutivo],
           Fecha_Factura: [Soporte.SoporteActa.FechaSoporte],
           Soporte: [Soporte.SoporteActa.DocumentoId],
           Elementos: this.fb.array([]),
         });
         for (const _Elemento of Soporte.Elementos) {
-
           const Elemento___ = this.fb.group({
             Id: [_Elemento.Id],
             TipoBienId: [
@@ -198,7 +197,8 @@ export class VerDetalleComponent implements OnInit {
             Subtotal: [this.T_V(_Elemento.ValorTotal.toString())],
             Descuento: [this.T_V(_Elemento.Descuento.toString())],
             PorcentajeIvaId: [
-              this.Tarifas_Iva.find(iva => iva.Id.toString() === _Elemento.PorcentajeIvaId.toString()).Nombre,
+              this.Tarifas_Iva.find(iva => iva.Tarifa === _Elemento.PorcentajeIvaId) ?
+              this.Tarifas_Iva.find(iva => iva.Tarifa === _Elemento.PorcentajeIvaId).Nombre : '',
             ],
             ValorIva: [this.T_V(_Elemento.ValorIva.toString())],
             ValorTotal: [this.T_V(_Elemento.ValorFinal.toString())],
@@ -371,8 +371,5 @@ export class VerDetalleComponent implements OnInit {
     } else {
       return '0';
     }
-  }
-  volver() {
-    window.location.reload();
   }
 }

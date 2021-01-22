@@ -46,7 +46,6 @@ export class CrudGrupoComponent implements OnInit {
     private catalogoElementosService: CatalogoElementosHelper,
     private toasterService: ToasterService,
   ) {
-    this.formGrupo = FORM_GRUPO;
     this.construirForm();
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
       this.construirForm();
@@ -54,6 +53,7 @@ export class CrudGrupoComponent implements OnInit {
   }
 
   construirForm() {
+    this.formGrupo = FORM_GRUPO;
     this.formGrupo.titulo = this.translate.instant('GLOBAL.subgrupo.grupo.nombre');
     this.formGrupo.btn = this.translate.instant('GLOBAL.guardar');
     for (let i = 0; i < this.formGrupo.campos.length; i++) {
