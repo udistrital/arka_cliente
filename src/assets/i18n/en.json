@@ -38,6 +38,7 @@
       "ErrorAnularMsg": "The Act {{ACTA}} cannot be voided by having state \"{{ESTADO}}\"",
       "AnuladaOkTitulo":"Act {{ACTA}} Voided",
       "AnuladaOkMsg":"The Act {{ACTA}} was successfully Voided",
+      "id_forma1": "Receipt Act #{{ID}}",
       "CapturarElementos": {
         "CargaMasivaTitle": "Masive Load",
         "ValidadorPlaceholder": "The file have xlsx extension (*.xlsx)",
@@ -175,6 +176,7 @@
         "Verificada3":"Certificate N° {{id}} has been successfully sent to Supplier",
         "VerificadaTitleNO": "Certificate Not Sent!",
         "VerificadaNO": "The Certificate hasn't been succesfully sent to verify. Try again later",
+        "ProveedorNO":"The Act has NOT been sent to supplier. Try again later",
         "VerificacionButton": "Send to Verification",
         "EnviarProveedorButton": "Send to Supplier"
       },
@@ -296,15 +298,6 @@
     "Salida de Almacen": "Output",
     "Depreciacion Almacen": "Depreciation",
     "Valorizacion Almacen": "Valorization",
-    "Adquisición": "Acquisition",
-    "Donación": "Donation",
-    "Reposición": "Replacement",
-    "Sobrante": "Surplus",
-    "Terceros": "Terceros",
-    "Elaboracion Propia": "Self Elaboration",
-    "Caja menor": "MInor cash",
-    "Compras extranjeras": "Foreign purchase",
-    "Aprovechamientos": "Exploitations",
     "Adiciones y mejoras": "Additions and improvements",
     "Intangibles": "Inmaterial assets",
     "Provisional": "Provisions",
@@ -506,14 +499,50 @@
     "ubicacion": "Location",
     "acciones": "Actions",
     "observaciones": "comments",
+
+    "entradas": {
+      "tipo": {
+        "EA": {
+          "nombre": "Acquisition",
+          "descripcion": "Acquisition Input"
+        },
+        "EEP": {
+          "nombre": "Elaboración Propia",
+          "descripcion": "Self-made Input"
+        },
+        "ED": {
+          "nombre": "Donation",
+          "descripcion": "Donation Input"
+        },
+        "ESI": {
+          "nombre": "Surplus",
+          "descripcion": "Surplus Input"
+        },
+        "ET": {
+          "nombre": "Third party",
+          "descripcion": "Third Party Input"
+        },
+        "EPR": {
+          "nombre": "Replacement",
+          "descripcion": "Replacement Input"
+        },
+        "ECM": {
+          "nombre": "Petty Cash",
+          "descripcion": "Petty Cash Input"
+        },
+        "ECE": {
+          "nombre": "Foreign Purchase",
+          "descripcion": "Foreign Purchase Input"
+        },
+        "EPPA": {
+          "nombre": "Use of Parts",
+          "descripcion": "Input by Use of Parts"
+        }
+      }
+    },
+
     "registrar_entrada": "Register Entry",
     "mensaje_registrar_entrada": "Select the received report to which you wish to make an entry by clicking on the actions icon located on the right side of the table.",
-    "entrada_adquisicion": "Acquisition Entry",
-    "entrada_reposicion": "Replacement Entry",
-    "entrada_elaboracion_propia": "Own Elaboration Entry",
-    "entrada_donacion": "Donation Entry",
-    "entrada_sobrante": "Leftover Inventory Entry",
-    "entrada_terceros": "Entry of Third Party Assets",
     "datos_contrato": "Contract Data",
     "ordenador_gasto": "Spending Authorizer",
     "supervisor": "Supervisory",

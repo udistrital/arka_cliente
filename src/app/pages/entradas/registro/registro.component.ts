@@ -14,14 +14,21 @@ export class RegistroComponent implements OnInit {
 
   // Datos Tabla
   source: LocalDataSource;
+  tiposDeEntradas: string[];
   // Acta de recibido
   actaSeleccionada: string;
   settings: any;
   opcionEntrada: string;
 
-  constructor(private actaRecibidoHelper: ActaRecibidoHelper, private pUpManager: PopUpManager, private translate: TranslateService) {
+  constructor(
+    private actaRecibidoHelper: ActaRecibidoHelper,
+    private pUpManager: PopUpManager,
+    private translate: TranslateService,
+  ) {
     this.source = new LocalDataSource();
     this.actaSeleccionada = '';
+    this.tiposDeEntradas = ['EA','EPR','ED','ESI','ECM','ECE','EPPA',
+      'EEP','ET'];// Los de esta línea no están en las HU
     this.loadTablaSettings();
     this.loadActas();
   }

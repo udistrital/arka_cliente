@@ -14,14 +14,10 @@
 
       <h5 *ngIf="actaSeleccionada != ''">{{'GLOBAL.tipo_entrada' | translate}}</h5>
 
-      <select class="form-control mb-4" [(ngModel)]="opcionEntrada" *ngIf="actaSeleccionada != ''">
-        <option value="EA">Adquisición</option>
-        <option value="EPR">Reposición</option>
-        <option value="EEP">Elaboración Propia</option>
-        <option value="ED">Donación</option>
-        <option value="ESI">Sobrante de Inventario</option>
-        <option value="ET">Terceros</option>
-        <option value="ECM">Caja Menor</option>
+      <select class="form-control mb-4" [(ngModel)]="opcionEntrada" *ngIf="actaSeleccionada != ''" >
+        <option *ngFor="let entrada of tiposDeEntradas" [value]="entrada">
+          {{ 'GLOBAL.entradas.tipo.'+entrada+'.nombre' | translate }}
+        </option>
       </select>
 
       <ngx-adquisicion *ngIf="opcionEntrada === 'EA'" [actaRecibidoId]="actaSeleccionada"></ngx-adquisicion>

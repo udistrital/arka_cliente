@@ -38,6 +38,7 @@
       "ErrorAnularMsg": "No se puede anular el Acta {{ACTA}} por tener estado \"{{ESTADO}}\"",
       "AnuladaOkTitulo":"Acta {{ACTA}} Anulada",
       "AnuladaOkMsg":"El Acta {{ACTA}} fue Anulada exitosamente",
+      "id_forma1": "Acta de Recibido #{{ID}}",
       "CapturarElementos":{
         "CargaMasivaTitle":"Carga Masiva",
         "ValidadorPlaceholder":"El archivo debe tener extension (*.xlsx)",
@@ -297,15 +298,6 @@
     "Salida de Almacen":"Salida",
     "Depreciacion Almacen":"Depreciación",
     "Valorizacion Almacen":"Valorización",
-    "Adquisición":"Adquisición",
-    "Donación":"Donación",
-    "Reposición":"Reposición",
-    "Sobrante":"Sobrante",
-    "Terceros":"Terceros",
-    "Elaboración Propia":"Elaboración Propia",
-    "Caja menor": "Caja menor",
-    "Compras extranjeras": "Compras extranjeras",
-    "Aprovechamientos": "Aprovechamientos",
     "Adiciones y mejoras": "Adiciones y mejoras",
     "Intangibles": "Intangibles",
     "Provisional": "Provisional",
@@ -507,14 +499,50 @@
     "ubicacion": "Ubicación",
     "acciones": "Acciones",
     "observaciones": "Observaciones",
+
+    "entradas": {
+      "tipo": {
+        "EA": {
+          "nombre": "Adquisición",
+          "descripcion": "Entrada por Adquisición"
+        },
+        "EEP": {
+          "nombre": "Elaboración Propia",
+          "descripcion": "Entrada por Elaboración Propia"
+        },
+        "ED": {
+          "nombre": "Donación",
+          "descripcion": "Entrada por Donación"
+        },
+        "ESI": {
+          "nombre": "Sobrante",
+          "descripcion": "Entrada por Sobrante de Inventario"
+        },
+        "ET": {
+          "nombre": "Terceros",
+          "descripcion": "Entrada de Bienes de Terceros"
+        },
+        "EPR": {
+          "nombre": "Reposición",
+          "descripcion": "Entrada por Reposición"
+        },
+        "ECM": {
+          "nombre": "Caja menor",
+          "descripcion": "Entrada por Adquisición por Caja Menor"
+        },
+        "ECE": {
+          "nombre": "Compras extranjeras",
+          "descripcion": "Entrada por Compra en el Extranjero"
+        },
+        "EPPA": {
+          "nombre": "Aprovechamiento de Partes",
+          "descripcion": "Entrada de partes por aprovechamiento"
+        }
+      }
+    },
+
     "registrar_entrada": "Registrar Entrada",
     "mensaje_registrar_entrada": "Seleccione el acta de recibido a la cual desea realizarle entrada dando clic en el ícono de acciones ubicado al costado derecho de la tabla.",
-    "entrada_adquisicion": "Entrada por Adquisición",
-    "entrada_reposicion": "Entrada por Reposición",
-    "entrada_elaboracion_propia": "Entrada por Elaboración Propia",
-    "entrada_donacion": "Entrada por Donación",
-    "entrada_sobrante": "Entrada por Sobrante de Inventario",
-    "entrada_terceros": "Entrada de Bienes de Terceros",
     "datos_contrato": "Datos de Contrato",
     "ordenador_gasto": "Ordenador de Gasto",
     "supervisor": "Supervisor",
