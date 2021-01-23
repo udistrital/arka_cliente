@@ -36,6 +36,7 @@
   "GLOBAL": {
     "Acta_Recibido":{
       "ErrorAnularMsg": "No se puede anular el Acta {{ACTA}} por tener estado \"{{ESTADO}}\"",
+      "Anular": "Anular Acta de Recibido",
       "AnuladaOkTitulo":"Acta {{ACTA}} Anulada",
       "AnuladaOkMsg":"El Acta {{ACTA}} fue Anulada exitosamente",
       "una": "Acta Recibido",
