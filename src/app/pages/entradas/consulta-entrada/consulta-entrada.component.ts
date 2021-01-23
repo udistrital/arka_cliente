@@ -43,13 +43,15 @@ export class ConsultaEntradaComponent implements OnInit {
   }
 
   loadTablaSettings() {
+    const t = {
+      registrar: this.translate.instant('GLOBAL.registrar_nueva_entrada'),
+    };
     this.settings = {
       hideSubHeader: false,
       noDataMessage: this.translate.instant('GLOBAL.no_data_entradas'),
       actions: {
-        columnTitle: this.translate.instant('GLOBAL.detalle'),
+        columnTitle: this.translate.instant('GLOBAL.Acciones'),
         position: 'right',
-        add: false,
         edit: false,
         delete: false,
         custom: [
@@ -59,6 +61,10 @@ export class ConsultaEntradaComponent implements OnInit {
           },
         ],
       },
+      add: {
+        addButtonContent: '<i class="fas fa-plus" title="' + t.registrar + '" aria-label="' + t.registrar + '"></i>',
+      },
+      mode: 'external',
       columns: {
         Id: {
           title: 'ID',

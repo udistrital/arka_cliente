@@ -106,7 +106,7 @@ export class ConsultaActaRecibidoComponent implements OnInit {
     this.settings = {
       noDataMessage: 'No se encontraron elementos asociados.',
       actions: {
-        columnTitle: 'Acciones',
+        columnTitle: this.translate.instant('GLOBAL.Acciones'),
         position: 'right',
         delete: this.userService.tieneAlgunRol([Rol.Admin, Rol.Revisor]),
         add: this.userService.tieneAlgunRol([Rol.Secretaria, Rol.Admin, Rol.Revisor]),

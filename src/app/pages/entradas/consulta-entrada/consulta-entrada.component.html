@@ -8,15 +8,8 @@
       <!-- CARD PARA MOSTRAR LAS SOLICITUDES *ngIf="!detalle" -->
       <p class="h4 pb-4" *ngIf="!detalle">{{'GLOBAL.mensaje_consulta_entrada' | translate}}</p>
 
-      <ng2-smart-table [settings]="settings" [source]="source" (custom)="onCustom($event)" *ngIf="!detalle">
+      <ng2-smart-table [settings]="settings" [source]="source" (custom)="onCustom($event)" (create)="onRegister($event)" *ngIf="!detalle">
       </ng2-smart-table>
-
-      <div class="justify-content-center float-right pt-4" *ngIf="!detalle">
-        <button type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off"
-          (click)="onRegister()">
-          {{'GLOBAL.registrar_nueva_entrada' | translate}}
-        </button>
-      </div>
 
       <!-- CARD PARA MOSTRAR LOS DETALLES DE LAS SOLICITUDES -->
       <h5 *ngIf="detalle" class="pb-4">{{'GLOBAL.detalle_entrada' | translate}}</h5>
