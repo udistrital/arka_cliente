@@ -1,18 +1,6 @@
-<div *ngIf="!firstForm" [nbSpinner]="!firstForm">
-  <nb-card>
-    <nb-card-header>
 
-    </nb-card-header>
-    <nb-card-body>
+<nb-card *ngIf="!firstForm" [nbSpinner]="!firstForm"></nb-card>
 
-    </nb-card-body>
-  </nb-card>
-</div>
-<!-- <code *ngIf="firstForm">
-    <pre>
-      {{firstForm.value | json}}
-    </pre>
-  </code> -->
 <div class="col-lg-12" *ngIf="firstForm">
   <form [formGroup]="firstForm" #fform="ngForm" class="step-container">
     <nb-card>
@@ -50,10 +38,6 @@
                   </div>
                   <div class="form-group col-sm">
                     <label>{{'GLOBAL.Acta_Recibido.EdicionActa.Ubicacion' | translate}}</label>
-                    <!-- <ng2-completer style="border: 0rem" inputClass="form-control" nbInput [datasource]="dataService" (keyup)="usarLocalStorage()" (click)="usarLocalStorage()"
-                      formControlName="Ubicacion" [minSearchLength]="3" [clearUnselected]="true">
-                    </ng2-completer> -->
-
                     <select nbInput type="text" class="form-control" formControlName="Ubicacion"
                     disabled *ngIf="!getPermisoEditar(permisos.Acta)">
                       <option *ngFor="let ubicacion of Ubicaciones" [(value)]="ubicacion.Id">{{ubicacion.Nombre}}
@@ -79,12 +63,6 @@
                     <p class="campo" *ngIf="firstForm.get('Formulario1').get('Revisor').invalid">
                       {{'GLOBAL.placeholder' | translate}}</p>
                   </div>
-
-
-
-
-
-
 
                 </div>
               </nb-card-body>
@@ -159,50 +137,12 @@
                                 <p class="campo" *ngIf="firstForm.get('Formulario2').at(i).get('Fecha_Factura').invalid">
                                   {{'GLOBAL.placeholder' | translate}}</p>
                               </div>
-
-
-                              <!--<div class="form-group col-sm">
-                                  <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Revisor' | translate}}</label>
-                                  <ng2-completer style="border: 0rem" inputClass="form-control" [clearUnselected]="true"
-                                    placeholder="{{'GLOBAL.Acta_Recibido.RegistroActa.SeleccioneFiltro' | translate}}"
-                                    nbInput [datasource]="dataService2" formControlName="Revisor"
-                                    (keyup)="usarLocalStorage()" [minSearchLength]="3">
-                                  </ng2-completer>
-                                  <p class="campo" *ngIf="firstForm.get('Formulario2').at(i).get('Revisor').invalid">
-                                    {{'GLOBAL.placeholder' | translate}}</p>
-                              </div>-->
-
-<!--
-
-                              <div class="form-group col-sm">
-                                <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Revisor' | translate}}</label>
-                                <ng2-completer style="border: 0rem" inputClass="form-control" (keyup)="usarLocalStorage()"
-                                  placeholder="{{'GLOBAL.Acta_Recibido.EdicionActa.SeleccioneFiltro' | translate}}"
-                                  [clearUnselected]="true" nbInput [datasource]="dataService2" formControlName="Revisor"
-                                  [minSearchLength]="3">
-                                </ng2-completer>
-                                <p class="campo" *ngIf="firstForm.get('Formulario2').at(i).get('Revisor').invalid">
-                                  {{'GLOBAL.placeholder' | translate}}</p>
-                              </div>
-                            -->
-
-
-
-
-
-
                             </div>
 
                             <div class="col">
                               <div class="form-group col-sm">
-                                <!-- <label>{{'GLOBAL.Acta_Recibido.EdicionActa.Soporte' | translate}}</label>
-                                <input nbInput type="file" class="form-control-file" id="factura"
-                                  formControlName="Soporte" (click)="usarLocalStorage()" required>
-                                  <p class="campo" *ngIf="firstForm.get('Formulario2').at(i).get('Soporte').invalid">{{'GLOBAL.placeholder' | translate}}</p> -->
-
                                 <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Soporte' | translate}}</label>
                                 <nb-card>
-
                                   <nb-card-body>
                                     <div class="col-sm soporte">
                                       <div>
@@ -238,9 +178,9 @@
                                     </div>
                                   </nb-card-body>
                                 </nb-card>
-
                               </div>
                             </div>
+
                           </div>
                         </nb-card-body>
                       </nb-card>
@@ -355,10 +295,3 @@
     </nb-card>
   </form>
 </div>
-<!-- <div *ngIf="firstForm">
-  <code>
-    <pre>
-      {{firstForm.value | json}}
-    </pre>
-  </code>
-</div> -->
