@@ -38,7 +38,7 @@ export class RegistroComponent implements OnInit {
       hideSubHeader: false,
       noDataMessage: this.translate.instant('GLOBAL.no_data_actas_entrada'),
       actions: {
-        columnTitle: this.translate.instant('GLOBAL.acciones'),
+        columnTitle: this.translate.instant('GLOBAL.Acciones'),
         position: 'right',
         add: false,
         edit: false,
