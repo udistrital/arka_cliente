@@ -27,6 +27,7 @@ export class TablaEntradasComponent implements OnInit {
   }
 
   loadElementos(): void {
+    if (this.actaRecibidoId) {
     this.actaRecibidoHelper.getElementosActa(this.actaRecibidoId).subscribe(res => {
       if (res !== null) {
         const data = <Array<any>>res;
@@ -66,6 +67,7 @@ export class TablaEntradasComponent implements OnInit {
         this.source.load(this.elementos);
       }
     });
+    }
   }
 
   loadTablaSettings() {

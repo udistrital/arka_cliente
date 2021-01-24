@@ -1,9 +1,8 @@
-<div class="col-lg-12">
   <nb-card>
     <nb-card-header>
       <h1>{{'GLOBAL.consultar_entrada' | translate}}</h1>
     </nb-card-header>
-    <nb-card-body class="row d-flex justify-content-center">
+    <nb-card-body [nbSpinner]="!mostrar">
 
       <!-- CARD PARA MOSTRAR LAS SOLICITUDES *ngIf="!detalle" -->
       <p class="h4 pb-4" *ngIf="!detalle">{{'GLOBAL.mensaje_consulta_entrada' | translate}}</p>
@@ -200,12 +199,10 @@
 
       <ngx-tabla-entradas [actaRecibidoId]="actaRecibidoId" *ngIf="detalle"></ngx-tabla-entradas>
 
-      <div class="pt-4">
+    </nb-card-body>
+    <nb-card-footer class="pt-4">
         <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="onVolver()"
           *ngIf="detalle">{{'GLOBAL.volver' | translate}}
         </button>
-      </div>
-
-    </nb-card-body>
+    </nb-card-footer>
   </nb-card>
-</div>
