@@ -310,6 +310,7 @@ export class ConsultaEntradaComponent implements OnInit {
   onVolver() {
     this.detalle = !this.detalle;
     this.iniciarParametros();
+    this.mostrar = true;
   }
 
   iniciarParametros() {
