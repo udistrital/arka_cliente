@@ -39,8 +39,10 @@
           </datalist>
         </div>
       </div>
-      <button type="button" (click)="onContratoSubmit()" nbButton nbStepperNext>{{'GLOBAL.siguiente' |
-        translate}}</button>
+      <div class="row float-right">
+        <button type="button" (click)="onContratoSubmit()" nbButton nbStepperNext>
+          {{'GLOBAL.siguiente' | translate}}</button>
+      </div>
     </form>
   </nb-step>
 
@@ -189,13 +191,11 @@
     <div class="step-container d-flex justify-content-center">
       <p>{{'GLOBAL.mensaje_registrar' | translate}}</p>
     </div>
+    <div class="row float-right">
+      <button type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off"
+      [disabled]="!validar" (click)="onSubmit()">
+        {{'GLOBAL.registrar_entrada' | translate}}</button>
+    </div>
   </nb-step>
 
 </nb-stepper>
-
-<div class="justify-content-center float-right pt-4">
-  <button type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off"
-    [disabled]="!validar" (click)="onSubmit()">
-    {{'GLOBAL.registrar_entrada' | translate}}
-  </button>
-</div>
