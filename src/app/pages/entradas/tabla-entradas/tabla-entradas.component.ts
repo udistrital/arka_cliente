@@ -14,6 +14,8 @@ import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 })
 export class TablaEntradasComponent implements OnInit {
 
+  ready: boolean = false;
+
   source: LocalDataSource;
   elementos: Array<ElementoActa>;
   settings: any;
@@ -65,6 +67,7 @@ export class TablaEntradasComponent implements OnInit {
           }
         }
         this.source.load(this.elementos);
+        this.ready = true;
       }
     });
     }

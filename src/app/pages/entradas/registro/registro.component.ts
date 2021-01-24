@@ -12,6 +12,8 @@ import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
 })
 export class RegistroComponent implements OnInit {
 
+  mostrar: boolean = false;
+
   // Datos Tabla
   source: LocalDataSource;
   tiposDeEntradas: string[];
@@ -120,6 +122,7 @@ export class RegistroComponent implements OnInit {
       if (Array.isArray(res) && res.length !== 0) {
         const data = <Array<ActaRecibidoUbicacion>>res;
         this.source.load(data);
+        this.mostrar = true;
       }
     });
   }
