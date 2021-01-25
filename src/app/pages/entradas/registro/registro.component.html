@@ -32,6 +32,7 @@
       </ngx-sobrante>
       <ngx-terceros *ngIf="opcionEntrada === 'ET'" [actaRecibidoId]="actaSeleccionada"></ngx-terceros>
       <ngx-caja-menor *ngIf="opcionEntrada === 'ECM'" [actaRecibidoId]="actaSeleccionada"></ngx-caja-menor>
+      <ngx-adiciones-mejoras *ngIf="opcionEntrada === 'EAM'" [actaRecibidoId]="actaSeleccionada"></ngx-adiciones-mejoras>
 
       <ngx-tabla-entradas *ngIf="opcionEntrada" [actaRecibidoId]="actaSeleccionada"></ngx-tabla-entradas>
 

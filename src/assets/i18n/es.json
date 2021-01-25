@@ -525,6 +525,14 @@
           "nombre": "Caja menor",
           "descripcion": "Entrada por Adquisición por Caja Menor"
         },
+        "EAM": {
+          "nombre": "Adiciones y mejoras",
+          "descripcion": "Entrada por Adiciones y mejoras"
+        },
+        "EIA": {
+          "nombre": "Intangibles adquiridos",
+          "descripcion": "Entrada por Intangibles adquiridos "
+        },
         "ECE": {
           "nombre": "Compras extranjeras",
           "descripcion": "Entrada por Compra en el Extranjero"

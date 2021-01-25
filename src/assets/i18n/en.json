@@ -525,6 +525,14 @@
           "nombre": "Petty Cash",
           "descripcion": "Petty Cash Input"
         },
+        "EAM": {
+          "nombre": "Additions and improvements",
+          "descripcion": "Additions and improvements Input"
+        },
+        "EIA": {
+          "nombre": "Intangibles acquired",
+          "descripcion": "Intangibles acquired Input"
+        },
         "ECE": {
           "nombre": "Foreign Purchase",
           "descripcion": "Foreign Purchase Input"

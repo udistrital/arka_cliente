@@ -6,7 +6,9 @@ import { TipoBien } from '../../../@core/data/models/acta_recibido/tipo_bien';
 import { SoporteActa } from '../../../@core/data/models/acta_recibido/soporte_acta';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
-
+import { ListService } from '../../../@core/store/services/list.service';
+import { Store } from '@ngrx/store';
+import { IAppState } from '../../../@core/store/app.state';
 @Component({
   selector: 'ngx-tabla-entradas',
   templateUrl: './tabla-entradas.component.html',
@@ -17,15 +19,32 @@ export class TablaEntradasComponent implements OnInit {
   ready: boolean = false;
 
   source: LocalDataSource;
+  Clases: any;
   elementos: Array<ElementoActa>;
   settings: any;
 
   @Input() actaRecibidoId: string;
 
-  constructor(private actaRecibidoHelper: ActaRecibidoHelper, private pUpManager: PopUpManager, private translate: TranslateService) {
+  constructor(
+    private actaRecibidoHelper: ActaRecibidoHelper,
+    private pUpManager: PopUpManager,
+    private translate: TranslateService,
+    private listService: ListService,
+    private store: Store<IAppState>) {
+
     this.source = new LocalDataSource();
     this.elementos = new Array<ElementoActa>();
+    this.listService.findClases();
+    this.loadLists();
     this.loadTablaSettings();
+  }
+  loadLists() {
+    this.store.select((state) => state).subscribe(
+      (list) => {
+        this.Clases = list.listClases[0];
+      },
+    );
+
   }
 
   loadElementos(): void {
@@ -61,7 +80,8 @@ export class TablaEntradasComponent implements OnInit {
             elemento.TipoBienId = tipoBien;
             soporteActa.Consecutivo = data[datos].SoporteActaId.Consecutivo;
             elemento.SoporteActaId = soporteActa;
-            elemento.SubgrupoCatalogoId = data[datos].SubgrupoCatalogoId;
+            elemento.SubgrupoCatalogoId = this.Clases.find((clase) => clase.SubgrupoId.Id === data[datos].SubgrupoCatalogoId).SubgrupoId.Nombre;
+            // elemento.SubgrupoCatalogoId = data[datos].SubgrupoCatalogoId;
 
             this.elementos.push(elemento);
           }
@@ -99,7 +119,7 @@ export class TablaEntradasComponent implements OnInit {
         },
         SubgrupoCatalogoId: {
           // TODO: Actualizar dinamicamente este texto:
-          title: this.translate.instant('GLOBAL.subgrupo.segmento.nombre'),
+          title: this.translate.instant('GLOBAL.subgrupo.clase.nombre'),
         },
         Nombre: {
           title: this.translate.instant('GLOBAL.descripcion'),
@@ -192,6 +212,7 @@ export class TablaEntradasComponent implements OnInit {
 
   ngOnInit() {
     this.loadElementos();
+    this.loadLists();
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
       this.loadTablaSettings();
     });
