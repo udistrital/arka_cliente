@@ -47,7 +47,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
   searchStr2: string[];
   searchStr3: string;
   protected dataService: CompleterData;
-  protected dataService2: CompleterData;
+  dataService2: CompleterData;
 
   // Mensajes de error
   errMess: any;
