@@ -3,7 +3,7 @@
     <nb-card-header>
       <h1>{{'GLOBAL.registrar_entrada' | translate}}</h1>
     </nb-card-header>
-    <nb-card-body>
+    <nb-card-body [nbSpinner]="!mostrar">
 
       <p class="h4 pb-4" *ngIf="actaSeleccionada === ''">{{'GLOBAL.mensaje_registrar_entrada' | translate}}</p>
 
@@ -20,6 +20,9 @@
         </option>
       </select>
 
+      <h3 *ngIf="opcionEntrada" class="pt-4 pb-2">{{'GLOBAL.entradas.tipo.' + opcionEntrada + '.descripcion' | translate}}</h3>
+      <p *ngIf="opcionEntrada" class="font-weight-bold font-italic pb-2">{{ 'GLOBAL.Acta_Recibido.id_forma1' | translate : {ID: actaSeleccionada} }}</p>
+
       <ngx-adquisicion *ngIf="opcionEntrada === 'EA'" [actaRecibidoId]="actaSeleccionada"></ngx-adquisicion>
       <ngx-reposicion *ngIf="opcionEntrada === 'EPR'" [actaRecibidoId]="actaSeleccionada"></ngx-reposicion>
       <ngx-elaboracion-propia *ngIf="opcionEntrada === 'EEP'" [actaRecibidoId]="actaSeleccionada">
@@ -29,6 +32,8 @@
       </ngx-sobrante>
       <ngx-terceros *ngIf="opcionEntrada === 'ET'" [actaRecibidoId]="actaSeleccionada"></ngx-terceros>
       <ngx-caja-menor *ngIf="opcionEntrada === 'ECM'" [actaRecibidoId]="actaSeleccionada"></ngx-caja-menor>
+
+      <ngx-tabla-entradas *ngIf="opcionEntrada" [actaRecibidoId]="actaSeleccionada"></ngx-tabla-entradas>
 
     </nb-card-body>
   </nb-card>

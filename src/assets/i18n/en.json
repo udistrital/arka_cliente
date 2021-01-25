@@ -36,6 +36,7 @@
   "GLOBAL": {
     "Acta_Recibido": {
       "ErrorAnularMsg": "The Act {{ACTA}} cannot be voided by having state \"{{ESTADO}}\"",
+      "Anular": "Void Receipt Certificate",
       "AnuladaOkTitulo":"Act {{ACTA}} Voided",
       "AnuladaOkMsg":"The Act {{ACTA}} was successfully Voided",
       "una": "Receipt Certificate",
@@ -492,7 +493,6 @@
     "fecha_visto_bueno": "Approval Date",
     "revisor": "Reviewer",
     "ubicacion": "Location",
-    "acciones": "Actions",
     "observaciones": "comments",
 
     "entradas": {

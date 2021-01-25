@@ -28,6 +28,7 @@ export class ConsultaEntradaComponent implements OnInit {
   contrato: Contrato;
   settings: any;
   documentoId: boolean;
+  mostrar: boolean = false;
 
   constructor(private router: Router, private entradasHelper: EntradaHelper, private translate: TranslateService,
     private nuxeoService: NuxeoService, private documentoService: DocumentoService) {
@@ -37,19 +38,19 @@ export class ConsultaEntradaComponent implements OnInit {
     this.entradaEspecifica = new Entrada;
     this.contrato = new Contrato;
     this.documentoId = false;
-    this.loadTablaSettings();
     this.iniciarParametros();
-    this.loadEntradas();
   }
 
   loadTablaSettings() {
+    const t = {
+      registrar: this.translate.instant('GLOBAL.registrar_nueva_entrada'),
+    };
     this.settings = {
       hideSubHeader: false,
       noDataMessage: this.translate.instant('GLOBAL.no_data_entradas'),
       actions: {
-        columnTitle: this.translate.instant('GLOBAL.detalle'),
+        columnTitle: this.translate.instant('GLOBAL.Acciones'),
         position: 'right',
-        add: false,
         edit: false,
         delete: false,
         custom: [
@@ -59,6 +60,10 @@ export class ConsultaEntradaComponent implements OnInit {
           },
         ],
       },
+      add: {
+        addButtonContent: '<i class="fas fa-plus" title="' + t.registrar + '" aria-label="' + t.registrar + '"></i>',
+      },
+      mode: 'external',
       columns: {
         Id: {
           title: 'ID',
@@ -128,6 +133,7 @@ export class ConsultaEntradaComponent implements OnInit {
           }
         }
         this.source.load(this.entradas);
+        this.mostrar = true;
       }
     });
   }
@@ -165,6 +171,7 @@ export class ConsultaEntradaComponent implements OnInit {
   }
 
   loadContrato(): void {
+    if (this.entradaEspecifica.ContratoId && this.entradaEspecifica.Vigencia) {
     this.entradasHelper.getContrato(this.entradaEspecifica.ContratoId, this.entradaEspecifica.Vigencia).subscribe(res => {
       if (res !== null) {
         const ordenadorAux = new OrdenadorGasto;
@@ -183,8 +190,10 @@ export class ConsultaEntradaComponent implements OnInit {
         this.contrato.TipoContrato = res.contrato.tipo_contrato;
         this.contrato.FechaSuscripcion = res.contrato.fecha_suscripcion;
         this.contrato.Supervisor = supervisorAux;
+        this.mostrar = true;
       }
     });
+    } else this.mostrar = true;
   }
 
   loadOrdenador() {
@@ -231,11 +240,11 @@ export class ConsultaEntradaComponent implements OnInit {
     this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
     this.entradaEspecifica.ContratoId = detalle.contrato_id; // CONTRATO
     this.entradaEspecifica.Vigencia = detalle.vigencia_contrato; // VIGENCIA CONTRATO
-    this.loadContrato(); // CONTRATO
     this.entradaEspecifica.Importacion = detalle.importacion; // IMPORTACIÓN
     this.entradaEspecifica.TipoEntradaId.Nombre = info.TipoMovimiento.TipoMovimientoId.Nombre; // TIPO ENTRADA
     this.entradaEspecifica.Observacion = info.Movimiento.Observacion; // OBSERVACIÓN
     this.documentoId = false; // SOPORTE
+    this.loadContrato(); // CONTRATO
   }
 
   loadDetalleElaboracion(info) {
@@ -248,6 +257,7 @@ export class ConsultaEntradaComponent implements OnInit {
     this.entradaEspecifica.TipoEntradaId.Nombre = info.TipoMovimiento.TipoMovimientoId.Nombre; // TIPO ENTRADA
     this.entradaEspecifica.Observacion = info.Movimiento.Observacion; // OBSERVACIÓN
     this.documentoId = true; // SOPORTE
+    this.mostrar = true;
   }
 
   loadDetalleDonacion(info) {
@@ -256,12 +266,12 @@ export class ConsultaEntradaComponent implements OnInit {
     this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
     this.entradaEspecifica.ContratoId = detalle.contrato_id; // CONTRATO
     this.entradaEspecifica.Vigencia = detalle.vigencia_contrato; // VIGENCIA CONTRATO
-    this.loadContrato(); // CONTRATO
     this.entradaEspecifica.Vigencia = detalle.vigencia_solicitante; // VIGENCIA SOLICITANTE
     this.entradaEspecifica.OrdenadorId = detalle.ordenador_gasto_id; // ORDENADOR DE GASTO
     this.entradaEspecifica.TipoEntradaId.Nombre = info.TipoMovimiento.TipoMovimientoId.Nombre; // TIPO ENTRADA
     this.entradaEspecifica.Observacion = info.Movimiento.Observacion; // OBSERVACIÓN
     this.documentoId = false; // SOPORTE
+    this.loadContrato(); // CONTRATO
   }
 
   loadDetalleSobrante(info) {
@@ -273,6 +283,7 @@ export class ConsultaEntradaComponent implements OnInit {
     this.entradaEspecifica.TipoEntradaId.Nombre = info.TipoMovimiento.TipoMovimientoId.Nombre; // TIPO ENTRADA
     this.entradaEspecifica.Observacion = info.Movimiento.Observacion; // OBSERVACIÓN
     this.documentoId = true;
+    this.mostrar = true;
   }
 
   loadDetalleTerceros(info) {
@@ -281,13 +292,14 @@ export class ConsultaEntradaComponent implements OnInit {
     this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
     this.entradaEspecifica.ContratoId = detalle.contrato_id; // CONTRATO
     this.entradaEspecifica.Vigencia = detalle.vigencia_contrato; // VIGENCIA CONTRATO
-    this.loadContrato(); // CONTRATO
     this.entradaEspecifica.TipoEntradaId.Nombre = info.TipoMovimiento.TipoMovimientoId.Nombre; // TIPO ENTRADA
     this.entradaEspecifica.Observacion = info.Movimiento.Observacion; // OBSERVACIÓN
     this.documentoId = false; // SOPORTE
+    this.loadContrato(); // CONTRATO
   }
 
   onCustom(event) {
+    this.mostrar = false;
     this.actaRecibidoId = +`${event.data.ActaRecibidoId}`;
     // this.consecutivoEntrada = `${event.data.Consecutivo}`;
     this.consecutivoEntrada = `${event.data.Id}`;
@@ -298,6 +310,7 @@ export class ConsultaEntradaComponent implements OnInit {
   onVolver() {
     this.detalle = !this.detalle;
     this.iniciarParametros();
+    this.mostrar = true;
   }
 
   iniciarParametros() {
@@ -317,6 +330,8 @@ export class ConsultaEntradaComponent implements OnInit {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
       this.loadTablaSettings();
     });
+    this.loadTablaSettings();
+    this.loadEntradas();
   }
 
 }

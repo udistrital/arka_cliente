@@ -693,9 +693,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
           text: this.translate.instant('GLOBAL.Acta_Recibido.EdicionActa.Modificada2', {id: res.ActaRecibido.Id}),
         }).then((willDelete) => {
           if (willDelete.value) {
-            this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
-              this.router.navigateByUrl('/pages/acta_recibido/consulta_acta_recibido');
-            });
             this.verificar = false;
           }
         });

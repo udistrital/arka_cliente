@@ -98,16 +98,27 @@ export class ConsultaActaRecibidoComponent implements OnInit {
 
 
   cargarCampos() {
+    const f = {
+      registrar: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.Title'),
+      editar: this.translate.instant('GLOBAL.Acta_Recibido.EdicionActa.Title'),
+      anular: this.translate.instant('GLOBAL.Acta_Recibido.Anular'),
+    };
     this.settings = {
       noDataMessage: 'No se encontraron elementos asociados.',
       actions: {
-        columnTitle: 'Acciones',
+        columnTitle: this.translate.instant('GLOBAL.Acciones'),
         position: 'right',
-        delete: false,
-        add: false,
+        delete: this.userService.tieneAlgunRol([Rol.Admin, Rol.Revisor]),
+        add: this.userService.tieneAlgunRol([Rol.Secretaria, Rol.Admin, Rol.Revisor]),
+      },
+      add: {
+        addButtonContent: '<i class="fas fa-plus" title="' + f.registrar + '" aria-label="' + f.registrar + '"></i>',
       },
       edit: {
-        editButtonContent: '<i class="far fa-edit" title="Editar Acta" aria-label="Editar Acta"></i>',
+        editButtonContent: '<i class="far fa-edit" title="' + f.editar + '" aria-label="' + f.editar + '"></i>',
+      },
+      delete: {
+        deleteButtonContent: '<i class="fas fa-ban" title="' + f.anular + '" aria-label="' + f.anular + '"></i>',
       },
       mode: 'external',
       columns: {
@@ -213,20 +224,6 @@ export class ConsultaActaRecibidoComponent implements OnInit {
         },
       },
     };
-
-    if (this.userService.tieneAlgunRol([Rol.Secretaria, Rol.Admin, Rol.Revisor])) {
-      this.settings.add = {
-        addButtonContent: '<i class="nb-plus" title="Registrar Acta Nueva" aria-label="Registrar Acta Nueva"></i>',
-      };
-      this.settings.actions.add = true;
-    }
-
-    if (this.userService.tieneAlgunRol([Rol.Admin, Rol.Revisor])) {
-      this.settings.delete = {
-        deleteButtonContent: '<i class="fas fa-ban" title="Anular Acta" aria-label="Anular Acta"></i>',
-      };
-      this.settings.actions.delete = true;
-    }
   }
 
   anularActa(id: number, obs: string) {

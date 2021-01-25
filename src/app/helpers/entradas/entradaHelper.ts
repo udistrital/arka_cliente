@@ -210,6 +210,27 @@ export class EntradaHelper {
      * If the response is successs, it returns the object's data.
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
      */
+    public getTipoEntradaByAcronimoAndNombre(acronimo, nombre) {
+        this.rqManager.setPath('MOVIMIENTOS_KRONOS_SERVICE');
+        return this.rqManager.get('tipo_movimiento?query=Acronimo:' + acronimo + ',Nombre:' + nombre).pipe(
+            map(
+                (res) => {
+                    if (res === 'error' || !Array.isArray(res) || res.length === 0) {
+                        this.pUpManager.showErrorAlert('Tipo de entrada no registrado en Kronos');
+                        return undefined;
+                    }
+                    return res[0];
+                },
+            ),
+        );
+    }
+
+    /**
+     * Entradas Get
+     * If the response has errors in the OAS API it should show a popup message with an error.
+     * If the response is successs, it returns the object's data.
+     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
+     */
     public getFormatoEntradaByName(nombre) {
         this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
         return this.rqManager.get('formato_tipo_movimiento?query=Nombre:' + nombre + '&limit=-1').pipe(

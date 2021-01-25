@@ -188,14 +188,9 @@ export class ElaboracionPropiaComponent implements OnInit {
   }
 
   getTipoEntrada() {
-    this.entradasHelper.getTipoEntradaByAcronimo('e_arka').subscribe(res => {
-      if (res !== null) {
-        const data = <Array<any>>res;
-        for (const datos in Object.keys(data)) {
-          if (data.hasOwnProperty(datos) && data[datos].Nombre !== undefined && data[datos].Nombre === 'Elaboración Propia') {
-            this.tipoEntrada = data[datos];
-          }
-        }
+    this.entradasHelper.getTipoEntradaByAcronimoAndNombre('e_arka', 'Elaboración Propia').subscribe(res => {
+      if (res !== undefined) {
+        this.tipoEntrada = res;
       }
     });
   }
