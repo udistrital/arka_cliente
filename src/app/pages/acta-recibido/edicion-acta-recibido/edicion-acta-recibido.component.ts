@@ -694,7 +694,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
     this.Actas_Recibido.putTransaccionActa(Transaccion_Acta, Transaccion_Acta.ActaRecibido.Id).subscribe((res: any) => {
       // console.log(res);
       if (res !== null) {
-        let titulo,descripcion,idTitulo,idDescripcion;
+        let titulo, descripcion, idTitulo, idDescripcion;
         if (siguienteEtapa) {
           const L10n_base = 'GLOBAL.Acta_Recibido.EdicionActa.';
           titulo = L10n_base + 'VerificadaTitle2';
@@ -712,16 +712,12 @@ export class EdicionActaRecibidoComponent implements OnInit {
           title: this.translate.instant(titulo, idTitulo),
           text: this.translate.instant(descripcion, idDescripcion),
         }).then((willDelete) => {
-          if (willDelete.value) {
-            if (siguienteEtapa) {
+          if (willDelete.value && siguienteEtapa) {
               // Se usa una redirección "dummy", intermedia. Ver
               // https://stackoverflow.com/a/49509706/3180052
               this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
                 this.router.navigateByUrl('/pages/acta_recibido/consulta_acta_recibido');
               });
-            } else {
-              this.verificar = false;
-            }
           }
         });
       } else {
