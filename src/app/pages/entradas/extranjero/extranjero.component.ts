@@ -122,12 +122,11 @@ export class ExtranjeroComponent implements OnInit {
   }
 
   private loadContratos(): void {
-    if (this.opcionTipoContrato !== '' && this.opcionvigencia) {
+    if (this.opcionTipoContrato && this.opcionvigencia) {
       this.entradasHelper.getContratos(this.opcionTipoContrato, this.opcionvigencia).subscribe(res => {
         if (res !== null) {
-          while (this.contratos.length > 0) {
-            this.contratos.pop();
-          }
+          this.contratos.length = 0;
+          if (res.contratos_suscritos && res.contratos_suscritos.contrato_suscritos)
           for (const index of Object.keys(res.contratos_suscritos.contrato_suscritos)) {
             const contratoAux = new Contrato;
             contratoAux.NumeroContratoSuscrito = res.contratos_suscritos.contrato_suscritos[index].numero_contrato;
@@ -257,6 +256,7 @@ export class ExtranjeroComponent implements OnInit {
     if (this.validar) {
       const detalle = {
         acta_recibido_id: +this.actaRecibidoId,
+        // REVISAR TIPO DE COMPROBANTE (P1)
         consecutivo: 'P1-' + this.actaRecibidoId + '-' + new Date().getFullYear(),
         documento_contable_id: 1, // REVISAR
         contrato_id: +this.contratoEspecifico.NumeroContratoSuscrito,
@@ -264,6 +264,8 @@ export class ExtranjeroComponent implements OnInit {
         importacion: this.checked,
         tipo_contrato: this.opcionTipoContrato === '14' ? 'Orden de Servicios' :
         this.opcionTipoContrato === '15' ? 'Orden de Compra' : '',
+        num_reg_importacion: this.facturaForm.value.regImportCtrl,
+        TRM: this.facturaForm.value.trmCtrl,
       };
       const movimientoAdquisicion = {
         Observacion: this.observacionForm.value.observacionCtrl,
@@ -278,6 +280,7 @@ export class ExtranjeroComponent implements OnInit {
         SoporteMovimientoId: 0,
         IdTipoMovimiento: this.tipoEntrada.Id,
       };
+      // console.log({movimientoAdquisicion});
       this.entradasHelper.postEntrada(movimientoAdquisicion).subscribe((res: any) => {
         if (res !== null) {
           (Swal as any).fire({
