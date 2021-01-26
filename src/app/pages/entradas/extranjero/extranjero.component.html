@@ -146,13 +146,11 @@
         </div>
         <div class="form-group col-sm">
           <label>Registro de Importacion</label>
-          <input class="form-control"
-            [disabled]="!checked" [required]="checked">
+          <input type="text" class="form-control" formControlName="regImportCtrl">
         </div>
         <div class="form-group col-sm">
           <label>Tasa Representativa del Mercado</label>
-          <input type="number" min="0" max="9999999999"
-            class="form-control" [disabled]="!checked" [required]="checked">
+          <input type="number" class="form-control" formControlName="trmCtrl">
         </div>
       </div>
       <div class="row">

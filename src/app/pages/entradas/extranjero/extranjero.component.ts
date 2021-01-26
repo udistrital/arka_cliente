@@ -80,6 +80,11 @@ export class ExtranjeroComponent implements OnInit {
     });
     this.facturaForm = this.fb.group({
       facturaCtrl: ['', Validators.nullValidator],
+      regImportCtrl: ['', Validators.maxLength(20)],
+      trmCtrl: ['', [
+        Validators.required,
+        Validators.max(9999999999),
+      ]],
     });
     this.observacionForm = this.fb.group({
       observacionCtrl: ['', Validators.nullValidator],
