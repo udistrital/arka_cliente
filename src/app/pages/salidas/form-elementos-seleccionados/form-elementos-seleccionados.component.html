@@ -4,8 +4,7 @@
   </pre>
 </code> -->
 <form [formGroup]="form_salida" #fform="ngForm" class="step-container">
-  <nb-card>
-    <nb-card-body class="bla">
+    <mat-card-content class="bla">
       <div class="form-group col-sm">
 
 
@@ -24,7 +23,7 @@
             <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Proveedor' | translate}}</label>
             <input type="text" placeholder="{{'GLOBAL.Acta_Recibido.RegistroActa.SeleccioneFiltro' | translate}}"
               Class="form-control" (input)="changeNombreProveedor($event)" value='{{proveedorfiltro}}'
-              list="elementosList" formControlName="Proveedor" /> 
+              list="elementosList" formControlName="Proveedor" />
             <!-- <label>{{'GLOBAL.Acta_Recibido.EdicionActa.Proveedor' | translate}}</label>
             <ng2-completer style="border: 0rem" inputClass="form-control" (keyup)="usarLocalStorage()"
               placeholder="{{'GLOBAL.Acta_Recibido.EdicionActa.SeleccioneFiltro' | translate}}"
@@ -38,17 +37,17 @@
           </datalist>
         </div>
         <div class="row">
-        <div class="form-group col-sm">
-          <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Sede' | translate}}</label>
-          <select nbInput type="text" class="form-control" formControlName="Sede" required
-            (click)="Traer_Relacion_Ubicaciones();">
-            <option *ngFor="let sede of Sedes" [(value)]="sede.Id">{{sede.Nombre}}</option>
-          </select>
-          <!-- <p class="campo" *ngIf="firstForm.get('Formulario1').get('Sede').invalid">
+          <div class="form-group col-sm">
+            <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Sede' | translate}}</label>
+            <select nbInput type="text" class="form-control" formControlName="Sede" required
+              (click)="Traer_Relacion_Ubicaciones();">
+              <option *ngFor="let sede of Sedes" [(value)]="sede.Id">{{sede.Nombre}}</option>
+            </select>
+            <!-- <p class="campo" *ngIf="firstForm.get('Formulario1').get('Sede').invalid">
                 {{'GLOBAL.placeholder' | translate}}</p> -->
-        </div>
+          </div>
 
-        
+
           <div class="form-group col-sm">
             <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Dependencia' | translate}}</label>
             <ng2-completer style="border: 0rem" inputClass="form-control" [clearUnselected]="true" nbInput
@@ -64,7 +63,7 @@
             <!-- <ng2-completer style="border: 0rem" inputClass="form-control" [clearUnselected]="true" nbInput
               [datasource]="dataService" formControlName="Ubicacion" [minSearchLength]="3"
               placeholder="{{'GLOBAL.Acta_Recibido.RegistroActa.SeleccioneFiltro' | translate}}">
-            </ng2-completer> -->
+            </ng2-completer> [disabled]="!form_salida.valid"-->
             <select nbInput type="text" class="form-control" formControlName="Ubicacion"
               (click)="Traer_Relacion_Ubicaciones();" required>
               <option value=""></option>
@@ -74,10 +73,9 @@
           </div>
         </div>
       </div>
-    </nb-card-body>
-    <nb-card-footer>
-      <button nbButton [disabled]="!form_salida.valid" (click)="verfificarProveedor()"
-        class="float-right">Asignar</button>
-    </nb-card-footer>
-  </nb-card>
+    </mat-card-content>
+    <mat-card-actions>
+      <button mat-stroked-button (click)="verfificarProveedor()"
+        class="float-right">Asignar a Proveedor</button>
+    </mat-card-actions>
 </form>

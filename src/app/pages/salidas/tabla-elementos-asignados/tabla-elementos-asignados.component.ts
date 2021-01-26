@@ -43,10 +43,13 @@ export class TablaElementosAsignadosComponent implements OnInit {
   Clases: any;
   Devolutivo: any;
   DatosSeleccionados: any;
+  ConsumoSeleccionados: any;
+  AsignarDeConsumo: boolean;
   formulario: boolean;
   Datos2: ElementoSalida[];
   bandera2: boolean;
   Observaciones: string;
+  ObservacionesConsumo: string;
   entradaId: string;
   Datos_Salida_Consumo: any;
   selected = new FormControl(0);
@@ -126,7 +129,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
           this.ConsumoControlado !== undefined && this.Devolutivo !== undefined &&
           this.respuesta === undefined && this.Sedes !== undefined && this.Dependencias !== undefined) {
           this.actaRecibidoHelper.getElementosActa(this.actaRecibidoId).subscribe((res: any) => {
-            // console.log(res)
+            console.log(res)
             this.respuesta = res;
             this.AjustarDatos(res);
           });
@@ -136,15 +139,26 @@ export class TablaElementosAsignadosComponent implements OnInit {
 
   }
   onRowSelect(event) {
-    // console.log(event);
+    console.log(event);
     this.DatosSeleccionados = event;
+    console.log(Object.keys(this.DatosSeleccionados.data))
     if (Object.keys(this.DatosSeleccionados.selected).length !== 0) {
       this.formulario = true;
-    } else {
+    } else { // if (Object.keys(this.DatosSeleccionados.data[0]) === 1)
       this.formulario = false;
     }
-
   }
+
+  onRowSelect2(event) {
+    console.log(event);
+    this.ConsumoSeleccionados = event;
+    if (Object.keys(this.ConsumoSeleccionados.selected).length !== 0) {
+      this.AsignarDeConsumo = true;
+    } else { // if (Object.keys(this.DatosSeleccionados.data[0]) === 1)
+      this.AsignarDeConsumo = false;
+    }
+  }
+
   cargarCampos() {
 
     this.settings = {
@@ -333,6 +347,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
 
     this.settings2 = {
       hideSubHeader: false,
+      selectMode: 'multi',
       noDataMessage: 'No se encontraron elementos asociados.',
       actions: {
         columnTitle: 'Acciones',
@@ -480,6 +495,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
     }
   }
   AjustarDatos2(datos: any[]) {
+    console.log(datos)
     this.Datos2 = new Array<ElementoSalida>();
     const datos2 = new Array<any>();
     for (const index in datos) {
