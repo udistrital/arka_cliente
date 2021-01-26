@@ -7,69 +7,20 @@
     <form [formGroup]="contratoForm" class="step-container">
       <div class="row">
         <div class="form-group col-sm">
-          <label>{{'GLOBAL.tipo_contrato' | translate}}</label>
-          <select class="form-control" (change)="changeSelectTipoContrato($event)">
-            <option disabled selected>{{'GLOBAL.seleccionar' | translate}}...</option>
-            <option value="14">Orden de Servicios</option>
-            <option value="15">Orden de Compra</option>
-          </select>
-        </div>
-        <div class="form-group col-sm">
           <label>{{'GLOBAL.vigencia' | translate}}</label>
-          <select class="form-control" (change)="changeSelectVigencia($event)" [disabled]="!tipoContratoSelect"
+          <select class="form-control" [disabled]="!tipoContratoSelect"
             formControlName="vigenciaCtrl">
             <option disabled selected>{{'GLOBAL.seleccionar' | translate}}...</option>
             <option value="{{ vigencia }}">{{ vigencia }}</option>
             <option value="{{ vigencia-1 }}">{{ vigencia-1 }}</option>
           </select>
         </div>
-        <div class="form-group col-sm">
-          <label>{{'GLOBAL.numero_contrato' | translate}}</label>
-          <div class="input-group">
-            <input nbInput type="text" shape="semi-round" placeholder="{{'GLOBAL.placeholder_contrato' | translate}}"
-              class="form-control" [readonly]="!vigenciaSelect || !tipoContratoSelect" list="contratosList"
-              formControlName="contratoCtrl"
-              [ngClass]="{'form-control-danger': contratoForm.invalid && (contratoForm.dirty || contratoForm.touched)}" />
-          </div>
-          <datalist id="contratosList">
-            <option *ngFor="let item of contratos" value='{{ item.NumeroContratoSuscrito }}'></option>
-          </datalist>
-        </div>
       </div>
       <div class="row float-right">
-        <button type="button" (click)="onContratoSubmit()" nbButton nbStepperNext>
+        <button type="button" nbButton nbStepperNext>
           {{'GLOBAL.siguiente' | translate}}</button>
       </div>
     </form>
-  </nb-step>
-
-  <!-- ORDENADOR DE GASTO -->
-  <nb-step [stepControl]="ordenadorForm" label="{{'GLOBAL.ordenador_gasto' | translate}}">
-    <h5>{{'GLOBAL.ordenador_gasto' | translate}}</h5>
-    <div class="row">
-      <div class="form-group col-sm">
-        <label>{{'GLOBAL.nombres' | translate}}</label>
-        <div class="input-group">
-          <input nbInput type="text" shape="semi-round" placeholder="Nombre Completo" class="form-control"
-            value="{{ contratoEspecifico.OrdenadorGasto.NombreOrdenador }}" [readonly]="true" />
-        </div>
-      </div>
-      <div class="form-group col-sm">
-        <label>{{'GLOBAL.asignacion' | translate}}</label>
-        <div class="input-group">
-          <input nbInput type="text" shape="semi-round" placeholder="Rol" class="form-control"
-            value="{{ contratoEspecifico.OrdenadorGasto.RolOrdenadorGasto }}" [readonly]="true" />
-        </div>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col">
-        <button nbButton nbStepperPrevious>{{'GLOBAL.anterior' | translate}}</button>
-      </div>
-      <div class="col" align="end">
-        <button nbButton nbStepperNext>{{'GLOBAL.siguiente' | translate}}</button>
-      </div>
-    </div>
   </nb-step>
 
   <!-- SUPERVISOR -->
@@ -79,22 +30,19 @@
       <div class="form-group col-sm">
         <label>{{'GLOBAL.nombres' | translate}}</label>
         <div class="input-group">
-          <input nbInput type="text" shape="semi-round" placeholder="Nombre Completo" class="form-control"
-            value="{{ contratoEspecifico.Supervisor.Nombre }}" [readonly]="true" />
+          <input nbInput type="text" shape="semi-round" placeholder="Nombre Completo" class="form-control"/>
         </div>
       </div>
       <div class="form-group col-sm">
         <label>{{'GLOBAL.sede' | translate}}</label>
         <div class="input-group">
-          <input nbInput type="text" shape="semi-round" placeholder="Sede" class="form-control"
-            value="{{ contratoEspecifico.Supervisor.Sede }}" [readonly]="true" />
+          <input nbInput type="text" shape="semi-round" placeholder="Sede" class="form-control"/>
         </div>
       </div>
       <div class="form-group col-sm">
         <label>{{'GLOBAL.dependencia' | translate}}</label>
         <div class="input-group">
-          <input nbInput type="text" shape="semi-round" placeholder="Dependencia" class="form-control"
-            value="{{ contratoEspecifico.Supervisor.Dependencia }}" [readonly]="true" />
+          <input nbInput type="text" shape="semi-round" placeholder="Dependencia" class="form-control"/>
         </div>
       </div>
     </div>
@@ -114,34 +62,10 @@
       <h5>{{'GLOBAL.factura' | translate}}</h5>
       <div class="row">
         <div class="form-group col-sm">
-          <label>{{'GLOBAL.numero_factura' | translate}}</label>
-          <div class="input-group">
-            <select class="form-control" (change)="changeSelectSoporte($event)">
-              <option disabled selected>{{'GLOBAL.seleccionar' | translate}}...</option>
-              <option *ngFor="let item of soportes" value="{{ item.Id }}">{{ item.Consecutivo }}</option>
-            </select>
-          </div>
-        </div>
-        <div class="form-group col-sm">
           <label>{{'GLOBAL.proveedor' | translate}}</label>
           <div class="input-group">
             <input nbInput type="text" shape="semi-round" placeholder="{{'GLOBAL.razon_social' | translate}}"
               class="form-control" value="{{proveedor}}" [readonly]="true" />
-          </div>
-        </div>
-        <div class="form-group col-sm">
-          <label>{{'GLOBAL.fecha_factura' | translate}}</label>
-          <div class="input-group">
-            <input nbInput type="text" shape="semi-round" placeholder="{{'GLOBAL.fecha_factura' | translate}}"
-              class="form-control" value="{{ fechaFactura }}" [readonly]="true">
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="form-group col-sm">
-          <label>{{'GLOBAL.importacion' | translate}}</label>
-          <div class="input-group">
-            <nb-checkbox status="success" (change)="changeCheck()"></nb-checkbox>
           </div>
         </div>
       </div>

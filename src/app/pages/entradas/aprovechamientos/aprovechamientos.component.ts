@@ -20,7 +20,6 @@ export class AprovechamientosComponent implements OnInit {
 
   // Formularios
   contratoForm: FormGroup;
-  ordenadorForm: FormGroup;
   supervisorForm: FormGroup;
   facturaForm: FormGroup;
   observacionForm: FormGroup;
@@ -31,9 +30,6 @@ export class AprovechamientosComponent implements OnInit {
   vigenciaSelect: boolean;
 
   vigencia: number; // Año Actual
-  contratos: Array<Contrato>; // Contratos
-  contratoEspecifico: Contrato; // Contrato Seleccionado
-  private contratoInput: string; // Número de Contrato
   soportes: Array<SoporteActaProveedor>; // Soportes
   proveedor: string;
   fechaFactura: string;
@@ -59,13 +55,10 @@ export class AprovechamientosComponent implements OnInit {
     this.checked = false;
     this.tipoContratoSelect = false;
     this.vigenciaSelect = false;
-    this.contratos = new Array<Contrato>();
-    this.contratoEspecifico = new Contrato;
     this.soportes = new Array<SoporteActaProveedor>();
     this.proveedor = '';
     this.fechaFactura = '';
     this.validar = false;
-    this.iniciarContrato();
   }
 
   ngOnInit() {
@@ -83,9 +76,6 @@ export class AprovechamientosComponent implements OnInit {
     });
     this.observacionForm = this.fb.group({
       observacionCtrl: ['', Validators.nullValidator],
-    });
-    this.ordenadorForm = this.fb.group({
-      ordenadorCtrl: ['', Validators.nullValidator],
     });
     this.supervisorForm = this.fb.group({
       supervisorCtrl: ['', Validators.nullValidator],
@@ -118,45 +108,6 @@ export class AprovechamientosComponent implements OnInit {
 
   // Métodos para cargar los contratos.
 
-  private loadContratos(): void {
-    if (this.opcionTipoContrato && this.opcionvigencia) {
-      this.entradasHelper.getContratos(this.opcionTipoContrato, this.opcionvigencia).subscribe(res => {
-        if (res !== null) {
-          this.contratos.length = 0;
-          if (res.contratos_suscritos && res.contratos_suscritos.contrato_suscritos)
-          for (const index of Object.keys(res.contratos_suscritos.contrato_suscritos)) {
-            const contratoAux = new Contrato;
-            contratoAux.NumeroContratoSuscrito = res.contratos_suscritos.contrato_suscritos[index].numero_contrato;
-            this.contratos.push(contratoAux);
-          }
-        }
-      });
-    }
-  }
-
-  private loadContratoEspecifico(): void {
-    this.entradasHelper.getContrato(this.contratoInput, this.opcionvigencia).subscribe(res => {
-      if (res !== null) {
-        const ordenadorAux = new OrdenadorGasto;
-        const supervisorAux = new Supervisor;
-        ordenadorAux.Id = res.contrato.ordenador_gasto.id;
-        ordenadorAux.NombreOrdenador = res.contrato.ordenador_gasto.nombre_ordenador;
-        ordenadorAux.RolOrdenadorGasto = res.contrato.ordenador_gasto.rol_ordenador;
-        supervisorAux.Id = res.contrato.supervisor.id;
-        supervisorAux.Nombre = res.contrato.supervisor.nombre;
-        supervisorAux.Cargo = res.contrato.supervisor.cargo;
-        supervisorAux.Dependencia = res.contrato.supervisor.dependencia_supervisor;
-        supervisorAux.Sede = res.contrato.supervisor.sede_supervisor;
-        supervisorAux.DocumentoIdentificacion = res.contrato.supervisor.documento_identificacion;
-        this.contratoEspecifico.OrdenadorGasto = ordenadorAux;
-        this.contratoEspecifico.NumeroContratoSuscrito = res.contrato.numero_contrato_suscrito;
-        this.contratoEspecifico.TipoContrato = res.contrato.tipo_contrato;
-        this.contratoEspecifico.FechaSuscripcion = res.contrato.fecha_suscripcion;
-        this.contratoEspecifico.Supervisor = supervisorAux;
-      }
-    });
-  }
-
   private loadSoporte(): void {
     this.actaRecibidoHelper.getSoporte(this.actaRecibidoId).subscribe(res => {
       if (res !== null) {
@@ -176,22 +127,6 @@ export class AprovechamientosComponent implements OnInit {
 
   // Métodos para cambiar estados de los select.
 
-  changeSelectTipoContrato(event) {
-    if (!this.tipoContratoSelect) {
-      this.tipoContratoSelect = !this.tipoContratoSelect;
-    }
-    this.opcionTipoContrato = event.target.options[event.target.options.selectedIndex].value;
-    this.loadContratos();
-  }
-
-  changeSelectVigencia(event) {
-    if (!this.vigenciaSelect) {
-      this.vigenciaSelect = !this.vigenciaSelect;
-    }
-    this.opcionvigencia = event.target.options[event.target.options.selectedIndex].value;
-    this.loadContratos();
-  }
-
   changeSelectSoporte(event) {
     const soporteId: string = event.target.options[event.target.options.selectedIndex].value;
     for (const i in this.soportes) {
@@ -207,41 +142,6 @@ export class AprovechamientosComponent implements OnInit {
     this.checked = !this.checked;
   }
 
-  private iniciarContrato() {
-    const ordenadorAux = new OrdenadorGasto;
-    const supervisorAux = new Supervisor;
-    ordenadorAux.NombreOrdenador = '';
-    ordenadorAux.RolOrdenadorGasto = '';
-    supervisorAux.Nombre = '';
-    this.contratoEspecifico.OrdenadorGasto = ordenadorAux;
-    this.contratoEspecifico.Supervisor = supervisorAux;
-  }
-
-  // Métodos para validar campos requeridos en el formulario.
-
-  onContratoSubmit() {
-    let existe = false;
-    if (this.contratos.length > 0) {
-      const aux = this.contratoForm.value.contratoCtrl;
-      if (aux !== '') {
-        for (const i in this.contratos) {
-          if (this.contratos[i].NumeroContratoSuscrito.toString() === aux) {
-            this.contratoInput = aux;
-            existe = true;
-          }
-        }
-        if (existe) {
-          this.loadContratoEspecifico();
-          this.loadSoporte();
-        } else {
-          this.stepper.previous();
-          this.iniciarContrato();
-          this.pUpManager.showErrorAlert('El contrato seleccionado no existe!');
-        }
-      }
-    }
-  }
-
   onObservacionSubmit() {
     this.validar = true;
   }
@@ -255,11 +155,7 @@ export class AprovechamientosComponent implements OnInit {
         acta_recibido_id: +this.actaRecibidoId,
         consecutivo: 'P1-' + this.actaRecibidoId + '-' + new Date().getFullYear(),
         documento_contable_id: 1, // REVISAR
-        contrato_id: +this.contratoEspecifico.NumeroContratoSuscrito,
         vigencia_contrato: this.contratoForm.value.vigenciaCtrl,
-        importacion: this.checked,
-        tipo_contrato: this.opcionTipoContrato === '14' ? 'Orden de Servicios' :
-        this.opcionTipoContrato === '15' ? 'Orden de Compra' : '',
       };
       const movimientoAdquisicion = {
         Observacion: this.observacionForm.value.observacionCtrl,
