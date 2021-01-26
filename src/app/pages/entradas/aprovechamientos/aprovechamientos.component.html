@@ -26,11 +26,12 @@
   <!-- SUPERVISOR -->
   <nb-step [stepControl]="supervisorForm" label="{{'GLOBAL.supervisor' | translate}}">
     <h5>{{'GLOBAL.supervisor' | translate}}</h5>
+    <form [formGroup]="supervisorForm" class="step-container">
     <div class="row">
       <div class="form-group col-sm">
         <label>{{'GLOBAL.nombres' | translate}}</label>
         <div class="input-group">
-          <input nbInput type="text" shape="semi-round" placeholder="Nombre Completo" class="form-control"/>
+          <input nbInput type="text" shape="semi-round" placeholder="Nombre Completo" class="form-control" formControlName="supervisorCtrl"/>
         </div>
       </div>
       <div class="form-group col-sm">
@@ -54,6 +55,7 @@
         <button nbButton nbStepperNext>{{'GLOBAL.siguiente' | translate}}</button>
       </div>
     </div>
+    </form>
   </nb-step>
 
   <!-- FACTURA -->
@@ -65,7 +67,7 @@
           <label>{{'GLOBAL.proveedor' | translate}}</label>
           <div class="input-group">
             <input nbInput type="text" shape="semi-round" placeholder="{{'GLOBAL.razon_social' | translate}}"
-              class="form-control" value="{{proveedor}}" [readonly]="true" />
+              class="form-control" formControlName="proveedorCtrl"/>
           </div>
         </div>
       </div>

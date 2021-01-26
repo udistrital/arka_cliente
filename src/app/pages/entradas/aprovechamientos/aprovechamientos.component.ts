@@ -25,7 +25,6 @@ export class AprovechamientosComponent implements OnInit {
   observacionForm: FormGroup;
 
   // Validadores
-  private checked: boolean;
   tipoContratoSelect: boolean;
   vigenciaSelect: boolean;
 
@@ -34,9 +33,6 @@ export class AprovechamientosComponent implements OnInit {
   proveedor: string;
   fechaFactura: string;
   validar: boolean;
-
-  private opcionTipoContrato: string;
-  private opcionvigencia: string;
 
   private tipoEntrada: any;
   private formatoTipoMovimiento: any;
@@ -52,8 +48,6 @@ export class AprovechamientosComponent implements OnInit {
     private pUpManager: PopUpManager,
     private fb: FormBuilder,
   ) {
-    this.checked = false;
-    this.tipoContratoSelect = false;
     this.vigenciaSelect = false;
     this.soportes = new Array<SoporteActaProveedor>();
     this.proveedor = '';
@@ -65,20 +59,17 @@ export class AprovechamientosComponent implements OnInit {
     this.getTipoEntrada();
     this.getFormatoEntrada();
     this.contratoForm = this.fb.group({
-      contratoCtrl: ['', [
-        Validators.required,
-        Validators.pattern('^[0-9]{2,4}$')],
-      ],
       vigenciaCtrl: ['', [Validators.required]],
     });
     this.facturaForm = this.fb.group({
       facturaCtrl: ['', Validators.nullValidator],
+      proveedorCtrl: ['', Validators.required],
     });
     this.observacionForm = this.fb.group({
       observacionCtrl: ['', Validators.nullValidator],
     });
     this.supervisorForm = this.fb.group({
-      supervisorCtrl: ['', Validators.nullValidator],
+      supervisorCtrl: ['', Validators.required],
     });
     this.getVigencia();
   }
@@ -104,42 +95,6 @@ export class AprovechamientosComponent implements OnInit {
    */
   getVigencia() {
     this.vigencia = new Date().getFullYear();
-  }
-
-  // Métodos para cargar los contratos.
-
-  private loadSoporte(): void {
-    this.actaRecibidoHelper.getSoporte(this.actaRecibidoId).subscribe(res => {
-      if (res !== null) {
-        for (const index in res) {
-          if (res.hasOwnProperty(index)) {
-            const soporte = new SoporteActaProveedor;
-            soporte.Id = res[index].Id;
-            soporte.Consecutivo = res[index].Consecutivo;
-            soporte.Proveedor = res[index].ProveedorId;
-            soporte.FechaSoporte = res[index].FechaSoporte;
-            this.soportes.push(soporte);
-          }
-        }
-      }
-    });
-  }
-
-  // Métodos para cambiar estados de los select.
-
-  changeSelectSoporte(event) {
-    const soporteId: string = event.target.options[event.target.options.selectedIndex].value;
-    for (const i in this.soportes) {
-      if (this.soportes[i].Id.toString() === soporteId) {
-        this.proveedor = this.soportes[i].Proveedor.NomProveedor;
-        const date = this.soportes[i].FechaSoporte.toString().split('T');
-        this.fechaFactura = date[0];
-      }
-    }
-  }
-
-  changeCheck() {
-    this.checked = !this.checked;
   }
 
   onObservacionSubmit() {
@@ -170,6 +125,8 @@ export class AprovechamientosComponent implements OnInit {
         SoporteMovimientoId: 0,
         IdTipoMovimiento: this.tipoEntrada.Id,
       };
+      // console.log({movimientoAdquisicion})
+      /*
       this.entradasHelper.postEntrada(movimientoAdquisicion).subscribe((res: any) => {
         if (res !== null) {
           (Swal as any).fire({
@@ -183,6 +140,7 @@ export class AprovechamientosComponent implements OnInit {
           this.pUpManager.showErrorAlert('No es posible hacer el registro.');
         }
       });
+      // */
     } else {
       this.pUpManager.showErrorAlert('No ha llenado todos los campos! No es posible hacer el registro.');
     }
