@@ -119,12 +119,11 @@ export class AprovechamientosComponent implements OnInit {
   // Métodos para cargar los contratos.
 
   private loadContratos(): void {
-    if (this.opcionTipoContrato !== '' && this.opcionvigencia) {
+    if (this.opcionTipoContrato && this.opcionvigencia) {
       this.entradasHelper.getContratos(this.opcionTipoContrato, this.opcionvigencia).subscribe(res => {
         if (res !== null) {
-          while (this.contratos.length > 0) {
-            this.contratos.pop();
-          }
+          this.contratos.length = 0;
+          if (res.contratos_suscritos && res.contratos_suscritos.contrato_suscritos)
           for (const index of Object.keys(res.contratos_suscritos.contrato_suscritos)) {
             const contratoAux = new Contrato;
             contratoAux.NumeroContratoSuscrito = res.contratos_suscritos.contrato_suscritos[index].numero_contrato;
