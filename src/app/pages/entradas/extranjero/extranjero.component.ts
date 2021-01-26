@@ -26,7 +26,7 @@ export class ExtranjeroComponent implements OnInit {
   observacionForm: FormGroup;
 
   // Validadores
-  private checked: boolean;
+  checked: boolean;
   tipoContratoSelect: boolean;
   vigenciaSelect: boolean;
 

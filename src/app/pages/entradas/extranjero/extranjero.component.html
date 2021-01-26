@@ -144,6 +144,16 @@
             <nb-checkbox status="success" (change)="changeCheck()"></nb-checkbox>
           </div>
         </div>
+        <div class="form-group col-sm">
+          <label>Registro de Importacion</label>
+          <input class="form-control"
+            [disabled]="!checked" [required]="checked">
+        </div>
+        <div class="form-group col-sm">
+          <label>Tasa Representativa del Mercado</label>
+          <input type="number" min="0" max="9999999999"
+            class="form-control" [disabled]="!checked" [required]="checked">
+        </div>
       </div>
       <div class="row">
         <div class="col">
