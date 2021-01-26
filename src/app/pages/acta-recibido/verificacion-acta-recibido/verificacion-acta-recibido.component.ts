@@ -230,12 +230,23 @@ export class VerificacionActaRecibidoComponent implements OnInit {
         Form2.push(Formulario__2);
       }
 
+      let personarev: any = this.Proveedores.find(proveedor => proveedor.Id.toString() === transaccion_.ActaRecibido.PersonaAsignada.toString());
+      if (typeof personarev === 'undefined') {
+          personarev = {proveedor: 0 };
+            // color is undefined
+      }
+
+
       this.firstForm = this.fb.group({
         Formulario1: this.fb.group({
           Id: [transaccion_.ActaRecibido.Id],
           Sede: [this.Sedes.find(x => x.CodigoAbreviacion === valor.toString()).Nombre],
           Dependencia: [this.Dependencias.find(x => x.Id === res[0].DependenciaId.Id).Nombre],
           Ubicacion: [transaccion_.ActaRecibido.UbicacionId],
+          Revisor: [
+            personarev.compuesto,
+            Validators.required,
+          ],
         }),
         Formulario2: Form2,
         Formulario3: this.fb.group({
@@ -373,6 +384,7 @@ export class VerificacionActaRecibidoComponent implements OnInit {
   Registrar_Acta(Datos: any, Datos2: any): ActaRecibido {
 
     const Acta_de_Recibido = new ActaRecibido();
+    const revisor___ = Datos.Revisor.split(' ');
 
     Acta_de_Recibido.Id = parseFloat(Datos.Id);
     Acta_de_Recibido.Activo = true;
@@ -382,6 +394,7 @@ export class VerificacionActaRecibidoComponent implements OnInit {
     Acta_de_Recibido.RevisorId = this.userService.getPersonaId();
     Acta_de_Recibido.UbicacionId = this.Ubicaciones.find(ubicacion => ubicacion.Nombre === Datos.Ubicacion).Id;
     Acta_de_Recibido.Observaciones = Datos2.Datos_Adicionales;
+    Acta_de_Recibido.PersonaAsignada = this.Proveedores.find(proveedor => proveedor.NumDocumento.toString() === revisor___[0].toString()).Id;
 
     return Acta_de_Recibido;
   }
