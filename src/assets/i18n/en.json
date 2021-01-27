@@ -374,6 +374,7 @@
       "uno": "Catalogue",
       "crear": "Create Catalogue",
       "editar": "Edit Catalogue",
+      "editar_nombre": "Edit Catalogue \"{{NOMBRE}}\"",
       "desactivar": "Disable Catalogue",
       "lista": "Catalogue List"
     },

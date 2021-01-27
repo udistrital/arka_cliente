@@ -374,6 +374,7 @@
       "uno": "Catálogo",
       "crear": "Crear Catálogo",
       "editar": "Editar Catálogo",
+      "editar_nombre": "Editar Catálogo \"{{NOMBRE}}\"",
       "desactivar": "Desactivar Catálogo",
       "lista": "Lista de Catálogos"
     },
