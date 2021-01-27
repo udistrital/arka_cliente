@@ -37,13 +37,13 @@
       <div class="form-group col-sm">
         <label>{{'GLOBAL.sede' | translate}}</label>
         <div class="input-group">
-          <input nbInput type="text" shape="semi-round" placeholder="Sede" class="form-control"/>
+          <output defaultValue="Sede" class="form-control" [value]="supervisorForm.value.supervisorCtrl + '&nbsp;'"></output>
         </div>
       </div>
       <div class="form-group col-sm">
         <label>{{'GLOBAL.dependencia' | translate}}</label>
         <div class="input-group">
-          <input nbInput type="text" shape="semi-round" placeholder="Dependencia" class="form-control"/>
+          <output defaultValue="Dependencia" class="form-control" [value]="supervisorForm.value.supervisorCtrl + '&nbsp;'"></output>
         </div>
       </div>
     </div>
