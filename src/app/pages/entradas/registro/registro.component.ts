@@ -4,6 +4,9 @@ import { ActaRecibido, ActaRecibidoUbicacion } from '../../../@core/data/models/
 import { PopUpManager } from '../../../managers/popUpManager';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
 import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
+import { ListService } from '../../../@core/store/services/list.service';
+import { Store } from '@ngrx/store';
+import { IAppState } from '../../../@core/store/app.state';
 
 @Component({
   selector: 'ngx-registro',
@@ -26,6 +29,8 @@ export class RegistroComponent implements OnInit {
     private actaRecibidoHelper: ActaRecibidoHelper,
     private pUpManager: PopUpManager,
     private translate: TranslateService,
+    private listService: ListService,
+    private store: Store<IAppState>,
   ) {
     this.source = new LocalDataSource();
     this.actaSeleccionada = '';
@@ -33,6 +38,8 @@ export class RegistroComponent implements OnInit {
       'EEP', 'ET']; // Los de esta línea no están en las HU
     this.loadTablaSettings();
     this.loadActas();
+    this.listService.findClases();
+    this.listService.findImpuestoIVA();
   }
 
   loadTablaSettings() {

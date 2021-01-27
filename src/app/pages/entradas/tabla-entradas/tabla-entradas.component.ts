@@ -22,6 +22,7 @@ export class TablaEntradasComponent implements OnInit {
   Clases: any;
   elementos: Array<ElementoActa>;
   settings: any;
+  Tarifas_Iva: any;
 
   @Input() actaRecibidoId: string;
 
@@ -34,7 +35,6 @@ export class TablaEntradasComponent implements OnInit {
 
     this.source = new LocalDataSource();
     this.elementos = new Array<ElementoActa>();
-    this.listService.findClases();
     this.loadLists();
     this.loadTablaSettings();
   }
@@ -42,6 +42,7 @@ export class TablaEntradasComponent implements OnInit {
     this.store.select((state) => state).subscribe(
       (list) => {
         this.Clases = list.listClases[0];
+        this.Tarifas_Iva = list.listIVA[0];
       },
     );
 
@@ -51,6 +52,7 @@ export class TablaEntradasComponent implements OnInit {
     if (this.actaRecibidoId) {
     this.actaRecibidoHelper.getElementosActa(this.actaRecibidoId).subscribe(res => {
       if (res !== null) {
+        // console.log(res);
         const data = <Array<any>>res;
         for (const datos in Object.keys(data)) {
           if (data.hasOwnProperty(datos) && data[datos].Id !== undefined) {
@@ -211,7 +213,6 @@ export class TablaEntradasComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.listService.findClases();
     this.loadLists();
     this.loadElementos();
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
