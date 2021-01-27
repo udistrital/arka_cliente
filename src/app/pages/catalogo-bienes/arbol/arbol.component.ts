@@ -94,17 +94,18 @@ export class ArbolComponent implements OnInit, OnChanges {
     this.catalogoSeleccionado = 0;
     this.detalle = false;
     this.cuentasContables = new Array<CuentasGrupoTransaccion>();
-  }
 
-  ngOnChanges(changes) {
-    if (this.catalogoId !== this.catalogoSeleccionado) {
-      this.loadTreeCatalogo();
-      this.catalogoSeleccionado = this.catalogoId;
-    }
-    if (changes['updateSignal'] && this.updateSignal) {
+    if (this.updateSignal) {
       this.updateSignal.subscribe(() => {
         this.loadTreeCatalogo();
       });
+    }
+  }
+
+  ngOnChanges(changes) {
+    if (changes.hasOwnProperty('catalogoId')) {
+      this.catalogoSeleccionado = changes.catalogoId.currentValue;
+      this.loadTreeCatalogo();
     }
   }
 
@@ -234,12 +235,13 @@ export class ArbolComponent implements OnInit, OnChanges {
     this.catalogoHelper.getArbolCatalogo(this.catalogoId).subscribe((res) => {
       this.mostrar = true;
       if (res !== null) {
+        console.log({res});
         if (res[0].hasOwnProperty('data')) {
           this.data = res;
           this.aux = res;
           this.dataSource = this.dataSourceBuilder.create(this.data);
-          // this.dataSource.sortService.sort = ()
-          // console.log(this.dataSource)
+        } else {
+          this.dataSource = this.dataSourceBuilder.create([]);
         }
       }
     });
