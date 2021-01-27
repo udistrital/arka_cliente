@@ -56,13 +56,6 @@ export class ListCatalogoComponent implements OnInit {
       },
       mode: 'external',
       columns: {
-        // Id: {
-        //   title: this.translate.instant('GLOBAL.id'),
-        //   // type: 'number;',
-        //   valuePrepareFunction: (value) => {
-        //     return value;
-        //   },
-        // },
         Nombre: {
           title: this.translate.instant('GLOBAL.nombre'),
           width: '40%',
@@ -79,40 +72,6 @@ export class ListCatalogoComponent implements OnInit {
             return value;
           },
         },
-/*        FechaInicio: {
-          title: this.translate.instant('GLOBAL.fechainicio'),
-          width: '20%',
-          // type: 'Date;',
-          valuePrepareFunction: (value: any) => {
-            const date = value.split('T');
-            return date[0];
-          },
-          filter: {
-            type: 'daterange',
-            config: {
-              daterange: {
-                format: 'yyyy/mm/dd',
-              },
-            },
-          },
-        },
-        FechaFin: {
-          title: this.translate.instant('GLOBAL.fechafin'),
-          width: '20%',
-          // type: 'Date;',
-          valuePrepareFunction: (value: any) => {
-            const date = value.split('T');
-            return date[0];
-          },
-          filter: {
-            type: 'daterange',
-            config: {
-              daterange: {
-                format: 'yyyy/mm/dd',
-              },
-            },
-          },
-        },*/
         Activo: {
           title: this.translate.instant('GLOBAL.activo'),
           width: '10%',
@@ -167,29 +126,14 @@ export class ListCatalogoComponent implements OnInit {
     (Swal as any)(opt)
       .then((willDelete) => {
         if (willDelete.value) {
-
-
-         const catalogo = <Catalogo>event.data;
-         catalogo.Activo = false;
-
-
-
-        this.catalogoElementosService.putCatalogo(catalogo, catalogo.Id).subscribe(res => {
+          const catalogo = <Catalogo>event.data;
+          catalogo.Activo = false;
+          this.catalogoElementosService.putCatalogo(catalogo, catalogo.Id).subscribe(res => {
             if (res !== null) {
               this.loadData();
               this.showToast('info', 'deleted', 'Catalogo deleted');
             }
-        });
-/*
-
-          this.catalogoElementosService.deleteCatalogo(event.data).subscribe(res => {
-
-            if (res !== null) {
-              this.loadData();
-              this.showToast('info', 'deleted', 'Catalogo deleted');
-            }
-          });*/
-
+          });
         }
       });
   }
