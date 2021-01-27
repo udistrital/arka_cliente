@@ -11,25 +11,27 @@ export class ConsultaCatalogoComponent implements OnInit {
 
   catalogos: Array<Catalogo>;
   catalogoId: number;
+  cargando_catalogos: boolean = true;
 
   @Output() eventChange = new EventEmitter();
 
   constructor(private catalogoHelper: CatalogoElementosHelper) {
     this.catalogos = new Array<Catalogo>();
-    this.catalogoId = 0;
-    this.loadCatalogos();
   }
 
   ngOnInit() {
+    this.loadCatalogos();
   }
 
   loadCatalogos() {
+    this.catalogoId = 0;
     this.catalogoHelper.getCatalogos().subscribe((res) => {
       if (res !== null) {
         const data = <Array<Catalogo>>res;
         for (const datos in Object.keys(data)) {
           if (data.hasOwnProperty(datos)) {
             this.catalogos.push(data[datos]);
+            this.cargando_catalogos = false;
           }
         }
       }
