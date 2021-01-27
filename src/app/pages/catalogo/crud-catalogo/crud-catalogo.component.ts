@@ -54,7 +54,7 @@ export class CrudCatalogoComponent implements OnInit {
    }
 
   construirForm() {
-    this.formCatalogo.titulo = this.translate.instant('GLOBAL.catalogo');
+    this.formCatalogo.titulo = this.translate.instant('GLOBAL.catalogo.uno');
     this.formCatalogo.btn = this.translate.instant('GLOBAL.guardar');
     for (let i = 0; i < this.formCatalogo.campos.length; i++) {
       this.formCatalogo.campos[i].label = this.translate.instant('GLOBAL.' + this.formCatalogo.campos[i].label_i18n);

@@ -7,7 +7,7 @@
     <div class="row">
 
       <div class="col">
-        <h5>{{'GLOBAL.catalogo' | translate}}</h5>
+        <h5>{{'GLOBAL.catalogo.uno' | translate}}</h5>
         <select class="form-control mb-4" (change)="onChange($event.target.value)">
           <option disabled selected>{{'GLOBAL.seleccionar' | translate}}...</option>
           <option *ngFor="let item of catalogos" value="{{ item.Id }}">{{ item.Nombre }}</option>
@@ -22,7 +22,7 @@
               <h2>Detalle</h2>
               <p class="font-weight-bold text-uppercase pt-4 pb-4">Grupo:
                   <span class="font-weight-normal">{{ subgrupo.Consecutivo }}: {{ subgrupo.Nombre }}</span></p>
-          </div>          
+          </div>
         <toaster-container [toasterconfig]="config"></toaster-container>
         <ngx-dinamicform [normalform]="formElemento" [modeloData]="info_elemento" (result)="validarForm($event)"
           [clean]="clean">

@@ -370,11 +370,15 @@
       "t_restante_alerta": "Less than {{MINUTES}} minute(s) left. Please save your pending work"
     },
 
+    "catalogo": {
+      "uno": "Catalogue",
+      "lista": "Catalogue List"
+    },
+
     "info": "Información",
     "Detalle": "Detail",
     "placeholder": "This field is mandatory",
     "search": "Search",
-    "catalogo": "Catalogue",
     "inactivar_grupos_subgrupos": "Inactivate groups and subgroups",
     "inactivar": "Inactivate",
     "inactivar_info": "You won't be able to revert this!",
