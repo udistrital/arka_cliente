@@ -1,6 +1,6 @@
   <nb-card>
     <nb-card-header><h1>{{ 'GLOBAL.catalogo.lista' | translate }}</h1></nb-card-header>
-    <nb-card-body>
+    <nb-card-body [nbSpinner]="cargando">
         <toaster-container [toasterconfig]="config"></toaster-container>
           <ng2-smart-table [settings]="settings" [source]="source"
           (delete)="onDelete($event)" (rowSelect)="itemselec($event)" (edit)="onEdit($event)" (create)="onCreate()">

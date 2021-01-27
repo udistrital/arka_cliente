@@ -18,6 +18,7 @@ export class ListCatalogoComponent implements OnInit {
   cambiotab: boolean[] = [true, false, false];
   config: ToasterConfig;
   settings: any;
+  cargando: boolean = true;
 
   source: LocalDataSource = new LocalDataSource();
 
@@ -27,8 +28,11 @@ export class ListCatalogoComponent implements OnInit {
     private toasterService: ToasterService,
     public router: Router,
   ) {
-    this.loadData();
     this.cargarCampos();
+  }
+
+  ngOnInit() {
+    this.loadData();
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
       this.cargarCampos();
     });
@@ -39,7 +43,7 @@ export class ListCatalogoComponent implements OnInit {
       crear: this.translate.instant('GLOBAL.catalogo.crear'),
       editar: this.translate.instant('GLOBAL.catalogo.editar'),
       desactivar: this.translate.instant('GLOBAL.catalogo.desactivar'),
-    }
+    };
     this.settings = {
       actions: {
         position: 'right',
@@ -98,10 +102,8 @@ export class ListCatalogoComponent implements OnInit {
         // console.log(data);
         this.source.load(data);
       }
+      this.cargando = false;
     });
-  }
-
-  ngOnInit() {
   }
 
   onEdit(event): void {
