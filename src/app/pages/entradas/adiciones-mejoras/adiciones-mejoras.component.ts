@@ -237,7 +237,7 @@ export class AdicionesMejorasComponent implements OnInit {
   }
 
   getFormatoEntrada() {
-    this.entradasHelper.getFormatoEntradaByName('Adquisición').subscribe(res => {
+    this.entradasHelper.getFormatoEntradaByName('Adiciones y mejoras').subscribe(res => {
       if (res !== null) {
         this.formatoTipoMovimiento = res;
       }

@@ -12,6 +12,7 @@ import { SoporteActaProveedor } from '../../../@core/data/models/acta_recibido/s
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
 import { Entrada } from '../../../@core/data/models/entrada/entrada';
 import { TipoEntrada } from '../../../@core/data/models/entrada/tipo_entrada';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'ngx-caja-menor',
@@ -229,11 +230,12 @@ changeSolicitante(event) {
 
       this.entradasHelper.postEntrada(movimientoAdquisicion).subscribe((res: any) => {
         if (res !== null) {
-          this.pUpManager.showSuccesToast('Registro Exitoso');
-          this.pUpManager.showSuccessAlert('Entrada registrada satisfactoriamente!' +
-            '\n ENTRADA N°: P8-5-2019'); // SE DEBE MOSTRAR EL CONSECUTIVO REAL
-
-          const navigationExtras: NavigationExtras = { state: { consecutivo: res.Id } }; // REVISAR POR QUÉ RES LLEGA 0
+          (Swal as any).fire({
+            type: 'success',
+            title: 'Entrada N° ' + `${detalle.consecutivo}` + ' Registrada',
+            text: 'La Entrada N° ' + `${detalle.consecutivo}` + ' ha sido registrada de forma exitosa',
+          });
+          const navigationExtras: NavigationExtras = { state: { consecutivo: detalle.consecutivo } };
           this.router.navigate(['/pages/reportes/registro-entradas'], navigationExtras);
         } else {
           this.pUpManager.showErrorAlert('No es posible hacer el registro.');
