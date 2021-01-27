@@ -28,12 +28,7 @@
 :host /deep/ ng2-smart-table {
   padding-left: 15px !important;
   padding-right: 15px !important;
-  display: flex;
-}
-
-:host /deep/ ng2-smart-table table {
   display: table;
-  padding-left: 100px;
 }
 
 .example-container {

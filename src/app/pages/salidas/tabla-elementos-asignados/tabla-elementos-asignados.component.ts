@@ -157,6 +157,10 @@ export class TablaElementosAsignadosComponent implements OnInit {
   cargarCampos() {
 
     this.settings = {
+      pager: {
+        display: true,
+        perPage: 10,
+      },
       hideSubHeader: false,
       selectMode: 'multi',
       noDataMessage: 'No se encontraron elementos asociados.',
@@ -834,7 +838,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
   Salida_General_Consumo() {
     if (Object.keys(this.ElementosConsumoAsignados).length !== 0) {
       const datos_agrupados2 = this.ElementosConsumoAsignados.reduce((accumulator, currentValue) => {
-        if (currentValue.Funcionario.Id){
+        if (currentValue.Funcionario.Id) {
         const detalle = {
           funcionario: currentValue.Funcionario.Id,
           ubicacion: currentValue.Ubicacion.Id,
@@ -842,7 +846,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
         const val = currentValue.Funcionario.Id + '-' + currentValue.Ubicacion.Id;
         accumulator[val] = accumulator[val] || {
           Salida: {
-            Observacion: this.Observaciones,
+            Observacion: this.ObservacionesConsumo,
             Detalle: JSON.stringify(detalle),
             Activo: true,
             MovimientoPadreId: {
@@ -879,9 +883,9 @@ export class TablaElementosAsignadosComponent implements OnInit {
 
   onSubmit() {
 
-    const datos_agrupados = this.Salida_General(); // elementos de consumo controlado, diferencia por proveedores, ubicaciones... 
+    const datos_agrupados = this.Salida_General(); // elementos de consumo controlado, diferencia por proveedores, ubicaciones...
     const datos_agrupados2 = this.Salida_General_Consumo(); // elementos de consumo asignados
-    this.Salida_Consumo(); // elementos de consumo, diferencia por proveedores, ubicaciones... 
+    this.Salida_Consumo(); // elementos de consumo, diferencia por proveedores, ubicaciones...
     const Salidas = {
       Salidas: [],
     };
@@ -902,8 +906,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
       }
     }
 
-
-    console.log(Salidas);
+    // console.log(Salidas);
 
     (Swal as any).fire({
       title: 'Desea Registrar Salida?',

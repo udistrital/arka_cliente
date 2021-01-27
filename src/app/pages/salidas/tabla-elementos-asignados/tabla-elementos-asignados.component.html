@@ -14,6 +14,17 @@
         <p></p>
         <ngx-form-elementos-seleccionados *ngIf="formulario" [Datos]="DatosSeleccionados"
           (DatosEnviados)="AjustarDatos2($event)"></ngx-form-elementos-seleccionados>
+        <p></p>
+        <mat-card-content>
+          <div class="form-group  col-lg-12">
+            <label>{{'GLOBAL.Acta_Recibido.EdicionActa.Observaciones' | translate}}</label>
+            <div class="input-group">
+              <textarea rows="5" [(ngModel)]="Observaciones"
+                placeholder="Proporciona datos adicionales que no se pueden expresar en el formulario"
+                class="form-control" required></textarea>
+            </div>
+          </div>
+        </mat-card-content>
       </mat-tab>
       <mat-tab>
         <p></p>
@@ -24,11 +35,22 @@
         </ng2-smart-table>
         <ngx-form-elementos-seleccionados *ngIf="AsignarDeConsumo" [Datos]="ConsumoSeleccionados"
           (DatosEnviados)="AjustarDatosConsumo($event)"></ngx-form-elementos-seleccionados>
+        <p></p>
+        <mat-card-content>
+          <div class="form-group  col-lg-12">
+            <label>{{'GLOBAL.Acta_Recibido.EdicionActa.Observaciones' | translate}}</label>
+            <div class="input-group">
+              <textarea rows="5" [(ngModel)]="ObservacionesConsumo"
+                placeholder="Proporciona datos adicionales que no se pueden expresar en el formulario"
+                class="form-control" required></textarea>
+            </div>
+          </div>
+        </mat-card-content>
       </mat-tab>
     </mat-tab-group>
   </mat-card-content>
   <p></p>
-  <mat-card-content>
+  <!-- <mat-card-content>
     <div class="form-group  col-lg-12">
       <label>{{'GLOBAL.Acta_Recibido.EdicionActa.Observaciones' | translate}}</label>
       <div class="input-group">
@@ -37,7 +59,7 @@
           required></textarea>
       </div>
     </div>
-  </mat-card-content>
+  </mat-card-content> -->
 </mat-card>
 <mat-card-actions>
   <button mat-flat-button color="primary" [disabled]="!bandera2" (click)="onSubmit()"
