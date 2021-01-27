@@ -41,18 +41,13 @@ export class ListCatalogoComponent implements OnInit {
         columnTitle: this.translate.instant('GLOBAL.Acciones'),
       },
       add: {
-        addButtonContent: '<i class="nb-plus"></i>',
-        createButtonContent: '<i class="nb-checkmark"></i>',
-        cancelButtonContent: '<i class="nb-close"></i>',
+        addButtonContent: '<i class="fas fa-plus"></i>',
       },
       edit: {
-        editButtonContent: '<i class="nb-edit"></i>',
-        saveButtonContent: '<i class="nb-checkmark"></i>',
-        cancelButtonContent: '<i class="nb-close"></i>',
+        editButtonContent: '<i class="far fa-edit"></i>',
       },
       delete: {
-        deleteButtonContent: '<i class="nb-trash"></i>',
-        confirmDelete: true,
+        deleteButtonContent: '<i class="fas fa-ban"></i>',
       },
       mode: 'external',
       columns: {
@@ -109,9 +104,8 @@ export class ListCatalogoComponent implements OnInit {
     this.router.navigate(['/pages/catalogo/crud-catalogo'], { state: { example: this.uid}});
   }
 
-  onCreate(event): void {
-    this.uid = 0;
-    this.cambiotab = [false, true, false];
+  onCreate(): void {
+    this.router.navigate(['/pages/catalogo/crud-catalogo']);
   }
 
   onDelete(event): void {
