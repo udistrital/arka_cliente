@@ -35,19 +35,24 @@ export class ListCatalogoComponent implements OnInit {
   }
 
   cargarCampos() {
+    const t = {
+      crear: this.translate.instant('GLOBAL.catalogo.crear'),
+      editar: this.translate.instant('GLOBAL.catalogo.editar'),
+      desactivar: this.translate.instant('GLOBAL.catalogo.desactivar'),
+    }
     this.settings = {
       actions: {
         position: 'right',
         columnTitle: this.translate.instant('GLOBAL.Acciones'),
       },
       add: {
-        addButtonContent: '<i class="fas fa-plus"></i>',
+        addButtonContent: '<i class="fas fa-plus" title="' + t.crear + '" aria-label="' + t.crear + '"></i>',
       },
       edit: {
-        editButtonContent: '<i class="far fa-edit"></i>',
+        editButtonContent: '<i class="far fa-edit" title="' + t.editar + '" aria-label="' + t.editar + '"></i>',
       },
       delete: {
-        deleteButtonContent: '<i class="fas fa-ban"></i>',
+        deleteButtonContent: '<i class="fas fa-ban" title="' + t.desactivar + '" aria-label="' + t.desactivar + '"></i>',
       },
       mode: 'external',
       columns: {

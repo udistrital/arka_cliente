@@ -372,6 +372,9 @@
 
     "catalogo": {
       "uno": "Catalogue",
+      "crear": "Create Catalogue",
+      "editar": "Edit Catalogue",
+      "desactivar": "Disable Catalogue",
       "lista": "Catalogue List"
     },
 

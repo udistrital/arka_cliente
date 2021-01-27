@@ -372,6 +372,9 @@
 
     "catalogo": {
       "uno": "Catálogo",
+      "crear": "Crear Catálogo",
+      "editar": "Editar Catálogo",
+      "desactivar": "Desactivar Catálogo",
       "lista": "Lista de Catálogos"
     },
 
