@@ -211,8 +211,9 @@ export class TablaEntradasComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.loadElementos();
+    this.listService.findClases();
     this.loadLists();
+    this.loadElementos();
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
       this.loadTablaSettings();
     });

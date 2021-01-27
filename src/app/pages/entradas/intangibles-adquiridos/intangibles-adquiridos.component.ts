@@ -14,11 +14,11 @@ import { NbStepperComponent } from '@nebular/theme';
 import Swal from 'sweetalert2';
 
 @Component({
-  selector: 'ngx-adiciones-mejoras',
-  templateUrl: './adiciones-mejoras.component.html',
-  styleUrls: ['./adiciones-mejoras.component.scss'],
+  selector: 'ngx-intangibles-adquiridos',
+  templateUrl: './intangibles-adquiridos.component.html',
+  styleUrls: ['./intangibles-adquiridos.component.scss'],
 })
-export class AdicionesMejorasComponent implements OnInit {
+export class IntangiblesAdquiridosComponent implements OnInit {
 
   // Formularios
   contratoForm: FormGroup;
@@ -229,7 +229,7 @@ export class AdicionesMejorasComponent implements OnInit {
   }
 
   getTipoEntrada() {
-    this.entradasHelper.getTipoEntradaByAcronimoAndNombre('e_arka', 'Adiciones y mejoras').subscribe(res => {
+    this.entradasHelper.getTipoEntradaByAcronimoAndNombre('e_arka', 'Intangibles').subscribe(res => {
       if (res !== undefined) {
         this.tipoEntrada = res;
       }
@@ -237,7 +237,7 @@ export class AdicionesMejorasComponent implements OnInit {
   }
 
   getFormatoEntrada() {
-    this.entradasHelper.getFormatoEntradaByName('Adqusición').subscribe(res => {
+    this.entradasHelper.getFormatoEntradaByName('Intangibles adquiridos').subscribe(res => {
       if (res !== null) {
         this.formatoTipoMovimiento = res;
       }
@@ -258,11 +258,12 @@ export class AdicionesMejorasComponent implements OnInit {
     if (this.validar) {
       const detalle = {
         acta_recibido_id: +this.actaRecibidoId,
-        consecutivo: 'P1-' + this.actaRecibidoId + '-' + new Date().getFullYear(),
+        consecutivo: 'P8-' + this.actaRecibidoId + '-' + new Date().getFullYear(),
         documento_contable_id: 1, // REVISAR
         contrato_id: +this.contratoEspecifico.NumeroContratoSuscrito,
         vigencia_contrato: this.contratoForm.value.vigenciaCtrl,
-        importacion: this.checked,
+        amortizacion: 0, // REVISAR PENDIENTE A APROBACION ALMACEN
+        vida_util: 0, // REVISAR PENDIENTE A APROBACION ALMACEN
         tipo_contrato: this.opcionTipoContrato === '14' ? 'Orden de Servicios' :
         this.opcionTipoContrato === '15' ? 'Orden de Compra' : '',
       };

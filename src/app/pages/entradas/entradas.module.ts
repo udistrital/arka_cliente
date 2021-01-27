@@ -17,6 +17,7 @@ import { OwlDateTimeModule, OwlNativeDateTimeModule } from 'ng-pick-datetime';
 import { TablaEntradasComponent } from './tabla-entradas/tabla-entradas.component';
 import { CajaMenorComponent } from './caja-menor/caja-menor.component';
 import { AdicionesMejorasComponent } from './adiciones-mejoras/adiciones-mejoras.component';
+import { IntangiblesAdquiridosComponent } from './intangibles-adquiridos/intangibles-adquiridos.component';
 
 @NgModule({
   declarations: [
@@ -33,6 +34,7 @@ import { AdicionesMejorasComponent } from './adiciones-mejoras/adiciones-mejoras
     TablaEntradasComponent,
     CajaMenorComponent,
     AdicionesMejorasComponent,
+    IntangiblesAdquiridosComponent,
   ],
   imports: [
     CommonModule,
