@@ -1,3 +1,4 @@
+import { Proveedor } from './../../../@core/data/models/acta_recibido/Proveedor';
 import { Component, OnInit, ViewChild, ElementRef, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import * as XLSX from 'xlsx';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
@@ -36,6 +37,8 @@ export class TablaElementosAsignadosComponent implements OnInit {
   respuesta: any;
   Datos: ElementoSalida[];
   DatosConsumo: ElementoSalida[];
+  ElementosConsumoNoAsignados: ElementoSalida[];
+  ElementosConsumoAsignados: ElementoSalida[];
   Consumo: any;
   Sedes: any;
   Dependencias: any;
@@ -121,15 +124,10 @@ export class TablaElementosAsignadosComponent implements OnInit {
         this.Devolutivo = list.listDevolutivo[0];
         this.Sedes = list.listSedes[0];
         this.Dependencias = list.listDependencias[0];
-        // console.log(this.actaRecibidoId);
-        // console.log(this.Consumo);
-        // console.log(this.Devolutivo);
-        // console.log(this.ConsumoControlado);
         if (this.actaRecibidoId !== undefined && this.Consumo !== undefined &&
           this.ConsumoControlado !== undefined && this.Devolutivo !== undefined &&
           this.respuesta === undefined && this.Sedes !== undefined && this.Dependencias !== undefined) {
           this.actaRecibidoHelper.getElementosActa(this.actaRecibidoId).subscribe((res: any) => {
-            console.log(res)
             this.respuesta = res;
             this.AjustarDatos(res);
           });
@@ -139,9 +137,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
 
   }
   onRowSelect(event) {
-    console.log(event);
     this.DatosSeleccionados = event;
-    console.log(Object.keys(this.DatosSeleccionados.data))
     if (Object.keys(this.DatosSeleccionados.selected).length !== 0) {
       this.formulario = true;
     } else { // if (Object.keys(this.DatosSeleccionados.data[0]) === 1)
@@ -150,7 +146,6 @@ export class TablaElementosAsignadosComponent implements OnInit {
   }
 
   onRowSelect2(event) {
-    console.log(event);
     this.ConsumoSeleccionados = event;
     if (Object.keys(this.ConsumoSeleccionados.selected).length !== 0) {
       this.AsignarDeConsumo = true;
@@ -433,6 +428,98 @@ export class TablaElementosAsignadosComponent implements OnInit {
             return value;
           },
         },
+        Funcionario: {
+          title: 'Funcionario',
+          valuePrepareFunction: (value: any) => {
+            if (value !== null) {
+              return value.NombreCompleto;
+            } else {
+              return '';
+            }
+          },
+          filterFunction: (cell?: any, search?: string): boolean => {
+            // console.log(cell);
+            // console.log(search);
+            if (Object.keys(cell).length !== 0) {
+              if (cell.compuesto.indexOf(search) > -1) {
+                return true;
+              } else {
+                return false;
+              }
+            } else {
+              return false;
+            }
+          },
+        },
+        Sede: {
+          title: 'Sede',
+          valuePrepareFunction: (value: any) => {
+            if (value !== null) {
+              return value.Nombre;
+            } else {
+              return '';
+            }
+          },
+          filterFunction: (cell?: any, search?: string): boolean => {
+            // console.log(cell);
+            // console.log(search);
+            if (Object.keys(cell).length !== 0) {
+              if (cell.Nombre.indexOf(search) > -1) {
+                return true;
+              } else {
+                return false;
+              }
+            } else {
+              return false;
+            }
+          },
+        },
+        Dependencia: {
+          title: 'Dependencia',
+          valuePrepareFunction: (value: any) => {
+            if (value !== null) {
+              return value.Nombre;
+            } else {
+              return '';
+            }
+          },
+          filterFunction: (cell?: any, search?: string): boolean => {
+            // console.log(cell);
+            // console.log(search);
+            if (Object.keys(cell).length !== 0) {
+              if (cell.Nombre.indexOf(search) > -1) {
+                return true;
+              } else {
+                return false;
+              }
+            } else {
+              return false;
+            }
+          },
+        },
+        Ubicacion: {
+          title: 'Ubicacion',
+          valuePrepareFunction: (value: any) => {
+            if (value !== null) {
+              return value.Nombre;
+            } else {
+              return '';
+            }
+          },
+          filterFunction: (cell?: any, search?: string): boolean => {
+            // console.log(cell);
+            // console.log(search);
+            if (Object.keys(cell).length !== 0) {
+              if (cell.Nombre.indexOf(search) > -1) {
+                return true;
+              } else {
+                return false;
+              }
+            } else {
+              return false;
+            }
+          },
+        },
       },
     };
 
@@ -469,7 +556,6 @@ export class TablaElementosAsignadosComponent implements OnInit {
         if (datos[index].TipoBienId.Id === 3 && Object.keys(this.Devolutivo[0]).length !== 0) {
           elemento.SubgrupoCatalogoId = this.Devolutivo.find(x => x.Id === datos[index].SubgrupoCatalogoId);
         }
-        // console.log(elemento);
         if (datos[index].TipoBienId.Id === 1) {
           this.DatosConsumo.push(elemento);
         } else {
@@ -479,7 +565,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
     }
 
     if (this.DatosConsumo !== undefined) {
-      this.Salida_Consumo();
+      // this.Salida_Consumo();
       this.source2.load(this.DatosConsumo);
     }
     if (this.Datos !== undefined) {
@@ -495,7 +581,6 @@ export class TablaElementosAsignadosComponent implements OnInit {
     }
   }
   AjustarDatos2(datos: any[]) {
-    console.log(datos)
     this.Datos2 = new Array<ElementoSalida>();
     const datos2 = new Array<any>();
     for (const index in datos) {
@@ -541,7 +626,6 @@ export class TablaElementosAsignadosComponent implements OnInit {
           elemento.SubgrupoCatalogoId = this.Devolutivo.find(x => x.Id === datos[index].SubgrupoCatalogoId.Id).SubgrupoId;
         }
         // elemento.SubgrupoCatalogoId = datos[index].SubgrupoCatalogoId;
-        // console.log(elemento);
         datos2.push(elemento);
       }
     }
@@ -549,6 +633,74 @@ export class TablaElementosAsignadosComponent implements OnInit {
       this.source.load(datos2);
       this.formulario = false;
       // console.log(this.source);
+      this.checkElementosAsignados();
+    }
+  }
+
+  AjustarDatosConsumo(datos: any[]) {
+    this.Datos2 = new Array<ElementoSalida>();
+    const datos2 = new Array<any>();
+    const elementosConsumoAsignados = new Array<any>();
+    const elementosConsumoNoAsignados = new Array<any>();
+    for (const index in datos) {
+      if (true) {
+        // console.log(datos[index])
+        const elemento = new ElementoSalida();
+        elemento.ValorUnitario = datos[index].ValorUnitario;
+        elemento.ValorTotal = datos[index].ValorTotal;
+        elemento.Id = datos[index].Id;
+        elemento.Nombre = datos[index].Nombre;
+        elemento.Cantidad = datos[index].Cantidad;
+        elemento.Marca = datos[index].Marca;
+        elemento.Serie = datos[index].Serie;
+        elemento.Asignado = datos[index].Asignado;
+        elemento.TipoBienId = datos[index].TipoBienId;
+        if (datos[index].Funcionario !== null) {
+          if (datos[index].Funcionario !== undefined) {
+            elemento.Funcionario = datos[index].Funcionario;
+          }
+        }
+        if (datos[index].Sede !== null) {
+          if (datos[index].Sede !== undefined) {
+            elemento.Sede = datos[index].Sede;
+          }
+        }
+        if (datos[index].Dependencia !== null) {
+          if (datos[index].Dependencia !== undefined) {
+            elemento.Dependencia = datos[index].Dependencia;
+          }
+        }
+        if (datos[index].Ubicacion !== null) {
+          if (datos[index].Ubicacion !== undefined) {
+            elemento.Ubicacion = datos[index].Ubicacion;
+          }
+        }
+        if (datos[index].TipoBienId.Id === 1 && Object.keys(this.Consumo[0]).length !== 0) {
+          elemento.SubgrupoCatalogoId = this.Consumo.find(x => x.SubgrupoId.Id === datos[index].SubgrupoCatalogoId.Id).SubgrupoId;
+        }
+        if (datos[index].TipoBienId.Id === 2 && Object.keys(this.ConsumoControlado[0]).length !== 0) {
+          elemento.SubgrupoCatalogoId = this.ConsumoControlado.find(x => x.SubgrupoId.Id === datos[index].SubgrupoCatalogoId.Id).SubgrupoId;
+        }
+        if (datos[index].TipoBienId.Id === 3 && Object.keys(this.Devolutivo[0]).length !== 0) {
+          elemento.SubgrupoCatalogoId = this.Devolutivo.find(x => x.Id === datos[index].SubgrupoCatalogoId.Id).SubgrupoId;
+        }
+        datos2.push(elemento);
+        // elemento.SubgrupoCatalogoId = datos[index].SubgrupoCatalogoId;
+        if (elemento.Funcionario) {
+          elementosConsumoAsignados.push(elemento);
+        } else {
+          elementosConsumoNoAsignados.push(elemento);
+        }
+      }
+    }
+
+    if (datos2 !== undefined) {
+      this.ElementosConsumoNoAsignados = elementosConsumoNoAsignados;
+      this.ElementosConsumoAsignados = elementosConsumoAsignados;
+      this.source2.load(datos2);
+      this.AsignarDeConsumo = false;
+      // console.log(this.source);
+      this.Salida_Consumo();
       this.checkElementosAsignados();
     }
   }
@@ -588,16 +740,14 @@ export class TablaElementosAsignadosComponent implements OnInit {
   }
   Salida_Consumo() {
 
-    if (Object.keys(this.DatosConsumo).length !== 0) {
+      if (Object.keys(this.ElementosConsumoNoAsignados).length !== 0) {
       const sede = 'FICC';
       const dependencia = 'ALMACEN GENERAL E INVENTARIOS';
 
       const transaccion: any = {};
       transaccion.Sede = this.Sedes.find((x) => x.CodigoAbreviacion === sede);
       transaccion.Dependencia = this.Dependencias.find((x) => x.Nombre === dependencia);
-      // console.log(transaccion);
       this.actaRecibidoHelper.postRelacionSedeDependencia(transaccion).subscribe((res: any) => {
-        // console.log(res)
         const detalle = {
           ubicacion: res[0].Relaciones[0].Id,
         };
@@ -618,8 +768,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
           },
           Elementos: [],
         };
-
-        for (const currentValue of this.DatosConsumo) {
+        for (const currentValue of this.ElementosConsumoNoAsignados) {
           const elemento = {};
           elemento['Activo'] = true;
           elemento['ElementoActaId'] = currentValue.Id;
@@ -630,9 +779,9 @@ export class TablaElementosAsignadosComponent implements OnInit {
           elemento['ValorTotal'] = currentValue.ValorTotal;
 
           Salida.Elementos.push(elemento);
-          // console.log(Salida)
         }
         this.Datos_Salida_Consumo = Salida;
+        return Salida;
       });
     }
 
@@ -662,8 +811,6 @@ export class TablaElementosAsignadosComponent implements OnInit {
           },
           Elementos: [],
         };
-        // accumulator[val].Ubicacion = currentValue.Ubicacion.Id;
-        // accumulator[val].Funcionario = currentValue.Funcionario.Id;
         const elemento = {};
         elemento['Activo'] = true;
         elemento['ElementoActaId'] = currentValue.Id;
@@ -674,7 +821,6 @@ export class TablaElementosAsignadosComponent implements OnInit {
         elemento['ValorTotal'] = currentValue.ValorTotal;
 
         accumulator[val].Elementos.push(elemento);
-        // console.log(currentValue);
         return accumulator;
 
       }, {});
@@ -683,17 +829,70 @@ export class TablaElementosAsignadosComponent implements OnInit {
     } else {
       return this.Datos;
     }
-
   }
+
+  Salida_General_Consumo() {
+    if (Object.keys(this.ElementosConsumoAsignados).length !== 0) {
+      const datos_agrupados2 = this.ElementosConsumoAsignados.reduce((accumulator, currentValue) => {
+        if (currentValue.Funcionario.Id){
+        const detalle = {
+          funcionario: currentValue.Funcionario.Id,
+          ubicacion: currentValue.Ubicacion.Id,
+        };
+        const val = currentValue.Funcionario.Id + '-' + currentValue.Ubicacion.Id;
+        accumulator[val] = accumulator[val] || {
+          Salida: {
+            Observacion: this.Observaciones,
+            Detalle: JSON.stringify(detalle),
+            Activo: true,
+            MovimientoPadreId: {
+              Id: parseFloat(this.entradaId),
+            },
+            FormatoTipoMovimientoId: {
+              Id: 7,
+            },
+            EstadoMovimientoId: {
+              Id: 3,
+            },
+          },
+          Elementos: [],
+        };
+        const elemento = {};
+        elemento['Activo'] = true;
+        elemento['ElementoActaId'] = currentValue.Id;
+        elemento['SaldoCantidad'] = currentValue.Cantidad;
+        elemento['SaldoValor'] = currentValue.ValorTotal;
+        elemento['Unidad'] = currentValue.Cantidad;
+        elemento['ValorUnitario'] = currentValue.ValorUnitario;
+        elemento['ValorTotal'] = currentValue.ValorTotal;
+
+        accumulator[val].Elementos.push(elemento);
+        return accumulator;
+      }
+      }, {});
+
+      return datos_agrupados2;
+    } else {
+      return this.Datos;
+    }
+  }
+
   onSubmit() {
 
-    const datos_agrupados = this.Salida_General();
-    // console.log(datos_agrupados);
-    // console.log(Object.keys(datos_agrupados));
+    const datos_agrupados = this.Salida_General(); // elementos de consumo controlado, diferencia por proveedores, ubicaciones... 
+    const datos_agrupados2 = this.Salida_General_Consumo(); // elementos de consumo asignados
+    this.Salida_Consumo(); // elementos de consumo, diferencia por proveedores, ubicaciones... 
     const Salidas = {
       Salidas: [],
     };
-    if (Object.keys(this.DatosConsumo).length !== 0) {
+    if (Object.keys(datos_agrupados2).length !== 0) {
+      for (const salida of Object.keys(datos_agrupados2)) {
+        Salidas.Salidas.push(datos_agrupados2[salida]);
+      }
+
+    }
+
+    if (Object.keys(this.ElementosConsumoNoAsignados).length !== 0) {
       Salidas.Salidas.push(this.Datos_Salida_Consumo);
     }
 
@@ -704,7 +903,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
     }
 
 
-    // console.log(Salidas);
+    console.log(Salidas);
 
     (Swal as any).fire({
       title: 'Desea Registrar Salida?',
