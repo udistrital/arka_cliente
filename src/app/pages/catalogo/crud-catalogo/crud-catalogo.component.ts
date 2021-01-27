@@ -32,6 +32,7 @@ export class CrudCatalogoComponent implements OnInit {
   formCatalogo: any;
   regCatalogo: any;
   clean: boolean;
+  cargando: boolean = true;
 
   constructor(
     private translate: TranslateService,
@@ -40,8 +41,6 @@ export class CrudCatalogoComponent implements OnInit {
     private route: ActivatedRoute,
     public router: Router,
     ) {
-
-
     this.formCatalogo = FORM_CATALOGO;
     this.construirForm();
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
@@ -85,10 +84,12 @@ export class CrudCatalogoComponent implements OnInit {
           if (res !== null) {
             this.info_catalogo = <Catalogo>res;
           }
+          this.cargando = false;
         });
     } else  {
       this.info_catalogo = undefined;
       this.clean = !this.clean;
+      this.cargando = false;
     }
   }
 

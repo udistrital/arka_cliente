@@ -1,5 +1,7 @@
-
-<toaster-container [toasterconfig]="config"></toaster-container>
-<ngx-dinamicform [normalform]="formCatalogo" [modeloData]="info_catalogo" (result)="validarForm($event)" [clean]="clean">
-</ngx-dinamicform>
-
+<nb-card>
+  <nb-card-body [nbSpinner]="cargando">
+    <toaster-container [toasterconfig]="config"></toaster-container>
+    <ngx-dinamicform [normalform]="formCatalogo" [modeloData]="info_catalogo" (result)="validarForm($event)" [clean]="clean">
+    </ngx-dinamicform>
+  </nb-card-body>
+</nb-card>

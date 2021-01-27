@@ -178,11 +178,6 @@ export class ListCatalogoComponent implements OnInit {
     }
   }
 
-
-  itemselec(event): void {
-    // console.log("afssaf");
-  }
-
   private showToast(type: string, title: string, body: string) {
     this.config = new ToasterConfig({
       // 'toast-top-full-width', 'toast-bottom-full-width', 'toast-top-left', 'toast-top-center'
