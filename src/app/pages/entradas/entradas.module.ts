@@ -20,6 +20,7 @@ import { AdicionesMejorasComponent } from './adiciones-mejoras/adiciones-mejoras
 import { IntangiblesAdquiridosComponent } from './intangibles-adquiridos/intangibles-adquiridos.component';
 import { ExtranjeroComponent } from './extranjero/extranjero.component';
 import { ProvisionalComponent } from './provisional/provisional.component';
+import { IntangiblesDesarrolladosComponent } from './intangibles-desarrollados/intangibles-desarrollados.component';
 
 
 @NgModule({
@@ -40,6 +41,7 @@ import { ProvisionalComponent } from './provisional/provisional.component';
     IntangiblesAdquiridosComponent,
     ExtranjeroComponent,
     ProvisionalComponent,
+    IntangiblesDesarrolladosComponent,
 
   ],
   imports: [
