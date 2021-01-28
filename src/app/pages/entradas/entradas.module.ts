@@ -19,6 +19,7 @@ import { CajaMenorComponent } from './caja-menor/caja-menor.component';
 import { AdicionesMejorasComponent } from './adiciones-mejoras/adiciones-mejoras.component';
 import { IntangiblesAdquiridosComponent } from './intangibles-adquiridos/intangibles-adquiridos.component';
 import { ExtranjeroComponent } from './extranjero/extranjero.component';
+import { ProvisionalComponent } from './provisional/provisional.component';
 
 
 @NgModule({
@@ -38,6 +39,7 @@ import { ExtranjeroComponent } from './extranjero/extranjero.component';
     AdicionesMejorasComponent,
     IntangiblesAdquiridosComponent,
     ExtranjeroComponent,
+    ProvisionalComponent,
 
   ],
   imports: [
