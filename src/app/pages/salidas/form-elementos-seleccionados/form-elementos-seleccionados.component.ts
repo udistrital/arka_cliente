@@ -48,6 +48,7 @@ export class FormElementosSeleccionadosComponent implements OnInit {
   Proveedores: any;
   Dependencias: any;
   Ubicaciones: any;
+  DependenciaV: any;
   Sedes: any;
   form_salida: FormGroup;
   Datos: any;
@@ -118,18 +119,20 @@ export class FormElementosSeleccionadosComponent implements OnInit {
   Traer_Relacion_Ubicaciones() {
     const sede = this.form_salida.get('Sede').value;
     const dependencia = this.form_salida.get('Dependencia').value;
+    if (this.DependenciaV !== dependencia) {
+      this.form_salida.patchValue({
+        Ubicacion: '',
+      });
+    }
     if (this.form_salida.get('Sede').valid || this.form_salida.get('Dependencia').valid) {
       const transaccion: any = {};
       transaccion.Sede = this.Sedes.find((x) => x.Id === parseFloat(sede));
       transaccion.Dependencia = this.Dependencias.find((x) => x.Nombre === dependencia);
-      // console.log({Sede:this.form_salida.get('Sede'),Dep:this.form_salida.get('Dependencia')})
       if (transaccion.Sede !== undefined && transaccion.Dependencia !== undefined) {
         this.Actas_Recibido.postRelacionSedeDependencia(transaccion).subscribe((res: any) => {
           if (Object.keys(res[0]).length !== 0) {
             this.Ubicaciones = res[0].Relaciones;
-            // console.log(res[0].Relaciones);
-          } else {
-            this.Ubicaciones = undefined;
+            this.DependenciaV = this.form_salida.get('Dependencia').value;
           }
         });
       }
@@ -193,7 +196,7 @@ export class FormElementosSeleccionadosComponent implements OnInit {
     this.loadProveedoresElementos();
 
   }
-// MÉTODO PARA VERIFICAR QUE EL DATO EN EL INPUT CORRESPONDA CON UNO EN LA LISTA
+  // MÉTODO PARA VERIFICAR QUE EL DATO EN EL INPUT CORRESPONDA CON UNO EN LA LISTA
   verfificarProveedor() {
     if (this.elementos.length !== 0) {
 

@@ -7,7 +7,7 @@
       <mat-tab>
         <p></p>
         <ng-template mat-tab-label>
-          Elementos Devolutivos y de Consumo Controlado
+          {{'GLOBAL.entradas.tab_consumo_controlado' | translate}}
         </ng-template>
         <ng2-smart-table [settings]="settings" [source]="source" (userRowSelect)="onRowSelect($event)">
         </ng2-smart-table>
@@ -29,7 +29,7 @@
       <mat-tab>
         <p></p>
         <ng-template mat-tab-label>
-          Elementos de Consumo
+          {{'GLOBAL.entradas.tab_consumo' | translate}}
         </ng-template>
         <ng2-smart-table [settings]="settings2" [source]="source2" (userRowSelect)="onRowSelect2($event)">
         </ng2-smart-table>
@@ -50,20 +50,10 @@
     </mat-tab-group>
   </mat-card-content>
   <p></p>
-  <!-- <mat-card-content>
-    <div class="form-group  col-lg-12">
-      <label>{{'GLOBAL.Acta_Recibido.EdicionActa.Observaciones' | translate}}</label>
-      <div class="input-group">
-        <textarea rows="5" [(ngModel)]="ObservacionesConsumo"
-          placeholder="Proporciona datos adicionales que no se pueden expresar en el formulario" class="form-control"
-          required></textarea>
-      </div>
-    </div>
-  </mat-card-content> -->
 </mat-card>
 <mat-card-actions>
   <button mat-flat-button color="primary" [disabled]="!bandera2" (click)="onSubmit()"
-    class="float-right">ASIGNAR</button>
+    class="float-right">{{'GLOBAL.entradas.asignar' | translate}}</button>
 </mat-card-actions>
 <mat-card-content>
 </mat-card-content>

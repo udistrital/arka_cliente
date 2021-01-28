@@ -744,7 +744,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
   }
   Salida_Consumo() {
 
-      if (Object.keys(this.ElementosConsumoNoAsignados).length !== 0) {
+    if (Object.keys(this.ElementosConsumoNoAsignados).length !== 0) {
       const sede = 'FICC';
       const dependencia = 'ALMACEN GENERAL E INVENTARIOS';
 
@@ -798,9 +798,10 @@ export class TablaElementosAsignadosComponent implements OnInit {
           ubicacion: currentValue.Ubicacion.Id,
         };
         const val = currentValue.Funcionario.Id + '-' + currentValue.Ubicacion.Id;
+        const obs = 'Salida con elementos de consumo controlado asignados a funcionario.';
         accumulator[val] = accumulator[val] || {
           Salida: {
-            Observacion: this.Observaciones,
+            Observacion: this.Observaciones ? obs + ' // ' + this.Observaciones : obs,
             Detalle: JSON.stringify(detalle),
             Activo: true,
             MovimientoPadreId: {
@@ -839,40 +840,41 @@ export class TablaElementosAsignadosComponent implements OnInit {
     if (Object.keys(this.ElementosConsumoAsignados).length !== 0) {
       const datos_agrupados2 = this.ElementosConsumoAsignados.reduce((accumulator, currentValue) => {
         if (currentValue.Funcionario.Id) {
-        const detalle = {
-          funcionario: currentValue.Funcionario.Id,
-          ubicacion: currentValue.Ubicacion.Id,
-        };
-        const val = currentValue.Funcionario.Id + '-' + currentValue.Ubicacion.Id;
-        accumulator[val] = accumulator[val] || {
-          Salida: {
-            Observacion: this.ObservacionesConsumo,
-            Detalle: JSON.stringify(detalle),
-            Activo: true,
-            MovimientoPadreId: {
-              Id: parseFloat(this.entradaId),
+          const detalle = {
+            funcionario: currentValue.Funcionario.Id,
+            ubicacion: currentValue.Ubicacion.Id,
+          };
+          const val = currentValue.Funcionario.Id + '-' + currentValue.Ubicacion.Id;
+          const obs = 'Salida con elementos de consumo asignados a funcionario.';
+          accumulator[val] = accumulator[val] || {
+            Salida: {
+              Observacion: this.ObservacionesConsumo ? obs + ' // ' + this.ObservacionesConsumo : obs,
+              Detalle: JSON.stringify(detalle),
+              Activo: true,
+              MovimientoPadreId: {
+                Id: parseFloat(this.entradaId),
+              },
+              FormatoTipoMovimientoId: {
+                Id: 7,
+              },
+              EstadoMovimientoId: {
+                Id: 3,
+              },
             },
-            FormatoTipoMovimientoId: {
-              Id: 7,
-            },
-            EstadoMovimientoId: {
-              Id: 3,
-            },
-          },
-          Elementos: [],
-        };
-        const elemento = {};
-        elemento['Activo'] = true;
-        elemento['ElementoActaId'] = currentValue.Id;
-        elemento['SaldoCantidad'] = currentValue.Cantidad;
-        elemento['SaldoValor'] = currentValue.ValorTotal;
-        elemento['Unidad'] = currentValue.Cantidad;
-        elemento['ValorUnitario'] = currentValue.ValorUnitario;
-        elemento['ValorTotal'] = currentValue.ValorTotal;
+            Elementos: [],
+          };
+          const elemento = {};
+          elemento['Activo'] = true;
+          elemento['ElementoActaId'] = currentValue.Id;
+          elemento['SaldoCantidad'] = currentValue.Cantidad;
+          elemento['SaldoValor'] = currentValue.ValorTotal;
+          elemento['Unidad'] = currentValue.Cantidad;
+          elemento['ValorUnitario'] = currentValue.ValorUnitario;
+          elemento['ValorTotal'] = currentValue.ValorTotal;
 
-        accumulator[val].Elementos.push(elemento);
-        return accumulator;
-      }
+          accumulator[val].Elementos.push(elemento);
+          return accumulator;
+        }
       }, {});
 
       return datos_agrupados2;
@@ -910,7 +912,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
 
     (Swal as any).fire({
       title: 'Desea Registrar Salida?',
-      text: 'Esta seguro de registrar los datos suministrados',
+      text: 'Está seguro de registrar los datos suministrados',
       type: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
@@ -922,11 +924,12 @@ export class TablaElementosAsignadosComponent implements OnInit {
         this.salidasHelper.postSalidas(Salidas).subscribe(res => {
           // console.log(res);
           (Swal as any).fire({
+            type: 'success',
             title: 'Salida Registrada',
-            text: 'Ok',
+            text: 'La Salida ha sido Registrada exitosamente',
           });
         });
-
+        this.router.navigate(['/pages/salidas/consulta_salidas']);
       }
     });
   }
