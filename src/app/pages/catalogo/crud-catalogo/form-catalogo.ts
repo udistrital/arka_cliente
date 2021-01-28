@@ -1,4 +1,3 @@
-
 export let FORM_CATALOGO = {
     titulo: 'Catalogo',
     tipo_formulario: 'mini',
@@ -6,15 +5,6 @@ export let FORM_CATALOGO = {
     alertas: true,
     modelo: 'Catalogo',
     campos: [
-    // {
-    //     etiqueta: 'input',
-    //     claseGrid: 'col-6',
-    //     nombre: 'Id',
-    //     label_i18n: 'id',
-    //     placeholder_i18n: 'id',
-    //     requerido: true,
-    //     tipo: 'number',
-    // },
     {
         etiqueta: 'input',
         claseGrid: 'col-6',

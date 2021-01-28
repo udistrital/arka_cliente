@@ -9,7 +9,6 @@ import { CompleterService, CompleterData } from 'ng2-completer';
   styleUrls: ['./dinamicform.component.scss'],
 })
 
-
 export class DinamicformComponent implements OnInit, OnChanges {
 
   @Input('normalform') normalform: any;
@@ -40,7 +39,6 @@ export class DinamicformComponent implements OnInit, OnChanges {
     if (!this.normalform.tipo_formulario) {
       this.normalform.tipo_formulario = 'grid';
     }
-
     this.normalform.campos = this.normalform.campos.map(d => {
       d.clase = 'form-control';
       if (d.relacion === undefined) {
@@ -55,9 +53,8 @@ export class DinamicformComponent implements OnInit, OnChanges {
       return d;
     });
   }
+
   ngOnChanges(changes) {
-
-
     if (changes.normalform !== undefined) {
       if (changes.normalform.currentValue !== undefined) {
         this.normalform = changes.normalform.currentValue;

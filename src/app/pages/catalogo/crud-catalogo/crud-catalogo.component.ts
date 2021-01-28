@@ -1,4 +1,3 @@
-
 import { Catalogo } from '../../../@core/data/models/catalogo/catalogo';
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { FORM_CATALOGO } from './form-catalogo';
