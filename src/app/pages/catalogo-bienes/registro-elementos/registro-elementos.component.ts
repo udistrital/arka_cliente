@@ -24,6 +24,7 @@ export class RegistroElementosComponent implements OnInit {
   catalogoId: number;
   subgrupo: Subgrupo;
   ver_formulario: boolean;
+  cargando_catalogos: boolean = true;
 
   constructor(private translate: TranslateService,
     private catalogoElementosService: CatalogoElementosHelper,
@@ -57,6 +58,7 @@ export class RegistroElementosComponent implements OnInit {
             this.catalogos.push(data[datos]);
           }
         }
+        this.cargando_catalogos = false;
       }
     });
   }

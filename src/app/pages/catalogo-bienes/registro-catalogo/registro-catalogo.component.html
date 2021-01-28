@@ -3,7 +3,7 @@
     <nb-card-header>
       {{'GLOBAL.catalogo.uno' | translate}}
     </nb-card-header>
-    <nb-card-body>
+    <nb-card-body [nbSpinner]="cargando_catalogos">
         <select class="form-control mb-4" (change)="onChange($event.target.value)">
           <option disabled selected>{{'GLOBAL.seleccionar' | translate}}...</option>
           <option *ngFor="let item of catalogos" value="{{ item.Id }}">{{ item.Nombre }}</option>

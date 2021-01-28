@@ -32,7 +32,7 @@ export class CrudCatalogoComponent implements OnInit {
   regCatalogo: any;
   clean: boolean;
   cargando: boolean = true;
-  titulo: string = "";
+  titulo: string = '';
 
   constructor(
     private translate: TranslateService,
