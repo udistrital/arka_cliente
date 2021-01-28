@@ -16,7 +16,7 @@
         </div>
         <div class="form-group col-sm">
           <label>{{'GLOBAL.vigencia' | translate}}</label>
-          <select class="form-control" (change)="changeSelectVigencia($event)" [disabled]="!tipoContratoSelect"
+          <select class="form-control" (change)="changeSelectVigencia($event)"
             formControlName="vigenciaCtrl">
             <option disabled selected>{{'GLOBAL.seleccionar' | translate}}...</option>
             <option value="{{ vigencia }}">{{ vigencia }}</option>
@@ -41,6 +41,71 @@
           {{'GLOBAL.siguiente' | translate}}</button>
       </div>
     </form>
+  </nb-step>
+
+  <!-- ORDENADOR DE GASTO -->
+  <nb-step [stepControl]="ordenadorForm" label="{{'GLOBAL.ordenador_gasto' | translate}}">
+    <h5>{{'GLOBAL.ordenador_gasto' | translate}}</h5>
+    <div class="row">
+      <div class="form-group col-sm">
+        <label>{{'GLOBAL.nombres' | translate}}</label>
+        <div class="input-group">
+          <input nbInput type="text" shape="semi-round" placeholder="Nombre Completo" class="form-control"
+            value="{{ contratoEspecifico.OrdenadorGasto.NombreOrdenador }}" [readonly]="true" />
+        </div>
+      </div>
+      <div class="form-group col-sm">
+        <label>{{'GLOBAL.asignacion' | translate}}</label>
+        <div class="input-group">
+          <input nbInput type="text" shape="semi-round" placeholder="Rol" class="form-control"
+            value="{{ contratoEspecifico.OrdenadorGasto.RolOrdenadorGasto }}" [readonly]="true" />
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <button nbButton nbStepperPrevious>{{'GLOBAL.anterior' | translate}}</button>
+      </div>
+      <div class="col" align="end">
+        <button nbButton nbStepperNext>{{'GLOBAL.siguiente' | translate}}</button>
+      </div>
+    </div>
+  </nb-step>
+
+  <!-- SUPERVISOR -->
+  <nb-step [stepControl]="supervisorForm" label="{{'GLOBAL.supervisor' | translate}}">
+    <h5>{{'GLOBAL.supervisor' | translate}}</h5>
+    <div class="row">
+      <div class="form-group col-sm">
+        <label>{{'GLOBAL.nombres' | translate}}</label>
+        <div class="input-group">
+          <input nbInput type="text" shape="semi-round" placeholder="Nombre Completo" class="form-control"
+            value="{{ contratoEspecifico.Supervisor.Nombre }}" [readonly]="true" />
+        </div>
+      </div>
+      <div class="form-group col-sm">
+        <label>{{'GLOBAL.sede' | translate}}</label>
+        <div class="input-group">
+          <input nbInput type="text" shape="semi-round" placeholder="Sede" class="form-control"
+            value="{{ contratoEspecifico.Supervisor.Sede }}" [readonly]="true" />
+        </div>
+      </div>
+      <div class="form-group col-sm">
+        <label>{{'GLOBAL.dependencia' | translate}}</label>
+        <div class="input-group">
+          <input nbInput type="text" shape="semi-round" placeholder="Dependencia" class="form-control"
+            value="{{ contratoEspecifico.Supervisor.Dependencia }}" [readonly]="true" />
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <button nbButton nbStepperPrevious>{{'GLOBAL.anterior' | translate}}</button>
+      </div>
+      <div class="col" align="end">
+        <button nbButton nbStepperNext>{{'GLOBAL.siguiente' | translate}}</button>
+      </div>
+    </div>
   </nb-step>
 
   <!-- FACTURA -->
@@ -73,52 +138,24 @@
         </div>
       </div>
       <div class="row">
-        <div class="col">
-          <button nbButton nbStepperPrevious>{{'GLOBAL.anterior' | translate}}</button>
-        </div>
-        <div class="col" align="end">
-          <button type="button" nbButton nbStepperNext>{{'GLOBAL.siguiente' | translate}}</button>
-        </div>
-      </div>
-    </form>
-  </nb-step>
-
-  <!-- SOLICITANTE -->
-  <nb-step [stepControl]="solicitanteForm" label="{{'GLOBAL.solicitante' | translate}}">
-    <h5>{{'GLOBAL.solicitante' | translate}}</h5>
-    <form [formGroup]="solicitanteForm" class="step-container">
-      <div class="row">
         <div class="form-group col-sm">
-          <label>{{'GLOBAL.vigencia' | translate}}</label>
+          <label>{{'GLOBAL.importacion' | translate}}</label>
           <div class="input-group">
-            <input nbInput shape="semi-round" placeholder="{{'GLOBAL.placeholder_fecha' | translate}}"
-              formControlName="fechaCtrl" class="form-control" [nbDatepicker]="formpicker" required>
-            <nb-datepicker (dateChange)="changeSolicitante($event)" #formpicker></nb-datepicker>
+            <nb-checkbox status="success" (change)="changeCheck()"></nb-checkbox>
           </div>
         </div>
         <div class="form-group col-sm">
-          <label>{{'GLOBAL.ordenador_gasto' | translate}}</label>
-          <div class="input-group">
-            <input nbInput (change)="changeOrdenador()" type="text" shape="semi-round"
-              placeholder="{{'GLOBAL.ordenador_gasto' | translate}}" class="form-control"
-              [readonly]="!solicitanteSelect" list="solicitanteList" formControlName="solicitanteCtrl"
-              [ngClass]="{'form-control-danger': solicitanteForm.invalid && (solicitanteForm.dirty || solicitanteForm.touched)}" />
-          </div>
+          <label>Registro de Importacion</label>
+          <input type="text" class="form-control" formControlName="regImportCtrl">
         </div>
-        <datalist id="solicitanteList">
-          <option *ngFor="let item of ordenadores" value='{{ item.NombreOrdenador }}'></option>
-        </datalist>
         <div class="form-group col-sm">
-          <label>{{'GLOBAL.asignacion' | translate}}</label>
-          <div class="input-group">
-            <input nbInput shape="semi-round" type="text" placeholder="{{'GLOBAL.asignacion' | translate}}"
-              value="{{ cargoOrdenador }}" class="form-control" [readonly]="true" />
-          </div>
+          <label>Tasa Representativa del Mercado</label>
+          <input type="number" class="form-control" formControlName="trmCtrl">
         </div>
       </div>
       <div class="row">
         <div class="col">
-          <button nbButton nbStepperPrevious>{{'GLOBAL.anterior' | translate}}</button>
+          <button type="button" nbButton nbStepperPrevious>{{'GLOBAL.anterior' | translate}}</button>
         </div>
         <div class="col" align="end">
           <button type="button" nbButton nbStepperNext>{{'GLOBAL.siguiente' | translate}}</button>
@@ -144,7 +181,7 @@
           <button nbButton nbStepperPrevious>{{'GLOBAL.anterior' | translate}}</button>
         </div>
         <div class="col" align="end">
-          <button type="button" nbButton nbStepperNext (click)="onObservacionSubmit()">{{'GLOBAL.siguiente' |
+          <button type="button" (click)="onObservacionSubmit()" nbButton nbStepperNext>{{'GLOBAL.siguiente' |
             translate}}</button>
         </div>
       </div>

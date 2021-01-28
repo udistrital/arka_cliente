@@ -24,6 +24,13 @@
 :host /deep/ .material-icons {
   font-family: "Material Icons" !important;
 }
+
+:host /deep/ ng2-smart-table {
+  padding-left: 15px !important;
+  padding-right: 15px !important;
+  display: table;
+}
+
 .example-container {
   height: 400px;
   overflow: auto;
@@ -73,4 +80,8 @@ tr.mat-footer-row {
 
 ng2-smart-table table tr.selected {
   background-color: lightblue !important;
+}
+
+.mat-card-actions {
+  padding-right: 40px !important;
 }
