@@ -43,6 +43,7 @@ export class CrudSubgrupoComponent implements OnInit, AfterViewInit {
   formSubgrupo: any;
   regSubgrupo: any;
   clean: boolean;
+  cargando: boolean = true;
 
   // ver comentarios en muestraDetalles()
   // campos_detalle_requeridos: Array<boolean>;
@@ -161,6 +162,7 @@ export class CrudSubgrupoComponent implements OnInit, AfterViewInit {
             this.subgrupo = subgrupo;
             this.info_subgrupo = info__grupo;
             this.mostrar.emit(true);
+            this.cargando = false;
           } else {
             this.info_subgrupo = undefined;
             this.clean = !this.clean;
@@ -171,6 +173,7 @@ export class CrudSubgrupoComponent implements OnInit, AfterViewInit {
       // this.subgrupo = undefined;
       this.info_subgrupo = undefined;
       this.clean = !this.clean;
+      this.cargando = false;
     }
   }
 
