@@ -16,7 +16,10 @@ import { Ng2SmartTableModule } from 'ngx-smart-table';
 import { OwlDateTimeModule, OwlNativeDateTimeModule } from 'ng-pick-datetime';
 import { TablaEntradasComponent } from './tabla-entradas/tabla-entradas.component';
 import { CajaMenorComponent } from './caja-menor/caja-menor.component';
+import { AdicionesMejorasComponent } from './adiciones-mejoras/adiciones-mejoras.component';
+import { IntangiblesAdquiridosComponent } from './intangibles-adquiridos/intangibles-adquiridos.component';
 import { ExtranjeroComponent } from './extranjero/extranjero.component';
+
 
 @NgModule({
   declarations: [
@@ -32,7 +35,10 @@ import { ExtranjeroComponent } from './extranjero/extranjero.component';
     ConsultaEntradaComponent,
     TablaEntradasComponent,
     CajaMenorComponent,
+    AdicionesMejorasComponent,
+    IntangiblesAdquiridosComponent,
     ExtranjeroComponent,
+
   ],
   imports: [
     CommonModule,
