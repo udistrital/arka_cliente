@@ -19,6 +19,7 @@ export class InactivarGrupoComponent implements OnInit {
   info_grupo: Grupo;
   clean: boolean;
   ver_formulario: boolean;
+  cargando_catalogos: boolean = true;
 
   catalogos: Array<Catalogo>;
   catalogoId: number;
@@ -62,6 +63,7 @@ export class InactivarGrupoComponent implements OnInit {
             this.catalogos.push(data[datos]);
           }
         }
+        this.cargando_catalogos = false;
       }
     });
   }

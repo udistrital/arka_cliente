@@ -1,20 +1,20 @@
 <toaster-container [toasterconfig]="config"></toaster-container>
 <div class="row">
+
   <nb-card class="col">
     <nb-card-header>
-      {{'GLOBAL.catalogo' | translate}}
+      {{'GLOBAL.catalogo.uno' | translate}}
     </nb-card-header>
-    <nb-card-body>
-      <div>
+    <nb-card-body [nbSpinner]="cargando_catalogos">
         <select class="form-control mb-4" (change)="onChange($event.target.value)">
           <option disabled selected>{{'GLOBAL.seleccionar' | translate}}...</option>
           <option *ngFor="let item of catalogos" value="{{ item.Id }}">{{ item.Nombre }}</option>
         </select>
         <ngx-arbol *ngIf="catalogoId !== 0" [catalogoId]="catalogoId" (grupo)="receiveMessage($event)"
           [updateSignal]="eventChange"></ngx-arbol>
-      </div>
     </nb-card-body>
   </nb-card>
+
   <div class="col" *ngIf="uid_1">
     <nb-card>
       <nb-card-header>

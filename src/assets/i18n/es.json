@@ -370,12 +370,20 @@
       "t_restante_alerta": "Queda(n) menos de {{MINUTES}} minuto(s). Por favor guarde los cambios que tenga pendientes"
     },
 
+    "catalogo": {
+      "uno": "Catálogo",
+      "crear": "Crear Catálogo",
+      "editar": "Editar Catálogo",
+      "editar_nombre": "Editar Catálogo \"{{NOMBRE}}\"",
+      "desactivar": "Desactivar Catálogo",
+      "lista": "Lista de Catálogos"
+    },
+
     "info": "Información",
     "Detalle":"Detalle",
     "placeholder":"Este Campo es Obligatorio",
     "funcionario":"Funcionario",
     "search": "Buscar",
-    "catalogo": "Catálogo",
     "inactivar_grupos_subgrupos": "Inactivar grupos y subgrupos",
     "inactivar": "Inactivar",
     "inactivar_info": "Esta acción no se puede revertir!",

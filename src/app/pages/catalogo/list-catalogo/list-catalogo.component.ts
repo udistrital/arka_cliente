@@ -18,6 +18,7 @@ export class ListCatalogoComponent implements OnInit {
   cambiotab: boolean[] = [true, false, false];
   config: ToasterConfig;
   settings: any;
+  cargando: boolean = true;
 
   source: LocalDataSource = new LocalDataSource();
 
@@ -27,42 +28,38 @@ export class ListCatalogoComponent implements OnInit {
     private toasterService: ToasterService,
     public router: Router,
   ) {
-    this.loadData();
     this.cargarCampos();
+  }
+
+  ngOnInit() {
+    this.loadData();
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
       this.cargarCampos();
     });
   }
 
   cargarCampos() {
+    const t = {
+      crear: this.translate.instant('GLOBAL.catalogo.crear'),
+      editar: this.translate.instant('GLOBAL.catalogo.editar'),
+      desactivar: this.translate.instant('GLOBAL.catalogo.desactivar'),
+    };
     this.settings = {
       actions: {
         position: 'right',
         columnTitle: this.translate.instant('GLOBAL.Acciones'),
       },
       add: {
-        addButtonContent: '<i class="nb-plus"></i>',
-        createButtonContent: '<i class="nb-checkmark"></i>',
-        cancelButtonContent: '<i class="nb-close"></i>',
+        addButtonContent: '<i class="fas fa-plus" title="' + t.crear + '" aria-label="' + t.crear + '"></i>',
       },
       edit: {
-        editButtonContent: '<i class="nb-edit"></i>',
-        saveButtonContent: '<i class="nb-checkmark"></i>',
-        cancelButtonContent: '<i class="nb-close"></i>',
+        editButtonContent: '<i class="far fa-edit" title="' + t.editar + '" aria-label="' + t.editar + '"></i>',
       },
       delete: {
-        deleteButtonContent: '<i class="nb-trash"></i>',
-        confirmDelete: true,
+        deleteButtonContent: '<i class="fas fa-ban" title="' + t.desactivar + '" aria-label="' + t.desactivar + '"></i>',
       },
       mode: 'external',
       columns: {
-        // Id: {
-        //   title: this.translate.instant('GLOBAL.id'),
-        //   // type: 'number;',
-        //   valuePrepareFunction: (value) => {
-        //     return value;
-        //   },
-        // },
         Nombre: {
           title: this.translate.instant('GLOBAL.nombre'),
           width: '40%',
@@ -79,40 +76,6 @@ export class ListCatalogoComponent implements OnInit {
             return value;
           },
         },
-/*        FechaInicio: {
-          title: this.translate.instant('GLOBAL.fechainicio'),
-          width: '20%',
-          // type: 'Date;',
-          valuePrepareFunction: (value: any) => {
-            const date = value.split('T');
-            return date[0];
-          },
-          filter: {
-            type: 'daterange',
-            config: {
-              daterange: {
-                format: 'yyyy/mm/dd',
-              },
-            },
-          },
-        },
-        FechaFin: {
-          title: this.translate.instant('GLOBAL.fechafin'),
-          width: '20%',
-          // type: 'Date;',
-          valuePrepareFunction: (value: any) => {
-            const date = value.split('T');
-            return date[0];
-          },
-          filter: {
-            type: 'daterange',
-            config: {
-              daterange: {
-                format: 'yyyy/mm/dd',
-              },
-            },
-          },
-        },*/
         Activo: {
           title: this.translate.instant('GLOBAL.activo'),
           width: '10%',
@@ -139,10 +102,8 @@ export class ListCatalogoComponent implements OnInit {
         // console.log(data);
         this.source.load(data);
       }
+      this.cargando = false;
     });
-  }
-
-  ngOnInit() {
   }
 
   onEdit(event): void {
@@ -150,9 +111,8 @@ export class ListCatalogoComponent implements OnInit {
     this.router.navigate(['/pages/catalogo/crud-catalogo'], { state: { example: this.uid}});
   }
 
-  onCreate(event): void {
-    this.uid = 0;
-    this.cambiotab = [false, true, false];
+  onCreate(): void {
+    this.router.navigate(['/pages/catalogo/crud-catalogo']);
   }
 
   onDelete(event): void {
@@ -167,29 +127,14 @@ export class ListCatalogoComponent implements OnInit {
     (Swal as any)(opt)
       .then((willDelete) => {
         if (willDelete.value) {
-
-
-         const catalogo = <Catalogo>event.data;
-         catalogo.Activo = false;
-
-
-
-        this.catalogoElementosService.putCatalogo(catalogo, catalogo.Id).subscribe(res => {
+          const catalogo = <Catalogo>event.data;
+          catalogo.Activo = false;
+          this.catalogoElementosService.putCatalogo(catalogo, catalogo.Id).subscribe(res => {
             if (res !== null) {
               this.loadData();
               this.showToast('info', 'deleted', 'Catalogo deleted');
             }
-        });
-/*
-
-          this.catalogoElementosService.deleteCatalogo(event.data).subscribe(res => {
-
-            if (res !== null) {
-              this.loadData();
-              this.showToast('info', 'deleted', 'Catalogo deleted');
-            }
-          });*/
-
+          });
         }
       });
   }
@@ -231,11 +176,6 @@ export class ListCatalogoComponent implements OnInit {
 
 
     }
-  }
-
-
-  itemselec(event): void {
-    // console.log("afssaf");
   }
 
   private showToast(type: string, title: string, body: string) {

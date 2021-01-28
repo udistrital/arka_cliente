@@ -50,6 +50,7 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
   depreciacion_ok: boolean;
   valorizacion_ok: boolean;
 
+  cargando_catalogos: boolean = true;
 
   constructor(
     private translate: TranslateService,
@@ -62,6 +63,10 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
     });
     this.catalogos = new Array<Catalogo>();
     this.catalogoId = 0;
+    this.Movimientos = [];
+  }
+
+  ngOnInit() {
     this.loadCatalogos();
     this.listService.findPlanCuentasDebito();
     this.listService.findPlanCuentasCredito();
@@ -71,13 +76,9 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
       this.Movimientos_Depreciacion = res.filter((x: any) => x.Descripcion.indexOf('Depreciacion') !== -1);
       this.Movimientos_Valorizacion = res.filter((x: any) => x.Descripcion.indexOf('Valorizacion') !== -1);
       this.all_mov = res.length - 1;
-
     });
-    this.Movimientos = [];
   }
 
-  ngOnInit() {
-  }
   // Se ve si ya tiene cuentas asignadas para mostrarlas en el formulario
   ver3(event) {
     // console.log(event); REVISAR AQUI
@@ -127,6 +128,7 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
             this.catalogos.push(data[datos]);
           }
         }
+        this.cargando_catalogos = false;
       }
     });
   }

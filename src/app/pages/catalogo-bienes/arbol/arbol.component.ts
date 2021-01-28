@@ -1,42 +1,21 @@
 import { Component, OnInit, Input, EventEmitter, Output, OnChanges } from '@angular/core';
 import { NbTreeGridDataSource, NbSortDirection, NbSortRequest, NbTreeGridDataSourceBuilder } from '@nebular/theme';
-import { Observable, combineLatest, from } from 'rxjs';
-import { CuentaContable } from '../../../@core/data/models/catalogo/cuenta_contable';
+import { Observable, combineLatest } from 'rxjs';
 import { PopUpManager } from '../../../managers/popUpManager';
 import { CuentasGrupoTransaccion } from '../../../@core/data/models/catalogo/cuentas_subgrupo';
-import {TipoNivelID} from '../../../@core/data/models/catalogo/tipo_nivel';
-import { SubgrupoTransaccion } from '../../../@core/data/models/catalogo/transacciones';
 import { Subgrupo } from '../../../@core/data/models/catalogo/jerarquia';
 import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/catalogoElementosHelper';
 import { TipoBien } from '../../../@core/data/models/acta_recibido/tipo_bien';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { TipoNivel } from '../../../@core/data/models/catalogo/tipo_nivel';
-import { request } from 'http';
-import { exists } from 'fs';
-import { shiftInitState } from '@angular/core/src/view';
 
 interface TreeNode<T> {
   data: T;
   children?: TreeNode<T>[];
   expanded?: boolean;
 }
-interface TreeNode2<T> {
-  data: T;
-  children?: TreeNode2<T>[];
-  expanded?: boolean;
-}
 
 interface CatalogoArbol {
-  Id: number;
-  Nombre: string;
-  Descripcion: string;
-  FechaCreacion: string;
-  FechaModificacion: string;
-  Activo: boolean;
-  Codigo: string;
-  TipoNivelId: TipoNivel;
-}
-interface CatalogoArbol2 {
   Id: number;
   Nombre: string;
   Descripcion: string;
@@ -55,7 +34,7 @@ interface CatalogoArbol2 {
 export class ArbolComponent implements OnInit, OnChanges {
 
   data: TreeNode<CatalogoArbol>[];
-  data2: TreeNode2<CatalogoArbol2>[];
+  data2: TreeNode<CatalogoArbol>[];
   customColumn = 'Codigo';
   defaultColumns = ['Nombre', 'Descripcion', 'Acciones'];
   allColumns = [this.customColumn, ...this.defaultColumns];
@@ -115,17 +94,18 @@ export class ArbolComponent implements OnInit, OnChanges {
     this.catalogoSeleccionado = 0;
     this.detalle = false;
     this.cuentasContables = new Array<CuentasGrupoTransaccion>();
-  }
 
-  ngOnChanges(changes) {
-    if (this.catalogoId !== this.catalogoSeleccionado) {
-      this.loadTreeCatalogo();
-      this.catalogoSeleccionado = this.catalogoId;
-    }
-    if (changes['updateSignal'] && this.updateSignal) {
+    if (this.updateSignal) {
       this.updateSignal.subscribe(() => {
         this.loadTreeCatalogo();
       });
+    }
+  }
+
+  ngOnChanges(changes) {
+    if (changes.hasOwnProperty('catalogoId')) {
+      this.catalogoSeleccionado = changes.catalogoId.currentValue;
+      this.loadTreeCatalogo();
     }
   }
 
@@ -259,8 +239,8 @@ export class ArbolComponent implements OnInit, OnChanges {
           this.data = res;
           this.aux = res;
           this.dataSource = this.dataSourceBuilder.create(this.data);
-          // this.dataSource.sortService.sort = ()
-          // console.log(this.dataSource)
+        } else {
+          this.dataSource = this.dataSourceBuilder.create([]);
         }
       }
     });
@@ -309,24 +289,5 @@ export class ArbolComponent implements OnInit, OnChanges {
       // this.pUpManager.showErrorAlert('no existen cuentas asociadas a este grupo');
       this.detalle = true;
     });
-  }
-}
-@Component({
-  selector: 'ngx-nb-fs-icon',
-  template: `
-    <nb-tree-grid-row-toggle
-      [expanded]="expanded"
-      *ngIf="isDir(); else fileIcon"
-    >
-    </nb-tree-grid-row-toggle>
-    <ng-template #fileIcon> </ng-template>
-  `,
-})
-export class FsIconAComponent {
-  @Input() kind: string;
-  @Input() expanded: boolean;
-
-  isDir(): boolean {
-    return this.kind === 'dir';
   }
 }

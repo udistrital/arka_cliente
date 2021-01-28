@@ -6,7 +6,7 @@ import { CatalogoBienesRoutingModule, routedComponents } from './catalogo-bienes
 import { CatalogoBienesComponent } from './catalogo-bienes.component';
 import { ConsultaCatalogoComponent } from './consulta-catalogo/consulta-catalogo.component';
 import { NbTreeGridModule } from '@nebular/theme';
-import { ArbolComponent, FsIconAComponent } from './arbol/arbol.component';
+import { ArbolComponent } from './arbol/arbol.component';
 import { TreeModule } from 'angular-tree-component';
 import { RegistroCatalogoComponent } from './registro-catalogo/registro-catalogo.component';
 import { ToasterModule } from 'angular2-toaster';
@@ -17,13 +17,11 @@ import { InactivarGrupoComponent } from './inactivar-grupo/inactivar-grupo.compo
 import { RegistroCuentasCatalogoComponent } from './registro-cuentas-catalogo/registro-cuentas-catalogo.component';
 import { CrudMovimientoComponent } from './crud-movimientos/crud-movimiento.component';
 
-
 @NgModule({
   declarations: [
     CatalogoBienesComponent,
     ConsultaCatalogoComponent,
     ArbolComponent,
-    FsIconAComponent,
     RegistroCatalogoComponent,
     CrudGrupoComponent,
     CrudSubgrupoComponent,
