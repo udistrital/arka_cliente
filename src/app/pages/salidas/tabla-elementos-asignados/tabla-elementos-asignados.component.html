@@ -1,42 +1,59 @@
-<nb-card>
-  <nb-card-header>
+<mat-card>
+  <mat-card-subtitle>
     Registrar Elementos
-  </nb-card-header>
-  <nb-card-body>
+  </mat-card-subtitle>
+  <mat-card-content>
     <mat-tab-group mat-stretch-tabs [selectedIndex]="selected.value" (selectedIndexChange)="selected.setValue($event)">
       <mat-tab>
+        <p></p>
         <ng-template mat-tab-label>
-          Elementos Devolutivos y de Consumo Controlado
+          {{'GLOBAL.entradas.tab_consumo_controlado' | translate}}
         </ng-template>
-        <ng2-smart-table [settings]="settings" [source]="source" (delete)="onDelete($event)"
-          (rowSelect)="itemselec($event)" (edit)="onEdit($event)" (create)="onCreate($event)"
-          (userRowSelect)="onRowSelect($event)">
+        <ng2-smart-table [settings]="settings" [source]="source" (userRowSelect)="onRowSelect($event)">
         </ng2-smart-table>
+        <p></p>
+        <ngx-form-elementos-seleccionados *ngIf="formulario" [Datos]="DatosSeleccionados"
+          (DatosEnviados)="AjustarDatos2($event)"></ngx-form-elementos-seleccionados>
+        <p></p>
+        <mat-card-content>
+          <div class="form-group  col-lg-12">
+            <label>{{'GLOBAL.Acta_Recibido.EdicionActa.Observaciones' | translate}}</label>
+            <div class="input-group">
+              <textarea rows="5" [(ngModel)]="Observaciones"
+                placeholder="Proporciona datos adicionales que no se pueden expresar en el formulario"
+                class="form-control" required></textarea>
+            </div>
+          </div>
+        </mat-card-content>
       </mat-tab>
       <mat-tab>
+        <p></p>
         <ng-template mat-tab-label>
-          Elementos de Consumo
+          {{'GLOBAL.entradas.tab_consumo' | translate}}
         </ng-template>
-        <ng2-smart-table [settings]="settings2" [source]="source2">
+        <ng2-smart-table [settings]="settings2" [source]="source2" (userRowSelect)="onRowSelect2($event)">
         </ng2-smart-table>
+        <ngx-form-elementos-seleccionados *ngIf="AsignarDeConsumo" [Datos]="ConsumoSeleccionados"
+          (DatosEnviados)="AjustarDatosConsumo($event)"></ngx-form-elementos-seleccionados>
+        <p></p>
+        <mat-card-content>
+          <div class="form-group  col-lg-12">
+            <label>{{'GLOBAL.Acta_Recibido.EdicionActa.Observaciones' | translate}}</label>
+            <div class="input-group">
+              <textarea rows="5" [(ngModel)]="ObservacionesConsumo"
+                placeholder="Proporciona datos adicionales que no se pueden expresar en el formulario"
+                class="form-control" required></textarea>
+            </div>
+          </div>
+        </mat-card-content>
       </mat-tab>
     </mat-tab-group>
-    <nb-card>
-      <nb-card-body>
-        <div class="form-group  col-lg-12">
-          <label>{{'GLOBAL.Acta_Recibido.EdicionActa.Observaciones' | translate}}</label>
-          <div class="input-group">
-            <textarea rows="5" [(ngModel)]="Observaciones"
-              placeholder="Proporciona datos adicionales que no se pueden expresar en el formulario"
-              class="form-control" required></textarea>
-          </div>
-        </div>
-      </nb-card-body>
-    </nb-card>
-  </nb-card-body>
-  <nb-card-footer>
-    <button nbButton [disabled]="!bandera2" (click)="onSubmit()" class="float-right">Asignar</button>
-  </nb-card-footer>
-</nb-card>
-<ngx-form-elementos-seleccionados *ngIf="formulario" [Datos]="DatosSeleccionados"
-  (DatosEnviados)="AjustarDatos2($event)"></ngx-form-elementos-seleccionados>
+  </mat-card-content>
+  <p></p>
+</mat-card>
+<mat-card-actions>
+  <button mat-flat-button color="primary" [disabled]="!bandera2" (click)="onSubmit()"
+    class="float-right">{{'GLOBAL.entradas.asignar' | translate}}</button>
+</mat-card-actions>
+<mat-card-content>
+</mat-card-content>

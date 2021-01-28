@@ -373,6 +373,7 @@
     "info": "Información",
     "Detalle": "Detail",
     "placeholder": "This field is mandatory",
+    "funcionario":"Civil servant",
     "search": "Search",
     "catalogo": "Catalogue",
     "inactivar_grupos_subgrupos": "Inactivate groups and subgroups",
@@ -533,7 +534,11 @@
           "nombre": "Use of Parts",
           "descripcion": "Input by Use of Parts"
         }
-      }
+      },
+      "tab_consumo": "Elementos de Consumo",
+      "tab_consumo_controlado": "Elementos Devolutivos y de Consumo Controlado",
+      "asignar": "ASIGN",
+      "asignar_funcionario": "ASIGN TO CIVIL SERVANT"
     },
 
     "registrar_entrada": "Register Entry",
