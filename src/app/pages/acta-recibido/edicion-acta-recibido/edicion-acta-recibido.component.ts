@@ -119,13 +119,20 @@ export class EdicionActaRecibidoComponent implements OnInit {
       Elementos: Permiso.Ninguno,
   };
 
+
   accion: {
     envHabilitado: boolean,
     envTexto: string,
+    envRevisor: string,
+    envRevisorHabilitado: boolean,
   } = {
     envHabilitado: false,
     envTexto: '',
+    envRevisor: '',
+    envRevisorHabilitado: false,
   };
+
+
 
   constructor(
     private translate: TranslateService,
@@ -242,13 +249,19 @@ export class EdicionActaRecibidoComponent implements OnInit {
         .some(est => this.estadoActa === est);
 
     this.accion.envHabilitado = envioProveedor || envioValidar;
-
+    this.accion.envRevisorHabilitado = envioProveedor;
     // Texto del botón según el estado
+
     if (envioProveedor) {
       this.accion.envTexto = this.translate.instant('GLOBAL.Acta_Recibido.EdicionActa.EnviarProveedorButton');
+      this.accion.envRevisor = this.translate.instant('GLOBAL.Acta_Recibido.EdicionActa.EnviarRevisorButton');
     } else if (envioValidar) {
       this.accion.envTexto = this.translate.instant('GLOBAL.Acta_Recibido.EdicionActa.VerificacionButton');
+      this.accion.envRevisorHabilitado = false;
     }
+
+
+
 
   }
 
@@ -343,6 +356,47 @@ export class EdicionActaRecibidoComponent implements OnInit {
     }
   }
 
+  EnviarEmail(cedula: String) {
+
+    let idtercero: any = '';
+    this.Actas_Recibido.getIdDelTercero(cedula).subscribe((res: any) => {
+      if (res == null) {
+        return '';
+      }
+      idtercero = res[0].TerceroId.Id;
+
+      this.Actas_Recibido.getEmailTercero(idtercero).subscribe((restercero: any) => {
+          if (restercero == null) {
+             return '';
+          }
+          const objemail = JSON.parse(restercero[0].Dato);
+          const objetomail = {
+              'to': [objemail.email],
+              'cc': [],
+              'bcc': [],
+              'subject': 'El subject pendiente por definir',
+              'TemplateName': 'invitacion_par_evaluador.html',
+              'TemplateData': {
+                  'Destinatario': 'Nombre docente',
+                  'Remitente': 'Oficina de docencia',
+                  'OtroDato': 'x_x',
+               },
+          };
+          this.Actas_Recibido.sendCorreo(objetomail).subscribe((resemail: any) => {
+              if (resemail == null) {}
+          });
+
+
+
+
+
+
+      });
+
+    });
+
+  }
+
   Cargar_Formularios( transaccion_: TransaccionActaRecibido ) {
     this.Actas_Recibido.getSedeDependencia(transaccion_.ActaRecibido.UbicacionId).subscribe(res => {
       const valor = res[0].EspacioFisicoId.Codigo.substring(0, 4); // Para algunas actas lanza error "Cannot read 'Codigo' of undefined"
@@ -404,7 +458,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
           ],
           Revisor: [
             this.Proveedores.find(proveedor =>
-              proveedor.Id.toString() === transaccion_.ActaRecibido.PersonaAsignada.toString() || { proveedor : 0 }).compuesto,
+              proveedor.Id.toString() === transaccion_.ActaRecibido.PersonaAsignada.toString()).compuesto,
             Validators.required,
           ],
         }),
@@ -662,7 +716,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
   }
 
   // Envío (a proveedor/revisor) o guardado
-  private async onFirstSubmit(siguienteEtapa: boolean = false) {
+  private async onFirstSubmit(siguienteEtapa: boolean = false, enviara: number = 0) {
     if (!siguienteEtapa) {
     const start = async () => {
       await this.asyncForEach(this.fileDocumento, async (file) => {
@@ -713,8 +767,21 @@ export class EdicionActaRecibidoComponent implements OnInit {
           text: this.translate.instant(descripcion, idDescripcion),
         }).then((willDelete) => {
           if (willDelete.value && siguienteEtapa) {
-              // Se usa una redirección "dummy", intermedia. Ver
-              // https://stackoverflow.com/a/49509706/3180052
+              const formularios  = this.firstForm.value;
+              const cedulaprov = formularios.Formulario1.Revisor.split(' ')[0].toString();
+              const cedularev = formularios.Formulario2[0].Proveedor.split(' ')[0].toString();
+              if (enviara === 1) {
+                 this.EnviarEmail(cedulaprov);
+                 this.EnviarEmail(cedularev);
+              }
+              if (enviara === 2) {
+                 this.EnviarEmail(cedularev);
+              }
+
+
+ // const revisor___ = Datos.Revisor.split(' ');
+ // Se usa una redirección "dummy", intermedia. Ver
+ // https://stackoverflow.com/a/49509706/3180052
               this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
                 this.router.navigateByUrl('/pages/acta_recibido/consulta_acta_recibido');
               });
@@ -932,13 +999,21 @@ export class EdicionActaRecibidoComponent implements OnInit {
   }
 
   // Enviar a revisor/proveedor?
-  Revisar_Totales3() {
+  Revisar_Totales3(enviara: number) {
     if (!this.revisorValido()) {
       return;
     }
     const L10n_base = 'GLOBAL.Acta_Recibido.EdicionActa.';
     const codigoL10n_titulo = L10n_base + 'DatosVeridicosTitle';
-    const codigoL10n_desc = L10n_base + ((this.estadoActa === 'Registrada') ? 'DatosVeridicos3' : 'DatosVeridicos2');
+    let codigoL10n_desc = '';
+    if (this.estadoActa !== 'Registrada') {
+       codigoL10n_desc = L10n_base + 'DatosVeridicos2';
+    } else {
+       codigoL10n_desc = L10n_base + ((enviara === 1) ? 'DatosVeridicos3' : 'DatosVeridicos4');
+       const formularios  = this.firstForm.value;
+       const cedulaprov = formularios.Formulario1.Revisor.split(' ')[0].toString();
+       const cedularev = formularios.Formulario2[0].Proveedor.split(' ')[0].toString();
+    }
     (Swal as any).fire({
       title: this.translate.instant(codigoL10n_titulo),
       text: this.translate.instant(codigoL10n_desc),
@@ -950,7 +1025,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
       cancelButtonText: 'No',
     }).then((result) => {
       if (result.value) {
-        this.onFirstSubmit(true);
+        this.onFirstSubmit(true, enviara);
       }
     });
   }

@@ -409,8 +409,6 @@ export class RegistroActaRecibidoComponent implements OnInit {
     Acta_de_Recibido.UbicacionId = parseFloat(Datos.Ubicacion);
     Acta_de_Recibido.Observaciones = '';
     Acta_de_Recibido.PersonaAsignada = this.Proveedores.find(proveedor => proveedor.NumDocumento.toString() === revisor___[0].toString()).Id;
-    console.log("la persona asignada que guarda");
-    console.log(Acta_de_Recibido.PersonaAsignada); 
     return Acta_de_Recibido;
   }
 
