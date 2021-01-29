@@ -1,3 +1,4 @@
+import { Row } from 'ngx-smart-table/lib/data-set/row';
 import { Proveedor } from './../../../@core/data/models/acta_recibido/Proveedor';
 import { Component, OnInit, ViewChild, ElementRef, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import * as XLSX from 'xlsx';
@@ -56,7 +57,8 @@ export class TablaElementosAsignadosComponent implements OnInit {
   entradaId: string;
   Datos_Salida_Consumo: any;
   selected = new FormControl(0);
-
+  estadoShift: boolean;
+  rango: any = null;
   @Input('actaRecibidoId')
   set name(acta_id: number) {
     this.actaRecibidoId = acta_id;
@@ -137,6 +139,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
 
   }
   onRowSelect(event) {
+
     this.DatosSeleccionados = event;
     if (Object.keys(this.DatosSeleccionados.selected).length !== 0) {
       this.formulario = true;
@@ -146,10 +149,35 @@ export class TablaElementosAsignadosComponent implements OnInit {
   }
 
   onRowSelect2(event) {
+    if (this.rango && event.data && event.data.Id === this.rango.Id && event.isSelected === false) {
+      this.rango = null;
+    }
+    if (!event.isSelected) {
+      this.rango = null;
+    }
+    if (event.isSelected === true && event.selected) {
+      const dataFilter = this.source2.getFilteredAndSorted();
+      const dConsumo = dataFilter.__zone_symbol__value.map((row, index) => ({ ...row, ...{ index: index } }));
+      if (!this.estadoShift && !this.rango) {
+        this.rango = dConsumo.filter((data) => (data.Id === event.data.Id))[0];
+
+      } else if (this.estadoShift && this.rango) {
+        const valorFinal = dConsumo.filter((data) => (data.Id === event.data.Id))[0];
+        const asc = this.rango.index < valorFinal.index;
+        dConsumo.filter((dato) => {
+          return (asc ? (dato.index > this.rango.index && dato.index < valorFinal.index) :
+            (dato.index < this.rango.index && dato.index > valorFinal.index));
+        }).map((i: any) => (setTimeout(() => {
+          (<any>(document.getElementsByClassName('ng2-smart-actions ng2-smart-action-multiple-select')[i.index])).click();
+        }, 50)));
+        this.rango = null;
+      }
+    }
+
     this.ConsumoSeleccionados = event;
     if (Object.keys(this.ConsumoSeleccionados.selected).length !== 0) {
       this.AsignarDeConsumo = true;
-    } else { // if (Object.keys(this.DatosSeleccionados.data[0]) === 1)
+    } else {
       this.AsignarDeConsumo = false;
     }
   }
@@ -170,19 +198,6 @@ export class TablaElementosAsignadosComponent implements OnInit {
         add: false,
         delete: false,
         edit: false,
-      },
-      add: {
-        addButtonContent: '<i class="nb-plus"></i>',
-        createButtonContent: '<i class="nb-checkmark"></i>',
-        cancelButtonContent: '<i class="nb-close"></i>',
-      },
-      edit: {
-        editButtonContent: '<i class="fas fa-pencil-alt"></i>',
-        saveButtonContent: '<i class="nb-checkmark"></i>',
-        cancelButtonContent: '<i class="nb-close"></i>',
-      },
-      delete: {
-        deleteButtonContent: '<i class="fas fa-eye"></i>',
       },
       mode: 'external',
       columns: {
@@ -223,8 +238,6 @@ export class TablaElementosAsignadosComponent implements OnInit {
             return value.Nombre;
           },
           filterFunction: (cell?: any, search?: string): boolean => {
-            // console.log(cell);
-            // console.log(search);
             if (Object.keys(cell).length !== 0) {
               if (cell.Nombre.indexOf(search) > -1) {
                 return true;
@@ -465,8 +478,6 @@ export class TablaElementosAsignadosComponent implements OnInit {
             }
           },
           filterFunction: (cell?: any, search?: string): boolean => {
-            // console.log(cell);
-            // console.log(search);
             if (Object.keys(cell).length !== 0) {
               if (cell.Nombre.indexOf(search) > -1) {
                 return true;
@@ -570,7 +581,9 @@ export class TablaElementosAsignadosComponent implements OnInit {
 
     if (this.DatosConsumo !== undefined) {
       // this.Salida_Consumo();
+      // const dConsumo = this.DatosConsumo.map((row, index) => ({...row, ...{ index: index }}));
       this.source2.load(this.DatosConsumo);
+      // console.log(this.source2);
     }
     if (this.Datos !== undefined) {
 
@@ -934,9 +947,17 @@ export class TablaElementosAsignadosComponent implements OnInit {
     });
   }
 
-
   onBack() {
-
   }
+
+  keyDownTablaShift(evento: KeyboardEvent) {
+    this.estadoShift = true;
+  }
+
+  keyUpTabla(evento: KeyboardEvent) {
+    this.estadoShift = evento.shiftKey;
+  }
+
+
 
 }
