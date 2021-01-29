@@ -60,7 +60,7 @@
   <!-- PROVEEDOR -->
   <nb-step [stepControl]="facturaForm" label="{{'GLOBAL.proveedor' | translate}}">
     <form [formGroup]="facturaForm" class="step-container">
-      <div class="row">
+      <div class="row" [nbSpinner]="cargando_proveedores">
         <div class="form-group col-sm">
           <label>{{'GLOBAL.proveedor' | translate}}</label>
           <div class="input-group">

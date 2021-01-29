@@ -3,12 +3,16 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, NavigationExtras } from '@angular/router';
 import { NbStepperComponent } from '@nebular/theme';
 import { Contrato } from '../../../@core/data/models/entrada/contrato';
+import { Proveedor } from '../../../@core/data/models/acta_recibido/Proveedor';
 import { OrdenadorGasto } from '../../../@core/data/models/entrada/ordenador_gasto';
 import { SoporteActaProveedor } from '../../../@core/data/models/acta_recibido/soporte_acta';
 import { Supervisor } from '../../../@core/data/models/entrada/supervisor';
 import { PopUpManager } from '../../../managers/popUpManager';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
 import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
+import { ListService } from '../../../@core/store/services/list.service';
+import { Store } from '@ngrx/store';
+import { IAppState } from '../../../@core/store/app.state';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -33,9 +37,11 @@ export class AprovechamientosComponent implements OnInit {
   proveedor: string;
   fechaFactura: string;
   validar: boolean;
+  cargando_proveedores: boolean = true;
 
   private tipoEntrada: any;
   private formatoTipoMovimiento: any;
+  private Proveedores: Proveedor[];
 
   @ViewChild('stepper') stepper: NbStepperComponent;
 
@@ -47,6 +53,8 @@ export class AprovechamientosComponent implements OnInit {
     private actaRecibidoHelper: ActaRecibidoHelper,
     private pUpManager: PopUpManager,
     private fb: FormBuilder,
+    private listService: ListService,
+    private store: Store<IAppState>,
   ) {
     this.vigenciaSelect = false;
     this.soportes = new Array<SoporteActaProveedor>();
@@ -72,6 +80,20 @@ export class AprovechamientosComponent implements OnInit {
       supervisorCtrl: ['', Validators.required],
     });
     this.getVigencia();
+    this.listService.findProveedores();
+    this.loadLists();
+  }
+
+  private loadLists(){
+    this.store.select(state => state.listProveedores).subscribe(
+      (res) => {
+        if (res.length) {
+          this.Proveedores = <Proveedor[]><any>res[0];
+          this.cargando_proveedores = false;
+          // console.log({proveedores: this.Proveedores});
+        }
+      },
+    );
   }
 
   private getTipoEntrada() {
