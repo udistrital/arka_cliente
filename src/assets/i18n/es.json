@@ -554,7 +554,7 @@
           "nombre": "Intangibles desarrollados",
           "descripcion": "Entrada por Intangibles desarrollados al Interior de los Entes y Entidades"
         },
-        "EEMP": {
+        "EBEMP": {
           "nombre": "Entregados de manera Provisional",
           "descripcion": "Entrada Entregados al Ente o Entidad de manera provisional"
         }

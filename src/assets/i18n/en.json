@@ -554,7 +554,7 @@
           "nombre": "Intangibles developed within the Entities",
           "descripcion": "Intangibles developed within the Entities Input"
         },
-        "EEMP": {
+        "EBEMP": {
           "nombre": "Delivered to the Entity or Entity on a provisional basis",
           "descripcion": "Delivered to the Entity or Entity on a provisional basis Input"
         }
