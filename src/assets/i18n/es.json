@@ -161,7 +161,8 @@
         "Observaciones2":"Proporciona datos adicionales que no se pueden expresar en el formulario (Obligatorio)",
         "DatosVeridicos":"Está seguro que desea guardar los cambios?",
         "DatosVeridicos2":"¿Está seguro que desea enviar el acta a verificación?",
-        "DatosVeridicos3":"¿Está seguro que desea enviar el acta al Proveedor?",
+        "DatosVeridicos3":"¿Está seguro que desea enviar el acta al Proveedor y al revisor?",
+        "DatosVeridicos4":"¿Está seguro que desea enviar el acta al Revisor?",
         "DatosVeridicosTitle":"¿Está seguro?",
         "CargaElementosTitle":"Carga de Elementos",
         "CargaElementos":"Por favor verificar la carga de elementos, valores y totales asociados al soporte antes de generar el registro",
@@ -176,7 +177,8 @@
         "VerificadaNO":"El Acta no ha podido ser enviada a verificación de forma exitosa, intenta más tarde",
         "ProveedorNO":"El Acta no ha podido ser enviada al proveedor de forma exitosa, intenta más tarde",
         "VerificacionButton":"Enviar a Verificación",
-        "EnviarProveedorButton": "Enviar a Proveedor"
+        "EnviarProveedorButton": "Enviar a Proveedor",
+        "EnviarRevisorButton": "Enviar a Revisor"
       },
       "DetalleActa":{
         "Title": "Detalle Acta de Recibido",
