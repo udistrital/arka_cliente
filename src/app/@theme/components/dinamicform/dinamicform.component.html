@@ -337,19 +337,31 @@
 
                         <!-- radio -->
                         <div *ngSwitchCase="'radio'">
-                            <div *ngFor="let item of c.opciones" class="form-check">
-                                <label class="row custom-control custom-radio">
-                                    <input type="radio" checked class="custom-control-input" name="{{c.nombre}}"
-                                        [value]="item" [(ngModel)]="c.valor" [ngModelOptions]="{standalone: true}"
-                                        checked="{{isEqual(item.Id, c.valor.Id)}}" [disabled]="c.deshabilitar">
-                                    <span class="custom-control-indicator">
-                                    </span>
-                                    <span class="custom-control-description">
-                                        {{item.valor}}
-                                    </span>
-                                </label>
-                            </div>
+                            <h6>{{ (c.requerido?'* ':'') + c.label }}</h6>
+                            <nb-radio-group [(ngModel)]="c.valor" [name]="c.nombre">
+                                <nb-radio
+                                *ngFor="let item of c.opciones"
+                                [value]="item.Id" >
+                                    {{ 'GLOBAL.' + item.desc | translate }}
+                                </nb-radio>
+                            </nb-radio-group>
                         </div>
+
+                        <!-- EL SIGUIENTE AÚN NO ESTÁ LISTO!
+                        probar con lo que esta comentado en
+                        pages/catalogo/crud-catalogo -->
+                        <!-- button toggle -->
+                        <label *ngSwitchCase="'toggle'" class="row">
+                            {{ (c.requerido?'* ':'') + c.label }}
+                        </label>
+                        <mat-button-toggle-group *ngSwitchCase="'toggle'" appearance="legacy"
+                        [multiple]="c.multiple" [name]="c.nombre">
+                            <mat-button-toggle *ngFor="let opcion of c.opciones"
+                            [value]="opcion.valor"
+                            [checked]="isEqual(opcion.valor, c.valor)" >
+                                {{ 'GLOBAL.' + opcion.valor_i18n | translate }}
+                            </mat-button-toggle>
+                        </mat-button-toggle-group>
 
                         <!-- date material -->
                         <mat-form-field *ngSwitchCase="'mat-date'" style="width: 100%;" floatLabel="always">

@@ -399,6 +399,7 @@
     "placeholder_codigo_abreviacion": "Abbreviation code",
     "descripcion": "Description",
     "placeholder_descripcion": "description",
+    "inactivo": "Inactive",
     "activo": "Active",
     "placeholder_activo": "active",
     "numero_orden": "numero_orden",

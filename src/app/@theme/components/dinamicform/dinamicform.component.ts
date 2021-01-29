@@ -159,6 +159,7 @@ export class DinamicformComponent implements OnInit, OnChanges {
   }
 
   validCampo(c): boolean {
+    // console.log({c});
     if (c.uppercase) {
       c.valor = c.valor.toUpperCase();
     }
@@ -182,7 +183,7 @@ export class DinamicformComponent implements OnInit, OnChanges {
       }
     }
     if (c.etiqueta === 'radio') {
-      if (c.valor.Id === undefined) {
+      if (c.valor === undefined) {
         c.clase = 'form-control form-control-danger';
         c.alerta = 'Seleccione el campo';
         return false;
@@ -343,6 +344,7 @@ export class DinamicformComponent implements OnInit, OnChanges {
         /// console.log('ok');
 
         if (this.validCampo(d)) {
+          // console.log({sisas: d});
           if (d.etiqueta === 'file') {
             result[d.nombre] = { nombre: d.nombre, file: d.File };
             // result[d.nombre].push({ nombre: d.name, file: d.valor });
@@ -356,6 +358,7 @@ export class DinamicformComponent implements OnInit, OnChanges {
           // console.log(result);
           resueltos = d.requerido ? resueltos + 1 : resueltos;
         } else {
+          // console.log({noclas: d});
           this.data.valid = false;
         }
       } else {
