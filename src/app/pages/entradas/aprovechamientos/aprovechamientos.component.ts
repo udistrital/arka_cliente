@@ -13,6 +13,8 @@ import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
 import { ListService } from '../../../@core/store/services/list.service';
 import { Store } from '@ngrx/store';
 import { IAppState } from '../../../@core/store/app.state';
+import {Observable} from 'rxjs';
+import {map, startWith} from 'rxjs/operators';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -42,6 +44,7 @@ export class AprovechamientosComponent implements OnInit {
   private tipoEntrada: any;
   private formatoTipoMovimiento: any;
   private Proveedores: Proveedor[];
+  proveedoresFiltrados: Observable<Proveedor[]>;
 
   @ViewChild('stepper') stepper: NbStepperComponent;
 
@@ -84,16 +87,33 @@ export class AprovechamientosComponent implements OnInit {
     this.loadLists();
   }
 
+  private filtroProveedores(nombre: string): Proveedor[] {
+    if (nombre.length >= 4 ) {
+      const valorFiltrado = nombre.toLowerCase();
+      return this.Proveedores.filter(prov => prov.compuesto.toLowerCase().includes(valorFiltrado));
+    } else return [];
+  }
+
   private loadLists(){
     this.store.select(state => state.listProveedores).subscribe(
       (res) => {
         if (res.length) {
           this.Proveedores = <Proveedor[]><any>res[0];
+          this.proveedoresFiltrados = this.facturaForm.get('proveedorCtrl').valueChanges
+            .pipe(
+              startWith(''),
+              map(val => typeof val === 'string' ? val : val.compuesto),
+              map(nombre => this.filtroProveedores(nombre))
+            );
           this.cargando_proveedores = false;
           // console.log({proveedores: this.Proveedores});
         }
       },
     );
+  }
+
+  muestraProveedor(prov: Proveedor): string {
+    return prov.compuesto;
   }
 
   private getTipoEntrada() {
