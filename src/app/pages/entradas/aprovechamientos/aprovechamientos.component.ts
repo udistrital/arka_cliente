@@ -94,7 +94,7 @@ export class AprovechamientosComponent implements OnInit {
     } else return [];
   }
 
-  private loadLists(){
+  private loadLists() {
     this.store.select(state => state.listProveedores).subscribe(
       (res) => {
         if (res.length) {
@@ -103,7 +103,7 @@ export class AprovechamientosComponent implements OnInit {
             .pipe(
               startWith(''),
               map(val => typeof val === 'string' ? val : val.compuesto),
-              map(nombre => this.filtroProveedores(nombre))
+              map(nombre => this.filtroProveedores(nombre)),
             );
           this.cargando_proveedores = false;
           // console.log({proveedores: this.Proveedores});
@@ -152,7 +152,9 @@ export class AprovechamientosComponent implements OnInit {
         acta_recibido_id: +this.actaRecibidoId,
         consecutivo: 'P1-' + this.actaRecibidoId + '-' + new Date().getFullYear(),
         documento_contable_id: 1, // REVISAR
-        vigencia_contrato: this.contratoForm.value.vigenciaCtrl,
+        vigencia: this.contratoForm.value.vigenciaCtrl,
+        supervisor: this.supervisorForm.value.supervisorCtrl,
+        proveedor: this.facturaForm.value.proveedorCtrl.compuesto,
       };
       const movimientoAdquisicion = {
         Observacion: this.observacionForm.value.observacionCtrl,
@@ -168,7 +170,6 @@ export class AprovechamientosComponent implements OnInit {
         IdTipoMovimiento: this.tipoEntrada.Id,
       };
       // console.log({movimientoAdquisicion})
-      /*
       this.entradasHelper.postEntrada(movimientoAdquisicion).subscribe((res: any) => {
         if (res !== null) {
           (Swal as any).fire({
@@ -182,7 +183,6 @@ export class AprovechamientosComponent implements OnInit {
           this.pUpManager.showErrorAlert('No es posible hacer el registro.');
         }
       });
-      // */
     } else {
       this.pUpManager.showErrorAlert('No ha llenado todos los campos! No es posible hacer el registro.');
     }
