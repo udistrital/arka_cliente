@@ -26,7 +26,7 @@
                         <textarea *ngSwitchCase="'textarea'" [(ngModel)]="c.valor" (ngModelChange)="validCampo(c)"
                             [ngModelOptions]="{standalone: true}" type="text" id="{{c.nombre}}" class="{{c.clase}}"
                             placeholder="{{c.placeholder}}">
-            </textarea>
+                        </textarea>
 
                         <!-- radio -->
                         <div *ngSwitchCase="'radio'">
@@ -76,8 +76,8 @@
                             </option>
                         </select>
 
-                        <!-- input-file -->dsf
-                        <div *ngSwitchCase="'file'">wrq
+                        <!-- input-file -->
+                        <div *ngSwitchCase="'file'">
                             <label for="{{c.nombre}}" class="upload-file">
                                 add_a_photo
                             </label>
@@ -127,7 +127,7 @@
                     <textarea *ngSwitchCase="'textarea'" [(ngModel)]="c.valor" (ngModelChange)="validCampo(c)"
                         [ngModelOptions]="{standalone: true}" type="text" id="{{c.nombre}}" class="{{c.clase}}"
                         placeholder="{{c.placeholder}}">
-          </textarea>
+                    </textarea>
 
                     <!-- radio -->
                     <div *ngSwitchCase="'radio'">
@@ -216,7 +216,7 @@
                     <textarea *ngSwitchCase="'textarea'" [(ngModel)]="c.valor" (ngModelChange)="validCampo(c)"
                         [ngModelOptions]="{standalone: true}" type="text" id="{{c.nombre}}" class="{{c.clase}}"
                         placeholder="{{c.placeholder}}">
-          </textarea>
+                    </textarea>
 
                     <!-- radio -->
                     <div *ngSwitchCase="'radio'">
@@ -241,7 +241,6 @@
                     </div>
 
                     <!-- date material -->
-
                     <mat-form-field *ngSwitchCase="'mat-date'">
                         <input matInput [matDatepicker]="picker" (dateChange)="onChangeDate($event,c)">
                         <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
@@ -284,7 +283,7 @@
             </div>
         </div>
         <br>
-        <!-- Botones de form con accaión de botones -->
+        <!-- Botones de form con acción de botones -->
         <div align="center">
             <button class="btn btn-success btn-tiny" (click)="validForm()"
                 [hidden]="!normalform.btn">{{normalform.btn}}</button>
@@ -303,12 +302,13 @@
             <div class="row">
                 <div *ngFor="let c of normalform.campos" class="{{c.claseGrid}}" [ngSwitch]="c.etiqueta">
                     <div class=" form-group">
+
                         <!-- input -->
                         <mat-form-field *ngSwitchCase="'input'" style="width: 100%;" class="form-group"
                             floatLabel="always">
                             <mat-label>{{c.requerido?'* '+c.label:c.label}}:</mat-label>
                             <input #input min="1" matInput [(ngModel)]="c.valor" (ngModelChange)="validCampo(c)"
-                                [ngModelOptions]="{standalone: true}" type="{{c.tipo}}" id="{{c.nombre}}" 
+                                [ngModelOptions]="{standalone: true}" type="{{c.tipo}}" id="{{c.nombre}}"
                                 [placeholder]="c.placeholder" [disabled]="c.deshabilitar" maxlength="{{c.maxlength}}"/>
                                 <span matPrefix *ngIf="c.prefix">{{c.prefix.value}}&nbsp;</span>
                                 <span matSuffix *ngIf="c.suffix">&nbsp;{{c.suffix.value}}</span>
@@ -337,19 +337,31 @@
 
                         <!-- radio -->
                         <div *ngSwitchCase="'radio'">
-                            <div *ngFor="let item of c.opciones" class="form-check">
-                                <label class="row custom-control custom-radio">
-                                    <input type="radio" checked class="custom-control-input" name="{{c.nombre}}"
-                                        [value]="item" [(ngModel)]="c.valor" [ngModelOptions]="{standalone: true}"
-                                        checked="{{isEqual(item.Id, c.valor.Id)}}" [disabled]="c.deshabilitar">
-                                    <span class="custom-control-indicator">
-                                    </span>
-                                    <span class="custom-control-description">
-                                        {{item.valor}}
-                                    </span>
-                                </label>
-                            </div>
+                            <h6>{{ (c.requerido?'* ':'') + c.label }}</h6>
+                            <nb-radio-group [(ngModel)]="c.valor" [name]="c.nombre">
+                                <nb-radio
+                                *ngFor="let item of c.opciones"
+                                [value]="item.Id" >
+                                    {{ 'GLOBAL.' + item.desc | translate }}
+                                </nb-radio>
+                            </nb-radio-group>
                         </div>
+
+                        <!-- EL SIGUIENTE AÚN NO ESTÁ LISTO!
+                        probar con lo que esta comentado en
+                        pages/catalogo/crud-catalogo -->
+                        <!-- button toggle -->
+                        <label *ngSwitchCase="'toggle'" class="row">
+                            {{ (c.requerido?'* ':'') + c.label }}
+                        </label>
+                        <mat-button-toggle-group *ngSwitchCase="'toggle'" appearance="legacy"
+                        [multiple]="c.multiple" [name]="c.nombre">
+                            <mat-button-toggle *ngFor="let opcion of c.opciones"
+                            [value]="opcion.valor"
+                            [checked]="isEqual(opcion.valor, c.valor)" >
+                                {{ 'GLOBAL.' + opcion.valor_i18n | translate }}
+                            </mat-button-toggle>
+                        </mat-button-toggle-group>
 
                         <!-- date material -->
                         <mat-form-field *ngSwitchCase="'mat-date'" style="width: 100%;" floatLabel="always">
@@ -457,6 +469,7 @@
                     </div>
                 </div>
             </div>
+            <!-- Botones de form con acción de botones -->
             <div align="right" class="form-group">
                 <button class="btn btn-primary btn-sm" (click)="clearForm()"
                     [hidden]="!normalform.btnLimpiar">{{normalform.btnLimpiar}}</button>
@@ -465,6 +478,5 @@
             </div>
 
         </fieldset>
-        <!-- Botones de form con acción de botones -->
     </form>
 </div>
