@@ -7,6 +7,7 @@ import 'style-loader!angular2-toaster/toaster.css';
 import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/catalogoElementosHelper';
 import { CuentaGrupo, CuentasFormulario } from '../../../@core/data/models/catalogo/cuentas_grupo';
 import { Cuenta } from '../../../@core/data/models/catalogo/cuenta_contable';
+import { TipoMovimientoKronos } from '../../../@core/data/models/movimientos';
 import { Store } from '@ngrx/store';
 import { IAppState } from '../../../@core/store/app.state';
 import { ListService } from '../../../@core/store/services/list.service';
@@ -15,13 +16,32 @@ import {
     NbTreeGridRowComponent,
   } from '@nebular/theme';
 
-
+/**
+ * Mapeo entre:
+ *
+ * movimientos_arka / formato_tipo_movimiento / campo "CodigoAbreviacion"
+ * movimientos (_kronos) / tipo_movimiento / campo "Nombre", con Acronimo:e_arka
+ */
+const MOVIMIENTOS_KRONOS_ARKA = [
+  { arka: 'EA', kronos: 'Adquisición' },
+  { arka: 'EBEMP', kronos: 'Provisional' },
+  { arka: 'ECE', kronos: 'Compras extranjeras' },
+  { arka: 'ECM', kronos: 'Caja menor' },
+  { arka: 'ED', kronos: 'Donación' },
+  { arka: 'EEP', kronos: 'Elaboración Propia' },
+  { arka: 'EIA', kronos: 'Intangibles' },
+  { arka: 'EID', kronos: '' },
+  { arka: 'EPPA', kronos: 'Aprovechamientos' },
+  { arka: 'EPR', kronos: 'Reposición' },
+  { arka: 'ESI', kronos: 'Sobrante' },
+  { arka: 'ET', kronos: 'Terceros' },
+  // { arka: '', kronos:'' }, // PLANTILLA
+];
 @Component({
   selector: 'ngx-crud-movimiento',
   templateUrl: './crud-movimiento.component.html',
   styleUrls: ['./crud-movimiento.component.scss'],
 })
-
 export class CrudMovimientoComponent implements OnInit, OnChanges {
 
   config: ToasterConfig;
@@ -128,11 +148,26 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
     );
   }
 
+  private codigo_movimiento_i18n(mov: TipoMovimientoKronos): string {
+    const tipos = ['Entrada', 'Salida', 'Depreciacion', 'Valorizacion'];
+    const tipo = tipos.find(t => mov.Descripcion.includes(t));
+    switch (tipo) {
+      case 'Entrada':
+        // TODO: Quitar este switch/case y refactorizar el
+        // segmento I18n GLOBAL.entradas para que pase a llamarse
+        // GLOBAL.movimientos
+        // Debería ser suficiente esta línea:
+        return 'entradas.tipo.' + MOVIMIENTOS_KRONOS_ARKA.find(m => mov.Nombre === m.kronos).arka + '.nombre';
+      default:
+        return mov.Nombre;
+    }
+  }
+
   construirForm() {
     if (this.movimiento_id !== undefined) {
 
       // this.formulario.normalform = {...this.formulario.normalform, ...{ titulo: this.translate.instant('GLOBAL.' + this.movimiento_id)}} ;
-      this.formMovimiento.titulo = this.translate.instant('GLOBAL.' + this.movimiento_id.Nombre);
+      this.formMovimiento.titulo = this.translate.instant('GLOBAL.' + this.codigo_movimiento_i18n(this.movimiento_id));
       // this.formMovimiento.btn = this.translate.instant('GLOBAL.guardar');
       for (let i = 0; i < this.formMovimiento.campos.length; i++) {
         this.formMovimiento.campos[i].label = this.translate.instant('GLOBAL.' + this.formMovimiento.campos[i].label_i18n);
