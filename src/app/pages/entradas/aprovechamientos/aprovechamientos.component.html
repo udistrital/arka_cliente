@@ -1,9 +1,8 @@
 <!-- FORMULARIO -->
 <nb-stepper #stepper orientation="horizontal">
 
-  <!-- DATOS DE CONTRATO -->
-  <nb-step [stepControl]="contratoForm" label="{{'GLOBAL.contrato' | translate}}">
-    <h5>{{'GLOBAL.datos_contrato' | translate}}</h5>
+  <!-- VIGENCIA -->
+  <nb-step [stepControl]="contratoForm" label="{{'GLOBAL.vigencia' | translate}}">
     <form [formGroup]="contratoForm" class="step-container">
       <div class="row">
         <div class="form-group col-sm">
@@ -58,10 +57,9 @@
     </form>
   </nb-step>
 
-  <!-- FACTURA -->
-  <nb-step [stepControl]="facturaForm" label="{{'GLOBAL.factura' | translate}}">
+  <!-- PROVEEDOR -->
+  <nb-step [stepControl]="facturaForm" label="{{'GLOBAL.proveedor' | translate}}">
     <form [formGroup]="facturaForm" class="step-container">
-      <h5>{{'GLOBAL.factura' | translate}}</h5>
       <div class="row">
         <div class="form-group col-sm">
           <label>{{'GLOBAL.proveedor' | translate}}</label>
