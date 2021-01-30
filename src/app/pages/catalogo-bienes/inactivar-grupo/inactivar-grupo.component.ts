@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Catalogo } from '../../../@core/data/models/catalogo/catalogo';
 import { FORM_INACTIVAR } from './form-inactivar';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
@@ -23,8 +23,6 @@ export class InactivarGrupoComponent implements OnInit {
 
   catalogos: Array<Catalogo>;
   catalogoId: number;
-
-  @Output() eventChange = new EventEmitter();
 
   constructor(private catalogoBienesHelper: CatalogoElementosHelper,
     private translate: TranslateService, private pUpManager: PopUpManager, private router: Router) { }

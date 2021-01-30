@@ -133,11 +133,8 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
     });
   }
 
-  recargarCatalogo(event) {
-    // console.log(event);
+  recargarCatalogo() {
     this.eventChange.emit(true);
-
-
   }
 
   onChange(catalogo) {
@@ -225,7 +222,7 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
           this.catalogoElementosService.putTransaccionCuentasSubgrupo(mov, this.uid_1.Id)
             .subscribe(res => {
               // console.log(res);
-              this.eventChange.emit(true);
+              this.recargarCatalogo();
               this.Movimientos = [];
               this.showToast(
                 'info',
@@ -256,7 +253,7 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
           this.catalogoElementosService.postTransaccionCuentasSubgrupo(mov)
             .subscribe(res => {
               // console.log(res);
-              this.eventChange.emit(true);
+              this.recargarCatalogo();
               this.Movimientos = [];
               this.showToast('info', this.translate.instant('GLOBAL.Creado'), this.translate.instant('GLOBAL.Creado_Movimientos_placeholder'));
               setTimeout(() => {

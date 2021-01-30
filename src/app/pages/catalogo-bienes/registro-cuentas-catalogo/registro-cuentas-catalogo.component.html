@@ -31,7 +31,7 @@
             </ng-template>
             <div *ngFor="let tab of Movimientos_Entradas">
               <ngx-crud-movimiento [subgrupo_id]="uid_1" [movimiento_id]="tab" (formulario)="ver3($event)"
-                (eventChange)="recargarCatalogo($event)">
+                (eventChange)="recargarCatalogo()">
               </ngx-crud-movimiento>
             </div>
             <div class="justify-content-center">
@@ -47,7 +47,7 @@
             </ng-template>
             <div *ngFor="let tab of Movimientos_Salidas">
               <ngx-crud-movimiento [subgrupo_id]="uid_1" [movimiento_id]="tab" (formulario)="ver3($event)"
-                (eventChange)="recargarCatalogo($event)">
+                (eventChange)="recargarCatalogo()">
               </ngx-crud-movimiento>
               <div class="justify-content-center">
                 <button nbButton
@@ -63,7 +63,7 @@
             </ng-template>
             <div *ngFor="let tab of Movimientos_Depreciacion">
               <ngx-crud-movimiento [subgrupo_id]="uid_1" [movimiento_id]="tab" (formulario)="ver3($event)"
-                (eventChange)="recargarCatalogo($event)">
+                (eventChange)="recargarCatalogo()">
               </ngx-crud-movimiento>
             </div>
             <div class="justify-content-center">
@@ -79,7 +79,7 @@
             </ng-template>
             <div *ngFor="let tab of Movimientos_Valorizacion">
               <ngx-crud-movimiento [subgrupo_id]="uid_1" [movimiento_id]="tab" (formulario)="ver3($event)"
-                (eventChange)="recargarCatalogo($event)">
+                (eventChange)="recargarCatalogo()">
               </ngx-crud-movimiento>
             </div>
             <div class="justify-content-center">

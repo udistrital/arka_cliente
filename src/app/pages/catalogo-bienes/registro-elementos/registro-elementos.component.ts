@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/catalogoElementosHelper';
 import { ToasterService } from 'angular2-toaster';
@@ -14,8 +14,6 @@ import { Subgrupo } from '../../../@core/data/models/catalogo/jerarquia';
   styleUrls: ['./registro-elementos.component.scss'],
 })
 export class RegistroElementosComponent implements OnInit {
-
-  @Output() eventChange = new EventEmitter();
 
   formElemento: any;
   info_elemento: Elemento;
@@ -114,6 +112,5 @@ export class RegistroElementosComponent implements OnInit {
     this.clean = !this.clean;
     this.info_elemento = undefined;
   }
-
 
 }

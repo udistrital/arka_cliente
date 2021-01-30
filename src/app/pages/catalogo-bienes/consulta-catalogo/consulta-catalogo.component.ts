@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Catalogo } from '../../../@core/data/models/catalogo/catalogo';
 import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/catalogoElementosHelper';
 
@@ -12,8 +12,6 @@ export class ConsultaCatalogoComponent implements OnInit {
   catalogos: Array<Catalogo>;
   catalogoId: number;
   cargando_catalogos: boolean = true;
-
-  @Output() eventChange = new EventEmitter();
 
   constructor(private catalogoHelper: CatalogoElementosHelper) {
     this.catalogos = new Array<Catalogo>();
