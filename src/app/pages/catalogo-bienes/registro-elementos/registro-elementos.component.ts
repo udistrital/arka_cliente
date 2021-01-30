@@ -7,6 +7,7 @@ import { Catalogo } from '../../../@core/data/models/catalogo/catalogo';
 import { FORM_ELEMENTO } from './form-elemento';
 import { Elemento } from '../../../@core/data/models/catalogo/elemento';
 import { Subgrupo } from '../../../@core/data/models/catalogo/jerarquia';
+import { Nivel_t } from '../../../@core/data/models/catalogo/tipo_nivel';
 
 @Component({
   selector: 'ngx-registro-elementos',
@@ -70,8 +71,10 @@ export class RegistroElementosComponent implements OnInit {
   }
 
   receiveMessage(event) {
-    this.catalogoElementosService.getSubgrupoById(event.Id).subscribe(
-      res => {
+    if (event.hasOwnProperty('TipoNivelId')
+    && event.TipoNivelId.hasOwnProperty('Id')
+    && event.TipoNivelId.Id === Nivel_t.Clase ) {
+      this.catalogoElementosService.getSubgrupoById(event.Id).subscribe(res => {
         // console.log(res[0]);
         if (Object.keys(res[0]).length !== 0) {
           this.subgrupo = event;
@@ -80,6 +83,7 @@ export class RegistroElementosComponent implements OnInit {
           this.ver_formulario = false;
         }
       });
+    } else this.ver_formulario = false;
   }
 
   validarForm(event) {
