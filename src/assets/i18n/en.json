@@ -381,7 +381,8 @@
       "lista": "Catalogue List"
     },
 
-    "info": "Información",
+    "info": "Information",
+    "info_adicional": "Additional Information",
     "Detalle": "Detail",
     "placeholder": "This field is mandatory",
     "funcionario":"Civil servant",

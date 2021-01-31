@@ -1,4 +1,4 @@
-<div *ngIf="!detalle" [nbSpinner]="!mostrar">
+<div [nbSpinner]="!mostrar">
     <label class="search-label" for="search">{{'GLOBAL.search' | translate}}:</label>
     <input nbInput [(ngModel)]="stringBusqueda" (ngModelChange)="filterSearch()" id="search" class="search-input">
     <!-- <input nbInput [nbFilterInput]="dataSource" id="search" class="search-input"> -->
@@ -41,8 +41,9 @@
                     {{ row.data[column].Nombre || '-' }}</span>
 
                 <!-- Acciones -->
-                <span *ngIf="column === 'Acciones'" class="fas fa-info-circle fa-2x" title="Ver"
-                (click)="getDetalle(row.data)"></span>
+                <span *ngIf="column === 'Acciones'" class="fas fa-info-circle fa-2x"
+                [nbPopover]="'GLOBAL.info_adicional' | translate" nbPopoverTrigger="hover"
+                (click)="getDetalle(row.data, dialogoDetalle)"></span>
             </td>
         </ng-container>
 
@@ -50,9 +51,12 @@
 
 </div>
 
-<div *ngIf="detalle">
-
+<ng-template #dialogoDetalle let-ref="dialogRef">
+    <nb-card>
+        <nb-card-header>
     <h2>Detalle</h2>
+        </nb-card-header>
+        <nb-card-body [nbSpinner]="!detalle">
     <p class="font-weight-bold text-uppercase pt-4 pb-4">Grupo:
         <span class="font-weight-normal">{{ grupoSeleccionado.Nombre }}</span></p>
 
@@ -90,11 +94,11 @@
             </div>
         </div>
     </div>
-
-    <div class="pt-4">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="volver()"
+        </nb-card-body>
+        <nb-card-footer>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="ref.close()"
             *ngIf="detalle">{{'GLOBAL.volver' | translate}}
         </button>
-    </div>
-
-</div>
+        </nb-card-footer>
+    </nb-card>
+</ng-template>

@@ -1,5 +1,5 @@
-import { Component, OnInit, Input, EventEmitter, Output, OnChanges } from '@angular/core';
-import { NbTreeGridDataSource, NbSortDirection, NbSortRequest, NbTreeGridDataSourceBuilder } from '@nebular/theme';
+import { Component, OnInit, Input, EventEmitter, Output, OnChanges, TemplateRef } from '@angular/core';
+import { NbTreeGridDataSource, NbSortDirection, NbSortRequest, NbTreeGridDataSourceBuilder, NbDialogService } from '@nebular/theme';
 import { Observable, combineLatest } from 'rxjs';
 import { PopUpManager } from '../../../managers/popUpManager';
 import { CuentasGrupoTransaccion } from '../../../@core/data/models/catalogo/cuentas_subgrupo';
@@ -67,7 +67,9 @@ export class ArbolComponent implements OnInit, OnChanges {
     private dataSourceBuilder: NbTreeGridDataSourceBuilder<CatalogoArbol>,
     private catalogoHelper: CatalogoElementosHelper,
     private translate: TranslateService,
-    private pUpManager: PopUpManager) {
+    private pUpManager: PopUpManager,
+    private dialogService: NbDialogService,
+  ) {
     this.stringBusqueda = '';
     this.aux = 0;
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
@@ -263,9 +265,12 @@ export class ArbolComponent implements OnInit, OnChanges {
     this.cuentasContables = undefined;
     this.tipos_de_bien = undefined;
     this.elementosSubgrupo = undefined;
-
   }
-  getDetalle(selectedRow) {
+
+  getDetalle(selectedRow, dialog: TemplateRef<any>) {
+    this.detalle = false;
+    this.dialogService.open(dialog);
+
     // console.log(selectedRow);
     this.grupoSeleccionado = selectedRow;
     const observable = combineLatest([
@@ -290,9 +295,14 @@ export class ArbolComponent implements OnInit, OnChanges {
       }
       if (Object.keys(detalle[0]).length !== 0) {
         this.tipos_de_bien = <TipoBien>detalle[0].TipoBienId;
+      } else {
+        this.tipos_de_bien = undefined;
       }
+      console.log({"elementos[0]":elementos[0]});
       if (Object.keys(elementos[0]).length !== 0) {
         this.elementosSubgrupo = elementos;
+      } else {
+        this.elementosSubgrupo = undefined;
       }
       // this.pUpManager.showErrorAlert('no existen cuentas asociadas a este grupo');
       this.detalle = true;
