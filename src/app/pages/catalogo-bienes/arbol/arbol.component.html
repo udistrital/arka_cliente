@@ -56,7 +56,7 @@
 </div>
 
 <ng-template #dialogoDetalle let-ref="dialogRef">
-    <nb-card>
+    <nb-card class="dialogo">
         <nb-card-header>
     <h2>Detalle</h2>
         </nb-card-header>
@@ -100,8 +100,8 @@
     </div>
         </nb-card-body>
         <nb-card-footer>
-        <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="ref.close()"
-            *ngIf="detalle">{{'GLOBAL.volver' | translate}}
+        <button type="button" class="btn btn-secondary float-right" data-dismiss="modal" (click)="ref.close()"
+            *ngIf="detalle">{{'GLOBAL.cerrar' | translate}}
         </button>
         </nb-card-footer>
     </nb-card>
