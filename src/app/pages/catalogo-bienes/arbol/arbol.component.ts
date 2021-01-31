@@ -250,6 +250,14 @@ export class ArbolComponent implements OnInit, OnChanges {
     this.subgrupo.emit(selectedRow);
   }
 
+  /**
+   * Usar únicamente para depurar!
+   * Por ejemplo, dentro de una etiqueta 'pre'
+  */
+  imprime(t: any): string{
+    return JSON.stringify(t, undefined, 2);
+  }
+
   volver() {
     this.detalle = false;
     this.cuentasContables = undefined;
