@@ -55,8 +55,7 @@ export class ArbolComponent implements OnInit, OnChanges {
   @Input() catalogoId: number;
   @Input() updateSignal: Observable<string[]>;
   @Input() acciones: boolean = false;
-  @Output() grupo = new EventEmitter<CatalogoArbol>();
-  @Output() subgrupo = new EventEmitter<CatalogoArbol>();
+  @Output() fila = new EventEmitter<CatalogoArbol>();
   tipos_de_bien: TipoBien;
   elementosSubgrupo: TipoBien;
   customColumn2: any;
@@ -235,9 +234,6 @@ export class ArbolComponent implements OnInit, OnChanges {
     return minWithForMultipleColumns + (nextColumnStep * index);
   }
 
-  getSelectedRow2(selectedRow) {
-    this.grupo.emit(selectedRow);
-  }
   loadTreeCatalogo() {
     this.mostrar = false;
     this.catalogoHelper.getArbolCatalogo(this.catalogoId).subscribe((res) => {
@@ -255,7 +251,7 @@ export class ArbolComponent implements OnInit, OnChanges {
   }
 
   getSelectedRow(selectedRow) {
-    this.subgrupo.emit(selectedRow);
+    this.fila.emit(selectedRow);
   }
 
   /**
