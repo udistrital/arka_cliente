@@ -10,7 +10,9 @@
 
         <ng-container [nbTreeGridColumnDef]="customColumn">
             <th nbTreeGridHeaderCell [nbSortHeader]="getSortDirection(customColumn)" *nbTreeGridHeaderCellDef>
-                {{ customColumn2 }}
+                {{ customColumn2 }}&nbsp;
+                <span *nbSortHeaderIcon="let asc = isAscending; let desc = isDescending"
+                [class]="'fas ' + (asc ? 'fa-sort-up' :(desc ? 'fa-sort-down' :'fa-sort'))"></span>
             </th>
             <td nbTreeGridCell *nbTreeGridCellDef="let row">
                 <button nbTreeGridRowToggle *ngIf="row.hasChildren()"
@@ -25,7 +27,9 @@
         <ng-container *ngFor="let column of defaultColumns; let index = index" [nbTreeGridColumnDef]="column"
             [showOn]="getShowOn(index)">
             <th nbTreeGridHeaderCell [nbSortHeader]="getSortDirection(column)" *nbTreeGridHeaderCellDef>
-                {{ defaultColumns2[index] }}
+                {{ defaultColumns2[index] }}&nbsp;
+                <span *nbSortHeaderIcon="let asc = isAscending; let desc = isDescending"
+                [class]="'fas ' + (asc ? 'fa-sort-up' :(desc ? 'fa-sort-down' :'fa-sort'))"></span>
             </th>
             <td nbTreeGridCell *nbTreeGridCellDef="let row" class="text-uppercase">
                 <!-- PARA DEPURACIÓN - Descomentar alguna de las dos siguientes -->
