@@ -37,7 +37,7 @@ export class ArbolComponent implements OnInit, OnChanges {
   data2: TreeNode<CatalogoArbol>[];
   customColumn = 'Codigo';
   defaultColumns = ['Nombre', 'Descripcion', 'Acciones'];
-  allColumns = [this.customColumn, ...this.defaultColumns];
+  allColumns: string[];
   stringBusqueda: any;
   mostrar: boolean = false;
 
@@ -72,6 +72,10 @@ export class ArbolComponent implements OnInit, OnChanges {
   ) {
     this.stringBusqueda = '';
     this.aux = 0;
+  }
+
+  ngOnInit() {
+    this.allColumns = [this.customColumn, ...this.defaultColumns];
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
       this.construirForm();
     });
@@ -81,6 +85,15 @@ export class ArbolComponent implements OnInit, OnChanges {
       this.Movimientos = res;
 
     });
+    this.catalogoSeleccionado = 0;
+    this.detalle = false;
+    this.cuentasContables = new Array<CuentasGrupoTransaccion>();
+
+    if (this.updateSignal) {
+      this.updateSignal.subscribe(() => {
+        this.loadTreeCatalogo();
+      });
+    }
   }
 
   construirForm() {
@@ -91,17 +104,6 @@ export class ArbolComponent implements OnInit, OnChanges {
       this.translate.instant('GLOBAL.Acciones'),
     ];
     this.allColumns2 = [this.customColumn, ...this.defaultColumns];
-  }
-  ngOnInit() {
-    this.catalogoSeleccionado = 0;
-    this.detalle = false;
-    this.cuentasContables = new Array<CuentasGrupoTransaccion>();
-
-    if (this.updateSignal) {
-      this.updateSignal.subscribe(() => {
-        this.loadTreeCatalogo();
-      });
-    }
   }
 
   ngOnChanges(changes) {
@@ -256,7 +258,7 @@ export class ArbolComponent implements OnInit, OnChanges {
    * Usar únicamente para depurar!
    * Por ejemplo, dentro de una etiqueta 'pre'
   */
-  imprime(t: any): string{
+  imprime(t: any): string {
     return JSON.stringify(t, undefined, 2);
   }
 
@@ -298,7 +300,6 @@ export class ArbolComponent implements OnInit, OnChanges {
       } else {
         this.tipos_de_bien = undefined;
       }
-      console.log({"elementos[0]":elementos[0]});
       if (Object.keys(elementos[0]).length !== 0) {
         this.elementosSubgrupo = elementos;
       } else {
