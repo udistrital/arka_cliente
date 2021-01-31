@@ -13,11 +13,12 @@
                 {{ customColumn2 }}
             </th>
             <td nbTreeGridCell *nbTreeGridCellDef="let row">
-                <span [ngClass]="{
-              'nb-chevron-down': row.expanded,
-              'nb-chevron-right': !row.expanded
-            }" aria-hidden="true">
-                </span>{{ row.data[customColumn] }}
+                <button nbTreeGridRowToggle *ngIf="row.hasChildren()"
+                [nbPopover]="'GLOBAL.' + (row.expanded ? 'colapsar' : 'expandir') | translate" nbPopoverTrigger="hover" nbPopoverPlacement="left"
+                [attr.aria-label]="'GLOBAL.' + (row.expanded ? 'colapsar' : 'expandir') | translate">
+                    <span [class]="'fas ' + (row.expanded ? 'fa-chevron-down' : 'fa-chevron-right')" aria-hidden="true"></span>
+                </button>
+                {{ row.data[customColumn] }}
             </td>
         </ng-container>
 
