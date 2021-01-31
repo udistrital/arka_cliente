@@ -36,7 +36,7 @@ export class ArbolComponent implements OnInit, OnChanges {
   data: TreeNode<CatalogoArbol>[];
   data2: TreeNode<CatalogoArbol>[];
   customColumn = 'Codigo';
-  defaultColumns = ['Nombre', 'Descripcion', 'Acciones'];
+  defaultColumns = ['Nombre', 'Descripcion'];
   allColumns: string[];
   stringBusqueda: any;
   mostrar: boolean = false;
@@ -54,6 +54,7 @@ export class ArbolComponent implements OnInit, OnChanges {
 
   @Input() catalogoId: number;
   @Input() updateSignal: Observable<string[]>;
+  @Input() acciones: boolean = false;
   @Output() grupo = new EventEmitter<CatalogoArbol>();
   @Output() subgrupo = new EventEmitter<CatalogoArbol>();
   tipos_de_bien: TipoBien;
@@ -75,6 +76,9 @@ export class ArbolComponent implements OnInit, OnChanges {
   }
 
   ngOnInit() {
+    if (this.acciones) {
+      this.defaultColumns.push('Acciones');
+    }
     this.allColumns = [this.customColumn, ...this.defaultColumns];
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
       this.construirForm();
