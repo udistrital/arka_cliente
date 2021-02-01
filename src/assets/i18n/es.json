@@ -161,7 +161,8 @@
         "Observaciones2":"Proporciona datos adicionales que no se pueden expresar en el formulario (Obligatorio)",
         "DatosVeridicos":"Está seguro que desea guardar los cambios?",
         "DatosVeridicos2":"¿Está seguro que desea enviar el acta a verificación?",
-        "DatosVeridicos3":"¿Está seguro que desea enviar el acta al Proveedor?",
+        "DatosVeridicos3":"¿Está seguro que desea enviar el acta al Proveedor y al revisor?",
+        "DatosVeridicos4":"¿Está seguro que desea enviar el acta al Revisor?",
         "DatosVeridicosTitle":"¿Está seguro?",
         "CargaElementosTitle":"Carga de Elementos",
         "CargaElementos":"Por favor verificar la carga de elementos, valores y totales asociados al soporte antes de generar el registro",
@@ -176,7 +177,8 @@
         "VerificadaNO":"El Acta no ha podido ser enviada a verificación de forma exitosa, intenta más tarde",
         "ProveedorNO":"El Acta no ha podido ser enviada al proveedor de forma exitosa, intenta más tarde",
         "VerificacionButton":"Enviar a Verificación",
-        "EnviarProveedorButton": "Enviar a Proveedor"
+        "EnviarProveedorButton": "Enviar a Proveedor",
+        "EnviarRevisorButton": "Enviar a Revisor"
       },
       "DetalleActa":{
         "Title": "Detalle Acta de Recibido",
@@ -370,11 +372,20 @@
       "t_restante_alerta": "Queda(n) menos de {{MINUTES}} minuto(s). Por favor guarde los cambios que tenga pendientes"
     },
 
+    "catalogo": {
+      "uno": "Catálogo",
+      "crear": "Crear Catálogo",
+      "editar": "Editar Catálogo",
+      "editar_nombre": "Editar Catálogo \"{{NOMBRE}}\"",
+      "desactivar": "Desactivar Catálogo",
+      "lista": "Lista de Catálogos"
+    },
+
     "info": "Información",
     "Detalle":"Detalle",
     "placeholder":"Este Campo es Obligatorio",
+    "funcionario":"Funcionario",
     "search": "Buscar",
-    "catalogo": "Catálogo",
     "inactivar_grupos_subgrupos": "Inactivar grupos y subgrupos",
     "inactivar": "Inactivar",
     "inactivar_info": "Esta acción no se puede revertir!",
@@ -390,6 +401,7 @@
     "placeholder_codigo_abreviacion": "codigo_abreviacion",
     "descripcion": "Descripción",
     "placeholder_descripcion": "descripción",
+    "inactivo": "Inactivo",
     "activo": "Activo",
     "placeholder_activo": "activo",
     "numero_orden": "numero_orden",
@@ -525,6 +537,14 @@
           "nombre": "Caja menor",
           "descripcion": "Entrada por Adquisición por Caja Menor"
         },
+        "EAM": {
+          "nombre": "Adiciones y mejoras",
+          "descripcion": "Entrada por Adiciones y mejoras"
+        },
+        "EIA": {
+          "nombre": "Intangibles adquiridos",
+          "descripcion": "Entrada por Intangibles adquiridos "
+        },
         "ECE": {
           "nombre": "Compras extranjeras",
           "descripcion": "Entrada por Compra en el Extranjero"
@@ -532,8 +552,20 @@
         "EPPA": {
           "nombre": "Aprovechamiento de Partes",
           "descripcion": "Entrada de partes por aprovechamiento"
+        },
+        "EID": {
+          "nombre": "Intangibles desarrollados",
+          "descripcion": "Entrada por Intangibles desarrollados al Interior de los Entes y Entidades"
+        },
+        "EBEMP": {
+          "nombre": "Entregados de manera Provisional",
+          "descripcion": "Entrada Entregados al Ente o Entidad de manera provisional"
         }
-      }
+      },
+      "tab_consumo": "Elementos de Consumo",
+      "tab_consumo_controlado": "Elementos Devolutivos y de Consumo Controlado",
+      "asignar": "ASIGNAR",
+      "asignar_funcionario": "ASIGNAR A FUNCIONARIO"
     },
 
     "registrar_entrada": "Registrar Entrada",

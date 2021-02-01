@@ -409,7 +409,6 @@ export class RegistroActaRecibidoComponent implements OnInit {
     Acta_de_Recibido.UbicacionId = parseFloat(Datos.Ubicacion);
     Acta_de_Recibido.Observaciones = '';
     Acta_de_Recibido.PersonaAsignada = this.Proveedores.find(proveedor => proveedor.NumDocumento.toString() === revisor___[0].toString()).Id;
-
     return Acta_de_Recibido;
   }
 

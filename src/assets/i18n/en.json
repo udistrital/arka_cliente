@@ -161,7 +161,8 @@
         "Observaciones2": "Proporciona datos adicionales que no se pueden expresar en el formulario (Obligatorio)",
         "DatosVeridicos": "Are you sure do you want to save the data?",
         "DatosVeridicos2": "Are you sure do you want to send the data to verificate?",
-        "DatosVeridicos3":"Are you sure to Send the data to Supplier?",
+        "DatosVeridicos3":"Are you sure to Send the data to Supplier and te Reviewer?",
+        "DatosVeridicos4":"Are you sure to Send the data to Reviewer?",
         "DatosVeridicosTitle": "Are You Sure?",
         "CargaElementosTitle": "Elements Load",
         "CargaElementos": "Please verify the load of elements, values ​​and totals associated with the support before generating the record",
@@ -176,7 +177,8 @@
         "VerificadaNO": "The Certificate hasn't been succesfully sent to verify. Try again later",
         "ProveedorNO":"The Act has NOT been sent to supplier. Try again later",
         "VerificacionButton": "Send to Verification",
-        "EnviarProveedorButton": "Send to Supplier"
+        "EnviarProveedorButton": "Send to Supplier",
+        "EnviarRevisorButton": "Send to Reviewer"
       },
       "DetalleActa": {
         "Title": "Receipt Certificate Detail",
@@ -370,11 +372,20 @@
       "t_restante_alerta": "Less than {{MINUTES}} minute(s) left. Please save your pending work"
     },
 
+    "catalogo": {
+      "uno": "Catalogue",
+      "crear": "Create Catalogue",
+      "editar": "Edit Catalogue",
+      "editar_nombre": "Edit Catalogue \"{{NOMBRE}}\"",
+      "desactivar": "Disable Catalogue",
+      "lista": "Catalogue List"
+    },
+
     "info": "Información",
     "Detalle": "Detail",
     "placeholder": "This field is mandatory",
+    "funcionario":"Civil servant",
     "search": "Search",
-    "catalogo": "Catalogue",
     "inactivar_grupos_subgrupos": "Inactivate groups and subgroups",
     "inactivar": "Inactivate",
     "inactivar_info": "You won't be able to revert this!",
@@ -390,6 +401,7 @@
     "placeholder_codigo_abreviacion": "Abbreviation code",
     "descripcion": "Description",
     "placeholder_descripcion": "description",
+    "inactivo": "Inactive",
     "activo": "Active",
     "placeholder_activo": "active",
     "numero_orden": "numero_orden",
@@ -525,6 +537,14 @@
           "nombre": "Petty Cash",
           "descripcion": "Petty Cash Input"
         },
+        "EAM": {
+          "nombre": "Additions and improvements",
+          "descripcion": "Additions and improvements Input"
+        },
+        "EIA": {
+          "nombre": "Intangibles acquired",
+          "descripcion": "Intangibles acquired Input"
+        },
         "ECE": {
           "nombre": "Foreign Purchase",
           "descripcion": "Foreign Purchase Input"
@@ -532,8 +552,20 @@
         "EPPA": {
           "nombre": "Use of Parts",
           "descripcion": "Input by Use of Parts"
+        },
+        "EID": {
+          "nombre": "Intangibles developed within the Entities",
+          "descripcion": "Intangibles developed within the Entities Input"
+        },
+        "EBEMP": {
+          "nombre": "Delivered to the Entity or Entity on a provisional basis",
+          "descripcion": "Delivered to the Entity or Entity on a provisional basis Input"
         }
-      }
+      },
+      "tab_consumo": "Elementos de Consumo",
+      "tab_consumo_controlado": "Elementos Devolutivos y de Consumo Controlado",
+      "asignar": "ASIGN",
+      "asignar_funcionario": "ASIGN TO CIVIL SERVANT"
     },
 
     "registrar_entrada": "Register Entry",

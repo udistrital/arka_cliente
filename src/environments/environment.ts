@@ -38,6 +38,9 @@ export const environment = {
   // CATALOGO_ELEMENTOS_SERVICE: 'http://pruebasapi.intranetoas.udistrital.edu.co:8120/v1/',
   // CATALOGO_ELEMENTOS_SERVICE: 'http://10.20.2.143:8087/v1/',
   TERCEROS_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/terceros_crud/v1/',
+  // GOOGLE_SERVICE: 'http://localhost:8080/v1/',
+  GOOGLE_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/google_mid/v1/',
+
   SPAGOBI: {
     PROTOCOL: 'https',
     HOST: 'intelligentia.udistrital.edu.co',

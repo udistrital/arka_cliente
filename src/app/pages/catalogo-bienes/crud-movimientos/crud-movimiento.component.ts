@@ -1,11 +1,8 @@
-import { Catalogo } from '../../../@core/data/models/catalogo/catalogo';
 import { Grupo, Subgrupo } from '../../../@core/data/models/catalogo/jerarquia';
 import { Component, OnInit, Input, Output, EventEmitter, ElementRef, ViewChildren, AfterViewInit, OnChanges } from '@angular/core';
-import { TipoBien } from '../../../@core/data/models/acta_recibido/tipo_bien';
 import { FORM_MOVIMIENTO } from './form-movimiento';
 import { ToasterService, ToasterConfig, Toast, BodyOutputType } from 'angular2-toaster';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
-import Swal from 'sweetalert2';
 import 'style-loader!angular2-toaster/toaster.css';
 import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/catalogoElementosHelper';
 import { CuentaGrupo, CuentasFormulario } from '../../../@core/data/models/catalogo/cuentas_grupo';
@@ -13,20 +10,9 @@ import { Cuenta } from '../../../@core/data/models/catalogo/cuenta_contable';
 import { Store } from '@ngrx/store';
 import { IAppState } from '../../../@core/store/app.state';
 import { ListService } from '../../../@core/store/services/list.service';
-import { GrupoTransaccion } from '../../../@core/data/models/catalogo/transacciones';
-import { DinamicformComponent } from '../../../@theme/components';
 import {
-  trigger,
-  state,
-  style,
-  animate,
-  transition } from '@angular/animations';
-import {
-    NbGetters,
     NbSortDirection,
     NbTreeGridRowComponent,
-    NbTreeGridDataSource,
-    NbTreeGridDataSourceBuilder,
   } from '@nebular/theme';
 
 
@@ -71,6 +57,7 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
   formMovimiento: any;
   regMovimiento: any;
   clean: boolean;
+  cargando: boolean = true;
 
   stateHighlight: string = 'initial';
   animationCuenta: string;
@@ -81,7 +68,6 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
   constructor(
     private translate: TranslateService,
     private catalogoElementosService: CatalogoElementosHelper,
-    private toasterService: ToasterService,
     private store: Store<IAppState>,
     private listService: ListService,
   ) {
@@ -155,10 +141,6 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
     }
   }
 
-  useLanguage(language: string) {
-    this.translate.use(language);
-  }
-
   getIndexForm(nombre: String): number {
     for (let index = 0; index < this.formMovimiento.campos.length; index++) {
       const element = this.formMovimiento.campos[index];
@@ -171,6 +153,7 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
   public loadCuentaGrupo(): void {
     if (this.subgrupo_id.Id !== undefined && this.subgrupo_id.Id !== 0) {
       // console.log(this.movimiento_id);
+      this.cargando = true;
       this.catalogoElementosService.getMovimiento(this.subgrupo_id.Id, this.movimiento_id.Id)
         .subscribe(res => {
           // console.log(res);
@@ -197,6 +180,7 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
             this.clean = !this.clean;
             this.respuesta = undefined;
           }
+          this.cargando = false;
           // console.log(this.respuesta)
           // console.log(res[0]);
         });
@@ -210,6 +194,7 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
       cuentasAsociadas.CuentaDebitoId = cuentaDebito;
       this.info_movimiento = cuentasAsociadas;
       this.clean = !this.clean;
+      this.cargando = false;
     }
   }
 

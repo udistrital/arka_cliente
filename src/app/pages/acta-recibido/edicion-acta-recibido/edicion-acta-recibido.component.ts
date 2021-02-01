@@ -47,7 +47,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
   searchStr2: string[];
   searchStr3: string;
   protected dataService: CompleterData;
-  protected dataService2: CompleterData;
+  dataService2: CompleterData;
 
   // Mensajes de error
   errMess: any;
@@ -119,13 +119,20 @@ export class EdicionActaRecibidoComponent implements OnInit {
       Elementos: Permiso.Ninguno,
   };
 
+
   accion: {
     envHabilitado: boolean,
     envTexto: string,
+    envRevisor: string,
+    envRevisorHabilitado: boolean,
   } = {
     envHabilitado: false,
     envTexto: '',
+    envRevisor: '',
+    envRevisorHabilitado: false,
   };
+
+
 
   constructor(
     private translate: TranslateService,
@@ -242,13 +249,19 @@ export class EdicionActaRecibidoComponent implements OnInit {
         .some(est => this.estadoActa === est);
 
     this.accion.envHabilitado = envioProveedor || envioValidar;
-
+    this.accion.envRevisorHabilitado = envioProveedor;
     // Texto del botón según el estado
+
     if (envioProveedor) {
       this.accion.envTexto = this.translate.instant('GLOBAL.Acta_Recibido.EdicionActa.EnviarProveedorButton');
+      this.accion.envRevisor = this.translate.instant('GLOBAL.Acta_Recibido.EdicionActa.EnviarRevisorButton');
     } else if (envioValidar) {
       this.accion.envTexto = this.translate.instant('GLOBAL.Acta_Recibido.EdicionActa.VerificacionButton');
+      this.accion.envRevisorHabilitado = false;
     }
+
+
+
 
   }
 
@@ -343,6 +356,47 @@ export class EdicionActaRecibidoComponent implements OnInit {
     }
   }
 
+  EnviarEmail(cedula: String) {
+
+    let idtercero: any = '';
+    this.Actas_Recibido.getIdDelTercero(cedula).subscribe((res: any) => {
+      if (res == null) {
+        return '';
+      }
+      idtercero = res[0].TerceroId.Id;
+
+      this.Actas_Recibido.getEmailTercero(idtercero).subscribe((restercero: any) => {
+          if (restercero == null) {
+             return '';
+          }
+          const objemail = JSON.parse(restercero[0].Dato);
+          const objetomail = {
+              'to': [objemail.email],
+              'cc': [],
+              'bcc': [],
+              'subject': 'El subject pendiente por definir',
+              'TemplateName': 'invitacion_par_evaluador.html',
+              'TemplateData': {
+                  'Destinatario': 'Nombre docente',
+                  'Remitente': 'Oficina de docencia',
+                  'OtroDato': 'x_x',
+               },
+          };
+          this.Actas_Recibido.sendCorreo(objetomail).subscribe((resemail: any) => {
+              if (resemail == null) {}
+          });
+
+
+
+
+
+
+      });
+
+    });
+
+  }
+
   Cargar_Formularios( transaccion_: TransaccionActaRecibido ) {
     this.Actas_Recibido.getSedeDependencia(transaccion_.ActaRecibido.UbicacionId).subscribe(res => {
       const valor = res[0].EspacioFisicoId.Codigo.substring(0, 4); // Para algunas actas lanza error "Cannot read 'Codigo' of undefined"
@@ -404,7 +458,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
           ],
           Revisor: [
             this.Proveedores.find(proveedor =>
-              proveedor.Id.toString() === transaccion_.ActaRecibido.PersonaAsignada.toString() || { proveedor : 0 }).compuesto,
+              proveedor.Id.toString() === transaccion_.ActaRecibido.PersonaAsignada.toString()).compuesto,
             Validators.required,
           ],
         }),
@@ -661,8 +715,9 @@ export class EdicionActaRecibidoComponent implements OnInit {
     });
   }
 
-  // Envío de Guardar Cambios
-  async onFirstSubmit() {
+  // Envío (a proveedor/revisor) o guardado
+  private async onFirstSubmit(siguienteEtapa: boolean = false, enviara: number = 0) {
+    if (!siguienteEtapa) {
     const start = async () => {
       await this.asyncForEach(this.fileDocumento, async (file) => {
         await this.postSoporteNuxeo([file]);
@@ -671,81 +726,83 @@ export class EdicionActaRecibidoComponent implements OnInit {
       // console.log('Done');
     };
     await start();
+    }
     this.Datos = this.firstForm.value;
     // console.log(this.Elementos__Soporte);
     // console.log({Datos: this.Datos});
     const Transaccion_Acta = new TransaccionActaRecibido();
     Transaccion_Acta.ActaRecibido = this.Registrar_Acta(this.Datos.Formulario1, this.Datos.Formulario3);
-    Transaccion_Acta.UltimoEstado = this.Registrar_Estado_Acta(Transaccion_Acta.ActaRecibido,
-      this.Estados_Acta.find(estado => estado.Nombre === this.estadoActa).Id, // el nuevo estado es el mismo
-    );
+    let nuevoEstado: EstadoActa_t;
+    if (siguienteEtapa) {
+      nuevoEstado = (this.estadoActa === 'Registrada') ? EstadoActa_t.EnElaboracion : EstadoActa_t.EnVerificacion;
+    } else {
+      nuevoEstado = this.Estados_Acta.find(estado => estado.Nombre === this.estadoActa).Id; // el nuevo estado es el mismo
+    }
+    Transaccion_Acta.UltimoEstado = this.Registrar_Estado_Acta(Transaccion_Acta.ActaRecibido, nuevoEstado);
     const Soportes = new Array<TransaccionSoporteActa>();
     this.Datos.Formulario2.forEach((soporte, index) => {
       Soportes.push(this.Registrar_Soporte(soporte, this.Elementos__Soporte[index], Transaccion_Acta.ActaRecibido));
     });
     Transaccion_Acta.SoportesActa = Soportes;
+
     this.Actas_Recibido.putTransaccionActa(Transaccion_Acta, Transaccion_Acta.ActaRecibido.Id).subscribe((res: any) => {
       // console.log(res);
       if (res !== null) {
+        let titulo, descripcion, idTitulo, idDescripcion;
+        if (siguienteEtapa) {
+          const L10n_base = 'GLOBAL.Acta_Recibido.EdicionActa.';
+          titulo = L10n_base + 'VerificadaTitle2';
+          idTitulo = { id: res.ActaRecibido.Id };
+          descripcion = L10n_base + ((this.estadoActa === 'Registrada') ? 'Verificada3' : 'Verificada2');
+          idDescripcion = { id: res.ActaRecibido.Id };
+        } else {
+          titulo = 'GLOBAL.Acta_Recibido.EdicionActa.ModificadaTitle';
+          idTitulo = {ID: res.ActaRecibido.Id};
+          descripcion = 'GLOBAL.Acta_Recibido.EdicionActa.Modificada2';
+          idDescripcion = {id: res.ActaRecibido.Id};
+        }
         (Swal as any).fire({
           type: 'success',
-          title: this.translate.instant('GLOBAL.Acta_Recibido.EdicionActa.ModificadaTitle', {ID: res.ActaRecibido.Id}),
-          text: this.translate.instant('GLOBAL.Acta_Recibido.EdicionActa.Modificada2', {id: res.ActaRecibido.Id}),
+          title: this.translate.instant(titulo, idTitulo),
+          text: this.translate.instant(descripcion, idDescripcion),
         }).then((willDelete) => {
-          if (willDelete.value) {
-            this.verificar = false;
+          if (willDelete.value && siguienteEtapa) {
+              const formularios  = this.firstForm.value;
+              const cedulaprov = formularios.Formulario1.Revisor.split(' ')[0].toString();
+              const cedularev = formularios.Formulario2[0].Proveedor.split(' ')[0].toString();
+              if (enviara === 1) {
+                 this.EnviarEmail(cedulaprov);
+                 this.EnviarEmail(cedularev);
+              }
+              if (enviara === 2) {
+                 this.EnviarEmail(cedularev);
+              }
+
+
+ // const revisor___ = Datos.Revisor.split(' ');
+ // Se usa una redirección "dummy", intermedia. Ver
+ // https://stackoverflow.com/a/49509706/3180052
+              this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+                this.router.navigateByUrl('/pages/acta_recibido/consulta_acta_recibido');
+              });
           }
         });
       } else {
+        let titulo, mensaje;
+        if (siguienteEtapa) {
+          titulo = 'GLOBAL.Acta_Recibido.EdicionActa.VerificadaTitleNO';
+          mensaje = 'GLOBAL.Acta_Recibido.EdicionActa.VerificadaNO';
+        } else {
+          titulo = 'GLOBAL.Acta_Recibido.EdicionActa.ModificadaTitleNO';
+          mensaje = 'GLOBAL.Acta_Recibido.EdicionActa.ModificadaNO';
+        }
         (Swal as any).fire({
           type: 'error',
-          title: this.translate.instant('GLOBAL.Acta_Recibido.EdicionActa.ModificadaTitleNO'),
-          text: this.translate.instant('GLOBAL.Acta_Recibido.EdicionActa.ModificadaNO'),
+          title: this.translate.instant(titulo),
+          text: this.translate.instant(mensaje),
         });
       }
     });
-  }
-
-  // Envío a siguiente etapa (revisor/proveedor)
-  onFirstSubmit2() {
-    this.Datos = this.firstForm.value;
-    const Transaccion_Acta = new TransaccionActaRecibido();
-    Transaccion_Acta.ActaRecibido = this.Registrar_Acta(this.Datos.Formulario1, this.Datos.Formulario3);
-    Transaccion_Acta.UltimoEstado = this.Registrar_Estado_Acta(Transaccion_Acta.ActaRecibido,
-      (this.estadoActa === 'Registrada') ? EstadoActa_t.EnElaboracion : EstadoActa_t.EnVerificacion);
-    const Soportes = new Array<TransaccionSoporteActa>();
-    this.Datos.Formulario2.forEach((soporte, index) => {
-      Soportes.push(this.Registrar_Soporte(soporte, this.Elementos__Soporte[index], Transaccion_Acta.ActaRecibido));
-    });
-    Transaccion_Acta.SoportesActa = Soportes;
-    const L10n_base = 'GLOBAL.Acta_Recibido.EdicionActa.';
-    const resultadoL10n_titulo = L10n_base + 'VerificadaTitle2';
-    const resultadoL10n_desc = L10n_base + ((this.estadoActa === 'Registrada') ? 'Verificada3' : 'Verificada2');
-
-    this.Actas_Recibido.putTransaccionActa(Transaccion_Acta, Transaccion_Acta.ActaRecibido.Id).subscribe((res: any) => {
-      if (res !== null) {
-        (Swal as any).fire({
-          type: 'success',
-          title: this.translate.instant(resultadoL10n_titulo, { id: res.ActaRecibido.Id }),
-          text: this.translate.instant(resultadoL10n_desc, { id: res.ActaRecibido.Id }),
-        }).then((willDelete) => {
-          if (willDelete.value) {
-            // Se usa una redirección "dummy", intermedia. Ver
-            // https://stackoverflow.com/a/49509706/3180052
-            this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
-              this.router.navigateByUrl('/pages/acta_recibido/consulta_acta_recibido');
-            });
-          }
-        });
-      } else {
-        (Swal as any).fire({
-          type: 'error',
-          title: this.translate.instant('GLOBAL.Acta_Recibido.EdicionActa.VerificadaTitleNO'),
-          text: this.translate.instant('GLOBAL.Acta_Recibido.EdicionActa.VerificadaNO'),
-        });
-      }
-    });
-
   }
 
   Registrar_Acta(Datos: any, Datos2: any): ActaRecibido {
@@ -942,13 +999,21 @@ export class EdicionActaRecibidoComponent implements OnInit {
   }
 
   // Enviar a revisor/proveedor?
-  Revisar_Totales3() {
+  Revisar_Totales3(enviara: number) {
     if (!this.revisorValido()) {
       return;
     }
     const L10n_base = 'GLOBAL.Acta_Recibido.EdicionActa.';
     const codigoL10n_titulo = L10n_base + 'DatosVeridicosTitle';
-    const codigoL10n_desc = L10n_base + ((this.estadoActa === 'Registrada') ? 'DatosVeridicos3' : 'DatosVeridicos2');
+    let codigoL10n_desc = '';
+    if (this.estadoActa !== 'Registrada') {
+       codigoL10n_desc = L10n_base + 'DatosVeridicos2';
+    } else {
+       codigoL10n_desc = L10n_base + ((enviara === 1) ? 'DatosVeridicos3' : 'DatosVeridicos4');
+       const formularios  = this.firstForm.value;
+       const cedulaprov = formularios.Formulario1.Revisor.split(' ')[0].toString();
+       const cedularev = formularios.Formulario2[0].Proveedor.split(' ')[0].toString();
+    }
     (Swal as any).fire({
       title: this.translate.instant(codigoL10n_titulo),
       text: this.translate.instant(codigoL10n_desc),
@@ -960,7 +1025,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
       cancelButtonText: 'No',
     }).then((result) => {
       if (result.value) {
-        this.onFirstSubmit2();
+        this.onFirstSubmit(true, enviara);
       }
     });
   }
