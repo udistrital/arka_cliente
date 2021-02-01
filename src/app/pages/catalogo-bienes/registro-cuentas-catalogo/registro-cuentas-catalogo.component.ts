@@ -34,9 +34,6 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
   subgrupoHijo: Subgrupo;
   uid_1: Subgrupo;
   ModificarGrupo: boolean;
-  uid_2: Subgrupo;
-  uid_3: Subgrupo;
-  uid_4: Subgrupo;
   Movimiento: number;
   Movimientos_Entradas;
   Movimientos_Salidas;
@@ -138,12 +135,12 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
   }
 
   onChange(catalogo) {
+    this.uid_1 = undefined;
     this.catalogoId = catalogo;
   }
 
   QuitarVista() {
     this.uid_1 = undefined;
-    this.uid_2 = undefined;
   }
   receiveMessage(event) {
     if (event.TipoNivelId.Id === Nivel_t.Clase) {
@@ -165,14 +162,12 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
                 this.Total_Movimientos();
                 // console.log(this.all_mov);
                 this.uid_1 = event;
-                this.uid_2 = undefined;
               } else {
                 this.Movimientos = [];
                 this.depreciacion_ok = false;
                 this.valorizacion_ok = false;
                 this.Total_Movimientos();
                 this.uid_1 = event;
-                this.uid_2 = undefined;
                 (Swal as any).fire(opt);
               }
             });
@@ -182,7 +177,6 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
             this.valorizacion_ok = false;
             this.Total_Movimientos();
             this.uid_1 = undefined;
-            this.uid_2 = event;
             (Swal as any).fire(opt);
           }
       });

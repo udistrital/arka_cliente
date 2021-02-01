@@ -67,6 +67,7 @@ export class RegistroElementosComponent implements OnInit {
   }
 
   onChange(catalogo) {
+    this.ver_formulario = false;
     this.catalogoId = catalogo;
   }
 

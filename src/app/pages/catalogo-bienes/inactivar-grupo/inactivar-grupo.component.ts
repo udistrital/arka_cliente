@@ -67,6 +67,7 @@ export class InactivarGrupoComponent implements OnInit {
   }
 
   onChange(catalogo) {
+    this.ver_formulario = false;
     this.catalogoId = catalogo;
   }
 
