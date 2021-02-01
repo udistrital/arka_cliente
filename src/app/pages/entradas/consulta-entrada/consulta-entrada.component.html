@@ -177,6 +177,58 @@
           </div>
         </div>
 
+        <!-- CAJA MENOR -->
+        <div *ngIf="detalle && entradaEspecifica.TipoEntradaId.Nombre === 'Caja menor'" class="row">
+          <div class="col">
+            <p class="text-uppercase"><strong>Ordenador de Gasto:</strong>
+              capturar
+            </p>
+          </div>
+          <div class="col">
+            <p class="text-uppercase"><strong>Cargo:</strong>capturar</p>
+          </div>
+        </div>
+
+        <div *ngIf="detalle && entradaEspecifica.TipoEntradaId.Nombre === 'Caja menor'" class="row">
+          <div class="col">
+            <p class="text-uppercase"><strong>Solicitante:</strong> capturar </p>
+          </div>
+          <div class="col">
+            <p class="text-uppercase"><strong>Cargo:</strong> capturar</p>
+          </div>
+        </div>
+
+        <!-- ADICIONES Y MEJORAS -->
+        <div *ngIf="detalle && entradaEspecifica.TipoEntradaId.Nombre === 'Adiciones y mejoras'" class="row">
+          <div class="col">
+            <p class="text-uppercase"><strong>Contrato N°:</strong> {{ entradaEspecifica.ContratoId }}</p>
+          </div>
+          <div class="col">
+            <p class="text-uppercase"><strong>Tipo Contrato:</strong> {{ contrato.TipoContrato }}</p>
+          </div>
+        </div>
+
+        <div *ngIf="detalle && entradaEspecifica.TipoEntradaId.Nombre === 'Adiciones y mejoras'" class="row">
+          <div class="col">
+            <p class="text-uppercase"><strong>Ordenador de Gasto:</strong>
+              {{ contrato.OrdenadorGasto.NombreOrdenador }}
+            </p>
+          </div>
+          <div class="col">
+            <p class="text-uppercase"><strong>Cargo:</strong> {{ contrato.OrdenadorGasto.RolOrdenadorGasto }}</p>
+          </div>
+        </div>
+
+        <div *ngIf="detalle && entradaEspecifica.TipoEntradaId.Nombre === 'Adiciones y mejoras'" class="row">
+          <div class="col">
+            <p class="text-uppercase"><strong>Supervisor:</strong> {{ contrato.Supervisor.Nombre }}</p>
+          </div>
+          <div class="col">
+            <p class="text-uppercase"><strong>Cargo:</strong> {{ contrato.Supervisor.Cargo }}</p>
+          </div>
+        </div>        
+
+
         <!-- OBSERVACIONES -->
         <div *ngIf="detalle" class=" row">
           <div class="col">
