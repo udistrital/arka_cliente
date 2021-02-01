@@ -165,7 +165,6 @@ export class FormElementosSeleccionadosComponent implements OnInit {
     }
 
   }
-  usarLocalStorage() { }
 
   // MÉTODO PARA BUSCAR PROVEEDORES EXISTENTES
   loadProveedoresElementos(): void {
