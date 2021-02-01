@@ -34,9 +34,6 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
   subgrupoHijo: Subgrupo;
   uid_1: Subgrupo;
   ModificarGrupo: boolean;
-  uid_2: Subgrupo;
-  uid_3: Subgrupo;
-  uid_4: Subgrupo;
   Movimiento: number;
   Movimientos_Entradas;
   Movimientos_Salidas;
@@ -133,22 +130,20 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
     });
   }
 
-  recargarCatalogo(event) {
-    // console.log(event);
+  recargarCatalogo() {
     this.eventChange.emit(true);
-
-
   }
 
   onChange(catalogo) {
+    this.uid_1 = undefined;
     this.catalogoId = catalogo;
   }
 
   QuitarVista() {
     this.uid_1 = undefined;
-    this.uid_2 = undefined;
   }
   receiveMessage(event) {
+    if (event.TipoNivelId.Id === Nivel_t.Clase) {
     const opt: any = {
       title: this.translate.instant('No hay detalle asociado'),
       text: this.translate.instant('Revisar las caracteristicas del catalogo'),
@@ -157,7 +152,6 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
     this.catalogoElementosService.getSubgrupoById(event.Id).subscribe(
       res => {
 
-        if (event.TipoNivelId.Id === Nivel_t.Clase) {
           // console.log(event.TipoNivelId.Id);
           if (Object.keys(res[0]).length !== 0) {
             this.catalogoElementosService.getDetalleSubgrupo(event.Id).subscribe(res2 => {
@@ -168,14 +162,12 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
                 this.Total_Movimientos();
                 // console.log(this.all_mov);
                 this.uid_1 = event;
-                this.uid_2 = undefined;
               } else {
                 this.Movimientos = [];
                 this.depreciacion_ok = false;
                 this.valorizacion_ok = false;
                 this.Total_Movimientos();
                 this.uid_1 = event;
-                this.uid_2 = undefined;
                 (Swal as any).fire(opt);
               }
             });
@@ -185,12 +177,11 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
             this.valorizacion_ok = false;
             this.Total_Movimientos();
             this.uid_1 = undefined;
-            this.uid_2 = event;
             (Swal as any).fire(opt);
           }
-        }
       });
     // console.log(event);
+    } else this.uid_1 = undefined;
   }
   onSubmit() {
     let mov_existente: boolean;
@@ -225,7 +216,7 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
           this.catalogoElementosService.putTransaccionCuentasSubgrupo(mov, this.uid_1.Id)
             .subscribe(res => {
               // console.log(res);
-              this.eventChange.emit(true);
+              this.recargarCatalogo();
               this.Movimientos = [];
               this.showToast(
                 'info',
@@ -256,7 +247,7 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
           this.catalogoElementosService.postTransaccionCuentasSubgrupo(mov)
             .subscribe(res => {
               // console.log(res);
-              this.eventChange.emit(true);
+              this.recargarCatalogo();
               this.Movimientos = [];
               this.showToast('info', this.translate.instant('GLOBAL.Creado'), this.translate.instant('GLOBAL.Creado_Movimientos_placeholder'));
               setTimeout(() => {

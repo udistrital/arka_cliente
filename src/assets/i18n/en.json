@@ -306,6 +306,9 @@
     "Acciones": "Actions",
 
     "Deshacer": "Undo",
+    "colapsar": "Collapse",
+    "expandir": "Expand",
+    "cerrar": "Close",
 
     "nivel_jerarquico": "Hierarchical Level",
 
@@ -381,7 +384,8 @@
       "lista": "Catalogue List"
     },
 
-    "info": "Información",
+    "info": "Information",
+    "info_adicional": "Additional Information",
     "Detalle": "Detail",
     "placeholder": "This field is mandatory",
     "funcionario":"Civil servant",

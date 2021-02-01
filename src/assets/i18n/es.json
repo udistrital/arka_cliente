@@ -306,6 +306,9 @@
     "Acciones":"Acciones",
 
     "Deshacer":"Deshacer",
+    "colapsar": "Colapsar",
+    "expandir": "Expandir",
+    "cerrar": "Cerrar",
 
     "nivel_jerarquico": "Nivel Jerárquico",
 
@@ -382,6 +385,7 @@
     },
 
     "info": "Información",
+    "info_adicional": "Información Adicional",
     "Detalle":"Detalle",
     "placeholder":"Este Campo es Obligatorio",
     "funcionario":"Funcionario",

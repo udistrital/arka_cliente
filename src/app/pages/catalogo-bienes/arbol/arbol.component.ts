@@ -1,5 +1,5 @@
-import { Component, OnInit, Input, EventEmitter, Output, OnChanges } from '@angular/core';
-import { NbTreeGridDataSource, NbSortDirection, NbSortRequest, NbTreeGridDataSourceBuilder } from '@nebular/theme';
+import { Component, OnInit, Input, EventEmitter, Output, OnChanges, TemplateRef } from '@angular/core';
+import { NbTreeGridDataSource, NbSortDirection, NbSortRequest, NbTreeGridDataSourceBuilder, NbDialogService } from '@nebular/theme';
 import { Observable, combineLatest } from 'rxjs';
 import { PopUpManager } from '../../../managers/popUpManager';
 import { CuentasGrupoTransaccion } from '../../../@core/data/models/catalogo/cuentas_subgrupo';
@@ -36,8 +36,8 @@ export class ArbolComponent implements OnInit, OnChanges {
   data: TreeNode<CatalogoArbol>[];
   data2: TreeNode<CatalogoArbol>[];
   customColumn = 'Codigo';
-  defaultColumns = ['Nombre', 'Descripcion', 'Acciones'];
-  allColumns = [this.customColumn, ...this.defaultColumns];
+  defaultColumns = ['Nombre', 'Descripcion'];
+  allColumns: string[];
   stringBusqueda: any;
   mostrar: boolean = false;
 
@@ -54,8 +54,8 @@ export class ArbolComponent implements OnInit, OnChanges {
 
   @Input() catalogoId: number;
   @Input() updateSignal: Observable<string[]>;
-  @Output() grupo = new EventEmitter<CatalogoArbol>();
-  @Output() subgrupo = new EventEmitter<CatalogoArbol>();
+  @Input() acciones: boolean = false;
+  @Output() fila = new EventEmitter<CatalogoArbol>();
   tipos_de_bien: TipoBien;
   elementosSubgrupo: TipoBien;
   customColumn2: any;
@@ -67,9 +67,18 @@ export class ArbolComponent implements OnInit, OnChanges {
     private dataSourceBuilder: NbTreeGridDataSourceBuilder<CatalogoArbol>,
     private catalogoHelper: CatalogoElementosHelper,
     private translate: TranslateService,
-    private pUpManager: PopUpManager) {
+    private pUpManager: PopUpManager,
+    private dialogService: NbDialogService,
+  ) {
     this.stringBusqueda = '';
     this.aux = 0;
+  }
+
+  ngOnInit() {
+    if (this.acciones) {
+      this.defaultColumns.push('Acciones');
+    }
+    this.allColumns = [this.customColumn, ...this.defaultColumns];
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
       this.construirForm();
     });
@@ -79,6 +88,15 @@ export class ArbolComponent implements OnInit, OnChanges {
       this.Movimientos = res;
 
     });
+    this.catalogoSeleccionado = 0;
+    this.detalle = false;
+    this.cuentasContables = new Array<CuentasGrupoTransaccion>();
+
+    if (this.updateSignal) {
+      this.updateSignal.subscribe(() => {
+        this.loadTreeCatalogo();
+      });
+    }
   }
 
   construirForm() {
@@ -89,17 +107,6 @@ export class ArbolComponent implements OnInit, OnChanges {
       this.translate.instant('GLOBAL.Acciones'),
     ];
     this.allColumns2 = [this.customColumn, ...this.defaultColumns];
-  }
-  ngOnInit() {
-    this.catalogoSeleccionado = 0;
-    this.detalle = false;
-    this.cuentasContables = new Array<CuentasGrupoTransaccion>();
-
-    if (this.updateSignal) {
-      this.updateSignal.subscribe(() => {
-        this.loadTreeCatalogo();
-      });
-    }
   }
 
   ngOnChanges(changes) {
@@ -227,9 +234,6 @@ export class ArbolComponent implements OnInit, OnChanges {
     return minWithForMultipleColumns + (nextColumnStep * index);
   }
 
-  getSelectedRow2(selectedRow) {
-    this.grupo.emit(selectedRow);
-  }
   loadTreeCatalogo() {
     this.mostrar = false;
     this.catalogoHelper.getArbolCatalogo(this.catalogoId).subscribe((res) => {
@@ -247,7 +251,15 @@ export class ArbolComponent implements OnInit, OnChanges {
   }
 
   getSelectedRow(selectedRow) {
-    this.subgrupo.emit(selectedRow);
+    this.fila.emit(selectedRow);
+  }
+
+  /**
+   * Usar únicamente para depurar!
+   * Por ejemplo, dentro de una etiqueta 'pre'
+  */
+  imprime(t: any): string {
+    return JSON.stringify(t, undefined, 2);
   }
 
   volver() {
@@ -255,9 +267,12 @@ export class ArbolComponent implements OnInit, OnChanges {
     this.cuentasContables = undefined;
     this.tipos_de_bien = undefined;
     this.elementosSubgrupo = undefined;
-
   }
-  getDetalle(selectedRow) {
+
+  getDetalle(selectedRow, dialog: TemplateRef<any>) {
+    this.detalle = false;
+    this.dialogService.open(dialog);
+
     // console.log(selectedRow);
     this.grupoSeleccionado = selectedRow;
     const observable = combineLatest([
@@ -282,9 +297,13 @@ export class ArbolComponent implements OnInit, OnChanges {
       }
       if (Object.keys(detalle[0]).length !== 0) {
         this.tipos_de_bien = <TipoBien>detalle[0].TipoBienId;
+      } else {
+        this.tipos_de_bien = undefined;
       }
       if (Object.keys(elementos[0]).length !== 0) {
         this.elementosSubgrupo = elementos;
+      } else {
+        this.elementosSubgrupo = undefined;
       }
       // this.pUpManager.showErrorAlert('no existen cuentas asociadas a este grupo');
       this.detalle = true;

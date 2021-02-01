@@ -64,3 +64,14 @@ button[nbTreeGridRowToggle] {
   // width: 100% !important;
   border: hidden;
 } */
+
+.dialogo {
+  min-width: 55vw;
+  max-width: 95vw;
+  min-height: 55vh;
+  max-height: 95vh;
+}
+
+.dialogo nb-card-header {
+  text-align: center;
+}

@@ -1,38 +1,53 @@
- <div *ngIf="!detalle" [nbSpinner]="!mostrar" nbSpinnerStatus="success" nbSpin   nbSpin   nerSize="xxlarge">
+<div [nbSpinner]="!mostrar">
     <label class="search-label" for="search">{{'GLOBAL.search' | translate}}:</label>
     <input nbInput [(ngModel)]="stringBusqueda" (ngModelChange)="filterSearch()" id="search" class="search-input">
     <!-- <input nbInput [nbFilterInput]="dataSource" id="search" class="search-input"> -->
     <table [nbTreeGrid]="dataSource" nbSort (sort)="updateSort($event)">
 
         <tr nbTreeGridHeaderRow *nbTreeGridHeaderRowDef="allColumns"></tr>
-        <tr nbTreeGridRow *nbTreeGridRowDef="let row; columns: allColumns" (click)="getSelectedRow2(row.data)"
+        <tr nbTreeGridRow *nbTreeGridRowDef="let row; columns: allColumns" (click)="getSelectedRow(row.data)" [clickToToggle]="false"
             ngxSelectDirective></tr>
 
         <ng-container [nbTreeGridColumnDef]="customColumn">
             <th nbTreeGridHeaderCell [nbSortHeader]="getSortDirection(customColumn)" *nbTreeGridHeaderCellDef>
-                {{ customColumn2 }}
+                {{ customColumn2 }}&nbsp;
+                <span *nbSortHeaderIcon="let asc = isAscending; let desc = isDescending"
+                [class]="'fas ' + (asc ? 'fa-sort-up' :(desc ? 'fa-sort-down' :'fa-sort'))"></span>
             </th>
             <td nbTreeGridCell *nbTreeGridCellDef="let row">
-                <span [ngClass]="{
-              'nb-chevron-down': row.expanded,
-              'nb-chevron-right': !row.expanded
-            }" aria-hidden="true">
-                </span>{{ row.data[customColumn] }}
+                <button nbTreeGridRowToggle *ngIf="row.hasChildren()"
+                [nbPopover]="'GLOBAL.' + (row.expanded ? 'colapsar' : 'expandir') | translate" nbPopoverTrigger="hover" nbPopoverPlacement="left"
+                [attr.aria-label]="'GLOBAL.' + (row.expanded ? 'colapsar' : 'expandir') | translate">
+                    <span [class]="'fas ' + (row.expanded ? 'fa-chevron-down' : 'fa-chevron-right')" aria-hidden="true"></span>
+                </button>
+                {{ row.data[customColumn] }}
             </td>
         </ng-container>
 
         <ng-container *ngFor="let column of defaultColumns; let index = index" [nbTreeGridColumnDef]="column"
             [showOn]="getShowOn(index)">
             <th nbTreeGridHeaderCell [nbSortHeader]="getSortDirection(column)" *nbTreeGridHeaderCellDef>
-                {{ defaultColumns2[index] }}
+                {{ defaultColumns2[index] }}&nbsp;
+                <span *nbSortHeaderIcon="let asc = isAscending; let desc = isDescending"
+                [class]="'fas ' + (asc ? 'fa-sort-up' :(desc ? 'fa-sort-down' :'fa-sort'))"></span>
             </th>
             <td nbTreeGridCell *nbTreeGridCellDef="let row" class="text-uppercase">
+                <!-- PARA DEPURACIÓN - Descomentar alguna de las dos siguientes -->
+                <!-- <pre>{{imprime({"column":column,"row.data[column]":row.data[column]})}}</pre> -->
+                <!-- <pre>{{imprime({"row":row,"column":column})}}</pre> -->
+
+                <!-- Campo "único" -->
                 <span *ngIf="row.data[column] !== undefined && row.data[column].Id === undefined">
                     {{ row.data[column] || '-' }}</span>
+
+                <!-- Campo normalizado, asociado a una "tabla paramétrica" -->
                 <span *ngIf="row.data[column] !== undefined && row.data[column].Id !== undefined">
                     {{ row.data[column].Nombre || '-' }}</span>
-                <span *ngIf="row.data[column] === undefined"> <i class="fas fa-eye fa-2x" title="Ver"
-                        (click)="getDetalle(row.data)"></i></span>
+
+                <!-- Acciones -->
+                <span *ngIf="column === 'Acciones'" class="fas fa-info-circle fa-2x"
+                [nbPopover]="'GLOBAL.info_adicional' | translate" nbPopoverTrigger="hover"
+                (click)="getDetalle(row.data, dialogoDetalle)"></span>
             </td>
         </ng-container>
 
@@ -40,9 +55,12 @@
 
 </div>
 
-<div *ngIf="detalle">
-
+<ng-template #dialogoDetalle let-ref="dialogRef">
+    <nb-card class="dialogo">
+        <nb-card-header>
     <h2>Detalle</h2>
+        </nb-card-header>
+        <nb-card-body [nbSpinner]="!detalle">
     <p class="font-weight-bold text-uppercase pt-4 pb-4">Grupo:
         <span class="font-weight-normal">{{ grupoSeleccionado.Nombre }}</span></p>
 
@@ -80,11 +98,11 @@
             </div>
         </div>
     </div>
-
-    <div class="pt-4">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="volver()"
-            *ngIf="detalle">{{'GLOBAL.volver' | translate}}
+        </nb-card-body>
+        <nb-card-footer>
+        <button type="button" class="btn btn-secondary float-right" data-dismiss="modal" (click)="ref.close()"
+            *ngIf="detalle">{{'GLOBAL.cerrar' | translate}}
         </button>
-    </div>
-
-</div>
+        </nb-card-footer>
+    </nb-card>
+</ng-template>
