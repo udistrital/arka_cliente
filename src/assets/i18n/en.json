@@ -552,6 +552,14 @@
         "EPPA": {
           "nombre": "Use of Parts",
           "descripcion": "Input by Use of Parts"
+        },
+        "EID": {
+          "nombre": "Intangibles developed within the Entities",
+          "descripcion": "Intangibles developed within the Entities Input"
+        },
+        "EBEMP": {
+          "nombre": "Delivered to the Entity or Entity on a provisional basis",
+          "descripcion": "Delivered to the Entity or Entity on a provisional basis Input"
         }
       },
       "tab_consumo": "Elementos de Consumo",

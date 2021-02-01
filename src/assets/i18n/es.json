@@ -552,6 +552,14 @@
         "EPPA": {
           "nombre": "Aprovechamiento de Partes",
           "descripcion": "Entrada de partes por aprovechamiento"
+        },
+        "EID": {
+          "nombre": "Intangibles desarrollados",
+          "descripcion": "Entrada por Intangibles desarrollados al Interior de los Entes y Entidades"
+        },
+        "EBEMP": {
+          "nombre": "Entregados de manera Provisional",
+          "descripcion": "Entrada Entregados al Ente o Entidad de manera provisional"
         }
       },
       "tab_consumo": "Elementos de Consumo",

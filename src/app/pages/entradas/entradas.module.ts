@@ -19,6 +19,8 @@ import { CajaMenorComponent } from './caja-menor/caja-menor.component';
 import { AdicionesMejorasComponent } from './adiciones-mejoras/adiciones-mejoras.component';
 import { IntangiblesAdquiridosComponent } from './intangibles-adquiridos/intangibles-adquiridos.component';
 import { ExtranjeroComponent } from './extranjero/extranjero.component';
+import { ProvisionalComponent } from './provisional/provisional.component';
+import { IntangiblesDesarrolladosComponent } from './intangibles-desarrollados/intangibles-desarrollados.component';
 
 
 @NgModule({
@@ -38,6 +40,8 @@ import { ExtranjeroComponent } from './extranjero/extranjero.component';
     AdicionesMejorasComponent,
     IntangiblesAdquiridosComponent,
     ExtranjeroComponent,
+    ProvisionalComponent,
+    IntangiblesDesarrolladosComponent,
 
   ],
   imports: [
