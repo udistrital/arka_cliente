@@ -177,6 +177,18 @@ export class ConsultaEntradaComponent implements OnInit {
             this.loadDetalleAdicionesMejoras(res);
             break;
           }
+          case 'Intangibles': {
+            this.loadDetalleIntangiblesAdquiridos(res);
+            break;
+          }
+          case 'Provisional': {
+            this.loadDetalleProvisional(res);
+            break;
+          }
+          case 'Compras extranjeras': {
+            this.loadDetalleComprasExtranjeras(res);
+            break;
+          }
           default: {
             break;
           }
@@ -336,6 +348,46 @@ export class ConsultaEntradaComponent implements OnInit {
     this.entradaEspecifica.Observacion = info.Movimiento.Observacion; // OBSERVACIÓN
     this.documentoId = false; // SOPORTE
     this.loadContrato(); // CONTRATO
+  }
+
+  loadDetalleIntangiblesAdquiridos(info) {
+    const detalle = JSON.parse(info.Movimiento.Detalle);
+    this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id; // ACTA RECIBIDO
+    this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
+    this.entradaEspecifica.ContratoId = detalle.contrato_id; // CONTRATO
+    this.entradaEspecifica.Vigencia = detalle.vigencia_contrato; // VIGENCIA CONTRATO
+    this.entradaEspecifica.TipoEntradaId.Nombre = info.TipoMovimiento.TipoMovimientoId.Nombre; // TIPO ENTRADA
+    this.entradaEspecifica.Observacion = info.Movimiento.Observacion; // OBSERVACIÓN
+    this.documentoId = false; // SOPORTE
+    this.loadContrato(); // CONTRATO
+    // this.mostrar=true;
+  }
+  loadDetalleProvisional(info) {
+    const detalle = JSON.parse(info.Movimiento.Detalle);
+    this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id; // ACTA RECIBIDO
+    this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
+    this.entradaEspecifica.ContratoId = detalle.contrato_id; // CONTRATO
+    this.entradaEspecifica.Vigencia = detalle.vigencia_contrato; // VIGENCIA CONTRATO
+    this.entradaEspecifica.TipoEntradaId.Nombre = info.TipoMovimiento.TipoMovimientoId.Nombre; // TIPO ENTRADA
+    this.entradaEspecifica.Observacion = info.Movimiento.Observacion; // OBSERVACIÓN
+    this.documentoId = false; // SOPORTE
+    this.loadContrato(); // CONTRATO
+    // this.mostrar=true;
+    console.log(this.entradaEspecifica)
+  }
+  loadDetalleComprasExtranjeras(info) {
+    const detalle = JSON.parse(info.Movimiento.Detalle);
+    this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id; // ACTA RECIBIDO
+    this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
+    this.entradaEspecifica.ContratoId = detalle.contrato_id; // CONTRATO
+    this.entradaEspecifica.Vigencia = detalle.vigencia_contrato; // VIGENCIA CONTRATO
+    this.entradaEspecifica.TipoEntradaId.Nombre = info.TipoMovimiento.TipoMovimientoId.Nombre; // TIPO ENTRADA
+    this.entradaEspecifica.Observacion = info.Movimiento.Observacion; // OBSERVACIÓN
+    this.entradaEspecifica.RegistroImportacion=detalle.num_reg_importacion; // NUMERO DE IMPORTACION
+    this.entradaEspecifica.TasaRepresentativaMercado=detalle.TRM; // TASA REPRESENTATIVA DEL MERCADO
+    this.documentoId = false; // SOPORTE
+    this.loadContrato(); // CONTRATO
+    // this.mostrar=true;
     console.log(this.entradaEspecifica)
   }
 

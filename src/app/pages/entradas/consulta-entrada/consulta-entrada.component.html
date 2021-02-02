@@ -226,8 +226,105 @@
           <div class="col">
             <p class="text-uppercase"><strong>Cargo:</strong> {{ contrato.Supervisor.Cargo }}</p>
           </div>
-        </div>        
+        </div>      
 
+        <!-- INTANGIBLES ADQUIRIDOS -->
+        <div *ngIf="detalle && entradaEspecifica.TipoEntradaId.Nombre === 'Intangibles'" class="row">
+          <div class="col">
+            <p class="text-uppercase"><strong>Contrato N°:</strong> {{ entradaEspecifica.ContratoId }}</p>
+          </div>
+          <div class="col">
+            <p class="text-uppercase"><strong>Tipo Contrato:</strong> {{ contrato.TipoContrato }}</p>
+          </div>
+        </div>
+
+        <div *ngIf="detalle && entradaEspecifica.TipoEntradaId.Nombre === 'Intangibles'" class="row">
+          <div class="col">
+            <p class="text-uppercase"><strong>Ordenador de Gasto:</strong>
+              {{ contrato.OrdenadorGasto.NombreOrdenador }}
+            </p>
+          </div>
+          <div class="col">
+            <p class="text-uppercase"><strong>Cargo:</strong> {{ contrato.OrdenadorGasto.RolOrdenadorGasto }}</p>
+          </div>
+        </div>
+
+        <div *ngIf="detalle && entradaEspecifica.TipoEntradaId.Nombre === 'Intangibles'" class="row">
+          <div class="col">
+            <p class="text-uppercase"><strong>Supervisor:</strong> {{ contrato.Supervisor.Nombre }}</p>
+          </div>
+          <div class="col">
+            <p class="text-uppercase"><strong>Cargo:</strong> {{ contrato.Supervisor.Cargo }}</p>
+          </div>
+        </div>     
+
+        <!-- PROVISIONAL -->
+        <div *ngIf="detalle && entradaEspecifica.TipoEntradaId.Nombre === 'Provisional'" class="row">
+          <div class="col">
+            <p class="text-uppercase"><strong>Contrato N°:</strong> {{ entradaEspecifica.ContratoId }}</p>
+          </div>
+          <div class="col">
+            <p class="text-uppercase"><strong>Tipo Contrato:</strong> {{ contrato.TipoContrato }}</p>
+          </div>
+        </div>
+
+        <div *ngIf="detalle && entradaEspecifica.TipoEntradaId.Nombre === 'Provisional'" class="row">
+          <div class="col">
+            <p class="text-uppercase"><strong>Ordenador de Gasto:</strong>
+              {{ contrato.OrdenadorGasto.NombreOrdenador }}
+            </p>
+          </div>
+          <div class="col">
+            <p class="text-uppercase"><strong>Cargo:</strong> {{ contrato.OrdenadorGasto.RolOrdenadorGasto }}</p>
+          </div>
+        </div>
+
+        <div *ngIf="detalle && entradaEspecifica.TipoEntradaId.Nombre === 'Provisional'" class="row">
+          <div class="col">
+            <p class="text-uppercase"><strong>Supervisor:</strong> {{ contrato.Supervisor.Nombre }}</p>
+          </div>
+          <div class="col">
+            <p class="text-uppercase"><strong>Cargo:</strong> {{ contrato.Supervisor.Cargo }}</p>
+          </div>
+        </div>  
+
+        <!-- COMPRAS EXTRANJERAS -->
+        <div *ngIf="detalle && entradaEspecifica.TipoEntradaId.Nombre === 'Compras extranjeras'" class="row">
+          <div class="col">
+            <p class="text-uppercase"><strong>Contrato N°:</strong> {{ entradaEspecifica.ContratoId }}</p>
+          </div>
+          <div class="col">
+            <p class="text-uppercase"><strong>Tipo Contrato:</strong> {{ contrato.TipoContrato }}</p>
+          </div>
+        </div>
+
+        <div *ngIf="detalle && entradaEspecifica.TipoEntradaId.Nombre === 'Compras extranjeras'" class="row">
+          <div class="col">
+            <p class="text-uppercase"><strong>Ordenador de Gasto:</strong>
+              {{ contrato.OrdenadorGasto.NombreOrdenador }}
+            </p>
+          </div>
+          <div class="col">
+            <p class="text-uppercase"><strong>Cargo:</strong> {{ contrato.OrdenadorGasto.RolOrdenadorGasto }}</p>
+          </div>
+        </div>
+
+        <div *ngIf="detalle && entradaEspecifica.TipoEntradaId.Nombre === 'Compras extranjeras'" class="row">
+          <div class="col">
+            <p class="text-uppercase"><strong>Supervisor:</strong> {{ contrato.Supervisor.Nombre }}</p>
+          </div>
+          <div class="col">
+            <p class="text-uppercase"><strong>Cargo:</strong> {{ contrato.Supervisor.Cargo }}</p>
+          </div>
+        </div>  
+        <div *ngIf="detalle && entradaEspecifica.TipoEntradaId.Nombre === 'Compras extranjeras'" class="row">
+          <div class="col">
+            <p class="text-uppercase"><strong>Registro de Importación:</strong> {{ entradaEspecifica.RegistroImportacion }}</p>
+          </div>
+          <div class="col">
+            <p class="text-uppercase"><strong>Tasa Representativa del mercado:</strong> {{ entradaEspecifica.TasaRepresentativaMercado }}</p>
+          </div>
+        </div>  
 
         <!-- OBSERVACIONES -->
         <div *ngIf="detalle" class=" row">
