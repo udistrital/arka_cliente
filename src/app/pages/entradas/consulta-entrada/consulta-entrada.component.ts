@@ -34,8 +34,8 @@ export class ConsultaEntradaComponent implements OnInit {
   mostrar: boolean = false;
 
   constructor(private router: Router, private entradasHelper: EntradaHelper, private translate: TranslateService,
-    private nuxeoService: NuxeoService, private documentoService: DocumentoService,private listService: ListService,
-    private store: Store<IAppState>,) {
+    private nuxeoService: NuxeoService, private documentoService: DocumentoService, private listService: ListService,
+    private store: Store<IAppState>) {
     this.source = new LocalDataSource();
     this.entradas = new Array<Entrada>();
     this.detalle = false;
@@ -147,7 +147,7 @@ export class ConsultaEntradaComponent implements OnInit {
   loadEntradaEspecifica(): void {
     this.entradasHelper.getEntrada(this.consecutivoEntrada).subscribe(res => {
       if (res !== null) {
-        console.log(res)
+        // console.log(res);
         switch (res.TipoMovimiento.TipoMovimientoId.Nombre) {
           case 'Adquisición': {
             this.loadDetalleAdquisicion(res);
@@ -373,7 +373,6 @@ export class ConsultaEntradaComponent implements OnInit {
     this.documentoId = false; // SOPORTE
     this.loadContrato(); // CONTRATO
     // this.mostrar=true;
-    console.log(this.entradaEspecifica)
   }
   loadDetalleComprasExtranjeras(info) {
     const detalle = JSON.parse(info.Movimiento.Detalle);
@@ -383,12 +382,33 @@ export class ConsultaEntradaComponent implements OnInit {
     this.entradaEspecifica.Vigencia = detalle.vigencia_contrato; // VIGENCIA CONTRATO
     this.entradaEspecifica.TipoEntradaId.Nombre = info.TipoMovimiento.TipoMovimientoId.Nombre; // TIPO ENTRADA
     this.entradaEspecifica.Observacion = info.Movimiento.Observacion; // OBSERVACIÓN
-    this.entradaEspecifica.RegistroImportacion=detalle.num_reg_importacion; // NUMERO DE IMPORTACION
-    this.entradaEspecifica.TasaRepresentativaMercado=detalle.TRM; // TASA REPRESENTATIVA DEL MERCADO
+    this.entradaEspecifica.RegistroImportacion = detalle.num_reg_importacion; // NUMERO DE IMPORTACION
+    this.entradaEspecifica.TasaRepresentativaMercado = detalle.TRM; // TASA REPRESENTATIVA DEL MERCADO
     this.documentoId = false; // SOPORTE
     this.loadContrato(); // CONTRATO
     // this.mostrar=true;
-    console.log(this.entradaEspecifica)
+  }
+  loadIntangiblesDesarrollados(info) {
+    const detalle = JSON.parse(info.Movimiento.Detalle);
+    this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id; // ACTA RECIBIDO
+    this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
+    this.entradaEspecifica.Vigencia = detalle.vigencia_ordenador; // VIGENCIA ORDENADOR
+    this.entradaEspecifica.OrdenadorId = detalle.ordenador_gasto_id; // ORDENADOR DE GASTO
+    this.entradaEspecifica.TipoEntradaId.Nombre = info.TipoMovimiento.TipoMovimientoId.Nombre; // TIPO ENTRADA
+    this.entradaEspecifica.Observacion = info.Movimiento.Observacion; // OBSERVACIÓN
+    this.documentoId = true;
+    this.mostrar = true;
+  }
+  loadAprovechamientos(info) {
+    const detalle = JSON.parse(info.Movimiento.Detalle);
+    this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id; // ACTA RECIBIDO
+    this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
+    this.entradaEspecifica.Vigencia = detalle.vigencia_ordenador; // VIGENCIA ORDENADOR
+    this.entradaEspecifica.OrdenadorId = detalle.ordenador_gasto_id; // ORDENADOR DE GASTO
+    this.entradaEspecifica.TipoEntradaId.Nombre = info.TipoMovimiento.TipoMovimientoId.Nombre; // TIPO ENTRADA
+    this.entradaEspecifica.Observacion = info.Movimiento.Observacion; // OBSERVACIÓN
+    this.documentoId = true;
+    this.mostrar = true;
   }
 
   onCustom(event) {

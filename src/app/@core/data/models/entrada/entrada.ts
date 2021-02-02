@@ -16,6 +16,6 @@ export class Entrada {
     Consecutivo: string;
     Vigencia: string;
     OrdenadorId: number;
-    RegistroImportacion:string;
-    TasaRepresentativaMercado:number;
+    RegistroImportacion: string;
+    TasaRepresentativaMercado: number;
 }
