@@ -317,40 +317,53 @@
         "nombre": "Group",
         "agregar": "Add Group",
         "modificar": "Modify Group",
+        "seleccionado": "Choosen Group",
         "pregunta_actualizar": "Are you sure to update the group?",
         "respuesta_actualizar_ok": "Group Updated Successfully",
         "pregunta_crear": "Are you sure to create the group?",
         "respuesta_crear_ok": "Group Created Successfully",
-        "pregunta_inactivar": "Deactivate Group?",
-        "respuesta_inactivar_ok": "Group Deactivated Successfully",
-        "respuesta_inactivar_err": "Group could not be deactivated!"
+        "pregunta_inactivar": "Deactivate Group \"{{CODE}}\"?",
+        "respuesta_inactivar_ok": "Group \"{{CODE}}\" Deactivated Successfully",
+        "respuesta_inactivar_err": "Group \"{{CODE}}\" could not be deactivated!"
       },
       "segmento": {
         "nombre": "Segment",
         "agregar": "Add Segment",
         "modificar": "Modify Segment",
+        "seleccionado": "Choosen Segment",
         "pregunta_actualizar": "Are you sure to update the segment?",
         "respuesta_actualizar_ok": "Segment Updated Successfully",
         "pregunta_crear": "Are you sure to create the segment?",
-        "respuesta_crear_ok": "Segment Created Successfully"
+        "respuesta_crear_ok": "Segment Created Successfully",
+        "pregunta_inactivar": "Deactivate Segment \"{{CODE}}\"?",
+        "respuesta_inactivar_ok": "Segment \"{{CODE}}\" was successfully Deactivated",
+        "respuesta_inactivar_err": "Segment \"{{CODE}}\" could not be deactivated!"
       },
       "familia": {
         "nombre": "Family",
         "agregar": "Add Family",
         "modificar": "Modify Family",
+        "seleccionado": "Choosen Family",
         "pregunta_actualizar": "Are you sure to update the family?",
         "respuesta_actualizar_ok": "Family Updated Successfully",
         "pregunta_crear": "Are you sure to create the Family?",
-        "respuesta_crear_ok": "Family Created Successfully"
+        "respuesta_crear_ok": "Family Created Successfully",
+        "pregunta_inactivar": "Deactivate Family \"{{CODE}}\"?",
+        "respuesta_inactivar_ok": "Family \"{{CODE}}\" was successfully Deactivated",
+        "respuesta_inactivar_err": "Family \"{{CODE}}\" could not be deactivated!"
       },
       "clase": {
         "nombre": "Class",
         "agregar": "Add Class",
         "modificar": "Modify Class",
+        "seleccionado": "Choosen Class",
         "pregunta_actualizar": "Are you sure to update the class?",
         "respuesta_actualizar_ok": "Class Updated Successfully",
         "pregunta_crear": "Are you sure to create the Class?",
-        "respuesta_crear_ok": "Class Created Successfully"
+        "respuesta_crear_ok": "Class Created Successfully",
+        "pregunta_inactivar": "Deactivate Class \"{{CODE}}\"?",
+        "respuesta_inactivar_ok": "Class \"{{CODE}}\" was successfully Deactivated",
+        "respuesta_inactivar_err": "Class \"{{CODE}}\" could not be deactivated!"
       }
     },
 
@@ -496,6 +509,8 @@
     "factura": "Bill",
     "tipo_bien": "Type of Asset",
     "placeholder_tipo_bien": "Type of Asset",
+    "tipo_movimiento": "Tipo de Movimiento",
+    "elementos_asociados": "Elementos Asociados",
     "cantidad": "Quantity",
     "marca": "Brand Name",
     "serie": "Serie",

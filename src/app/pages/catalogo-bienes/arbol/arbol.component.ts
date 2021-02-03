@@ -8,6 +8,7 @@ import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/cat
 import { TipoBien } from '../../../@core/data/models/acta_recibido/tipo_bien';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { TipoNivel } from '../../../@core/data/models/catalogo/tipo_nivel';
+import { NivelHelper as nh } from '../../../@core/utils/niveles.helper';
 
 interface TreeNode<T> {
   data: T;
@@ -51,6 +52,7 @@ export class ArbolComponent implements OnInit, OnChanges {
   detalle: boolean;
   cuentasContables: Array<CuentasGrupoTransaccion>;
   grupoSeleccionado: Subgrupo;
+  nivelSeleccionado: string;
 
   @Input() catalogoId: number;
   @Input() updateSignal: Observable<string[]>;
@@ -280,6 +282,7 @@ export class ArbolComponent implements OnInit, OnChanges {
       this.catalogoHelper.getDetalleSubgrupo(selectedRow.Id),
       this.catalogoHelper.getElementosSubgrupo(selectedRow.Id),
     ]);
+    this.nivelSeleccionado = this.translate.instant('GLOBAL.subgrupo.' + nh.Texto(selectedRow.TipoNivelId.Id) + '.nombre');
 
     observable.subscribe(([cuentas, detalle, elementos]: any[]) => {
       // console.log([cuentas, detalle, elementos]);

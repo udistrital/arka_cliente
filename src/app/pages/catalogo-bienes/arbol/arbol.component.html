@@ -58,21 +58,21 @@
 <ng-template #dialogoDetalle let-ref="dialogRef">
     <nb-card class="dialogo">
         <nb-card-header>
-    <h2>Detalle</h2>
+    <h2>{{ 'GLOBAL.detalle' | translate }}</h2>
         </nb-card-header>
         <nb-card-body [nbSpinner]="!detalle">
-    <p class="font-weight-bold text-uppercase pt-4 pb-4">Grupo:
+    <p class="font-weight-bold text-uppercase pt-4 pb-4">{{ nivelSeleccionado }}:
         <span class="font-weight-normal">{{ grupoSeleccionado.Nombre }}</span></p>
 
     <div *ngIf="tipos_de_bien">
-        <p class="font-weight-bold text-uppercase">Tipo de Bien:
+        <p class="font-weight-bold text-uppercase">{{ 'GLOBAL.tipo_bien' | translate }}:
             <span class="font-weight-normal">{{ tipos_de_bien.Nombre }}</span></p>
     </div>
     <p></p>
     <div *ngIf="cuentasContables">
         <div *ngFor="let cuenta of cuentasContables" class="row">
             <div class="col">
-                <p class="font-weight-bold text-uppercase">Tipo de movimiento:
+                <p class="font-weight-bold text-uppercase">{{ 'GLOBAL.tipo_movimiento' | translate }}:
                     <span class="font-weight-normal">{{ cuenta.SubtipoMovimientoId.Nombre }}</span></p>
 
             </div>
@@ -90,7 +90,7 @@
     </div>
 
     <div *ngIf="elementosSubgrupo">
-        <p class="font-weight-bold text-uppercase">Elementos Asociados:</p>
+        <p class="font-weight-bold text-uppercase">{{ 'GLOBAL.elementos_asociados' | translate }}:</p>
         <div *ngFor="let elemento of elementosSubgrupo; let i = index" class="row">
             <div class="col">
                 <span class="font-weight-normal">{{i + 1}}: {{ elemento.Nombre }}</span>
