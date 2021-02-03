@@ -2,9 +2,11 @@
   <mat-card-subtitle>
     Registrar Elementos
   </mat-card-subtitle>
+
   <mat-card-content>
     <mat-tab-group mat-stretch-tabs [selectedIndex]="selected.value" (selectedIndexChange)="selected.setValue($event)">
       <mat-tab>
+
         <p></p>
         <ng-template mat-tab-label>
           {{'GLOBAL.entradas.tab_consumo_controlado' | translate}}
@@ -26,6 +28,7 @@
             </div>
           </div>
         </mat-card-content>
+
       </mat-tab>
       <mat-tab>
         <p></p>
@@ -54,13 +57,13 @@
   </mat-card-content>
   <p></p>
 </mat-card>
+
 <mat-card-actions>
-  <button mat-flat-button color="primary" [disabled]="!bandera2" (click)="onSubmit()"
+  <button mat-flat-button color="primary" (click)="checkElementosAsignados()"
     class="float-right">{{'GLOBAL.entradas.asignar' | translate}}</button>
 </mat-card-actions>
 <mat-card-content>
 </mat-card-content>
 <div>
-  <label (keyup)="keyUpTabla($event)" (keydown.shift)="keyDownTablaShift($event)">
-    {{'GLOBAL.Acta_Recibido.EdicionActa.Observaciones' | translate}}</label>
+  <label>{{'GLOBAL.Acta_Recibido.EdicionActa.Observaciones' | translate}}</label>
 </div>
