@@ -1,11 +1,10 @@
 <div class="col-lg-12">
-  <nb-card>
-    <nb-card-header>
+  <mat-card>
+    <mat-card-title>
       <!-- <h1>{{'GLOBAL.consultar_entrada' | translate}}</h1> -->
       Registrar Salida
-    </nb-card-header>
-    <nb-card-body>
-
+    </mat-card-title>
+    <mat-card-content>
       <!-- CARD PARA MOSTRAR LAS SOLICITUDES *ngIf="!detalle" -->
       <!-- <p class="h4 pb-4" *ngIf="!detalle">{{'GLOBAL.mensaje_consulta_entrada' | translate}}</p> -->
       <p class="h4 pb-4" *ngIf="!detalle">
@@ -208,7 +207,7 @@
       
       <ngx-tabla-elementos-asignados [entradaId]="consecutivoEntrada" [actaRecibidoId]="actaRecibidoId" *ngIf="detalle"></ngx-tabla-elementos-asignados>
 
-    </nb-card-body>
+    </mat-card-content>
     <nb-card-footer>
       <div class="pt-4">
         <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="onVolver()"
@@ -216,5 +215,5 @@
         </button>
       </div>
     </nb-card-footer>
-  </nb-card>
+  </mat-card>
 </div>
