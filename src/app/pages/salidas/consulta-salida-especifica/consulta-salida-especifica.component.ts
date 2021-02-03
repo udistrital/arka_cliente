@@ -112,6 +112,12 @@ export class ConsultaSalidaEspecificaComponent implements OnInit {
             return value;
           },
         },
+        Placa: {
+          title: 'Placa',
+          valuePrepareFunction: (value: any) => {
+            return value;
+          },
+        },
         TipoBienId: {
           title: 'Tipo de Bien',
           valuePrepareFunction: (value: any) => {
