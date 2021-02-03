@@ -568,8 +568,12 @@
       },
       "tab_consumo": "Elementos de Consumo",
       "tab_consumo_controlado": "Elementos Devolutivos y de Consumo Controlado",
-      "asignar": "ASIGNAR",
-      "asignar_funcionario": "ASIGNAR A FUNCIONARIO"
+      "asignar": "REGISTRAR SALIDA",
+      "asignar_funcionario": "ASIGNAR A FUNCIONARIO",
+      "alerta_descargue": "Elementos sin descargar",
+      "alerta_consumo": "Elementos de consumo sin asignar",
+      "alerta_controlado": "Elementos de consumo controlado sin asignar",
+      "alerta_ambos": "Elementos de consumo y consumo controlado sin asignar"
     },
 
     "registrar_entrada": "Registrar Entrada",

@@ -569,7 +569,11 @@
       "tab_consumo": "Elementos de Consumo",
       "tab_consumo_controlado": "Elementos Devolutivos y de Consumo Controlado",
       "asignar": "ASIGN",
-      "asignar_funcionario": "ASIGN TO CIVIL SERVANT"
+      "asignar_funcionario": "ASIGN TO CIVIL SERVANT",
+      "alerta_descargue": "Unassgined elements",
+      "alerta_consumo": "Unassgined elements",
+      "alerta_controlado": "Unassgined elements",
+      "alerta_ambos": "Unassgined elements"
     },
 
     "registrar_entrada": "Register Entry",
