@@ -144,7 +144,8 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
   }
   receiveMessage(event) {
     if (event.TipoNivelId.Id === Nivel_t.Clase) {
-      this.uid_1 = event;
+      if (this.uid_1 === undefined || this.uid_1.Id !== event.Id) {
+        this.uid_1 = event;
     const opt: any = {
       title: this.translate.instant('No hay detalle asociado'),
       text: this.translate.instant('Revisar las caracteristicas del catalogo'),
@@ -165,7 +166,7 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
                 (Swal as any).fire(opt);
               }
             });
-    // console.log(event);
+      }
     } else this.uid_1 = undefined;
   }
   onSubmit() {
