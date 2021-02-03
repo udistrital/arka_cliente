@@ -66,6 +66,8 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
     this.movimiento_id = movimiento_id;
   }
 
+  @Input() cuentas: CuentaGrupo;
+
   @Output() eventChange = new EventEmitter();
   @Output() formulario = new EventEmitter();
 
@@ -77,7 +79,6 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
   formMovimiento: any;
   regMovimiento: any;
   clean: boolean;
-  cargando: boolean = true;
 
   stateHighlight: string = 'initial';
   animationCuenta: string;
@@ -105,7 +106,8 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
   ngOnInit() {
   }
 
-  ngOnChanges() {
+  ngOnChanges(changes) {
+    // console.log({movimiento: this.movimiento_id, subgrupo: this.subgrupo_id, cuentas: this.cuentas, changes});
     this.construirForm();
     this.loadLists();
     this.loadCuentaGrupo();
@@ -187,15 +189,10 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
     return 0;
   }
   public loadCuentaGrupo(): void {
-    if (this.subgrupo_id.Id !== undefined && this.subgrupo_id.Id !== 0) {
+    if (this.cuentas !== undefined && this.cuentas.Id > 0) {
       // console.log(this.movimiento_id);
-      this.cargando = true;
-      this.catalogoElementosService.getMovimiento(this.subgrupo_id.Id, this.movimiento_id.Id)
-        .subscribe(res => {
-          // console.log(res);
-          if (Object.keys(res[0]).length !== 0) {
             const cuentasAsociadas = new CuentasFormulario();
-            this.respuesta = <CuentaGrupo>res[0];
+            this.respuesta = this.cuentas;
             const cuentaCredito = new Cuenta();
             const cuentaDebito = new Cuenta();
             cuentaCredito.Id = this.respuesta.CuentaCreditoId;
@@ -203,23 +200,7 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
             cuentasAsociadas.CuentaCreditoId = cuentaCredito;
             cuentasAsociadas.CuentaDebitoId = cuentaDebito;
             this.info_movimiento = cuentasAsociadas;
-          } else {
-            const cuentasAsociadas = new CuentasFormulario();
-            const cuentaCredito = new Cuenta();
-            const cuentaDebito = new Cuenta();
-            cuentaCredito.Id = null;
-            cuentaDebito.Id = null;
-            cuentasAsociadas.CuentaCreditoId = cuentaCredito;
-            cuentasAsociadas.CuentaDebitoId = cuentaDebito;
-            this.info_movimiento = cuentasAsociadas;
-            // console.log(this.info_movimiento);
-            this.clean = !this.clean;
-            this.respuesta = undefined;
-          }
-          this.cargando = false;
           // console.log(this.respuesta)
-          // console.log(res[0]);
-        });
     } else {
       const cuentasAsociadas = new CuentasFormulario();
       const cuentaCredito = new Cuenta();
@@ -230,12 +211,11 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
       cuentasAsociadas.CuentaDebitoId = cuentaDebito;
       this.info_movimiento = cuentasAsociadas;
       this.clean = !this.clean;
-      this.cargando = false;
     }
   }
 
   validarForm(event) {
-    // console.log(event)
+    // console.log({event, cuenta: this.cuentas.Id});
     if (event.valid) {
       if (this.respuesta !== undefined) {
         const cuentaDebito = event.data.CuentasFormulario.CuentaDebitoId;

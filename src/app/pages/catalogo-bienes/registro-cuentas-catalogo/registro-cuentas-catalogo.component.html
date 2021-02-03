@@ -15,7 +15,7 @@
     </nb-card-body>
   </nb-card>
 
-  <div class="col" *ngIf="uid_1">
+  <div class="col" *ngIf="uid_1" [nbSpinner]="cargandoCuentas()">
     <nb-card>
       <nb-card-header>
           <p class="font-weight-bold text-uppercase">{{'GLOBAL.subgrupo.clase.seleccionado' | translate}}:</p>
@@ -31,7 +31,7 @@
             </ng-template>
             <ngx-crud-movimiento *ngFor="let tab of Movimientos_Entradas"
             [subgrupo_id]="uid_1" [movimiento_id]="tab" (formulario)="ver3($event)"
-            (eventChange)="recargarCatalogo()"></ngx-crud-movimiento>
+            (eventChange)="recargarCatalogo()" [cuentas]="getCuentasCrDb(tab.Id)"></ngx-crud-movimiento>
             <div class="justify-content-center">
               <button nbButton
                 matStepperPrevious>{{'GLOBAL.Acta_Recibido.RegistroActa.AnteriorButton' | translate}}</button>
@@ -46,7 +46,7 @@
             </ng-template>
             <ngx-crud-movimiento *ngFor="let tab of Movimientos_Salidas"
             [subgrupo_id]="uid_1" [movimiento_id]="tab" (formulario)="ver3($event)"
-            (eventChange)="recargarCatalogo()"></ngx-crud-movimiento>
+            (eventChange)="recargarCatalogo()" [cuentas]="getCuentasCrDb(tab.Id)"></ngx-crud-movimiento>
               <div class="justify-content-center">
                 <button nbButton
                   matStepperPrevious>{{'GLOBAL.Acta_Recibido.RegistroActa.AnteriorButton' | translate}}</button>
@@ -61,7 +61,7 @@
             </ng-template>
             <ngx-crud-movimiento *ngFor="let tab of Movimientos_Depreciacion"
             [subgrupo_id]="uid_1" [movimiento_id]="tab" (formulario)="ver3($event)"
-                (eventChange)="recargarCatalogo()"></ngx-crud-movimiento>
+                (eventChange)="recargarCatalogo()" [cuentas]="getCuentasCrDb(tab.Id)"></ngx-crud-movimiento>
             <div class="justify-content-center">
               <button nbButton
                 matStepperPrevious>{{'GLOBAL.Acta_Recibido.RegistroActa.AnteriorButton' | translate}}</button>
@@ -76,7 +76,7 @@
             </ng-template>
             <ngx-crud-movimiento *ngFor="let tab of Movimientos_Valorizacion"
             [subgrupo_id]="uid_1" [movimiento_id]="tab" (formulario)="ver3($event)"
-                (eventChange)="recargarCatalogo()"></ngx-crud-movimiento>
+                (eventChange)="recargarCatalogo()" [cuentas]="getCuentasCrDb(tab.Id)"></ngx-crud-movimiento>
             <div class="justify-content-center">
               <button nbButton
                 matStepperPrevious>{{'GLOBAL.Acta_Recibido.RegistroActa.AnteriorButton' | translate}}</button>
@@ -84,7 +84,7 @@
           </mat-step>
 
         </mat-vertical-stepper>
-        <button nbButton (click)="onSubmit()" [disabled]="!all_mov_ok"
+        <button nbButton (click)="onSubmit()" [disabled]="!all_mov_ok()"
           class="float-right">{{'GLOBAL.Acta_Recibido.RegistroActa.GuardarCambiosButton' | translate}}</button>
       </nb-card-body>
     </nb-card>
