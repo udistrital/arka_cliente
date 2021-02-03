@@ -382,6 +382,8 @@
     "Crear_Movimientos_placeholder":"Está seguro de crear las cuentas?",
     "Creado_Movimientos_placeholder":"Cuentas creadas exitosamente",
 
+    "instr_asig_cuentas": "Ingrese las cuentas crédito y débito asociadas a cada movimiento contable:",
+
     "notificaciones": {
       "t_restante": "La sesion expirará en {{MINUTES}} minuto(s)",
       "t_restante_titulo": "La sesión está por expirar",
