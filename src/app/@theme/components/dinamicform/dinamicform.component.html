@@ -321,6 +321,7 @@
                             <mat-checkbox type="checkbox" class="customised-control-input" [disabled]="c.deshabilitar"
                                 color="primary" [(checked)]="c.valor" (change)="c.valor = !c.valor">
                                 {{c.requerido?'* '+c.label:c.label}}?</mat-checkbox>
+                            <mat-hint class="text-danger">{{c.alerta}}</mat-hint>
                         </div>
 
                         <!-- textarea -->
@@ -345,6 +346,7 @@
                                     {{ 'GLOBAL.' + item.desc | translate }}
                                 </nb-radio>
                             </nb-radio-group>
+                            <mat-hint class="text-danger">{{c.alerta}}</mat-hint>
                         </div>
 
                         <!-- EL SIGUIENTE AÚN NO ESTÁ LISTO!

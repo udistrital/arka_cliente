@@ -17,8 +17,8 @@
 <div class="col" *ngIf="ver_formulario">
   <nb-card>
     <nb-card-body>
-              <h2>Detalle</h2>
-              <p class="font-weight-bold text-uppercase pt-4 pb-4">Grupo:
+              <h2>{{ 'GLOBAL.detalle' | translate }}</h2>
+              <p class="font-weight-bold text-uppercase pt-4 pb-4">{{ 'GLOBAL.subgrupo.clase.nombre' | translate }}:
                   <span class="font-weight-normal">{{ subgrupo.Consecutivo }}: {{ subgrupo.Nombre }}</span></p>
         <toaster-container [toasterconfig]="config"></toaster-container>
         <ngx-dinamicform [normalform]="formElemento" [modeloData]="info_elemento" (result)="validarForm($event)"

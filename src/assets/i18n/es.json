@@ -317,40 +317,53 @@
         "nombre": "Grupo",
         "agregar": "Agregar Grupo",
         "modificar": "Modificar Grupo",
+        "seleccionado": "Grupo Seleccionado",
         "pregunta_actualizar": "¿Está seguro de actualizar el grupo?",
         "respuesta_actualizar_ok": "Grupo actualizado exitosamente",
         "pregunta_crear": "¿Está seguro de crear el Grupo?",
         "respuesta_crear_ok": "Grupo creado exitosamente",
-        "pregunta_inactivar": "¿Inactivar grupo?",
-        "respuesta_inactivar_ok": "Grupo inactivado exitosamente",
-        "respuesta_inactivar_err": "¡No se pudo inactivar el grupo!"
+        "pregunta_inactivar": "¿Inactivar grupo \"{{CODE}}\"?",
+        "respuesta_inactivar_ok": "Grupo \"{{CODE}}\" inactivado exitosamente",
+        "respuesta_inactivar_err": "¡No se pudo inactivar el grupo \"{{CODE}}\"!"
       },
       "segmento": {
         "nombre": "Segmento",
         "agregar": "Agregar Segmento",
         "modificar": "Modificar Segmento",
+        "seleccionado": "Segmento Seleccionado",
         "pregunta_actualizar": "¿Está seguro de actualizar el segmento?",
         "respuesta_actualizar_ok": "Segmento actualizado exitosamente",
         "pregunta_crear": "¿Está seguro de crear el Segmento?",
-        "respuesta_crear_ok": "Segmento creado exitosamente"
+        "respuesta_crear_ok": "Segmento creado exitosamente",
+        "pregunta_inactivar": "¿Inactivar segmento \"{{CODE}}\"?",
+        "respuesta_inactivar_ok": "Segmento \"{{CODE}}\" inactivado exitosamente",
+        "respuesta_inactivar_err": "¡No se pudo inactivar el segmento \"{{CODE}}\"!"
       },
       "familia": {
         "nombre": "Familia",
         "agregar": "Agregar Familia",
         "modificar": "Modificar Familia",
+        "seleccionado": "Familia Seleccionada",
         "pregunta_actualizar": "¿Está seguro de actualizar la familia?",
         "respuesta_actualizar_ok": "Familia actualizada exitosamente",
         "pregunta_crear": "¿Está seguro de crear la Familia?",
-        "respuesta_crear_ok": "Familia creada exitosamente"
+        "respuesta_crear_ok": "Familia creada exitosamente",
+        "pregunta_inactivar": "¿Inactivar familia \"{{CODE}}\"?",
+        "respuesta_inactivar_ok": "Familia \"{{CODE}}\" inactivada exitosamente",
+        "respuesta_inactivar_err": "¡No se pudo inactivar la Familia \"{{CODE}}\"!"
       },
       "clase": {
         "nombre": "Clase",
         "agregar": "Agregar Clase",
         "modificar": "Modificar Clase",
+        "seleccionado": "Clase Seleccionada",
         "pregunta_actualizar": "¿Está seguro de actualizar la clase?",
         "respuesta_actualizar_ok": "Clase actualizada exitosamente",
         "pregunta_crear": "¿Está seguro de crear la Clase?",
-        "respuesta_crear_ok": "Clase creada exitosamente"
+        "respuesta_crear_ok": "Clase creada exitosamente",
+        "pregunta_inactivar": "¿Inactivar Clase \"{{CODE}}\"?",
+        "respuesta_inactivar_ok": "Clase \"{{CODE}}\" inactivada exitosamente",
+        "respuesta_inactivar_err": "¡No se pudo inactivar la Clase \"{{CODE}}\"!"
       }
     },
 
@@ -368,6 +381,8 @@
     "Actualizado_Movimientos_placeholder":"Cuentas actualizadas exitosamente",
     "Crear_Movimientos_placeholder":"Está seguro de crear las cuentas?",
     "Creado_Movimientos_placeholder":"Cuentas creadas exitosamente",
+
+    "instr_asig_cuentas": "Ingrese las cuentas crédito y débito asociadas a cada movimiento contable:",
 
     "notificaciones": {
       "t_restante": "La sesion expirará en {{MINUTES}} minuto(s)",
@@ -496,6 +511,8 @@
     "factura": "Factura",
     "tipo_bien": "Tipo de Bien",
     "placeholder_tipo_bien": "Tipo de Bien",
+    "tipo_movimiento": "Tipo de Movimiento",
+    "elementos_asociados": "Elementos Asociados",
     "cantidad": "Cantidad",
     "marca": "Marca",
     "serie": "Serie",

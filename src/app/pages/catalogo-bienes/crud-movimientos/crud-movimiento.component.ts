@@ -103,10 +103,8 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
   }
 
   ngOnInit() {
-    this.construirForm();
-    this.loadLists();
-    this.loadCuentaGrupo();
   }
+
   ngOnChanges() {
     this.construirForm();
     this.loadLists();
@@ -157,7 +155,10 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
         // segmento I18n GLOBAL.entradas para que pase a llamarse
         // GLOBAL.movimientos
         // Debería ser suficiente esta línea:
+        if (MOVIMIENTOS_KRONOS_ARKA.some(m => mov.Nombre === m.kronos)) {
         return 'entradas.tipo.' + MOVIMIENTOS_KRONOS_ARKA.find(m => mov.Nombre === m.kronos).arka + '.nombre';
+        }
+      // tslint:disable-next-line
       default:
         return mov.Nombre;
     }

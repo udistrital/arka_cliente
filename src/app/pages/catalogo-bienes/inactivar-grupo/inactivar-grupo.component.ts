@@ -7,6 +7,7 @@ import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/cat
 import Swal from 'sweetalert2';
 import { PopUpManager } from '../../../managers/popUpManager';
 import { Router } from '@angular/router';
+import { NivelHelper as nh } from '../../../@core/utils/niveles.helper';
 
 @Component({
   selector: 'ngx-inactivar-grupo',
@@ -18,7 +19,6 @@ export class InactivarGrupoComponent implements OnInit {
   formGrupo: any;
   info_grupo: Grupo;
   clean: boolean;
-  ver_formulario: boolean;
   cargando_catalogos: boolean = true;
 
   catalogos: Array<Catalogo>;
@@ -67,7 +67,6 @@ export class InactivarGrupoComponent implements OnInit {
   }
 
   onChange(catalogo) {
-    this.ver_formulario = false;
     this.catalogoId = catalogo;
   }
 
@@ -78,19 +77,9 @@ export class InactivarGrupoComponent implements OnInit {
 
   receiveMessage(event) {
 
+    // console.log({event});
     this.info_grupo = event;
-    this.catalogoBienesHelper.getGrupoById(event.Id).subscribe(
-      res => {
-        // console.log(res[0]);
-        if (Object.keys(res[0]).length !== 0) {
-          this.formGrupo.titulo = this.translate.instant('GLOBAL.subgrupo.grupo.nombre');
-          this.ver_formulario = true;
-        } else {
-          // TODO: Actualizar dinamicamente este texto:
-          this.formGrupo.titulo = this.translate.instant('GLOBAL.subgrupo.segmento.nombre');
-          this.ver_formulario = true;
-        }
-      });
+    this.inactivarGrupo();
   }
 
   validarForm(event) {
@@ -102,8 +91,10 @@ export class InactivarGrupoComponent implements OnInit {
   }
 
   inactivarGrupo() {
+    const t = {CODE: this.info_grupo.Codigo};
+    const niv_i18n = nh.Texto(this.info_grupo.TipoNivelId.Id);
     (Swal as any).fire({
-      title: this.translate.instant('GLOBAL.subgrupo.grupo.pregunta_inactivar'),
+      title: this.translate.instant('GLOBAL.subgrupo.' + niv_i18n + '.pregunta_inactivar', t),
       text: this.translate.instant('GLOBAL.inactivar_info'),
       icon: 'warning',
       showCancelButton: true,
@@ -116,12 +107,12 @@ export class InactivarGrupoComponent implements OnInit {
         this.info_grupo.Activo = false;
         this.catalogoBienesHelper.putSubgrupo(this.info_grupo, this.info_grupo.Id).subscribe(res => {
           if (res !== null) {
-            this.pUpManager.showSuccessAlert(this.translate.instant('GLOBAL.subgrupo.grupo.respuesta_inactivar_ok'));
+            this.pUpManager.showSuccessAlert(this.translate.instant('GLOBAL.subgrupo.' + niv_i18n + '.respuesta_inactivar_ok', t));
             this.router.navigateByUrl('/RefreshComponent', { skipLocationChange: true }).then(() => {
               this.router.navigate(['/pages/catalogo_bienes/inactiva_grupos']);
             });
           } else {
-            this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.subgrupo.grupo.respuesta_inactivar_err'));
+            this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.subgrupo.' + niv_i18n + '.respuesta_inactivar_err', t));
           }
         });
       }
