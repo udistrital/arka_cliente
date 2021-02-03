@@ -169,21 +169,11 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
       }
     } else this.uid_1 = undefined;
   }
-  onSubmit() {
-    let mov_existente: boolean;
-    this.Movimientos.forEach((element3: CuentaGrupo) => {
-      // console.log(element3)
-      if (element3.Id !== null && element3.Id !== undefined) {
-        mov_existente = true;
-      }
-    });
 
-    if (mov_existente !== true) {
-      this.createMovimientos(this.Movimientos);
-    } else {
+  onSubmit() {
       this.updateMovimientos(this.Movimientos);
-    }
   }
+
   updateMovimientos(subgrupo: any): void {
 
     const opt: any = {
@@ -217,32 +207,6 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
       });
   }
 
-  createMovimientos(subgrupo: any): void {
-    const opt: any = {
-      title: this.translate.instant('GLOBAL.Crear'),
-      text: this.translate.instant('GLOBAL.Crear_Movimientos_placeholder'),
-      type: 'warning',
-      showCancelButton: true,
-    };
-    (Swal as any).fire(opt)
-      .then((willDelete) => {
-        if (willDelete.value) {
-          const mov: any = {};
-          mov['Cuentas'] = subgrupo;
-          // console.log(mov['Cuentas'])
-          this.catalogoElementosService.postTransaccionCuentasSubgrupo(mov)
-            .subscribe(res => {
-              // console.log(res);
-              this.recargarCatalogo();
-              this.Movimientos = [];
-              this.showToast('info', this.translate.instant('GLOBAL.Creado'), this.translate.instant('GLOBAL.Creado_Movimientos_placeholder'));
-              setTimeout(() => {
-                this.QuitarVista();
-              }, 2000);
-            });
-        }
-      });
-  }
   private showToast(type: string, title: string, body: string) {
     this.config = new ToasterConfig({
       // 'toast-top-full-width', 'toast-bottom-full-width', 'toast-top-left', 'toast-top-center'
