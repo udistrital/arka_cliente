@@ -103,10 +103,8 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
   }
 
   ngOnInit() {
-    this.construirForm();
-    this.loadLists();
-    this.loadCuentaGrupo();
   }
+
   ngOnChanges() {
     this.construirForm();
     this.loadLists();
