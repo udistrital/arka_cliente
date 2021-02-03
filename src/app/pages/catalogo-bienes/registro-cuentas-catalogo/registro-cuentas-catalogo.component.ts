@@ -144,16 +144,12 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
   }
   receiveMessage(event) {
     if (event.TipoNivelId.Id === Nivel_t.Clase) {
+      this.uid_1 = event;
     const opt: any = {
       title: this.translate.instant('No hay detalle asociado'),
       text: this.translate.instant('Revisar las caracteristicas del catalogo'),
       type: 'warning',
     };
-    this.catalogoElementosService.getSubgrupoById(event.Id).subscribe(
-      res => {
-
-          // console.log(event.TipoNivelId.Id);
-          if (Object.keys(res[0]).length !== 0) {
             this.catalogoElementosService.getDetalleSubgrupo(event.Id).subscribe(res2 => {
               if (Object.keys(res2[0]).length !== 0) {
                 this.Movimientos = [];
@@ -161,25 +157,14 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
                 this.valorizacion_ok = res2[0].Valorizacion;
                 this.Total_Movimientos();
                 // console.log(this.all_mov);
-                this.uid_1 = event;
               } else {
                 this.Movimientos = [];
                 this.depreciacion_ok = false;
                 this.valorizacion_ok = false;
                 this.Total_Movimientos();
-                this.uid_1 = event;
                 (Swal as any).fire(opt);
               }
             });
-          } else {
-            this.Movimientos = [];
-            this.depreciacion_ok = false;
-            this.valorizacion_ok = false;
-            this.Total_Movimientos();
-            this.uid_1 = undefined;
-            (Swal as any).fire(opt);
-          }
-      });
     // console.log(event);
     } else this.uid_1 = undefined;
   }
