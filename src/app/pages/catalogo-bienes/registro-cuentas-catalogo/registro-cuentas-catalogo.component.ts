@@ -4,6 +4,7 @@ import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/cat
 import { Grupo, Subgrupo } from '../../../@core/data/models/catalogo/jerarquia';
 import { Nivel_t } from '../../../@core/data/models/catalogo/tipo_nivel';
 import { Catalogo } from '../../../@core/data/models/catalogo/catalogo';
+import { BaseId } from '../../../@core/data/models/base';
 import Swal from 'sweetalert2';
 import { Store } from '@ngrx/store';
 import { IAppState } from '../../../@core/store/app.state';
@@ -185,8 +186,13 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
     (Swal as any).fire(opt)
       .then((willDelete) => {
         if (willDelete.value) {
-          const mov: any = {};
-          mov['Cuentas'] = subgrupo;
+          const mov = {Cuentas: subgrupo.map( (cuenta: CuentaGrupo) => {
+            const subgrupo_id: BaseId = {Id: cuenta.SubgrupoId.Id};
+            cuenta.SubgrupoId = subgrupo_id;
+            cuenta.FechaCreacion = undefined;
+            cuenta.FechaModificacion = undefined;
+            return cuenta;
+          })};
           // console.log(mov)
           // console.log(this.uid_1.Id);
           this.catalogoElementosService.putTransaccionCuentasSubgrupo(mov, this.uid_1.Id)
