@@ -603,6 +603,8 @@ export class TablaElementosAsignadosComponent implements OnInit {
 
   AjustarDatos2(datos: any[]) {
     this.Datos2 = new Array<ElementoSalida>();
+    this.ElementosConsumoControladoSinAsignar = new Array<ElementoSalida>();
+    const elementosConsumoControladoSinAsignar = new Array<any>();
     const datos2 = new Array<any>();
     for (const index in datos) {
       if (true) {
@@ -648,9 +650,15 @@ export class TablaElementosAsignadosComponent implements OnInit {
         }
         // elemento.SubgrupoCatalogoId = datos[index].SubgrupoCatalogoId;
         datos2.push(elemento);
+
+        if (!elemento.Funcionario || !elemento.Ubicacion) {
+          elementosConsumoControladoSinAsignar.push(elemento);
+        }
       }
     }
+
     if (datos2 !== undefined) {
+      this.ElementosConsumoControladoSinAsignar = elementosConsumoControladoSinAsignar;
       this.source.load(datos2);
       this.formulario = false;
       // console.log(this.source);
@@ -734,8 +742,9 @@ export class TablaElementosAsignadosComponent implements OnInit {
     const alertConsumo = (this.DatosConsumo && this.DatosConsumo.length) &&
       (this.ElementosConsumoSinAsignar && this.ElementosConsumoSinAsignar.length) ? true : false;
 
-    const alert =  alertControlado && alertConsumo ? 'GLOBAL.entradas.alerta_ambos' :
+    const alert = alertControlado && alertConsumo ? 'GLOBAL.entradas.alerta_ambos' :
       alertConsumo ? 'GLOBAL.entradas.alerta_consumo' : alertControlado ? 'GLOBAL.entradas.alerta_controlado' : null;
+
     alert ? (Swal as any).fire({
       title: this.translate.instant('GLOBAL.entradas.alerta_descargue'),
       text: this.translate.instant(alert),
