@@ -28,6 +28,7 @@ export class TablaEntradaAprobadaComponent implements OnInit {
   contrato: Contrato;
   settings: any;
   documentoId: boolean;
+  show: boolean;
 
   constructor(
     private router: Router,
@@ -188,6 +189,7 @@ export class TablaEntradaAprobadaComponent implements OnInit {
         this.contrato.TipoContrato = res.contrato.tipo_contrato;
         this.contrato.FechaSuscripcion = res.contrato.fecha_suscripcion;
         this.contrato.Supervisor = supervisorAux;
+        this.show = true;
       }
     });
   }
@@ -253,6 +255,7 @@ export class TablaEntradaAprobadaComponent implements OnInit {
     this.entradaEspecifica.TipoEntradaId.Nombre = info.TipoMovimiento.TipoMovimientoId.Nombre; // TIPO ENTRADA
     this.entradaEspecifica.Observacion = info.Movimiento.Observacion; // OBSERVACIÓN
     this.documentoId = true; // SOPORTE
+    this.show = true;
   }
 
   loadDetalleDonacion(info) {
@@ -267,6 +270,7 @@ export class TablaEntradaAprobadaComponent implements OnInit {
     this.entradaEspecifica.TipoEntradaId.Nombre = info.TipoMovimiento.TipoMovimientoId.Nombre; // TIPO ENTRADA
     this.entradaEspecifica.Observacion = info.Movimiento.Observacion; // OBSERVACIÓN
     this.documentoId = false; // SOPORTE
+    this.show = true;
   }
 
   loadDetalleSobrante(info) {
@@ -278,6 +282,7 @@ export class TablaEntradaAprobadaComponent implements OnInit {
     this.entradaEspecifica.TipoEntradaId.Nombre = info.TipoMovimiento.TipoMovimientoId.Nombre; // TIPO ENTRADA
     this.entradaEspecifica.Observacion = info.Movimiento.Observacion; // OBSERVACIÓN
     this.documentoId = true;
+    this.show = true;
   }
 
   loadDetalleTerceros(info) {
@@ -304,6 +309,7 @@ export class TablaEntradaAprobadaComponent implements OnInit {
   onVolver() {
     this.detalle = !this.detalle;
     this.iniciarParametros();
+    this.show = false;
   }
 
   iniciarParametros() {
