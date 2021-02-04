@@ -63,6 +63,9 @@ export class TablaElementosAsignadosComponent implements OnInit {
   estadoShift: boolean;
   rango: any = null;
   JefeOficinaId: number;
+  showControlado: boolean;
+  showConsumo: boolean;
+  mode :string = 'determinate'
   @Input('actaRecibidoId')
   set name(acta_id: number) {
     this.actaRecibidoId = acta_id;
@@ -200,7 +203,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
       },
       hideSubHeader: false,
       selectMode: 'multi',
-      noDataMessage: 'No se encontraron elementos asociados.',
+      noDataMessage: 'No se encontraron elementos de consumo controlado asociados a esta entrada.',
       actions: {
         columnTitle: 'Acciones',
         position: 'right',
@@ -369,7 +372,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
     this.settings2 = {
       hideSubHeader: false,
       selectMode: 'multi',
-      noDataMessage: 'No se encontraron elementos asociados.',
+      noDataMessage: 'No se encontraron elementos de consumo asociados a esta entrada.',
       actions: {
         columnTitle: 'Acciones',
         position: 'right',
@@ -592,13 +595,15 @@ export class TablaElementosAsignadosComponent implements OnInit {
       }
     }
 
-    if (this.DatosConsumo !== undefined) {
+    if (this.DatosConsumo.length > 0) {
       this.source2.load(this.DatosConsumo);
     }
-    if (this.Datos !== undefined) {
+    if (this.Datos.length > 0) {
       this.source.load(this.Datos);
     }
 
+    this.showControlado = true;
+    this.showConsumo = true;
   }
 
   AjustarDatos2(datos: any[]) {
