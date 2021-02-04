@@ -576,6 +576,10 @@
       "alerta_ambos": "Unassgined elements"
     },
 
+    "salidas": {
+      "elementos": "Elements"
+    },
+
     "registrar_entrada": "Register Entry",
     "mensaje_registrar_entrada": "Select the received report to which you wish to make an entry by clicking on the actions icon located on the right side of the table.",
     "datos_contrato": "Contract Data",

@@ -1,6 +1,6 @@
 <mat-card>
   <mat-card-subtitle>
-    Registrar Elementos
+    {{'GLOBAL.salidas.elementos' | translate}}
   </mat-card-subtitle>
   <mat-card-content>
     <mat-tab-group mat-stretch-tabs [selectedIndex]="selected.value" (selectedIndexChange)="selected.setValue($event)">
@@ -15,6 +15,7 @@
           </ng2-smart-table>
           <ngx-form-elementos-seleccionados *ngIf="formulario" [Datos]="DatosSeleccionados"
             (DatosEnviados)="AjustarDatos2($event)"></ngx-form-elementos-seleccionados>
+          <p></p>
           <div class="form-group  col-lg-12">
             <label>{{'GLOBAL.Acta_Recibido.EdicionActa.Observaciones' | translate}}</label>
             <div class="input-group">
@@ -26,7 +27,8 @@
         </mat-card-content>
       </mat-tab>
       <mat-tab label="{{'GLOBAL.entradas.tab_consumo' | translate}}">
-        <mat-spinner style="margin:0 auto;" *ngIf="!showConsumo" [diameter]="35" [value]="99" [mode]="mode" aria-label="Rating">
+        <mat-spinner style="margin:0 auto;" *ngIf="!showConsumo" [diameter]="35" [value]="99" [mode]="mode"
+          aria-label="Rating">
         </mat-spinner>
         <mat-card-content *ngIf="showConsumo">
           <ng2-smart-table id="source2" [settings]="settings2" [source]="source2" class="noselect"
@@ -35,6 +37,7 @@
           </ng2-smart-table>
           <ngx-form-elementos-seleccionados *ngIf="AsignarDeConsumo" [Datos]="ConsumoSeleccionados"
             (DatosEnviados)="AjustarDatosConsumo($event)"></ngx-form-elementos-seleccionados>
+          <p></p>
           <div class="form-group col-lg-12">
             <label>{{'GLOBAL.Acta_Recibido.EdicionActa.Observaciones' | translate}}</label>
             <div class="input-group">
