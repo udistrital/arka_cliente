@@ -189,6 +189,10 @@ export class ConsultaEntradaComponent implements OnInit {
             this.loadDetalleComprasExtranjeras(res);
             break;
           }
+          case 'Desarrollo interior': {
+            this.loadDetalleIntangiblesDesarrollados(res);
+            break;
+          }
           default: {
             break;
           }
@@ -400,6 +404,17 @@ export class ConsultaEntradaComponent implements OnInit {
     this.mostrar = true;
   }
   loadAprovechamientos(info) {
+    const detalle = JSON.parse(info.Movimiento.Detalle);
+    this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id; // ACTA RECIBIDO
+    this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
+    this.entradaEspecifica.Vigencia = detalle.vigencia_ordenador; // VIGENCIA ORDENADOR
+    this.entradaEspecifica.OrdenadorId = detalle.ordenador_gasto_id; // ORDENADOR DE GASTO
+    this.entradaEspecifica.TipoEntradaId.Nombre = info.TipoMovimiento.TipoMovimientoId.Nombre; // TIPO ENTRADA
+    this.entradaEspecifica.Observacion = info.Movimiento.Observacion; // OBSERVACIÓN
+    this.documentoId = true;
+    this.mostrar = true;
+  }
+  loadDetalleIntangiblesDesarrollados(info) {
     const detalle = JSON.parse(info.Movimiento.Detalle);
     this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id; // ACTA RECIBIDO
     this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
