@@ -65,7 +65,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
   JefeOficinaId: number;
   showControlado: boolean;
   showConsumo: boolean;
-  mode :string = 'determinate'
+  mode: string = 'determinate';
   @Input('actaRecibidoId')
   set name(acta_id: number) {
     this.actaRecibidoId = acta_id;

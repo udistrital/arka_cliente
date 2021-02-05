@@ -258,7 +258,6 @@ export class TablaEntradaAprobadaComponent implements OnInit {
     this.entradaEspecifica.Observacion = info.Movimiento.Observacion; // OBSERVACIÓN
     this.documentoId = true; // SOPORTE
     this.show = true;
-    console.log(this.show)
   }
 
   loadDetalleDonacion(info) {
