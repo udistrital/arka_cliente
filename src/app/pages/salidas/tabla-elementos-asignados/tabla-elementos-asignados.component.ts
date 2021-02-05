@@ -763,7 +763,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
   }
   Salida_Consumo() {
 
-    if (Object.keys(this.ElementosConsumoNoAsignados).length !== 0) {
+    if (this.ElementosConsumoNoAsignados && Object.keys(this.ElementosConsumoNoAsignados).length !== 0) {
       const sede = 'FICC';
       const dependencia = 'ALMACEN GENERAL E INVENTARIOS';
 
@@ -773,6 +773,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
       this.actaRecibidoHelper.postRelacionSedeDependencia(transaccion).subscribe((res: any) => {
         const detalle = {
           ubicacion: res[0].Relaciones[0].Id,
+          funcionario: this.JefeOficinaId,
         };
         const Salida = {
           Salida: {
@@ -856,7 +857,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
   }
 
   Salida_General_Consumo() {
-    if (Object.keys(this.ElementosConsumoAsignados).length !== 0) {
+    if (this.ElementosConsumoAsignados && Object.keys(this.ElementosConsumoAsignados).length !== 0) {
       const datos_agrupados2 = this.ElementosConsumoAsignados.reduce((accumulator, currentValue) => {
         if (currentValue.Funcionario.Id) {
           const detalle = {
@@ -898,7 +899,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
 
       return datos_agrupados2;
     } else {
-      return this.Datos;
+      return this.ElementosConsumoAsignados;
     }
   }
 
@@ -910,14 +911,14 @@ export class TablaElementosAsignadosComponent implements OnInit {
     const Salidas = {
       Salidas: [],
     };
-    if (Object.keys(datos_agrupados2).length !== 0) {
+    if (datos_agrupados2 && Object.keys(datos_agrupados2).length !== 0) {
       for (const salida of Object.keys(datos_agrupados2)) {
         Salidas.Salidas.push(datos_agrupados2[salida]);
       }
 
     }
 
-    if (Object.keys(this.ElementosConsumoNoAsignados).length !== 0) {
+    if (this.ElementosConsumoNoAsignados && Object.keys(this.ElementosConsumoNoAsignados).length !== 0) {
       Salidas.Salidas.push(this.Datos_Salida_Consumo);
     }
 
