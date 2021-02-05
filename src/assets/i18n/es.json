@@ -577,7 +577,9 @@
     },
 
     "salidas": {
-      "elementos": "Elementos"
+      "titulo_registrar": "Registrar Salida",
+      "elementos": "Elementos",
+      "salida_instruccion": "En la siguiente tabla seleccione la entrada para poder generar la salida correspondiente"
     },
 
     "registrar_entrada": "Registrar Entrada",
