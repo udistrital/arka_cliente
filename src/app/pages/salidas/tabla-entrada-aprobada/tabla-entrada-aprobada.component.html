@@ -4,7 +4,10 @@
   </mat-card-title>
   <mat-card-subtitle *ngIf="!detalle">{{'GLOBAL.salidas.salida_instruccion' | translate}}
   </mat-card-subtitle>
-  <ng2-smart-table [settings]="settings" [source]="source" (custom)="onCustom($event)" *ngIf="!detalle">
+  <mat-spinner style="margin:0 auto;" *ngIf="!showList" [diameter]="35" [value]="99" [mode]="mode">
+  </mat-spinner>
+  
+  <ng2-smart-table [settings]="settings" [source]="source" (custom)="onCustom($event)" *ngIf="!detalle && showList">
   </ng2-smart-table>
 
   <mat-accordion *ngIf="detalle" multi>

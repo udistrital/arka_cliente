@@ -30,6 +30,7 @@ export class TablaEntradaAprobadaComponent implements OnInit {
   documentoId: boolean;
   show: boolean;
   mode: string = 'determinate';
+  showList: boolean;
 
   constructor(
     private router: Router,
@@ -135,6 +136,7 @@ export class TablaEntradaAprobadaComponent implements OnInit {
           this.entradas.push(entrada);
         }
         this.source.load(this.entradas);
+        this.showList = true;
       }
     });
   }
