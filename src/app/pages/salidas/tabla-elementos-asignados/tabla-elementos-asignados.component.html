@@ -1,58 +1,50 @@
-<mat-card>
-  <mat-card-subtitle>
-    {{'GLOBAL.salidas.elementos' | translate}}
-  </mat-card-subtitle>
-  <mat-card-content>
-    <mat-tab-group mat-stretch-tabs [selectedIndex]="selected.value" (selectedIndexChange)="selected.setValue($event)">
-      <mat-tab label="{{'GLOBAL.entradas.tab_consumo_controlado' | translate}}">
+<mat-card-content>
+  <mat-tab-group mat-stretch-tabs [selectedIndex]="selected.value" (selectedIndexChange)="selected.setValue($event)">
+    <mat-tab label="{{'GLOBAL.entradas.tab_consumo_controlado' | translate}}">
+      <p></p>
+      <mat-spinner style="margin:0 auto;" *ngIf="!showControlado" [diameter]="35" [value]="99" [mode]="mode">
+      </mat-spinner>
+      <mat-card-content *ngIf="showControlado">
+        <ng2-smart-table [settings]="settings" [source]="source" class="noselect" (userRowSelect)="onRowSelect($event)"
+          (keyup)="keyUpTabla($event)" (keydown.shift)="keyDownTablaShift($event)">
+        </ng2-smart-table>
+        <ngx-form-elementos-seleccionados *ngIf="formulario" [Datos]="DatosSeleccionados"
+          (DatosEnviados)="AjustarDatos2($event)"></ngx-form-elementos-seleccionados>
         <p></p>
-        <mat-spinner style="margin:0 auto;" *ngIf="!showControlado" [diameter]="35" [value]="99" [mode]="mode">
-        </mat-spinner>
-        <mat-card-content *ngIf="showControlado">
-          <ng2-smart-table [settings]="settings" [source]="source" class="noselect"
-            (userRowSelect)="onRowSelect($event)" (keyup)="keyUpTabla($event)"
-            (keydown.shift)="keyDownTablaShift($event)">
-          </ng2-smart-table>
-          <ngx-form-elementos-seleccionados *ngIf="formulario" [Datos]="DatosSeleccionados"
-            (DatosEnviados)="AjustarDatos2($event)"></ngx-form-elementos-seleccionados>
-          <p></p>
-          <div class="form-group  col-lg-12">
-            <label>{{'GLOBAL.Acta_Recibido.EdicionActa.Observaciones' | translate}}</label>
-            <div class="input-group">
-              <textarea rows="5" [(ngModel)]="Observaciones"
-                placeholder="Proporciona datos adicionales que no se pueden expresar en el formulario"
-                class="form-control" required></textarea>
-            </div>
+        <div class="form-group  col-lg-12">
+          <label>{{'GLOBAL.Acta_Recibido.EdicionActa.Observaciones' | translate}}</label>
+          <div class="input-group">
+            <textarea rows="5" [(ngModel)]="Observaciones"
+              placeholder="Proporciona datos adicionales que no se pueden expresar en el formulario"
+              class="form-control" required></textarea>
           </div>
-        </mat-card-content>
-      </mat-tab>
-      <mat-tab label="{{'GLOBAL.entradas.tab_consumo' | translate}}">
-        <mat-spinner style="margin:0 auto;" *ngIf="!showConsumo" [diameter]="35" [value]="99" [mode]="mode"
-          aria-label="Rating">
-        </mat-spinner>
-        <mat-card-content *ngIf="showConsumo">
-          <ng2-smart-table id="source2" [settings]="settings2" [source]="source2" class="noselect"
-            (userRowSelect)="onRowSelect2($event)" (keyup)="keyUpTabla($event)"
-            (keydown.shift)="keyDownTablaShift($event)">
-          </ng2-smart-table>
-          <ngx-form-elementos-seleccionados *ngIf="AsignarDeConsumo" [Datos]="ConsumoSeleccionados"
-            (DatosEnviados)="AjustarDatosConsumo($event)"></ngx-form-elementos-seleccionados>
-          <p></p>
-          <div class="form-group col-lg-12">
-            <label>{{'GLOBAL.Acta_Recibido.EdicionActa.Observaciones' | translate}}</label>
-            <div class="input-group">
-              <textarea rows="5" [(ngModel)]="ObservacionesConsumo"
-                placeholder="Proporciona datos adicionales que no se pueden expresar en el formulario"
-                class="form-control" required></textarea>
-            </div>
+        </div>
+      </mat-card-content>
+    </mat-tab>
+    <mat-tab label="{{'GLOBAL.entradas.tab_consumo' | translate}}">
+      <mat-spinner style="margin:0 auto;" *ngIf="!showConsumo" [diameter]="35" [value]="99" [mode]="mode">
+      </mat-spinner>
+      <mat-card-content *ngIf="showConsumo">
+        <ng2-smart-table id="source2" [settings]="settings2" [source]="source2" class="noselect"
+          (userRowSelect)="onRowSelect2($event)" (keyup)="keyUpTabla($event)"
+          (keydown.shift)="keyDownTablaShift($event)">
+        </ng2-smart-table>
+        <ngx-form-elementos-seleccionados *ngIf="AsignarDeConsumo" [Datos]="ConsumoSeleccionados"
+          (DatosEnviados)="AjustarDatosConsumo($event)"></ngx-form-elementos-seleccionados>
+        <p></p>
+        <div class="form-group col-lg-12">
+          <label>{{'GLOBAL.Acta_Recibido.EdicionActa.Observaciones' | translate}}</label>
+          <div class="input-group">
+            <textarea rows="5" [(ngModel)]="ObservacionesConsumo"
+              placeholder="Proporciona datos adicionales que no se pueden expresar en el formulario"
+              class="form-control" required></textarea>
           </div>
-        </mat-card-content>
-      </mat-tab>
-    </mat-tab-group>
-  </mat-card-content>
-</mat-card>
+        </div>
+      </mat-card-content>
+    </mat-tab>
+  </mat-tab-group>
 
-<mat-card-actions>
-  <button mat-flat-button color="primary" (click)="checkElementosAsignados()"
-    class="float-right">{{'GLOBAL.entradas.asignar' | translate}}</button>
-</mat-card-actions>
+  <mat-card-actions>
+    <button mat-raised-button color="primary" (click)="checkElementosAsignados()"
+      class="float-right">{{'GLOBAL.entradas.asignar' | translate}}</button>
+  </mat-card-actions>

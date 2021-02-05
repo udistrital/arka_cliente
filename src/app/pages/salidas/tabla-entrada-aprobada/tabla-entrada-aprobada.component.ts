@@ -29,6 +29,7 @@ export class TablaEntradaAprobadaComponent implements OnInit {
   settings: any;
   documentoId: boolean;
   show: boolean;
+  mode: string = 'determinate';
 
   constructor(
     private router: Router,
@@ -163,6 +164,7 @@ export class TablaEntradaAprobadaComponent implements OnInit {
             break;
           }
           default: {
+            this.show = true;
             break;
           }
         }
@@ -256,6 +258,7 @@ export class TablaEntradaAprobadaComponent implements OnInit {
     this.entradaEspecifica.Observacion = info.Movimiento.Observacion; // OBSERVACIÓN
     this.documentoId = true; // SOPORTE
     this.show = true;
+    console.log(this.show)
   }
 
   loadDetalleDonacion(info) {
