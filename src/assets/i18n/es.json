@@ -579,7 +579,9 @@
     "salidas": {
       "titulo_registrar": "Registrar Salida",
       "elementos": "Elementos",
-      "salida_instruccion": "En la siguiente tabla seleccione la entrada para poder generar la salida correspondiente"
+      "salida_instruccion": "En la siguiente tabla seleccione la entrada para poder generar la salida correspondiente",
+      "consulta_salida_info": "En la siguiente tabla se muestran de forma general las salidas, seleccione una para ver la informacion asociada",
+      "detalle_salida": "Detalle Salida"
     },
 
     "registrar_entrada": "Registrar Entrada",

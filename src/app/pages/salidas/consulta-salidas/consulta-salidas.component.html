@@ -1,36 +1,22 @@
-<div *ngIf="!mostrar" [nbSpinner]="!mostrar">
-  <nb-card>
-    <nb-card-header>
+<mat-card *ngIf="mostrar">
+  <div>
+    <mat-card-title>
+      {{'GLOBAL.consultar_entrada' | translate}}
+    </mat-card-title>
 
-    </nb-card-header>
-    <nb-card-body>
+    <mat-card-subtitle *ngIf="!detalle">
+      {{'GLOBAL.salidas.consulta_salida_info' | translate}}
+    </mat-card-subtitle>
 
-    </nb-card-body>
-  </nb-card>
-</div>
-<div class="col-lg-12">
-  <nb-card *ngIf="mostrar">
-    <nb-card-header>
-      <!-- <h1>{{'GLOBAL.consultar_entrada' | translate}}</h1> -->
-      Consultar Salidas
-    </nb-card-header>
-    <nb-card-body>
+    <ng2-smart-table [settings]="settings" [source]="source" (custom)="onCustom($event)" *ngIf="!detalle">
+    </ng2-smart-table>
 
-      <!-- CARD PARA MOSTRAR LAS SOLICITUDES *ngIf="!detalle" -->
-      <!-- <p class="h4 pb-4" *ngIf="!detalle">{{'GLOBAL.mensaje_consulta_entrada' | translate}}</p> -->
-      <p class="h4 pb-4" *ngIf="!detalle">
-        En la siguiente tabla se muestran de forma general las salidas, seleccione una para ver la informacion asociada</p>
-        <ng2-smart-table [settings]="settings" [source]="source" (custom)="onCustom($event)" *ngIf="!detalle">
-        </ng2-smart-table>
+    <ngx-consulta-salida-especifica [salida_id]="salidaId" *ngIf="detalle">
+    </ngx-consulta-salida-especifica>
 
-        <ngx-consulta-salida-especifica [salida_id]="salidaId" *ngIf="detalle"></ngx-consulta-salida-especifica>
-    </nb-card-body>
-    <nb-card-footer>
-      <div class="pt-4">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="onVolver()"
-          *ngIf="detalle">{{'GLOBAL.volver' | translate}}
-        </button>
-      </div>
-    </nb-card-footer>
-  </nb-card>
-</div>
+    <mat-card-actions>
+      <button mat-raised-button color="secondary" (click)="onVolver()" class="float-left text-uppercase"
+        *ngIf="detalle">{{'GLOBAL.volver' | translate}}</button>
+    </mat-card-actions>
+  </div>
+</mat-card>

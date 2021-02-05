@@ -577,8 +577,11 @@
     },
 
     "salidas": {
+      "titulo_registrar": "Register Output",
       "elementos": "Elements",
-      "salida_instruccion": "Select an entry from the following list"
+      "salida_instruccion": "Select an entry from the following list",
+      "consulta_salida_info": "Select an output from the following list",
+      "detalle_salida": "Output Detail"
     },
 
     "registrar_entrada": "Register Entry",
