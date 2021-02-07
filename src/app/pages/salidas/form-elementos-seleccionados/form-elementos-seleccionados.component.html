@@ -38,7 +38,7 @@
       </div>
       <div class="row">
         <div class="form-group col-sm">
-          <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Sede' | translate}}</label>
+          <label class="label">{{'GLOBAL.Acta_Recibido.RegistroActa.Sede' | translate}}</label>
           <mat-select class="form-control" type="text" formControlName="Sede" (click)="Traer_Relacion_Ubicaciones();"
             required>
             <mat-option *ngFor="let sede of Sedes" [(value)]="sede.Id">{{sede.Nombre}}</mat-option>
@@ -46,19 +46,19 @@
         </div>
 
         <div class="form-group col-sm">
-          <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Dependencia' | translate}}</label>
+          <label class="label">{{'GLOBAL.Acta_Recibido.RegistroActa.Dependencia' | translate}}</label>
           <ng2-completer style="border: 0rem" inputClass="form-control" [datasource]="dataService3"
             formControlName="Dependencia" [minSearchLength]="3" (change)="Traer_Relacion_Ubicaciones()"
             placeholder="{{'GLOBAL.Acta_Recibido.RegistroActa.SeleccioneFiltro' | translate}}">
           </ng2-completer>
         </div>
         <div class="form-group col-sm">
-          <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Ubicacion' | translate}}</label>
+          <label class="label">{{'GLOBAL.Acta_Recibido.RegistroActa.Ubicacion' | translate}}</label>
           <!-- <ng2-completer style="border: 0rem" inputClass="form-control" [clearUnselected]="true" nbInput
               [datasource]="dataService" formControlName="Ubicacion" [minSearchLength]="3"
               placeholder="{{'GLOBAL.Acta_Recibido.RegistroActa.SeleccioneFiltro' | translate}}">
             </ng2-completer> [disabled]="!form_salida.valid"-->
-          <mat-select type="text" class="form-control" formControlName="Ubicacion"
+          <mat-select style="margin-left: 10%;" type="text" class="form-control" formControlName="Ubicacion"
             (click)="Traer_Relacion_Ubicaciones();" required>
             <mat-option *ngFor="let ubicacion of Ubicaciones" [(value)]="ubicacion.Id">{{ubicacion.Nombre}}</mat-option>
           </mat-select>
