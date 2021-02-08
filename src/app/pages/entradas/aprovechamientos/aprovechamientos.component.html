@@ -42,13 +42,13 @@
       <div class="form-group col-sm">
         <label>{{'GLOBAL.sede' | translate}}</label>
         <div class="input-group">
-          <output defaultValue="Sede" class="form-control" [value]="supervisorForm.value.supervisorCtrl + '&nbsp;'"></output>
+          <output defaultValue="Sede" class="form-control" [value]="datosSupervisor('sede') + '&nbsp;'"></output>
         </div>
       </div>
       <div class="form-group col-sm">
         <label>{{'GLOBAL.dependencia' | translate}}</label>
         <div class="input-group">
-          <output defaultValue="Dependencia" class="form-control" [value]="supervisorForm.value.supervisorCtrl + '&nbsp;'"></output>
+          <output defaultValue="Dependencia" class="form-control" [value]="datosSupervisor('dependencia') + '&nbsp;'"></output>
         </div>
       </div>
     </div>

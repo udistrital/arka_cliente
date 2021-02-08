@@ -150,6 +150,24 @@ export class AprovechamientosComponent implements OnInit {
     return sup.TerceroPrincipal.NombreCompleto;
   }
 
+  datosSupervisor(param: string): string {
+    const supervisorSeleccionado: TerceroCriterioPlanta = <TerceroCriterioPlanta>this.supervisorForm.value.supervisorCtrl;
+    console.log({supervisorSeleccionado});
+    if (supervisorSeleccionado) {
+      switch (param) {
+        case 'sede':
+          return supervisorSeleccionado.Sede.Nombre;
+
+        case 'dependencia':
+          return supervisorSeleccionado.Dependencia.Nombre;
+
+        default:
+          return '';
+      }
+    }
+    return '';
+  }
+
   private getTipoEntrada() {
     this.entradasHelper.getTipoEntradaByAcronimoAndNombre('e_arka', 'Aprovechamientos').subscribe(res => {
       if (res !== undefined) {
