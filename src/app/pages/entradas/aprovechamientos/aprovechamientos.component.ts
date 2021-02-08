@@ -7,6 +7,7 @@ import { Proveedor } from '../../../@core/data/models/acta_recibido/Proveedor';
 import { OrdenadorGasto } from '../../../@core/data/models/entrada/ordenador_gasto';
 import { SoporteActaProveedor } from '../../../@core/data/models/acta_recibido/soporte_acta';
 import { Supervisor } from '../../../@core/data/models/entrada/supervisor';
+import { TerceroCriterioPlanta } from '../../../@core/data/models/terceros_criterio';
 import { PopUpManager } from '../../../managers/popUpManager';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
 import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
@@ -47,8 +48,8 @@ export class AprovechamientosComponent implements OnInit {
   private formatoTipoMovimiento: any;
   private Proveedores: Proveedor[];
   proveedoresFiltrados: Observable<Proveedor[]>;
-  private Supervisores: any[];
-  supervisoresFiltrados: Observable<any[]>;
+  private Supervisores: TerceroCriterioPlanta[];
+  supervisoresFiltrados: Observable<TerceroCriterioPlanta[]>;
 
   @ViewChild('stepper') stepper: NbStepperComponent;
 
@@ -121,8 +122,8 @@ export class AprovechamientosComponent implements OnInit {
   private loadSupervisores(): void {
     this.tercerosHelper.getTercerosByCriterio('funcionarioPlanta').subscribe( res => {
       if (Array.isArray(res)) {
-        // console.log({supervisores: res});
         this.Supervisores = res;
+        // console.log({supervisores: this.Supervisores});
         this.cargando_supervisores = false;
       }
     });
