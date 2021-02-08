@@ -101,6 +101,13 @@ export class AprovechamientosComponent implements OnInit {
     } else return [];
   }
 
+  private filtroSupervisores(nombre: string): TerceroCriterioPlanta[] {
+    // if (nombre.length >= 4 ) {
+      const valorFiltrado = nombre.toLowerCase();
+      return this.Supervisores.filter(sup => sup.TerceroPrincipal.NombreCompleto.toLowerCase().includes(valorFiltrado));
+    // } else return [];
+  }
+
   private loadLists() {
     this.store.select(state => state.listProveedores).subscribe(
       (res) => {
@@ -123,6 +130,12 @@ export class AprovechamientosComponent implements OnInit {
     this.tercerosHelper.getTercerosByCriterio('funcionarioPlanta').subscribe( res => {
       if (Array.isArray(res)) {
         this.Supervisores = res;
+        this.supervisoresFiltrados = this.supervisorForm.get('supervisorCtrl').valueChanges
+          .pipe(
+            startWith(''),
+            map(val => typeof val === 'string' ? val : this.muestraSupervisor(val)),
+            map(nombre => this.filtroSupervisores(nombre)),
+          );
         // console.log({supervisores: this.Supervisores});
         this.cargando_supervisores = false;
       }
@@ -131,6 +144,10 @@ export class AprovechamientosComponent implements OnInit {
 
   muestraProveedor(prov: Proveedor): string {
     return prov.compuesto;
+  }
+
+  muestraSupervisor(sup: TerceroCriterioPlanta): string {
+    return sup.TerceroPrincipal.NombreCompleto;
   }
 
   private getTipoEntrada() {
