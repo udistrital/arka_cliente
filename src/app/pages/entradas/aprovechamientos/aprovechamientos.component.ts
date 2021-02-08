@@ -152,7 +152,7 @@ export class AprovechamientosComponent implements OnInit {
 
   datosSupervisor(param: string): string {
     const supervisorSeleccionado: TerceroCriterioPlanta = <TerceroCriterioPlanta>this.supervisorForm.value.supervisorCtrl;
-    console.log({supervisorSeleccionado});
+    // console.log({supervisorSeleccionado});
     if (supervisorSeleccionado) {
       switch (param) {
         case 'sede':
@@ -205,7 +205,7 @@ export class AprovechamientosComponent implements OnInit {
         consecutivo: 'P1-' + this.actaRecibidoId + '-' + new Date().getFullYear(),
         documento_contable_id: 1, // REVISAR
         vigencia: this.contratoForm.value.vigenciaCtrl,
-        supervisor: this.supervisorForm.value.supervisorCtrl,
+        supervisor: this.supervisorForm.value.supervisorCtrl.TerceroPrincipal.Id,
         proveedor: this.facturaForm.value.proveedorCtrl.compuesto,
       };
       const movimientoAdquisicion = {
@@ -221,7 +221,7 @@ export class AprovechamientosComponent implements OnInit {
         SoporteMovimientoId: 0,
         IdTipoMovimiento: this.tipoEntrada.Id,
       };
-      // console.log({movimientoAdquisicion})
+      // console.log({movimientoAdquisicion});
       this.entradasHelper.postEntrada(movimientoAdquisicion).subscribe((res: any) => {
         if (res !== null) {
           (Swal as any).fire({

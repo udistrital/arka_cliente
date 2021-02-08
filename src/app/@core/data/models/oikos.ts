@@ -2,7 +2,7 @@
  * Estructuras de datos asociadas a Oikos
  */
 
-import { Base } from './base'
+import { Base } from './base';
 
 export class Dependencia extends Base {
     Nombre: string;
