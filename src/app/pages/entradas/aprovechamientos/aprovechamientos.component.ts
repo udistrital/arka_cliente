@@ -10,6 +10,7 @@ import { Supervisor } from '../../../@core/data/models/entrada/supervisor';
 import { PopUpManager } from '../../../managers/popUpManager';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
 import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
+import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
 import { ListService } from '../../../@core/store/services/list.service';
 import { Store } from '@ngrx/store';
 import { IAppState } from '../../../@core/store/app.state';
@@ -40,11 +41,14 @@ export class AprovechamientosComponent implements OnInit {
   fechaFactura: string;
   validar: boolean;
   cargando_proveedores: boolean = true;
+  cargando_supervisores: boolean = true;
 
   private tipoEntrada: any;
   private formatoTipoMovimiento: any;
   private Proveedores: Proveedor[];
   proveedoresFiltrados: Observable<Proveedor[]>;
+  private Supervisores: any[];
+  supervisoresFiltrados: Observable<any[]>;
 
   @ViewChild('stepper') stepper: NbStepperComponent;
 
@@ -54,6 +58,7 @@ export class AprovechamientosComponent implements OnInit {
     private router: Router,
     private entradasHelper: EntradaHelper,
     private actaRecibidoHelper: ActaRecibidoHelper,
+    private tercerosHelper: TercerosHelper,
     private pUpManager: PopUpManager,
     private fb: FormBuilder,
     private listService: ListService,
@@ -85,6 +90,7 @@ export class AprovechamientosComponent implements OnInit {
     this.getVigencia();
     this.listService.findProveedores();
     this.loadLists();
+    this.loadSupervisores();
   }
 
   private filtroProveedores(nombre: string): Proveedor[] {
@@ -110,6 +116,16 @@ export class AprovechamientosComponent implements OnInit {
         }
       },
     );
+  }
+
+  private loadSupervisores(): void {
+    this.tercerosHelper.getTercerosByCriterio('funcionarioPlanta').subscribe( res => {
+      if (Array.isArray(res)) {
+        // console.log({supervisores: res});
+        this.Supervisores = res;
+        this.cargando_supervisores = false;
+      }
+    });
   }
 
   muestraProveedor(prov: Proveedor): string {

@@ -70,4 +70,30 @@ export class TercerosHelper {
         );
     }
 
+    /**
+     * getTercerosByCriterio
+     *
+     * Trae todos o un tercero, de acuerdo al criterio especificado
+     * @param criterio El tipo de tercero que se necesita, ejemplo: "funcionarioPlanta" o "jefes"
+     * @param idTercero De especificarse, adicionalmente filtra por ese ID
+     */
+    public getTercerosByCriterio(criterio: string, idTercero: number = 0) {
+        this.rqManager.setPath('ARKA_SERVICE');
+        let path = 'terceros/tipo/' + criterio;
+        if (idTercero > 0) {
+            path += '/' + idTercero;
+        }
+        return this.rqManager.get(path).pipe(
+            map(
+                (res) => {
+                    if (res === 'error' || !Array.isArray(res)) {
+                        this.pUpManager.showErrorAlert('No se encontro ningun tercero que pueda ejercer como supervisor');
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
+
 }
