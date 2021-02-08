@@ -3,6 +3,7 @@ import { REDUCER_LIST } from '../reducer.constants';
 export class ListReducer {
   constructor() {
   }
+
   static ListReducerProveedor(state: Array<any> = new Array, action) {
     switch (action.type) {
       case REDUCER_LIST.Proveedores:
@@ -20,6 +21,7 @@ export class ListReducer {
         return state;
     }
   }
+
   static ListReducerPlanCuentasCredito(state: Array<any> = new Array, action) {
     switch (action.type) {
       case REDUCER_LIST.PlanCuentasCredito:
@@ -28,6 +30,7 @@ export class ListReducer {
         return state;
     }
   }
+
   static ListReducerSedes(state: Array<any> = new Array, action) {
     switch (action.type) {
       case REDUCER_LIST.Sedes:
@@ -36,6 +39,7 @@ export class ListReducer {
         return state;
     }
   }
+
   static ListReducerDependencias(state: Array<any> = new Array, action) {
     switch (action.type) {
       case REDUCER_LIST.Dependencias:
@@ -44,6 +48,7 @@ export class ListReducer {
         return state;
     }
   }
+
   static ListReducerUbicaciones(state: Array<any> = new Array, action) {
     switch (action.type) {
       case REDUCER_LIST.Ubicaciones:
@@ -52,6 +57,7 @@ export class ListReducer {
         return state;
     }
   }
+
   static ListReducerEstadosActa(state: Array<any> = new Array, action) {
     switch (action.type) {
       case REDUCER_LIST.EstadosActa:
@@ -60,6 +66,7 @@ export class ListReducer {
         return state;
     }
   }
+
   static ListReducerEstadosElemento(state: Array<any> = new Array, action) {
     switch (action.type) {
       case REDUCER_LIST.EstadosElemento:
@@ -68,6 +75,7 @@ export class ListReducer {
         return state;
     }
   }
+
   static ListReducerTipoBien(state: Array<any> = new Array, action) {
     switch (action.type) {
       case REDUCER_LIST.TipoBien:
@@ -76,6 +84,7 @@ export class ListReducer {
         return state;
     }
   }
+
   static ListReducerIVA(state: Array<any> = new Array, action) {
     switch (action.type) {
       case REDUCER_LIST.IVA:
@@ -84,6 +93,7 @@ export class ListReducer {
         return state;
     }
   }
+
   static ListReducerUnidades(state: Array<any> = new Array, action) {
     switch (action.type) {
       case REDUCER_LIST.Unidades:
@@ -92,6 +102,7 @@ export class ListReducer {
         return state;
     }
   }
+
   static ListReducerConsumo(state: Array<any> = new Array, action) {
     switch (action.type) {
       case REDUCER_LIST.Consumo:
@@ -100,6 +111,7 @@ export class ListReducer {
         return state;
     }
   }
+
   static ListReducerConsumoControlado(state: Array<any> = new Array, action) {
     switch (action.type) {
       case REDUCER_LIST.ConsumoControlado:
@@ -108,6 +120,7 @@ export class ListReducer {
         return state;
     }
   }
+
   static ListReducerDevolutivo(state: Array<any> = new Array, action) {
     switch (action.type) {
       case REDUCER_LIST.Devolutivo:
@@ -116,6 +129,7 @@ export class ListReducer {
         return state;
     }
   }
+
   static ListReducerFormatosKardex(state: Array<any> = new Array, action) {
     switch (action.type) {
       case REDUCER_LIST.FormatosKardex:
@@ -124,6 +138,7 @@ export class ListReducer {
         return state;
     }
   }
+
   static ListReducerEstadosMovimiento(state: Array<any> = new Array, action) {
     switch (action.type) {
       case REDUCER_LIST.EstadosMovimiento:
@@ -132,6 +147,7 @@ export class ListReducer {
         return state;
     }
   }
+
   static ListReducerFormatosMovimiento(state: Array<any> = new Array, action) {
     switch (action.type) {
       case REDUCER_LIST.FormatosMovimiento:
@@ -140,6 +156,7 @@ export class ListReducer {
         return state;
     }
   }
+
   static ListReducerClases(state: Array<any> = new Array, action) {
     switch (action.type) {
       case REDUCER_LIST.Clases:
@@ -148,6 +165,5 @@ export class ListReducer {
         return state;
     }
   }
-
 
 }

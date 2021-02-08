@@ -7,9 +7,11 @@ import { Proveedor } from '../../../@core/data/models/acta_recibido/Proveedor';
 import { OrdenadorGasto } from '../../../@core/data/models/entrada/ordenador_gasto';
 import { SoporteActaProveedor } from '../../../@core/data/models/acta_recibido/soporte_acta';
 import { Supervisor } from '../../../@core/data/models/entrada/supervisor';
+import { TerceroCriterioPlanta } from '../../../@core/data/models/terceros_criterio';
 import { PopUpManager } from '../../../managers/popUpManager';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
 import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
+import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
 import { ListService } from '../../../@core/store/services/list.service';
 import { Store } from '@ngrx/store';
 import { IAppState } from '../../../@core/store/app.state';
@@ -40,11 +42,14 @@ export class AprovechamientosComponent implements OnInit {
   fechaFactura: string;
   validar: boolean;
   cargando_proveedores: boolean = true;
+  cargando_supervisores: boolean = true;
 
   private tipoEntrada: any;
   private formatoTipoMovimiento: any;
   private Proveedores: Proveedor[];
   proveedoresFiltrados: Observable<Proveedor[]>;
+  private Supervisores: TerceroCriterioPlanta[];
+  supervisoresFiltrados: Observable<TerceroCriterioPlanta[]>;
 
   @ViewChild('stepper') stepper: NbStepperComponent;
 
@@ -54,6 +59,7 @@ export class AprovechamientosComponent implements OnInit {
     private router: Router,
     private entradasHelper: EntradaHelper,
     private actaRecibidoHelper: ActaRecibidoHelper,
+    private tercerosHelper: TercerosHelper,
     private pUpManager: PopUpManager,
     private fb: FormBuilder,
     private listService: ListService,
@@ -85,6 +91,7 @@ export class AprovechamientosComponent implements OnInit {
     this.getVigencia();
     this.listService.findProveedores();
     this.loadLists();
+    this.loadSupervisores();
   }
 
   private filtroProveedores(nombre: string): Proveedor[] {
@@ -92,6 +99,13 @@ export class AprovechamientosComponent implements OnInit {
       const valorFiltrado = nombre.toLowerCase();
       return this.Proveedores.filter(prov => prov.compuesto.toLowerCase().includes(valorFiltrado));
     } else return [];
+  }
+
+  private filtroSupervisores(nombre: string): TerceroCriterioPlanta[] {
+    // if (nombre.length >= 4 ) {
+      const valorFiltrado = nombre.toLowerCase();
+      return this.Supervisores.filter(sup => sup.TerceroPrincipal.NombreCompleto.toLowerCase().includes(valorFiltrado));
+    // } else return [];
   }
 
   private loadLists() {
@@ -112,8 +126,46 @@ export class AprovechamientosComponent implements OnInit {
     );
   }
 
+  private loadSupervisores(): void {
+    this.tercerosHelper.getTercerosByCriterio('funcionarioPlanta').subscribe( res => {
+      if (Array.isArray(res)) {
+        this.Supervisores = res;
+        this.supervisoresFiltrados = this.supervisorForm.get('supervisorCtrl').valueChanges
+          .pipe(
+            startWith(''),
+            map(val => typeof val === 'string' ? val : this.muestraSupervisor(val)),
+            map(nombre => this.filtroSupervisores(nombre)),
+          );
+        // console.log({supervisores: this.Supervisores});
+        this.cargando_supervisores = false;
+      }
+    });
+  }
+
   muestraProveedor(prov: Proveedor): string {
     return prov.compuesto;
+  }
+
+  muestraSupervisor(sup: TerceroCriterioPlanta): string {
+    return sup.TerceroPrincipal.NombreCompleto;
+  }
+
+  datosSupervisor(param: string): string {
+    const supervisorSeleccionado: TerceroCriterioPlanta = <TerceroCriterioPlanta>this.supervisorForm.value.supervisorCtrl;
+    // console.log({supervisorSeleccionado});
+    if (supervisorSeleccionado) {
+      switch (param) {
+        case 'sede':
+          return supervisorSeleccionado.Sede.Nombre;
+
+        case 'dependencia':
+          return supervisorSeleccionado.Dependencia.Nombre;
+
+        default:
+          return '';
+      }
+    }
+    return '';
   }
 
   private getTipoEntrada() {
@@ -153,7 +205,7 @@ export class AprovechamientosComponent implements OnInit {
         consecutivo: 'P1-' + this.actaRecibidoId + '-' + new Date().getFullYear(),
         documento_contable_id: 1, // REVISAR
         vigencia: this.contratoForm.value.vigenciaCtrl,
-        supervisor: this.supervisorForm.value.supervisorCtrl,
+        supervisor: this.supervisorForm.value.supervisorCtrl.TerceroPrincipal.Id,
         proveedor: this.facturaForm.value.proveedorCtrl.compuesto,
       };
       const movimientoAdquisicion = {
@@ -169,7 +221,7 @@ export class AprovechamientosComponent implements OnInit {
         SoporteMovimientoId: 0,
         IdTipoMovimiento: this.tipoEntrada.Id,
       };
-      // console.log({movimientoAdquisicion})
+      // console.log({movimientoAdquisicion});
       this.entradasHelper.postEntrada(movimientoAdquisicion).subscribe((res: any) => {
         if (res !== null) {
           (Swal as any).fire({

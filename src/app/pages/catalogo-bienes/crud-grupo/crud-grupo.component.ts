@@ -9,8 +9,6 @@ import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import Swal from 'sweetalert2';
 import 'style-loader!angular2-toaster/toaster.css';
 import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/catalogoElementosHelper';
-import { Dependencia } from '../../../@core/data/models/acta_recibido/soporte_acta';
-
 
 @Component({
   selector: 'ngx-crud-grupo',

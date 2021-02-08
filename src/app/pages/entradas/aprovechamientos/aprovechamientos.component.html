@@ -26,23 +26,29 @@
   <nb-step [stepControl]="supervisorForm" label="{{'GLOBAL.supervisor' | translate}}">
     <h5>{{'GLOBAL.supervisor' | translate}}</h5>
     <form [formGroup]="supervisorForm" class="step-container">
-    <div class="row">
+    <div class="row" [nbSpinner]="cargando_supervisores">
       <div class="form-group col-sm">
         <label>{{'GLOBAL.nombres' | translate}}</label>
         <div class="input-group">
-          <input nbInput type="text" shape="semi-round" placeholder="Nombre Completo" class="form-control" formControlName="supervisorCtrl"/>
+          <input matInput type="text" class="form-control" placeholder="Nombre Completo"
+          formControlName="supervisorCtrl" [matAutocomplete]="autoSupervisor"/>
+          <mat-autocomplete #autoSupervisor="matAutocomplete" [displayWith]="muestraSupervisor">
+            <mat-option *ngFor="let super of supervisoresFiltrados | async" [value]="super">
+              {{super.TerceroPrincipal.NombreCompleto}}
+            </mat-option>
+          </mat-autocomplete>
         </div>
       </div>
       <div class="form-group col-sm">
         <label>{{'GLOBAL.sede' | translate}}</label>
         <div class="input-group">
-          <output defaultValue="Sede" class="form-control" [value]="supervisorForm.value.supervisorCtrl + '&nbsp;'"></output>
+          <output defaultValue="Sede" class="form-control" [value]="datosSupervisor('sede') + '&nbsp;'"></output>
         </div>
       </div>
       <div class="form-group col-sm">
         <label>{{'GLOBAL.dependencia' | translate}}</label>
         <div class="input-group">
-          <output defaultValue="Dependencia" class="form-control" [value]="supervisorForm.value.supervisorCtrl + '&nbsp;'"></output>
+          <output defaultValue="Dependencia" class="form-control" [value]="datosSupervisor('dependencia') + '&nbsp;'"></output>
         </div>
       </div>
     </div>

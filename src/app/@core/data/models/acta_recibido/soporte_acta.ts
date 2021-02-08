@@ -19,12 +19,6 @@ export class Ubicacion {
     Nombre: string; // CAMBIAR POR MODELO CUANDO SE PUEDA CONSULTAR
     Estado: string;
 }
-export class Dependencia {
-    Id: number;
-    Nombre: string;
-    TelefonoDependencia: string;
-    CorreoElectronico: string;
-}
 
 export class SoporteActaProveedor {
     Id: number;
