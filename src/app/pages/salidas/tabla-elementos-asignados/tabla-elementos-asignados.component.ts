@@ -1,3 +1,4 @@
+import { Ubicacion } from './../../../@core/data/models/acta_recibido/soporte_acta';
 import { Row } from 'ngx-smart-table/lib/data-set/row';
 import { Proveedor } from './../../../@core/data/models/acta_recibido/Proveedor';
 import { Component, OnInit, ViewChild, ElementRef, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
@@ -40,6 +41,8 @@ export class TablaElementosAsignadosComponent implements OnInit {
   DatosConsumo: ElementoSalida[];
   ElementosConsumoNoAsignados: ElementoSalida[];
   ElementosConsumoAsignados: ElementoSalida[];
+  ElementosConsumoSinAsignar: ElementoSalida[];
+  ElementosConsumoControladoSinAsignar: ElementoSalida[];
   Consumo: any;
   Sedes: any;
   Dependencias: any;
@@ -59,6 +62,10 @@ export class TablaElementosAsignadosComponent implements OnInit {
   selected = new FormControl(0);
   estadoShift: boolean;
   rango: any = null;
+  JefeOficinaId: number;
+  showControlado: boolean;
+  showConsumo: boolean;
+  mode: string = 'determinate';
   @Input('actaRecibidoId')
   set name(acta_id: number) {
     this.actaRecibidoId = acta_id;
@@ -111,6 +118,11 @@ export class TablaElementosAsignadosComponent implements OnInit {
     this.elementos = new Array<Elemento>();
     this.Datos2 = new Array<any>();
     this.cargarCampos();
+    this.salidasHelper.getJefeOficina().subscribe((res: any) => {
+      if (res) {
+        this.JefeOficinaId = res[0].TerceroPrincipalId.Id;
+      }
+    });
     this.loadLists();
   }
   initialiseInvites() {
@@ -191,7 +203,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
       },
       hideSubHeader: false,
       selectMode: 'multi',
-      noDataMessage: 'No se encontraron elementos asociados.',
+      noDataMessage: 'No se encontraron elementos de consumo controlado asociados a esta entrada.',
       actions: {
         columnTitle: 'Acciones',
         position: 'right',
@@ -360,7 +372,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
     this.settings2 = {
       hideSubHeader: false,
       selectMode: 'multi',
-      noDataMessage: 'No se encontraron elementos asociados.',
+      noDataMessage: 'No se encontraron elementos de consumo asociados a esta entrada.',
       actions: {
         columnTitle: 'Acciones',
         position: 'right',
@@ -544,6 +556,8 @@ export class TablaElementosAsignadosComponent implements OnInit {
     // console.log(datos);
     this.Datos = new Array<ElementoSalida>();
     this.DatosConsumo = new Array<ElementoSalida>();
+    this.ElementosConsumoSinAsignar = new Array<ElementoSalida>();
+    this.ElementosConsumoControladoSinAsignar = new Array<ElementoSalida>();
     for (const index in datos) {
       if (true) {
         // console.log(datos[index])
@@ -572,33 +586,30 @@ export class TablaElementosAsignadosComponent implements OnInit {
           elemento.SubgrupoCatalogoId = this.Devolutivo.find(x => x.Id === datos[index].SubgrupoCatalogoId);
         }
         if (datos[index].TipoBienId.Id === 1) {
+          this.ElementosConsumoSinAsignar.push(elemento);
           this.DatosConsumo.push(elemento);
         } else {
+          this.ElementosConsumoControladoSinAsignar.push(elemento);
           this.Datos.push(elemento);
         }
       }
     }
 
-    if (this.DatosConsumo !== undefined) {
-      // this.Salida_Consumo();
-      // const dConsumo = this.DatosConsumo.map((row, index) => ({...row, ...{ index: index }}));
+    if (this.DatosConsumo.length > 0) {
       this.source2.load(this.DatosConsumo);
-      // console.log(this.source2);
     }
-    if (this.Datos !== undefined) {
-
-      // console.log(this.Datos)
-      if (Object.keys(this.Datos).length === 0) {
-        // console.log('ok')
-
-        this.bandera2 = true;
-      }
+    if (this.Datos.length > 0) {
       this.source.load(this.Datos);
-      // console.log(this.source)
     }
+
+    this.showControlado = true;
+    this.showConsumo = true;
   }
+
   AjustarDatos2(datos: any[]) {
     this.Datos2 = new Array<ElementoSalida>();
+    this.ElementosConsumoControladoSinAsignar = new Array<ElementoSalida>();
+    const elementosConsumoControladoSinAsignar = new Array<any>();
     const datos2 = new Array<any>();
     for (const index in datos) {
       if (true) {
@@ -644,13 +655,18 @@ export class TablaElementosAsignadosComponent implements OnInit {
         }
         // elemento.SubgrupoCatalogoId = datos[index].SubgrupoCatalogoId;
         datos2.push(elemento);
+
+        if (!elemento.Funcionario || !elemento.Ubicacion) {
+          elementosConsumoControladoSinAsignar.push(elemento);
+        }
       }
     }
+
     if (datos2 !== undefined) {
+      this.ElementosConsumoControladoSinAsignar = elementosConsumoControladoSinAsignar;
       this.source.load(datos2);
       this.formulario = false;
       // console.log(this.source);
-      this.checkElementosAsignados();
     }
   }
 
@@ -659,6 +675,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
     const datos2 = new Array<any>();
     const elementosConsumoAsignados = new Array<any>();
     const elementosConsumoNoAsignados = new Array<any>();
+    const elementosConsumoSinAsignar = new Array<any>();
     for (const index in datos) {
       if (true) {
         // console.log(datos[index])
@@ -702,11 +719,12 @@ export class TablaElementosAsignadosComponent implements OnInit {
           elemento.SubgrupoCatalogoId = this.Devolutivo.find(x => x.Id === datos[index].SubgrupoCatalogoId.Id).SubgrupoId;
         }
         datos2.push(elemento);
-        // elemento.SubgrupoCatalogoId = datos[index].SubgrupoCatalogoId;
-        if (elemento.Funcionario) {
+        if (elemento.Funcionario && elemento.Funcionario.Id === this.JefeOficinaId && elemento.Ubicacion && elemento.Ubicacion.Id === 3) {
+          elementosConsumoNoAsignados.push(elemento);
+        } else if ((elemento.Funcionario && elemento.Ubicacion) && (elemento.Funcionario.Id === this.JefeOficinaId || elemento.Ubicacion.Id === 3)) {
           elementosConsumoAsignados.push(elemento);
         } else {
-          elementosConsumoNoAsignados.push(elemento);
+          elementosConsumoSinAsignar.push(elemento);
         }
       }
     }
@@ -714,50 +732,38 @@ export class TablaElementosAsignadosComponent implements OnInit {
     if (datos2 !== undefined) {
       this.ElementosConsumoNoAsignados = elementosConsumoNoAsignados;
       this.ElementosConsumoAsignados = elementosConsumoAsignados;
+      this.ElementosConsumoSinAsignar = elementosConsumoSinAsignar;
       this.source2.load(datos2);
       this.AsignarDeConsumo = false;
-      // console.log(this.source);
       this.Salida_Consumo();
-      this.checkElementosAsignados();
     }
   }
 
   checkElementosAsignados() {
-    this.bandera = false;
-    // console.log(this.source);
-    for (const datos of this.source.data) {
-      if (datos.Asignado !== true) {
-        this.bandera = true;
-        break;
-      }
-    }
-    if (this.bandera === false) {
-      this.bandera2 = true;
-    } else {
-      this.bandera = false;
-      this.bandera2 = false;
-    }
 
-  }
-  onEdit(event): void {
-  }
+    const alertControlado = (this.Datos && this.Datos.length) &&
+      (this.ElementosConsumoControladoSinAsignar && this.ElementosConsumoControladoSinAsignar.length) ? true : false;
 
-  itemselec(event): void {
+    const alertConsumo = (this.DatosConsumo && this.DatosConsumo.length) &&
+      (this.ElementosConsumoSinAsignar && this.ElementosConsumoSinAsignar.length) ? true : false;
 
-  }
-  onCreate(event): void {
+    const alert = alertControlado && alertConsumo ? 'GLOBAL.entradas.alerta_ambos' :
+      alertConsumo ? 'GLOBAL.entradas.alerta_consumo' : alertControlado ? 'GLOBAL.entradas.alerta_controlado' : null;
+
+    alert ? (Swal as any).fire({
+      title: this.translate.instant('GLOBAL.entradas.alerta_descargue'),
+      text: this.translate.instant(alert),
+      type: 'warning',
+    }) : this.onSubmit();
 
   }
 
-  onDelete(event): void {
-
-  }
   Traer_Relacion_Ubicaciones() {
 
   }
   Salida_Consumo() {
 
-    if (Object.keys(this.ElementosConsumoNoAsignados).length !== 0) {
+    if (this.ElementosConsumoNoAsignados && Object.keys(this.ElementosConsumoNoAsignados).length !== 0) {
       const sede = 'FICC';
       const dependencia = 'ALMACEN GENERAL E INVENTARIOS';
 
@@ -767,6 +773,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
       this.actaRecibidoHelper.postRelacionSedeDependencia(transaccion).subscribe((res: any) => {
         const detalle = {
           ubicacion: res[0].Relaciones[0].Id,
+          funcionario: this.JefeOficinaId,
         };
         const Salida = {
           Salida: {
@@ -850,7 +857,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
   }
 
   Salida_General_Consumo() {
-    if (Object.keys(this.ElementosConsumoAsignados).length !== 0) {
+    if (this.ElementosConsumoAsignados && Object.keys(this.ElementosConsumoAsignados).length !== 0) {
       const datos_agrupados2 = this.ElementosConsumoAsignados.reduce((accumulator, currentValue) => {
         if (currentValue.Funcionario.Id) {
           const detalle = {
@@ -892,7 +899,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
 
       return datos_agrupados2;
     } else {
-      return this.Datos;
+      return this.ElementosConsumoAsignados;
     }
   }
 
@@ -904,14 +911,14 @@ export class TablaElementosAsignadosComponent implements OnInit {
     const Salidas = {
       Salidas: [],
     };
-    if (Object.keys(datos_agrupados2).length !== 0) {
+    if (datos_agrupados2 && Object.keys(datos_agrupados2).length !== 0) {
       for (const salida of Object.keys(datos_agrupados2)) {
         Salidas.Salidas.push(datos_agrupados2[salida]);
       }
 
     }
 
-    if (Object.keys(this.ElementosConsumoNoAsignados).length !== 0) {
+    if (this.ElementosConsumoNoAsignados && Object.keys(this.ElementosConsumoNoAsignados).length !== 0) {
       Salidas.Salidas.push(this.Datos_Salida_Consumo);
     }
 

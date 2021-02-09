@@ -34,6 +34,7 @@ export class ConsultaSalidaEspecificaComponent implements OnInit {
   Dependencias: any;
   Sedes: any;
   TipoBien: any;
+  mode: string = 'determinate';
 
   @Input('salida_id')
   set name(salida_id: number) {
@@ -108,6 +109,12 @@ export class ConsultaSalidaEspecificaComponent implements OnInit {
         },
         SaldoCantidad: {
           title: 'Cantidad',
+          valuePrepareFunction: (value: any) => {
+            return value;
+          },
+        },
+        Placa: {
+          title: 'Placa',
           valuePrepareFunction: (value: any) => {
             return value;
           },
