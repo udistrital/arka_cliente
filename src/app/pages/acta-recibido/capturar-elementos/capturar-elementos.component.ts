@@ -74,7 +74,8 @@ export class CapturarElementosComponent implements OnInit {
   Proveedor: boolean;
   ErroresCarga: string = '';
 
-  constructor(private fb: FormBuilder,
+  constructor(
+    private fb: FormBuilder,
     private translate: TranslateService,
     private actaRecibidoHelper: ActaRecibidoHelper,
     private store: Store<IAppState>,
@@ -83,19 +84,8 @@ export class CapturarElementosComponent implements OnInit {
     private documentoService: DocumentoService,
     private catalogoHelper: CatalogoElementosHelper,
     private userService: UserService,
-    private completerService: CompleterService) {
-
-    this.listService.findSubgruposConsumo();
-    this.listService.findSubgruposConsumoControlado();
-    this.listService.findSubgruposDevolutivo();
-    this.listService.findEstadosElemento();
-    this.listService.findTipoBien();
-    this.listService.findUnidades();
-    this.listService.findImpuestoIVA();
-    this.listService.findClases();
-    this.loadLists();
-    this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
-    });
+    private completerService: CompleterService
+  ) {
   }
 
   public loadLists() {
@@ -113,11 +103,19 @@ export class CapturarElementosComponent implements OnInit {
       },
     );
   }
-  useLanguage(language: string) {
-    this.translate.use(language);
-  }
 
   ngOnInit() {
+    this.listService.findSubgruposConsumo();
+    this.listService.findSubgruposConsumoControlado();
+    this.listService.findSubgruposDevolutivo();
+    this.listService.findEstadosElemento();
+    this.listService.findTipoBien();
+    this.listService.findUnidades();
+    this.listService.findImpuestoIVA();
+    this.listService.findClases();
+    this.loadLists();
+    this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
+    });
     this.createForm();
     this.Totales = new DatosLocales();
     if (this.DatosRecibidos !== undefined) {

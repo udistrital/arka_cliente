@@ -151,6 +151,17 @@ export class EdicionActaRecibidoComponent implements OnInit {
     private userService: UserService,
     private dateService: NbDateService<Date>,
   ) {
+    this.fileDocumento = [];
+    this.Validador = [];
+    this.uidDocumento = [];
+    this.idDocumento = [];
+    this.searchStr2 = new Array<string>();
+    this.DatosElementos = new Array<any>();
+    this.Elementos__Soporte = new Array<any>();
+    this.TodaysDate = new Date();
+  }
+
+  ngOnInit() {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
     });
     this.listService.findProveedores();
@@ -162,14 +173,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
     this.listService.findTipoBien();
     this.listService.findUnidades();
     this.listService.findImpuestoIVA();
-    this.fileDocumento = [];
-    this.Validador = [];
-    this.uidDocumento = [];
-    this.idDocumento = [];
-    this.searchStr2 = new Array<string>();
-    this.DatosElementos = new Array<any>();
-    this.Elementos__Soporte = new Array<any>();
-    this.TodaysDate = new Date();
+    this.cargaPermisos();
   }
 
   // Los permisos en cada sección dependen del estado del acta y del rol.
@@ -315,9 +319,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
     }
   }
 
-  ngOnInit() {
-    this.cargaPermisos();
-  }
   public loadLists() {
     this.store.select((state) => state).subscribe(
       (list) => {
