@@ -10,6 +10,9 @@ import { TipoEntrada } from '../../../@core/data/models/entrada/tipo_entrada';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { NuxeoService } from '../../../@core/utils/nuxeo.service';
 import { DocumentoService } from '../../../@core/data/documento.service';
+import { ListService } from '../../../@core/store/services/list.service';
+import { Store } from '@ngrx/store';
+import { IAppState } from '../../../@core/store/app.state';
 
 @Component({
   selector: 'ngx-consulta-entrada',
@@ -31,7 +34,8 @@ export class ConsultaEntradaComponent implements OnInit {
   mostrar: boolean = false;
 
   constructor(private router: Router, private entradasHelper: EntradaHelper, private translate: TranslateService,
-    private nuxeoService: NuxeoService, private documentoService: DocumentoService) {
+    private nuxeoService: NuxeoService, private documentoService: DocumentoService, private listService: ListService,
+    private store: Store<IAppState>) {
     this.source = new LocalDataSource();
     this.entradas = new Array<Entrada>();
     this.detalle = false;
@@ -39,6 +43,8 @@ export class ConsultaEntradaComponent implements OnInit {
     this.contrato = new Contrato;
     this.documentoId = false;
     this.iniciarParametros();
+    this.listService.findClases();
+    this.listService.findImpuestoIVA();
   }
 
   loadTablaSettings() {
@@ -141,6 +147,7 @@ export class ConsultaEntradaComponent implements OnInit {
   loadEntradaEspecifica(): void {
     this.entradasHelper.getEntrada(this.consecutivoEntrada).subscribe(res => {
       if (res !== null) {
+        // console.log(res);
         switch (res.TipoMovimiento.TipoMovimientoId.Nombre) {
           case 'Adquisición': {
             this.loadDetalleAdquisicion(res);
@@ -160,6 +167,30 @@ export class ConsultaEntradaComponent implements OnInit {
           }
           case 'Terceros': {
             this.loadDetalleTerceros(res);
+            break;
+          }
+          case 'Caja menor': {
+            this.loadDetalleCajaMenor(res);
+            break;
+          }
+          case 'Adiciones y mejoras': {
+            this.loadDetalleAdicionesMejoras(res);
+            break;
+          }
+          case 'Intangibles': {
+            this.loadDetalleIntangiblesAdquiridos(res);
+            break;
+          }
+          case 'Provisional': {
+            this.loadDetalleProvisional(res);
+            break;
+          }
+          case 'Compras extranjeras': {
+            this.loadDetalleComprasExtranjeras(res);
+            break;
+          }
+          case 'Desarrollo interior': {
+            this.loadDetalleIntangiblesDesarrollados(res);
             break;
           }
           default: {
@@ -296,6 +327,103 @@ export class ConsultaEntradaComponent implements OnInit {
     this.entradaEspecifica.Observacion = info.Movimiento.Observacion; // OBSERVACIÓN
     this.documentoId = false; // SOPORTE
     this.loadContrato(); // CONTRATO
+  }
+
+  loadDetalleCajaMenor(info) {
+    const detalle = JSON.parse(info.Movimiento.Detalle);
+    this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id; // ACTA RECIBIDO
+    this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
+    this.entradaEspecifica.Vigencia = detalle.vigencia_ordenador; // VIGENCIA ORDENADOR
+    this.entradaEspecifica.OrdenadorId = detalle.ordenador_gasto_id; // ORDENADOR DE GASTO
+    this.entradaEspecifica.Solicitante = detalle.solicitante_id; // SOLICITANTE
+    this.entradaEspecifica.TipoEntradaId.Nombre = info.TipoMovimiento.TipoMovimientoId.Nombre; // TIPO ENTRADA
+    this.entradaEspecifica.Observacion = info.Movimiento.Observacion; // OBSERVACIÓN
+    this.documentoId = true; // SOPORTE
+    this.mostrar = true;
+  }
+
+  loadDetalleAdicionesMejoras(info) {
+    const detalle = JSON.parse(info.Movimiento.Detalle);
+    this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id; // ACTA RECIBIDO
+    this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
+    this.entradaEspecifica.ContratoId = detalle.contrato_id; // CONTRATO
+    this.entradaEspecifica.Vigencia = detalle.vigencia_contrato; // VIGENCIA CONTRATO
+    this.entradaEspecifica.TipoEntradaId.Nombre = info.TipoMovimiento.TipoMovimientoId.Nombre; // TIPO ENTRADA
+    this.entradaEspecifica.Observacion = info.Movimiento.Observacion; // OBSERVACIÓN
+    this.documentoId = false; // SOPORTE
+    this.loadContrato(); // CONTRATO
+  }
+
+  loadDetalleIntangiblesAdquiridos(info) {
+    const detalle = JSON.parse(info.Movimiento.Detalle);
+    this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id; // ACTA RECIBIDO
+    this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
+    this.entradaEspecifica.ContratoId = detalle.contrato_id; // CONTRATO
+    this.entradaEspecifica.Vigencia = detalle.vigencia_contrato; // VIGENCIA CONTRATO
+    this.entradaEspecifica.TipoEntradaId.Nombre = info.TipoMovimiento.TipoMovimientoId.Nombre; // TIPO ENTRADA
+    this.entradaEspecifica.Observacion = info.Movimiento.Observacion; // OBSERVACIÓN
+    this.documentoId = false; // SOPORTE
+    this.loadContrato(); // CONTRATO
+    // this.mostrar=true;
+  }
+  loadDetalleProvisional(info) {
+    const detalle = JSON.parse(info.Movimiento.Detalle);
+    this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id; // ACTA RECIBIDO
+    this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
+    this.entradaEspecifica.ContratoId = detalle.contrato_id; // CONTRATO
+    this.entradaEspecifica.Vigencia = detalle.vigencia_contrato; // VIGENCIA CONTRATO
+    this.entradaEspecifica.TipoEntradaId.Nombre = info.TipoMovimiento.TipoMovimientoId.Nombre; // TIPO ENTRADA
+    this.entradaEspecifica.Observacion = info.Movimiento.Observacion; // OBSERVACIÓN
+    this.documentoId = false; // SOPORTE
+    this.loadContrato(); // CONTRATO
+    // this.mostrar=true;
+  }
+  loadDetalleComprasExtranjeras(info) {
+    const detalle = JSON.parse(info.Movimiento.Detalle);
+    this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id; // ACTA RECIBIDO
+    this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
+    this.entradaEspecifica.ContratoId = detalle.contrato_id; // CONTRATO
+    this.entradaEspecifica.Vigencia = detalle.vigencia_contrato; // VIGENCIA CONTRATO
+    this.entradaEspecifica.TipoEntradaId.Nombre = info.TipoMovimiento.TipoMovimientoId.Nombre; // TIPO ENTRADA
+    this.entradaEspecifica.Observacion = info.Movimiento.Observacion; // OBSERVACIÓN
+    this.entradaEspecifica.RegistroImportacion = detalle.num_reg_importacion; // NUMERO DE IMPORTACION
+    this.entradaEspecifica.TasaRepresentativaMercado = detalle.TRM; // TASA REPRESENTATIVA DEL MERCADO
+    this.documentoId = false; // SOPORTE
+    this.loadContrato(); // CONTRATO
+    // this.mostrar=true;
+  }
+  loadIntangiblesDesarrollados(info) {
+    const detalle = JSON.parse(info.Movimiento.Detalle);
+    this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id; // ACTA RECIBIDO
+    this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
+    this.entradaEspecifica.Vigencia = detalle.vigencia_ordenador; // VIGENCIA ORDENADOR
+    this.entradaEspecifica.OrdenadorId = detalle.ordenador_gasto_id; // ORDENADOR DE GASTO
+    this.entradaEspecifica.TipoEntradaId.Nombre = info.TipoMovimiento.TipoMovimientoId.Nombre; // TIPO ENTRADA
+    this.entradaEspecifica.Observacion = info.Movimiento.Observacion; // OBSERVACIÓN
+    this.documentoId = true;
+    this.mostrar = true;
+  }
+  loadAprovechamientos(info) {
+    const detalle = JSON.parse(info.Movimiento.Detalle);
+    this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id; // ACTA RECIBIDO
+    this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
+    this.entradaEspecifica.Vigencia = detalle.vigencia_ordenador; // VIGENCIA ORDENADOR
+    this.entradaEspecifica.OrdenadorId = detalle.ordenador_gasto_id; // ORDENADOR DE GASTO
+    this.entradaEspecifica.TipoEntradaId.Nombre = info.TipoMovimiento.TipoMovimientoId.Nombre; // TIPO ENTRADA
+    this.entradaEspecifica.Observacion = info.Movimiento.Observacion; // OBSERVACIÓN
+    this.documentoId = true;
+    this.mostrar = true;
+  }
+  loadDetalleIntangiblesDesarrollados(info) {
+    const detalle = JSON.parse(info.Movimiento.Detalle);
+    this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id; // ACTA RECIBIDO
+    this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
+    this.entradaEspecifica.Vigencia = detalle.vigencia_ordenador; // VIGENCIA ORDENADOR
+    this.entradaEspecifica.OrdenadorId = detalle.ordenador_gasto_id; // ORDENADOR DE GASTO
+    this.entradaEspecifica.TipoEntradaId.Nombre = info.TipoMovimiento.TipoMovimientoId.Nombre; // TIPO ENTRADA
+    this.entradaEspecifica.Observacion = info.Movimiento.Observacion; // OBSERVACIÓN
+    this.documentoId = true;
+    this.mostrar = true;
   }
 
   onCustom(event) {
