@@ -494,8 +494,7 @@ export class ConsultaEntradaComponent implements OnInit {
     });
     this.mostrar = true;
   }
-  loadProveedor(Compuesto: string)
-  {
+  loadProveedor(Compuesto: string) {
     this.Proveedor = this.Proveedores.find((prov) => prov.compuesto === Compuesto).NomProveedor;
   }
 
