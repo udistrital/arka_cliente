@@ -336,6 +336,23 @@
             <p class="text-uppercase"><strong>Cargo:</strong>capturar</p>
           </div>
         </div>
+        
+        <!-- APROVECHAMIENTOS -->
+
+        <div *ngIf="detalle && entradaEspecifica.TipoEntradaId.Nombre === 'Aprovechamientos'" class="row">
+          <div *ngIf="Supervisor!=undefined" class="col">
+            <p class="text-uppercase"><strong>Supervisor:</strong> {{ Supervisor.TerceroPrincipal.NombreCompleto }}</p>
+          </div>
+          <div *ngIf="Supervisor!=undefined" class="col">
+            <p class="text-uppercase"><strong>Dependencia:</strong> {{ Supervisor.Dependencia.Nombre}}</p>
+          </div>
+        </div>  
+
+        <div *ngIf="detalle && entradaEspecifica.TipoEntradaId.Nombre === 'Aprovechamientos'" class="row">
+          <div *ngIf="Proveedor!=undefined" class="col">
+            <p class="text-uppercase"><strong>Proveedor:</strong> {{ Proveedor }}</p>
+          </div>
+        </div>  
 
         <!-- OBSERVACIONES -->
         <div *ngIf="detalle" class=" row">

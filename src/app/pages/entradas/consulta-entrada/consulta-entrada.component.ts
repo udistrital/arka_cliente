@@ -11,8 +11,11 @@ import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { NuxeoService } from '../../../@core/utils/nuxeo.service';
 import { DocumentoService } from '../../../@core/data/documento.service';
 import { ListService } from '../../../@core/store/services/list.service';
+import { TerceroCriterioPlanta } from '../../../@core/data/models/terceros_criterio';
 import { Store } from '@ngrx/store';
 import { IAppState } from '../../../@core/store/app.state';
+import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
+import { Proveedor } from '../../../@core/data/models/acta_recibido/Proveedor';
 
 @Component({
   selector: 'ngx-consulta-entrada',
@@ -32,10 +35,13 @@ export class ConsultaEntradaComponent implements OnInit {
   settings: any;
   documentoId: boolean;
   mostrar: boolean = false;
+  Supervisor: TerceroCriterioPlanta[];
+  Proveedores: any;
+  Proveedor: any;
 
   constructor(private router: Router, private entradasHelper: EntradaHelper, private translate: TranslateService,
     private nuxeoService: NuxeoService, private documentoService: DocumentoService, private listService: ListService,
-    private store: Store<IAppState>) {
+    private store: Store<IAppState>, private tercerosHelper: TercerosHelper) {
     this.source = new LocalDataSource();
     this.entradas = new Array<Entrada>();
     this.detalle = false;
@@ -45,7 +51,20 @@ export class ConsultaEntradaComponent implements OnInit {
     this.iniciarParametros();
     this.listService.findClases();
     this.listService.findImpuestoIVA();
+    this.listService.findProveedores();
+    this.loadLists();
+
   }
+  private loadLists() {
+    this.store.select((state) => state).subscribe(
+      (list) => {
+        this.Proveedores = list.listProveedores[0];
+        // console.log(this.Proveedores)
+      },
+    );
+
+  }
+
 
   loadTablaSettings() {
     const t = {
@@ -191,6 +210,10 @@ export class ConsultaEntradaComponent implements OnInit {
           }
           case 'Desarrollo interior': {
             this.loadDetalleIntangiblesDesarrollados(res);
+            break;
+          }
+          case 'Aprovechamientos': {
+            this.loadDetalleAprovechamientos(res);
             break;
           }
           default: {
@@ -425,6 +448,19 @@ export class ConsultaEntradaComponent implements OnInit {
     this.documentoId = true;
     this.mostrar = true;
   }
+  loadDetalleAprovechamientos(info) {
+    const detalle = JSON.parse(info.Movimiento.Detalle);
+    // console.log(detalle.supervisor)
+    this.loadSupervisorById(detalle.supervisor); // DATOS GENERALES DEL SUPERVISOR
+    this.loadProveedor(detalle.proveedor);
+    this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id; // ACTA RECIBIDO
+    this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
+    this.entradaEspecifica.Vigencia = detalle.vigencia_contrato; // VIGENCIA CONTRATO
+    this.entradaEspecifica.TipoEntradaId.Nombre = info.TipoMovimiento.TipoMovimientoId.Nombre; // TIPO ENTRADA
+    this.entradaEspecifica.Observacion = info.Movimiento.Observacion; // OBSERVACIÓN
+    this.documentoId = false;
+    // console.log(this.Proveedor)
+  }
 
   onCustom(event) {
     this.mostrar = false;
@@ -449,6 +485,19 @@ export class ConsultaEntradaComponent implements OnInit {
     this.contrato.Supervisor = supervisor;
     this.contrato.OrdenadorGasto = ordenadorGasto;
   }
+  loadSupervisorById(id: number): void {
+    this.tercerosHelper.getTercerosByCriterio('funcionarioPlanta', id).subscribe( res => {
+      if (Array.isArray(res)) {
+        this.Supervisor = res[0];
+        // console.log(this.Supervisor)
+      }
+    });
+    this.mostrar = true;
+  }
+  loadProveedor(Compuesto: string)
+  {
+    this.Proveedor = this.Proveedores.find((prov) => prov.compuesto === Compuesto).NomProveedor;
+  }
 
   onRegister() {
     this.router.navigate(['/pages/entradas/registro']);
@@ -460,6 +509,7 @@ export class ConsultaEntradaComponent implements OnInit {
     });
     this.loadTablaSettings();
     this.loadEntradas();
+    this.loadLists();
   }
 
 }
