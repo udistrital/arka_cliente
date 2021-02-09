@@ -35,7 +35,7 @@ export class ConsultaEntradaComponent implements OnInit {
   settings: any;
   documentoId: boolean;
   mostrar: boolean = false;
-  Supervisor: TerceroCriterioPlanta[];
+  Supervisor: any;
   Proveedores: any;
   Proveedor: any;
 
