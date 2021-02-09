@@ -215,42 +215,22 @@
             <nb-card *ngIf="Totales">
               <nb-card-header>{{'GLOBAL.Acta_Recibido.EdicionActa.Consolidado' | translate}}</nb-card-header>
               <nb-card-body>
-                <table>
+                <table class="consolidado">
                   <tr>
-                    <td class="cell-3"></td>
-                    <td class="cell-3"></td>
                     <td class="cell-3">{{'GLOBAL.Acta_Recibido.EdicionActa.Subtotal' | translate}}</td>
-                    <td class="cell-3"></td>
                     <td class="cell-3">{{getGranSubtotal() | currency}}</td>
-                    <td class="cell-3"></td>
-                    <td class="cell-3"></td>
                   </tr>
                   <tr>
-                    <td class="cell-3"></td>
-                    <td class="cell-3"></td>
                     <td class="cell-3">{{'GLOBAL.Acta_Recibido.EdicionActa.Descuento' | translate}}</td>
-                    <td class="cell-3"></td>
                     <td class="cell-3">{{getGranDescuentos() | currency}}</td>
-                    <td class="cell-3"></td>
-                    <td class="cell-3"></td>
                   </tr>
                   <tr>
-                    <td class="cell-3"></td>
-                    <td class="cell-3"></td>
                     <td class="cell-3">{{'GLOBAL.Acta_Recibido.EdicionActa.ValorIva' | translate}}</td>
-                    <td class="cell-3"></td>
                     <td class="cell-3">{{getGranValorIva() | currency}}</td>
-                    <td class="cell-3"></td>
-                    <td class="cell-3"></td>
                   </tr>
                   <tr>
-                    <td class="cell-3"></td>
-                    <td class="cell-3"></td>
                     <td class="cell-3">{{'GLOBAL.Acta_Recibido.EdicionActa.Total' | translate}}</td>
-                    <td class="cell-3"></td>
                     <td class="cell-3">{{getGranTotal() | currency}}</td>
-                    <td class="cell-3"></td>
-                    <td class="cell-3"></td>
                   </tr>
                 </table>
               </nb-card-body>
