@@ -1,8 +1,8 @@
-  <form [formGroup]="firstForm" #fform="ngForm" class="step-container">
-    <nb-card [nbSpinner]="!firstForm">
-      <nb-card-header>{{'GLOBAL.Acta_Recibido.EdicionActa.Title' | translate}}</nb-card-header>
-      <nb-card-body>
-        <mat-vertical-stepper [linear]="true" #stepper>
+<nb-card>
+  <nb-card-header><h2>{{'GLOBAL.Acta_Recibido.EdicionActa.Title' | translate}}</h2></nb-card-header>
+  <nb-card-body [nbSpinner]="!firstForm">
+    <form *ngIf="firstForm" [formGroup]="firstForm" #fform="ngForm" class="step-container">
+      <mat-vertical-stepper [linear]="true" #stepper>
 
           <!-- Datos iniciales -->
           <mat-step label="{{'GLOBAL.Acta_Recibido.EdicionActa.DatosTitle' | translate}}" formGroupName="Formulario1">
@@ -291,11 +291,9 @@
                 class="float-right">{{ accion.envRevisor }}</button>
             </div>
 
-
-
-
           </mat-step>
+
         </mat-vertical-stepper>
-      </nb-card-body>
-    </nb-card>
-  </form>
+      </form>
+    </nb-card-body>
+  </nb-card>
