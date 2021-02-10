@@ -109,6 +109,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
   dataService3: CompleterData;
   Tarifas_Iva: any;
   verificar: boolean = true;
+  guardando: boolean = false;
   private actaCargada: boolean = false;
 
   permisos: {
@@ -726,6 +727,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
 
   // Envío (a proveedor/revisor) o guardado
   private async onFirstSubmit(siguienteEtapa: boolean = false, enviara: number = 0) {
+    this.guardando = true;
     if (!siguienteEtapa) {
     const start = async () => {
       await this.asyncForEach(this.fileDocumento, async (file) => {
@@ -811,6 +813,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
           text: this.translate.instant(mensaje),
         });
       }
+      this.guardando = false;
     });
   }
 
