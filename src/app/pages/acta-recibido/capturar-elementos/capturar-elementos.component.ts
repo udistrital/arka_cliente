@@ -73,8 +73,10 @@ export class CapturarElementosComponent implements OnInit {
   checkParcial: boolean = false;
   Proveedor: boolean;
   ErroresCarga: string = '';
+  cargando: boolean = true;
 
-  constructor(private fb: FormBuilder,
+  constructor(
+    private fb: FormBuilder,
     private translate: TranslateService,
     private actaRecibidoHelper: ActaRecibidoHelper,
     private store: Store<IAppState>,
@@ -83,19 +85,8 @@ export class CapturarElementosComponent implements OnInit {
     private documentoService: DocumentoService,
     private catalogoHelper: CatalogoElementosHelper,
     private userService: UserService,
-    private completerService: CompleterService) {
-
-    this.listService.findSubgruposConsumo();
-    this.listService.findSubgruposConsumoControlado();
-    this.listService.findSubgruposDevolutivo();
-    this.listService.findEstadosElemento();
-    this.listService.findTipoBien();
-    this.listService.findUnidades();
-    this.listService.findImpuestoIVA();
-    this.listService.findClases();
-    this.loadLists();
-    this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
-    });
+    private completerService: CompleterService,
+  ) {
   }
 
   public loadLists() {
@@ -107,23 +98,38 @@ export class CapturarElementosComponent implements OnInit {
         this.Tipos_Bien = list.listTipoBien[0];
         this.Unidades = list.listUnidades[0];
         this.Tarifas_Iva = list.listIVA[0];
-        this.Clases = list.listClases[0];
-        this.dataService = this.completerService.local(this.Clases, 'SubgrupoId.Nombre', 'SubgrupoId.Nombre');
+        if (Array.isArray(list.listClases[0])) {
+          const clases = list.listClases[0];
+          if (Array.isArray(clases) && clases.length) {
+            this.Clases = clases.map(v => {
+              v.mostrar = v.SubgrupoId.Codigo + ' - ' + v.SubgrupoId.Nombre;
+              return v;
+            });
+            this.dataService = this.completerService.local(this.Clases, 'mostrar', 'mostrar');
+          }
+          // console.log({clases});
+        }
         // console.log({pollito:this.Tarifas_Iva})
       },
     );
   }
-  useLanguage(language: string) {
-    this.translate.use(language);
-  }
 
   ngOnInit() {
+    this.listService.findSubgruposConsumo();
+    this.listService.findSubgruposConsumoControlado();
+    this.listService.findSubgruposDevolutivo();
+    this.listService.findEstadosElemento();
+    this.listService.findTipoBien();
+    this.listService.findUnidades();
+    this.listService.findImpuestoIVA();
+    this.listService.findClases();
+    this.loadLists();
+    this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
+    });
     this.createForm();
     this.Totales = new DatosLocales();
     if (this.DatosRecibidos !== undefined) {
       this.dataSource = new MatTableDataSource(this.DatosRecibidos);
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
       this.respuesta = this.DatosRecibidos;
       this.getDescuentos();
       this.getSubtotales();
@@ -133,15 +139,16 @@ export class CapturarElementosComponent implements OnInit {
       this.ver();
     } else {
       this.dataSource = new MatTableDataSource();
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
     }
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
     for (let i = 0; i < this.dataSource.data.length; i++) {
       if (this.dataSource.data[i].CodigoSubgrupo === undefined) {
         this.dataSource.data[i].CodigoSubgrupo = '';
       }
     }
     this.ReglasColumnas();
+    this.cargando = false;
   }
 
   ReglasColumnas() {
@@ -284,6 +291,7 @@ export class CapturarElementosComponent implements OnInit {
 
   readThis(): void {
 
+    this.cargando = true;
     const formModel: FormData = this.prepareSave();
     this.actaRecibidoHelper.postArchivo(formModel).subscribe(res => {
       if (res !== null) {
@@ -328,6 +336,7 @@ export class CapturarElementosComponent implements OnInit {
         });
         this.clearFile();
       }
+      this.cargando = false;
     });
   }
 
@@ -391,9 +400,20 @@ export class CapturarElementosComponent implements OnInit {
   }
 
   onSubmit() {
-    this.checkAnterior = undefined;
-    this.basePaginas = 0;
-    this.readThis();
+    if (this.dataSource.data.length) {
+      (Swal as any).fire({
+        title: this.translate.instant('GLOBAL.Advertencia'),
+        text: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.AvisoSobreescritura', {CANT: this.dataSource.data.length}),
+        type: 'warning',
+        showCancelButton: true,
+      }).then( res => {
+        if (res.value) {
+          this.checkAnterior = undefined;
+          this.basePaginas = 0;
+          this.readThis();
+        }
+      });
+    }
   }
 
 

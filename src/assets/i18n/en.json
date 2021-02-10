@@ -44,9 +44,8 @@
       "id_forma1": "Receipt Certificate #{{ID}}",
       "id_forma2": "Certificate N° {{ID}}",
       "CapturarElementos": {
-        "CargaMasivaTitle": "Masive Load",
-        "ValidadorPlaceholder": "The file have xlsx extension (*.xlsx)",
-        "ValidadorPlaceholder2": "The file have xlsx extension (*.pdf)",
+        "CargaMasivaTitle": "Bulk Load",
+        "ValidadorPlaceholder": "The file shall have {{EXT}} extension (*.{{EXT}})",
         "LimpiarEspacioButton": "Discard File",
         "CargarElementosButton": "Load Items",
         "ArticulosRelacionadosTitle": "Related Articles",
@@ -64,6 +63,7 @@
         "ValorIVAHeader": "IVA's Value",
         "ValorTotalHeader": "Total Value",
         "AgregarElemento": "Arr Element",
+        "AvisoSobreescritura": "The Bulk Load will DELETE {{CANT}} element(s) currently listed. Continue with the Bulk Load?",
         "EliminarElemento": "Remove Element",
         "ElementosCargadosTitleOK": "Loaded Elements",
         "ElementosCargadosTextOK": "Successfully Loaded Items",
@@ -73,8 +73,8 @@
         "EliminarElementosText": "Are you sure about remove the selected item?",
         "EliminarVariosElementosTitle":"Delete {{cantidad}} element(s)?",
         "EliminarVariosElementosText":"Are you sure to delete {{cantidad}} element(s)?",
-        "ValidacionCargaMasivaTitle": "Some errors found at massive  charge",
-        "ValidacionCargaMasivaText": "There are {{cantidad}} error(s) at massive charge, check them at table"
+        "ValidacionCargaMasivaTitle": "Some errors found at bulk load",
+        "ValidacionCargaMasivaText": "There are {{cantidad}} error(s) at bulk load, check them at table"
       },
       "ConsultaActas": {
         "NuevaActa": "Register New Certificate",
@@ -399,6 +399,7 @@
       "lista": "Catalogue List"
     },
 
+    "Advertencia": "Warning",
     "info": "Information",
     "info_adicional": "Additional Information",
     "Detalle": "Detail",

@@ -124,6 +124,14 @@ export class ActaEspecialComponent implements OnInit {
     private userService: UserService,
     private dateService: NbDateService<Date>,
   ) {
+    this.fileDocumento = [];
+    this.Validador = [];
+    this.uidDocumento = [];
+    this.idDocumento = [];
+    this.Elementos__Soporte = new Array<any>();
+  }
+
+  ngOnInit() {
     this.listService.findUbicaciones();
     this.listService.findDependencias();
     this.listService.findSedes();
@@ -136,15 +144,6 @@ export class ActaEspecialComponent implements OnInit {
     this.loadLists();
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
     });
-    this.fileDocumento = [];
-    this.Validador = [];
-    this.uidDocumento = [];
-    this.idDocumento = [];
-    this.Elementos__Soporte = new Array<any>();
-  }
-
-  ngOnInit() {
-    this.loadLists();
     this.searchStr2 = new Array<string>();
     if (sessionStorage.Formulario_Acta_Especial == null) {
       this.Cargar_Formularios();

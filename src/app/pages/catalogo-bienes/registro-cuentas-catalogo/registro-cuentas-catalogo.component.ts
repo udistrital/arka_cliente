@@ -49,6 +49,7 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
   valorizacion_ok: boolean;
 
   cargando_catalogos: boolean = true;
+  guardando: boolean = false;
 
   constructor(
     private translate: TranslateService,
@@ -186,6 +187,7 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
     (Swal as any).fire(opt)
       .then((willDelete) => {
         if (willDelete.value) {
+          this.guardando = true;
           const mov = {Cuentas: subgrupo.map( (cuenta: CuentaGrupo) => {
             const subgrupo_id: BaseId = {Id: cuenta.SubgrupoId.Id};
             cuenta.SubgrupoId = subgrupo_id;
@@ -207,6 +209,7 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
               );
               setTimeout(() => {
                 this.QuitarVista();
+                this.guardando = false;
               }, 2000);
             });
         }

@@ -77,7 +77,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
     if (id !== '') {
       this._Acta_Id = id;
       // console.log('ok');
-      this.loadLists();
     }
     // console.log(this._Acta_Id);
 
@@ -110,6 +109,8 @@ export class EdicionActaRecibidoComponent implements OnInit {
   dataService3: CompleterData;
   Tarifas_Iva: any;
   verificar: boolean = true;
+  guardando: boolean = false;
+  private actaCargada: boolean = false;
 
   permisos: {
     Acta: Permiso,
@@ -151,6 +152,17 @@ export class EdicionActaRecibidoComponent implements OnInit {
     private userService: UserService,
     private dateService: NbDateService<Date>,
   ) {
+    this.fileDocumento = [];
+    this.Validador = [];
+    this.uidDocumento = [];
+    this.idDocumento = [];
+    this.searchStr2 = new Array<string>();
+    this.DatosElementos = new Array<any>();
+    this.Elementos__Soporte = new Array<any>();
+    this.TodaysDate = new Date();
+  }
+
+  ngOnInit() {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
     });
     this.listService.findProveedores();
@@ -162,14 +174,8 @@ export class EdicionActaRecibidoComponent implements OnInit {
     this.listService.findTipoBien();
     this.listService.findUnidades();
     this.listService.findImpuestoIVA();
-    this.fileDocumento = [];
-    this.Validador = [];
-    this.uidDocumento = [];
-    this.idDocumento = [];
-    this.searchStr2 = new Array<string>();
-    this.DatosElementos = new Array<any>();
-    this.Elementos__Soporte = new Array<any>();
-    this.TodaysDate = new Date();
+    this.loadLists();
+    this.cargaPermisos();
   }
 
   // Los permisos en cada sección dependen del estado del acta y del rol.
@@ -315,9 +321,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
     }
   }
 
-  ngOnInit() {
-    this.cargaPermisos();
-  }
   public loadLists() {
     this.store.select((state) => state).subscribe(
       (list) => {
@@ -340,14 +343,21 @@ export class EdicionActaRecibidoComponent implements OnInit {
           this.Dependencias !== undefined && this.Sedes !== undefined &&
           this._Acta_Id !== undefined) {
           // console.log(this._Acta_Id);
+          this.cargaActa();
+        }
+      },
+    );
+  }
+
+  private cargaActa() {
+    if (!this.actaCargada) {
           this.Actas_Recibido.getTransaccionActa(this._Acta_Id).subscribe(Acta => {
             // console.log(Acta);
             this.Cargar_Formularios(Acta[0]);
             // console.log('ok');
+            this.actaCargada = true;
           });
-        }
-      },
-    );
+    }
   }
 
   async asyncForEach(array, callback) {
@@ -717,6 +727,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
 
   // Envío (a proveedor/revisor) o guardado
   private async onFirstSubmit(siguienteEtapa: boolean = false, enviara: number = 0) {
+    this.guardando = true;
     if (!siguienteEtapa) {
     const start = async () => {
       await this.asyncForEach(this.fileDocumento, async (file) => {
@@ -802,6 +813,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
           text: this.translate.instant(mensaje),
         });
       }
+      this.guardando = false;
     });
   }
 

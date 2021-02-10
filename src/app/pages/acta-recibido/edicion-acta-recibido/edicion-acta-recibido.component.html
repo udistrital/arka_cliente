@@ -1,8 +1,8 @@
-  <form [formGroup]="firstForm" #fform="ngForm" class="step-container">
-    <nb-card [nbSpinner]="!firstForm">
-      <nb-card-header>{{'GLOBAL.Acta_Recibido.EdicionActa.Title' | translate}}</nb-card-header>
-      <nb-card-body>
-        <mat-vertical-stepper [linear]="true" #stepper>
+<nb-card>
+  <nb-card-header><h2>{{'GLOBAL.Acta_Recibido.EdicionActa.Title' | translate}}</h2></nb-card-header>
+  <nb-card-body [nbSpinner]="!firstForm || guardando">
+    <form *ngIf="firstForm" [formGroup]="firstForm" #fform="ngForm" class="step-container">
+      <mat-vertical-stepper [linear]="true" #stepper>
 
           <!-- Datos iniciales -->
           <mat-step label="{{'GLOBAL.Acta_Recibido.EdicionActa.DatosTitle' | translate}}" formGroupName="Formulario1">
@@ -152,7 +152,7 @@
                                       <p></p>
                                       <p *ngIf="Validador[i] && fileDocumento[i]">{{fileDocumento[i].name}}</p>
                                       <p *ngIf="!Validador[i]">
-                                        {{'GLOBAL.Acta_Recibido.CapturarElementos.ValidadorPlaceholder2' | translate }}
+                                        {{'GLOBAL.Acta_Recibido.CapturarElementos.ValidadorPlaceholder' | translate: {EXT: 'pdf'} }}
                                       </p>
                                       <div>
                                         <button nbButton type="button" *ngIf="fileDocumento[i]" target="_blank"
@@ -215,42 +215,22 @@
             <nb-card *ngIf="Totales">
               <nb-card-header>{{'GLOBAL.Acta_Recibido.EdicionActa.Consolidado' | translate}}</nb-card-header>
               <nb-card-body>
-                <table>
+                <table class="consolidado">
                   <tr>
-                    <td class="cell-3"></td>
-                    <td class="cell-3"></td>
                     <td class="cell-3">{{'GLOBAL.Acta_Recibido.EdicionActa.Subtotal' | translate}}</td>
-                    <td class="cell-3"></td>
                     <td class="cell-3">{{getGranSubtotal() | currency}}</td>
-                    <td class="cell-3"></td>
-                    <td class="cell-3"></td>
                   </tr>
                   <tr>
-                    <td class="cell-3"></td>
-                    <td class="cell-3"></td>
                     <td class="cell-3">{{'GLOBAL.Acta_Recibido.EdicionActa.Descuento' | translate}}</td>
-                    <td class="cell-3"></td>
                     <td class="cell-3">{{getGranDescuentos() | currency}}</td>
-                    <td class="cell-3"></td>
-                    <td class="cell-3"></td>
                   </tr>
                   <tr>
-                    <td class="cell-3"></td>
-                    <td class="cell-3"></td>
                     <td class="cell-3">{{'GLOBAL.Acta_Recibido.EdicionActa.ValorIva' | translate}}</td>
-                    <td class="cell-3"></td>
                     <td class="cell-3">{{getGranValorIva() | currency}}</td>
-                    <td class="cell-3"></td>
-                    <td class="cell-3"></td>
                   </tr>
                   <tr>
-                    <td class="cell-3"></td>
-                    <td class="cell-3"></td>
                     <td class="cell-3">{{'GLOBAL.Acta_Recibido.EdicionActa.Total' | translate}}</td>
-                    <td class="cell-3"></td>
                     <td class="cell-3">{{getGranTotal() | currency}}</td>
-                    <td class="cell-3"></td>
-                    <td class="cell-3"></td>
                   </tr>
                 </table>
               </nb-card-body>
@@ -291,11 +271,9 @@
                 class="float-right">{{ accion.envRevisor }}</button>
             </div>
 
-
-
-
           </mat-step>
+
         </mat-vertical-stepper>
-      </nb-card-body>
-    </nb-card>
-  </form>
+      </form>
+    </nb-card-body>
+  </nb-card>

@@ -45,8 +45,7 @@
       "id_forma2": "Acta N° {{ID}}",
       "CapturarElementos":{
         "CargaMasivaTitle":"Carga Masiva",
-        "ValidadorPlaceholder":"El archivo debe tener extension (*.xlsx)",
-        "ValidadorPlaceholder2":"El archivo debe tener extension (*.pdf)",
+        "ValidadorPlaceholder":"El archivo debe tener extensión {{EXT}} (*.{{EXT}})",
         "LimpiarEspacioButton":"Descartar Archivo",
         "CargarElementosButton":"Cargar Elementos",
         "ArticulosRelacionadosTitle":"Articulos Relacionados",
@@ -63,6 +62,7 @@
         "IVAHeader":"% IVA",
         "ValorIVAHeader":"Valor de IVA",
         "ValorTotalHeader":"ValorTotal",
+        "AvisoSobreescritura": "La Carga Masiva ELIMINARÁ {{CANT}} elemento(s) actualmente en la Lista. ¿Desea continuar con la Carga Masiva?",
         "AgregarElemento":"Agregar Elemento",
         "EliminarElemento":"Eliminar Elemento",
         "ElementosCargadosTitleOK":"Elementos Cargados",
@@ -399,6 +399,7 @@
       "lista": "Lista de Catálogos"
     },
 
+    "Advertencia": "Advertencia",
     "info": "Información",
     "info_adicional": "Información Adicional",
     "Detalle":"Detalle",
