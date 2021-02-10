@@ -387,9 +387,20 @@ export class CapturarElementosComponent implements OnInit {
   }
 
   onSubmit() {
-    this.checkAnterior = undefined;
-    this.basePaginas = 0;
-    this.readThis();
+    if (this.dataSource.data.length) {
+      (Swal as any).fire({
+        title: this.translate.instant('GLOBAL.Advertencia'),
+        text: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.AvisoSobreescritura', {CANT: this.dataSource.data.length}),
+        type: 'warning',
+        showCancelButton: true,
+      }).then( res => {
+        if (res.value) {
+          this.checkAnterior = undefined;
+          this.basePaginas = 0;
+          this.readThis();
+        }
+      });
+    }
   }
 
 

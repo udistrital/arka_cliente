@@ -55,7 +55,7 @@
                   <p></p>
                   <p *ngIf="Validador">{{fileDocumento.name}}</p>
                   <p *ngIf="!Validador">
-                    {{'GLOBAL.Acta_Recibido.CapturarElementos.ValidadorPlaceholder2' | translate }}</p>
+                    {{'GLOBAL.Acta_Recibido.CapturarElementos.ValidadorPlaceholder' | translate: {EXT: 'pdf'} }}</p>
                   <div>
                     <button nbButton type="button" *ngIf="fileDocumento" target="_blank" (click)="download()">
                       Ver

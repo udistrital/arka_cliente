@@ -12,7 +12,7 @@
           </button>
           <p></p>
           <p *ngIf="Validador">{{nombreArchivo}}</p>
-          <p *ngIf="!Validador">{{'GLOBAL.Acta_Recibido.CapturarElementos.ValidadorPlaceholder' | translate }}</p>
+          <p *ngIf="!Validador">{{'GLOBAL.Acta_Recibido.CapturarElementos.ValidadorPlaceholder' | translate: {EXT: 'xlsx'} }}</p>
           <button type="button" class="btn btn-primary" (click)="clearFile()" *ngIf="Validador">
             {{'GLOBAL.Acta_Recibido.CapturarElementos.LimpiarEspacioButton' | translate }}
           </button>
