@@ -85,7 +85,7 @@ export class CapturarElementosComponent implements OnInit {
     private documentoService: DocumentoService,
     private catalogoHelper: CatalogoElementosHelper,
     private userService: UserService,
-    private completerService: CompleterService
+    private completerService: CompleterService,
   ) {
   }
 
@@ -104,10 +104,10 @@ export class CapturarElementosComponent implements OnInit {
             this.Clases = clases.map(v => {
               v.mostrar = v.SubgrupoId.Codigo + ' - ' + v.SubgrupoId.Nombre;
               return v;
-            })
+            });
             this.dataService = this.completerService.local(this.Clases, 'mostrar', 'mostrar');
           }
-          console.log({clases});
+          // console.log({clases});
         }
         // console.log({pollito:this.Tarifas_Iva})
       },
