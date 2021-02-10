@@ -98,8 +98,17 @@ export class CapturarElementosComponent implements OnInit {
         this.Tipos_Bien = list.listTipoBien[0];
         this.Unidades = list.listUnidades[0];
         this.Tarifas_Iva = list.listIVA[0];
-        this.Clases = list.listClases[0];
-        this.dataService = this.completerService.local(this.Clases, 'SubgrupoId.Nombre', 'SubgrupoId.Nombre');
+        if (Array.isArray(list.listClases[0])) {
+          const clases = list.listClases[0];
+          if (Array.isArray(clases) && clases.length) {
+            this.Clases = clases.map(v => {
+              v.mostrar = v.SubgrupoId.Codigo + ' - ' + v.SubgrupoId.Nombre;
+              return v;
+            })
+            this.dataService = this.completerService.local(this.Clases, 'mostrar', 'mostrar');
+          }
+          console.log({clases});
+        }
         // console.log({pollito:this.Tarifas_Iva})
       },
     );
