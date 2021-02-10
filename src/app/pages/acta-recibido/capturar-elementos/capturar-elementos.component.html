@@ -35,7 +35,7 @@
   </form>
 </div>
 
-<nb-card *ngIf="dataSource">
+<nb-card *ngIf="dataSource" [nbSpinner]="cargando">
   <nb-card-header>{{'GLOBAL.Acta_Recibido.CapturarElementos.ArticulosRelacionadosTitle' | translate }}</nb-card-header>
   <nb-card-body>
 

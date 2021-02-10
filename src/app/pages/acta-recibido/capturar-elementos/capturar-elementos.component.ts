@@ -73,6 +73,7 @@ export class CapturarElementosComponent implements OnInit {
   checkParcial: boolean = false;
   Proveedor: boolean;
   ErroresCarga: string = '';
+  cargando: boolean = true;
 
   constructor(
     private fb: FormBuilder,
@@ -138,6 +139,7 @@ export class CapturarElementosComponent implements OnInit {
       }
     }
     this.ReglasColumnas();
+    this.cargando = false;
   }
 
   ReglasColumnas() {
@@ -280,6 +282,7 @@ export class CapturarElementosComponent implements OnInit {
 
   readThis(): void {
 
+    this.cargando = true;
     const formModel: FormData = this.prepareSave();
     this.actaRecibidoHelper.postArchivo(formModel).subscribe(res => {
       if (res !== null) {
@@ -324,6 +327,7 @@ export class CapturarElementosComponent implements OnInit {
         });
         this.clearFile();
       }
+      this.cargando = false;
     });
   }
 
