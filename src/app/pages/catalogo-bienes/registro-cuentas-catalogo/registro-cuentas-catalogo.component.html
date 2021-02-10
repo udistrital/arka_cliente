@@ -21,7 +21,7 @@
           <p class="font-weight-bold text-uppercase">{{'GLOBAL.subgrupo.clase.seleccionado' | translate}}:</p>
           <span class="font-weight-normal">{{ uid_1.Nombre }}</span>
       </nb-card-header>
-      <nb-card-body>
+      <nb-card-body [nbSpinner]="guardando">
         <p><em>{{'GLOBAL.instr_asig_cuentas' | translate}}</em></p>
         <mat-vertical-stepper #stepper>
 
