@@ -96,7 +96,7 @@ export class ListCatalogoComponent implements OnInit {
   }
 
   loadData(): void {
-    this.catalogoElementosService.getCatalogo().subscribe(res => {
+    this.catalogoElementosService.getCatalogo(false).subscribe(res => {
       if (res !== null) {
         const data = <Array<any>>res;
         // console.log(data);

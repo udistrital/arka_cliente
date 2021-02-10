@@ -23,7 +23,7 @@ export class ConsultaCatalogoComponent implements OnInit {
 
   loadCatalogos() {
     this.catalogoId = 0;
-    this.catalogoHelper.getCatalogos().subscribe((res) => {
+    this.catalogoHelper.getCatalogo().subscribe((res) => {
       if (res !== null) {
         const data = <Array<Catalogo>>res;
         for (const datos in Object.keys(data)) {
