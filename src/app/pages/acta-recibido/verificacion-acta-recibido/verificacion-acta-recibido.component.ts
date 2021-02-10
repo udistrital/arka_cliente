@@ -197,12 +197,28 @@ export class VerificacionActaRecibidoComponent implements OnInit {
           Elementos: this.fb.array([]),
         });
         this.Verificar_tabla.push(false);
+
+        if (Array.isArray(Soporte.Elementos))
         for (const _Elemento of Soporte.Elementos) {
 
           const Elemento___ = this.fb.group({
             Id: [_Elemento.Id],
             TipoBienId: [
-              this.Tipos_Bien.find(bien => bien.Id.toString() === _Elemento.TipoBienId.Id.toString()).Nombre,
+              (() => {
+                const criterio = bien => {
+                  if (bien.hasOwnProperty('Id')
+                  && _Elemento.hasOwnProperty('TipoBienId') && _Elemento.TipoBienId
+                  && _Elemento.TipoBienId.hasOwnProperty('Id') && _Elemento.TipoBienId.Id) {
+                    return bien.Id.toString() === _Elemento.TipoBienId.Id.toString();
+                  } else {
+                    return false;
+                  }
+                };
+                if (Array.isArray(this.Tipos_Bien) && this.Tipos_Bien.some(criterio)) {
+                  return this.Tipos_Bien.find(criterio).Nombre;
+                }
+                return undefined;
+              })(),
             ],
             SubgrupoCatalogoId: [_Elemento.SubgrupoCatalogoId],
             Nombre: [_Elemento.Nombre],
