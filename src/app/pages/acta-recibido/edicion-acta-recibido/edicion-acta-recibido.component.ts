@@ -109,6 +109,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
   dataService3: CompleterData;
   Tarifas_Iva: any;
   verificar: boolean = true;
+  private actaCargada: boolean = false;
 
   permisos: {
     Acta: Permiso,
@@ -341,14 +342,21 @@ export class EdicionActaRecibidoComponent implements OnInit {
           this.Dependencias !== undefined && this.Sedes !== undefined &&
           this._Acta_Id !== undefined) {
           // console.log(this._Acta_Id);
+          this.cargaActa();
+        }
+      },
+    );
+  }
+
+  private cargaActa() {
+    if (!this.actaCargada) {
           this.Actas_Recibido.getTransaccionActa(this._Acta_Id).subscribe(Acta => {
             // console.log(Acta);
             this.Cargar_Formularios(Acta[0]);
             // console.log('ok');
+            this.actaCargada = true;
           });
-        }
-      },
-    );
+    }
   }
 
   async asyncForEach(array, callback) {
