@@ -77,7 +77,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
     if (id !== '') {
       this._Acta_Id = id;
       // console.log('ok');
-      this.loadLists();
     }
     // console.log(this._Acta_Id);
 
@@ -173,6 +172,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
     this.listService.findTipoBien();
     this.listService.findUnidades();
     this.listService.findImpuestoIVA();
+    this.loadLists();
     this.cargaPermisos();
   }
 

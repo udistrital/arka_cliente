@@ -120,8 +120,6 @@ export class CapturarElementosComponent implements OnInit {
     this.Totales = new DatosLocales();
     if (this.DatosRecibidos !== undefined) {
       this.dataSource = new MatTableDataSource(this.DatosRecibidos);
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
       this.respuesta = this.DatosRecibidos;
       this.getDescuentos();
       this.getSubtotales();
@@ -131,9 +129,9 @@ export class CapturarElementosComponent implements OnInit {
       this.ver();
     } else {
       this.dataSource = new MatTableDataSource();
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
     }
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
     for (let i = 0; i < this.dataSource.data.length; i++) {
       if (this.dataSource.data[i].CodigoSubgrupo === undefined) {
         this.dataSource.data[i].CodigoSubgrupo = '';
