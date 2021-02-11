@@ -1,17 +1,7 @@
-<div *ngIf="!firstForm" [nbSpinner]="!firstForm">
-  <nb-card>
-    <nb-card-header>
-    </nb-card-header>
-    <nb-card-body>
-    </nb-card-body>
-  </nb-card>
-</div>
-
-<div class="col-lg-12" *ngIf="firstForm">
-  <form [formGroup]="firstForm" #fform="ngForm" class="step-container">
-    <nb-card>
-      <nb-card-header>{{'GLOBAL.Acta_Recibido.RegistroActa.Title' | translate}}</nb-card-header>
-      <nb-card-body [nbSpinner]="Registrando">
+<nb-card>
+  <nb-card-header><h2>{{'GLOBAL.Acta_Recibido.RegistroActa.Title' | translate}}</h2></nb-card-header>
+  <nb-card-body [nbSpinner]="Registrando || !firstForm">
+    <form *ngIf="firstForm" [formGroup]="firstForm" #fform="ngForm" class="step-container">
         <mat-vertical-stepper [linear]="true" #stepper>
 
           <!-- Datos iniciales -->
@@ -191,7 +181,6 @@
             </nb-card>
           </mat-step>
         </mat-vertical-stepper>
-      </nb-card-body>
-    </nb-card>
-  </form>
-</div>
+    </form>
+  </nb-card-body>
+</nb-card>

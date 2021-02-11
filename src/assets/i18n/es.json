@@ -136,6 +136,7 @@
       },
       "EdicionActa":{
         "Title": "Editar Acta de Recibido",
+        "TitleId": "Editar Acta de Recibido #{{ID}}",
         "DatosTitle":"Datos Iniciales",
         "Sede":"Sede",
         "Dependencia":"Dependencia",
@@ -182,6 +183,7 @@
       },
       "DetalleActa":{
         "Title": "Detalle Acta de Recibido",
+        "TitleId": "Detalle Acta de Recibido #{{ID}}",
         "DatosTitle":"Datos Iniciales",
         "Sede":"Sede",
         "Dependencia":"Dependencia",
@@ -221,6 +223,7 @@
       },
       "VerificacionActa":{
         "Title": "Detalle Acta de Recibido",
+        "TitleId": "Detalle Acta de Recibido #{{ID}}",
         "DatosTitle":"Datos Iniciales",
         "Sede":"Sede",
         "Dependencia":"Dependencia",

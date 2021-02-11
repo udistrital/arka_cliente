@@ -466,9 +466,11 @@ export class EdicionActaRecibidoComponent implements OnInit {
             transaccion_.ActaRecibido.UbicacionId,
             Validators.required,
           ],
-          Revisor: [
-            this.Proveedores.find(proveedor =>
-              proveedor.Id.toString() === transaccion_.ActaRecibido.PersonaAsignada.toString()).compuesto,
+          Revisor: [ (() => {
+            const criterio = proveedor =>
+            proveedor.Id.toString() === transaccion_.ActaRecibido.PersonaAsignada.toString();
+            return this.Proveedores.some(criterio) ? this.Proveedores.find(criterio).compuesto : '';
+          })(),
             Validators.required,
           ],
         }),

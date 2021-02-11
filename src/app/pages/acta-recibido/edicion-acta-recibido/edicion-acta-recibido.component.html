@@ -1,5 +1,5 @@
 <nb-card>
-  <nb-card-header><h2>{{'GLOBAL.Acta_Recibido.EdicionActa.Title' | translate}}</h2></nb-card-header>
+  <nb-card-header><h2>{{'GLOBAL.Acta_Recibido.EdicionActa.TitleId' | translate: {ID: _Acta_Id} }}</h2></nb-card-header>
   <nb-card-body [nbSpinner]="!firstForm || guardando">
     <form *ngIf="firstForm" [formGroup]="firstForm" #fform="ngForm" class="step-container">
       <mat-vertical-stepper [linear]="true" #stepper>
@@ -217,19 +217,19 @@
               <nb-card-body>
                 <table class="consolidado">
                   <tr>
-                    <td class="cell-3">{{'GLOBAL.Acta_Recibido.EdicionActa.Subtotal' | translate}}</td>
+                    <th class="cell-3">{{'GLOBAL.Acta_Recibido.EdicionActa.Subtotal' | translate}}</th>
                     <td class="cell-3">{{getGranSubtotal() | currency}}</td>
                   </tr>
                   <tr>
-                    <td class="cell-3">{{'GLOBAL.Acta_Recibido.EdicionActa.Descuento' | translate}}</td>
+                    <th class="cell-3">{{'GLOBAL.Acta_Recibido.EdicionActa.Descuento' | translate}}</th>
                     <td class="cell-3">{{getGranDescuentos() | currency}}</td>
                   </tr>
                   <tr>
-                    <td class="cell-3">{{'GLOBAL.Acta_Recibido.EdicionActa.ValorIva' | translate}}</td>
+                    <th class="cell-3">{{'GLOBAL.Acta_Recibido.EdicionActa.ValorIva' | translate}}</th>
                     <td class="cell-3">{{getGranValorIva() | currency}}</td>
                   </tr>
                   <tr>
-                    <td class="cell-3">{{'GLOBAL.Acta_Recibido.EdicionActa.Total' | translate}}</td>
+                    <th class="cell-3">{{'GLOBAL.Acta_Recibido.EdicionActa.Total' | translate}}</th>
                     <td class="cell-3">{{getGranTotal() | currency}}</td>
                   </tr>
                 </table>

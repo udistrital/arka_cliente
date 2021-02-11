@@ -400,6 +400,11 @@ export class CapturarElementosComponent implements OnInit {
   }
 
   onSubmit() {
+    const cargar = () => {
+      this.checkAnterior = undefined;
+      this.basePaginas = 0;
+      this.readThis();
+    };
     if (this.dataSource.data.length) {
       (Swal as any).fire({
         title: this.translate.instant('GLOBAL.Advertencia'),
@@ -408,11 +413,11 @@ export class CapturarElementosComponent implements OnInit {
         showCancelButton: true,
       }).then( res => {
         if (res.value) {
-          this.checkAnterior = undefined;
-          this.basePaginas = 0;
-          this.readThis();
+          cargar();
         }
       });
+    } else {
+      cargar();
     }
   }
 
