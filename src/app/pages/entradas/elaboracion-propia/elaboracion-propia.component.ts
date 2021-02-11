@@ -11,7 +11,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { Entrada } from '../../../@core/data/models/entrada/entrada';
 import { TipoEntrada } from '../../../@core/data/models/entrada/tipo_entrada';
 import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
-import { TerceroCriterioPlanta } from '../../../@core/data/models/terceros_criterio';
+import { TerceroCriterioJefe, TerceroCriterioPlanta } from '../../../@core/data/models/terceros_criterio';
 import {Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
 import Swal from 'sweetalert2';
@@ -29,6 +29,8 @@ export class ElaboracionPropiaComponent implements OnInit {
   supervisorForm: FormGroup;
   Supervisores: TerceroCriterioPlanta[];
   supervisoresFiltrados: Observable<TerceroCriterioPlanta[]>;
+  Ordenadores:TerceroCriterioJefe[];
+  ordenadoresFiltrados: Observable<TerceroCriterioJefe[]>;
   contratoForm: FormGroup;
 
   ordenadores: Array<OrdenadorGasto>;
@@ -44,6 +46,8 @@ export class ElaboracionPropiaComponent implements OnInit {
   idDocumento: number;
   cargando_proveedores: boolean = true;
   cargando_supervisores: boolean = true;
+  cargando_ordenadores: boolean = true;
+
 
 
   tipoEntrada: any;
@@ -70,9 +74,6 @@ export class ElaboracionPropiaComponent implements OnInit {
 
 
   ngOnInit() {
-    this.contratoForm = this.fb.group({
-      vigenciaCtrl: ['', [Validators.required]],
-    });
     this.soporteForm = this.fb.group({
       soporteCtrl: ['', Validators.required],
     });
@@ -80,7 +81,7 @@ export class ElaboracionPropiaComponent implements OnInit {
       observacionCtrl: ['', Validators.nullValidator],
     });
     this.ordenadorForm = this.fb.group({
-      //ordenadorCtrl: ['', Validators.required],
+      ordenadorCtrl: ['', Validators.required],
       vigenciaCtrl: ['', [Validators.required]],
     });
     this.supervisorForm = this.fb.group({
@@ -90,6 +91,7 @@ export class ElaboracionPropiaComponent implements OnInit {
     this.getTipoEntrada();
     this.getFormatoEntrada();
     this.loadSupervisores();
+    this.loadOrdenadores();
   }
 
   // Métodos para validar campos requeridos en el formulario
@@ -185,19 +187,40 @@ export class ElaboracionPropiaComponent implements OnInit {
     }  
   }
 
-
-  changeSupervisor() {
-    for (const i in this.ordenadores) {
-      if (this.ordenadores[i].NombreOrdenador === this.ordenadorForm.value.ordenadorCtrl) {
-        this.supervisorId = this.ordenadores[i].Id;
-      }
-    }
-  }
-//-------------------------------------END SUPERVISORES---------------------------------------------------
+//-------------------------------------ORDENADORES---------------------------------------------------
   onSoporteSubmit() {
     if (this.ordenadorId !== 0) {
       this.soporteForm.markAsDirty();
     }
+  }
+  loadOrdenadores(): void {
+    this.tercerosHelper.getTercerosByCriterio('jefes').subscribe( res => {
+      if (Array.isArray(res)) {
+        this.Ordenadores = res;
+        this.ordenadoresFiltrados = this.ordenadorForm.get('ordenadorCtrl').valueChanges
+          .pipe(
+            startWith(''),
+            map(val => typeof val === 'string' ? val : this.muestraOrdenador(val)),
+            map(nombre => this.filtroOrdenadores(nombre)),
+          );
+        // console.log({supervisores: this.Supervisores});
+        this.cargando_ordenadores = false;
+      }
+    });
+  }
+  filtroOrdenadores(nombre: string): TerceroCriterioJefe[] {
+    // if (nombre.length >= 4 ) {
+      const valorFiltrado = nombre.toLowerCase();
+      return this.Ordenadores.filter(sup => sup.TerceroPrincipal.NombreCompleto.toLowerCase().includes(valorFiltrado));
+    // } else return [];
+  }
+
+  muestraOrdenador(ord: TerceroCriterioJefe): string {
+    if (ord.TerceroPrincipal!=undefined) {
+      return ord.TerceroPrincipal.NombreCompleto;
+    }else {
+      return ''
+    }  
   }
 
   onObservacionSubmit() {
@@ -283,8 +306,9 @@ export class ElaboracionPropiaComponent implements OnInit {
         acta_recibido_id: +this.actaRecibidoId,
         consecutivo: 'P3-' + this.actaRecibidoId + '-' + new Date().getFullYear(),
         documento_contable_id: 1, // REVISAR
-        vigencia_ordenador: this.fechaSolicitante,
-        ordenador_gasto_id: +this.ordenadorId,
+        supervisor: this.supervisorForm.value.supervisorCtrl.TerceroPrincipal.Id,
+        vigencia_ordenador: this.ordenadorForm.value.vigenciaCtrl,
+        ordenador_gasto_id:this.ordenadorForm.value.ordenadorCtrl.TerceroPrincipal.Id, 
         solicitante_id: +this.supervisorId,
       };
       const movimientoAdquisicion = {

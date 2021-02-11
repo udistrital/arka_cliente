@@ -5,7 +5,7 @@
   <nb-step [stepControl]="ordenadorForm" label="Ordenador Gasto">
     <h5>{{'GLOBAL.ordenador_gasto' | translate}}</h5>
     <form [formGroup]="ordenadorForm" class="step-container">
-      <div class="row">
+      <div class="row" [nbSpinner]="cargando_ordenadores">
         <div class="form-group col-sm">
           <label>{{'GLOBAL.vigencia' | translate}}</label>
           <select class="form-control" 
@@ -15,13 +15,16 @@
             <option value="{{ vigencia-1 }}">{{ vigencia-1 }}</option>
           </select>
         </div>
-        <!-- <div class="form-group col-sm">
-          <label>{{'GLOBAL.ordenador_gasto' | translate}}</label>
+        <div class="form-group col-sm">
+          <label>{{'GLOBAL.nombres' | translate}}</label>
           <div class="input-group">
-            <input nbInput (change)="changeOrdenador()" type="text" shape="semi-round"
-              placeholder="{{'GLOBAL.ordenador_gasto' | translate}}" class="form-control"
-              [readonly]="!solicitanteSelect" list="solicitanteList" formControlName="ordenadorCtrl"
-              [ngClass]="{'form-control-danger': ordenadorForm.invalid && (ordenadorForm.dirty || ordenadorForm.touched)}" />
+            <input matInput type="text" class="form-control" placeholder="Nombre Completo"
+            formControlName="ordenadorCtrl" [matAutocomplete]="autoOrdenador"/>
+            <mat-autocomplete #autoOrdenador="matAutocomplete" [displayWith]="muestraOrdenador">
+              <mat-option *ngFor="let orde of ordenadoresFiltrados | async" [value]="orde">
+                {{orde.TerceroPrincipal.NombreCompleto}}
+              </mat-option>
+            </mat-autocomplete>
           </div>
         </div>
         <datalist id="solicitanteList">
@@ -33,7 +36,7 @@
             <input nbInput shape="semi-round" type="text" placeholder="{{'GLOBAL.asignacion' | translate}}"
               value="{{ cargoOrdenador }}" class="form-control" [readonly]="true" />
           </div>
-        </div> -->
+        </div>
       </div>
       <div class="row float-right">
         <button type="button" nbButton nbStepperNext>
