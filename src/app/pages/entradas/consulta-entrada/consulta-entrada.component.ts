@@ -47,9 +47,13 @@ export class ConsultaEntradaComponent implements OnInit {
     this.listService.findImpuestoIVA();
   }
 
+  onEdit($event) {
+    console.log($event);
+  }
   loadTablaSettings() {
     const t = {
       registrar: this.translate.instant('GLOBAL.registrar_nueva_entrada'),
+      editar: this.translate.instant('GLOBAL.Acta_Recibido.EdicionActa.Title'),
     };
     this.settings = {
       hideSubHeader: false,
@@ -57,7 +61,6 @@ export class ConsultaEntradaComponent implements OnInit {
       actions: {
         columnTitle: this.translate.instant('GLOBAL.Acciones'),
         position: 'right',
-        edit: false,
         delete: false,
         custom: [
           {
@@ -65,6 +68,9 @@ export class ConsultaEntradaComponent implements OnInit {
             title: '<i class="fas fa-eye" title="Ver"></i>',
           },
         ],
+      },
+      edit: {
+        editButtonContent: '<i class="material-icons" title="' + t.editar + '" aria-label="' + t.editar + '">edit</i>',
       },
       add: {
         addButtonContent: '<i class="fas fa-plus" title="' + t.registrar + '" aria-label="' + t.registrar + '"></i>',
@@ -203,27 +209,27 @@ export class ConsultaEntradaComponent implements OnInit {
 
   loadContrato(): void {
     if (this.entradaEspecifica.ContratoId && this.entradaEspecifica.Vigencia) {
-    this.entradasHelper.getContrato(this.entradaEspecifica.ContratoId, this.entradaEspecifica.Vigencia).subscribe(res => {
-      if (res !== null) {
-        const ordenadorAux = new OrdenadorGasto;
-        const supervisorAux = new Supervisor;
-        ordenadorAux.Id = res.contrato.ordenador_gasto.id;
-        ordenadorAux.NombreOrdenador = res.contrato.ordenador_gasto.nombre_ordenador;
-        ordenadorAux.RolOrdenadorGasto = res.contrato.ordenador_gasto.rol_ordenador;
-        supervisorAux.Id = res.contrato.supervisor.id;
-        supervisorAux.Nombre = res.contrato.supervisor.nombre;
-        supervisorAux.Cargo = res.contrato.supervisor.cargo;
-        supervisorAux.Dependencia = res.contrato.supervisor.dependencia_supervisor;
-        supervisorAux.Sede = res.contrato.supervisor.sede_supervisor;
-        supervisorAux.DocumentoIdentificacion = res.contrato.supervisor.documento_identificacion;
-        this.contrato.OrdenadorGasto = ordenadorAux;
-        this.contrato.NumeroContratoSuscrito = res.contrato.numero_contrato_suscrito;
-        this.contrato.TipoContrato = res.contrato.tipo_contrato;
-        this.contrato.FechaSuscripcion = res.contrato.fecha_suscripcion;
-        this.contrato.Supervisor = supervisorAux;
-        this.mostrar = true;
-      }
-    });
+      this.entradasHelper.getContrato(this.entradaEspecifica.ContratoId, this.entradaEspecifica.Vigencia).subscribe(res => {
+        if (res !== null) {
+          const ordenadorAux = new OrdenadorGasto;
+          const supervisorAux = new Supervisor;
+          ordenadorAux.Id = res.contrato.ordenador_gasto.id;
+          ordenadorAux.NombreOrdenador = res.contrato.ordenador_gasto.nombre_ordenador;
+          ordenadorAux.RolOrdenadorGasto = res.contrato.ordenador_gasto.rol_ordenador;
+          supervisorAux.Id = res.contrato.supervisor.id;
+          supervisorAux.Nombre = res.contrato.supervisor.nombre;
+          supervisorAux.Cargo = res.contrato.supervisor.cargo;
+          supervisorAux.Dependencia = res.contrato.supervisor.dependencia_supervisor;
+          supervisorAux.Sede = res.contrato.supervisor.sede_supervisor;
+          supervisorAux.DocumentoIdentificacion = res.contrato.supervisor.documento_identificacion;
+          this.contrato.OrdenadorGasto = ordenadorAux;
+          this.contrato.NumeroContratoSuscrito = res.contrato.numero_contrato_suscrito;
+          this.contrato.TipoContrato = res.contrato.tipo_contrato;
+          this.contrato.FechaSuscripcion = res.contrato.fecha_suscripcion;
+          this.contrato.Supervisor = supervisorAux;
+          this.mostrar = true;
+        }
+      });
     } else this.mostrar = true;
   }
 
