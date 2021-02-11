@@ -27,6 +27,9 @@ export class ElaboracionPropiaComponent implements OnInit {
   observacionForm: FormGroup;
   ordenadorForm: FormGroup;
   supervisorForm: FormGroup;
+
+
+  
   Supervisores: TerceroCriterioPlanta[];
   supervisoresFiltrados: Observable<TerceroCriterioPlanta[]>;
   Ordenadores:TerceroCriterioJefe[];
@@ -222,7 +225,7 @@ export class ElaboracionPropiaComponent implements OnInit {
       return ''
     }  
   }
-
+//---------------------------------FIN ORDENADORES-------------------------------------------------
   onObservacionSubmit() {
     this.validar = true;
   }
