@@ -84,6 +84,8 @@ export class VerificacionActaRecibidoComponent implements OnInit {
   bandera2: boolean;
   respuesta: any;
 
+  private actaCargada: boolean = false;
+
   constructor(
     private translate: TranslateService,
     private router: Router,
@@ -138,15 +140,21 @@ export class VerificacionActaRecibidoComponent implements OnInit {
           this.Dependencias !== undefined && this.Sedes !== undefined &&
           this._ActaId !== undefined && this.respuesta === undefined) {
           // console.log(this._ActaId);
+          this.cargarActa();
+        }
+      },
+    );
+  }
+
+  private cargarActa() {
+    if (!this.actaCargada) {
           this.Actas_Recibido.getTransaccionActa(this._ActaId).subscribe(Acta => {
             // console.log(Acta);
             this.respuesta = true;
             this.Cargar_Formularios(Acta[0]);
             // console.log('ok');
           });
-        }
-      },
-    );
+    }
   }
 
   T_V(valor: string): string {

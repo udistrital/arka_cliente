@@ -69,6 +69,8 @@ export class VerDetalleComponent implements OnInit {
     this.loadLists();
   }
 
+  private actaCargada: boolean = false;
+
   // Modelos
 
   Acta__: ActaRecibido;
@@ -141,14 +143,20 @@ export class VerDetalleComponent implements OnInit {
           this.Dependencias !== undefined && this.Sedes !== undefined &&
           this._ActaId !== undefined) {
           // console.log(this._ActaId);
+          this.cargarActa();
+        }
+      },
+    );
+  }
+
+  private cargarActa() {
+    if (!this.actaCargada) {
           this.Actas_Recibido.getTransaccionActa(this._ActaId).subscribe(Acta => {
             // console.log(Acta);
             this.Cargar_Formularios(Acta[0]);
             // console.log('ok');
           });
-        }
-      },
-    );
+    }
   }
 
   T_V(valor: string): string {
