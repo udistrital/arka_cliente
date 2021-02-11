@@ -229,7 +229,7 @@ export class VerificacionElementosComponent implements OnInit {
         if (datos[index].TipoBienId === 'Consumo Controlado' && Object.keys(this.ConsumoControlado[0]).length !== 0) {
           elemento.SubgrupoCatalogoId = this.ConsumoControlado.find(x => x.SubgrupoId.Id === datos[index].SubgrupoCatalogoId).SubgrupoId;
         }
-        if (datos[index].TipoBienId.Id === 'Devolutivo' && Object.keys(this.Devolutivo[0]).length !== 0) {
+        if (datos[index].TipoBienId === 'Devolutivo' && Object.keys(this.Devolutivo[0]).length !== 0) {
           elemento.SubgrupoCatalogoId = this.Devolutivo.find(x => x.SubgrupoId.Id === datos[index].SubgrupoCatalogoId).SubgrupoId;
         }
         this.Datos.push(elemento);

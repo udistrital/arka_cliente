@@ -599,38 +599,45 @@ export class VerificacionActaRecibidoComponent implements OnInit {
       }
     });
   }
-  getGranSubtotal() {
 
-    if (this.Acta !== undefined) {
+  private hayElementos(): boolean {
+    return (this.Acta
+    && this.Acta.hasOwnProperty('SoportesActa')
+    && Array.isArray(this.Acta.SoportesActa)
+    && this.Acta.SoportesActa.some(sop => Array.isArray(sop.Elementos))
+    );
+  }
+
+  getGranSubtotal() {
+    if (this.hayElementos()) {
       return this.Acta.SoportesActa.map(t => t.Elementos.map(w => w.ValorTotal).reduce((acc, value) => acc + value)).toString();
     } else {
       return '0';
     }
   }
-  getGranDescuentos() {
 
-    if (this.Acta !== undefined) {
+  getGranDescuentos() {
+    if (this.hayElementos()) {
       return this.Acta.SoportesActa.map(t => t.Elementos.map(w => w.Descuento).reduce((acc, value) => acc + value)).toString();
     } else {
       return '0';
     }
   }
-  getGranValorIva() {
 
-    if (this.Acta !== undefined) {
+  getGranValorIva() {
+    if (this.hayElementos()) {
       return this.Acta.SoportesActa.map(t => t.Elementos.map(w => w.ValorIva).reduce((acc, value) => acc + value)).toString();
     } else {
       return '0';
     }
   }
-  getGranTotal() {
 
-    if (this.Acta !== undefined) {
+  getGranTotal() {
+    if (this.hayElementos()) {
       return this.Acta.SoportesActa.map(t => t.Elementos.map(w => w.ValorFinal).reduce((acc, value) => acc + value)).toString();
     } else {
       return '0';
     }
   }
-  volver() {
-  }
+
 }
