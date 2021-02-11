@@ -136,6 +136,7 @@
       },
       "EdicionActa": {
         "Title": "Edit Receipt Certificate",
+        "TitleId": "Edit Receipt Certificate No.{{ID}}",
         "DatosTitle": "Initial Data",
         "Sede": "Campus",
         "Dependencia": "Dependence",
@@ -182,6 +183,7 @@
       },
       "DetalleActa": {
         "Title": "Receipt Certificate Detail",
+        "TitleId": "Receipt Certificate No.{{ID}} Detail",
         "DatosTitle": "Initial Data",
         "Sede": "Campus",
         "Dependencia": "Dependence",
@@ -221,6 +223,7 @@
       },
       "VerificacionActa": {
         "Title": "Verify Receipt Certificate",
+        "TitleId": "Verify Receipt Certificate No.{{ID}}",
         "DatosTitle": "Initial Data",
         "Sede": "Campus",
         "Dependencia": "Dependence",
