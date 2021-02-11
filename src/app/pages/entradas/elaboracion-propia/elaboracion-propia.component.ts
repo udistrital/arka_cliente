@@ -10,6 +10,10 @@ import { DocumentoService } from '../../../@core/data/documento.service';
 import { TranslateService } from '@ngx-translate/core';
 import { Entrada } from '../../../@core/data/models/entrada/entrada';
 import { TipoEntrada } from '../../../@core/data/models/entrada/tipo_entrada';
+import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
+import { TerceroCriterioPlanta } from '../../../@core/data/models/terceros_criterio';
+import {Observable} from 'rxjs';
+import {map, startWith} from 'rxjs/operators';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -23,6 +27,9 @@ export class ElaboracionPropiaComponent implements OnInit {
   observacionForm: FormGroup;
   ordenadorForm: FormGroup;
   supervisorForm: FormGroup;
+  Supervisores: TerceroCriterioPlanta[];
+  supervisoresFiltrados: Observable<TerceroCriterioPlanta[]>;
+  contratoForm: FormGroup;
 
   ordenadores: Array<OrdenadorGasto>;
   solicitanteSelect: boolean;
@@ -35,14 +42,24 @@ export class ElaboracionPropiaComponent implements OnInit {
   fileDocumento: any;
   uidDocumento: string;
   idDocumento: number;
+  cargando_proveedores: boolean = true;
+  cargando_supervisores: boolean = true;
+
 
   tipoEntrada: any;
   formatoTipoMovimiento: any;
 
   @Input() actaRecibidoId: string;
 
-  constructor(private router: Router, private entradasHelper: EntradaHelper, private pUpManager: PopUpManager, private fb: FormBuilder,
-    private nuxeoService: NuxeoService, private sanitization: DomSanitizer, private documentoService: DocumentoService,
+  constructor(
+    private router: Router,
+    private entradasHelper: EntradaHelper,
+    private pUpManager: PopUpManager,
+    private fb: FormBuilder,
+    private nuxeoService: NuxeoService,
+    private sanitization: DomSanitizer,
+    private documentoService: DocumentoService,
+    private tercerosHelper: TercerosHelper,
     private translate: TranslateService) {
     this.ordenadores = new Array<OrdenadorGasto>();
     this.solicitanteSelect = false;
@@ -53,6 +70,9 @@ export class ElaboracionPropiaComponent implements OnInit {
 
 
   ngOnInit() {
+    this.contratoForm = this.fb.group({
+      vigenciaCtrl: ['', [Validators.required]],
+    });
     this.soporteForm = this.fb.group({
       soporteCtrl: ['', Validators.required],
     });
@@ -60,8 +80,8 @@ export class ElaboracionPropiaComponent implements OnInit {
       observacionCtrl: ['', Validators.nullValidator],
     });
     this.ordenadorForm = this.fb.group({
-      ordenadorCtrl: ['', Validators.required],
-      fechaCtrl: ['', Validators.required],
+      //ordenadorCtrl: ['', Validators.required],
+      vigenciaCtrl: ['', [Validators.required]],
     });
     this.supervisorForm = this.fb.group({
       supervisorCtrl: ['', Validators.required],
@@ -69,6 +89,7 @@ export class ElaboracionPropiaComponent implements OnInit {
     this.getVigencia();
     this.getTipoEntrada();
     this.getFormatoEntrada();
+    this.loadSupervisores();
   }
 
   // Métodos para validar campos requeridos en el formulario
@@ -116,6 +137,54 @@ export class ElaboracionPropiaComponent implements OnInit {
       }
     }
   }
+  // -------------------------SUPERVISORES--------------------------------------------------------
+  loadSupervisores(): void {
+    this.tercerosHelper.getTercerosByCriterio('funcionarioPlanta').subscribe( res => {
+      if (Array.isArray(res)) {
+        this.Supervisores = res;
+        this.supervisoresFiltrados = this.supervisorForm.get('supervisorCtrl').valueChanges
+          .pipe(
+            startWith(''),
+            map(val => typeof val === 'string' ? val : this.muestraSupervisor(val)),
+            map(nombre => this.filtroSupervisores(nombre)),
+          );
+        // console.log({supervisores: this.Supervisores});
+        this.cargando_supervisores = false;
+      }
+    });
+  }
+  datosSupervisor(param: string): string {
+    const supervisorSeleccionado: TerceroCriterioPlanta = <TerceroCriterioPlanta>this.supervisorForm.value.supervisorCtrl;
+    // console.log({supervisorSeleccionado});
+    if (supervisorSeleccionado) {
+      switch (param) {
+        case 'sede':
+          return supervisorSeleccionado.Sede.Nombre;
+
+        case 'dependencia':
+          return supervisorSeleccionado.Dependencia.Nombre;
+
+        default:
+          return '';
+      }
+    }
+    return '';
+  }
+  filtroSupervisores(nombre: string): TerceroCriterioPlanta[] {
+    // if (nombre.length >= 4 ) {
+      const valorFiltrado = nombre.toLowerCase();
+      return this.Supervisores.filter(sup => sup.TerceroPrincipal.NombreCompleto.toLowerCase().includes(valorFiltrado));
+    // } else return [];
+  }
+
+  muestraSupervisor(sup: TerceroCriterioPlanta): string {
+    if (sup.TerceroPrincipal!=undefined) {
+      return sup.TerceroPrincipal.NombreCompleto;
+    }else {
+      return ''
+    }  
+  }
+
 
   changeSupervisor() {
     for (const i in this.ordenadores) {
@@ -124,7 +193,7 @@ export class ElaboracionPropiaComponent implements OnInit {
       }
     }
   }
-
+//-------------------------------------END SUPERVISORES---------------------------------------------------
   onSoporteSubmit() {
     if (this.ordenadorId !== 0) {
       this.soporteForm.markAsDirty();
