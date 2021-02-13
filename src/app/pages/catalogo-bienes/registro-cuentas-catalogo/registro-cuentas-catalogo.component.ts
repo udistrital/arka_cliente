@@ -4,6 +4,7 @@ import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/cat
 import { Grupo, Subgrupo } from '../../../@core/data/models/catalogo/jerarquia';
 import { Nivel_t } from '../../../@core/data/models/catalogo/tipo_nivel';
 import { Catalogo } from '../../../@core/data/models/catalogo/catalogo';
+import { TipoMovimientoKronos } from '../../../@core/data/models/movimientos';
 import { BaseId } from '../../../@core/data/models/base';
 import Swal from 'sweetalert2';
 import { Store } from '@ngrx/store';
@@ -15,6 +16,13 @@ import { CuentasFormulario, CuentaGrupo } from '../../../@core/data/models/catal
 import { CuentasGrupoTransaccion } from '../../../@core/data/models/catalogo/cuentas_subgrupo';
 import { element } from '@angular/core/src/render3';
 import { ToasterConfig, Toast, BodyOutputType, ToasterService } from 'angular2-toaster';
+
+class TiposMovimiento {
+  tipo: string;
+  data: TipoMovimientoKronos[];
+  i18n: string;
+  mostrar: () => boolean;
+}
 
 @Component({
   selector: 'ngx-registro-cuentas-catalogo',
@@ -36,10 +44,7 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
   uid_1: Subgrupo;
   ModificarGrupo: boolean;
   Movimiento: number;
-  Movimientos_Entradas;
-  Movimientos_Salidas;
-  Movimientos_Depreciacion;
-  Movimientos_Valorizacion;
+  TiposMovimientos: TiposMovimiento[] = [];
   selected = new FormControl(0);
   Movimientos: any[];
   config: ToasterConfig;
@@ -69,11 +74,35 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
     this.loadCatalogos();
     this.listService.findPlanCuentasDebito();
     this.listService.findPlanCuentasCredito();
-    this.catalogoElementosService.getTiposMovimientoKronos().subscribe((res: any[]) => {
-      this.Movimientos_Entradas = res.filter((x: any) => x.Descripcion.indexOf('Entrada') !== -1);
-      this.Movimientos_Salidas = res.filter((x: any) => x.Descripcion.indexOf('Salida') !== -1);
-      this.Movimientos_Depreciacion = res.filter((x: any) => x.Descripcion.indexOf('Depreciacion') !== -1);
-      this.Movimientos_Valorizacion = res.filter((x: any) => x.Descripcion.indexOf('Valorizacion') !== -1);
+    this.cargaMovimientos();
+  }
+
+  private cargaMovimientos () {
+    const movimientos = [
+      {buscar: 'Entrada', i18n: 'GLOBAL.Entradas', mostrar: () => true},
+      {buscar: 'Salida', i18n: 'GLOBAL.Salidas', mostrar: () => true},
+      {buscar: 'Depreciacion', i18n: 'GLOBAL.Depreciacion', mostrar: () => this.depreciacion_ok},
+      {buscar: 'Valorizacion', i18n: 'GLOBAL.Valorizacion', mostrar: () => this.valorizacion_ok},
+    ];
+
+    this.catalogoElementosService.getTiposMovimientoKronos().subscribe((res: TipoMovimientoKronos[]) => {
+      // console.log({res});
+      const desglose = res.reduce((acc: TiposMovimiento[], val): TiposMovimiento[] => {
+        const tipo = movimientos.find(mov => val.Descripcion.indexOf(mov.buscar) !== -1);
+        const criterio = (t: TiposMovimiento) => tipo && (t.tipo === tipo.buscar);
+        if (acc.some(criterio)) {
+          acc.find(criterio).data.push(val);
+        } else {
+          if (tipo) {
+            acc.push({tipo: tipo.buscar, data: [val], i18n: tipo.i18n, mostrar: tipo.mostrar});
+          }
+        }
+        return acc;
+      }, <TiposMovimiento[]>[]);
+      // console.log({desglose});
+
+      this.TiposMovimientos = movimientos.map(mov => desglose.find(d => d.tipo === mov.buscar));
+      // console.log({mvtos:this.TiposMovimientos});
       this.all_mov = res.length - 1;
     });
   }
@@ -245,8 +274,7 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
   }
 
   Total_Movimientos() {
-    this.all_mov = this.Movimientos_Entradas.length + this.Movimientos_Salidas.length +
-      this.Bool2Number(this.valorizacion_ok, this.Movimientos_Valorizacion.length) +
-      this.Bool2Number(this.depreciacion_ok, this.Movimientos_Depreciacion.length);
+    this.all_mov = this.TiposMovimientos
+    .reduce((acc: number, tipoMov: TiposMovimiento) => acc + (tipoMov.mostrar() ? tipoMov.data.length : 0), 0);
   }
 }

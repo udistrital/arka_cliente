@@ -40,17 +40,11 @@
           </mat-step>
           </ng-template>
 
-          <ng-container *ngTemplateOutlet="tipoMovimientoTemplate;
-            context:{label:'GLOBAL.Entradas',mvtos:Movimientos_Entradas}"></ng-container>
-          <ng-container *ngTemplateOutlet="tipoMovimientoTemplate;
-            context:{label:'GLOBAL.Salidas',mvtos:Movimientos_Salidas}"></ng-container>
-          <ng-container *ngIf="depreciacion_ok">
-            <ng-container *ngTemplateOutlet="tipoMovimientoTemplate;
-              context:{label:'GLOBAL.Depreciacion',mvtos:Movimientos_Depreciacion}"></ng-container>
-          </ng-container>
-          <ng-container *ngIf="valorizacion_ok">
-            <ng-container *ngTemplateOutlet="tipoMovimientoTemplate;
-              context:{label:'GLOBAL.Valorizacion',mvtos:Movimientos_Valorizacion}"></ng-container>
+          <ng-container *ngFor="let categoria of TiposMovimientos">
+            <ng-container *ngIf="categoria.mostrar()">
+              <ng-container *ngTemplateOutlet="tipoMovimientoTemplate;
+              context: {label: categoria.i18n, mvtos: categoria.data}"></ng-container>
+            </ng-container>
           </ng-container>
 
         </mat-vertical-stepper>
