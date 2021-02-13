@@ -83,6 +83,8 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
       {buscar: 'Salida', i18n: 'GLOBAL.Salidas', mostrar: () => true},
       {buscar: 'Depreciacion', i18n: 'GLOBAL.Depreciacion', mostrar: () => this.depreciacion_ok},
       {buscar: 'Valorizacion', i18n: 'GLOBAL.Valorizacion', mostrar: () => this.valorizacion_ok},
+      {buscar: 'Baja', i18n: 'GLOBAL.movimientos.tipo.SOL_BAJA.nombre', mostrar: () => true},
+      {buscar: 'Traslado', i18n: 'GLOBAL.movimientos.tipo.SOL_TRD.nombre', mostrar: () => true},
     ];
 
     this.catalogoElementosService.getTiposMovimientoKronos().subscribe((res: TipoMovimientoKronos[]) => {

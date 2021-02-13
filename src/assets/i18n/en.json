@@ -585,6 +585,14 @@
         "EBEMP": {
           "nombre": "Delivered to the Entity or Entity on a provisional basis",
           "descripcion": "Delivered to the Entity or Entity on a provisional basis Input"
+        },
+        "SOL_BAJA": {
+          "nombre": "Derecognition",
+          "descripcion": "Derecognition Request"
+        },
+        "SOL_TRD": {
+          "nombre": "Transfer",
+          "descripcion": "Transfer Request"
         }
       },
       "tab_consumo": "Elementos de Consumo",

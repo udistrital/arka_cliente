@@ -35,7 +35,9 @@ const MOVIMIENTOS_KRONOS_ARKA = [
   { arka: 'EPR', kronos: 'Reposición' },
   { arka: 'ESI', kronos: 'Sobrante' },
   { arka: 'ET', kronos: 'Terceros' },
-  // { arka: '', kronos:'' }, // PLANTILLA
+  { arka: 'SOL_BAJA', kronos: 'Baja' },
+  { arka: 'SOL_TRD', kronos: 'Traslado' },
+  // { arka: '', kronos: '' }, // PLANTILLA
 ];
 @Component({
   selector: 'ngx-crud-movimiento',

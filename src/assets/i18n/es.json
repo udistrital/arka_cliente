@@ -585,6 +585,14 @@
         "EBEMP": {
           "nombre": "Entregados de manera Provisional",
           "descripcion": "Entrada Entregados al Ente o Entidad de manera provisional"
+        },
+        "SOL_BAJA": {
+          "nombre": "Baja",
+          "descripcion": "Solicitud de Baja"
+        },
+        "SOL_TRD": {
+          "nombre": "Traslado",
+          "descripcion": "Solicitud de Traslado"
         }
       },
       "tab_consumo": "Elementos de Consumo",
