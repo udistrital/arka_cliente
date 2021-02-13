@@ -147,21 +147,10 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
   }
 
   private codigo_movimiento_i18n(mov: TipoMovimientoKronos): string {
-    const tipos = ['Entrada', 'Salida', 'Depreciacion', 'Valorizacion'];
-    const tipo = tipos.find(t => mov.Descripcion.includes(t));
-    switch (tipo) {
-      case 'Entrada':
-        // TODO: Quitar este switch/case y refactorizar el
-        // segmento I18n GLOBAL.entradas para que pase a llamarse
-        // GLOBAL.movimientos
-        // Debería ser suficiente esta línea:
         if (MOVIMIENTOS_KRONOS_ARKA.some(m => mov.Nombre === m.kronos)) {
-        return 'entradas.tipo.' + MOVIMIENTOS_KRONOS_ARKA.find(m => mov.Nombre === m.kronos).arka + '.nombre';
+        return 'movimientos.tipo.' + MOVIMIENTOS_KRONOS_ARKA.find(m => mov.Nombre === m.kronos).arka + '.nombre';
         }
-      // tslint:disable-next-line
-      default:
         return mov.Nombre;
-    }
   }
 
   construirForm() {

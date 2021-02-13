@@ -16,11 +16,11 @@
 
       <select class="form-control mb-4" [(ngModel)]="opcionEntrada" *ngIf="actaSeleccionada != ''" >
         <option *ngFor="let entrada of tiposDeEntradas" [value]="entrada">
-          {{ 'GLOBAL.entradas.tipo.'+entrada+'.nombre' | translate }}
+          {{ 'GLOBAL.movimientos.tipo.'+entrada+'.nombre' | translate }}
         </option>
       </select>
 
-      <h3 *ngIf="opcionEntrada" class="pt-4 pb-2">{{'GLOBAL.entradas.tipo.' + opcionEntrada + '.descripcion' | translate}}</h3>
+      <h3 *ngIf="opcionEntrada" class="pt-4 pb-2">{{'GLOBAL.movimientos.tipo.' + opcionEntrada + '.descripcion' | translate}}</h3>
       <p *ngIf="opcionEntrada" class="font-weight-bold font-italic pb-2">{{ 'GLOBAL.Acta_Recibido.id_forma1' | translate : {ID: actaSeleccionada} }}</p>
 
       <ngx-adquisicion *ngIf="opcionEntrada === 'EA'" [actaRecibidoId]="actaSeleccionada"></ngx-adquisicion>
