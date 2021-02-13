@@ -34,8 +34,14 @@ export class RegistroComponent implements OnInit {
   ) {
     this.source = new LocalDataSource();
     this.actaSeleccionada = '';
-    this.tiposDeEntradas = ['EA', 'EPR', 'ED', 'ESI', 'ECM', 'ECE', 'EPPA', 'EAM', 'EIA', 'EBEMP', 'EID',
-      'EEP', 'ET']; // Los de esta línea no están en las HU
+    this.tiposDeEntradas = [
+      // De acuerdo a las HU:
+      'EA', 'ECM', 'ECE', 'EPPA', 'EAM', 'EPR', 'ESI', 'ED', 'EIA', 'EID', 'EBEMP',
+      // Los siguientes no están en las HU
+      /*
+      'EEP', 'ET',
+      // */
+    ];
     this.loadTablaSettings();
     this.loadActas();
     this.listService.findClases();
