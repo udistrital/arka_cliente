@@ -1,6 +1,7 @@
   <nb-card *ngIf="!(editarActa||verActa||validarActa)">
     <nb-card-header><h2>{{'GLOBAL.Acta_Recibido.varias' | translate}}</h2></nb-card-header>
     <nb-card-body [nbSpinner]="!mostrar">
+      <em>{{'GLOBAL.Acta_Recibido.ConsultaActas.Instrucciones' | translate}}</em>
       <ng2-smart-table [settings]="settings" [source]="source" (delete)="onDelete($event)"
         (userRowSelect)="seleccionarActa($event)" (edit)="onEdit($event)" (create)="onCreate($event)">
       </ng2-smart-table>

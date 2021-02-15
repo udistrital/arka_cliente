@@ -93,10 +93,10 @@
         "Aceptada": "Acepted",
         "Asociada": "Entrance Associated",
         "Anulada": "Closed",
+        "Instrucciones": "Press a Receipt Certificate's row to view its contents",
         "DialogoAnularTitulo":"Void Act {{ACTA}}?",
         "DialogoAnularMsg":"This action cannot be undone. Are you sure to VOID the Act {{ACTA}}?",
-        "OpcionNoValida": "Invalid Option",
-        "OpcionNoValida2": "Invalid Option for this Certificate"
+        "EdicionBloqueada":"Receipt Certificate No.{{NUM}} cannot be modified due to its State \"{{STATE}}\""
       },
       "RegistroActa": {
         "Title": "Register Receipt Certificate",
