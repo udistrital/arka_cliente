@@ -395,12 +395,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
           this.Actas_Recibido.sendCorreo(objetomail).subscribe((resemail: any) => {
               if (resemail == null) {}
           });
-
-
-
-
-
-
       });
 
     });
@@ -409,7 +403,10 @@ export class EdicionActaRecibidoComponent implements OnInit {
 
   Cargar_Formularios( transaccion_: TransaccionActaRecibido ) {
     this.Actas_Recibido.getSedeDependencia(transaccion_.ActaRecibido.UbicacionId).subscribe(res => {
-      const valor = res[0].EspacioFisicoId.Codigo.substring(0, 4); // Para algunas actas lanza error "Cannot read 'Codigo' of undefined"
+      let valor = '';
+      if (res[0].hasOwnProperty('EspacioFisicoId') && res[0].EspacioFisicoId.hasOwnProperty('Codigo')) {
+        valor = res[0].EspacioFisicoId.Codigo.substring(0, 4);
+      }
       const Form2 = this.fb.array([]);
       const elementos = new Array<any[]>();
       transaccion_.SoportesActa.forEach((Soporte, index) => {
@@ -460,14 +457,27 @@ export class EdicionActaRecibidoComponent implements OnInit {
       this.firstForm = this.fb.group({
         Formulario1: this.fb.group({
           Id: [transaccion_.ActaRecibido.Id],
-          Sede: [this.Sedes.find(x => x.CodigoAbreviacion === valor.toString()).Id, Validators.required],
-          Dependencia: [this.Dependencias.find(x => x.Id === res[0].DependenciaId.Id).Nombre, Validators.required],
+          Sede: [ (() => {
+            const criterio = x => x && x.CodigoAbreviacion === valor.toString();
+            if (this.Sedes.some(criterio)) {
+              return this.Sedes.find(criterio).Id;
+            }
+            return '';
+          })(), Validators.required],
+          Dependencia: [ (() => {
+            const criterio = x => res[0].hasOwnProperty('DependenciaId') && x.Id === res[0].DependenciaId.Id;
+            if (this.Dependencias.some(criterio)) {
+              return this.Dependencias.find(criterio).Nombre;
+            }
+            return '';
+          })(), Validators.required],
           Ubicacion: [
             transaccion_.ActaRecibido.UbicacionId,
             Validators.required,
           ],
           Revisor: [ (() => {
             const criterio = proveedor =>
+            proveedor &&
             proveedor.Id.toString() === transaccion_.ActaRecibido.PersonaAsignada.toString();
             return this.Proveedores.some(criterio) ? this.Proveedores.find(criterio).compuesto : '';
           })(),
@@ -935,6 +945,8 @@ export class EdicionActaRecibidoComponent implements OnInit {
   valor_iva(subtotal: string, descuento: string, porcentaje_iva: string) {
     return ((parseFloat(subtotal) - parseFloat(descuento)) * parseFloat(porcentaje_iva) / 100);
   }
+
+  // Datos
   ver(event: any, index: number) {
     this.DatosElementos = event;
     if (this.Elementos__Soporte === undefined) {
@@ -947,6 +959,8 @@ export class EdicionActaRecibidoComponent implements OnInit {
       }
     }
   }
+
+  // Totales
   ver2(event: any, index: number) {
     this.DatosTotales = event;
     if (this.Totales === undefined) {
