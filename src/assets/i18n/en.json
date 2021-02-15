@@ -287,15 +287,13 @@
     "registro_elementos": "Item Registration",
     "registrar_elementos": "Register Items",
     "consultar_catalogo": "Consult Catalog Tree",
-    "depreciacion": "Depreciation",
-    "valorizacion": "Valorization",
     "cuenta_credito": "Credit",
     "cuenta_debito": "Debit",
     "placeholder_cuenta_credito": "Credit",
     "placeholder_cuenta_debito": "Debit",
     "Entradas": "Entries",
     "Salidas": "Outputs",
-    "Depreciación": "Depreciation",
+    "Depreciacion": "Depreciation",
     "Valorización": "Valorization",
     "Salida de Almacen": "Output",
     "Depreciacion Almacen": "Depreciation",
@@ -532,15 +530,15 @@
     "ubicacion": "Location",
     "observaciones": "comments",
 
-    "entradas": {
+    "movimientos": {
       "tipo": {
         "EA": {
           "nombre": "Acquisition",
           "descripcion": "Acquisition Input"
         },
         "EEP": {
-          "nombre": "Elaboración Propia",
-          "descripcion": "Self-made Input"
+          "nombre": "Own Elaboration",
+          "descripcion": "Own Elaboration Input"
         },
         "ED": {
           "nombre": "Donation",
@@ -579,12 +577,20 @@
           "descripcion": "Input by Use of Parts"
         },
         "EID": {
-          "nombre": "Intangibles developed within the Entities",
-          "descripcion": "Intangibles developed within the Entities Input"
+          "nombre": "Developed Intangibles",
+          "descripcion": "Input of Developed Intangibles"
         },
         "EBEMP": {
-          "nombre": "Delivered to the Entity or Entity on a provisional basis",
-          "descripcion": "Delivered to the Entity or Entity on a provisional basis Input"
+          "nombre": "Delivered Goods on a provisional basis",
+          "descripcion": "Input of Delivered Goods on a provisional basis"
+        },
+        "SOL_BAJA": {
+          "nombre": "Derecognition",
+          "descripcion": "Derecognition Request"
+        },
+        "SOL_TRD": {
+          "nombre": "Transfer",
+          "descripcion": "Transfer Request"
         }
       },
       "tab_consumo": "Elementos de Consumo",

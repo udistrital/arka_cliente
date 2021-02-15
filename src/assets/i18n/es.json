@@ -287,8 +287,6 @@
     "registro_elementos":"Registro de Elementos",
     "registrar_elementos":"Registrar Elemento",
     "consultar_catalogo":"Consultar Arbol de Catálogo",
-    "depreciacion":"Depreciación",
-    "valorizacion":"Valorización",
     "cuenta_credito":"Crédito",
     "cuenta_debito":"Débito",
     "placeholder_cuenta_credito":"Crédito",
@@ -532,7 +530,7 @@
     "ubicacion": "Ubicación",
     "observaciones": "Observaciones",
 
-    "entradas": {
+    "movimientos": {
       "tipo": {
         "EA": {
           "nombre": "Adquisición",
@@ -585,6 +583,14 @@
         "EBEMP": {
           "nombre": "Entregados de manera Provisional",
           "descripcion": "Entrada Entregados al Ente o Entidad de manera provisional"
+        },
+        "SOL_BAJA": {
+          "nombre": "Baja",
+          "descripcion": "Solicitud de Baja"
+        },
+        "SOL_TRD": {
+          "nombre": "Traslado",
+          "descripcion": "Solicitud de Traslado"
         }
       },
       "tab_consumo": "Elementos de Consumo",
