@@ -241,23 +241,4 @@ export class VerificacionElementosComponent implements OnInit {
     }
   }
 
-  onEdit(event): void {
-  }
-
-  itemselec(event): void {
-
-  }
-  onCreate(event): void {
-
-  }
-
-  onDelete(event): void {
-
-  }
-
-  onBack() {
-
-  }
-
-
 }
