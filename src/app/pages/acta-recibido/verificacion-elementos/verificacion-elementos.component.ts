@@ -31,7 +31,7 @@ export class VerificacionElementosComponent implements OnInit {
 
   @Input('DatosRecibidos')
   set name(data: any[]) {
-    // console.log(data)
+    // console.log({data});
     this.store.select((state) => state).subscribe(
       (list) => {
         this.Consumo = list.listConsumo[0];
@@ -61,6 +61,8 @@ export class VerificacionElementosComponent implements OnInit {
   settings: any;
   Datos: Elemento[];
 
+  private clasesValidas: boolean = false;
+
   constructor(private translate: TranslateService,
     private router: Router,
     private actaRecibidoHelper: ActaRecibidoHelper,
@@ -81,7 +83,6 @@ export class VerificacionElementosComponent implements OnInit {
 
   }
   ngOnInit() {
-
   }
   public loadLists() {
     this.store.select((state) => state).subscribe(
@@ -94,12 +95,11 @@ export class VerificacionElementosComponent implements OnInit {
 
   }
   onRowSelect(event) {
+    const todosMarcados = event.source.data.length === event.selected.length;
+    const alMenosUno = event.source.data.length > 0;
 
-    if (event.source.data.length === event.selected.length) {
-      this.DatosEnviados.emit(true);
-    } else {
-      this.DatosEnviados.emit(false);
-    }
+    const valido = todosMarcados && alMenosUno && this.clasesValidas;
+    this.DatosEnviados.emit(valido);
   }
   cargarCampos() {
     this.settings = {
@@ -236,8 +236,9 @@ export class VerificacionElementosComponent implements OnInit {
       }
     }
     if (this.Datos !== undefined) {
-      // console.log(this.Datos)
+      // console.log({'this.Datos': this.Datos});
       this.source.load(this.Datos);
+      this.clasesValidas = this.Datos.every(elem => elem.hasOwnProperty('SubgrupoCatalogoId') && elem.SubgrupoCatalogoId.hasOwnProperty('Id'));
     }
   }
 
