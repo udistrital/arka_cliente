@@ -108,7 +108,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
   Totales: Array<any>;
   dataService3: CompleterData;
   Tarifas_Iva: any;
-  verificar: boolean = true;
   guardando: boolean = false;
   private actaCargada: boolean = false;
 
@@ -958,6 +957,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
         this.Elementos__Soporte.push(this.DatosElementos);
       }
     }
+    // console.log({event, index, 'this.Elementos__Soporte': this.Elementos__Soporte});
   }
 
   // Totales
@@ -1018,19 +1018,38 @@ export class EdicionActaRecibidoComponent implements OnInit {
     });
   }
 
-  formNoValido(): boolean {
+  // TODO: Colocar más validaciones necesarias previo al envío a revisor, acá
+  private elementosValidos(): boolean {
     return (
-      !this.firstForm.get('Formulario1').valid
-      || !this.firstForm.get('Formulario2').valid
-      || !this.firstForm.get('Formulario3').valid
-      || !this.verificar);
+      Array.isArray(this.Elementos__Soporte)
+      && this.Elementos__Soporte.length // Al menos un soporte
+      && this.Elementos__Soporte.every(sop => (
+        Array.isArray(sop)
+        && sop.length // Al menos un elemento
+        && sop.every(elem => (
+          elem.hasOwnProperty('SubgrupoCatalogoId')
+          && elem.SubgrupoCatalogoId
+        ))
+      ))
+    );
+  }
+
+  envioPermitidoARevisor(): boolean {
+    return (['En Elaboracion', 'En Modificacion']
+    .some(est => this.estadoActa === est) ? this.elementosValidos() : true);
+  }
+
+  formNoValido(): boolean {
+    return !(
+      this.firstForm.get('Formulario1').valid
+      && this.firstForm.get('Formulario2').valid
+      && this.firstForm.get('Formulario3').valid
+      && this.userService.getPersonaId() // "Revisor valido" (realmente es "editor", no revisor!...)
+    );
   }
 
   // Enviar a revisor/proveedor?
   Revisar_Totales3(enviara: number) {
-    if (!this.revisorValido()) {
-      return;
-    }
     const L10n_base = 'GLOBAL.Acta_Recibido.EdicionActa.';
     const codigoL10n_titulo = L10n_base + 'DatosVeridicosTitle';
     let codigoL10n_desc = '';
