@@ -7,7 +7,7 @@
           <p>Archivo Carga Masiva</p>
           <button nbButton type="button" (click)="fileInputDocumento.click()">
             <i class="fas fa-file-upload fa-2x"></i>
-            <input formControlname="archivo" id="archivo_icfes" #fileInputDocumento type="file"
+            <input formControlname="archivo" id="archivo_icfes" #fileInputDocumento type="file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
               (change)="onFileChange($event)" style="display:none;" />
           </button>
           <p></p>
