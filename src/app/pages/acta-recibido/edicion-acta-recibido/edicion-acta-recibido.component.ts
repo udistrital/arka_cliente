@@ -110,6 +110,8 @@ export class EdicionActaRecibidoComponent implements OnInit {
   Tarifas_Iva: any;
   guardando: boolean = false;
   private actaCargada: boolean = false;
+  private SoporteElementosValidos: Array<boolean>;
+  private elementosValidos: boolean = false;
 
   permisos: {
     Acta: Permiso,
@@ -453,6 +455,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
       });
 
       this.Elementos__Soporte = elementos;
+      this.SoporteElementosValidos = new Array<boolean>(this.Elementos__Soporte.length);
       this.firstForm = this.fb.group({
         Formulario1: this.fb.group({
           Id: [transaccion_.ActaRecibido.Id],
@@ -690,9 +693,11 @@ export class EdicionActaRecibidoComponent implements OnInit {
 
   addSoportes() {
     (this.firstForm.get('Formulario2') as FormArray).push(this.Formulario_2);
+    this.SoporteElementosValidos.push(false);
   }
   deleteSoportes(index: number) {
     (this.firstForm.get('Formulario2') as FormArray).removeAt(index);
+    this.SoporteElementosValidos.splice(index, 1);
   }
   addTab() {
     this.addSoportes();
@@ -1018,25 +1023,29 @@ export class EdicionActaRecibidoComponent implements OnInit {
     });
   }
 
+  setElementosValidos(soporte: number, valido: boolean): void {
+    if (['En Elaboracion', 'En Modificacion'].some(est => this.estadoActa === est)) {
+      this.SoporteElementosValidos[soporte] = valido;
+      this.validaSoportes();
+    }
+  }
+
   // TODO: Colocar más validaciones necesarias previo al envío a revisor, acá
-  private elementosValidos(): boolean {
-    return (
+  private validaSoportes(): void {
+    this.elementosValidos = (
       Array.isArray(this.Elementos__Soporte)
       && this.Elementos__Soporte.length // Al menos un soporte
-      && this.Elementos__Soporte.every(sop => (
+      && this.Elementos__Soporte.every((sop, idx) => (
         Array.isArray(sop)
         && sop.length // Al menos un elemento
-        && sop.every(elem => (
-          elem.hasOwnProperty('SubgrupoCatalogoId')
-          && elem.SubgrupoCatalogoId
-        ))
+        && this.SoporteElementosValidos[idx]
       ))
     );
   }
 
   envioPermitidoARevisor(): boolean {
     return (['En Elaboracion', 'En Modificacion']
-    .some(est => this.estadoActa === est) ? this.elementosValidos() : true);
+    .some(est => this.estadoActa === est) ? this.elementosValidos : true);
   }
 
   formNoValido(): boolean {

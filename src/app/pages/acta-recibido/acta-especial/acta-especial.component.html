@@ -110,6 +110,7 @@
               <nb-card-body>
                   <ngx-capturar-elementos *ngIf="getPermisoEditar(permisos.Elementos)"
                     [DatosRecibidos]="Elementos__Soporte[0]" (DatosTotales)="ver2($event)" (DatosEnviados)="ver($event)"
+                    (ElementosValidos)="setElementosValidos(0,$event)"
                     (click)="usarLocalStorage()" (change)="usarLocalStorage()">
                   </ngx-capturar-elementos>
               </nb-card-body>

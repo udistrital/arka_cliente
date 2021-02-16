@@ -57,6 +57,7 @@ export class CapturarElementosComponent implements OnInit {
   @Input() DatosRecibidos: any;
   @Output() DatosEnviados = new EventEmitter();
   @Output() DatosTotales = new EventEmitter();
+  @Output() ElementosValidos = new EventEmitter<boolean>();
 
   respuesta: any;
   Tipos_Bien: any;
@@ -214,11 +215,25 @@ export class CapturarElementosComponent implements OnInit {
     }
   }
 
+  // TODO: De ser necesario, agregar otras validaciones asociadas
+  // a cada elemento
+  private validarElementos(): boolean {
+    return (
+      Array.isArray(this.dataSource.data)
+      && this.dataSource.data.length // Al menos un elemento
+      && this.dataSource.data.every(elem => (
+          elem.hasOwnProperty('SubgrupoCatalogoId')
+          && elem.SubgrupoCatalogoId
+      ))
+    );
+  }
+
   ver() {
     this.refrescaCheckTotal();
     // console.log(this.DatosEnviados)
     this.DatosEnviados.emit(this.dataSource.data);
     this.DatosTotales.emit(this.Totales);
+    this.ElementosValidos.emit(this.validarElementos());
     // console.log(this.dataSource.data)
   }
 
@@ -319,7 +334,6 @@ export class CapturarElementosComponent implements OnInit {
         } else {
           this.respuesta = res;
           this.dataSource.data = this.respuesta[0].Elementos;
-          this.ver();
           this.dataSource.paginator = this.paginator;
           this.dataSource.sort = this.sort;
           const validacion = this.validarCargaMasiva();
@@ -330,7 +344,6 @@ export class CapturarElementosComponent implements OnInit {
               text: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.ElementosCargadosTextOK'),
             });
             this.ErroresCarga = validacion.errores[4];
-            this.clearFile();
           } else {
             (Swal as any).fire({
               type: 'warning',
@@ -338,8 +351,9 @@ export class CapturarElementosComponent implements OnInit {
               text: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.ValidacionCargaMasivaText', {cantidad: validacion.cont_err}),
             });
             this.ErroresCarga = '';
-            this.clearFile();
           }
+          this.clearFile();
+          this.ver();
         }
 
       } else {
@@ -628,7 +642,7 @@ export class CapturarElementosComponent implements OnInit {
       this.dataSource.data[index].NombreClase = selected.originalObject.SubgrupoId.Nombre;
       this.dataSource.data[index].seleccionado = false;
     });
-    this.refrescaCheckTotal();
+    this.ver();
   }
 
   refrescaCheckTotal() {
