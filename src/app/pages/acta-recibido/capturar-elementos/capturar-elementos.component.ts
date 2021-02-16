@@ -205,7 +205,14 @@ export class CapturarElementosComponent implements OnInit {
     }
   }
 
-
+  onBlurClase(idx: number) {
+    if (!this.dataSource.data[idx].NombreClase) {
+      this.dataSource.data[idx].CodigoSubgrupo = '';
+      this.dataSource.data[idx].TipoBienId = '';
+      this.dataSource.data[idx].SubgrupoCatalogoId = '';
+      this.dataSource.data[idx].TipoBienNombre = '';
+    }
+  }
 
   ver() {
     this.refrescaCheckTotal();
