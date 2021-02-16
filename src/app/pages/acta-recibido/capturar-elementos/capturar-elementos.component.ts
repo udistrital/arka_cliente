@@ -424,7 +424,6 @@ export class CapturarElementosComponent implements OnInit {
   clearFile() {
     this.Validador = false;
     this.form.get('archivo').setValue('');
-
   }
 
   onSubmit() {
@@ -452,7 +451,6 @@ export class CapturarElementosComponent implements OnInit {
 
 
   getDescuentos() {
-
     if (this.dataSource.data.length !== 0) {
       this.Totales.Descuento = this.dataSource.data.map(t => t.Descuento).reduce((acc, value) => parseFloat(acc) + parseFloat(value));
       const total = this.dataSource.data.map(t => t.Descuento).reduce((acc, value) => parseFloat(acc) + parseFloat(value));
@@ -481,7 +479,6 @@ export class CapturarElementosComponent implements OnInit {
   }
 
   getIVA() {
-
     if (this.dataSource.data.length !== 0) {
       this.Totales.ValorIva = this.dataSource.data.map(t => t.ValorIva).reduce((acc, value) => parseFloat(acc) + parseFloat(value));
       const total = this.dataSource.data.map(t => t.ValorIva).reduce((acc, value) => parseFloat(acc) + parseFloat(value));
@@ -494,23 +491,36 @@ export class CapturarElementosComponent implements OnInit {
       return '0';
     }
   }
+
   getClasesElementos() {
     if (this.Clases && this.Clases.length) {
       this.dataSource.data.map((elemento) => {
-        elemento.TipoBienNombre = elemento.TipoBienId !== 0 ?
-          this.Tipos_Bien.find((x) => x.Id === elemento.TipoBienId).Nombre : '';
-        elemento.CodigoSubgrupo = elemento.TipoBienId !== 0 ?
-        this.Clases.find((x) => x.SubgrupoId.Id === elemento.SubgrupoCatalogoId).SubgrupoId.Codigo : '';
-        elemento.NombreClase = elemento.TipoBienId !== 0 ?
-        this.Clases.find((x) => x.SubgrupoId.Id === elemento.SubgrupoCatalogoId).SubgrupoId.Nombre : '';
+        elemento.TipoBienNombre = elemento.TipoBienId !== 0 ? (() => {
+          const criterio = x => x && x.Id === elemento.TipoBienId;
+          if (this.Tipos_Bien.some(criterio)) {
+            return this.Tipos_Bien.find(criterio).Nombre;
+          }
+          return '';
+        })() : '';
+        elemento.CodigoSubgrupo = elemento.TipoBienId !== 0 ? (() => {
+          const criterio = x => x && x.SubgrupoId.Id === elemento.SubgrupoCatalogoId;
+          if (this.Clases.some(criterio)) {
+            return this.Clases.find(criterio).SubgrupoId.Codigo;
+          }
+          return '';
+        })() : '';
+        elemento.NombreClase = elemento.TipoBienId !== 0 ? (() => {
+          const criterio = x => x.SubgrupoId.Id === elemento.SubgrupoCatalogoId;
+          if (this.Clases.some(criterio)) {
+            return this.Clases.find((x) => x.SubgrupoId.Id === elemento.SubgrupoCatalogoId).SubgrupoId.Nombre;
+          }
+          return '';
+        })() : '';
       });
     }
   }
 
-
-
   getTotales() {
-
     if (this.dataSource.data.length !== 0) {
       this.Totales.ValorTotal = this.dataSource.data.map(t => t.ValorTotal).reduce((acc, value) => parseFloat(acc) + parseFloat(value));
       const total = this.dataSource.data.map(t => t.ValorTotal).reduce((acc, value) => parseFloat(acc) + parseFloat(value));
