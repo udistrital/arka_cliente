@@ -492,6 +492,31 @@ export class ActaEspecialComponent implements OnInit {
     }
   }
 
+  // TODO: Colocar más validaciones necesarias previo al envío a revisor, acá
+  private elementosValidos(): boolean {
+    return (
+      Array.isArray(this.Elementos__Soporte)
+      && this.Elementos__Soporte.length // Al menos un soporte
+      && this.Elementos__Soporte.every(sop => (
+        Array.isArray(sop)
+        && sop.length // Al menos un elemento
+        && sop.every(elem => (
+          elem.hasOwnProperty('SubgrupoCatalogoId')
+          && elem.SubgrupoCatalogoId
+        ))
+      ))
+    );
+  }
+
+  desactivarEnvio(): boolean {
+    return !(
+      this.firstForm.get('Formulario1').valid
+      && this.firstForm.get('Formulario2').valid // this.Elementos__Soporte
+      && this.firstForm.get('Formulario3').valid
+      && this.elementosValidos()
+    );
+  }
+
   Revisar_Totales2() {
     if (!this.revisorValido()) {
       return;
