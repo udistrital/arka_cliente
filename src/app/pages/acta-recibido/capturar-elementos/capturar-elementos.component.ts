@@ -192,10 +192,17 @@ export class CapturarElementosComponent implements OnInit {
   }
 
   onSelectedClase(selected: CompleterItem, fila: number) {
+    if (selected) {
     this.dataSource.data[fila].CodigoSubgrupo = selected.originalObject.SubgrupoId.Codigo;
     this.dataSource.data[fila].TipoBienId = selected.originalObject.TipoBienId.Id;
     this.dataSource.data[fila].SubgrupoCatalogoId = selected.originalObject.SubgrupoId.Id;
     this.dataSource.data[fila].TipoBienNombre = selected.originalObject.TipoBienId.Nombre;
+    } else {
+      this.dataSource.data[fila].CodigoSubgrupo = '';
+      this.dataSource.data[fila].TipoBienId = '';
+      this.dataSource.data[fila].SubgrupoCatalogoId = '';
+      this.dataSource.data[fila].TipoBienNombre = '';
+    }
   }
 
 
