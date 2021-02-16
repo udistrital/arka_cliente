@@ -103,9 +103,9 @@ export class ActaEspecialComponent implements OnInit {
     Acta: Permiso,
     Elementos: Permiso,
   } = {
-      Acta: Permiso.Ninguno,
-      Elementos: Permiso.Ninguno,
-    };
+    Acta: Permiso.Ninguno,
+    Elementos: Permiso.Ninguno,
+  };
 
   constructor(
     private translate: TranslateService,

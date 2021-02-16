@@ -58,8 +58,9 @@
                 <mat-tab-group [selectedIndex]="selected.value" (selectedIndexChange)="selected.setValue($event)">
                   <mat-tab *ngFor="let soporte of firstForm.get('Formulario2').controls; let i = index"
                   [formGroupName]="i">
-                <div class="col">
-                  <div class="form-group col-sm">
+                    <div class="col">
+                    <div class="form-group col-sm">
+
                     <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Soporte' | translate}}</label>
                     <nb-card>
                       <nb-card-body>
@@ -98,21 +99,19 @@
                       </nb-card-body>
                     </nb-card>
 
-                  </div>
-                </div>
-              </mat-tab>
+                    </div>
+                    </div>
+                  </mat-tab>
                 </mat-tab-group>
               </nb-card-body>
             </nb-card>
 
             <nb-card>
               <nb-card-body>
-                <div>
-                  <ngx-capturar-elementos *ngIf="getPermisoEditar(permisos.Elementos)" (click)="usarLocalStorage()"
+                  <ngx-capturar-elementos *ngIf="getPermisoEditar(permisos.Elementos)"
                     [DatosRecibidos]="Elementos__Soporte[0]" (DatosTotales)="ver2($event)" (DatosEnviados)="ver($event)"
                     (click)="usarLocalStorage()" (change)="usarLocalStorage()">
                   </ngx-capturar-elementos>
-                </div>
               </nb-card-body>
               <nb-card-footer>
                 <div class="justify-content-center">
