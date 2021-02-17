@@ -57,6 +57,7 @@ export class CapturarElementosComponent implements OnInit {
   @Input() DatosRecibidos: any;
   @Output() DatosEnviados = new EventEmitter();
   @Output() DatosTotales = new EventEmitter();
+  @Output() ElementosValidos = new EventEmitter<boolean>();
 
   respuesta: any;
   Tipos_Bien: any;
@@ -192,19 +193,47 @@ export class CapturarElementosComponent implements OnInit {
   }
 
   onSelectedClase(selected: CompleterItem, fila: number) {
+    if (selected) {
     this.dataSource.data[fila].CodigoSubgrupo = selected.originalObject.SubgrupoId.Codigo;
     this.dataSource.data[fila].TipoBienId = selected.originalObject.TipoBienId.Id;
     this.dataSource.data[fila].SubgrupoCatalogoId = selected.originalObject.SubgrupoId.Id;
     this.dataSource.data[fila].TipoBienNombre = selected.originalObject.TipoBienId.Nombre;
+    } else {
+      this.dataSource.data[fila].CodigoSubgrupo = '';
+      this.dataSource.data[fila].TipoBienId = '';
+      this.dataSource.data[fila].SubgrupoCatalogoId = '';
+      this.dataSource.data[fila].TipoBienNombre = '';
+    }
   }
 
+  onBlurClase(idx: number) {
+    if (!this.dataSource.data[idx].NombreClase) {
+      this.dataSource.data[idx].CodigoSubgrupo = '';
+      this.dataSource.data[idx].TipoBienId = '';
+      this.dataSource.data[idx].SubgrupoCatalogoId = '';
+      this.dataSource.data[idx].TipoBienNombre = '';
+    }
+  }
 
+  // TODO: De ser necesario, agregar otras validaciones asociadas
+  // a cada elemento
+  private validarElementos(): boolean {
+    return (
+      Array.isArray(this.dataSource.data)
+      && this.dataSource.data.length // Al menos un elemento
+      && this.dataSource.data.every(elem => (
+          elem.hasOwnProperty('SubgrupoCatalogoId')
+          && elem.SubgrupoCatalogoId
+      ))
+    );
+  }
 
   ver() {
     this.refrescaCheckTotal();
     // console.log(this.DatosEnviados)
     this.DatosEnviados.emit(this.dataSource.data);
     this.DatosTotales.emit(this.Totales);
+    this.ElementosValidos.emit(this.validarElementos());
     // console.log(this.dataSource.data)
   }
 
@@ -305,7 +334,6 @@ export class CapturarElementosComponent implements OnInit {
         } else {
           this.respuesta = res;
           this.dataSource.data = this.respuesta[0].Elementos;
-          this.ver();
           this.dataSource.paginator = this.paginator;
           this.dataSource.sort = this.sort;
           const validacion = this.validarCargaMasiva();
@@ -316,7 +344,6 @@ export class CapturarElementosComponent implements OnInit {
               text: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.ElementosCargadosTextOK'),
             });
             this.ErroresCarga = validacion.errores[4];
-            this.clearFile();
           } else {
             (Swal as any).fire({
               type: 'warning',
@@ -324,8 +351,9 @@ export class CapturarElementosComponent implements OnInit {
               text: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.ValidacionCargaMasivaText', {cantidad: validacion.cont_err}),
             });
             this.ErroresCarga = '';
-            this.clearFile();
           }
+          this.clearFile();
+          this.ver();
         }
 
       } else {
@@ -396,7 +424,6 @@ export class CapturarElementosComponent implements OnInit {
   clearFile() {
     this.Validador = false;
     this.form.get('archivo').setValue('');
-
   }
 
   onSubmit() {
@@ -424,7 +451,6 @@ export class CapturarElementosComponent implements OnInit {
 
 
   getDescuentos() {
-
     if (this.dataSource.data.length !== 0) {
       this.Totales.Descuento = this.dataSource.data.map(t => t.Descuento).reduce((acc, value) => parseFloat(acc) + parseFloat(value));
       const total = this.dataSource.data.map(t => t.Descuento).reduce((acc, value) => parseFloat(acc) + parseFloat(value));
@@ -453,7 +479,6 @@ export class CapturarElementosComponent implements OnInit {
   }
 
   getIVA() {
-
     if (this.dataSource.data.length !== 0) {
       this.Totales.ValorIva = this.dataSource.data.map(t => t.ValorIva).reduce((acc, value) => parseFloat(acc) + parseFloat(value));
       const total = this.dataSource.data.map(t => t.ValorIva).reduce((acc, value) => parseFloat(acc) + parseFloat(value));
@@ -466,23 +491,36 @@ export class CapturarElementosComponent implements OnInit {
       return '0';
     }
   }
+
   getClasesElementos() {
     if (this.Clases && this.Clases.length) {
       this.dataSource.data.map((elemento) => {
-        elemento.TipoBienNombre = elemento.TipoBienId !== 0 ?
-          this.Tipos_Bien.find((x) => x.Id === elemento.TipoBienId).Nombre : '';
-        elemento.CodigoSubgrupo = elemento.TipoBienId !== 0 ?
-        this.Clases.find((x) => x.SubgrupoId.Id === elemento.SubgrupoCatalogoId).SubgrupoId.Codigo : '';
-        elemento.NombreClase = elemento.TipoBienId !== 0 ?
-        this.Clases.find((x) => x.SubgrupoId.Id === elemento.SubgrupoCatalogoId).SubgrupoId.Nombre : '';
+        elemento.TipoBienNombre = elemento.TipoBienId !== 0 ? (() => {
+          const criterio = x => x && x.Id === elemento.TipoBienId;
+          if (this.Tipos_Bien.some(criterio)) {
+            return this.Tipos_Bien.find(criterio).Nombre;
+          }
+          return '';
+        })() : '';
+        elemento.CodigoSubgrupo = elemento.TipoBienId !== 0 ? (() => {
+          const criterio = x => x && x.SubgrupoId.Id === elemento.SubgrupoCatalogoId;
+          if (this.Clases.some(criterio)) {
+            return this.Clases.find(criterio).SubgrupoId.Codigo;
+          }
+          return '';
+        })() : '';
+        elemento.NombreClase = elemento.TipoBienId !== 0 ? (() => {
+          const criterio = x => x.SubgrupoId.Id === elemento.SubgrupoCatalogoId;
+          if (this.Clases.some(criterio)) {
+            return this.Clases.find((x) => x.SubgrupoId.Id === elemento.SubgrupoCatalogoId).SubgrupoId.Nombre;
+          }
+          return '';
+        })() : '';
       });
     }
   }
 
-
-
   getTotales() {
-
     if (this.dataSource.data.length !== 0) {
       this.Totales.ValorTotal = this.dataSource.data.map(t => t.ValorTotal).reduce((acc, value) => parseFloat(acc) + parseFloat(value));
       const total = this.dataSource.data.map(t => t.ValorTotal).reduce((acc, value) => parseFloat(acc) + parseFloat(value));
@@ -614,7 +652,7 @@ export class CapturarElementosComponent implements OnInit {
       this.dataSource.data[index].NombreClase = selected.originalObject.SubgrupoId.Nombre;
       this.dataSource.data[index].seleccionado = false;
     });
-    this.refrescaCheckTotal();
+    this.ver();
   }
 
   refrescaCheckTotal() {

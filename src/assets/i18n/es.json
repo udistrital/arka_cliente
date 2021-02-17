@@ -93,10 +93,10 @@
         "Aceptada":"Aceptada",
         "Asociada":"Asociada a Entrada",
         "Anulada":"Anulada",
+        "Instrucciones": "Para ver un Acta, dé click en la fila del Acta",
         "DialogoAnularTitulo":"¿Anular Acta {{ACTA}}?",
         "DialogoAnularMsg":"Esta acción no se puede deshacer. ¿Está seguro de ANULAR el Acta {{ACTA}}?",
-        "OpcionNoValida":"Opción no válida",
-        "OpcionNoValida2":"Opción no válida para el estado de esta acta"
+        "EdicionBloqueada":"No se puede Editar el Acta Nº {{NUM}} por tener Estado \"{{STATE}}\""
       },
       "RegistroActa":{
         "Title": "Registrar Acta de Recibido",

@@ -287,9 +287,12 @@ export class ConsultaActaRecibidoComponent implements OnInit {
 
       default: {
         (Swal as any).fire({
-          type: 'warning',
-          title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.OpcionNoValida'),
-          text: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.OpcionNoValida2'),
+          type: 'error',
+          title: this.translate.instant('GLOBAL.error'),
+          text: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.EdicionBloqueada', {
+            NUM: event.data.Id,
+            STATE: event.data.Estado,
+          }),
         });
         break;
       }

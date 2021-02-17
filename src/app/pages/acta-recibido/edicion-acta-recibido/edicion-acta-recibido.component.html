@@ -185,7 +185,7 @@
                       <ngx-capturar-elementos
                         *ngIf="getPermisoEditar(permisos.Elementos)"
                         [DatosRecibidos]="Elementos__Soporte[i]" (DatosTotales)="ver2($event,i)"
-                        (DatosEnviados)="ver($event, i)">
+                        (DatosEnviados)="ver($event, i)" (ElementosValidos)="setElementosValidos(i,$event)">
                       </ngx-capturar-elementos>
 
                     </div>
@@ -263,11 +263,11 @@
 
 
             <div class="justify-content-center">
-              <button nbButton (click)="Revisar_Totales3(1)" *ngIf="accion.envHabilitado" [disabled]="formNoValido()"
+              <button nbButton (click)="Revisar_Totales3(1)" *ngIf="accion.envHabilitado" [disabled]="!envioPermitidoARevisor() || formNoValido()"
                 class="float-right">{{ accion.envTexto }}</button>
             </div>
             <div class="justify-content-center">
-              <button nbButton (click)="Revisar_Totales3(2)" *ngIf="accion.envRevisorHabilitado" [disabled]="formNoValido()"
+              <button nbButton (click)="Revisar_Totales3(2)" *ngIf="accion.envRevisorHabilitado" [disabled]="!envioPermitidoARevisor() || formNoValido()"
                 class="float-right">{{ accion.envRevisor }}</button>
             </div>
 

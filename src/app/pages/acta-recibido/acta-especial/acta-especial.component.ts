@@ -99,13 +99,16 @@ export class ActaEspecialComponent implements OnInit {
   Registrando: Boolean;
   Unidades: any;
 
+  private SoporteElementosValidos: Array<boolean>;
+  private elementosValidos: boolean = false;
+
   permisos: {
     Acta: Permiso,
     Elementos: Permiso,
   } = {
-      Acta: Permiso.Ninguno,
-      Elementos: Permiso.Ninguno,
-    };
+    Acta: Permiso.Ninguno,
+    Elementos: Permiso.Ninguno,
+  };
 
   constructor(
     private translate: TranslateService,
@@ -229,6 +232,7 @@ export class ActaEspecialComponent implements OnInit {
       Form2.push(Formulario__2);
     }
     this.Elementos__Soporte = elementos_;
+    this.SoporteElementosValidos = new Array<boolean>(elementos_.length);
 
     this.firstForm = this.fb.group({
       Formulario1: this.fb.group({
@@ -490,6 +494,33 @@ export class ActaEspecialComponent implements OnInit {
     } else {
       return '0';
     }
+  }
+
+  setElementosValidos(soporte: number, valido: boolean): void {
+    this.SoporteElementosValidos[soporte] = valido;
+    this.validaSoportes();
+  }
+
+  // TODO: De ser necesario, agregar más validaciones asociadas a cada soporte
+  private validaSoportes(): void {
+    this.elementosValidos = (
+      Array.isArray(this.Elementos__Soporte)
+      && this.Elementos__Soporte.length // Al menos un soporte
+      && this.Elementos__Soporte.every((sop, idx) => (
+        Array.isArray(sop)
+        && sop.length // Al menos un elemento
+        && this.SoporteElementosValidos[idx]
+      ))
+    );
+  }
+
+  desactivarEnvio(): boolean {
+    return !(
+      this.firstForm.get('Formulario1').valid
+      && this.firstForm.get('Formulario2').valid // this.Elementos__Soporte
+      && this.firstForm.get('Formulario3').valid
+      && this.elementosValidos
+    );
   }
 
   Revisar_Totales2() {
