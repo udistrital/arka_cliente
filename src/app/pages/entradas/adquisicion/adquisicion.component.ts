@@ -265,7 +265,7 @@ export class AdquisicionComponent implements OnInit {
         vigencia_contrato: this.contratoForm.value.vigenciaCtrl,
         importacion: this.checked,
         tipo_contrato: this.opcionTipoContrato === '14' ? 'Orden de Servicios' :
-        this.opcionTipoContrato === '15' ? 'Orden de Compra' : '',
+          this.opcionTipoContrato === '15' ? 'Orden de Compra' : '',
       };
       const movimientoAdquisicion = {
         Observacion: this.observacionForm.value.observacionCtrl,

@@ -14,7 +14,7 @@
 
       <h5 *ngIf="actaSeleccionada != ''">{{'GLOBAL.tipo_entrada' | translate}}</h5>
 
-      <select class="form-control mb-4" [(ngModel)]="opcionEntrada" *ngIf="actaSeleccionada != ''" >
+      <select class="form-control mb-4" [(ngModel)]="opcionEntrada" *ngIf="actaSeleccionada != '' || EntradaEdit" >
         <option *ngFor="let entrada of tiposDeEntradas" [value]="entrada">
           {{ 'GLOBAL.entradas.tipo.'+entrada+'.nombre' | translate }}
         </option>

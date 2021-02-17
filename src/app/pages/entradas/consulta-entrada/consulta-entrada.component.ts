@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { LocalDataSource } from 'ngx-smart-table';
 import { Router } from '@angular/router';
 import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
@@ -32,6 +32,9 @@ export class ConsultaEntradaComponent implements OnInit {
   settings: any;
   documentoId: boolean;
   mostrar: boolean = false;
+  edit: boolean;
+  entradaEdit: any;
+
 
   constructor(private router: Router, private entradasHelper: EntradaHelper, private translate: TranslateService,
     private nuxeoService: NuxeoService, private documentoService: DocumentoService, private listService: ListService,
@@ -47,9 +50,12 @@ export class ConsultaEntradaComponent implements OnInit {
     this.listService.findImpuestoIVA();
   }
 
-  onEdit($event) {
-    console.log($event);
+  onEdit(event) {
+    this.edit = true;
+    this.entradaEdit = event.data;
+    console.log(this.entradaEdit);
   }
+
   loadTablaSettings() {
     const t = {
       registrar: this.translate.instant('GLOBAL.registrar_nueva_entrada'),

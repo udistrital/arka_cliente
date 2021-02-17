@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { LocalDataSource } from 'ngx-smart-table';
 import { ActaRecibido, ActaRecibidoUbicacion } from '../../../@core/data/models/acta_recibido/acta_recibido';
 import { PopUpManager } from '../../../managers/popUpManager';
@@ -24,6 +24,9 @@ export class RegistroComponent implements OnInit {
   actaSeleccionada: string;
   settings: any;
   opcionEntrada: string;
+
+  @Input() EntradaEdit: any;
+  @Input() Edit: boolean;
 
   constructor(
     private actaRecibidoHelper: ActaRecibidoHelper,
@@ -119,6 +122,9 @@ export class RegistroComponent implements OnInit {
   }
 
   ngOnInit() {
+    console.log(this.EntradaEdit);
+    console.log(this.actaSeleccionada)
+    this.actaSeleccionada = this.EntradaEdit ? this.EntradaEdit.ActaRecibidoId : '';
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
       this.loadTablaSettings();
     });
