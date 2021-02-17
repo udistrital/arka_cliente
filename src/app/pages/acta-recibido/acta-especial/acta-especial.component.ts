@@ -58,6 +58,7 @@ export class ActaEspecialComponent implements OnInit {
   // Mensajes de error
   errMess: any;
   private sub: Subscription;
+  errores: Map<string,boolean>;
 
   // Decorador para renderizar los cambios en las tablas de elementos
   @ViewChildren(MatTable) _matTable: QueryList<MatTable<any>>;
@@ -132,6 +133,7 @@ export class ActaEspecialComponent implements OnInit {
     this.uidDocumento = [];
     this.idDocumento = [];
     this.Elementos__Soporte = new Array<any>();
+    this.errores = new Map<string, boolean>();
   }
 
   ngOnInit() {
@@ -190,6 +192,9 @@ export class ActaEspecialComponent implements OnInit {
           });
         }
       });
+    }
+    if (!this.userService.getPersonaId()) {
+      this.errores.set('terceros', true);
     }
   }
 
@@ -512,15 +517,28 @@ export class ActaEspecialComponent implements OnInit {
         && this.SoporteElementosValidos[idx]
       ))
     );
+    if (this.elementosValidos) {
+      this.errores.delete('clases');
+    } else {
+      this.errores.set('clases', true);
+    }
   }
 
   desactivarEnvio(): boolean {
-    return !(
+    const error = !(
       this.firstForm.get('Formulario1').valid
       && this.firstForm.get('Formulario2').valid // this.Elementos__Soporte
       && this.firstForm.get('Formulario3').valid
       && this.elementosValidos
     );
+
+    if (error) {
+      this.errores.set('formularios', true);
+    } else {
+      this.errores.delete('formularios');
+    }
+
+    return error;
   }
 
   Revisar_Totales2() {

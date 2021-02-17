@@ -171,10 +171,16 @@
                 <div class="justify-content-center">
                   <button nbButton matStepperPrevious>{{'GLOBAL.Acta_Recibido.RegistroActa.AnteriorButton' |
                     translate}}</button>
-                  <button nbButton matStepperNext (click)="Revisar_Totales()"
-                    [disabled]="desactivarEnvio()"
-                    class="float-right">{{'GLOBAL.Acta_Recibido.RegistroActa.GuardarCambiosButton' |
-                    translate}}</button>
+                  <div class="float-right">
+                    <button mat-icon-button type="button"
+                    *ngIf="errores.size" [nbPopover]="erroresTemplate" nbPopoverTrigger="hover">
+                      <span class="fas fa-exclamation-triangle fa-2x"></span>
+                    </button>
+                    <button nbButton matStepperNext (click)="Revisar_Totales()"
+                      [disabled]="desactivarEnvio()">
+                      {{'GLOBAL.Acta_Recibido.RegistroActa.GuardarCambiosButton' | translate}}
+                    </button>
+                  </div>
                 </div>
               </nb-card-footer>
             </nb-card>
@@ -184,3 +190,11 @@
     </form>
   </nb-card-body>
 </nb-card>
+<ng-template #erroresTemplate><nb-card><nb-card-body>
+  Desactivado por:
+  <ul>
+    <li *ngIf="errores.get('terceros')">Usuario no registrado en la base de datos de Terceros</li>
+    <li *ngIf="errores.get('formularios')">Hay que corregir alguno de los campos</li>
+    <li *ngIf="errores.get('clases')">Todos los elementos tienen que tener una clase</li>
+  </ul>
+</nb-card-body></nb-card></ng-template>
