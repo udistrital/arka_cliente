@@ -8,12 +8,11 @@
       <div class="row" [nbSpinner]="cargando_ordenadores">
         <div class="form-group col-sm">
           <label>{{'GLOBAL.vigencia' | translate}}</label>
-          <select class="form-control" 
-            formControlName="vigenciaCtrl">
-            <option disabled selected>{{'GLOBAL.seleccionar' | translate}}...</option>
-            <option value="{{ vigencia }}">{{ vigencia }}</option>
-            <option value="{{ vigencia-1 }}">{{ vigencia-1 }}</option>
-          </select>
+          <div class="input-group">
+            <input nbInput shape="semi-round" placeholder="{{'GLOBAL.placeholder_fecha' | translate}}"
+              formControlName="vigenciaCtrl" class="form-control" [nbDatepicker]="formpicker" required>
+            <nb-datepicker  #formpicker></nb-datepicker>
+          </div>
         </div>
         <div class="form-group col-sm">
           <label>{{'GLOBAL.nombres' | translate}}</label>
@@ -30,13 +29,6 @@
         <datalist id="solicitanteList">
           <option *ngFor="let item of ordenadores" value='{{ item.NombreOrdenador }}'></option>
         </datalist>
-        <div class="form-group col-sm">
-          <label>{{'GLOBAL.asignacion' | translate}}</label>
-          <div class="input-group">
-            <input nbInput shape="semi-round" type="text" placeholder="{{'GLOBAL.asignacion' | translate}}"
-              value="{{ cargoOrdenador }}" class="form-control" [readonly]="true" />
-          </div>
-        </div>
       </div>
       <div class="row float-right">
         <button type="button" nbButton nbStepperNext>

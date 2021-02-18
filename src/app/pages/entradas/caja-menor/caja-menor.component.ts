@@ -222,23 +222,6 @@ muestraOrdenador(ord: TerceroCriterioJefe): string {
   }
 }
 // ---------------------------------FIN ORDENADORES-------------------------------------------------
-  changeOrdenador() {
-    this.cargoOrdenador = '';
-    for (const i in this.ordenadores) {
-      if (this.ordenadores[i].NombreOrdenador === this.ordenadorForm.value.ordenadorCtrl) {
-        this.ordenadorId = this.ordenadores[i].Id;
-        this.cargoOrdenador = this.ordenadores[i].RolOrdenadorGasto;
-      }
-    }
-  }
-
-  changeSupervisor() {
-    for (const i in this.ordenadores) {
-      if (this.ordenadores[i].NombreOrdenador === this.ordenadorForm.value.ordenadorCtrl) {
-        this.supervisorId = this.ordenadores[i].Id;
-      }
-    }
-  }
 
   onSoporteSubmit() {
     if (this.ordenadorId !== 0) {
@@ -312,6 +295,7 @@ muestraOrdenador(ord: TerceroCriterioJefe): string {
         acta_recibido_id: +this.actaRecibidoId,
         consecutivo: 'P8-5-2019', // REVISAR
         documento_contable_id: 1, // REVISAR
+        vigencia: this.ordenadorForm.value.vigenciaCtrl,
         supervisor: this.supervisorForm.value.supervisorCtrl.TerceroPrincipal.Id,
         ordenador_gasto_id: this.ordenadorForm.value.ordenadorCtrl.TerceroPrincipal.Id,
         // solicitante_id: +this.supervisorId,

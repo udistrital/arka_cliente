@@ -27,7 +27,7 @@ import Swal from 'sweetalert2';
 export class AprovechamientosComponent implements OnInit {
 
   // Formularios
-  contratoForm: FormGroup;
+  fechaForm: FormGroup;
   supervisorForm: FormGroup;
   facturaForm: FormGroup;
   observacionForm: FormGroup;
@@ -75,8 +75,8 @@ export class AprovechamientosComponent implements OnInit {
   ngOnInit() {
     this.getTipoEntrada();
     this.getFormatoEntrada();
-    this.contratoForm = this.fb.group({
-      vigenciaCtrl: ['', [Validators.required]],
+    this.fechaForm = this.fb.group({
+      fechaCtrl: ['', Validators.required],
     });
     this.facturaForm = this.fb.group({
       facturaCtrl: ['', Validators.nullValidator],
@@ -208,7 +208,7 @@ export class AprovechamientosComponent implements OnInit {
         acta_recibido_id: +this.actaRecibidoId,
         consecutivo: 'P1-' + this.actaRecibidoId + '-' + new Date().getFullYear(),
         documento_contable_id: 1, // REVISAR
-        vigencia: this.contratoForm.value.vigenciaCtrl,
+        vigencia: this.fechaForm.value.fechaCtrl,
         supervisor: this.supervisorForm.value.supervisorCtrl.TerceroPrincipal.Id,
         proveedor: this.facturaForm.value.proveedorCtrl.compuesto,
       };
