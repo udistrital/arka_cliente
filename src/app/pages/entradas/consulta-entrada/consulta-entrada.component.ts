@@ -90,9 +90,11 @@ export class ConsultaEntradaComponent implements OnInit {
       },
       mode: 'external',
       columns: {
+        /*
         Id: {
           title: 'ID',
         },
+        // */
         Consecutivo: {
           title: this.translate.instant('GLOBAL.consecutivo'),
         },
