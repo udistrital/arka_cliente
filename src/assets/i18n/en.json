@@ -85,6 +85,7 @@
         "FechaVistoBuenoHeader": "Good View Date",
         "RevisorHeader": "Last Check",
         "ModificadaPor": "Modified By",
+        "AceptadaPor": "Approved By",
         "EstadoHeader": "Actual State",
         "UbicacionHeader": "Location",
         "ObservacionesHeader": "Observations",

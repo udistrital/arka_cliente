@@ -90,12 +90,30 @@ export class ConsultaActaRecibidoComponent implements OnInit {
     this.actaRecibidoHelper.getActasRecibidoUsuario(usuario).subscribe((res: any) => {
       // console.log(res);
       if (Array.isArray(res) && res.length !== 0) {
+        res = this.calculaRevisores(res);
         this.source.load(res);
       }
       this.mostrar = true;
     });
   }
 
+  // TODO: Lo ideal sería que el MID, así como retorna 'FechaVistoBueno'
+  // de una vez retorne la persona que dió dicho visto bueno
+  // (Si se llega a implementar, esta función sería innecesaria y se podría eliminar)
+  private calculaRevisores(actas) {
+
+    const estadosAceptada = ['Aceptada', 'Asociada a Entrada'];
+
+    const data = actas.map(acta => {
+      let aceptada = '';
+      if (estadosAceptada.some(est => acta.Estado === est)) {
+        aceptada = acta.RevisorId;
+      }
+      acta.AceptadaPor = aceptada;
+      return acta;
+    });
+    return data;
+  }
 
   cargarCampos() {
     const f = {
@@ -181,6 +199,12 @@ export class ConsultaActaRecibidoComponent implements OnInit {
                 format: 'yyyy/mm/dd',
               },
             },
+          },
+        },
+        AceptadaPor: {
+          title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.AceptadaPor'),
+          valuePrepareFunction: (value: any) => {
+            return value;
           },
         },
         PersonaAsignada: {

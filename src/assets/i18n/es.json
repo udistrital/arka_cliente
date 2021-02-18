@@ -85,6 +85,7 @@
         "FechaVistoBuenoHeader":"Fecha de Visto Bueno",
         "RevisorHeader":"Último Revisor",
         "ModificadaPor": "Modificada Por",
+        "AceptadaPor": "Aceptada Por",
         "EstadoHeader":"Estado Actual",
         "UbicacionHeader":"Ubicación",
         "ObservacionesHeader":"Observaciones",
