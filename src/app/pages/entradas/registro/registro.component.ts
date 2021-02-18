@@ -24,16 +24,16 @@ export class RegistroComponent implements OnInit {
   actaSeleccionada: string;
   settings: any;
   opcionEntrada: string;
+  movimientoId: number;
 
   @Input() EntradaEdit: any;
-  @Input() Edit: boolean;
 
-  constructor(
-    private actaRecibidoHelper: ActaRecibidoHelper,
-    private pUpManager: PopUpManager,
-    private translate: TranslateService,
-    private listService: ListService,
-    private store: Store<IAppState>,
+    constructor(
+      private actaRecibidoHelper: ActaRecibidoHelper,
+      private pUpManager: PopUpManager,
+      private translate: TranslateService,
+      private listService: ListService,
+      private store: Store<IAppState>,
   ) {
     this.source = new LocalDataSource();
     this.actaSeleccionada = '';
@@ -102,19 +102,19 @@ export class RegistroComponent implements OnInit {
         UbicacionId: {
           title: this.translate.instant('GLOBAL.ubicacion'),
           valuePrepareFunction: (value: any) => {
-            return value.Nombre.toUpperCase( );
+            return value.Nombre.toUpperCase();
           },
         },
         EstadoActaId: {
           title: this.translate.instant('GLOBAL.estado'),
           valuePrepareFunction: (value: any) => {
-            return value.CodigoAbreviacion.toUpperCase( );
+            return value.CodigoAbreviacion.toUpperCase();
           },
         },
         Observaciones: {
           title: this.translate.instant('GLOBAL.observaciones'),
           valuePrepareFunction: (value: any) => {
-            return value.toUpperCase( );
+            return value.toUpperCase();
           },
         },
       },
@@ -122,9 +122,10 @@ export class RegistroComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log(this.EntradaEdit);
-    console.log(this.actaSeleccionada)
+    // console.log(this.EntradaEdit);
+    // console.log(this.actaSeleccionada)
     this.actaSeleccionada = this.EntradaEdit ? this.EntradaEdit.ActaRecibidoId : '';
+    this.movimientoId = this.EntradaEdit ? this.EntradaEdit.Id : '';
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
       this.loadTablaSettings();
     });
