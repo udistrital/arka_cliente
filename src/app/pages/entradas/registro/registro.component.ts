@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { LocalDataSource } from 'ngx-smart-table';
 import { ActaRecibido, ActaRecibidoUbicacion } from '../../../@core/data/models/acta_recibido/acta_recibido';
+import { Tercero } from '../../../@core/data/models/terceros';
 import { PopUpManager } from '../../../managers/popUpManager';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
+import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
 import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
 import { ListService } from '../../../@core/store/services/list.service';
 import { Store } from '@ngrx/store';
@@ -25,12 +27,16 @@ export class RegistroComponent implements OnInit {
   settings: any;
   opcionEntrada: string;
 
+  private terceros: Partial<Tercero>[];
+  private actas: any[];
+
   constructor(
     private actaRecibidoHelper: ActaRecibidoHelper,
     private pUpManager: PopUpManager,
     private translate: TranslateService,
     private listService: ListService,
     private store: Store<IAppState>,
+    private tercerosHelper: TercerosHelper,
   ) {
     this.source = new LocalDataSource();
     this.actaSeleccionada = '';
@@ -52,6 +58,7 @@ export class RegistroComponent implements OnInit {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
       this.loadTablaSettings();
     });
+    this.loadTerceros();
   }
 
   loadTablaSettings() {
@@ -134,10 +141,36 @@ export class RegistroComponent implements OnInit {
     this.actaRecibidoHelper.getActasRecibido().subscribe(res => {
       if (Array.isArray(res) && res.length !== 0) {
         const data = <Array<ActaRecibidoUbicacion>>res;
-        this.source.load(data);
-        this.mostrar = true;
+        this.actas = data;
+        this.mostrarData();
+        // console.log({actas: this.actas});
       }
     });
+  }
+
+  private loadTerceros(): void {
+    this.tercerosHelper.getTerceros().subscribe(terceros => {
+      this.terceros = terceros;
+      this.mostrarData();
+      // console.log({terceros: this.terceros});
+    });
+  }
+
+  private mostrarData(): void {
+    if (!this.mostrar
+    && this.actas && this.actas.length
+    && this.terceros && this.terceros.length) {
+      this.source.load(this.actas.map(acta => {
+        const buscar = (tercero: Tercero) => tercero.Id === acta.RevisorId;
+        let nombre = '';
+        if (this.terceros.some(buscar)) {
+          nombre = this.terceros.find(buscar).NombreCompleto;
+        }
+        acta.RevisorId = nombre;
+        return acta;
+      }));
+      this.mostrar = true;
+    }
   }
 
   onCustom(event) {
