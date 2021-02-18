@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { LocalDataSource } from 'ngx-smart-table';
 import { ActaRecibido, ActaRecibidoUbicacion } from '../../../@core/data/models/acta_recibido/acta_recibido';
 import { Tercero } from '../../../@core/data/models/terceros';
@@ -26,6 +26,9 @@ export class RegistroComponent implements OnInit {
   actaSeleccionada: string;
   settings: any;
   opcionEntrada: string;
+  movimientoId: number;
+
+  @Input() EntradaEdit: any;
 
   private terceros: Partial<Tercero>[];
   private actas: any[];
@@ -37,6 +40,7 @@ export class RegistroComponent implements OnInit {
     private listService: ListService,
     private store: Store<IAppState>,
     private tercerosHelper: TercerosHelper,
+
   ) {
     this.source = new LocalDataSource();
     this.actaSeleccionada = '';
@@ -59,6 +63,8 @@ export class RegistroComponent implements OnInit {
       this.loadTablaSettings();
     });
     this.loadTerceros();
+    this.actaSeleccionada = this.EntradaEdit ? this.EntradaEdit.ActaRecibidoId : '';
+    this.movimientoId = this.EntradaEdit ? this.EntradaEdit.Id : '';
   }
 
   loadTablaSettings() {
@@ -118,19 +124,19 @@ export class RegistroComponent implements OnInit {
         UbicacionId: {
           title: this.translate.instant('GLOBAL.ubicacion'),
           valuePrepareFunction: (value: any) => {
-            return value.Nombre.toUpperCase( );
+            return value.Nombre.toUpperCase();
           },
         },
         EstadoActaId: {
           title: this.translate.instant('GLOBAL.estado'),
           valuePrepareFunction: (value: any) => {
-            return value.CodigoAbreviacion.toUpperCase( );
+            return value.CodigoAbreviacion.toUpperCase();
           },
         },
         Observaciones: {
           title: this.translate.instant('GLOBAL.observaciones'),
           valuePrepareFunction: (value: any) => {
-            return value.toUpperCase( );
+            return value.toUpperCase();
           },
         },
       },

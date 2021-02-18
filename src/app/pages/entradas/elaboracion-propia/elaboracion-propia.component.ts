@@ -39,7 +39,8 @@ export class ElaboracionPropiaComponent implements OnInit {
   tipoEntrada: any;
   formatoTipoMovimiento: any;
 
-  @Input() actaRecibidoId: string;
+  @Input() actaRecibidoId: Number;
+  @Input() movimientoId: Number;
 
   constructor(private router: Router, private entradasHelper: EntradaHelper, private pUpManager: PopUpManager, private fb: FormBuilder,
     private nuxeoService: NuxeoService, private sanitization: DomSanitizer, private documentoService: DocumentoService,
@@ -228,6 +229,7 @@ export class ElaboracionPropiaComponent implements OnInit {
         EstadoMovimientoId: {
           Id: 2, // REVISAR
         },
+        Id: this.movimientoId ? this.movimientoId : 0,
         SoporteMovimientoId: this.idDocumento,
         IdTipoMovimiento: this.tipoEntrada.Id,
       };
