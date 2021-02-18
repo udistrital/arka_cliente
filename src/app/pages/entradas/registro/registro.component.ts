@@ -42,10 +42,16 @@ export class RegistroComponent implements OnInit {
       'EEP', 'ET',
       // */
     ];
+  }
+
+  ngOnInit() {
     this.loadTablaSettings();
     this.loadActas();
     this.listService.findClases();
     this.listService.findImpuestoIVA();
+    this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
+      this.loadTablaSettings();
+    });
   }
 
   loadTablaSettings() {
@@ -122,12 +128,6 @@ export class RegistroComponent implements OnInit {
         },
       },
     };
-  }
-
-  ngOnInit() {
-    this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
-      this.loadTablaSettings();
-    });
   }
 
   loadActas(): void {
