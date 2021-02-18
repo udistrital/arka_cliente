@@ -82,29 +82,7 @@
         </div>
       </form>
     </nb-step>
-
-  <!-- SOPORTE -->
-  <nb-step [stepControl]="soporteForm" label="Soporte">
-      <h5>{{'GLOBAL.soporte' | translate}}</h5>
-      <form [formGroup]="soporteForm" class="step-container">
-        <div class="pb-3">
-          <label>Oficio de Reposición</label>
-          <input nbInput type="file" class="form-control-file" #file id="soporte" formControlName="soporteCtrl"
-            [ngClass]="{'form-control-danger': soporteForm.invalid && (soporteForm.dirty || soporteForm.touched)}"
-            (change)="getSoporte($event)" accept=".pdf" data-max-size="5120"
-            >
-        </div>
-        <div class="row">
-          <div class="col">
-            <button nbButton nbStepperPrevious>{{'GLOBAL.anterior' | translate}}</button>
-          </div>
-          <div class="col" align="end">
-            <button (click)="onSoporteSubmit()" nbButton nbStepperNext>{{'GLOBAL.siguiente' | translate}}</button>
-          </div>
-        </div>
-      </form>
-
-    </nb-step>
+    
   <!-- OBSERVACIONES -->
   <nb-step [stepControl]="observacionForm" label="Observaciones">
     <h5>Observaciones</h5>
