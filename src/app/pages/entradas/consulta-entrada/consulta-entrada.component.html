@@ -37,15 +37,6 @@
         <!-- ADQUISICIÓN -->
         <div *ngIf="detalle && entradaEspecifica.TipoEntradaId.Nombre === 'Adquisición'" class="row">
           <div class="col">
-            <p *ngIf="entradaEspecifica.Importacion" class="text-uppercase">
-              <strong>Entrada por Importación:</strong> Si</p>
-            <p *ngIf="!entradaEspecifica.Importacion" class="text-uppercase">
-              <strong>Entrada por Importación:</strong> No</p>
-          </div>
-        </div>
-
-        <div *ngIf="detalle && entradaEspecifica.TipoEntradaId.Nombre === 'Adquisición'" class="row">
-          <div class="col">
             <p class="text-uppercase"><strong>Contrato N°:</strong> {{ entradaEspecifica.ContratoId }}</p>
           </div>
           <div class="col">

@@ -215,9 +215,6 @@ export class AdquisicionComponent implements OnInit {
     }
   }
 
-  changeCheck() {
-    this.checked = !this.checked;
-  }
 
   iniciarContrato() {
     const ordenadorAux = new OrdenadorGasto;
@@ -263,7 +260,6 @@ export class AdquisicionComponent implements OnInit {
         documento_contable_id: 1, // REVISAR
         contrato_id: +this.contratoEspecifico.NumeroContratoSuscrito,
         vigencia_contrato: this.contratoForm.value.vigenciaCtrl,
-        importacion: this.checked,
         tipo_contrato: this.opcionTipoContrato === '14' ? 'Orden de Servicios' :
         this.opcionTipoContrato === '15' ? 'Orden de Compra' : '',
       };
