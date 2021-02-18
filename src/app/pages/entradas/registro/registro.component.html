@@ -23,7 +23,7 @@
       <h3 *ngIf="opcionEntrada" class="pt-4 pb-2">{{'GLOBAL.entradas.tipo.' + opcionEntrada + '.descripcion' | translate}}</h3>
       <p *ngIf="opcionEntrada" class="font-weight-bold font-italic pb-2">{{ 'GLOBAL.Acta_Recibido.id_forma1' | translate : {ID: actaSeleccionada} }}</p>
 
-      <ngx-adquisicion *ngIf="opcionEntrada === 'EA'" [actaRecibidoId]="actaSeleccionada"></ngx-adquisicion>
+      <ngx-adquisicion *ngIf="opcionEntrada === 'EA'" [actaRecibidoId]="actaSeleccionada" [movimientoId]="movimientoId"></ngx-adquisicion>
       <ngx-reposicion *ngIf="opcionEntrada === 'EPR'" [actaRecibidoId]="actaSeleccionada"></ngx-reposicion>
       <ngx-elaboracion-propia *ngIf="opcionEntrada === 'EEP'" [actaRecibidoId]="actaSeleccionada">
       </ngx-elaboracion-propia>
