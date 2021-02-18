@@ -53,7 +53,7 @@ export class InactivarGrupoComponent implements OnInit {
   }
 
   loadCatalogos() {
-    this.catalogoBienesHelper.getCatalogos().subscribe((res) => {
+    this.catalogoBienesHelper.getCatalogo().subscribe((res) => {
       if (res !== null) {
         const data = <Array<Catalogo>>res;
         for (const datos in Object.keys(data)) {

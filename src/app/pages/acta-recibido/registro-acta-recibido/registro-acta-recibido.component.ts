@@ -113,17 +113,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
     private userService: UserService,
     private dateService: NbDateService<Date>,
   ) {
-    this.listService.findUbicaciones();
-    this.listService.findDependencias();
-    this.listService.findSedes();
-    this.listService.findProveedores();
-    this.listService.findEstadosActa();
-    this.listService.findEstadosElemento();
-    this.listService.findTipoBien();
     this.TodaysDate = new Date();
-    this.loadLists();
-    this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
-    });
     this.fileDocumento = [];
     this.Validador = [];
     this.uidDocumento = [];
@@ -131,7 +121,16 @@ export class RegistroActaRecibidoComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.listService.findUbicaciones();
+    this.listService.findDependencias();
+    this.listService.findSedes();
+    this.listService.findProveedores();
+    this.listService.findEstadosActa();
+    this.listService.findEstadosElemento();
+    this.listService.findTipoBien();
     this.loadLists();
+    this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
+    });
     this.searchStr2 = new Array<string>();
     if (sessionStorage.Formulario_Registro == null) {
       this.Cargar_Formularios();

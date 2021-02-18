@@ -1,8 +1,10 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { LocalDataSource } from 'ngx-smart-table';
 import { ActaRecibido, ActaRecibidoUbicacion } from '../../../@core/data/models/acta_recibido/acta_recibido';
+import { Tercero } from '../../../@core/data/models/terceros';
 import { PopUpManager } from '../../../managers/popUpManager';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
+import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
 import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
 import { ListService } from '../../../@core/store/services/list.service';
 import { Store } from '@ngrx/store';
@@ -28,21 +30,41 @@ export class RegistroComponent implements OnInit {
 
   @Input() EntradaEdit: any;
 
-    constructor(
-      private actaRecibidoHelper: ActaRecibidoHelper,
-      private pUpManager: PopUpManager,
-      private translate: TranslateService,
-      private listService: ListService,
-      private store: Store<IAppState>,
+  private terceros: Partial<Tercero>[];
+  private actas: any[];
+
+  constructor(
+    private actaRecibidoHelper: ActaRecibidoHelper,
+    private pUpManager: PopUpManager,
+    private translate: TranslateService,
+    private listService: ListService,
+    private store: Store<IAppState>,
+    private tercerosHelper: TercerosHelper,
+
   ) {
     this.source = new LocalDataSource();
     this.actaSeleccionada = '';
-    this.tiposDeEntradas = ['EA', 'EPR', 'ED', 'ESI', 'ECM', 'ECE', 'EPPA', 'EAM', 'EIA', 'EBEMP', 'EID',
-      'EEP', 'ET']; // Los de esta línea no están en las HU
+    this.tiposDeEntradas = [
+      // De acuerdo a las HU:
+      'EA', 'ECM', 'ECE', 'EPPA', 'EAM', 'EPR', 'ESI', 'ED', 'EIA', 'EID', 'EBEMP',
+      // Los siguientes no están en las HU
+      /*
+      'EEP', 'ET',
+      // */
+    ];
+  }
+
+  ngOnInit() {
     this.loadTablaSettings();
     this.loadActas();
     this.listService.findClases();
     this.listService.findImpuestoIVA();
+    this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
+      this.loadTablaSettings();
+    });
+    this.loadTerceros();
+    this.actaSeleccionada = this.EntradaEdit ? this.EntradaEdit.ActaRecibidoId : '';
+    this.movimientoId = this.EntradaEdit ? this.EntradaEdit.Id : '';
   }
 
   loadTablaSettings() {
@@ -121,24 +143,40 @@ export class RegistroComponent implements OnInit {
     };
   }
 
-  ngOnInit() {
-    // console.log(this.EntradaEdit);
-    // console.log(this.actaSeleccionada)
-    this.actaSeleccionada = this.EntradaEdit ? this.EntradaEdit.ActaRecibidoId : '';
-    this.movimientoId = this.EntradaEdit ? this.EntradaEdit.Id : '';
-    this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
-      this.loadTablaSettings();
-    });
-  }
-
   loadActas(): void {
     this.actaRecibidoHelper.getActasRecibido().subscribe(res => {
       if (Array.isArray(res) && res.length !== 0) {
         const data = <Array<ActaRecibidoUbicacion>>res;
-        this.source.load(data);
-        this.mostrar = true;
+        this.actas = data;
+        this.mostrarData();
+        // console.log({actas: this.actas});
       }
     });
+  }
+
+  private loadTerceros(): void {
+    this.tercerosHelper.getTerceros().subscribe(terceros => {
+      this.terceros = terceros;
+      this.mostrarData();
+      // console.log({terceros: this.terceros});
+    });
+  }
+
+  private mostrarData(): void {
+    if (!this.mostrar
+    && this.actas && this.actas.length
+    && this.terceros && this.terceros.length) {
+      this.source.load(this.actas.map(acta => {
+        const buscar = (tercero: Tercero) => tercero.Id === acta.RevisorId;
+        let nombre = '';
+        if (this.terceros.some(buscar)) {
+          nombre = this.terceros.find(buscar).NombreCompleto;
+        }
+        acta.RevisorId = nombre;
+        return acta;
+      }));
+      this.mostrar = true;
+    }
   }
 
   onCustom(event) {

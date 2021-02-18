@@ -77,7 +77,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
     if (id !== '') {
       this._Acta_Id = id;
       // console.log('ok');
-      this.loadLists();
     }
     // console.log(this._Acta_Id);
 
@@ -109,7 +108,10 @@ export class EdicionActaRecibidoComponent implements OnInit {
   Totales: Array<any>;
   dataService3: CompleterData;
   Tarifas_Iva: any;
-  verificar: boolean = true;
+  guardando: boolean = false;
+  private actaCargada: boolean = false;
+  private SoporteElementosValidos: Array<boolean>;
+  private elementosValidos: boolean = false;
 
   permisos: {
     Acta: Permiso,
@@ -119,20 +121,17 @@ export class EdicionActaRecibidoComponent implements OnInit {
       Elementos: Permiso.Ninguno,
   };
 
-
   accion: {
     envHabilitado: boolean,
     envTexto: string,
-    envRevisor: string,
-    envRevisorHabilitado: boolean,
+    envContratista: string,
+    envContratistaHabilitado: boolean,
   } = {
     envHabilitado: false,
     envTexto: '',
-    envRevisor: '',
-    envRevisorHabilitado: false,
+    envContratista: '',
+    envContratistaHabilitado: false,
   };
-
-
 
   constructor(
     private translate: TranslateService,
@@ -151,6 +150,17 @@ export class EdicionActaRecibidoComponent implements OnInit {
     private userService: UserService,
     private dateService: NbDateService<Date>,
   ) {
+    this.fileDocumento = [];
+    this.Validador = [];
+    this.uidDocumento = [];
+    this.idDocumento = [];
+    this.searchStr2 = new Array<string>();
+    this.DatosElementos = new Array<any>();
+    this.Elementos__Soporte = new Array<any>();
+    this.TodaysDate = new Date();
+  }
+
+  ngOnInit() {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
     });
     this.listService.findProveedores();
@@ -162,14 +172,8 @@ export class EdicionActaRecibidoComponent implements OnInit {
     this.listService.findTipoBien();
     this.listService.findUnidades();
     this.listService.findImpuestoIVA();
-    this.fileDocumento = [];
-    this.Validador = [];
-    this.uidDocumento = [];
-    this.idDocumento = [];
-    this.searchStr2 = new Array<string>();
-    this.DatosElementos = new Array<any>();
-    this.Elementos__Soporte = new Array<any>();
-    this.TodaysDate = new Date();
+    this.loadLists();
+    this.cargaPermisos();
   }
 
   // Los permisos en cada sección dependen del estado del acta y del rol.
@@ -249,24 +253,19 @@ export class EdicionActaRecibidoComponent implements OnInit {
         .some(est => this.estadoActa === est);
 
     this.accion.envHabilitado = envioProveedor || envioValidar;
-    this.accion.envRevisorHabilitado = envioProveedor;
-    // Texto del botón según el estado
+    this.accion.envContratistaHabilitado = envioProveedor;
 
+    // Texto del botón según el estado
     if (envioProveedor) {
       this.accion.envTexto = this.translate.instant('GLOBAL.Acta_Recibido.EdicionActa.EnviarProveedorButton');
-      this.accion.envRevisor = this.translate.instant('GLOBAL.Acta_Recibido.EdicionActa.EnviarRevisorButton');
+      this.accion.envContratista = this.translate.instant('GLOBAL.Acta_Recibido.EdicionActa.EnviarContratistaButton');
     } else if (envioValidar) {
       this.accion.envTexto = this.translate.instant('GLOBAL.Acta_Recibido.EdicionActa.VerificacionButton');
-      this.accion.envRevisorHabilitado = false;
+      this.accion.envContratistaHabilitado = false;
     }
-
-
-
-
   }
 
   Cargar_localStorage(Acta: any) {
-
     if (sessionStorage.Formulario_Edicion == null) {
       this.Cargar_Formularios(Acta);
     } else {
@@ -315,9 +314,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
     }
   }
 
-  ngOnInit() {
-    this.cargaPermisos();
-  }
   public loadLists() {
     this.store.select((state) => state).subscribe(
       (list) => {
@@ -340,14 +336,21 @@ export class EdicionActaRecibidoComponent implements OnInit {
           this.Dependencias !== undefined && this.Sedes !== undefined &&
           this._Acta_Id !== undefined) {
           // console.log(this._Acta_Id);
+          this.cargaActa();
+        }
+      },
+    );
+  }
+
+  private cargaActa() {
+    if (!this.actaCargada) {
           this.Actas_Recibido.getTransaccionActa(this._Acta_Id).subscribe(Acta => {
             // console.log(Acta);
             this.Cargar_Formularios(Acta[0]);
             // console.log('ok');
+            this.actaCargada = true;
           });
-        }
-      },
-    );
+    }
   }
 
   async asyncForEach(array, callback) {
@@ -385,12 +388,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
           this.Actas_Recibido.sendCorreo(objetomail).subscribe((resemail: any) => {
               if (resemail == null) {}
           });
-
-
-
-
-
-
       });
 
     });
@@ -399,7 +396,10 @@ export class EdicionActaRecibidoComponent implements OnInit {
 
   Cargar_Formularios( transaccion_: TransaccionActaRecibido ) {
     this.Actas_Recibido.getSedeDependencia(transaccion_.ActaRecibido.UbicacionId).subscribe(res => {
-      const valor = res[0].EspacioFisicoId.Codigo.substring(0, 4); // Para algunas actas lanza error "Cannot read 'Codigo' of undefined"
+      let valor = '';
+      if (res[0].hasOwnProperty('EspacioFisicoId') && res[0].EspacioFisicoId.hasOwnProperty('Codigo')) {
+        valor = res[0].EspacioFisicoId.Codigo.substring(0, 4);
+      }
       const Form2 = this.fb.array([]);
       const elementos = new Array<any[]>();
       transaccion_.SoportesActa.forEach((Soporte, index) => {
@@ -447,18 +447,34 @@ export class EdicionActaRecibidoComponent implements OnInit {
       });
 
       this.Elementos__Soporte = elementos;
+      this.SoporteElementosValidos = new Array<boolean>(this.Elementos__Soporte.length);
       this.firstForm = this.fb.group({
         Formulario1: this.fb.group({
           Id: [transaccion_.ActaRecibido.Id],
-          Sede: [this.Sedes.find(x => x.CodigoAbreviacion === valor.toString()).Id, Validators.required],
-          Dependencia: [this.Dependencias.find(x => x.Id === res[0].DependenciaId.Id).Nombre, Validators.required],
+          Sede: [ (() => {
+            const criterio = x => x && x.CodigoAbreviacion === valor.toString();
+            if (this.Sedes.some(criterio)) {
+              return this.Sedes.find(criterio).Id;
+            }
+            return '';
+          })(), Validators.required],
+          Dependencia: [ (() => {
+            const criterio = x => res[0].hasOwnProperty('DependenciaId') && x.Id === res[0].DependenciaId.Id;
+            if (this.Dependencias.some(criterio)) {
+              return this.Dependencias.find(criterio).Nombre;
+            }
+            return '';
+          })(), Validators.required],
           Ubicacion: [
             transaccion_.ActaRecibido.UbicacionId,
             Validators.required,
           ],
-          Revisor: [
-            this.Proveedores.find(proveedor =>
-              proveedor.Id.toString() === transaccion_.ActaRecibido.PersonaAsignada.toString()).compuesto,
+          Revisor: [ (() => {
+            const criterio = proveedor =>
+            proveedor &&
+            proveedor.Id.toString() === transaccion_.ActaRecibido.PersonaAsignada.toString();
+            return this.Proveedores.some(criterio) ? this.Proveedores.find(criterio).compuesto : '';
+          })(),
             Validators.required,
           ],
         }),
@@ -669,9 +685,11 @@ export class EdicionActaRecibidoComponent implements OnInit {
 
   addSoportes() {
     (this.firstForm.get('Formulario2') as FormArray).push(this.Formulario_2);
+    this.SoporteElementosValidos.push(false);
   }
   deleteSoportes(index: number) {
     (this.firstForm.get('Formulario2') as FormArray).removeAt(index);
+    this.SoporteElementosValidos.splice(index, 1);
   }
   addTab() {
     this.addSoportes();
@@ -717,6 +735,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
 
   // Envío (a proveedor/revisor) o guardado
   private async onFirstSubmit(siguienteEtapa: boolean = false, enviara: number = 0) {
+    this.guardando = true;
     if (!siguienteEtapa) {
     const start = async () => {
       await this.asyncForEach(this.fileDocumento, async (file) => {
@@ -802,6 +821,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
           text: this.translate.instant(mensaje),
         });
       }
+      this.guardando = false;
     });
   }
 
@@ -921,6 +941,8 @@ export class EdicionActaRecibidoComponent implements OnInit {
   valor_iva(subtotal: string, descuento: string, porcentaje_iva: string) {
     return ((parseFloat(subtotal) - parseFloat(descuento)) * parseFloat(porcentaje_iva) / 100);
   }
+
+  // Datos
   ver(event: any, index: number) {
     this.DatosElementos = event;
     if (this.Elementos__Soporte === undefined) {
@@ -932,7 +954,10 @@ export class EdicionActaRecibidoComponent implements OnInit {
         this.Elementos__Soporte.push(this.DatosElementos);
       }
     }
+    // console.log({event, index, 'this.Elementos__Soporte': this.Elementos__Soporte});
   }
+
+  // Totales
   ver2(event: any, index: number) {
     this.DatosTotales = event;
     if (this.Totales === undefined) {
@@ -990,19 +1015,42 @@ export class EdicionActaRecibidoComponent implements OnInit {
     });
   }
 
+  setElementosValidos(soporte: number, valido: boolean): void {
+    if (['En Elaboracion', 'En Modificacion'].some(est => this.estadoActa === est)) {
+      this.SoporteElementosValidos[soporte] = valido;
+      this.validaSoportes();
+    }
+  }
+
+  // TODO: Colocar más validaciones necesarias previo al envío a revisor, acá
+  private validaSoportes(): void {
+    this.elementosValidos = (
+      Array.isArray(this.Elementos__Soporte)
+      && this.Elementos__Soporte.length // Al menos un soporte
+      && this.Elementos__Soporte.every((sop, idx) => (
+        Array.isArray(sop)
+        && sop.length // Al menos un elemento
+        && this.SoporteElementosValidos[idx]
+      ))
+    );
+  }
+
+  envioPermitido(): boolean {
+    return (['En Elaboracion', 'En Modificacion']
+    .some(est => this.estadoActa === est) ? this.elementosValidos : true);
+  }
+
   formNoValido(): boolean {
-    return (
-      !this.firstForm.get('Formulario1').valid
-      || !this.firstForm.get('Formulario2').valid
-      || !this.firstForm.get('Formulario3').valid
-      || !this.verificar);
+    return !(
+      this.firstForm.get('Formulario1').valid
+      && this.firstForm.get('Formulario2').valid
+      && this.firstForm.get('Formulario3').valid
+      && this.userService.getPersonaId() // "Revisor valido" (realmente es "editor", no revisor!...)
+    );
   }
 
   // Enviar a revisor/proveedor?
   Revisar_Totales3(enviara: number) {
-    if (!this.revisorValido()) {
-      return;
-    }
     const L10n_base = 'GLOBAL.Acta_Recibido.EdicionActa.';
     const codigoL10n_titulo = L10n_base + 'DatosVeridicosTitle';
     let codigoL10n_desc = '';
@@ -1029,6 +1077,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
       }
     });
   }
+
   getGranSubtotal() {
     if (this.Totales !== []) {
       return this.Totales.map(t => t.Subtotal).reduce((acc, value) => parseFloat(acc) + parseFloat(value));

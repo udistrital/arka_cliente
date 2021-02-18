@@ -43,10 +43,10 @@
       "varias": "Actas de Recibido",
       "id_forma1": "Acta de Recibido #{{ID}}",
       "id_forma2": "Acta N° {{ID}}",
+      "ContratistaAsignado": "Contratista Asignado",
       "CapturarElementos":{
         "CargaMasivaTitle":"Carga Masiva",
-        "ValidadorPlaceholder":"El archivo debe tener extension (*.xlsx)",
-        "ValidadorPlaceholder2":"El archivo debe tener extension (*.pdf)",
+        "ValidadorPlaceholder":"El archivo debe tener extensión {{EXT}} (*.{{EXT}})",
         "LimpiarEspacioButton":"Descartar Archivo",
         "CargarElementosButton":"Cargar Elementos",
         "ArticulosRelacionadosTitle":"Articulos Relacionados",
@@ -63,6 +63,7 @@
         "IVAHeader":"% IVA",
         "ValorIVAHeader":"Valor de IVA",
         "ValorTotalHeader":"ValorTotal",
+        "AvisoSobreescritura": "La Carga Masiva ELIMINARÁ {{CANT}} elemento(s) actualmente en la Lista. ¿Desea continuar con la Carga Masiva?",
         "AgregarElemento":"Agregar Elemento",
         "EliminarElemento":"Eliminar Elemento",
         "ElementosCargadosTitleOK":"Elementos Cargados",
@@ -83,6 +84,8 @@
         "FechaModificacionHeader":"Fecha de Modificación",
         "FechaVistoBuenoHeader":"Fecha de Visto Bueno",
         "RevisorHeader":"Último Revisor",
+        "ModificadaPor": "Modificada Por",
+        "AceptadaPor": "Aceptada Por",
         "EstadoHeader":"Estado Actual",
         "UbicacionHeader":"Ubicación",
         "ObservacionesHeader":"Observaciones",
@@ -93,10 +96,10 @@
         "Aceptada":"Aceptada",
         "Asociada":"Asociada a Entrada",
         "Anulada":"Anulada",
+        "Instrucciones": "Para ver un Acta, dé click en la fila del Acta",
         "DialogoAnularTitulo":"¿Anular Acta {{ACTA}}?",
         "DialogoAnularMsg":"Esta acción no se puede deshacer. ¿Está seguro de ANULAR el Acta {{ACTA}}?",
-        "OpcionNoValida":"Opción no válida",
-        "OpcionNoValida2":"Opción no válida para el estado de esta acta"
+        "EdicionBloqueada":"No se puede Editar el Acta Nº {{NUM}} por tener Estado \"{{STATE}}\""
       },
       "RegistroActa":{
         "Title": "Registrar Acta de Recibido",
@@ -136,6 +139,7 @@
       },
       "EdicionActa":{
         "Title": "Editar Acta de Recibido",
+        "TitleId": "Editar Acta de Recibido #{{ID}}",
         "DatosTitle":"Datos Iniciales",
         "Sede":"Sede",
         "Dependencia":"Dependencia",
@@ -160,9 +164,9 @@
         "Total":"Gran Total:",
         "Observaciones2":"Proporciona datos adicionales que no se pueden expresar en el formulario (Obligatorio)",
         "DatosVeridicos":"Está seguro que desea guardar los cambios?",
-        "DatosVeridicos2":"¿Está seguro que desea enviar el acta a verificación?",
-        "DatosVeridicos3":"¿Está seguro que desea enviar el acta al Proveedor y al revisor?",
-        "DatosVeridicos4":"¿Está seguro que desea enviar el acta al Revisor?",
+        "DatosVeridicos2":"¿Está seguro que desea enviar el acta a Verificación?",
+        "DatosVeridicos3":"¿Está seguro que desea enviar el acta al Proveedor y al Contratista?",
+        "DatosVeridicos4":"¿Está seguro que desea enviar el acta al Contratista?",
         "DatosVeridicosTitle":"¿Está seguro?",
         "CargaElementosTitle":"Carga de Elementos",
         "CargaElementos":"Por favor verificar la carga de elementos, valores y totales asociados al soporte antes de generar el registro",
@@ -178,10 +182,11 @@
         "ProveedorNO":"El Acta no ha podido ser enviada al proveedor de forma exitosa, intenta más tarde",
         "VerificacionButton":"Enviar a Verificación",
         "EnviarProveedorButton": "Enviar a Proveedor",
-        "EnviarRevisorButton": "Enviar a Revisor"
+        "EnviarContratistaButton": "Enviar a Contratista"
       },
       "DetalleActa":{
         "Title": "Detalle Acta de Recibido",
+        "TitleId": "Detalle Acta de Recibido #{{ID}}",
         "DatosTitle":"Datos Iniciales",
         "Sede":"Sede",
         "Dependencia":"Dependencia",
@@ -221,6 +226,7 @@
       },
       "VerificacionActa":{
         "Title": "Detalle Acta de Recibido",
+        "TitleId": "Detalle Acta de Recibido #{{ID}}",
         "DatosTitle":"Datos Iniciales",
         "Sede":"Sede",
         "Dependencia":"Dependencia",
@@ -284,8 +290,6 @@
     "registro_elementos":"Registro de Elementos",
     "registrar_elementos":"Registrar Elemento",
     "consultar_catalogo":"Consultar Arbol de Catálogo",
-    "depreciacion":"Depreciación",
-    "valorizacion":"Valorización",
     "cuenta_credito":"Crédito",
     "cuenta_debito":"Débito",
     "placeholder_cuenta_credito":"Crédito",
@@ -399,6 +403,7 @@
       "lista": "Lista de Catálogos"
     },
 
+    "Advertencia": "Advertencia",
     "info": "Información",
     "info_adicional": "Información Adicional",
     "Detalle":"Detalle",
@@ -528,7 +533,7 @@
     "ubicacion": "Ubicación",
     "observaciones": "Observaciones",
 
-    "entradas": {
+    "movimientos": {
       "tipo": {
         "EA": {
           "nombre": "Adquisición",
@@ -581,6 +586,14 @@
         "EBEMP": {
           "nombre": "Entregados de manera Provisional",
           "descripcion": "Entrada Entregados al Ente o Entidad de manera provisional"
+        },
+        "SOL_BAJA": {
+          "nombre": "Baja",
+          "descripcion": "Solicitud de Baja"
+        },
+        "SOL_TRD": {
+          "nombre": "Traslado",
+          "descripcion": "Solicitud de Traslado"
         }
       },
       "tab_consumo": "Elementos de Consumo",

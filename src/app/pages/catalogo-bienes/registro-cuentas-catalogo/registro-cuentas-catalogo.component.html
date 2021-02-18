@@ -3,7 +3,7 @@
 
   <nb-card class="col">
     <nb-card-header>
-      {{'GLOBAL.catalogo.uno' | translate}}
+      <h2>{{'GLOBAL.catalogo.uno' | translate}}</h2>
     </nb-card-header>
     <nb-card-body [nbSpinner]="cargando_catalogos">
         <select class="form-control mb-4" (change)="onChange($event.target.value)">
@@ -21,15 +21,14 @@
           <p class="font-weight-bold text-uppercase">{{'GLOBAL.subgrupo.clase.seleccionado' | translate}}:</p>
           <span class="font-weight-normal">{{ uid_1.Nombre }}</span>
       </nb-card-header>
-      <nb-card-body>
+      <nb-card-body [nbSpinner]="guardando">
         <p><em>{{'GLOBAL.instr_asig_cuentas' | translate}}</em></p>
         <mat-vertical-stepper #stepper>
 
+          <ng-template #tipoMovimientoTemplate let-lbl="label" let-movs="mvtos">
           <mat-step>
-            <ng-template matStepLabel>
-              {{'GLOBAL.Entradas' | translate}}
-            </ng-template>
-            <ngx-crud-movimiento *ngFor="let tab of Movimientos_Entradas"
+            <ng-template matStepLabel>{{lbl | translate}}</ng-template>
+            <ngx-crud-movimiento *ngFor="let tab of movs"
             [subgrupo_id]="uid_1" [movimiento_id]="tab" (formulario)="ver3($event)"
             (eventChange)="recargarCatalogo()"></ngx-crud-movimiento>
             <div class="justify-content-center">
@@ -39,49 +38,14 @@
                 class="float-right">{{'GLOBAL.Acta_Recibido.RegistroActa.SiguienteButton' | translate}}</button>
             </div>
           </mat-step>
+          </ng-template>
 
-          <mat-step>
-            <ng-template matStepLabel>
-              {{'GLOBAL.Salidas' | translate}}
-            </ng-template>
-            <ngx-crud-movimiento *ngFor="let tab of Movimientos_Salidas"
-            [subgrupo_id]="uid_1" [movimiento_id]="tab" (formulario)="ver3($event)"
-            (eventChange)="recargarCatalogo()"></ngx-crud-movimiento>
-              <div class="justify-content-center">
-                <button nbButton
-                  matStepperPrevious>{{'GLOBAL.Acta_Recibido.RegistroActa.AnteriorButton' | translate}}</button>
-                <button nbButton matStepperNext
-                  class="float-right">{{'GLOBAL.Acta_Recibido.RegistroActa.SiguienteButton' | translate}}</button>
-              </div>
-          </mat-step>
-
-          <mat-step *ngIf="depreciacion_ok">
-            <ng-template matStepLabel>
-              {{'GLOBAL.Depreciacion' | translate}}
-            </ng-template>
-            <ngx-crud-movimiento *ngFor="let tab of Movimientos_Depreciacion"
-            [subgrupo_id]="uid_1" [movimiento_id]="tab" (formulario)="ver3($event)"
-                (eventChange)="recargarCatalogo()"></ngx-crud-movimiento>
-            <div class="justify-content-center">
-              <button nbButton
-                matStepperPrevious>{{'GLOBAL.Acta_Recibido.RegistroActa.AnteriorButton' | translate}}</button>
-              <button nbButton matStepperNext
-                class="float-right">{{'GLOBAL.Acta_Recibido.RegistroActa.SiguienteButton' | translate}}</button>
-            </div>
-          </mat-step>
-
-          <mat-step *ngIf="valorizacion_ok">
-            <ng-template matStepLabel>
-              {{'GLOBAL.Valorizacion' | translate}}
-            </ng-template>
-            <ngx-crud-movimiento *ngFor="let tab of Movimientos_Valorizacion"
-            [subgrupo_id]="uid_1" [movimiento_id]="tab" (formulario)="ver3($event)"
-                (eventChange)="recargarCatalogo()"></ngx-crud-movimiento>
-            <div class="justify-content-center">
-              <button nbButton
-                matStepperPrevious>{{'GLOBAL.Acta_Recibido.RegistroActa.AnteriorButton' | translate}}</button>
-            </div>
-          </mat-step>
+          <ng-container *ngFor="let categoria of TiposMovimientos">
+            <ng-container *ngIf="categoria.mostrar()">
+              <ng-container *ngTemplateOutlet="tipoMovimientoTemplate;
+              context: {label: categoria.i18n, mvtos: categoria.data}"></ng-container>
+            </ng-container>
+          </ng-container>
 
         </mat-vertical-stepper>
         <button nbButton (click)="onSubmit()" [disabled]="!all_mov_ok"

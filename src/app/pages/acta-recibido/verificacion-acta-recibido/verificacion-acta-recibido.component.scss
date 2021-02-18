@@ -2,14 +2,14 @@
     display: flex !important;
     height: 0 !important;
   }
-  
+
   :host /deep/ ng2-st-tbody-custom a.ng2-smart-action.ng2-smart-action-custom-custom {
     display: inline-block;
     width: 30px;
     text-align: center;
     font-size: 1.1em;
   }
-  
+
   :host /deep/ ng2-st-tbody-custom a.ng2-smart-action.ng2-smart-action-custom-custom:hover {
     color: #5dcfe3;
   }
@@ -43,4 +43,8 @@
     float: none;
     text-align: center;
   }
-  
+
+table.consolidado {
+  width: auto;
+  margin: auto;
+}

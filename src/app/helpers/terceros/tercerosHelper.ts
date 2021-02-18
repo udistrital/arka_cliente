@@ -12,19 +12,25 @@ export class TercerosHelper {
         private pUpManager: PopUpManager) { }
 
     /**
-      * Elementos get
-      * Conversion Archivo Post
+      * Trae la lista de terceros activos
       * If the response has errors in the OAS API it should show a popup message with an error.
       * If the response is successs, it returns the object's data.
+      * @param query to Terceros CRUD API
       * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
      */
-    public getProveedor(nombre) {
-        this.rqManager.setPath('TERCEROS');
-        return this.rqManager.get('tercero/' + nombre + '').pipe(
+    public getTerceros(query: string = '') {
+        this.rqManager.setPath('TERCEROS_SERVICE');
+        let endpoint = 'tercero?limit=-1';
+        endpoint += '&fields=Id,NombreCompleto';
+        endpoint += '&query=Activo:true';
+        if (query) {
+            endpoint += ',' + query;
+        }
+        return this.rqManager.get(endpoint).pipe(
             map(
                 (res) => {
-                    if (res === 'error') {
-                        this.pUpManager.showErrorAlert('No se encontro ningun nombre de proovedor');
+                    if (res === 'error' || !Array.isArray(res) || !res.some(t => Object.keys(t).length > 0)) {
+                        this.pUpManager.showErrorAlert('No hay terceros disponibles');
                         return undefined;
                     }
                     return res;
