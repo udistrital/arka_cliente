@@ -43,6 +43,7 @@
       "varias": "Receipt Certificates",
       "id_forma1": "Receipt Certificate #{{ID}}",
       "id_forma2": "Certificate N° {{ID}}",
+      "ContratistaAsignado": "Assigned Contractor",
       "CapturarElementos": {
         "CargaMasivaTitle": "Bulk Load",
         "ValidadorPlaceholder": "The file shall have {{EXT}} extension (*.{{EXT}})",
@@ -83,6 +84,8 @@
         "FechaModificacionHeader": "Modification Date",
         "FechaVistoBuenoHeader": "Good View Date",
         "RevisorHeader": "Last Check",
+        "ModificadaPor": "Modified By",
+        "AceptadaPor": "Approved By",
         "EstadoHeader": "Actual State",
         "UbicacionHeader": "Location",
         "ObservacionesHeader": "Observations",
@@ -161,9 +164,9 @@
         "Total": "Grand Total:",
         "Observaciones2": "Proporciona datos adicionales que no se pueden expresar en el formulario (Obligatorio)",
         "DatosVeridicos": "Are you sure do you want to save the data?",
-        "DatosVeridicos2": "Are you sure do you want to send the data to verificate?",
-        "DatosVeridicos3":"Are you sure to Send the data to Supplier and te Reviewer?",
-        "DatosVeridicos4":"Are you sure to Send the data to Reviewer?",
+        "DatosVeridicos2": "Are you sure do you want to send the data to Verification?",
+        "DatosVeridicos3":"Are you sure to Send the data to Supplier and Contractor?",
+        "DatosVeridicos4":"Are you sure to Send the data to Contractor?",
         "DatosVeridicosTitle": "Are You Sure?",
         "CargaElementosTitle": "Elements Load",
         "CargaElementos": "Please verify the load of elements, values ​​and totals associated with the support before generating the record",
@@ -179,7 +182,7 @@
         "ProveedorNO":"The Act has NOT been sent to supplier. Try again later",
         "VerificacionButton": "Send to Verification",
         "EnviarProveedorButton": "Send to Supplier",
-        "EnviarRevisorButton": "Send to Reviewer"
+        "EnviarContratistaButton": "Send to Contractor"
       },
       "DetalleActa": {
         "Title": "Receipt Certificate Detail",

@@ -121,20 +121,17 @@ export class EdicionActaRecibidoComponent implements OnInit {
       Elementos: Permiso.Ninguno,
   };
 
-
   accion: {
     envHabilitado: boolean,
     envTexto: string,
-    envRevisor: string,
-    envRevisorHabilitado: boolean,
+    envContratista: string,
+    envContratistaHabilitado: boolean,
   } = {
     envHabilitado: false,
     envTexto: '',
-    envRevisor: '',
-    envRevisorHabilitado: false,
+    envContratista: '',
+    envContratistaHabilitado: false,
   };
-
-
 
   constructor(
     private translate: TranslateService,
@@ -256,24 +253,19 @@ export class EdicionActaRecibidoComponent implements OnInit {
         .some(est => this.estadoActa === est);
 
     this.accion.envHabilitado = envioProveedor || envioValidar;
-    this.accion.envRevisorHabilitado = envioProveedor;
-    // Texto del botón según el estado
+    this.accion.envContratistaHabilitado = envioProveedor;
 
+    // Texto del botón según el estado
     if (envioProveedor) {
       this.accion.envTexto = this.translate.instant('GLOBAL.Acta_Recibido.EdicionActa.EnviarProveedorButton');
-      this.accion.envRevisor = this.translate.instant('GLOBAL.Acta_Recibido.EdicionActa.EnviarRevisorButton');
+      this.accion.envContratista = this.translate.instant('GLOBAL.Acta_Recibido.EdicionActa.EnviarContratistaButton');
     } else if (envioValidar) {
       this.accion.envTexto = this.translate.instant('GLOBAL.Acta_Recibido.EdicionActa.VerificacionButton');
-      this.accion.envRevisorHabilitado = false;
+      this.accion.envContratistaHabilitado = false;
     }
-
-
-
-
   }
 
   Cargar_localStorage(Acta: any) {
-
     if (sessionStorage.Formulario_Edicion == null) {
       this.Cargar_Formularios(Acta);
     } else {
@@ -1043,7 +1035,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
     );
   }
 
-  envioPermitidoARevisor(): boolean {
+  envioPermitido(): boolean {
     return (['En Elaboracion', 'En Modificacion']
     .some(est => this.estadoActa === est) ? this.elementosValidos : true);
   }
@@ -1085,6 +1077,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
       }
     });
   }
+
   getGranSubtotal() {
     if (this.Totales !== []) {
       return this.Totales.map(t => t.Subtotal).reduce((acc, value) => parseFloat(acc) + parseFloat(value));

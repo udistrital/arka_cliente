@@ -47,10 +47,8 @@
                     <p class="campo" *ngIf="firstForm.get('Formulario1').get('Ubicacion').invalid">
                       {{'GLOBAL.placeholder' | translate}}</p>
                   </div>
-
-
                   <div class="form-group col-sm">
-                    <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Revisor' | translate}}</label>
+                    <label>{{'GLOBAL.Acta_Recibido.ContratistaAsignado' | translate}}</label>
                     <ng2-completer style="border: 0rem" inputClass="form-control" (keyup)="usarLocalStorage()"
                       placeholder="{{'GLOBAL.Acta_Recibido.EdicionActa.SeleccioneFiltro' | translate}}"
                       [clearUnselected]="true" nbInput [datasource]="dataService2" formControlName="Revisor"
@@ -59,7 +57,6 @@
                     <p class="campo" *ngIf="firstForm.get('Formulario1').get('Revisor').invalid">
                       {{'GLOBAL.placeholder' | translate}}</p>
                   </div>
-
                 </div>
               </nb-card-body>
               <nb-card-footer>
@@ -261,14 +258,11 @@
               </nb-card-footer>
             </nb-card>
 
-
-            <div class="justify-content-center">
-              <button nbButton (click)="Revisar_Totales3(1)" *ngIf="accion.envHabilitado" [disabled]="!envioPermitidoARevisor() || formNoValido()"
-                class="float-right">{{ accion.envTexto }}</button>
-            </div>
-            <div class="justify-content-center">
-              <button nbButton (click)="Revisar_Totales3(2)" *ngIf="accion.envRevisorHabilitado" [disabled]="!envioPermitidoARevisor() || formNoValido()"
-                class="float-right">{{ accion.envRevisor }}</button>
+            <div class="float-right">
+              <button nbButton (click)="Revisar_Totales3(1)" *ngIf="accion.envHabilitado"
+              [disabled]="!envioPermitido() || formNoValido()">{{ accion.envTexto }}</button>
+              <button nbButton (click)="Revisar_Totales3(2)" *ngIf="accion.envContratistaHabilitado"
+              [disabled]="!envioPermitido() || formNoValido()">{{ accion.envContratista }}</button>
             </div>
 
           </mat-step>
