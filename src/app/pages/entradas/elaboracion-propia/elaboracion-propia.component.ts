@@ -32,7 +32,7 @@ export class ElaboracionPropiaComponent implements OnInit {
 
   Supervisores: TerceroCriterioPlanta[];
   supervisoresFiltrados: Observable<TerceroCriterioPlanta[]>;
-  Ordenadores:TerceroCriterioJefe[];
+  Ordenadores: TerceroCriterioJefe[];
   ordenadoresFiltrados: Observable<TerceroCriterioJefe[]>;
   contratoForm: FormGroup;
 
@@ -183,14 +183,14 @@ export class ElaboracionPropiaComponent implements OnInit {
   }
 
   muestraSupervisor(sup: TerceroCriterioPlanta): string {
-    if (sup.TerceroPrincipal!=undefined) {
+    if (sup.TerceroPrincipal !== undefined) {
       return sup.TerceroPrincipal.NombreCompleto;
     }else {
-      return ''
-    }  
+      return '';
+    }
   }
 
-//-------------------------------------ORDENADORES---------------------------------------------------
+// -------------------------------------ORDENADORES---------------------------------------------------
   onSoporteSubmit() {
     if (this.ordenadorId !== 0) {
       this.soporteForm.markAsDirty();
@@ -219,13 +219,13 @@ export class ElaboracionPropiaComponent implements OnInit {
   }
 
   muestraOrdenador(ord: TerceroCriterioJefe): string {
-    if (ord.TerceroPrincipal!=undefined) {
+    if (ord.TerceroPrincipal !== undefined) {
       return ord.TerceroPrincipal.NombreCompleto;
     }else {
-      return ''
-    }  
+      return '';
+    }
   }
-//---------------------------------FIN ORDENADORES-------------------------------------------------
+// ---------------------------------FIN ORDENADORES-------------------------------------------------
   onObservacionSubmit() {
     this.validar = true;
   }
@@ -311,8 +311,8 @@ export class ElaboracionPropiaComponent implements OnInit {
         documento_contable_id: 1, // REVISAR
         supervisor: this.supervisorForm.value.supervisorCtrl.TerceroPrincipal.Id,
         vigencia_ordenador: this.ordenadorForm.value.vigenciaCtrl,
-        ordenador_gasto_id:this.ordenadorForm.value.ordenadorCtrl.TerceroPrincipal.Id, 
-        //solicitante_id: +this.supervisorId,
+        ordenador_gasto_id: this.ordenadorForm.value.ordenadorCtrl.TerceroPrincipal.Id,
+        // solicitante_id: +this.supervisorId,
       };
       const movimientoAdquisicion = {
         Observacion: this.observacionForm.value.observacionCtrl,

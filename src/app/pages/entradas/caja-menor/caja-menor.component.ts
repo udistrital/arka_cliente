@@ -34,7 +34,7 @@ export class CajaMenorComponent implements OnInit {
 
   Supervisores: TerceroCriterioPlanta[];
   supervisoresFiltrados: Observable<TerceroCriterioPlanta[]>;
-  Ordenadores:TerceroCriterioJefe[];
+  Ordenadores: TerceroCriterioJefe[];
   ordenadoresFiltrados: Observable<TerceroCriterioJefe[]>;
 
   ordenadores: Array<OrdenadorGasto>;
@@ -184,11 +184,11 @@ filtroSupervisores(nombre: string): TerceroCriterioPlanta[] {
 }
 
 muestraSupervisor(sup: TerceroCriterioPlanta): string {
-  if (sup.TerceroPrincipal!=undefined) {
+  if (sup.TerceroPrincipal !== undefined) {
     return sup.TerceroPrincipal.NombreCompleto;
   }else {
-    return ''
-  }  
+    return '';
+  }
 }
 
 //-------------------------------------ORDENADORES---------------------------------------------------
@@ -215,13 +215,13 @@ filtroOrdenadores(nombre: string): TerceroCriterioJefe[] {
 }
 
 muestraOrdenador(ord: TerceroCriterioJefe): string {
-  if (ord.TerceroPrincipal!=undefined) {
+  if (ord.TerceroPrincipal !== undefined) {
     return ord.TerceroPrincipal.NombreCompleto;
   }else {
-    return ''
-  }  
+    return '';
+  }
 }
-//---------------------------------FIN ORDENADORES-------------------------------------------------
+// ---------------------------------FIN ORDENADORES-------------------------------------------------
   changeOrdenador() {
     this.cargoOrdenador = '';
     for (const i in this.ordenadores) {
@@ -313,7 +313,7 @@ muestraOrdenador(ord: TerceroCriterioJefe): string {
         consecutivo: 'P8-5-2019', // REVISAR
         documento_contable_id: 1, // REVISAR
         supervisor: this.supervisorForm.value.supervisorCtrl.TerceroPrincipal.Id,
-        ordenador_gasto_id:this.ordenadorForm.value.ordenadorCtrl.TerceroPrincipal.Id, 
+        ordenador_gasto_id: this.ordenadorForm.value.ordenadorCtrl.TerceroPrincipal.Id,
         // solicitante_id: +this.supervisorId,
       };
       const movimientoAdquisicion = {

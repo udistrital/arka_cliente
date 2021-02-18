@@ -14,7 +14,7 @@ export class TerceroCriterioPlanta {
     TipoVinculacion: number;
 }
 export class TerceroCriterioJefe {
-    Cargo:number;
+    Cargo: number;
     DependenciaId: number;
     TerceroPrincipal: Tercero;
 }

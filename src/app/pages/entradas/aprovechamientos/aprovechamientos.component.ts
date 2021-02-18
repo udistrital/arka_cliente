@@ -147,11 +147,11 @@ export class AprovechamientosComponent implements OnInit {
   }
 
   muestraSupervisor(sup: TerceroCriterioPlanta): string {
-    if (sup.TerceroPrincipal!=undefined) {
+    if (sup.TerceroPrincipal != undefined) {
       return sup.TerceroPrincipal.NombreCompleto;
     }else {
-      return ''
-    }  
+      return '';
+    }
   }
 
   datosSupervisor(param: string): string {
