@@ -161,6 +161,12 @@ export class ConsultaActaRecibidoComponent implements OnInit {
             },
           },
         },
+        RevisorId: {
+          title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.ModificadaPor'),
+          valuePrepareFunction: (value: any) => {
+            return value;
+          },
+        },
         FechaVistoBueno: {
           title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.FechaVistoBuenoHeader'),
           width: '70px',
@@ -177,14 +183,8 @@ export class ConsultaActaRecibidoComponent implements OnInit {
             },
           },
         },
-        RevisorId: {
-          title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.RevisorHeader'),
-          valuePrepareFunction: (value: any) => {
-            return value;
-          },
-        },
         PersonaAsignada: {
-          title: 'Asignado',
+          title: this.translate.instant('GLOBAL.Acta_Recibido.ContratistaAsignado'),
           valuePrepareFunction: (value: any) => {
             return value;
           },
