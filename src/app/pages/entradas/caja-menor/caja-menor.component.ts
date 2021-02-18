@@ -44,7 +44,8 @@ export class CajaMenorComponent implements OnInit {
   tipoEntrada: any;
   formatoTipoMovimiento: any;
 
-  @Input() actaRecibidoId: string;
+  @Input() actaRecibidoId: Number;
+  @Input() movimientoId: Number;
 
   constructor(private router: Router, private entradasHelper: EntradaHelper, private pUpManager: PopUpManager,
     private actaRecibidoHelper: ActaRecibidoHelper, private fb: FormBuilder,
@@ -224,6 +225,7 @@ changeSolicitante(event) {
         EstadoMovimientoId: {
           Id: 2, // REVISAR
         },
+        Id: this.movimientoId ? this.movimientoId : 0,
         SoporteMovimientoId: this.idDocumento,
         IdTipoMovimiento: this.tipoEntrada.Id,
       };
