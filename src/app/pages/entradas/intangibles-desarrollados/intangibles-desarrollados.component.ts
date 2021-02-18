@@ -10,6 +10,10 @@ import { DocumentoService } from '../../../@core/data/documento.service';
 import { TranslateService } from '@ngx-translate/core';
 import { SoporteActaProveedor } from '../../../@core/data/models/acta_recibido/soporte_acta';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
+import { TerceroCriterioJefe, TerceroCriterioPlanta } from '../../../@core/data/models/terceros_criterio';
+import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
+import {Observable} from 'rxjs';
+import {map, startWith} from 'rxjs/operators';
 import { Entrada } from '../../../@core/data/models/entrada/entrada';
 import { TipoEntrada } from '../../../@core/data/models/entrada/tipo_entrada';
 import Swal from 'sweetalert2';
@@ -24,6 +28,11 @@ export class IntangiblesDesarrolladosComponent implements OnInit {
   observacionForm: FormGroup;
   ordenadorForm: FormGroup;
   supervisorForm: FormGroup;
+
+  Supervisores: TerceroCriterioPlanta[];
+  supervisoresFiltrados: Observable<TerceroCriterioPlanta[]>;
+  Ordenadores: TerceroCriterioJefe[];
+  ordenadoresFiltrados: Observable<TerceroCriterioJefe[]>;
 
   ordenadores: Array<OrdenadorGasto>;
   solicitanteSelect: boolean;
@@ -43,11 +52,22 @@ export class IntangiblesDesarrolladosComponent implements OnInit {
   tipoEntrada: any;
   formatoTipoMovimiento: any;
 
+  cargando_proveedores: boolean = true;
+  cargando_supervisores: boolean = true;
+  cargando_ordenadores: boolean = true;
+
   @Input() actaRecibidoId: string;
 
-  constructor(private router: Router, private entradasHelper: EntradaHelper, private pUpManager: PopUpManager,
-    private actaRecibidoHelper: ActaRecibidoHelper, private fb: FormBuilder,
-    private nuxeoService: NuxeoService, private sanitization: DomSanitizer, private documentoService: DocumentoService,
+  constructor(
+    private router: Router,
+    private entradasHelper: EntradaHelper,
+    private pUpManager: PopUpManager,
+    private actaRecibidoHelper: ActaRecibidoHelper,
+    private fb: FormBuilder,
+    private nuxeoService: NuxeoService,
+    private sanitization: DomSanitizer,
+    private documentoService: DocumentoService,
+    private tercerosHelper: TercerosHelper,
     private translate: TranslateService) {
     this.ordenadores = new Array<OrdenadorGasto>();
     this.solicitanteSelect = false;
@@ -68,7 +88,7 @@ export class IntangiblesDesarrolladosComponent implements OnInit {
     });
     this.ordenadorForm = this.fb.group({
       ordenadorCtrl: ['', Validators.required],
-      fechaCtrl: ['', Validators.required],
+      vigenciaCtrl: ['', Validators.required],
     });
     this.supervisorForm = this.fb.group({
       supervisorCtrl: ['', Validators.required],
@@ -76,13 +96,93 @@ export class IntangiblesDesarrolladosComponent implements OnInit {
     this.getVigencia();
     this.getTipoEntrada();
     this.getFormatoEntrada();
-    this.loadSoporte();
+    this.loadSupervisores();
+    this.loadOrdenadores();
   }
 
   // Métodos para validar campos requeridos en el formulario
   onSolicitanteSubmit() {
     this.soporteForm.markAsDirty();
   }
+
+ // -------------------------SUPERVISORES--------------------------------------------------------
+ loadSupervisores(): void {
+  this.tercerosHelper.getTercerosByCriterio('funcionarioPlanta').subscribe( res => {
+    if (Array.isArray(res)) {
+      this.Supervisores = res;
+      this.supervisoresFiltrados = this.supervisorForm.get('supervisorCtrl').valueChanges
+        .pipe(
+          startWith(''),
+          map(val => typeof val === 'string' ? val : this.muestraSupervisor(val)),
+          map(nombre => this.filtroSupervisores(nombre)),
+        );
+      // console.log({supervisores: this.Supervisores});
+      this.cargando_supervisores = false;
+    }
+  });
+}
+datosSupervisor(param: string): string {
+  const supervisorSeleccionado: TerceroCriterioPlanta = <TerceroCriterioPlanta>this.supervisorForm.value.supervisorCtrl;
+  // console.log({supervisorSeleccionado});
+  if (supervisorSeleccionado) {
+    switch (param) {
+      case 'sede':
+        return supervisorSeleccionado.Sede.Nombre;
+
+      case 'dependencia':
+        return supervisorSeleccionado.Dependencia.Nombre;
+
+      default:
+        return '';
+    }
+  }
+  return '';
+}
+filtroSupervisores(nombre: string): TerceroCriterioPlanta[] {
+  // if (nombre.length >= 4 ) {
+    const valorFiltrado = nombre.toLowerCase();
+    return this.Supervisores.filter(sup => sup.TerceroPrincipal.NombreCompleto.toLowerCase().includes(valorFiltrado));
+  // } else return [];
+}
+
+muestraSupervisor(sup: TerceroCriterioPlanta): string {
+  if (sup.TerceroPrincipal !== undefined) {
+    return sup.TerceroPrincipal.NombreCompleto;
+  }else {
+    return '';
+  }
+}
+
+// -------------------------------------ORDENADORES---------------------------------------------------
+loadOrdenadores(): void {
+  this.tercerosHelper.getTercerosByCriterio('ordenadoresGasto').subscribe( res => {
+    if (Array.isArray(res)) {
+      this.Ordenadores = res;
+      this.ordenadoresFiltrados = this.ordenadorForm.get('ordenadorCtrl').valueChanges
+        .pipe(
+          startWith(''),
+          map(val => typeof val === 'string' ? val : this.muestraOrdenador(val)),
+          map(nombre => this.filtroOrdenadores(nombre)),
+        );
+      // console.log({supervisores: this.Supervisores});
+      this.cargando_ordenadores = false;
+    }
+  });
+}
+filtroOrdenadores(nombre: string): TerceroCriterioJefe[] {
+  // if (nombre.length >= 4 ) {
+    const valorFiltrado = nombre.toLowerCase();
+    return this.Ordenadores.filter(sup => sup.TerceroPrincipal.NombreCompleto.toLowerCase().includes(valorFiltrado));
+  // } else return [];
+}
+
+muestraOrdenador(ord: TerceroCriterioJefe): string {
+  if (ord.TerceroPrincipal !== undefined) {
+    return ord.TerceroPrincipal.NombreCompleto;
+  }else {
+    return '';
+  }
+}
 
 loadSolicitantes(): void {
   this.entradasHelper.getSolicitantes(this.fechaSolicitante).subscribe(res => {
@@ -115,44 +215,10 @@ changeSolicitante(event) {
   this.loadSolicitantes();
 }
 
-  changeOrdenador() {
-    this.cargoOrdenador = '';
-    for (const i in this.ordenadores) {
-      if (this.ordenadores[i].NombreOrdenador === this.ordenadorForm.value.ordenadorCtrl) {
-        this.ordenadorId = this.ordenadores[i].Id;
-        this.cargoOrdenador = this.ordenadores[i].RolOrdenadorGasto;
-      }
-    }
-  }
-
-  changeSupervisor() {
-    for (const i in this.ordenadores) {
-      if (this.ordenadores[i].NombreOrdenador === this.ordenadorForm.value.ordenadorCtrl) {
-        this.supervisorId = this.ordenadores[i].Id;
-      }
-    }
-  }
-
   onSoporteSubmit() {
     if (this.ordenadorId !== 0) {
       this.soporteForm.markAsDirty();
     }
-  }
-  loadSoporte(): void {
-    this.actaRecibidoHelper.getSoporte(this.actaRecibidoId).subscribe(res => {
-      if (res !== null) {
-        for (const index in res) {
-          if (res.hasOwnProperty(index)) {
-            const soporte = new SoporteActaProveedor;
-            soporte.Id = res[index].Id;
-            soporte.Consecutivo = res[index].Consecutivo;
-            soporte.Proveedor = res[index].ProveedorId;
-            soporte.FechaSoporte = res[index].FechaSoporte;
-            this.soportes.push(soporte);
-          }
-        }
-      }
-    });
   }
   onObservacionSubmit() {
     this.validar = true;
@@ -193,7 +259,9 @@ changeSolicitante(event) {
         acta_recibido_id: +this.actaRecibidoId,
         consecutivo: 'P8-5-2019', // REVISAR
         documento_contable_id: 1, // REVISAR
-        solicitante_id: +this.supervisorId,
+        vigencia: this.ordenadorForm.value.vigenciaCtrl,
+        supervisor: this.supervisorForm.value.supervisorCtrl.TerceroPrincipal.Id,
+        ordenador_gasto_id: this.ordenadorForm.value.ordenadorCtrl.TerceroPrincipal.Id,
       };
       const movimientoAdquisicion = {
         Observacion: this.observacionForm.value.observacionCtrl,
