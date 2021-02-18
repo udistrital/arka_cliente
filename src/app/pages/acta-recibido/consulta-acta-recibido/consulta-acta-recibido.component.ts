@@ -235,7 +235,7 @@ export class ConsultaActaRecibidoComponent implements OnInit {
           },
         },
         UbicacionId: {
-          title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.UbicacionHeader'),
+          title: this.translate.instant('GLOBAL.dependencia'),
           valuePrepareFunction: (value: any) => {
             return value;
           },
