@@ -53,7 +53,7 @@ export class ConsultaEntradaComponent implements OnInit {
   onEdit(event) {
     this.edit = true;
     this.entradaEdit = event.data;
-    console.log(this.entradaEdit);
+    // console.log(this.entradaEdit);
   }
 
   loadTablaSettings() {
