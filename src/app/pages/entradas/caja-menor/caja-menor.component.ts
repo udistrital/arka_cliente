@@ -191,7 +191,7 @@ muestraSupervisor(sup: TerceroCriterioPlanta): string {
   }
 }
 
-//-------------------------------------ORDENADORES---------------------------------------------------
+// -------------------------------------ORDENADORES---------------------------------------------------
 loadOrdenadores(): void {
   this.tercerosHelper.getTercerosByCriterio('ordenadoresGasto').subscribe( res => {
     if (Array.isArray(res)) {
