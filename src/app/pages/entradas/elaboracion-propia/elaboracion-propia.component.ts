@@ -29,7 +29,7 @@ export class ElaboracionPropiaComponent implements OnInit {
   supervisorForm: FormGroup;
 
 
-  
+
   Supervisores: TerceroCriterioPlanta[];
   supervisoresFiltrados: Observable<TerceroCriterioPlanta[]>;
   Ordenadores:TerceroCriterioJefe[];
@@ -197,7 +197,7 @@ export class ElaboracionPropiaComponent implements OnInit {
     }
   }
   loadOrdenadores(): void {
-    this.tercerosHelper.getTercerosByCriterio('jefes').subscribe( res => {
+    this.tercerosHelper.getTercerosByCriterio('ordenadoresGasto').subscribe( res => {
       if (Array.isArray(res)) {
         this.Ordenadores = res;
         this.ordenadoresFiltrados = this.ordenadorForm.get('ordenadorCtrl').valueChanges
@@ -312,7 +312,7 @@ export class ElaboracionPropiaComponent implements OnInit {
         supervisor: this.supervisorForm.value.supervisorCtrl.TerceroPrincipal.Id,
         vigencia_ordenador: this.ordenadorForm.value.vigenciaCtrl,
         ordenador_gasto_id:this.ordenadorForm.value.ordenadorCtrl.TerceroPrincipal.Id, 
-        solicitante_id: +this.supervisorId,
+        //solicitante_id: +this.supervisorId,
       };
       const movimientoAdquisicion = {
         Observacion: this.observacionForm.value.observacionCtrl,

@@ -74,7 +74,7 @@ export class TercerosHelper {
      * getTercerosByCriterio
      *
      * Trae todos o un tercero, de acuerdo al criterio especificado
-     * @param criterio El tipo de tercero que se necesita, ejemplo: "funcionarioPlanta" o "jefes"
+     * @param criterio El tipo de tercero que se necesita, ejemplo: "funcionarioPlanta" u "ordenadores del gasto"
      * @param idTercero De especificarse, adicionalmente filtra por ese ID
      */
     public getTercerosByCriterio(criterio: string, idTercero: number = 0) {

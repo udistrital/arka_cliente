@@ -193,7 +193,7 @@ muestraSupervisor(sup: TerceroCriterioPlanta): string {
 
 //-------------------------------------ORDENADORES---------------------------------------------------
 loadOrdenadores(): void {
-  this.tercerosHelper.getTercerosByCriterio('jefes').subscribe( res => {
+  this.tercerosHelper.getTercerosByCriterio('ordenadoresGasto').subscribe( res => {
     if (Array.isArray(res)) {
       this.Ordenadores = res;
       this.ordenadoresFiltrados = this.ordenadorForm.get('ordenadorCtrl').valueChanges
@@ -313,7 +313,6 @@ muestraOrdenador(ord: TerceroCriterioJefe): string {
         consecutivo: 'P8-5-2019', // REVISAR
         documento_contable_id: 1, // REVISAR
         supervisor: this.supervisorForm.value.supervisorCtrl.TerceroPrincipal.Id,
-        vigencia_ordenador: this.ordenadorForm.value.vigenciaCtrl,
         ordenador_gasto_id:this.ordenadorForm.value.ordenadorCtrl.TerceroPrincipal.Id, 
         // solicitante_id: +this.supervisorId,
       };
