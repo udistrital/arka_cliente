@@ -191,10 +191,10 @@
   </nb-card-body>
 </nb-card>
 <ng-template #erroresTemplate><nb-card><nb-card-body>
-  Desactivado por:
+  {{ 'GLOBAL.Acta_Recibido.Errores.Mensaje' | translate }}
   <ul>
-    <li *ngIf="errores.get('terceros')">Usuario no registrado en la base de datos de Terceros</li>
-    <li *ngIf="errores.get('formularios')">Hay que corregir alguno de los campos</li>
-    <li *ngIf="errores.get('clases')">Todos los elementos tienen que tener una clase</li>
+    <li *ngIf="errores.get('terceros')">{{ 'GLOBAL.Acta_Recibido.Errores.Terceros' | translate }}</li>
+    <li *ngIf="errores.get('formularios')">{{ 'GLOBAL.Acta_Recibido.Errores.Formularios' | translate }}</li>
+    <li *ngIf="errores.get('clases')">{{ 'GLOBAL.Acta_Recibido.Errores.Clases' | translate }}</li>
   </ul>
 </nb-card-body></nb-card></ng-template>
