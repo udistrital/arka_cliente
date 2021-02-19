@@ -137,10 +137,10 @@ export class CapturarElementosComponent implements OnInit {
       this.getIVA();
       this.getTotales();
       this.getClasesElementos();
-      this.ver();
     } else {
       this.dataSource = new MatTableDataSource();
     }
+    this.ver();
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
     for (let i = 0; i < this.dataSource.data.length; i++) {
@@ -224,6 +224,7 @@ export class CapturarElementosComponent implements OnInit {
       && this.dataSource.data.every(elem => (
           elem.hasOwnProperty('SubgrupoCatalogoId')
           && elem.SubgrupoCatalogoId
+          && !isNaN(elem.SubgrupoCatalogoId)
       ))
     );
   }

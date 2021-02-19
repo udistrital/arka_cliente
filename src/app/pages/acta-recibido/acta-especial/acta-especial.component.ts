@@ -58,7 +58,7 @@ export class ActaEspecialComponent implements OnInit {
   // Mensajes de error
   errMess: any;
   private sub: Subscription;
-  errores: Map<string,boolean>;
+  errores: Map<string, boolean>;
 
   // Decorador para renderizar los cambios en las tablas de elementos
   @ViewChildren(MatTable) _matTable: QueryList<MatTable<any>>;
@@ -226,6 +226,7 @@ export class ActaEspecialComponent implements OnInit {
       Formulario2: this.fb.array([this.Formulario_2]),
       Formulario3: this.Formulario_3,
     });
+    this.SoporteElementosValidos = new Array<boolean>(1);
   }
 
   Cargar_Formularios2(transaccion_: any, elementos_: any) {
@@ -529,7 +530,6 @@ export class ActaEspecialComponent implements OnInit {
       this.firstForm.get('Formulario1').valid
       && this.firstForm.get('Formulario2').valid // this.Elementos__Soporte
       && this.firstForm.get('Formulario3').valid
-      && this.elementosValidos
     );
 
     if (error) {
@@ -538,7 +538,7 @@ export class ActaEspecialComponent implements OnInit {
       this.errores.delete('formularios');
     }
 
-    return error;
+    return error || !this.elementosValidos;
   }
 
   Revisar_Totales2() {
