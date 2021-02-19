@@ -1035,9 +1035,10 @@ export class EdicionActaRecibidoComponent implements OnInit {
     );
   }
 
-  envioPermitido(): boolean {
-    return (['En Elaboracion', 'En Modificacion']
-    .some(est => this.estadoActa === est) ? this.elementosValidos : true);
+  desactivarEnvio(): boolean {
+    const estadosAntesDeRevision = ['En Elaboracion', 'En Modificacion'];
+    return !(estadosAntesDeRevision
+    .some(est => this.estadoActa === est) ? this.elementosValidos : true) || this.formNoValido();
   }
 
   formNoValido(): boolean {

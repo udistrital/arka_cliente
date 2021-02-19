@@ -260,9 +260,9 @@
 
             <div class="float-right">
               <button nbButton (click)="Revisar_Totales3(1)" *ngIf="accion.envHabilitado"
-              [disabled]="!envioPermitido() || formNoValido()">{{ accion.envTexto }}</button>
+              [disabled]="desactivarEnvio()">{{ accion.envTexto }}</button>
               <button nbButton (click)="Revisar_Totales3(2)" *ngIf="accion.envContratistaHabilitado"
-              [disabled]="!envioPermitido() || formNoValido()">{{ accion.envContratista }}</button>
+              [disabled]="desactivarEnvio()">{{ accion.envContratista }}</button>
             </div>
 
           </mat-step>
