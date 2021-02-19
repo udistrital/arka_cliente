@@ -162,25 +162,18 @@
 
         <!-- CAJA MENOR -->
         <div *ngIf="detalle && entradaEspecifica.TipoEntradaId.Nombre === 'Caja menor'" class="row">
-          <div class="col">
-            <p class="text-uppercase"><strong>Ordenador de Gasto:</strong>
-              capturar
-            </p>
+          <div *ngIf="Supervisor!=undefined" class="col">
+            <p class="text-uppercase"><strong>Supervisor:</strong> {{ Supervisor.TerceroPrincipal.NombreCompleto }}</p>
           </div>
-          <div class="col">
-            <p class="text-uppercase"><strong>Cargo:</strong>capturar</p>
+          <div *ngIf="Supervisor!=undefined" class="col">
+            <p class="text-uppercase"><strong>Dependencia:</strong> {{ Supervisor.Dependencia.Nombre}}</p>
           </div>
         </div>
-
         <div *ngIf="detalle && entradaEspecifica.TipoEntradaId.Nombre === 'Caja menor'" class="row">
-          <div class="col">
-            <p class="text-uppercase"><strong>Solicitante:</strong> capturar </p>
-          </div>
-          <div class="col">
-            <p class="text-uppercase"><strong>Cargo:</strong> capturar</p>
+          <div *ngIf="Ordenador!=undefined" class="col">
+            <p class="text-uppercase"><strong>Ordenador:</strong> {{ Ordenador.TerceroPrincipal.NombreCompleto }}</p>
           </div>
         </div>
-
         <!-- ADICIONES Y MEJORAS -->
         <div *ngIf="detalle && entradaEspecifica.TipoEntradaId.Nombre === 'Adiciones y mejoras'" class="row">
           <div class="col">
@@ -310,13 +303,16 @@
         </div>
         <!-- INTANGIBLES DESARROLLADOS -->
         <div *ngIf="detalle && entradaEspecifica.TipoEntradaId.Nombre === 'Desarrollo interior'" class="row">
-          <div class="col">
-            <p class="text-uppercase"><strong>Ordenador de Gasto:</strong>
-              capturar
-            </p>
+          <div *ngIf="Supervisor!=undefined" class="col">
+            <p class="text-uppercase"><strong>Supervisor:</strong> {{ Supervisor.TerceroPrincipal.NombreCompleto }}</p>
           </div>
-          <div class="col">
-            <p class="text-uppercase"><strong>Cargo:</strong>capturar</p>
+          <div *ngIf="Supervisor!=undefined" class="col">
+            <p class="text-uppercase"><strong>Dependencia:</strong> {{ Supervisor.Dependencia.Nombre}}</p>
+          </div>
+        </div>
+        <div *ngIf="detalle && entradaEspecifica.TipoEntradaId.Nombre === 'Desarrollo interior'" class="row">
+          <div *ngIf="Ordenador!=undefined" class="col">
+            <p class="text-uppercase"><strong>Ordenador:</strong> {{ Ordenador.TerceroPrincipal.NombreCompleto }}</p>
           </div>
         </div>
         
