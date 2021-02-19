@@ -59,6 +59,7 @@ export class CapturarElementosComponent implements OnInit {
   @Output() DatosTotales = new EventEmitter();
   @Output() ElementosValidos = new EventEmitter<boolean>();
 
+  private lists: IAppState;
   respuesta: any;
   Tipos_Bien: any;
   Unidades: any;
@@ -88,34 +89,18 @@ export class CapturarElementosComponent implements OnInit {
     private userService: UserService,
     private completerService: CompleterService,
   ) {
-  }
-
-  public loadLists() {
-    this.store.select((state) => state).subscribe(
-      (list) => {
-        this.Consumo = list.listConsumo[0];
-        this.ConsumoControlado = list.listConsumoControlado[0];
-        this.Devolutivo = list.listDevolutivo[0];
-        this.Tipos_Bien = list.listTipoBien[0];
-        this.Unidades = list.listUnidades[0];
-        this.Tarifas_Iva = list.listIVA[0];
-        if (Array.isArray(list.listClases[0])) {
-          const clases = list.listClases[0];
-          if (Array.isArray(clases) && clases.length) {
-            this.Clases = clases.map(v => {
-              v.mostrar = v.SubgrupoId.Codigo + ' - ' + v.SubgrupoId.Nombre;
-              return v;
-            });
-            this.dataService = this.completerService.local(this.Clases, 'mostrar', 'mostrar');
-          }
-          // console.log({clases});
-        }
-        // console.log({pollito:this.Tarifas_Iva})
-      },
-    );
+    this.Totales = new DatosLocales();
   }
 
   ngOnInit() {
+    this.loadLists();
+    this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
+    });
+    this.createForm();
+    this.ReglasColumnas();
+  }
+
+  public loadLists() {
     this.listService.findSubgruposConsumo();
     this.listService.findSubgruposConsumoControlado();
     this.listService.findSubgruposDevolutivo();
@@ -124,32 +109,67 @@ export class CapturarElementosComponent implements OnInit {
     this.listService.findUnidades();
     this.listService.findImpuestoIVA();
     this.listService.findClases();
-    this.loadLists();
-    this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
-    });
-    this.createForm();
-    this.Totales = new DatosLocales();
-    if (this.DatosRecibidos !== undefined) {
-      this.dataSource = new MatTableDataSource(this.DatosRecibidos);
-      this.respuesta = this.DatosRecibidos;
-      this.getDescuentos();
-      this.getSubtotales();
-      this.getIVA();
-      this.getTotales();
-      this.getClasesElementos();
-    } else {
-      this.dataSource = new MatTableDataSource();
-    }
-    this.ver();
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
-    for (let i = 0; i < this.dataSource.data.length; i++) {
-      if (this.dataSource.data[i].CodigoSubgrupo === undefined) {
-        this.dataSource.data[i].CodigoSubgrupo = '';
+
+    this.store.select((state) => state).subscribe(
+      (list) => {
+        this.lists = list;
+        this.muestraData();
+      },
+    );
+  }
+
+  private muestraData() {
+    let clases;
+    const todoCargado = (
+      this.cargando && this.lists
+      && Array.isArray(this.lists.listConsumo) && this.lists.listConsumo[0]
+      && Array.isArray(this.lists.listConsumoControlado) && this.lists.listConsumoControlado[0]
+      && Array.isArray(this.lists.listDevolutivo) && this.lists.listDevolutivo[0]
+      && Array.isArray(this.lists.listTipoBien) && this.lists.listTipoBien[0]
+      && Array.isArray(this.lists.listUnidades) && this.lists.listUnidades[0]
+      && Array.isArray(this.lists.listIVA) && this.lists.listIVA[0]
+      && Array.isArray(this.lists.listClases) && this.lists.listClases[0]
+      && (() => {
+        clases = this.lists.listClases[0];
+        return Array.isArray(clases) && clases.length
+      })()
+    );
+    if (todoCargado) {
+      this.Consumo = this.lists.listConsumo[0];
+      this.ConsumoControlado = this.lists.listConsumoControlado[0];
+      this.Devolutivo = this.lists.listDevolutivo[0];
+      this.Tipos_Bien = this.lists.listTipoBien[0];
+      this.Unidades = this.lists.listUnidades[0];
+      this.Tarifas_Iva = this.lists.listIVA[0];
+
+      this.Clases = clases.map(v => {
+        v.mostrar = v.SubgrupoId.Codigo + ' - ' + v.SubgrupoId.Nombre;
+        return v;
+      });
+      this.dataService = this.completerService.local(this.Clases, 'mostrar', 'mostrar');
+
+      if (this.DatosRecibidos !== undefined) {
+        this.dataSource = new MatTableDataSource(this.DatosRecibidos);
+        this.respuesta = this.DatosRecibidos;
+        this.getDescuentos();
+        this.getSubtotales();
+        this.getIVA();
+        this.getTotales();
+        this.getClasesElementos();
+      } else {
+        this.dataSource = new MatTableDataSource();
       }
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
+      for (let i = 0; i < this.dataSource.data.length; i++) {
+        if (this.dataSource.data[i].CodigoSubgrupo === undefined) {
+          this.dataSource.data[i].CodigoSubgrupo = '';
+        }
+      }
+
+      this.ver();
+      this.cargando = false;
     }
-    this.ReglasColumnas();
-    this.cargando = false;
   }
 
   ReglasColumnas() {
