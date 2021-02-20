@@ -131,7 +131,7 @@ export class CapturarElementosComponent implements OnInit {
       && Array.isArray(this.lists.listClases) && this.lists.listClases[0]
       && (() => {
         clases = this.lists.listClases[0];
-        return Array.isArray(clases) && clases.length
+        return Array.isArray(clases) && clases.length;
       })()
     );
     if (todoCargado) {

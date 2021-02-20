@@ -52,6 +52,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
   // Mensajes de error
   errMess: any;
   private sub: Subscription;
+  errores: Map<string, boolean>;
 
   // Decorador para renderizar los cambios en las tablas de elementos
   @ViewChildren(MatTable) _matTable: QueryList<MatTable<any>>;
@@ -112,6 +113,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
   private actaCargada: boolean = false;
   private SoporteElementosValidos: Array<boolean>;
   private elementosValidos: boolean = false;
+  private validarElementos: boolean;
 
   permisos: {
     Acta: Permiso,
@@ -150,6 +152,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
     private userService: UserService,
     private dateService: NbDateService<Date>,
   ) {
+    this.errores = new Map<string, boolean>();
     this.fileDocumento = [];
     this.Validador = [];
     this.uidDocumento = [];
@@ -172,8 +175,12 @@ export class EdicionActaRecibidoComponent implements OnInit {
     this.listService.findTipoBien();
     this.listService.findUnidades();
     this.listService.findImpuestoIVA();
+    this.defineSiHayQueValidarElementosParaEnviar();
     this.loadLists();
     this.cargaPermisos();
+    if (!this.userService.getPersonaId()) {
+      this.errores.set('terceros', true);
+    }
   }
 
   // Los permisos en cada sección dependen del estado del acta y del rol.
@@ -263,6 +270,23 @@ export class EdicionActaRecibidoComponent implements OnInit {
       this.accion.envTexto = this.translate.instant('GLOBAL.Acta_Recibido.EdicionActa.VerificacionButton');
       this.accion.envContratistaHabilitado = false;
     }
+  }
+
+  private defineSiHayQueValidarElementosParaEnviar() {
+    // Estados de Actas que requieren que los elementos
+    // tengan sus clases asignadas
+    const estadosAntesDeRevision = [
+      'En Elaboracion',
+      'En Modificacion',
+      'Aceptada',
+    ];
+    const validar = estadosAntesDeRevision
+      .some(est => this.estadoActa === est);
+    this.validarElementos = validar;
+    if (!validar) {
+      this.elementosValidos = true;
+    }
+    // console.log({elemValiudos: this.elementosValidos});
   }
 
   Cargar_localStorage(Acta: any) {
@@ -483,9 +507,26 @@ export class EdicionActaRecibidoComponent implements OnInit {
           Datos_Adicionales: [transaccion_.ActaRecibido.Observaciones, Validators.required],
         }),
       });
+      this.firstForm.get('Formulario1').statusChanges.subscribe(change => this.checkValidness(1, change));
+      this.firstForm.get('Formulario2').statusChanges.subscribe(change => this.checkValidness(2, change));
+      this.firstForm.get('Formulario3').statusChanges.subscribe(change => this.checkValidness(3, change));
       this.carga_agregada = true;
       this.Traer_Relacion_Ubicaciones();
     });
+  }
+
+  private checkValidness(form, change) {
+    // console.log({form, change});
+    const errorForms = !(
+      this.firstForm.get('Formulario1').valid
+      && this.firstForm.get('Formulario2').valid
+      && this.firstForm.get('Formulario3').valid
+    );
+    if (errorForms) {
+      this.errores.set('formularios', true);
+    } else {
+      this.errores.delete('formularios');
+    }
   }
 
   Cargar_Formularios2(transaccion_: any, elementos_: any) {
@@ -1016,7 +1057,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
   }
 
   setElementosValidos(soporte: number, valido: boolean): void {
-    if (['En Elaboracion', 'En Modificacion'].some(est => this.estadoActa === est)) {
+    if (this.validarElementos) {
       this.SoporteElementosValidos[soporte] = valido;
       this.validaSoportes();
     }
@@ -1033,21 +1074,11 @@ export class EdicionActaRecibidoComponent implements OnInit {
         && this.SoporteElementosValidos[idx]
       ))
     );
-  }
-
-  desactivarEnvio(): boolean {
-    const estadosAntesDeRevision = ['En Elaboracion', 'En Modificacion'];
-    return !(estadosAntesDeRevision
-    .some(est => this.estadoActa === est) ? this.elementosValidos : true) || this.formNoValido();
-  }
-
-  formNoValido(): boolean {
-    return !(
-      this.firstForm.get('Formulario1').valid
-      && this.firstForm.get('Formulario2').valid
-      && this.firstForm.get('Formulario3').valid
-      && this.userService.getPersonaId() // "Revisor valido" (realmente es "editor", no revisor!...)
-    );
+    if (this.elementosValidos) {
+      this.errores.delete('clases');
+    } else {
+      this.errores.set('clases', true);
+    }
   }
 
   // Enviar a revisor/proveedor?
