@@ -267,6 +267,23 @@ export class ActaEspecialComponent implements OnInit {
         });
       }
     }
+    this.firstForm.get('Formulario1').statusChanges.subscribe(change => this.checkValidness(1, change));
+    this.firstForm.get('Formulario2').statusChanges.subscribe(change => this.checkValidness(2, change));
+    this.firstForm.get('Formulario3').statusChanges.subscribe(change => this.checkValidness(3, change));
+  }
+
+  private checkValidness(form, change) {
+    // console.log({form, change});
+    const errorForms = !(
+      this.firstForm.get('Formulario1').valid
+      && this.firstForm.get('Formulario2').valid
+      && this.firstForm.get('Formulario3').valid
+    );
+    if (errorForms) {
+      this.errores.set('formularios', true);
+    } else {
+      this.errores.delete('formularios');
+    }
   }
 
   get Formulario_1(): FormGroup {
@@ -523,22 +540,6 @@ export class ActaEspecialComponent implements OnInit {
     } else {
       this.errores.set('clases', true);
     }
-  }
-
-  desactivarEnvio(): boolean {
-    const error = !(
-      this.firstForm.get('Formulario1').valid
-      && this.firstForm.get('Formulario2').valid // this.Elementos__Soporte
-      && this.firstForm.get('Formulario3').valid
-    );
-
-    if (error) {
-      this.errores.set('formularios', true);
-    } else {
-      this.errores.delete('formularios');
-    }
-
-    return error || !this.elementosValidos;
   }
 
   Revisar_Totales2() {
