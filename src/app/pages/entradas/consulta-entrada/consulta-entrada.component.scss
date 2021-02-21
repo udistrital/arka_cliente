@@ -12,7 +12,7 @@
 }
 
 :host /deep/ td.ng2-smart-actions.ng-star-inserted {
-    height: 0px;
+    height: 0;
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     vertical-align: middle;
