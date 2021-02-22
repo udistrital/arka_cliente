@@ -44,6 +44,12 @@
       "id_forma1": "Acta de Recibido #{{ID}}",
       "id_forma2": "Acta N° {{ID}}",
       "ContratistaAsignado": "Contratista Asignado",
+      "Errores": {
+        "Mensaje": "Corrija primero los siguientes problemas:",
+        "Terceros": "Su usuario no está registrado en la Base de Datos de Terceros",
+        "Formularios": "Hay campos incorrectos y/o pendientes por llenar",
+        "Clases": "Debe existir al menos un elemento, y cada uno con su clase asignada"
+      },
       "CapturarElementos":{
         "CargaMasivaTitle":"Carga Masiva",
         "ValidadorPlaceholder":"El archivo debe tener extensión {{EXT}} (*.{{EXT}})",

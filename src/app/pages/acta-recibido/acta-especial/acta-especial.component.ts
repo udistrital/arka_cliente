@@ -58,6 +58,7 @@ export class ActaEspecialComponent implements OnInit {
   // Mensajes de error
   errMess: any;
   private sub: Subscription;
+  errores: Map<string, boolean>;
 
   // Decorador para renderizar los cambios en las tablas de elementos
   @ViewChildren(MatTable) _matTable: QueryList<MatTable<any>>;
@@ -132,6 +133,7 @@ export class ActaEspecialComponent implements OnInit {
     this.uidDocumento = [];
     this.idDocumento = [];
     this.Elementos__Soporte = new Array<any>();
+    this.errores = new Map<string, boolean>();
   }
 
   ngOnInit() {
@@ -191,6 +193,9 @@ export class ActaEspecialComponent implements OnInit {
         }
       });
     }
+    if (!this.userService.getPersonaId()) {
+      this.errores.set('terceros', true);
+    }
   }
 
   public loadLists() {
@@ -221,6 +226,7 @@ export class ActaEspecialComponent implements OnInit {
       Formulario2: this.fb.array([this.Formulario_2]),
       Formulario3: this.Formulario_3,
     });
+    this.SoporteElementosValidos = new Array<boolean>(1);
   }
 
   Cargar_Formularios2(transaccion_: any, elementos_: any) {
@@ -260,6 +266,23 @@ export class ActaEspecialComponent implements OnInit {
           }
         });
       }
+    }
+    this.firstForm.get('Formulario1').statusChanges.subscribe(change => this.checkValidness(1, change));
+    this.firstForm.get('Formulario2').statusChanges.subscribe(change => this.checkValidness(2, change));
+    this.firstForm.get('Formulario3').statusChanges.subscribe(change => this.checkValidness(3, change));
+  }
+
+  private checkValidness(form, change) {
+    // console.log({form, change});
+    const errorForms = !(
+      this.firstForm.get('Formulario1').valid
+      && this.firstForm.get('Formulario2').valid
+      && this.firstForm.get('Formulario3').valid
+    );
+    if (errorForms) {
+      this.errores.set('formularios', true);
+    } else {
+      this.errores.delete('formularios');
     }
   }
 
@@ -512,15 +535,11 @@ export class ActaEspecialComponent implements OnInit {
         && this.SoporteElementosValidos[idx]
       ))
     );
-  }
-
-  desactivarEnvio(): boolean {
-    return !(
-      this.firstForm.get('Formulario1').valid
-      && this.firstForm.get('Formulario2').valid // this.Elementos__Soporte
-      && this.firstForm.get('Formulario3').valid
-      && this.elementosValidos
-    );
+    if (this.elementosValidos) {
+      this.errores.delete('clases');
+    } else {
+      this.errores.set('clases', true);
+    }
   }
 
   Revisar_Totales2() {

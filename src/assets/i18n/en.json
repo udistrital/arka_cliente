@@ -44,6 +44,12 @@
       "id_forma1": "Receipt Certificate #{{ID}}",
       "id_forma2": "Certificate N° {{ID}}",
       "ContratistaAsignado": "Assigned Contractor",
+      "Errores": {
+        "Mensaje": "You must first fix the following issues:",
+        "Terceros": "Your user is not currently recorded in the Third-Party Database",
+        "Formularios": "There are missing/wrong fields",
+        "Clases": "There must be at least a single item, and each item with its related class"
+      },
       "CapturarElementos": {
         "CargaMasivaTitle": "Bulk Load",
         "ValidadorPlaceholder": "The file shall have {{EXT}} extension (*.{{EXT}})",
