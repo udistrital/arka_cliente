@@ -214,9 +214,9 @@ changeSolicitante(event) {
       this.entradasHelper.postEntrada(movimientoAdquisicion).subscribe((res: any) => {
         if (res !== null) {
           const elstring = JSON.stringify(res.Detalle);
-          const posini = elstring.indexOf("consecutivo") + 16;
+          const posini = elstring.indexOf('consecutivo') + 16;
           if (posini !== -1) {
-              const posfin = elstring.indexOf("\"", posini);
+              const posfin = elstring.indexOf('\"', posini);
               const elresultado = elstring.substr(posini, posfin - posini - 1);
               detalle.consecutivo = detalle.consecutivo + elresultado;
           }

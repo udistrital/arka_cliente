@@ -285,7 +285,7 @@ export class IntangiblesAdquiridosComponent implements OnInit {
       this.entradasHelper.postEntrada(movimientoAdquisicion).subscribe((res: any) => {
         if (res !== null) {
           const elstring = JSON.stringify(res.Detalle);
-          const posini = elstring.indexOf("consecutivo") + 16;
+          const posini = elstring.indexOf('consecutivo') + 16;
           if (posini !== -1) {
               const posfin = elstring.indexOf('\"', posini);
               const elresultado = elstring.substr(posini, posfin - posini - 1);
@@ -305,7 +305,5 @@ export class IntangiblesAdquiridosComponent implements OnInit {
     } else {
       this.pUpManager.showErrorAlert('No ha llenado todos los campos! No es posible hacer el registro.');
     }
-
   }
-
 }

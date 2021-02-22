@@ -748,7 +748,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
     this.salidasHelper.getElemento(datos).subscribe((res: any) => {
         if (res.Placa === '') {
            this.salidasHelper.putElemento(res).subscribe((res1: any) => {
-              return res1.placa; 
+              return res1.placa;
            });
         }
     });
