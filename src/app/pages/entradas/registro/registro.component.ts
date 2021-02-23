@@ -127,12 +127,14 @@ export class RegistroComponent implements OnInit {
             return value.Nombre.toUpperCase();
           },
         },
+        /*
         EstadoActaId: {
           title: this.translate.instant('GLOBAL.estado'),
           valuePrepareFunction: (value: any) => {
             return value.CodigoAbreviacion.toUpperCase();
           },
         },
+        // */
         Observaciones: {
           title: this.translate.instant('GLOBAL.observaciones'),
           valuePrepareFunction: (value: any) => {
