@@ -58,6 +58,7 @@ export class ActaEspecialComponent implements OnInit {
   // Mensajes de error
   errMess: any;
   private sub: Subscription;
+  errores: Map<string, boolean>;
 
   // Decorador para renderizar los cambios en las tablas de elementos
   @ViewChildren(MatTable) _matTable: QueryList<MatTable<any>>;
@@ -99,13 +100,16 @@ export class ActaEspecialComponent implements OnInit {
   Registrando: Boolean;
   Unidades: any;
 
+  private SoporteElementosValidos: Array<boolean>;
+  private elementosValidos: boolean = false;
+
   permisos: {
     Acta: Permiso,
     Elementos: Permiso,
   } = {
-      Acta: Permiso.Ninguno,
-      Elementos: Permiso.Ninguno,
-    };
+    Acta: Permiso.Ninguno,
+    Elementos: Permiso.Ninguno,
+  };
 
   constructor(
     private translate: TranslateService,
@@ -129,6 +133,7 @@ export class ActaEspecialComponent implements OnInit {
     this.uidDocumento = [];
     this.idDocumento = [];
     this.Elementos__Soporte = new Array<any>();
+    this.errores = new Map<string, boolean>();
   }
 
   ngOnInit() {
@@ -188,6 +193,9 @@ export class ActaEspecialComponent implements OnInit {
         }
       });
     }
+    if (!this.userService.getPersonaId()) {
+      this.errores.set('terceros', true);
+    }
   }
 
   public loadLists() {
@@ -218,6 +226,7 @@ export class ActaEspecialComponent implements OnInit {
       Formulario2: this.fb.array([this.Formulario_2]),
       Formulario3: this.Formulario_3,
     });
+    this.SoporteElementosValidos = new Array<boolean>(1);
   }
 
   Cargar_Formularios2(transaccion_: any, elementos_: any) {
@@ -229,6 +238,7 @@ export class ActaEspecialComponent implements OnInit {
       Form2.push(Formulario__2);
     }
     this.Elementos__Soporte = elementos_;
+    this.SoporteElementosValidos = new Array<boolean>(elementos_.length);
 
     this.firstForm = this.fb.group({
       Formulario1: this.fb.group({
@@ -256,6 +266,23 @@ export class ActaEspecialComponent implements OnInit {
           }
         });
       }
+    }
+    this.firstForm.get('Formulario1').statusChanges.subscribe(change => this.checkValidness(1, change));
+    this.firstForm.get('Formulario2').statusChanges.subscribe(change => this.checkValidness(2, change));
+    this.firstForm.get('Formulario3').statusChanges.subscribe(change => this.checkValidness(3, change));
+  }
+
+  private checkValidness(form, change) {
+    // console.log({form, change});
+    const errorForms = !(
+      this.firstForm.get('Formulario1').valid
+      && this.firstForm.get('Formulario2').valid
+      && this.firstForm.get('Formulario3').valid
+    );
+    if (errorForms) {
+      this.errores.set('formularios', true);
+    } else {
+      this.errores.delete('formularios');
     }
   }
 
@@ -489,6 +516,29 @@ export class ActaEspecialComponent implements OnInit {
       return this.Totales.map(t => t.ValorTotal).reduce((acc, value) => parseFloat(acc) + parseFloat(value));
     } else {
       return '0';
+    }
+  }
+
+  setElementosValidos(soporte: number, valido: boolean): void {
+    this.SoporteElementosValidos[soporte] = valido;
+    this.validaSoportes();
+  }
+
+  // TODO: De ser necesario, agregar más validaciones asociadas a cada soporte
+  private validaSoportes(): void {
+    this.elementosValidos = (
+      Array.isArray(this.Elementos__Soporte)
+      && this.Elementos__Soporte.length // Al menos un soporte
+      && this.Elementos__Soporte.every((sop, idx) => (
+        Array.isArray(sop)
+        && sop.length // Al menos un elemento
+        && this.SoporteElementosValidos[idx]
+      ))
+    );
+    if (this.elementosValidos) {
+      this.errores.delete('clases');
+    } else {
+      this.errores.set('clases', true);
     }
   }
 

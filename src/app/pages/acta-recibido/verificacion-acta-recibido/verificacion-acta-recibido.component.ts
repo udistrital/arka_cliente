@@ -84,6 +84,8 @@ export class VerificacionActaRecibidoComponent implements OnInit {
   bandera2: boolean;
   respuesta: any;
 
+  private actaCargada: boolean = false;
+
   constructor(
     private translate: TranslateService,
     private router: Router,
@@ -138,15 +140,21 @@ export class VerificacionActaRecibidoComponent implements OnInit {
           this.Dependencias !== undefined && this.Sedes !== undefined &&
           this._ActaId !== undefined && this.respuesta === undefined) {
           // console.log(this._ActaId);
+          this.cargarActa();
+        }
+      },
+    );
+  }
+
+  private cargarActa() {
+    if (!this.actaCargada) {
           this.Actas_Recibido.getTransaccionActa(this._ActaId).subscribe(Acta => {
             // console.log(Acta);
             this.respuesta = true;
             this.Cargar_Formularios(Acta[0]);
             // console.log('ok');
           });
-        }
-      },
-    );
+    }
   }
 
   T_V(valor: string): string {
@@ -197,12 +205,28 @@ export class VerificacionActaRecibidoComponent implements OnInit {
           Elementos: this.fb.array([]),
         });
         this.Verificar_tabla.push(false);
+
+        if (Array.isArray(Soporte.Elementos))
         for (const _Elemento of Soporte.Elementos) {
 
           const Elemento___ = this.fb.group({
             Id: [_Elemento.Id],
             TipoBienId: [
-              this.Tipos_Bien.find(bien => bien.Id.toString() === _Elemento.TipoBienId.Id.toString()).Nombre,
+              (() => {
+                const criterio = bien => {
+                  if (bien.hasOwnProperty('Id')
+                  && _Elemento.hasOwnProperty('TipoBienId') && _Elemento.TipoBienId
+                  && _Elemento.TipoBienId.hasOwnProperty('Id') && _Elemento.TipoBienId.Id) {
+                    return bien.Id.toString() === _Elemento.TipoBienId.Id.toString();
+                  } else {
+                    return false;
+                  }
+                };
+                if (Array.isArray(this.Tipos_Bien) && this.Tipos_Bien.some(criterio)) {
+                  return this.Tipos_Bien.find(criterio).Nombre;
+                }
+                return undefined;
+              })(),
             ],
             SubgrupoCatalogoId: [_Elemento.SubgrupoCatalogoId],
             Nombre: [_Elemento.Nombre],
@@ -575,38 +599,45 @@ export class VerificacionActaRecibidoComponent implements OnInit {
       }
     });
   }
-  getGranSubtotal() {
 
-    if (this.Acta !== undefined) {
+  private hayElementos(): boolean {
+    return (this.Acta
+    && this.Acta.hasOwnProperty('SoportesActa')
+    && Array.isArray(this.Acta.SoportesActa)
+    && this.Acta.SoportesActa.some(sop => Array.isArray(sop.Elementos))
+    );
+  }
+
+  getGranSubtotal() {
+    if (this.hayElementos()) {
       return this.Acta.SoportesActa.map(t => t.Elementos.map(w => w.ValorTotal).reduce((acc, value) => acc + value)).toString();
     } else {
       return '0';
     }
   }
-  getGranDescuentos() {
 
-    if (this.Acta !== undefined) {
+  getGranDescuentos() {
+    if (this.hayElementos()) {
       return this.Acta.SoportesActa.map(t => t.Elementos.map(w => w.Descuento).reduce((acc, value) => acc + value)).toString();
     } else {
       return '0';
     }
   }
-  getGranValorIva() {
 
-    if (this.Acta !== undefined) {
+  getGranValorIva() {
+    if (this.hayElementos()) {
       return this.Acta.SoportesActa.map(t => t.Elementos.map(w => w.ValorIva).reduce((acc, value) => acc + value)).toString();
     } else {
       return '0';
     }
   }
-  getGranTotal() {
 
-    if (this.Acta !== undefined) {
+  getGranTotal() {
+    if (this.hayElementos()) {
       return this.Acta.SoportesActa.map(t => t.Elementos.map(w => w.ValorFinal).reduce((acc, value) => acc + value)).toString();
     } else {
       return '0';
     }
   }
-  volver() {
-  }
+
 }

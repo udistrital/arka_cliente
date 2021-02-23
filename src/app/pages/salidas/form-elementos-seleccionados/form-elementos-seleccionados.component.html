@@ -39,7 +39,7 @@
       <div class="row">
         <div class="form-group col-sm">
           <label class="label">{{'GLOBAL.Acta_Recibido.RegistroActa.Sede' | translate}}</label>
-          <mat-select class="form-control" type="text" formControlName="Sede" (click)="Traer_Relacion_Ubicaciones();"
+          <mat-select style="margin-right: 10%;" class="form-control" type="text" formControlName="Sede" (click)="Traer_Relacion_Ubicaciones();"
             required>
             <mat-option *ngFor="let sede of Sedes" [(value)]="sede.Id">{{sede.Nombre}}</mat-option>
           </mat-select>

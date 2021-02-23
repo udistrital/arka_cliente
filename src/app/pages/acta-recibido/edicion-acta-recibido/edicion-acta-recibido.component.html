@@ -1,5 +1,5 @@
 <nb-card>
-  <nb-card-header><h2>{{'GLOBAL.Acta_Recibido.EdicionActa.Title' | translate}}</h2></nb-card-header>
+  <nb-card-header><h2>{{'GLOBAL.Acta_Recibido.EdicionActa.TitleId' | translate: {ID: _Acta_Id} }}</h2></nb-card-header>
   <nb-card-body [nbSpinner]="!firstForm || guardando">
     <form *ngIf="firstForm" [formGroup]="firstForm" #fform="ngForm" class="step-container">
       <mat-vertical-stepper [linear]="true" #stepper>
@@ -47,10 +47,8 @@
                     <p class="campo" *ngIf="firstForm.get('Formulario1').get('Ubicacion').invalid">
                       {{'GLOBAL.placeholder' | translate}}</p>
                   </div>
-
-
                   <div class="form-group col-sm">
-                    <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Revisor' | translate}}</label>
+                    <label>{{'GLOBAL.Acta_Recibido.ContratistaAsignado' | translate}}</label>
                     <ng2-completer style="border: 0rem" inputClass="form-control" (keyup)="usarLocalStorage()"
                       placeholder="{{'GLOBAL.Acta_Recibido.EdicionActa.SeleccioneFiltro' | translate}}"
                       [clearUnselected]="true" nbInput [datasource]="dataService2" formControlName="Revisor"
@@ -59,7 +57,6 @@
                     <p class="campo" *ngIf="firstForm.get('Formulario1').get('Revisor').invalid">
                       {{'GLOBAL.placeholder' | translate}}</p>
                   </div>
-
                 </div>
               </nb-card-body>
               <nb-card-footer>
@@ -185,7 +182,7 @@
                       <ngx-capturar-elementos
                         *ngIf="getPermisoEditar(permisos.Elementos)"
                         [DatosRecibidos]="Elementos__Soporte[i]" (DatosTotales)="ver2($event,i)"
-                        (DatosEnviados)="ver($event, i)">
+                        (DatosEnviados)="ver($event, i)" (ElementosValidos)="setElementosValidos(i,$event)">
                       </ngx-capturar-elementos>
 
                     </div>
@@ -217,19 +214,19 @@
               <nb-card-body>
                 <table class="consolidado">
                   <tr>
-                    <td class="cell-3">{{'GLOBAL.Acta_Recibido.EdicionActa.Subtotal' | translate}}</td>
+                    <th class="cell-3">{{'GLOBAL.Acta_Recibido.EdicionActa.Subtotal' | translate}}</th>
                     <td class="cell-3">{{getGranSubtotal() | currency}}</td>
                   </tr>
                   <tr>
-                    <td class="cell-3">{{'GLOBAL.Acta_Recibido.EdicionActa.Descuento' | translate}}</td>
+                    <th class="cell-3">{{'GLOBAL.Acta_Recibido.EdicionActa.Descuento' | translate}}</th>
                     <td class="cell-3">{{getGranDescuentos() | currency}}</td>
                   </tr>
                   <tr>
-                    <td class="cell-3">{{'GLOBAL.Acta_Recibido.EdicionActa.ValorIva' | translate}}</td>
+                    <th class="cell-3">{{'GLOBAL.Acta_Recibido.EdicionActa.ValorIva' | translate}}</th>
                     <td class="cell-3">{{getGranValorIva() | currency}}</td>
                   </tr>
                   <tr>
-                    <td class="cell-3">{{'GLOBAL.Acta_Recibido.EdicionActa.Total' | translate}}</td>
+                    <th class="cell-3">{{'GLOBAL.Acta_Recibido.EdicionActa.Total' | translate}}</th>
                     <td class="cell-3">{{getGranTotal() | currency}}</td>
                   </tr>
                 </table>
@@ -261,14 +258,15 @@
               </nb-card-footer>
             </nb-card>
 
-
-            <div class="justify-content-center">
-              <button nbButton (click)="Revisar_Totales3(1)" *ngIf="accion.envHabilitado" [disabled]="formNoValido()"
-                class="float-right">{{ accion.envTexto }}</button>
-            </div>
-            <div class="justify-content-center">
-              <button nbButton (click)="Revisar_Totales3(2)" *ngIf="accion.envRevisorHabilitado" [disabled]="formNoValido()"
-                class="float-right">{{ accion.envRevisor }}</button>
+            <div class="float-right">
+              <button mat-icon-button type="button"
+              *ngIf="errores.size > 0" [nbPopover]="erroresTemplate" nbPopoverTrigger="hover">
+                <span class="fas fa-exclamation-triangle fa-2x"></span>
+              </button>
+              <button nbButton (click)="Revisar_Totales3(1)" *ngIf="accion.envHabilitado"
+              [disabled]="this.errores.size > 0">{{ accion.envTexto }}</button>
+              <button nbButton (click)="Revisar_Totales3(2)" *ngIf="accion.envContratistaHabilitado"
+              [disabled]="this.errores.size > 0">{{ accion.envContratista }}</button>
             </div>
 
           </mat-step>
@@ -277,3 +275,12 @@
       </form>
     </nb-card-body>
   </nb-card>
+
+<ng-template #erroresTemplate><nb-card><nb-card-body>
+  {{ 'GLOBAL.Acta_Recibido.Errores.Mensaje' | translate }}
+  <ul>
+    <li *ngIf="errores.get('terceros')">{{ 'GLOBAL.Acta_Recibido.Errores.Terceros' | translate }}</li>
+    <li *ngIf="errores.get('formularios')">{{ 'GLOBAL.Acta_Recibido.Errores.Formularios' | translate }}</li>
+    <li *ngIf="errores.get('clases')">{{ 'GLOBAL.Acta_Recibido.Errores.Clases' | translate }}</li>
+  </ul>
+</nb-card-body></nb-card></ng-template>

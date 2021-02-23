@@ -1,4 +1,4 @@
-// @import url("https://pruebasassets.portaloas.udistrital.edu.co/gaia-style.css");
+// // @import url("https://pruebasassets.portaloas.udistrital.edu.co/gaia-style.css");
 
 .bla {
     position: relative;
@@ -13,7 +13,7 @@
 
 :host /deep/ mat-select {
     width: 90%;
-  }
+}
 
 .label {
     display: flex;
@@ -25,10 +25,6 @@
     overflow-x: hidden;
   }
 
-  :host /deep/ ng2-completer[formcontrolname="Dependencia"] .completer-dropdown-holder {
-    position: fixed;
-  }
-
-  :host /deep/ ng2-completer[formcontrolname="Dependencia"] {
-    width: 90%;
+ .mat-select {
+   width: 90%;
   }

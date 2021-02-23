@@ -54,12 +54,12 @@ export class CajaMenorComponent implements OnInit {
 
   tipoEntrada: any;
   formatoTipoMovimiento: any;
-
   cargando_proveedores: boolean = true;
   cargando_supervisores: boolean = true;
   cargando_ordenadores: boolean = true;
 
-  @Input() actaRecibidoId: string;
+  @Input() actaRecibidoId: Number;
+  @Input() movimientoId: Number;
 
   constructor(
     private router: Router,
@@ -310,6 +310,7 @@ muestraOrdenador(ord: TerceroCriterioJefe): string {
         EstadoMovimientoId: {
           Id: 2, // REVISAR
         },
+        Id: this.movimientoId ? this.movimientoId : 0,
         SoporteMovimientoId: this.idDocumento,
         IdTipoMovimiento: this.tipoEntrada.Id,
       };
