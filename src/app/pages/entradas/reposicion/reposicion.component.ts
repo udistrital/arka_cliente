@@ -60,10 +60,6 @@ export class ReposicionComponent implements OnInit {
         Validators.pattern('^[0-9]{13,13}$')] ],
       encargadoCtrl: [''],
     });
-
-    this.soporteForm = this.fb.group({
-      soporteCtrl: ['', Validators.required],
-    });
     this.observacionForm = this.fb.group({
       observacionCtrl: ['', Validators.nullValidator],
     });
@@ -80,10 +76,6 @@ export class ReposicionComponent implements OnInit {
   // Métodos para validar campos requeridos en el formulario
   onElementoSubmit() {
     this.elementoForm.markAsDirty();
-  }
-
-  onSoporteSubmit() {
-    this.soporteForm.markAsDirty();
   }
 
   // MÉTODO PARA BUSCAR PLACAS EXISTENTES
@@ -124,25 +116,6 @@ export class ReposicionComponent implements OnInit {
           this.encargado = '';
         }
       });
-  }
-  // MÉTODOS PARA CARGAR SOPORTES
-  getSoporte(event) {
-    if (event.target.files.length > 0) {
-      const file = event.target.files[0];
-      const [_, extension] = event.target.files[0].name;
-      if (file.type === 'application/pdf' ) {
-        this.validar = true;
-        file.urlTemp = URL.createObjectURL(event.srcElement.files[0]);
-        file.url = this.cleanURL(file.urlTemp);
-        file.IdDocumento = 12; // tipo de documento (API documentos_crud)
-        file.file = event.target.files[0];
-        this.fileDocumento = file;
-      } else {
-        this.fileInput.nativeElement.value = null;
-        this.validar = true;
-        this.pUpManager.showToast('error', this.translate.instant('GLOBAL.error'), this.translate.instant('ERROR.formato_documento_pdf'));
-      }
-    }
   }
 
   cleanURL(oldURL: string): SafeResourceUrl {

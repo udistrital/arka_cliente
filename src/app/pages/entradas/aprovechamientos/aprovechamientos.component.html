@@ -1,26 +1,25 @@
 <!-- FORMULARIO -->
 <nb-stepper #stepper orientation="horizontal">
-
-  <!-- VIGENCIA -->
-  <nb-step [stepControl]="contratoForm" label="{{'GLOBAL.vigencia' | translate}}">
-    <form [formGroup]="contratoForm" class="step-container">
-      <div class="row">
-        <div class="form-group col-sm">
-          <label>{{'GLOBAL.vigencia' | translate}}</label>
-          <select class="form-control" [disabled]="!tipoContratoSelect"
-            formControlName="vigenciaCtrl">
-            <option disabled selected>{{'GLOBAL.seleccionar' | translate}}...</option>
-            <option value="{{ vigencia }}">{{ vigencia }}</option>
-            <option value="{{ vigencia-1 }}">{{ vigencia-1 }}</option>
-          </select>
+    <!-- VIGENCIA//CUMPLIMIENTO -->
+    <nb-step [stepControl]="fechaForm" label="{{'GLOBAL.solicitante' | translate}}">
+      <h5>{{'GLOBAL.solicitante' | translate}}</h5>
+      <form [formGroup]="fechaForm" class="step-container">
+        <div class="row">
+          <div class="form-group col-sm">
+            <label>{{'GLOBAL.vigencia' | translate}}</label>
+            <div class="input-group">
+              <input nbInput shape="semi-round" placeholder="{{'GLOBAL.placeholder_fecha' | translate}}"
+                formControlName="fechaCtrl" class="form-control" [nbDatepicker]="formpicker" required>
+              <nb-datepicker  #formpicker></nb-datepicker>
+            </div>
+          </div>
         </div>
-      </div>
-      <div class="row float-right">
-        <button type="button" nbButton nbStepperNext>
-          {{'GLOBAL.siguiente' | translate}}</button>
-      </div>
-    </form>
-  </nb-step>
+        <div class="row float-right">
+          <button type="button"  nbButton nbStepperNext>
+            {{'GLOBAL.siguiente' | translate}}</button>
+        </div>
+      </form>
+    </nb-step>
 
   <!-- SUPERVISOR -->
   <nb-step [stepControl]="supervisorForm" label="{{'GLOBAL.supervisor' | translate}}">

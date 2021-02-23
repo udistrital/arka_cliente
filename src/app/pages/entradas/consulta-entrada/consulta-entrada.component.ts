@@ -38,6 +38,7 @@ export class ConsultaEntradaComponent implements OnInit {
   edit: boolean;
   entradaEdit: any;
   Supervisor: any;
+  Ordenador: any;
   Proveedores: any;
   Proveedor: any;
   constructor(private router: Router, private entradasHelper: EntradaHelper, private translate: TranslateService,
@@ -322,7 +323,7 @@ export class ConsultaEntradaComponent implements OnInit {
     this.entradaEspecifica.Solicitante = detalle.solicitante_id; // SOLICITANTE
     this.entradaEspecifica.TipoEntradaId.Nombre = info.TipoMovimiento.TipoMovimientoId.Nombre; // TIPO ENTRADA
     this.entradaEspecifica.Observacion = info.Movimiento.Observacion; // OBSERVACIÓN
-    this.documentoId = true; // SOPORTE
+    this.documentoId = false; // SOPORTE
     this.mostrar = true;
   }
 
@@ -345,10 +346,9 @@ export class ConsultaEntradaComponent implements OnInit {
     this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id; // ACTA RECIBIDO
     this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
     this.entradaEspecifica.Vigencia = detalle.vigencia_ordenador; // VIGENCIA ORDENADOR
-    this.entradaEspecifica.OrdenadorId = detalle.ordenador_gasto_id; // ORDENADOR DE GASTO
     this.entradaEspecifica.TipoEntradaId.Nombre = info.TipoMovimiento.TipoMovimientoId.Nombre; // TIPO ENTRADA
     this.entradaEspecifica.Observacion = info.Movimiento.Observacion; // OBSERVACIÓN
-    this.documentoId = true;
+    this.documentoId = false;
     this.mostrar = true;
   }
 
@@ -366,14 +366,15 @@ export class ConsultaEntradaComponent implements OnInit {
 
   loadDetalleCajaMenor(info) {
     const detalle = JSON.parse(info.Movimiento.Detalle);
+    this.loadSupervisorById(detalle.supervisor);
+    this.loadOrdenadorById(detalle.ordenador_gasto_id);
     this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id; // ACTA RECIBIDO
     this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
-    this.entradaEspecifica.Vigencia = detalle.vigencia_ordenador; // VIGENCIA ORDENADOR
-    this.entradaEspecifica.OrdenadorId = detalle.ordenador_gasto_id; // ORDENADOR DE GASTO
+    this.entradaEspecifica.Vigencia = detalle.vigencia; // VIGENCIA ORDENADOR
     this.entradaEspecifica.Solicitante = detalle.solicitante_id; // SOLICITANTE
     this.entradaEspecifica.TipoEntradaId.Nombre = info.TipoMovimiento.TipoMovimientoId.Nombre; // TIPO ENTRADA
     this.entradaEspecifica.Observacion = info.Movimiento.Observacion; // OBSERVACIÓN
-    this.documentoId = true; // SOPORTE
+    this.documentoId = false; // SOPORTE
     this.mostrar = true;
   }
 
@@ -427,17 +428,6 @@ export class ConsultaEntradaComponent implements OnInit {
     this.loadContrato(); // CONTRATO
     // this.mostrar=true;
   }
-  loadIntangiblesDesarrollados(info) {
-    const detalle = JSON.parse(info.Movimiento.Detalle);
-    this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id; // ACTA RECIBIDO
-    this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
-    this.entradaEspecifica.Vigencia = detalle.vigencia_ordenador; // VIGENCIA ORDENADOR
-    this.entradaEspecifica.OrdenadorId = detalle.ordenador_gasto_id; // ORDENADOR DE GASTO
-    this.entradaEspecifica.TipoEntradaId.Nombre = info.TipoMovimiento.TipoMovimientoId.Nombre; // TIPO ENTRADA
-    this.entradaEspecifica.Observacion = info.Movimiento.Observacion; // OBSERVACIÓN
-    this.documentoId = true;
-    this.mostrar = true;
-  }
   loadAprovechamientos(info) {
     const detalle = JSON.parse(info.Movimiento.Detalle);
     this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id; // ACTA RECIBIDO
@@ -446,18 +436,20 @@ export class ConsultaEntradaComponent implements OnInit {
     this.entradaEspecifica.OrdenadorId = detalle.ordenador_gasto_id; // ORDENADOR DE GASTO
     this.entradaEspecifica.TipoEntradaId.Nombre = info.TipoMovimiento.TipoMovimientoId.Nombre; // TIPO ENTRADA
     this.entradaEspecifica.Observacion = info.Movimiento.Observacion; // OBSERVACIÓN
-    this.documentoId = true;
+    this.documentoId = false;
     this.mostrar = true;
   }
   loadDetalleIntangiblesDesarrollados(info) {
     const detalle = JSON.parse(info.Movimiento.Detalle);
+    this.loadSupervisorById(detalle.supervisor);
+    this.loadOrdenadorById(detalle.ordenador_gasto_id);
     this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id; // ACTA RECIBIDO
     this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
     this.entradaEspecifica.Vigencia = detalle.vigencia_ordenador; // VIGENCIA ORDENADOR
     this.entradaEspecifica.OrdenadorId = detalle.ordenador_gasto_id; // ORDENADOR DE GASTO
     this.entradaEspecifica.TipoEntradaId.Nombre = info.TipoMovimiento.TipoMovimientoId.Nombre; // TIPO ENTRADA
     this.entradaEspecifica.Observacion = info.Movimiento.Observacion; // OBSERVACIÓN
-    this.documentoId = true;
+    this.documentoId = false;
     this.mostrar = true;
   }
   loadDetalleAprovechamientos(info) {
@@ -467,7 +459,7 @@ export class ConsultaEntradaComponent implements OnInit {
     this.loadProveedor(detalle.proveedor);
     this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id; // ACTA RECIBIDO
     this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
-    this.entradaEspecifica.Vigencia = detalle.vigencia_contrato; // VIGENCIA CONTRATO
+    this.entradaEspecifica.Vigencia = detalle.vigencia; // VIGENCIA CONTRATO
     this.entradaEspecifica.TipoEntradaId.Nombre = info.TipoMovimiento.TipoMovimientoId.Nombre; // TIPO ENTRADA
     this.entradaEspecifica.Observacion = info.Movimiento.Observacion; // OBSERVACIÓN
     this.documentoId = false;
@@ -502,6 +494,15 @@ export class ConsultaEntradaComponent implements OnInit {
       if (Array.isArray(res)) {
         this.Supervisor = res[0];
         // console.log(this.Supervisor)
+      }
+    });
+    this.mostrar = true;
+  }
+  loadOrdenadorById(id: number): void {
+    this.tercerosHelper.getTercerosByCriterio('ordenadoresGasto', id).subscribe( res => {
+      if (Array.isArray(res)) {
+        this.Ordenador = res[0];
+        // console.log(this.Ordenador)
       }
     });
     this.mostrar = true;
