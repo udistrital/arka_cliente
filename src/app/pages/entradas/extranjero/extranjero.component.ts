@@ -258,7 +258,7 @@ export class ExtranjeroComponent implements OnInit {
       const detalle = {
         acta_recibido_id: +this.actaRecibidoId,
         // REVISAR TIPO DE COMPROBANTE (P1)
-        consecutivo: 'P1-' + this.actaRecibidoId + '-' + new Date().getFullYear(),
+        consecutivo: 'P1',
         documento_contable_id: 1, // REVISAR
         contrato_id: +this.contratoEspecifico.NumeroContratoSuscrito,
         vigencia_contrato: this.contratoForm.value.vigenciaCtrl,
@@ -285,6 +285,13 @@ export class ExtranjeroComponent implements OnInit {
       // console.log({movimientoAdquisicion});
       this.entradasHelper.postEntrada(movimientoAdquisicion).subscribe((res: any) => {
         if (res !== null) {
+          const elstring = JSON.stringify(res.Detalle);
+          const posini = elstring.indexOf('consecutivo') + 16;
+          if (posini !== -1) {
+              const posfin = elstring.indexOf('\"', posini);
+              const elresultado = elstring.substr(posini, posfin - posini - 1);
+              detalle.consecutivo = detalle.consecutivo + elresultado;
+          }
           (Swal as any).fire({
             type: 'success',
             title: 'Entrada N° ' + `${detalle.consecutivo}` + ' Registrada',

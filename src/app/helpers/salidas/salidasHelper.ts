@@ -115,6 +115,45 @@ export class SalidaHelper {
         );
     }
 
+
+    public getElemento(elemento) {
+
+        this.rqManager.setPath('ACTA_RECIBIDO_SERVICE');
+        return this.rqManager.get('elemento/' + elemento.Id).pipe(
+            map(
+                (res) => {
+                    if (res === 'error') {
+                        this.pUpManager.showErrorAlert('No se pudo consultar el contrato contratos');
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
+
+
+
+
+    public putElemento(elemento) {
+
+        this.rqManager.setPath('ARKA_SERVICE');
+        return this.rqManager.post('elemento',  elemento).pipe(
+           map(
+              (res) => {
+                 if (res['Type'] === 'error') {
+                    this.pUpManager.showErrorAlert('No se pudo asignar la placa');
+                    return undefined;
+                 }
+                 return res;
+              },
+           ),
+        );
+    }
+
+
+
+
     /**
      * Entradas Get
      * If the response has errors in the OAS API it should show a popup message with an error.

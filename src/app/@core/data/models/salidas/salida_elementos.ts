@@ -4,6 +4,7 @@ export class ElementoSalida {
     Cantidad: number;
     Marca: string;
     Serie: string;
+    Placa: String;
     SubgrupoCatalogoId: any; // Remplazar por modelo cuando este disponoble
     TipoBienId: any;
     Funcionario: any;

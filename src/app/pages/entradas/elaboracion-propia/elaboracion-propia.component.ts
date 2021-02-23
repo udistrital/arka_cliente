@@ -308,7 +308,7 @@ export class ElaboracionPropiaComponent implements OnInit {
 
       const detalle = {
         acta_recibido_id: +this.actaRecibidoId,
-        consecutivo: 'P3-' + this.actaRecibidoId + '-' + new Date().getFullYear(),
+        consecutivo: 'P3',
         documento_contable_id: 1, // REVISAR
         supervisor: this.supervisorForm.value.supervisorCtrl.TerceroPrincipal.Id,
         vigencia_ordenador: this.ordenadorForm.value.vigenciaCtrl,
@@ -332,6 +332,14 @@ export class ElaboracionPropiaComponent implements OnInit {
 
       this.entradasHelper.postEntrada(movimientoAdquisicion).subscribe((res: any) => {
         if (res !== null) {
+
+          const elstring = JSON.stringify(res.Detalle);
+          const posini = elstring.indexOf('consecutivo') + 16;
+          if (posini !== -1) {
+              const posfin = elstring.indexOf('\"', posini);
+              const elresultado = elstring.substr(posini, posfin - posini - 1);
+              detalle.consecutivo = detalle.consecutivo + elresultado;
+          }
           (Swal as any).fire({
             type: 'success',
             title: 'Entrada N° ' + `${detalle.consecutivo}` + ' Registrada',
