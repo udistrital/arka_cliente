@@ -123,7 +123,7 @@ export class SalidaHelper {
      */
     public getEntradasSinSalida() {
         this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
-        return this.rqManager.get('movimiento?query=FormatoTipoMovimientoId.Descripcion__contains:entrada,EstadoMovimientoId.Id:2&limit=-1').pipe(
+        return this.rqManager.get('movimiento?query=EstadoMovimientoId.Id:2&limit=-1').pipe(
             map(
                 (res) => {
                     if (res === 'error') {
