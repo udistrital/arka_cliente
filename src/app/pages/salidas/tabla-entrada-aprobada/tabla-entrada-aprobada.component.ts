@@ -50,8 +50,8 @@ export class TablaEntradaAprobadaComponent implements OnInit {
     private nuxeoService: NuxeoService,
     private documentoService: DocumentoService,
     private listService: ListService,
-    private store: Store<IAppState>, 
-    private tercerosHelper: TercerosHelper
+    private store: Store<IAppState>,
+    private tercerosHelper: TercerosHelper,
   ) {
     this.source = new LocalDataSource();
     this.entradas = new Array<Entrada>();
