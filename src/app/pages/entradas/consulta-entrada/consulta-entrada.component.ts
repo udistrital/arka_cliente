@@ -86,7 +86,7 @@ export class ConsultaEntradaComponent implements OnInit {
         columnTitle: this.translate.instant('GLOBAL.Acciones'),
         position: 'right',
         delete: false,
-        edit:false,
+        edit: false,
         custom: [
           {
             name: this.translate.instant('GLOBAL.detalle'),
