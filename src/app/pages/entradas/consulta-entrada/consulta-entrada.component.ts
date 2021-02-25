@@ -93,15 +93,13 @@ export class ConsultaEntradaComponent implements OnInit {
         columnTitle: this.translate.instant('GLOBAL.Acciones'),
         position: 'right',
         delete: false,
+        edit: false,
         custom: [
           {
             name: this.translate.instant('GLOBAL.detalle'),
             title: '<i class="fas fa-eye" title="Ver"></i>',
           },
         ],
-      },
-      edit: {
-        editButtonContent: '<i class="material-icons" title="' + t.editar + '" aria-label="' + t.editar + '">edit</i>',
       },
       add: {
         addButtonContent: '<i class="fas fa-plus" title="' + t.registrar + '" aria-label="' + t.registrar + '"></i>',
@@ -161,6 +159,7 @@ export class ConsultaEntradaComponent implements OnInit {
 
   loadEntradas(): void {
     this.entradasHelper.getEntradas().subscribe(res => {
+      // console.log(res)
       if (res !== null) {
         const data = <Array<any>>res;
         for (const datos in Object.keys(data)) {

@@ -23,7 +23,7 @@ import { Router, NavigationEnd } from '@angular/router';
 import { LocalDataSource } from 'ngx-smart-table';
 import { ElementoSalida } from '../../../@core/data/models/salidas/salida_elementos';
 import { SalidaHelper } from '../../../helpers/salidas/salidasHelper';
-import {Ng2SmartTableComponent} from 'ng2-smart-table/ng2-smart-table.component';
+import {Ng2SmartTableComponent} from 'ngx-smart-table/ng2-smart-table.component';
 
 @Component({
   selector: 'ngx-tabla-elementos-asignados',

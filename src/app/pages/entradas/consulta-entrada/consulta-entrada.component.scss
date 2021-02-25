@@ -6,19 +6,36 @@
   color: #5dcfe3;
 }
 
+:host /deep/ ng2-smart-table thead th {
+  text-align: center;
+}
+
+:host /deep/ ng2-st-tbody-custom a.ng2-smart-action.ng2-smart-action-custom-custom:hover {
+  color: #5dcfe3;
+}
+
 :host /deep/ ng2-smart-table .ng2-smart-filter select {
   height: calc(2rem + 4px) !important;
   padding: 0 10px !important;
 }
 
-:host /deep/ td.ng2-smart-actions.ng-star-inserted {
-    height: 0;
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    vertical-align: middle;
-    padding: 6%;
+:host /deep/ ng2-st-tbody-edit-delete {
+  display: block !important;
+  height: 0 !important;
 }
+// :host /deep/ ng2-smart-table .ng2-smart-filter select {
+//   height: calc(2rem + 4px) !important;
+//   padding: 0 10px !important;
+// }
 
-:host /deep/ a.ng2-smart-action.ng2-smart-action-custom-custom.ng-star-inserted {
-  margin-top: 5px;
-}
+// :host /deep/ td.ng2-smart-actions.ng-star-inserted {
+//     height: 0;
+//     display: grid;
+//     grid-template-columns: repeat(2, 1fr);
+//     vertical-align: middle;
+//     padding: 6%;
+// }
+
+// :host /deep/ a.ng2-smart-action.ng2-smart-action-custom-custom.ng-star-inserted {
+//   margin-top: 5px;
+// }
