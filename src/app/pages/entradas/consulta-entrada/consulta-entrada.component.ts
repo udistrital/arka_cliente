@@ -41,9 +41,16 @@ export class ConsultaEntradaComponent implements OnInit {
   Ordenador: any;
   Proveedores: any;
   Proveedor: any;
-  constructor(private router: Router, private entradasHelper: EntradaHelper, private translate: TranslateService,
-    private nuxeoService: NuxeoService, private documentoService: DocumentoService, private listService: ListService,
-    private store: Store<IAppState>, private tercerosHelper: TercerosHelper) {
+
+  constructor(
+    private router: Router,
+    private entradasHelper: EntradaHelper,
+    private translate: TranslateService,
+    private nuxeoService: NuxeoService,
+    private documentoService: DocumentoService,
+    private listService: ListService,
+    private store: Store<IAppState>,
+    private tercerosHelper: TercerosHelper) {
     this.source = new LocalDataSource();
     this.entradas = new Array<Entrada>();
     this.detalle = false;
