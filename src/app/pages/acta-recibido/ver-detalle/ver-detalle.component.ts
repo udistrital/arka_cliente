@@ -69,6 +69,8 @@ export class VerDetalleComponent implements OnInit {
     this.loadLists();
   }
 
+  private actaCargada: boolean = false;
+
   // Modelos
 
   Acta__: ActaRecibido;
@@ -141,14 +143,20 @@ export class VerDetalleComponent implements OnInit {
           this.Dependencias !== undefined && this.Sedes !== undefined &&
           this._ActaId !== undefined) {
           // console.log(this._ActaId);
+          this.cargarActa();
+        }
+      },
+    );
+  }
+
+  private cargarActa() {
+    if (!this.actaCargada) {
           this.Actas_Recibido.getTransaccionActa(this._ActaId).subscribe(Acta => {
             // console.log(Acta);
             this.Cargar_Formularios(Acta[0]);
             // console.log('ok');
           });
-        }
-      },
-    );
+    }
   }
 
   T_V(valor: string): string {
@@ -179,6 +187,7 @@ export class VerDetalleComponent implements OnInit {
           Soporte: [Soporte.SoporteActa.DocumentoId],
           Elementos: this.fb.array([]),
         });
+        if (Array.isArray(Soporte.Elementos))
         for (const _Elemento of Soporte.Elementos) {
           const Elemento___ = this.fb.group({
             Id: [_Elemento.Id],
@@ -339,34 +348,40 @@ export class VerDetalleComponent implements OnInit {
     }
   }
 
+  private hayElementos(): boolean {
+    return (this.Acta
+    && this.Acta.hasOwnProperty('SoportesActa')
+    && Array.isArray(this.Acta.SoportesActa)
+    && this.Acta.SoportesActa.some(sop => Array.isArray(sop.Elementos))
+    );
+  }
 
   getGranSubtotal() {
-
-    if (this.Acta !== undefined) {
+    if (this.hayElementos()) {
       return this.Acta.SoportesActa.map(t => t.Elementos.map(w => w.ValorTotal).reduce((acc, value) => acc + value)).toString();
     } else {
       return '0';
     }
   }
-  getGranDescuentos() {
 
-    if (this.Acta !== undefined) {
+  getGranDescuentos() {
+    if (this.hayElementos()) {
       return this.Acta.SoportesActa.map(t => t.Elementos.map(w => w.Descuento).reduce((acc, value) => acc + value)).toString();
     } else {
       return '0';
     }
   }
-  getGranValorIva() {
 
-    if (this.Acta !== undefined) {
+  getGranValorIva() {
+    if (this.hayElementos()) {
       return this.Acta.SoportesActa.map(t => t.Elementos.map(w => w.ValorIva).reduce((acc, value) => acc + value)).toString();
     } else {
       return '0';
     }
   }
-  getGranTotal() {
 
-    if (this.Acta !== undefined) {
+  getGranTotal() {
+    if (this.hayElementos()) {
       return this.Acta.SoportesActa.map(t => t.Elementos.map(w => w.ValorFinal).reduce((acc, value) => acc + value)).toString();
     } else {
       return '0';

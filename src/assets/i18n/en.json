@@ -43,6 +43,13 @@
       "varias": "Receipt Certificates",
       "id_forma1": "Receipt Certificate #{{ID}}",
       "id_forma2": "Certificate N° {{ID}}",
+      "ContratistaAsignado": "Assigned Contractor",
+      "Errores": {
+        "Mensaje": "You must first fix the following issues:",
+        "Terceros": "Your user is not currently recorded in the Third-Party Database",
+        "Formularios": "There are missing/wrong fields",
+        "Clases": "There must be at least a single item, and each item with its related class"
+      },
       "CapturarElementos": {
         "CargaMasivaTitle": "Bulk Load",
         "ValidadorPlaceholder": "The file shall have {{EXT}} extension (*.{{EXT}})",
@@ -83,6 +90,8 @@
         "FechaModificacionHeader": "Modification Date",
         "FechaVistoBuenoHeader": "Good View Date",
         "RevisorHeader": "Last Check",
+        "ModificadaPor": "Modified By",
+        "AceptadaPor": "Approved By",
         "EstadoHeader": "Actual State",
         "UbicacionHeader": "Location",
         "ObservacionesHeader": "Observations",
@@ -93,10 +102,10 @@
         "Aceptada": "Acepted",
         "Asociada": "Entrance Associated",
         "Anulada": "Closed",
+        "Instrucciones": "Press a Receipt Certificate's row to view its contents",
         "DialogoAnularTitulo":"Void Act {{ACTA}}?",
         "DialogoAnularMsg":"This action cannot be undone. Are you sure to VOID the Act {{ACTA}}?",
-        "OpcionNoValida": "Invalid Option",
-        "OpcionNoValida2": "Invalid Option for this Certificate"
+        "EdicionBloqueada":"Receipt Certificate No.{{NUM}} cannot be modified due to its State \"{{STATE}}\""
       },
       "RegistroActa": {
         "Title": "Register Receipt Certificate",
@@ -136,6 +145,7 @@
       },
       "EdicionActa": {
         "Title": "Edit Receipt Certificate",
+        "TitleId": "Edit Receipt Certificate No.{{ID}}",
         "DatosTitle": "Initial Data",
         "Sede": "Campus",
         "Dependencia": "Dependence",
@@ -160,9 +170,9 @@
         "Total": "Grand Total:",
         "Observaciones2": "Proporciona datos adicionales que no se pueden expresar en el formulario (Obligatorio)",
         "DatosVeridicos": "Are you sure do you want to save the data?",
-        "DatosVeridicos2": "Are you sure do you want to send the data to verificate?",
-        "DatosVeridicos3":"Are you sure to Send the data to Supplier and te Reviewer?",
-        "DatosVeridicos4":"Are you sure to Send the data to Reviewer?",
+        "DatosVeridicos2": "Are you sure do you want to send the data to Verification?",
+        "DatosVeridicos3":"Are you sure to Send the data to Supplier and Contractor?",
+        "DatosVeridicos4":"Are you sure to Send the data to Contractor?",
         "DatosVeridicosTitle": "Are You Sure?",
         "CargaElementosTitle": "Elements Load",
         "CargaElementos": "Please verify the load of elements, values ​​and totals associated with the support before generating the record",
@@ -178,10 +188,11 @@
         "ProveedorNO":"The Act has NOT been sent to supplier. Try again later",
         "VerificacionButton": "Send to Verification",
         "EnviarProveedorButton": "Send to Supplier",
-        "EnviarRevisorButton": "Send to Reviewer"
+        "EnviarContratistaButton": "Send to Contractor"
       },
       "DetalleActa": {
         "Title": "Receipt Certificate Detail",
+        "TitleId": "Receipt Certificate No.{{ID}} Detail",
         "DatosTitle": "Initial Data",
         "Sede": "Campus",
         "Dependencia": "Dependence",
@@ -221,6 +232,7 @@
       },
       "VerificacionActa": {
         "Title": "Verify Receipt Certificate",
+        "TitleId": "Verify Receipt Certificate No.{{ID}}",
         "DatosTitle": "Initial Data",
         "Sede": "Campus",
         "Dependencia": "Dependence",
@@ -284,15 +296,13 @@
     "registro_elementos": "Item Registration",
     "registrar_elementos": "Register Items",
     "consultar_catalogo": "Consult Catalog Tree",
-    "depreciacion": "Depreciation",
-    "valorizacion": "Valorization",
     "cuenta_credito": "Credit",
     "cuenta_debito": "Debit",
     "placeholder_cuenta_credito": "Credit",
     "placeholder_cuenta_debito": "Debit",
     "Entradas": "Entries",
     "Salidas": "Outputs",
-    "Depreciación": "Depreciation",
+    "Depreciacion": "Depreciation",
     "Valorización": "Valorization",
     "Salida de Almacen": "Output",
     "Depreciacion Almacen": "Depreciation",
@@ -529,15 +539,15 @@
     "ubicacion": "Location",
     "observaciones": "comments",
 
-    "entradas": {
+    "movimientos": {
       "tipo": {
         "EA": {
           "nombre": "Acquisition",
           "descripcion": "Acquisition Input"
         },
         "EEP": {
-          "nombre": "Elaboración Propia",
-          "descripcion": "Self-made Input"
+          "nombre": "Own Elaboration",
+          "descripcion": "Own Elaboration Input"
         },
         "ED": {
           "nombre": "Donation",
@@ -576,12 +586,20 @@
           "descripcion": "Input by Use of Parts"
         },
         "EID": {
-          "nombre": "Intangibles developed within the Entities",
-          "descripcion": "Intangibles developed within the Entities Input"
+          "nombre": "Developed Intangibles",
+          "descripcion": "Input of Developed Intangibles"
         },
         "EBEMP": {
-          "nombre": "Delivered to the Entity or Entity on a provisional basis",
-          "descripcion": "Delivered to the Entity or Entity on a provisional basis Input"
+          "nombre": "Delivered Goods on a provisional basis",
+          "descripcion": "Input of Delivered Goods on a provisional basis"
+        },
+        "SOL_BAJA": {
+          "nombre": "Derecognition",
+          "descripcion": "Derecognition Request"
+        },
+        "SOL_TRD": {
+          "nombre": "Transfer",
+          "descripcion": "Transfer Request"
         }
       },
       "tab_consumo": "Elementos de Consumo",

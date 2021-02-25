@@ -40,7 +40,8 @@ export class ReposicionComponent implements OnInit {
   checked: boolean;
 
    @ViewChild('file') fileInput: ElementRef;
-   @Input() actaRecibidoId: string;
+   @Input() actaRecibidoId: Number;
+   @Input() movimientoId: Number;
 
   constructor(private router: Router, private fb: FormBuilder, private  actasHelper: ActaRecibidoHelper, private  entradasHelper: EntradaHelper,
     private nuxeoService: NuxeoService, private translate: TranslateService, private documentoService: DocumentoService,
@@ -198,7 +199,7 @@ export class ReposicionComponent implements OnInit {
         await this.postSoporteNuxeo([this.fileDocumento]);
       const detalle = {
         acta_recibido_id: +this.actaRecibidoId,
-        consecutivo: 'P2-' + this.actaRecibidoId + '-' + new Date().getFullYear(),
+        consecutivo: 'P2',
         documento_contable_id: 1, // REVISAR
         placa_id: this.placa,
         encargado_id: this.encargadoId,
@@ -213,11 +214,20 @@ export class ReposicionComponent implements OnInit {
         EstadoMovimientoId: {
           Id: 2, // REVISAR
         },
+        Id: this.movimientoId ? this.movimientoId : 0,
+        SoporteMovimientoId: this.idDocumento,
         IdTipoMovimiento: this.tipoEntrada.Id,
       };
 
       this.entradasHelper.postEntrada(movimientoReposicion).subscribe((res: any) => {
         if (res !== null) {
+          const elstring = JSON.stringify(res.Detalle);
+          const posini = elstring.indexOf('consecutivo') + 16;
+          if (posini !== -1) {
+              const posfin = elstring.indexOf('\"', posini);
+              const elresultado = elstring.substr(posini, posfin - posini - 1);
+              detalle.consecutivo = detalle.consecutivo + elresultado;
+          }
           (Swal as any).fire({
             type: 'success',
             title: 'Entrada N° ' + `${detalle.consecutivo}` + ' Registrada',

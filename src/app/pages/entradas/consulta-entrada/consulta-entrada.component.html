@@ -3,14 +3,20 @@
     <h1>{{'GLOBAL.consultar_entrada' | translate}}</h1>
   </nb-card-header>
   <nb-card-body [nbSpinner]="!mostrar">
-    <!-- CARD PARA MOSTRAR LAS SOLICITUDES *ngIf="!detalle" -->
-    <p class="h4 pb-4" *ngIf="!detalle">{{'GLOBAL.mensaje_consulta_entrada' | translate}}</p>
-    <ng2-smart-table [settings]="settings" [source]="source" (custom)="onCustom($event)" (create)="onRegister($event)" *ngIf="!detalle">
-    </ng2-smart-table>
-    <!-- CARD PARA MOSTRAR LOS DETALLES DE LAS SOLICITUDES -->
-    <h5 *ngIf="detalle" class="pb-4">{{'GLOBAL.detalle_entrada' | translate}}</h5>
 
-    <div *ngIf="detalle" class="container">
+    <!-- CARD PARA MOSTRAR LAS SOLICITUDES *ngIf="!detalle" -->
+    <p class="h4 pb-4" *ngIf="!detalle && !edit">{{'GLOBAL.mensaje_consulta_entrada' | translate}}</p>
+
+    <ng2-smart-table [settings]="settings" [source]="source" (custom)="onCustom($event)" (create)="onRegister($event)"
+      *ngIf="!detalle && !edit" (edit)="onEdit($event)">
+    </ng2-smart-table>
+
+    <ngx-registro *ngIf="edit && entradaEdit" [EntradaEdit]="entradaEdit"></ngx-registro>
+
+    <!-- CARD PARA MOSTRAR LOS DETALLES DE LAS SOLICITUDES -->
+    <h5 *ngIf="detalle && !edit" class="pb-4">{{'GLOBAL.detalle_entrada' | translate}}</h5>
+
+    <div *ngIf="detalle && !edit" class="container">
 
       <!-- ENTRADA -->
       <div class="row">
@@ -24,7 +30,7 @@
       </div>
 
       <!-- ACTA RECIBIDO -->
-      <div *ngIf="detalle" class="row">
+      <div *ngIf="detalle && !edit" class="row">
         <div class="col">
           <p class="text-uppercase"><strong>Acta de Recibido N°:</strong>
             {{ entradaEspecifica.ActaRecibidoId }}</p>
@@ -32,7 +38,8 @@
       </div>
 
       <!-- ADQUISICIÓN -->
-      <div *ngIf="detalle && entradaEspecifica.TipoEntradaId.Nombre === 'Adquisición'" class="row">
+
+      <div *ngIf="detalle && !edit && entradaEspecifica.TipoEntradaId.Nombre === 'Adquisición'" class="row">
         <div class="col">
           <p class="text-uppercase"><strong>Contrato N°:</strong> {{ entradaEspecifica.ContratoId }}</p>
         </div>
@@ -41,7 +48,7 @@
         </div>
       </div>
 
-      <div *ngIf="detalle && entradaEspecifica.TipoEntradaId.Nombre === 'Adquisición'" class="row">
+      <div *ngIf="detalle && !edit && entradaEspecifica.TipoEntradaId.Nombre === 'Adquisición'" class="row">
         <div class="col">
           <p class="text-uppercase"><strong>Ordenador de Gasto:</strong>
             {{ contrato.OrdenadorGasto.NombreOrdenador }}
@@ -52,7 +59,7 @@
         </div>
       </div>
 
-      <div *ngIf="detalle && entradaEspecifica.TipoEntradaId.Nombre === 'Adquisición'" class="row">
+      <div *ngIf="detalle && !edit && entradaEspecifica.TipoEntradaId.Nombre === 'Adquisición'" class="row">
         <div class="col">
           <p class="text-uppercase"><strong>Supervisor:</strong> {{ contrato.Supervisor.Nombre }}</p>
         </div>
@@ -62,7 +69,7 @@
       </div>
 
       <!-- ELABORACIÓN PROPIA -->
-      <div *ngIf="detalle && entradaEspecifica.TipoEntradaId.Nombre === 'Elaboración Propia'" class="row">
+      <div *ngIf="detalle && !edit && entradaEspecifica.TipoEntradaId.Nombre === 'Elaboración Propia'" class="row">
         <div class="col">
           <p class="text-uppercase"><strong>Ordenador de Gasto:</strong>
             capturar
@@ -73,7 +80,7 @@
         </div>
       </div>
 
-      <div *ngIf="detalle && entradaEspecifica.TipoEntradaId.Nombre === 'Elaboración Propia'" class="row">
+      <div *ngIf="detalle && !edit && entradaEspecifica.TipoEntradaId.Nombre === 'Elaboración Propia'" class="row">
         <div class="col">
           <p class="text-uppercase"><strong>Solicitante:</strong> capturar </p>
         </div>
@@ -83,7 +90,7 @@
       </div>
 
       <!-- DONACIÓN -->
-      <div *ngIf="detalle && entradaEspecifica.TipoEntradaId.Nombre === 'Donación'" class="row">
+      <div *ngIf="detalle && !edit && entradaEspecifica.TipoEntradaId.Nombre === 'Donación'" class="row">
         <div class="col">
           <p class="text-uppercase"><strong>Contrato N°:</strong> {{ entradaEspecifica.ContratoId }}</p>
         </div>
@@ -92,7 +99,7 @@
         </div>
       </div>
 
-      <div *ngIf="detalle && entradaEspecifica.TipoEntradaId.Nombre === 'Donación'" class="row">
+      <div *ngIf="detalle && !edit && entradaEspecifica.TipoEntradaId.Nombre === 'Donación'" class="row">
         <div class="col">
           <p class="text-uppercase"><strong>Ordenador de Gasto:</strong>
             {{ contrato.OrdenadorGasto.NombreOrdenador }}
@@ -103,7 +110,8 @@
         </div>
       </div>
 
-      <div *ngIf="detalle && entradaEspecifica.TipoEntradaId.Nombre === 'Donación'" class="row">
+
+      <div *ngIf="detalle && !edit && entradaEspecifica.TipoEntradaId.Nombre === 'Donación'" class="row">
         <div class="col">
           <p class="text-uppercase"><strong>Supervisor:</strong> {{ contrato.Supervisor.Nombre }}</p>
         </div>
@@ -111,7 +119,8 @@
           <p class="text-uppercase"><strong>Cargo:</strong> {{ contrato.Supervisor.Cargo }}</p>
         </div>
       </div>
-      <div *ngIf="detalle && entradaEspecifica.TipoEntradaId.Nombre === 'Donación'" class="row">
+
+      <div *ngIf="detalle && !edit && entradaEspecifica.TipoEntradaId.Nombre === 'Donación'" class="row">
         <div class="col">
           <p class="text-uppercase"><strong>Solicitante:</strong> capturar </p>
         </div>
@@ -124,11 +133,12 @@
       <!-- HACER CUANDO ESTE LISTO -->
 
       <!-- SOBRANTE -->
-      <div *ngIf="detalle && entradaEspecifica.TipoEntradaId.Nombre === 'Sobrante'" class="row">
-      </div>
+      <div *ngIf="detalle && !edit && entradaEspecifica.TipoEntradaId.Nombre === 'Sobrante'" class="row">
+      </div>      
+      
 
       <!-- TERCEROS -->
-      <div *ngIf="detalle && entradaEspecifica.TipoEntradaId.Nombre === 'Terceros'" class="row">
+      <div *ngIf="detalle && !edit && entradaEspecifica.TipoEntradaId.Nombre === 'Terceros'" class="row">
         <div class="col">
           <p class="text-uppercase"><strong>Contrato N°:</strong> {{ entradaEspecifica.ContratoId }}</p>
         </div>
@@ -137,7 +147,7 @@
         </div>
       </div>
 
-      <div *ngIf="detalle && entradaEspecifica.TipoEntradaId.Nombre === 'Terceros'" class="row">
+      <div *ngIf="detalle && !edit && entradaEspecifica.TipoEntradaId.Nombre === 'Terceros'" class="row">
         <div class="col">
           <p class="text-uppercase"><strong>Ordenador de Gasto:</strong>
             {{ contrato.OrdenadorGasto.NombreOrdenador }}
@@ -148,7 +158,7 @@
         </div>
       </div>
 
-      <div *ngIf="detalle && entradaEspecifica.TipoEntradaId.Nombre === 'Terceros'" class="row">
+      <div *ngIf="detalle && !edit && entradaEspecifica.TipoEntradaId.Nombre === 'Terceros'" class="row">
         <div class="col">
           <p class="text-uppercase"><strong>Supervisor:</strong> {{ contrato.Supervisor.Nombre }}</p>
         </div>
@@ -158,7 +168,7 @@
       </div>
 
       <!-- CAJA MENOR -->
-      <div *ngIf="detalle && entradaEspecifica.TipoEntradaId.Nombre === 'Caja menor'" class="row">
+      <div *ngIf="detalle && !edit && entradaEspecifica.TipoEntradaId.Nombre === 'Caja menor'" class="row">
         <div *ngIf="Supervisor!=undefined" class="col">
           <p class="text-uppercase"><strong>Supervisor:</strong> {{ Supervisor.TerceroPrincipal.NombreCompleto }}</p>
         </div>
@@ -166,13 +176,15 @@
           <p class="text-uppercase"><strong>Dependencia:</strong> {{ Supervisor.Dependencia.Nombre}}</p>
         </div>
       </div>
-      <div *ngIf="detalle && entradaEspecifica.TipoEntradaId.Nombre === 'Caja menor'" class="row">
+      
+      <div *ngIf="detalle && !edit && entradaEspecifica.TipoEntradaId.Nombre === 'Caja menor'" class="row">
         <div *ngIf="Ordenador!=undefined" class="col">
           <p class="text-uppercase"><strong>Ordenador:</strong> {{ Ordenador.TerceroPrincipal.NombreCompleto }}</p>
         </div>
       </div>
+
       <!-- ADICIONES Y MEJORAS -->
-      <div *ngIf="detalle && entradaEspecifica.TipoEntradaId.Nombre === 'Adiciones y mejoras'" class="row">
+      <div *ngIf="detalle && !edit && entradaEspecifica.TipoEntradaId.Nombre === 'Adiciones y mejoras'" class="row">
         <div class="col">
           <p class="text-uppercase"><strong>Contrato N°:</strong> {{ entradaEspecifica.ContratoId }}</p>
         </div>
@@ -181,7 +193,7 @@
         </div>
       </div>
 
-      <div *ngIf="detalle && entradaEspecifica.TipoEntradaId.Nombre === 'Adiciones y mejoras'" class="row">
+      <div *ngIf="detalle && !edit && entradaEspecifica.TipoEntradaId.Nombre === 'Adiciones y mejoras'" class="row">
         <div class="col">
           <p class="text-uppercase"><strong>Ordenador de Gasto:</strong>
             {{ contrato.OrdenadorGasto.NombreOrdenador }}
@@ -192,17 +204,17 @@
         </div>
       </div>
 
-      <div *ngIf="detalle && entradaEspecifica.TipoEntradaId.Nombre === 'Adiciones y mejoras'" class="row">
+      <div *ngIf="detalle && !edit && entradaEspecifica.TipoEntradaId.Nombre === 'Adiciones y mejoras'" class="row">
         <div class="col">
           <p class="text-uppercase"><strong>Supervisor:</strong> {{ contrato.Supervisor.Nombre }}</p>
         </div>
         <div class="col">
           <p class="text-uppercase"><strong>Cargo:</strong> {{ contrato.Supervisor.Cargo }}</p>
         </div>
-      </div>      
+      </div>   
 
       <!-- INTANGIBLES ADQUIRIDOS -->
-      <div *ngIf="detalle && entradaEspecifica.TipoEntradaId.Nombre === 'Intangibles'" class="row">
+      <div *ngIf="detalle && !edit && entradaEspecifica.TipoEntradaId.Nombre === 'Intangibles'" class="row">
         <div class="col">
           <p class="text-uppercase"><strong>Contrato N°:</strong> {{ entradaEspecifica.ContratoId }}</p>
         </div>
@@ -211,7 +223,7 @@
         </div>
       </div>
 
-      <div *ngIf="detalle && entradaEspecifica.TipoEntradaId.Nombre === 'Intangibles'" class="row">
+      <div *ngIf="detalle && !edit && entradaEspecifica.TipoEntradaId.Nombre === 'Intangibles'" class="row">
         <div class="col">
           <p class="text-uppercase"><strong>Ordenador de Gasto:</strong>
             {{ contrato.OrdenadorGasto.NombreOrdenador }}
@@ -222,7 +234,7 @@
         </div>
       </div>
 
-      <div *ngIf="detalle && entradaEspecifica.TipoEntradaId.Nombre === 'Intangibles'" class="row">
+      <div *ngIf="detalle && !edit && entradaEspecifica.TipoEntradaId.Nombre === 'Intangibles'" class="row">
         <div class="col">
           <p class="text-uppercase"><strong>Supervisor:</strong> {{ contrato.Supervisor.Nombre }}</p>
         </div>
@@ -232,7 +244,7 @@
       </div>     
 
       <!-- PROVISIONAL -->
-      <div *ngIf="detalle && entradaEspecifica.TipoEntradaId.Nombre === 'Provisional'" class="row">
+      <div *ngIf="detalle && !edit && entradaEspecifica.TipoEntradaId.Nombre === 'Provisional'" class="row">
         <div class="col">
           <p class="text-uppercase"><strong>Contrato N°:</strong> {{ entradaEspecifica.ContratoId }}</p>
         </div>
@@ -241,7 +253,7 @@
         </div>
       </div>
 
-      <div *ngIf="detalle && entradaEspecifica.TipoEntradaId.Nombre === 'Provisional'" class="row">
+      <div *ngIf="detalle && !edit && entradaEspecifica.TipoEntradaId.Nombre === 'Provisional'" class="row">
         <div class="col">
           <p class="text-uppercase"><strong>Ordenador de Gasto:</strong>
             {{ contrato.OrdenadorGasto.NombreOrdenador }}
@@ -252,7 +264,7 @@
         </div>
       </div>
 
-      <div *ngIf="detalle && entradaEspecifica.TipoEntradaId.Nombre === 'Provisional'" class="row">
+      <div *ngIf="detalle && !edit && entradaEspecifica.TipoEntradaId.Nombre === 'Provisional'" class="row">
         <div class="col">
           <p class="text-uppercase"><strong>Supervisor:</strong> {{ contrato.Supervisor.Nombre }}</p>
         </div>
@@ -262,7 +274,7 @@
       </div>  
 
       <!-- COMPRAS EXTRANJERAS -->
-      <div *ngIf="detalle && entradaEspecifica.TipoEntradaId.Nombre === 'Compras extranjeras'" class="row">
+      <div *ngIf="detalle && !edit && entradaEspecifica.TipoEntradaId.Nombre === 'Compras extranjeras'" class="row">
         <div class="col">
           <p class="text-uppercase"><strong>Contrato N°:</strong> {{ entradaEspecifica.ContratoId }}</p>
         </div>
@@ -271,7 +283,7 @@
         </div>
       </div>
 
-      <div *ngIf="detalle && entradaEspecifica.TipoEntradaId.Nombre === 'Compras extranjeras'" class="row">
+      <div *ngIf="detalle && !edit && entradaEspecifica.TipoEntradaId.Nombre === 'Compras extranjeras'" class="row">
         <div class="col">
           <p class="text-uppercase"><strong>Ordenador de Gasto:</strong>
             {{ contrato.OrdenadorGasto.NombreOrdenador }}
@@ -282,24 +294,27 @@
         </div>
       </div>
 
-      <div *ngIf="detalle && entradaEspecifica.TipoEntradaId.Nombre === 'Compras extranjeras'" class="row">
+      <div *ngIf="detalle && !edit && entradaEspecifica.TipoEntradaId.Nombre === 'Compras extranjeras'" class="row">
         <div class="col">
           <p class="text-uppercase"><strong>Supervisor:</strong> {{ contrato.Supervisor.Nombre }}</p>
         </div>
         <div class="col">
           <p class="text-uppercase"><strong>Cargo:</strong> {{ contrato.Supervisor.Cargo }}</p>
         </div>
-      </div>  
-      <div *ngIf="detalle && entradaEspecifica.TipoEntradaId.Nombre === 'Compras extranjeras'" class="row">
+      </div>
+      <div *ngIf="detalle && !edit && entradaEspecifica.TipoEntradaId.Nombre === 'Compras extranjeras'" class="row">
         <div class="col">
-          <p class="text-uppercase"><strong>Registro de Importación:</strong> {{ entradaEspecifica.RegistroImportacion }}</p>
+          <p class="text-uppercase"><strong>Registro de Importación:</strong> {{ entradaEspecifica.RegistroImportacion
+            }}</p>
         </div>
         <div class="col">
-          <p class="text-uppercase"><strong>Tasa Representativa del mercado:</strong> {{ entradaEspecifica.TasaRepresentativaMercado }}</p>
+          <p class="text-uppercase"><strong>Tasa Representativa del mercado:</strong> {{
+            entradaEspecifica.TasaRepresentativaMercado }}</p>
         </div>
       </div>
+        
       <!-- INTANGIBLES DESARROLLADOS -->
-      <div *ngIf="detalle && entradaEspecifica.TipoEntradaId.Nombre === 'Desarrollo interior'" class="row">
+      <div *ngIf="detalle && !edit && entradaEspecifica.TipoEntradaId.Nombre === 'Desarrollo interior'" class="row">
         <div *ngIf="Supervisor!=undefined" class="col">
           <p class="text-uppercase"><strong>Supervisor:</strong> {{ Supervisor.TerceroPrincipal.NombreCompleto }}</p>
         </div>
@@ -307,15 +322,16 @@
           <p class="text-uppercase"><strong>Dependencia:</strong> {{ Supervisor.Dependencia.Nombre}}</p>
         </div>
       </div>
-      <div *ngIf="detalle && entradaEspecifica.TipoEntradaId.Nombre === 'Desarrollo interior'" class="row">
+
+      <div *ngIf="detalle && !edit && entradaEspecifica.TipoEntradaId.Nombre === 'Desarrollo interior'" class="row">
         <div *ngIf="Ordenador!=undefined" class="col">
           <p class="text-uppercase"><strong>Ordenador:</strong> {{ Ordenador.TerceroPrincipal.NombreCompleto }}</p>
         </div>
       </div>
-      
+
       <!-- APROVECHAMIENTOS -->
 
-      <div *ngIf="detalle && entradaEspecifica.TipoEntradaId.Nombre === 'Aprovechamientos'" class="row">
+      <div *ngIf="detalle && !edit && entradaEspecifica.TipoEntradaId.Nombre === 'Aprovechamientos'" class="row">
         <div *ngIf="Supervisor!=undefined" class="col">
           <p class="text-uppercase"><strong>Supervisor:</strong> {{ Supervisor.TerceroPrincipal.NombreCompleto }}</p>
         </div>
@@ -324,19 +340,21 @@
         </div>
       </div>  
 
-      <div *ngIf="detalle && entradaEspecifica.TipoEntradaId.Nombre === 'Aprovechamientos'" class="row">
+      <div *ngIf="detalle && !edit && entradaEspecifica.TipoEntradaId.Nombre === 'Aprovechamientos'" class="row">
         <div *ngIf="Proveedor!=undefined" class="col">
           <p class="text-uppercase"><strong>Proveedor:</strong> {{ Proveedor }}</p>
         </div>
       </div>  
 
       <!-- OBSERVACIONES -->
-      <div *ngIf="detalle" class=" row">
+      <div *ngIf="detalle && !edit" class=" row">
         <div class="col">
           <p *ngIf="entradaEspecifica.Observacion !== ''" class="text-uppercase">
-            <strong>Observaciones:</strong> {{ entradaEspecifica.Observacion }}</p>
+            <strong>Observaciones:</strong> {{ entradaEspecifica.Observacion }}
+          </p>
           <p *ngIf="entradaEspecifica.Observacion === ''" class="text-uppercase">
-            <strong>Observaciones:</strong> N/A</p>
+            <strong>Observaciones:</strong> N/A
+          </p>
         </div>
       </div>
 
@@ -352,9 +370,8 @@
 
   </nb-card-body>
   <nb-card-footer class="pt-4">
-      <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="onVolver()"
-        *ngIf="detalle">{{'GLOBAL.volver' | translate}}
-      </button>
+    <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="onVolver()"
+      *ngIf="detalle && !edit">{{'GLOBAL.volver' | translate}}
+    </button>
   </nb-card-footer>
-
 </nb-card>

@@ -12,7 +12,7 @@ import { SobranteComponent } from './sobrante/sobrante.component';
 import { RegistroComponent } from './registro/registro.component';
 import { TercerosComponent } from './terceros/terceros.component';
 import { ConsultaEntradaComponent } from './consulta-entrada/consulta-entrada.component';
-import { Ng2SmartTableModule } from 'ngx-smart-table';
+import { Ng2SmartTableModule } from 'ng2-smart-table';
 import { OwlDateTimeModule, OwlNativeDateTimeModule } from 'ng-pick-datetime';
 import { TablaEntradasComponent } from './tabla-entradas/tabla-entradas.component';
 import { CajaMenorComponent } from './caja-menor/caja-menor.component';

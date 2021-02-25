@@ -23,6 +23,7 @@ import { Router, NavigationEnd } from '@angular/router';
 import { LocalDataSource } from 'ngx-smart-table';
 import { ElementoSalida } from '../../../@core/data/models/salidas/salida_elementos';
 import { SalidaHelper } from '../../../helpers/salidas/salidasHelper';
+import {Ng2SmartTableComponent} from 'ng2-smart-table/ng2-smart-table.component';
 
 @Component({
   selector: 'ngx-tabla-elementos-asignados',
@@ -31,6 +32,7 @@ import { SalidaHelper } from '../../../helpers/salidas/salidasHelper';
 })
 export class TablaElementosAsignadosComponent implements OnInit {
 
+  @ViewChild('table') table: Ng2SmartTableComponent;
   settings: any;
   settings2: any;
   bandera: boolean;
@@ -39,10 +41,12 @@ export class TablaElementosAsignadosComponent implements OnInit {
   respuesta: any;
   Datos: ElementoSalida[];
   DatosConsumo: ElementoSalida[];
+  DatosElementos: any;
   ElementosConsumoNoAsignados: ElementoSalida[];
   ElementosConsumoAsignados: ElementoSalida[];
   ElementosConsumoSinAsignar: ElementoSalida[];
   ElementosConsumoControladoSinAsignar: ElementoSalida[];
+  IndicesSeleccionados: number[] = new Array();
   Consumo: any;
   Sedes: any;
   Dependencias: any;
@@ -151,13 +155,59 @@ export class TablaElementosAsignadosComponent implements OnInit {
 
   }
   onRowSelect(event) {
+    const result = this.table.grid.getRows().filter(row => row.isSelected);
+    result.forEach((row) => {
+      if (this.IndicesSeleccionados.length > 0) {
+          const found = this.IndicesSeleccionados.find(element => element === row.index);
+          if (found === undefined)
+             this.IndicesSeleccionados.push(row.index);
 
+      } else {
+         this.IndicesSeleccionados.push(row.index);
+      }
+    });
+
+// si sacan de elementos seleccionados los que hayan sido deseleccionados
+
+    let seleccionar = false;
+    const numeroelementos = this.IndicesSeleccionados.length;
+    if (this.estadoShift === true && numeroelementos > 1) {
+        if (this.IndicesSeleccionados[numeroelementos - 1] > this.IndicesSeleccionados[numeroelementos - 2] + 1)
+          seleccionar = true;
+    }
+
+
+    this.IndicesSeleccionados.forEach((row, index) => {
+       const found = result.find(element => element.index === row);
+       if (found === undefined) {
+          this.IndicesSeleccionados.splice(index);
+          seleccionar = false;
+       }
+    });
+
+    if (seleccionar === true) {
+      this.table.grid.getRows().forEach((row) => {
+        if (row.index > this.IndicesSeleccionados[numeroelementos - 2] &&
+           row.index <= this.IndicesSeleccionados[numeroelementos - 1])
+             this.table.grid.multipleSelectRow(row);
+      });
+    }
     this.DatosSeleccionados = event;
     if (Object.keys(this.DatosSeleccionados.selected).length !== 0) {
       this.formulario = true;
     } else { // if (Object.keys(this.DatosSeleccionados.data[0]) === 1)
       this.formulario = false;
     }
+
+
+
+/*
+    this.DatosSeleccionados = event;
+    if (Object.keys(this.DatosSeleccionados.selected).length !== 0) {
+      this.formulario = true;
+    } else { // if (Object.keys(this.DatosSeleccionados.data[0]) === 1)
+      this.formulario = false;
+    }*/
   }
 
   onRowSelect2(event) {
@@ -272,7 +322,12 @@ export class TablaElementosAsignadosComponent implements OnInit {
           valuePrepareFunction: (value: any) => {
             return value;
           },
-
+        },
+        Placa: {
+          title: 'Placa',
+          valuePrepareFunction: (value: any) => {
+            return value;
+          },
         },
         Funcionario: {
           title: 'Funcionario',
@@ -558,6 +613,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
     this.DatosConsumo = new Array<ElementoSalida>();
     this.ElementosConsumoSinAsignar = new Array<ElementoSalida>();
     this.ElementosConsumoControladoSinAsignar = new Array<ElementoSalida>();
+    this.DatosElementos = new Array();
     for (const index in datos) {
       if (true) {
         // console.log(datos[index])
@@ -569,6 +625,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
         elemento.Cantidad = datos[index].Cantidad;
         elemento.Marca = datos[index].Marca;
         elemento.Serie = datos[index].Serie;
+        elemento.Placa = datos[index].Placa;
         elemento.TipoBienId = datos[index].TipoBienId;
         elemento.Funcionario = null;
         elemento.Sede = null;
@@ -590,6 +647,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
           this.DatosConsumo.push(elemento);
         } else {
           this.ElementosConsumoControladoSinAsignar.push(elemento);
+          this.DatosElementos.push(datos[index]);
           this.Datos.push(elemento);
         }
       }
@@ -613,8 +671,21 @@ export class TablaElementosAsignadosComponent implements OnInit {
     const datos2 = new Array<any>();
     for (const index in datos) {
       if (true) {
+
+
+
+
+
         // console.log(datos[index])
         const elemento = new ElementoSalida();
+
+        if (datos[index].Asignado === true) {
+          const filtrado = this.DatosElementos.filter((row) => row.Id === datos[index].Id);
+          this.asignarPlacas(filtrado[0], index);
+       }
+
+
+
         elemento.ValorUnitario = datos[index].ValorUnitario;
         elemento.ValorTotal = datos[index].ValorTotal;
         elemento.Id = datos[index].Id;
@@ -622,8 +693,10 @@ export class TablaElementosAsignadosComponent implements OnInit {
         elemento.Cantidad = datos[index].Cantidad;
         elemento.Marca = datos[index].Marca;
         elemento.Serie = datos[index].Serie;
+        elemento.Placa = datos[index].Placa;
         elemento.Asignado = datos[index].Asignado;
         elemento.TipoBienId = datos[index].TipoBienId;
+        elemento.Placa = datos[index].Placa;
         if (datos[index].Funcionario !== null) {
           if (datos[index].Funcionario !== undefined) {
             elemento.Funcionario = datos[index].Funcionario;
@@ -669,6 +742,21 @@ export class TablaElementosAsignadosComponent implements OnInit {
       // console.log(this.source);
     }
   }
+
+
+  asignarPlacas(datos: any, elemento: any) {
+    this.salidasHelper.getElemento(datos).subscribe((res: any) => {
+        if (res.Placa === '') {
+           this.salidasHelper.putElemento(res).subscribe((res1: any) => {
+              return res1.placa;
+           });
+        }
+    });
+    return '';
+ }
+
+
+
 
   AjustarDatosConsumo(datos: any[]) {
     this.Datos2 = new Array<ElementoSalida>();

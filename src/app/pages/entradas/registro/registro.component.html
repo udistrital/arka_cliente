@@ -14,30 +14,30 @@
 
       <h5 *ngIf="actaSeleccionada != ''">{{'GLOBAL.tipo_entrada' | translate}}</h5>
 
-      <select class="form-control mb-4" [(ngModel)]="opcionEntrada" *ngIf="actaSeleccionada != ''" >
+      <select class="form-control mb-4" [(ngModel)]="opcionEntrada" *ngIf="actaSeleccionada != '' || EntradaEdit" >
         <option *ngFor="let entrada of tiposDeEntradas" [value]="entrada">
-          {{ 'GLOBAL.entradas.tipo.'+entrada+'.nombre' | translate }}
+          {{ 'GLOBAL.movimientos.tipo.'+entrada+'.nombre' | translate }}
         </option>
       </select>
 
-      <h3 *ngIf="opcionEntrada" class="pt-4 pb-2">{{'GLOBAL.entradas.tipo.' + opcionEntrada + '.descripcion' | translate}}</h3>
+      <h3 *ngIf="opcionEntrada" class="pt-4 pb-2">{{'GLOBAL.movimientos.tipo.' + opcionEntrada + '.descripcion' | translate}}</h3>
       <p *ngIf="opcionEntrada" class="font-weight-bold font-italic pb-2">{{ 'GLOBAL.Acta_Recibido.id_forma1' | translate : {ID: actaSeleccionada} }}</p>
 
-      <ngx-adquisicion *ngIf="opcionEntrada === 'EA'" [actaRecibidoId]="actaSeleccionada"></ngx-adquisicion>
-      <ngx-reposicion *ngIf="opcionEntrada === 'EPR'" [actaRecibidoId]="actaSeleccionada"></ngx-reposicion>
-      <ngx-elaboracion-propia *ngIf="opcionEntrada === 'EEP'" [actaRecibidoId]="actaSeleccionada">
+      <ngx-adquisicion *ngIf="opcionEntrada === 'EA'" [actaRecibidoId]="actaSeleccionada" [movimientoId]="movimientoId"></ngx-adquisicion>
+      <ngx-reposicion *ngIf="opcionEntrada === 'EPR'" [actaRecibidoId]="actaSeleccionada" [movimientoId]="movimientoId"></ngx-reposicion>
+      <ngx-elaboracion-propia *ngIf="opcionEntrada === 'EEP'" [actaRecibidoId]="actaSeleccionada" [movimientoId]="movimientoId">
       </ngx-elaboracion-propia>
-      <ngx-donacion *ngIf="opcionEntrada === 'ED'" [actaRecibidoId]="actaSeleccionada"></ngx-donacion>
-      <ngx-aprovechamientos *ngIf="opcionEntrada === 'EPPA'" [actaRecibidoId]="actaSeleccionada"></ngx-aprovechamientos>
-      <ngx-sobrante *ngIf="opcionEntrada === 'ESI'" [actaRecibidoId]="actaSeleccionada">
+      <ngx-donacion *ngIf="opcionEntrada === 'ED'" [actaRecibidoId]="actaSeleccionada" [movimientoId]="movimientoId"></ngx-donacion>
+      <ngx-aprovechamientos *ngIf="opcionEntrada === 'EPPA'" [actaRecibidoId]="actaSeleccionada" [movimientoId]="movimientoId"></ngx-aprovechamientos>
+      <ngx-sobrante *ngIf="opcionEntrada === 'ESI'" [actaRecibidoId]="actaSeleccionada" [movimientoId]="movimientoId">
       </ngx-sobrante>
-      <ngx-extranjero *ngIf="opcionEntrada === 'ECE'" [actaRecibidoId]="actaSeleccionada"></ngx-extranjero>
-      <ngx-terceros *ngIf="opcionEntrada === 'ET'" [actaRecibidoId]="actaSeleccionada"></ngx-terceros>
-      <ngx-caja-menor *ngIf="opcionEntrada === 'ECM'" [actaRecibidoId]="actaSeleccionada"></ngx-caja-menor>
-      <ngx-adiciones-mejoras *ngIf="opcionEntrada === 'EAM'" [actaRecibidoId]="actaSeleccionada"></ngx-adiciones-mejoras>
-      <ngx-intangibles-adquiridos *ngIf="opcionEntrada === 'EIA'" [actaRecibidoId]="actaSeleccionada"></ngx-intangibles-adquiridos>
-      <ngx-provisional *ngIf="opcionEntrada === 'EBEMP'" [actaRecibidoId]="actaSeleccionada"></ngx-provisional>
-      <ngx-intangibles-desarrollados *ngIf="opcionEntrada === 'EID'" [actaRecibidoId]="actaSeleccionada"></ngx-intangibles-desarrollados>
+      <ngx-extranjero *ngIf="opcionEntrada === 'ECE'" [actaRecibidoId]="actaSeleccionada" [movimientoId]="movimientoId"></ngx-extranjero>
+      <ngx-terceros *ngIf="opcionEntrada === 'ET'" [actaRecibidoId]="actaSeleccionada" [movimientoId]="movimientoId"></ngx-terceros>
+      <ngx-caja-menor *ngIf="opcionEntrada === 'ECM'" [actaRecibidoId]="actaSeleccionada" [movimientoId]="movimientoId"></ngx-caja-menor>
+      <ngx-adiciones-mejoras *ngIf="opcionEntrada === 'EAM'" [actaRecibidoId]="actaSeleccionada" [movimientoId]="movimientoId"></ngx-adiciones-mejoras>
+      <ngx-intangibles-adquiridos *ngIf="opcionEntrada === 'EIA'" [actaRecibidoId]="actaSeleccionada" [movimientoId]="movimientoId"></ngx-intangibles-adquiridos>
+      <ngx-provisional *ngIf="opcionEntrada === 'EBEMP'" [actaRecibidoId]="actaSeleccionada" [movimientoId]="movimientoId"></ngx-provisional>
+      <ngx-intangibles-desarrollados *ngIf="opcionEntrada === 'EID'" [actaRecibidoId]="actaSeleccionada" [movimientoId]="movimientoId"></ngx-intangibles-desarrollados>
 
       <ngx-tabla-entradas *ngIf="opcionEntrada" [actaRecibidoId]="actaSeleccionada"></ngx-tabla-entradas>
 

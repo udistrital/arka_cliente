@@ -56,7 +56,8 @@ export class IntangiblesDesarrolladosComponent implements OnInit {
   cargando_supervisores: boolean = true;
   cargando_ordenadores: boolean = true;
 
-  @Input() actaRecibidoId: string;
+  @Input() actaRecibidoId: Number;
+  @Input() movimientoId: Number;
 
   constructor(
     private router: Router,
@@ -257,7 +258,7 @@ changeSolicitante(event) {
     if (this.validar) {
       const detalle = {
         acta_recibido_id: +this.actaRecibidoId,
-        consecutivo: 'P8-5-2019', // REVISAR
+        consecutivo: 'P8',
         documento_contable_id: 1, // REVISAR
         vigencia: this.ordenadorForm.value.vigenciaCtrl,
         supervisor: this.supervisorForm.value.supervisorCtrl.TerceroPrincipal.Id,
@@ -273,12 +274,20 @@ changeSolicitante(event) {
         EstadoMovimientoId: {
           Id: 2, // REVISAR
         },
+        Id: this.movimientoId ? this.movimientoId : 0,
         SoporteMovimientoId: this.idDocumento,
         IdTipoMovimiento: this.tipoEntrada.Id,
       };
 
       this.entradasHelper.postEntrada(movimientoAdquisicion).subscribe((res: any) => {
         if (res !== null) {
+          const elstring = JSON.stringify(res.Detalle);
+          const posini = elstring.indexOf('consecutivo') + 16;
+          if (posini !== -1) {
+              const posfin = elstring.indexOf('\"', posini);
+              const elresultado = elstring.substr(posini, posfin - posini - 1);
+              detalle.consecutivo = detalle.consecutivo + elresultado;
+          }
           (Swal as any).fire({
             type: 'success',
             title: 'Entrada N° ' + `${detalle.consecutivo}` + ' Registrada',

@@ -219,6 +219,20 @@ export class ActaRecibidoHelper {
         );
     }
 
+    public getActaById(Id: number) {
+        this.rqManager.setPath('ACTA_RECIBIDO_SERVICE');
+        return this.rqManager.get('historico_acta?query=Activo:true,ActaRecibidoId__Id:' + Id).pipe(
+            map(
+                (res) => {
+                    if (res === 'error') {
+                        this.pUpManager.showErrorAlert('No se pudo consultar los tipos de bien');
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
     /**
      * Estados Acta Get
      * If the response has errors in the OAS API it should show a popup message with an error.

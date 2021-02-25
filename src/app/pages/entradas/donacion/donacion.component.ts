@@ -57,7 +57,8 @@ export class DonacionComponent implements OnInit {
 
   @ViewChild('stepper') stepper: NbStepperComponent;
 
-  @Input() actaRecibidoId: string;
+  @Input() actaRecibidoId: Number;
+  @Input() movimientoId: Number;
 
   constructor(private router: Router, private entradasHelper: EntradaHelper, private actaRecibidoHelper: ActaRecibidoHelper,
     private pUpManager: PopUpManager, private fb: FormBuilder) {
@@ -299,7 +300,7 @@ export class DonacionComponent implements OnInit {
     if (this.validar) {
       const detalle = {
         acta_recibido_id: +this.actaRecibidoId,
-        consecutivo: 'P4-' + this.actaRecibidoId + '-' + new Date().getFullYear(),
+        consecutivo: 'P4',
         documento_contable_id: 1, // REVISAR
         contrato_id: +this.contratoEspecifico.NumeroContratoSuscrito,
         vigencia_contrato: this.contratoForm.value.vigenciaCtrl,
@@ -318,12 +319,23 @@ export class DonacionComponent implements OnInit {
         EstadoMovimientoId: {
           Id: 2, // REVISAR
         },
+        Id: this.movimientoId ? this.movimientoId : 0,
         SoporteMovimientoId: 0,
         IdTipoMovimiento: this.tipoEntrada.Id,
       };
 
       this.entradasHelper.postEntrada(movimientoAdquisicion).subscribe((res: any) => {
         if (res !== null) {
+
+          const elstring = JSON.stringify(res.Detalle);
+          const posini = elstring.indexOf('consecutivo') + 16;
+          if (posini !== -1) {
+              const posfin = elstring.indexOf('\"', posini);
+              const elresultado = elstring.substr(posini, posfin - posini - 1);
+              detalle.consecutivo = detalle.consecutivo + elresultado;
+          }
+
+
           (Swal as any).fire({
             type: 'success',
             title: 'Entrada N° ' + `${detalle.consecutivo}` + ' Registrada',
