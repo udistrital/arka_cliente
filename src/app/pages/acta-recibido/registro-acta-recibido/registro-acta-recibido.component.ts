@@ -8,6 +8,7 @@ import { NuxeoService } from '../../../@core/utils/nuxeo.service';
 import { MatTable } from '@angular/material';
 import 'hammerjs';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
+import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
 import { ActaRecibido } from '../../../@core/data/models/acta_recibido/acta_recibido';
 import { Elemento, Impuesto } from '../../../@core/data/models/acta_recibido/elemento';
 import { TipoBien } from '../../../@core/data/models/acta_recibido/tipo_bien';
@@ -17,6 +18,7 @@ import { ActaRecibidoUbicacion } from '../../../@core/data/models/acta_recibido/
 import { Proveedor } from '../../../@core/data/models/acta_recibido/Proveedor';
 import { EstadoActa_t } from '../../../@core/data/models/acta_recibido/estado_acta';
 import { EstadoElemento } from '../../../@core/data/models/acta_recibido/estado_elemento';
+import { TerceroCriterioContratista } from '../../../@core/data/models/terceros_criterio';
 import { HistoricoActa } from '../../../@core/data/models/acta_recibido/historico_acta';
 import { TransaccionSoporteActa, TransaccionActaRecibido } from '../../../@core/data/models/acta_recibido/transaccion_acta_recibido';
 import Swal from 'sweetalert2';
@@ -43,7 +45,6 @@ import { NbDateService } from '@nebular/theme';
   templateUrl: './registro-acta-recibido.component.html',
   styleUrls: ['./registro-acta-recibido.component.scss'],
 })
-
 export class RegistroActaRecibidoComponent implements OnInit {
 
   config: ToasterConfig;
@@ -53,6 +54,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
   protected dataService: CompleterData;
   protected dataService2: CompleterData;
   protected dataService3: CompleterData;
+  contratistas: TerceroCriterioContratista[];
 
   // Mensajes de error
   errMess: any;
@@ -102,6 +104,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
     private route: ActivatedRoute,
     private fb: FormBuilder,
     private Actas_Recibido: ActaRecibidoHelper,
+    private tercerosHelper: TercerosHelper,
     private toasterService: ToasterService,
     private completerService: CompleterService,
     private store: Store<IAppState>,
@@ -129,6 +132,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
     this.listService.findEstadosElemento();
     this.listService.findTipoBien();
     this.loadLists();
+    this.loadContratistas();
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
     });
     this.searchStr2 = new Array<string>();
@@ -187,6 +191,13 @@ export class RegistroActaRecibidoComponent implements OnInit {
       },
     );
   }
+
+  private loadContratistas(): void {
+    this.tercerosHelper.getTercerosByCriterio('contratista').subscribe(res => {
+      this.contratistas = res;
+    });
+  }
+
   download(index) {
 
     const new_tab = window.open(this.fileDocumento[index].urlTemp, this.fileDocumento[index].urlTemp, '_blank');

@@ -6,7 +6,7 @@ import { Base } from './base';
 
 export class TipoContribuyente extends Base {
     Nombre: string;
-    CodigoAbreviaion: string; // TODO: Cambiar cuando se corrija en la API de terceros
+    CodigoAbreviacion: string;
     Descripcion: string;
 }
 
@@ -19,4 +19,21 @@ export class Tercero extends Base {
     LugarOrigen: number;
     FechaNacimiento: Date;
     TipoContribuyenteId: Partial<TipoContribuyente>;
+}
+
+export class TipoDocumento extends Base {
+    Nombre: string;
+    Descripcion: string;
+    CodigoAbreviacion: string;
+    NumeroOrden: number;
+}
+
+export class DatosIdentificacion extends Base {
+    TipoDocumentoId: Partial<TipoDocumento>;
+    TerceroId: Partial<Tercero>;
+    Numero: string;
+    DigitoVerificacion: number;
+    CiudadExpedicion: number;
+    FechaExpedicion: Date;
+    DocumentoSoporte: number;
 }
