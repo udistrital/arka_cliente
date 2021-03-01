@@ -39,19 +39,19 @@
                     <p class="campo" *ngIf="firstForm.get('Formulario1').get('Ubicacion').invalid">
                       {{'GLOBAL.placeholder' | translate}}</p>
                   </div>
-
-                  <div class="form-group col-sm">
+                  <div class="form-group col-sm" [nbSpinner]="cargando_contratistas">
                       <label>{{'GLOBAL.Acta_Recibido.ContratistaAsignado' | translate}}</label>
-                      <ng2-completer style="border: 0rem" inputClass="form-control" [clearUnselected]="true"
-                      placeholder="{{'GLOBAL.Acta_Recibido.RegistroActa.SeleccioneFiltro' | translate}}"
-                      nbInput [datasource]="dataService2" formControlName="Revisor"
-                      (keyup)="usarLocalStorage()" [minSearchLength]="3">
-                      </ng2-completer>
-                      <p class="campo" *ngIf="firstForm.get('Formulario1').get('Revisor').invalid">
+                      <input matInput type="text" class="form-control" placeholder="Nombre o Documento"
+                      formControlName="Contratista" [matAutocomplete]="autoContratista" />
+                      <mat-autocomplete #autoContratista="matAutocomplete" [displayWith]="muestraContratista"
+                      (optionSelected)="usarLocalStorage()">
+                        <mat-option *ngFor="let contr of contratistasFiltrados | async" [value]="contr">
+                          {{muestraContratista(contr)}}
+                        </mat-option>
+                      </mat-autocomplete>
+                      <p class="campo" *ngIf="firstForm.get('Formulario1').get('Contratista').invalid">
                          {{'GLOBAL.placeholder' | translate}}</p>
                   </div>
-
-
                 </div>
               </nb-card-body>
               <nb-card-footer>

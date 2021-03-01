@@ -39,6 +39,7 @@ import { UserService } from '../../../@core/data/users.service';
 import { Console } from 'console';
 import { INVALID } from '@angular/forms/src/model';
 import { NbDateService } from '@nebular/theme';
+import { map, startWith } from 'rxjs/operators';
 
 @Component({
   selector: 'ngx-registro-acta-recibido',
@@ -54,7 +55,9 @@ export class RegistroActaRecibidoComponent implements OnInit {
   protected dataService: CompleterData;
   protected dataService2: CompleterData;
   protected dataService3: CompleterData;
-  contratistas: TerceroCriterioContratista[];
+  cargando_contratistas: boolean = true;
+  private Contratistas: TerceroCriterioContratista[];
+  contratistasFiltrados: Observable<TerceroCriterioContratista[]>;
 
   // Mensajes de error
   errMess: any;
@@ -132,7 +135,6 @@ export class RegistroActaRecibidoComponent implements OnInit {
     this.listService.findEstadosElemento();
     this.listService.findTipoBien();
     this.loadLists();
-    this.loadContratistas();
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
     });
     this.searchStr2 = new Array<string>();
@@ -193,9 +195,31 @@ export class RegistroActaRecibidoComponent implements OnInit {
   }
 
   private loadContratistas(): void {
-    this.tercerosHelper.getTercerosByCriterio('contratista').subscribe(res => {
-      this.contratistas = res;
-    });
+    if (this.cargando_contratistas) {
+      this.tercerosHelper.getTercerosByCriterio('contratista').subscribe(res => {
+        this.Contratistas = res;
+        // console.log({Contratistas: this.Contratistas});
+        this.contratistasFiltrados = this
+          .firstForm.get('Formulario1').get('Contratista').valueChanges
+          .pipe(
+            startWith(''),
+            map(val => typeof val === 'string' ? val : this.muestraContratista(val)),
+            map(nombre => this.filtroContratistas(nombre)),
+          );
+        this.cargando_contratistas = false;
+      });
+    }
+  }
+  private filtroContratistas(nombre: string): TerceroCriterioContratista[] {
+    if (nombre.length >= 4) {
+      const valorFiltrado = nombre.toLowerCase();
+      return this.Contratistas.filter(contr => this.muestraContratista(contr).toLowerCase().includes(valorFiltrado));
+    } else return [];
+  }
+  muestraContratista(contr: TerceroCriterioContratista): string {
+    if (contr) {
+      return contr.Identificacion.Numero + ' - ' + contr.Tercero.NombreCompleto;
+    }
   }
 
   download(index) {
@@ -253,6 +277,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
       Formulario1: this.Formulario_1,
       Formulario2: this.fb.array([this.Formulario_2]),
     });
+    this.loadContratistas();
   }
 
   Cargar_Formularios2(transaccion_: any) {
@@ -275,7 +300,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
         Sede: [transaccion_.Formulario1.Sede, Validators.required],
         Dependencia: [transaccion_.Formulario1.Dependencia, Validators.required],
         Ubicacion: [transaccion_.Formulario1.Ubicacion, Validators.required],
-        Revisor: [transaccion_.Formulario1.PersonaAsignada, Validators.required],
+        Contratista: [transaccion_.Formulario1.Contratista, Validators.required],
       }),
       Formulario2: Form2,
     });
@@ -294,6 +319,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
         });
       }
     }
+    this.loadContratistas();
   }
 
   get Formulario_1(): FormGroup {
@@ -301,7 +327,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
       Sede: ['', Validators.required],
       Dependencia: ['', Validators.required],
       Ubicacion: ['', Validators.required],
-      Revisor: ['', Validators.required],
+      Contratista: ['', Validators.required],
     });
   }
   get Formulario_2(): FormGroup {
@@ -379,6 +405,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
     });
 
     Transaccion_Acta.SoportesActa = Soportes;
+    // console.log({Transaccion_Acta, validador: this.validador});
     if (this.validador === false) {
       this.Actas_Recibido.postTransaccionActa(Transaccion_Acta).subscribe((res: any) => {
         if (res !== null) {
@@ -408,9 +435,8 @@ export class RegistroActaRecibidoComponent implements OnInit {
   }
 
   Registrar_Acta(Datos: any): ActaRecibido {
-
+    // console.log({Datos});
     const Acta_de_Recibido = new ActaRecibido();
-    const revisor___ = Datos.Revisor.split(' ');
     Acta_de_Recibido.Id = null;
     Acta_de_Recibido.Activo = true;
     Acta_de_Recibido.FechaCreacion = new Date();
@@ -418,7 +444,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
     Acta_de_Recibido.RevisorId = this.userService.getPersonaId();
     Acta_de_Recibido.UbicacionId = parseFloat(Datos.Ubicacion);
     Acta_de_Recibido.Observaciones = '';
-    Acta_de_Recibido.PersonaAsignada = this.Proveedores.find(proveedor => proveedor.NumDocumento.toString() === revisor___[0].toString()).Id;
+    Acta_de_Recibido.PersonaAsignada = Datos.Contratista.Tercero.Id;
     return Acta_de_Recibido;
   }
 
