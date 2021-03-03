@@ -1,5 +1,5 @@
 import { EspacioFisico } from './ubicacion/espacio_fisico';
-import { Tercero } from './terceros';
+import { Tercero, DatosIdentificacion } from './terceros';
 import { Dependencia } from './oikos';
 
 /**
@@ -13,9 +13,14 @@ export class TerceroCriterioPlanta {
     TerceroPrincipal: Tercero;
     TipoVinculacion: number;
 }
+
 export class TerceroCriterioJefe {
     Cargo: number;
     DependenciaId: number;
     TerceroPrincipal: Tercero;
 }
 
+export class TerceroCriterioContratista {
+    Identificacion: Partial<DatosIdentificacion>;
+    Tercero: Partial<Tercero>;
+}

@@ -1,5 +1,6 @@
 import { Component, OnInit, ViewChild, ViewChildren, QueryList, Input } from '@angular/core';
-import { Subscription, combineLatest, empty } from 'rxjs';
+import { Subscription, Observable } from 'rxjs';
+import { map, startWith } from 'rxjs/operators';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, FormControl, FormArray } from '@angular/forms';
 import { NuxeoService } from '../../../@core/utils/nuxeo.service';
@@ -7,6 +8,7 @@ import { AuthInterceptor } from './../../../@core/_Interceptor/auth.Interceptor'
 import { MatTable } from '@angular/material';
 import 'hammerjs';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
+import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
 import { ActaRecibido } from '../../../@core/data/models/acta_recibido/acta_recibido';
 import { Elemento, Impuesto } from '../../../@core/data/models/acta_recibido/elemento';
 import { TipoBien } from '../../../@core/data/models/acta_recibido/tipo_bien';
@@ -16,6 +18,7 @@ import { EstadoActa_t } from '../../../@core/data/models/acta_recibido/estado_ac
 import { EstadoElemento } from '../../../@core/data/models/acta_recibido/estado_elemento';
 import { HistoricoActa } from '../../../@core/data/models/acta_recibido/historico_acta';
 import { TransaccionSoporteActa, TransaccionActaRecibido } from '../../../@core/data/models/acta_recibido/transaccion_acta_recibido';
+import { TerceroCriterioContratista } from '../../../@core/data/models/terceros_criterio';
 import Swal from 'sweetalert2';
 import { ToasterService, ToasterConfig, Toast, BodyOutputType } from 'angular2-toaster';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
@@ -48,6 +51,9 @@ export class EdicionActaRecibidoComponent implements OnInit {
   searchStr3: string;
   protected dataService: CompleterData;
   dataService2: CompleterData;
+  cargando_contratistas: boolean = true;
+  private Contratistas: TerceroCriterioContratista[];
+  contratistasFiltrados: Observable<TerceroCriterioContratista[]>;
 
   // Mensajes de error
   errMess: any;
@@ -141,6 +147,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
     private route: ActivatedRoute,
     private fb: FormBuilder,
     private Actas_Recibido: ActaRecibidoHelper,
+    private tercerosHelper: TercerosHelper,
     private toasterService: ToasterService,
     private completerService: CompleterService,
     private store: Store<IAppState>,
@@ -181,6 +188,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
     if (!this.userService.getPersonaId()) {
       this.errores.set('terceros', true);
     }
+    this.loadContratistas();
   }
 
   // Los permisos en cada sección dependen del estado del acta y del rol.
@@ -377,6 +385,28 @@ export class EdicionActaRecibidoComponent implements OnInit {
     }
   }
 
+  private loadContratistas(): void {
+    if (this.cargando_contratistas) {
+      this.tercerosHelper.getTercerosByCriterio('contratista').subscribe(res => {
+        this.Contratistas = res;
+        // console.log({Contratistas: this.Contratistas});
+        this.cargando_contratistas = false;
+      });
+    }
+  }
+  private filtroContratistas(nombre: string): TerceroCriterioContratista[] {
+    if (nombre.length >= 4) {
+      const valorFiltrado = nombre.toLowerCase();
+      return this.Contratistas.filter(contr => this.muestraContratista(contr).toLowerCase().includes(valorFiltrado));
+    } else return [];
+  }
+  muestraContratista(contr: TerceroCriterioContratista): string {
+    // console.log({contr});
+    if (contr) {
+      return contr.Identificacion.Numero + ' - ' + contr.Tercero.NombreCompleto;
+    }
+  }
+
   async asyncForEach(array, callback) {
     for (let index = 0; index < array.length; index++) {
       await callback(array[index], index, array);
@@ -493,11 +523,11 @@ export class EdicionActaRecibidoComponent implements OnInit {
             transaccion_.ActaRecibido.UbicacionId,
             Validators.required,
           ],
-          Revisor: [ (() => {
-            const criterio = proveedor =>
-            proveedor &&
-            proveedor.Id.toString() === transaccion_.ActaRecibido.PersonaAsignada.toString();
-            return this.Proveedores.some(criterio) ? this.Proveedores.find(criterio).compuesto : '';
+          Contratista: [ (() => {
+            const criterio = (contratista: TerceroCriterioContratista) =>
+            contratista &&
+            contratista.Tercero.Id === transaccion_.ActaRecibido.PersonaAsignada;
+            return this.Contratistas.some(criterio) ? this.Contratistas.find(criterio) : '';
           })(),
             Validators.required,
           ],
@@ -512,6 +542,11 @@ export class EdicionActaRecibidoComponent implements OnInit {
       this.firstForm.get('Formulario3').statusChanges.subscribe(change => this.checkValidness(3, change));
       this.carga_agregada = true;
       this.Traer_Relacion_Ubicaciones();
+      this.contratistasFiltrados = this.firstForm.get('Formulario1').get('Contratista').valueChanges.pipe(
+        startWith(''),
+        map(val => typeof val === 'string' ? val : this.muestraContratista(val)),
+        map(nombre => this.filtroContratistas(nombre)),
+      );
     });
   }
 
@@ -551,7 +586,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
         Sede: [transaccion_.Formulario1.Sede, Validators.required],
         Dependencia: [transaccion_.Formulario1.Dependencia, Validators.required],
         Ubicacion: [transaccion_.Formulario1.Ubicacion, Validators.required],
-        Revisor: [transaccion_.Formulario1.Revisor, Validators.required],
+        Contratista: [transaccion_.Formulario1.Contratista, Validators.required],
       }),
       Formulario2: Form2,
       Formulario3: this.fb.group({
@@ -602,7 +637,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
       Sede: ['', Validators.required],
       Dependencia: ['', Validators.required],
       Ubicacion: ['', Validators.required],
-      Revisor: ['', Validators.required],
+      Contratista: ['', Validators.required],
     });
   }
   get Formulario_2(): FormGroup {
@@ -774,7 +809,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
     });
   }
 
-  // Envío (a proveedor/revisor) o guardado
+  // Envío (a (proveedor y/o contratista)/revisor) o guardado
   private async onFirstSubmit(siguienteEtapa: boolean = false, enviara: number = 0) {
     this.guardando = true;
     if (!siguienteEtapa) {
@@ -804,7 +839,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
       Soportes.push(this.Registrar_Soporte(soporte, this.Elementos__Soporte[index], Transaccion_Acta.ActaRecibido));
     });
     Transaccion_Acta.SoportesActa = Soportes;
-
+    // console.log({Transaccion_Acta});
     this.Actas_Recibido.putTransaccionActa(Transaccion_Acta, Transaccion_Acta.ActaRecibido.Id).subscribe((res: any) => {
       // console.log(res);
       if (res !== null) {
@@ -828,8 +863,8 @@ export class EdicionActaRecibidoComponent implements OnInit {
         }).then((willDelete) => {
           if (willDelete.value && siguienteEtapa) {
               const formularios  = this.firstForm.value;
-              const cedulaprov = formularios.Formulario1.Revisor.split(' ')[0].toString();
-              const cedularev = formularios.Formulario2[0].Proveedor.split(' ')[0].toString();
+              const cedulaprov = formularios.Formulario2[0].Proveedor.split(' ')[0].toString();
+              const cedularev = formularios.Formulario1.Contratista.Identificacion.Numero;
               if (enviara === 1) {
                  this.EnviarEmail(cedulaprov);
                  this.EnviarEmail(cedularev);
@@ -837,11 +872,9 @@ export class EdicionActaRecibidoComponent implements OnInit {
               if (enviara === 2) {
                  this.EnviarEmail(cedularev);
               }
-
-
- // const revisor___ = Datos.Revisor.split(' ');
- // Se usa una redirección "dummy", intermedia. Ver
- // https://stackoverflow.com/a/49509706/3180052
+              // const revisor___ = Datos.Revisor.split(' ');
+              // Se usa una redirección "dummy", intermedia. Ver
+              // https://stackoverflow.com/a/49509706/3180052
               this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
                 this.router.navigateByUrl('/pages/acta_recibido/consulta_acta_recibido');
               });
@@ -870,7 +903,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
 
     const Acta_de_Recibido = new ActaRecibido();
 
-    const revisor___ = Datos.Revisor.split(' ');
     Acta_de_Recibido.Id = parseFloat(Datos.Id);
     Acta_de_Recibido.Activo = true;
     Acta_de_Recibido.FechaCreacion = new Date();
@@ -878,7 +910,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
     Acta_de_Recibido.RevisorId = this.userService.getPersonaId();
     Acta_de_Recibido.UbicacionId = parseFloat(Datos.Ubicacion);
     Acta_de_Recibido.Observaciones = Datos2.Datos_Adicionales;
-    Acta_de_Recibido.PersonaAsignada = this.Proveedores.find(proveedor => proveedor.NumDocumento.toString() === revisor___[0].toString()).Id;
+    Acta_de_Recibido.PersonaAsignada = Datos.Contratista.Tercero.Id;
 
     return Acta_de_Recibido;
   }
@@ -1091,8 +1123,9 @@ export class EdicionActaRecibidoComponent implements OnInit {
     } else {
        codigoL10n_desc = L10n_base + ((enviara === 1) ? 'DatosVeridicos3' : 'DatosVeridicos4');
        const formularios  = this.firstForm.value;
-       const cedulaprov = formularios.Formulario1.Revisor.split(' ')[0].toString();
-       const cedularev = formularios.Formulario2[0].Proveedor.split(' ')[0].toString();
+      // Las siguientes variables no se usan, sin embargo se actualizaron:
+      const cedulaprov = formularios.Formulario2[0].Proveedor.split(' ')[0].toString();
+      const cedularev = formularios.Formulario1.Contratista.Identificacion.Numero;
     }
     (Swal as any).fire({
       title: this.translate.instant(codigoL10n_titulo),
