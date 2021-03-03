@@ -612,6 +612,84 @@
       "alerta_ambos": "Unassgined elements"
     },
 
+    "entradas": {
+      "tipo": {
+        "EA": {
+          "nombre": "Acquisition",
+          "descripcion": "Acquisition Input"
+        },
+        "EEP": {
+          "nombre": "Own Elaboration",
+          "descripcion": "Own Elaboration Input"
+        },
+        "ED": {
+          "nombre": "Donation",
+          "descripcion": "Donation Input"
+        },
+        "ESI": {
+          "nombre": "Surplus",
+          "descripcion": "Surplus Input"
+        },
+        "ET": {
+          "nombre": "Third party",
+          "descripcion": "Third Party Input"
+        },
+        "EPR": {
+          "nombre": "Replacement",
+          "descripcion": "Replacement Input"
+        },
+        "ECM": {
+          "nombre": "Petty Cash",
+          "descripcion": "Petty Cash Input"
+        },
+        "EAM": {
+          "nombre": "Additions and improvements",
+          "descripcion": "Additions and improvements Input"
+        },
+        "EIA": {
+          "nombre": "Intangibles acquired",
+          "descripcion": "Intangibles acquired Input"
+        },
+        "ECE": {
+          "nombre": "Foreign Purchase",
+          "descripcion": "Foreign Purchase Input"
+        },
+        "EPPA": {
+          "nombre": "Use of Parts",
+          "descripcion": "Input by Use of Parts"
+        },
+        "EID": {
+          "nombre": "Developed Intangibles",
+          "descripcion": "Input of Developed Intangibles"
+        },
+        "EBEMP": {
+          "nombre": "Delivered Goods on a provisional basis",
+          "descripcion": "Input of Delivered Goods on a provisional basis"
+        },
+        "SOL_BAJA": {
+          "nombre": "Derecognition",
+          "descripcion": "Derecognition Request"
+        },
+        "SOL_TRD": {
+          "nombre": "Transfer",
+          "descripcion": "Transfer Request"
+        }
+      },
+      "tab_consumo": "Elementos de Consumo",
+      "tab_consumo_controlado": "Elementos Devolutivos y de Consumo Controlado",
+      "asignar": "ASIGN",
+      "asignar_funcionario": "ASIGN TO CIVIL SERVANT",
+      "alerta_descargue": "Unassgined elements",
+      "alerta_consumo": "Unassgined elements",
+      "alerta_controlado": "Unassgined elements",
+      "alerta_ambos": "Unassgined elements"
+    },
+
+
+
+
+
+
     "salidas": {
       "titulo_registrar": "Register Output",
       "elementos": "Elements",

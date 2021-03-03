@@ -129,7 +129,7 @@ export class SobranteComponent implements OnInit {
           if (posini !== -1) {
               const posfin = elstring.indexOf('\"', posini);
               const elresultado = elstring.substr(posini, posfin - posini - 1);
-              detalle.consecutivo = detalle.consecutivo + elresultado;
+              detalle.consecutivo = elresultado;
           }
           (Swal as any).fire({
             type: 'success',
