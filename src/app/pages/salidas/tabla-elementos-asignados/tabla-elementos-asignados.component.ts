@@ -640,7 +640,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
           elemento.SubgrupoCatalogoId = this.ConsumoControlado.find(x => x.SubgrupoId.Id === datos[index].SubgrupoCatalogoId).SubgrupoId;
         }
         if (datos[index].TipoBienId.Id === 3 && Object.keys(this.Devolutivo[0]).length !== 0) {
-          elemento.SubgrupoCatalogoId = this.Devolutivo.find(x => x.Id === datos[index].SubgrupoCatalogoId);
+          elemento.SubgrupoCatalogoId = this.Devolutivo.find(x => x.SubgrupoId.Id === datos[index].SubgrupoCatalogoId).SubgrupoId;
         }
         if (datos[index].TipoBienId.Id === 1) {
           this.ElementosConsumoSinAsignar.push(elemento);
@@ -724,7 +724,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
           elemento.SubgrupoCatalogoId = this.ConsumoControlado.find(x => x.SubgrupoId.Id === datos[index].SubgrupoCatalogoId.Id).SubgrupoId;
         }
         if (datos[index].TipoBienId.Id === 3 && Object.keys(this.Devolutivo[0]).length !== 0) {
-          elemento.SubgrupoCatalogoId = this.Devolutivo.find(x => x.Id === datos[index].SubgrupoCatalogoId.Id).SubgrupoId;
+          elemento.SubgrupoCatalogoId = this.Devolutivo.find(x => x.SubgrupoId.Id === datos[index].SubgrupoCatalogoId.Id).SubgrupoId;
         }
         // elemento.SubgrupoCatalogoId = datos[index].SubgrupoCatalogoId;
         datos2.push(elemento);
@@ -900,13 +900,14 @@ export class TablaElementosAsignadosComponent implements OnInit {
   }
   Salida_General() {
     if (Object.keys(this.Datos).length !== 0) {
+      // console.log(this.Datos);
       const datos_agrupados2 = this.source.data.reduce((accumulator, currentValue) => {
         const detalle = {
           funcionario: currentValue.Funcionario.Id,
           ubicacion: currentValue.Ubicacion.Id,
         };
         const val = currentValue.Funcionario.Id + '-' + currentValue.Ubicacion.Id;
-        const obs = 'Salida con elementos de consumo controlado asignados a funcionario.';
+        const obs = 'Salida con elementos Devolutivos o de Consumo Controlado asignados a funcionario.';
         accumulator[val] = accumulator[val] || {
           Salida: {
             Observacion: this.Observaciones ? obs + ' // ' + this.Observaciones : obs,
