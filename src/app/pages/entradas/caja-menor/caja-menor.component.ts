@@ -102,7 +102,6 @@ export class CajaMenorComponent implements OnInit {
     this.getVigencia();
     this.getTipoEntrada();
     this.getFormatoEntrada();
-    this.loadSoporte();
     this.loadSupervisores();
     this.loadOrdenadores();
   }
@@ -242,6 +241,11 @@ muestraOrdenador(ord: TerceroCriterioJefe): string {
         }
       }
     });
+    if(this.soportes[0]){
+    this.proveedor = this.soportes[0].Proveedor.NomProveedor;
+    const date = this.soportes[0].FechaSoporte.toString().split('T');
+    this.fechaFactura = date[0];
+    }
   }
   onObservacionSubmit() {
     this.validar = true;
