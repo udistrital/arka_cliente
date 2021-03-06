@@ -12,6 +12,7 @@ import { TipoEntrada } from '../../../@core/data/models/entrada/tipo_entrada';
 import { Router, NavigationExtras } from '@angular/router';
 import { NbStepperComponent } from '@nebular/theme';
 import Swal from 'sweetalert2';
+import { isObject } from 'rxjs/internal-compatibility';
 
 @Component({
   selector: 'ngx-intangibles-adquiridos',
@@ -98,12 +99,11 @@ export class IntangiblesAdquiridosComponent implements OnInit {
    * Métodos para cargar los contratos.
    */
   loadContratos(): void {
+    this.contratos = [];
     if (this.opcionTipoContrato !== '' && this.opcionvigencia) {
       this.entradasHelper.getContratos(this.opcionTipoContrato, this.opcionvigencia).subscribe(res => {
         if (res !== null) {
-          while (this.contratos.length > 0) {
-            this.contratos.pop();
-          }
+          if (isObject(res.contratos_suscritos.contrato_suscritos))
           for (const index of Object.keys(res.contratos_suscritos.contrato_suscritos)) {
             const contratoAux = new Contrato;
             contratoAux.NumeroContratoSuscrito = res.contratos_suscritos.contrato_suscritos[index].numero_contrato;
