@@ -54,7 +54,6 @@ export class AprovechamientosComponent implements OnInit {
   @ViewChild('stepper') stepper: NbStepperComponent;
 
   @Input() actaRecibidoId: Number;
-  @Input() movimientoId: Number;
 
   constructor(
     private router: Router,
@@ -223,7 +222,6 @@ export class AprovechamientosComponent implements OnInit {
         EstadoMovimientoId: {
           Id: 2, // Movimiento adecuado para registrar una entrada como aprobada
         },
-        Id: this.movimientoId ? this.movimientoId : 0,
         SoporteMovimientoId: 0,
         IdTipoMovimiento: this.tipoEntrada.Id,
       };
