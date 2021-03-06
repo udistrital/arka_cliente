@@ -105,11 +105,11 @@ export class AdquisicionComponent implements OnInit {
       this.entradasHelper.getContratos(this.opcionTipoContrato, this.opcionvigencia).subscribe(res => {
         if (res !== null) {
           if (isObject(res.contratos_suscritos.contrato_suscritos))
-          for (const index of Object.keys(res.contratos_suscritos.contrato_suscritos)) {
-            const contratoAux = new Contrato;
-            contratoAux.NumeroContratoSuscrito = res.contratos_suscritos.contrato_suscritos[index].numero_contrato;
-            this.contratos.push(contratoAux);
-          }
+            for (const index of Object.keys(res.contratos_suscritos.contrato_suscritos)) {
+              const contratoAux = new Contrato;
+              contratoAux.NumeroContratoSuscrito = res.contratos_suscritos.contrato_suscritos[index].numero_contrato;
+              this.contratos.push(contratoAux);
+            }
         }
       });
     }
@@ -154,7 +154,7 @@ export class AdquisicionComponent implements OnInit {
       }
       this.proveedor = this.soportes[0].Proveedor.NomProveedor;
       const date = this.soportes[0].FechaSoporte.toString().split('T');
-          this.fechaFactura = date[0];
+      this.fechaFactura = date[0];
     });
   }
 
@@ -284,9 +284,9 @@ export class AdquisicionComponent implements OnInit {
           const elstring = JSON.stringify(res.Detalle);
           const posini = elstring.indexOf('consecutivo') + 16;
           if (posini !== -1) {
-              const posfin = elstring.indexOf('\"', posini);
-              const elresultado = elstring.substr(posini, posfin - posini - 1);
-              detalle.consecutivo = elresultado;
+            const posfin = elstring.indexOf('\"', posini);
+            const elresultado = elstring.substr(posini, posfin - posini - 1);
+            detalle.consecutivo = elresultado;
           }
           (Swal as any).fire({
             type: 'success',
