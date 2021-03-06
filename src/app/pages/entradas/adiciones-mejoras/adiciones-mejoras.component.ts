@@ -151,6 +151,9 @@ export class AdicionesMejorasComponent implements OnInit {
           }
         }
       }
+      this.proveedor = this.soportes[0].Proveedor.NomProveedor;
+      const date = this.soportes[0].FechaSoporte.toString().split('T');
+      this.fechaFactura = date[0];
     });
   }
 
