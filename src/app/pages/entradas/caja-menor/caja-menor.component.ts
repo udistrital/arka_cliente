@@ -14,8 +14,8 @@ import { Entrada } from '../../../@core/data/models/entrada/entrada';
 import { TipoEntrada } from '../../../@core/data/models/entrada/tipo_entrada';
 import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
 import { TerceroCriterioJefe, TerceroCriterioPlanta } from '../../../@core/data/models/terceros_criterio';
-import {Observable} from 'rxjs';
-import {map, startWith} from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { map, startWith } from 'rxjs/operators';
 import Swal from 'sweetalert2';
 
 
@@ -111,115 +111,115 @@ export class CajaMenorComponent implements OnInit {
     this.soporteForm.markAsDirty();
   }
 
-loadSolicitantes(): void {
-  this.entradasHelper.getSolicitantes(this.fechaSolicitante).subscribe(res => {
-    while (this.ordenadores.length > 0) {
-      this.ordenadores.pop();
+  loadSolicitantes(): void {
+    this.entradasHelper.getSolicitantes(this.fechaSolicitante).subscribe(res => {
+      while (this.ordenadores.length > 0) {
+        this.ordenadores.pop();
+      }
+      if (res !== null) {
+        for (const index of Object.keys(res.ListaOrdenadores.Ordenadores)) {
+          const ordenador = new OrdenadorGasto;
+          ordenador.NombreOrdenador = res.ListaOrdenadores.Ordenadores[index].NombreOrdenador;
+          ordenador.Id = res.ListaOrdenadores.Ordenadores[index].IdOrdenador;
+          ordenador.RolOrdenadorGasto = res.ListaOrdenadores.Ordenadores[index].CargoOrdenador;
+          this.ordenadores.push(ordenador);
+        }
+      }
+    });
+  }
+
+  changeSolicitante(event) {
+    if (!this.solicitanteSelect) {
+      this.solicitanteSelect = !this.solicitanteSelect;
     }
-    if (res !== null) {
-      for (const index of Object.keys(res.ListaOrdenadores.Ordenadores)) {
-        const ordenador = new OrdenadorGasto;
-        ordenador.NombreOrdenador = res.ListaOrdenadores.Ordenadores[index].NombreOrdenador;
-        ordenador.Id = res.ListaOrdenadores.Ordenadores[index].IdOrdenador;
-        ordenador.RolOrdenadorGasto = res.ListaOrdenadores.Ordenadores[index].CargoOrdenador;
-        this.ordenadores.push(ordenador);
+    const date: Date = event;
+    const mes = parseInt(date.getUTCMonth().toString(), 10) + 1;
+    if (mes < 10) {
+      this.fechaSolicitante = date.getFullYear() + '-0' + mes + '-' + date.getDate();
+    } else {
+      this.fechaSolicitante = date.getFullYear() + '-' + mes + '-' + date.getDate();
+    }
+    this.loadSolicitantes();
+  }
+  // -------------------------SUPERVISORES--------------------------------------------------------
+  loadSupervisores(): void {
+    this.tercerosHelper.getTercerosByCriterio('funcionarioPlanta').subscribe(res => {
+      if (Array.isArray(res)) {
+        this.Supervisores = res;
+        this.supervisoresFiltrados = this.supervisorForm.get('supervisorCtrl').valueChanges
+          .pipe(
+            startWith(''),
+            map(val => typeof val === 'string' ? val : this.muestraSupervisor(val)),
+            map(nombre => this.filtroSupervisores(nombre)),
+          );
+        // console.log({supervisores: this.Supervisores});
+        this.cargando_supervisores = false;
+      }
+    });
+  }
+  datosSupervisor(param: string): string {
+    const supervisorSeleccionado: TerceroCriterioPlanta = <TerceroCriterioPlanta>this.supervisorForm.value.supervisorCtrl;
+    // console.log({supervisorSeleccionado});
+    if (supervisorSeleccionado) {
+      switch (param) {
+        case 'sede':
+          return supervisorSeleccionado.Sede.Nombre;
+
+        case 'dependencia':
+          return supervisorSeleccionado.Dependencia.Nombre;
+
+        default:
+          return '';
       }
     }
-  });
-}
-
-changeSolicitante(event) {
-  if (!this.solicitanteSelect) {
-    this.solicitanteSelect = !this.solicitanteSelect;
+    return '';
   }
-  const date: Date = event;
-  const mes = parseInt(date.getUTCMonth().toString(), 10) + 1;
-  if (mes < 10) {
-    this.fechaSolicitante = date.getFullYear() + '-0' + mes + '-' + date.getDate();
-  } else {
-    this.fechaSolicitante = date.getFullYear() + '-' + mes + '-' + date.getDate();
-  }
-  this.loadSolicitantes();
-}
- // -------------------------SUPERVISORES--------------------------------------------------------
- loadSupervisores(): void {
-  this.tercerosHelper.getTercerosByCriterio('funcionarioPlanta').subscribe( res => {
-    if (Array.isArray(res)) {
-      this.Supervisores = res;
-      this.supervisoresFiltrados = this.supervisorForm.get('supervisorCtrl').valueChanges
-        .pipe(
-          startWith(''),
-          map(val => typeof val === 'string' ? val : this.muestraSupervisor(val)),
-          map(nombre => this.filtroSupervisores(nombre)),
-        );
-      // console.log({supervisores: this.Supervisores});
-      this.cargando_supervisores = false;
-    }
-  });
-}
-datosSupervisor(param: string): string {
-  const supervisorSeleccionado: TerceroCriterioPlanta = <TerceroCriterioPlanta>this.supervisorForm.value.supervisorCtrl;
-  // console.log({supervisorSeleccionado});
-  if (supervisorSeleccionado) {
-    switch (param) {
-      case 'sede':
-        return supervisorSeleccionado.Sede.Nombre;
-
-      case 'dependencia':
-        return supervisorSeleccionado.Dependencia.Nombre;
-
-      default:
-        return '';
-    }
-  }
-  return '';
-}
-filtroSupervisores(nombre: string): TerceroCriterioPlanta[] {
-  // if (nombre.length >= 4 ) {
+  filtroSupervisores(nombre: string): TerceroCriterioPlanta[] {
+    // if (nombre.length >= 4 ) {
     const valorFiltrado = nombre.toLowerCase();
     return this.Supervisores.filter(sup => sup.TerceroPrincipal.NombreCompleto.toLowerCase().includes(valorFiltrado));
-  // } else return [];
-}
-
-muestraSupervisor(sup: TerceroCriterioPlanta): string {
-  if (sup.TerceroPrincipal !== undefined) {
-    return sup.TerceroPrincipal.NombreCompleto;
-  }else {
-    return '';
+    // } else return [];
   }
-}
 
-// -------------------------------------ORDENADORES---------------------------------------------------
-loadOrdenadores(): void {
-  this.tercerosHelper.getTercerosByCriterio('ordenadoresGasto').subscribe( res => {
-    if (Array.isArray(res)) {
-      this.Ordenadores = res;
-      this.ordenadoresFiltrados = this.ordenadorForm.get('ordenadorCtrl').valueChanges
-        .pipe(
-          startWith(''),
-          map(val => typeof val === 'string' ? val : this.muestraOrdenador(val)),
-          map(nombre => this.filtroOrdenadores(nombre)),
-        );
-      // console.log({supervisores: this.Supervisores});
-      this.cargando_ordenadores = false;
+  muestraSupervisor(sup: TerceroCriterioPlanta): string {
+    if (sup.TerceroPrincipal !== undefined) {
+      return sup.TerceroPrincipal.NombreCompleto;
+    } else {
+      return '';
     }
-  });
-}
-filtroOrdenadores(nombre: string): TerceroCriterioJefe[] {
-  // if (nombre.length >= 4 ) {
+  }
+
+  // -------------------------------------ORDENADORES---------------------------------------------------
+  loadOrdenadores(): void {
+    this.tercerosHelper.getTercerosByCriterio('ordenadoresGasto').subscribe(res => {
+      if (Array.isArray(res)) {
+        this.Ordenadores = res;
+        this.ordenadoresFiltrados = this.ordenadorForm.get('ordenadorCtrl').valueChanges
+          .pipe(
+            startWith(''),
+            map(val => typeof val === 'string' ? val : this.muestraOrdenador(val)),
+            map(nombre => this.filtroOrdenadores(nombre)),
+          );
+        // console.log({supervisores: this.Supervisores});
+        this.cargando_ordenadores = false;
+      }
+    });
+  }
+  filtroOrdenadores(nombre: string): TerceroCriterioJefe[] {
+    // if (nombre.length >= 4 ) {
     const valorFiltrado = nombre.toLowerCase();
     return this.Ordenadores.filter(sup => sup.TerceroPrincipal.NombreCompleto.toLowerCase().includes(valorFiltrado));
-  // } else return [];
-}
-
-muestraOrdenador(ord: TerceroCriterioJefe): string {
-  if (ord.TerceroPrincipal !== undefined) {
-    return ord.TerceroPrincipal.NombreCompleto;
-  }else {
-    return '';
+    // } else return [];
   }
-}
-// ---------------------------------FIN ORDENADORES-------------------------------------------------
+
+  muestraOrdenador(ord: TerceroCriterioJefe): string {
+    if (ord.TerceroPrincipal !== undefined) {
+      return ord.TerceroPrincipal.NombreCompleto;
+    } else {
+      return '';
+    }
+  }
+  // ---------------------------------FIN ORDENADORES-------------------------------------------------
 
   onSoporteSubmit() {
     if (this.ordenadorId !== 0) {
@@ -241,10 +241,10 @@ muestraOrdenador(ord: TerceroCriterioJefe): string {
         }
       }
     });
-    if(this.soportes[0]){
-    this.proveedor = this.soportes[0].Proveedor.NomProveedor;
-    const date = this.soportes[0].FechaSoporte.toString().split('T');
-    this.fechaFactura = date[0];
+    if (this.soportes[0]) {
+      this.proveedor = this.soportes[0].Proveedor.NomProveedor;
+      const date = this.soportes[0].FechaSoporte.toString().split('T');
+      this.fechaFactura = date[0];
     }
   }
   onObservacionSubmit() {
@@ -322,9 +322,9 @@ muestraOrdenador(ord: TerceroCriterioJefe): string {
           const elstring = JSON.stringify(res.Detalle);
           const posini = elstring.indexOf('consecutivo') + 16;
           if (posini !== -1) {
-              const posfin = elstring.indexOf('\"', posini);
-              const elresultado = elstring.substr(posini, posfin - posini - 1);
-              detalle.consecutivo = elresultado;
+            const posfin = elstring.indexOf('\"', posini);
+            const elresultado = elstring.substr(posini, posfin - posini - 1);
+            detalle.consecutivo = elresultado;
           }
           (Swal as any).fire({
             type: 'success',
