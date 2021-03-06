@@ -118,7 +118,7 @@
           <div class="input-group">
             <select class="form-control" (change)="changeSelectSoporte($event)">
               <option disabled selected>{{'GLOBAL.seleccionar' | translate}}...</option>
-              <option *ngFor="let item of soportes" value="{{ item.Id }}">{{ item.Consecutivo }}</option>
+              <option *ngFor="let item of soportes" value="{{ item.Id }}" selected>{{ item.Consecutivo }}</option>
             </select>
           </div>
         </div>

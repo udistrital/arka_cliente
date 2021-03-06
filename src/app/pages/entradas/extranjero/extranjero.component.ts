@@ -174,6 +174,9 @@ export class ExtranjeroComponent implements OnInit {
             this.soportes.push(soporte);
           }
         }
+        this.proveedor = this.soportes[0].Proveedor.NomProveedor;
+        const date = this.soportes[0].FechaSoporte.toString().split('T');
+        this.fechaFactura = date[0];
       }
     });
   }
