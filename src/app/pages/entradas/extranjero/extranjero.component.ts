@@ -10,6 +10,7 @@ import { OrdenadorGasto } from '../../../@core/data/models/entrada/ordenador_gas
 import { SoporteActaProveedor } from '../../../@core/data/models/acta_recibido/soporte_acta';
 import { Supervisor } from '../../../@core/data/models/entrada/supervisor';
 import Swal from 'sweetalert2';
+import { isObject } from 'rxjs/internal-compatibility';
 
 @Component({
   selector: 'ngx-extranjero',
@@ -122,11 +123,11 @@ export class ExtranjeroComponent implements OnInit {
   }
 
   private loadContratos(): void {
+    this.contratos = [];
     if (this.opcionTipoContrato && this.opcionvigencia) {
       this.entradasHelper.getContratos(this.opcionTipoContrato, this.opcionvigencia).subscribe(res => {
         if (res !== null) {
-          this.contratos.length = 0;
-          if (res.contratos_suscritos && res.contratos_suscritos.contrato_suscritos)
+          if (isObject(res.contratos_suscritos.contrato_suscritos))
           for (const index of Object.keys(res.contratos_suscritos.contrato_suscritos)) {
             const contratoAux = new Contrato;
             contratoAux.NumeroContratoSuscrito = res.contratos_suscritos.contrato_suscritos[index].numero_contrato;
