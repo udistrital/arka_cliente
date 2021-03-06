@@ -108,11 +108,11 @@ export class DonacionComponent implements OnInit {
       this.entradasHelper.getContratos(this.opcionTipoContrato, this.opcionvigencia).subscribe(res => {
         if (res !== null) {
           if (isObject(res.contratos_suscritos.contrato_suscritos))
-          for (const index of Object.keys(res.contratos_suscritos.contrato_suscritos)) {
-            const contratoAux = new Contrato;
-            contratoAux.NumeroContratoSuscrito = res.contratos_suscritos.contrato_suscritos[index].numero_contrato;
-            this.contratos.push(contratoAux);
-          }
+            for (const index of Object.keys(res.contratos_suscritos.contrato_suscritos)) {
+              const contratoAux = new Contrato;
+              contratoAux.NumeroContratoSuscrito = res.contratos_suscritos.contrato_suscritos[index].numero_contrato;
+              this.contratos.push(contratoAux);
+            }
         }
       });
     }
@@ -153,6 +153,9 @@ export class DonacionComponent implements OnInit {
           }
         }
       }
+      this.proveedor = this.soportes[0].Proveedor.NomProveedor;
+      const date = this.soportes[0].FechaSoporte.toString().split('T');
+      this.fechaFactura = date[0];
     });
   }
 
@@ -306,7 +309,7 @@ export class DonacionComponent implements OnInit {
         vigencia_solicitante: this.solicitanteForm.value.fechaCtrl,
         ordenador_gasto_id: +this.ordenadorId,
         tipo_contrato: this.opcionTipoContrato === '14' ? 'Orden de Servicios' :
-        this.opcionTipoContrato === '15' ? 'Orden de Compra' : '',
+          this.opcionTipoContrato === '15' ? 'Orden de Compra' : '',
       };
       const movimientoAdquisicion = {
         Observacion: this.observacionForm.value.observacionCtrl,
@@ -328,9 +331,9 @@ export class DonacionComponent implements OnInit {
           const elstring = JSON.stringify(res.Detalle);
           const posini = elstring.indexOf('consecutivo') + 16;
           if (posini !== -1) {
-              const posfin = elstring.indexOf('\"', posini);
-              const elresultado = elstring.substr(posini, posfin - posini - 1);
-              detalle.consecutivo = elresultado;
+            const posfin = elstring.indexOf('\"', posini);
+            const elresultado = elstring.substr(posini, posfin - posini - 1);
+            detalle.consecutivo = elresultado;
           }
 
 
