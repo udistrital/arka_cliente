@@ -59,7 +59,6 @@ export class CajaMenorComponent implements OnInit {
   cargando_ordenadores: boolean = true;
 
   @Input() actaRecibidoId: Number;
-  @Input() movimientoId: Number;
 
   constructor(
     private router: Router,
@@ -310,7 +309,6 @@ muestraOrdenador(ord: TerceroCriterioJefe): string {
         EstadoMovimientoId: {
           Id: 2, // REVISAR
         },
-        Id: this.movimientoId ? this.movimientoId : 0,
         SoporteMovimientoId: this.idDocumento,
         IdTipoMovimiento: this.tipoEntrada.Id,
       };
