@@ -72,7 +72,7 @@
         <button nbButton nbStepperPrevious>{{'GLOBAL.anterior' | translate}}</button>
       </div>
       <div class="col" align="end">
-        <button nbButton nbStepperNext>{{'GLOBAL.siguiente' | translate}}</button>
+        <button nbButton nbStepperNext (click)="loadSoporte()">{{'GLOBAL.siguiente' | translate}}</button>
       </div>
     </div>
     </form>
@@ -107,8 +107,14 @@
           </div>
         </div>
       </div>
-      <button nbButton nbStepperPrevious>{{'GLOBAL.anterior' | translate}}</button>
-      <button type="button" nbButton nbStepperNext>{{'GLOBAL.siguiente' | translate}}</button>
+      <div class="row">
+        <div class="col">
+          <button nbButton nbStepperPrevious>{{'GLOBAL.anterior' | translate}}</button>
+        </div>
+        <div class="col" align="end">
+          <button type="button" nbButton nbStepperNext>{{'GLOBAL.siguiente' | translate}}</button>
+        </div>
+      </div>
     </form>
   </nb-step>
 
@@ -124,9 +130,14 @@
           </div>
         </div>
       </div>
-      <button nbButton nbStepperPrevious>{{'GLOBAL.anterior' | translate}}</button>
-      <button type="button" (click)="onObservacionSubmit()" nbButton
-        nbStepperNext>{{'GLOBAL.siguiente' | translate}}</button>
+      <div class="row">
+        <div class="col">
+          <button nbButton nbStepperPrevious>{{'GLOBAL.anterior' | translate}}</button>
+        </div>
+        <div class="col" align="end">
+          <button type="button" (click)="onObservacionSubmit()" nbButton
+          nbStepperNext>{{'GLOBAL.siguiente' | translate}}</button>        </div>
+      </div>
     </form>
   </nb-step>
 
