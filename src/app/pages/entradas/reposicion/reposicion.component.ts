@@ -41,7 +41,6 @@ export class ReposicionComponent implements OnInit {
 
    @ViewChild('file') fileInput: ElementRef;
    @Input() actaRecibidoId: Number;
-   @Input() movimientoId: Number;
 
   constructor(private router: Router, private fb: FormBuilder, private  actasHelper: ActaRecibidoHelper, private  entradasHelper: EntradaHelper,
     private nuxeoService: NuxeoService, private translate: TranslateService, private documentoService: DocumentoService,
@@ -214,7 +213,6 @@ export class ReposicionComponent implements OnInit {
         EstadoMovimientoId: {
           Id: 2, // REVISAR
         },
-        Id: this.movimientoId ? this.movimientoId : 0,
         SoporteMovimientoId: this.idDocumento,
         IdTipoMovimiento: this.tipoEntrada.Id,
       };
