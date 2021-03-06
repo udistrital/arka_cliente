@@ -152,11 +152,9 @@ export class AdquisicionComponent implements OnInit {
           }
         }
       }
-      for (const i in this.soportes) {
-          this.proveedor = this.soportes[i].Proveedor.NomProveedor;
-          const date = this.soportes[i].FechaSoporte.toString().split('T');
+      this.proveedor = this.soportes[0].Proveedor.NomProveedor;
+      const date = this.soportes[0].FechaSoporte.toString().split('T');
           this.fechaFactura = date[0];
-      }
     });
   }
 
