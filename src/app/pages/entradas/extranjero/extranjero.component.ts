@@ -27,7 +27,6 @@ export class ExtranjeroComponent implements OnInit {
   observacionForm: FormGroup;
 
   // Validadores
-  checked: boolean;
   tipoContratoSelect: boolean;
   vigenciaSelect: boolean;
 
@@ -57,7 +56,6 @@ export class ExtranjeroComponent implements OnInit {
     private actaRecibidoHelper: ActaRecibidoHelper,
     private fb: FormBuilder,
   ) {
-    this.checked = false;
     this.tipoContratoSelect = false;
     this.vigenciaSelect = false;
     this.contratos = new Array<Contrato>();
@@ -210,10 +208,6 @@ export class ExtranjeroComponent implements OnInit {
     }
   }
 
-  changeCheck() {
-    this.checked = !this.checked;
-  }
-
   private iniciarContrato() {
     const ordenadorAux = new OrdenadorGasto;
     const supervisorAux = new Supervisor;
@@ -265,7 +259,7 @@ export class ExtranjeroComponent implements OnInit {
         documento_contable_id: 1, // REVISAR
         contrato_id: +this.contratoEspecifico.NumeroContratoSuscrito,
         vigencia_contrato: this.contratoForm.value.vigenciaCtrl,
-        importacion: this.checked,
+        importacion: true,
         tipo_contrato: this.opcionTipoContrato === '14' ? 'Orden de Servicios' :
         this.opcionTipoContrato === '15' ? 'Orden de Compra' : '',
         num_reg_importacion: this.facturaForm.value.regImportCtrl,
