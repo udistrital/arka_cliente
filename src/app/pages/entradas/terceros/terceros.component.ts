@@ -149,6 +149,9 @@ export class TercerosComponent implements OnInit {
             this.soportes.push(soporte);
           }
         }
+        this.proveedor = this.soportes[0].Proveedor.NomProveedor;
+        const date = this.soportes[0].FechaSoporte.toString().split('T');
+        this.fechaFactura = date[0];
       }
     });
   }
@@ -261,7 +264,7 @@ export class TercerosComponent implements OnInit {
         vigencia_contrato: this.contratoForm.value.vigenciaCtrl,
         tercero_id: 0, // REVISAR
         tipo_contrato: this.opcionTipoContrato === '14' ? 'Orden de Servicios' :
-        this.opcionTipoContrato === '15' ? 'Orden de Compra' : '',
+          this.opcionTipoContrato === '15' ? 'Orden de Compra' : '',
       };
       const movimientoAdquisicion = {
         Observacion: this.observacionForm.value.observacionCtrl,
