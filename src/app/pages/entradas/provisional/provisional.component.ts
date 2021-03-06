@@ -1,4 +1,3 @@
-
 import { Component, OnInit, Input, ViewChild, ɵConsole } from '@angular/core';
 import { Validators, FormBuilder, FormGroup, AbstractControl, ValidatorFn } from '@angular/forms';
 import { PopUpManager } from '../../../managers/popUpManager';
@@ -13,6 +12,7 @@ import { TipoEntrada } from '../../../@core/data/models/entrada/tipo_entrada';
 import { Router, NavigationExtras } from '@angular/router';
 import { NbStepperComponent } from '@nebular/theme';
 import Swal from 'sweetalert2';
+import { isObject } from 'rxjs/internal-compatibility';
 
 @Component({
   selector: 'ngx-provisional',
@@ -99,12 +99,11 @@ export class ProvisionalComponent implements OnInit {
    * Métodos para cargar los contratos.
    */
   loadContratos(): void {
+    this.contratos = [];
     if (this.opcionTipoContrato !== '' && this.opcionvigencia) {
       this.entradasHelper.getContratos(this.opcionTipoContrato, this.opcionvigencia).subscribe(res => {
         if (res !== null) {
-          while (this.contratos.length > 0) {
-            this.contratos.pop();
-          }
+          if (isObject(res.contratos_suscritos.contrato_suscritos))
           for (const index of Object.keys(res.contratos_suscritos.contrato_suscritos)) {
             const contratoAux = new Contrato;
             contratoAux.NumeroContratoSuscrito = res.contratos_suscritos.contrato_suscritos[index].numero_contrato;
@@ -152,6 +151,9 @@ export class ProvisionalComponent implements OnInit {
           }
         }
       }
+      this.proveedor = this.soportes[0].Proveedor.NomProveedor;
+      const date = this.soportes[0].FechaSoporte.toString().split('T');
+      this.fechaFactura = date[0];
     });
   }
 
