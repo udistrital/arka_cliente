@@ -157,7 +157,7 @@ export class AprovechamientosComponent implements OnInit {
   datosSupervisor(param: string): string {
     const supervisorSeleccionado: TerceroCriterioPlanta = <TerceroCriterioPlanta>this.supervisorForm.value.supervisorCtrl;
     // console.log({supervisorSeleccionado});
-    if (supervisorSeleccionado) {
+    if (supervisorSeleccionado && supervisorSeleccionado.Sede) {
       switch (param) {
         case 'sede':
           return supervisorSeleccionado.Sede.Nombre;
