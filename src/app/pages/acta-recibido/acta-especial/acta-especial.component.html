@@ -32,10 +32,8 @@
                   <div class="form-group col-sm">
                     <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Ubicacion' | translate}}</label>
                     <select nbInput type="text" class="form-control" formControlName="Ubicacion"
-                      (click)="usarLocalStorage(); Traer_Relacion_Ubicaciones();" required>
-                      <option value=""></option>
-                      <option *ngFor="let ubicacion of UbicacionesForm" [(value)]="ubicacion.Id">{{ubicacion.Nombre}}
-                      </option>
+                      (click)="usarLocalStorage()" required>
+                      <option *ngFor="let ubicacion of UbicacionesFiltradas" [(value)]="ubicacion.Id">{{ubicacion.Nombre}}</option>
                     </select>
                     <p class="campo" *ngIf="firstForm.get('Formulario1').get('Ubicacion').invalid">
                       {{'GLOBAL.placeholder' | translate}}</p>
