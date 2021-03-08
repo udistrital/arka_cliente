@@ -107,9 +107,9 @@ export class ActaEspecialComponent implements OnInit {
     Acta: Permiso,
     Elementos: Permiso,
   } = {
-    Acta: Permiso.Ninguno,
-    Elementos: Permiso.Ninguno,
-  };
+      Acta: Permiso.Ninguno,
+      Elementos: Permiso.Ninguno,
+    };
 
   constructor(
     private translate: TranslateService,
@@ -239,7 +239,6 @@ export class ActaEspecialComponent implements OnInit {
     }
     this.Elementos__Soporte = elementos_;
     this.SoporteElementosValidos = new Array<boolean>(elementos_.length);
-
     this.firstForm = this.fb.group({
       Formulario1: this.fb.group({
         Id: [''],
@@ -261,7 +260,6 @@ export class ActaEspecialComponent implements OnInit {
       if (transaccion.Sede !== undefined && transaccion.Dependencia !== undefined) {
         this.UbicacionesFiltradas = [];
         this.Actas_Recibido.postRelacionSedeDependencia(transaccion).subscribe((res: any) => {
-          this.UbicacionesFiltradas = [];
           if (Object.keys(res[0]).length !== 0) {
             this.UbicacionesFiltradas = res[0].Relaciones;
           }
@@ -597,7 +595,7 @@ export class ActaEspecialComponent implements OnInit {
     return true;
   }
 
-  ver2 (event: any) {
+  ver2(event: any) {
     this.DatosTotales = event;
     this.Totales = new Array<any>(this.DatosTotales);
     this.usarLocalStorage();
