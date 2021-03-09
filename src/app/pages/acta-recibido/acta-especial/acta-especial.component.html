@@ -12,7 +12,7 @@
                   <div class="form-group col-sm">
                     <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Sede' | translate}}</label>
                     <mat-select type="text" class="form-control" formControlName="Sede"
-                      (click)="usarLocalStorage(); Traer_Relacion_Ubicaciones();" required>
+                      (selectionChange)="usarLocalStorage(); Traer_Relacion_Ubicaciones();" required>
                       <mat-option *ngFor="let sede of Sedes" [(value)]="sede.Id">{{sede.Nombre}}</mat-option>
                     </mat-select>
                     <p class="campo" *ngIf="firstForm.get('Formulario1').get('Sede').invalid">
@@ -32,7 +32,7 @@
                   <div class="form-group col-sm">
                     <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Ubicacion' | translate}}</label>
                     <mat-select type="text" class="form-control" formControlName="Ubicacion"
-                      (click)="usarLocalStorage()" required>
+                      (selectionChange)="usarLocalStorage()" required>
                       <mat-option *ngFor="let ubicacion of UbicacionesFiltradas" [(value)]="ubicacion.Id">{{ubicacion.Nombre}}</mat-option>
                     </mat-select>
                     <p class="campo" *ngIf="firstForm.get('Formulario1').get('Ubicacion').invalid">
