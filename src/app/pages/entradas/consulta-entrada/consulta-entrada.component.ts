@@ -138,9 +138,6 @@ export class ConsultaEntradaComponent implements OnInit {
           valuePrepareFunction: (value: any) => {
             return value;
           },
-          value:(value:any)=>{
-          // console.log(value)
-          },
           filter: {
             type: 'list',
             config: {
