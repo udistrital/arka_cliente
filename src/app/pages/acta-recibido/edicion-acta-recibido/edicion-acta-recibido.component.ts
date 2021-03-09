@@ -616,7 +616,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
     if (this.firstForm.get('Formulario1').get('Sede').valid && this.firstForm.get('Formulario1').get('Dependencia').valid &&
       sede !== undefined && dependencia !== undefined) {
       this.UbicacionesFiltradas = [];
-      this.carga_agregada ? this.firstForm.patchValue({ Formulario1: { Ubicacion: '', }, }) : null;
+      this.carga_agregada ? this.firstForm.patchValue({ Formulario1: { Ubicacion: '' } }) : null;
       const transaccion: any = {};
       transaccion.Sede = this.Sedes.find((x) => x.Id === parseFloat(sede));
       transaccion.Dependencia = this.Dependencias.find((x) => x.Nombre === dependencia);
