@@ -11,10 +11,10 @@
                 <div class="row" (click)="usarLocalStorage()">
                   <div class="form-group col-sm">
                     <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Sede' | translate}}</label>
-                    <select nbInput type="text" class="form-control" formControlName="Sede"
+                    <mat-select type="text" class="form-control" formControlName="Sede"
                       (click)="usarLocalStorage(); Traer_Relacion_Ubicaciones();" required>
-                      <option *ngFor="let sede of Sedes" [(value)]="sede.Id">{{sede.Nombre}}</option>
-                    </select>
+                      <mat-option *ngFor="let sede of Sedes" [(value)]="sede.Id">{{sede.Nombre}}</mat-option>
+                    </mat-select>
                     <p class="campo" *ngIf="firstForm.get('Formulario1').get('Sede').invalid">
                       {{'GLOBAL.placeholder' | translate}}</p>
                   </div>
@@ -31,10 +31,10 @@
                   </div>
                   <div class="form-group col-sm">
                     <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Ubicacion' | translate}}</label>
-                    <select nbInput type="text" class="form-control" formControlName="Ubicacion"
+                    <mat-select type="text" class="form-control" formControlName="Ubicacion"
                       (click)="usarLocalStorage()" required>
-                      <option *ngFor="let ubicacion of UbicacionesFiltradas" [(value)]="ubicacion.Id">{{ubicacion.Nombre}}</option>
-                    </select>
+                      <mat-option *ngFor="let ubicacion of UbicacionesFiltradas" [(value)]="ubicacion.Id">{{ubicacion.Nombre}}</mat-option>
+                    </mat-select>
                     <p class="campo" *ngIf="firstForm.get('Formulario1').get('Ubicacion').invalid">
                       {{'GLOBAL.placeholder' | translate}}</p>
                   </div>
