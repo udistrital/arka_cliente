@@ -239,18 +239,20 @@ export class ActaEspecialComponent implements OnInit {
     }
     this.Elementos__Soporte = elementos_;
     this.SoporteElementosValidos = new Array<boolean>(elementos_.length);
-    
+
     const sede = transaccion_.Formulario1.Sede;
     const dependencia = transaccion_.Formulario1.Dependencia;
     if (sede && dependencia) {
       const transaccion: any = {};
       transaccion.Sede = this.Sedes.find((x) => x.Id === parseFloat(sede));
       transaccion.Dependencia = this.Dependencias.find((x) => x.Nombre === dependencia);
-        this.Actas_Recibido.postRelacionSedeDependencia(transaccion).subscribe((res: any) => {
-          if (Object.keys(res[0]).length !== 0) {
-            this.UbicacionesFiltradas = res[0].Relaciones;
-          }
-        });
+      this.Actas_Recibido.postRelacionSedeDependencia(transaccion).subscribe((res: any) => {
+        if (Object.keys(res[0]).length !== 0) {
+          this.UbicacionesFiltradas = res[0].Relaciones;
+          transaccion_.Formulario1.Ubicacion ? 
+          this.firstForm.patchValue({ Formulario1: { Ubicacion: transaccion_.Formulario1.Ubicacion, }, }) : '';
+        }
+      });
     }
 
     this.firstForm = this.fb.group({
@@ -578,6 +580,7 @@ export class ActaEspecialComponent implements OnInit {
     const dependencia = this.firstForm.get('Formulario1').get('Dependencia').value;
     if (this.firstForm.get('Formulario1').get('Sede').valid && this.firstForm.get('Formulario1').get('Dependencia').valid &&
       sede !== undefined && dependencia !== undefined) {
+      this.firstForm.patchValue({ Formulario1: { Ubicacion: '', }, });
       this.UbicacionesFiltradas = [];
       const transaccion: any = {};
       transaccion.Sede = this.Sedes.find((x) => x.Id === parseFloat(sede));
