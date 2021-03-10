@@ -22,7 +22,7 @@
                     <label id="lbl-dependencia">{{'GLOBAL.Acta_Recibido.RegistroActa.Dependencia' | translate}}</label>
                     <ng2-completer style="border: 0rem" inputClass="form-control" nbInput
                       (keyup)="usarLocalStorage(); Traer_Relacion_Ubicaciones;" [datasource]="dataService3"
-                      formControlName="Dependencia" [minSearchLength]="2"
+                      formControlName="Dependencia" [minSearchLength]="3"
                       (change)="usarLocalStorage(); Traer_Relacion_Ubicaciones();"
                       placeholder="{{'GLOBAL.Acta_Recibido.RegistroActa.SeleccioneFiltro' | translate}}">
                     </ng2-completer>
