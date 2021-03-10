@@ -530,16 +530,16 @@ export class RegistroActaRecibidoComponent implements OnInit {
     const dependencia = this.firstForm.get('Formulario1').get('Dependencia').value;
     if (this.firstForm.get('Formulario1').get('Sede').valid && this.firstForm.get('Formulario1').get('Dependencia').valid &&
       sede !== undefined && dependencia !== undefined) {
-        this.UbicacionesFiltradas = [];
-        const transaccion: any = {};
-        transaccion.Sede = this.Sedes.find((x) => x.Id === parseFloat(sede));
-        transaccion.Dependencia = this.Dependencias.find((x) => x.Nombre === dependencia);
-        if (transaccion.Sede !== undefined && transaccion.Dependencia !== undefined) {
-          this.Actas_Recibido.postRelacionSedeDependencia(transaccion).subscribe((res: any) => {
-            if (isObject(res[0].Relaciones)){
-              this.firstForm.patchValue({ Formulario1: { Ubicacion: loadInicial ? loadInicial : '' } });
-              this.UbicacionesFiltradas = res[0].Relaciones;
-            }
+      this.UbicacionesFiltradas = [];
+      const transaccion: any = {};
+      transaccion.Sede = this.Sedes.find((x) => x.Id === parseFloat(sede));
+      transaccion.Dependencia = this.Dependencias.find((x) => x.Nombre === dependencia);
+      if (transaccion.Sede !== undefined && transaccion.Dependencia !== undefined) {
+        this.Actas_Recibido.postRelacionSedeDependencia(transaccion).subscribe((res: any) => {
+          if (isObject(res[0].Relaciones)) {
+            this.firstForm.patchValue({ Formulario1: { Ubicacion: loadInicial ? loadInicial : '' } });
+            this.UbicacionesFiltradas = res[0].Relaciones;
+          }
         });
       }
     }
