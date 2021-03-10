@@ -18,7 +18,7 @@ import { ActaRecibidoUbicacion } from '../../../@core/data/models/acta_recibido/
 import { Proveedor } from '../../../@core/data/models/acta_recibido/Proveedor';
 import { EstadoActa_t } from '../../../@core/data/models/acta_recibido/estado_acta';
 import { EstadoElemento } from '../../../@core/data/models/acta_recibido/estado_elemento';
-import { TerceroCriterioContratista } from '../../../@core/data/models/terceros_criterio';
+import { TerceroCriterioContratista, TerceroCriterioProveedor } from '../../../@core/data/models/terceros_criterio';
 import { HistoricoActa } from '../../../@core/data/models/acta_recibido/historico_acta';
 import { TransaccionSoporteActa, TransaccionActaRecibido } from '../../../@core/data/models/acta_recibido/transaccion_acta_recibido';
 import Swal from 'sweetalert2';
@@ -58,6 +58,8 @@ export class RegistroActaRecibidoComponent implements OnInit {
   cargando_contratistas: boolean = true;
   private Contratistas: TerceroCriterioContratista[];
   contratistasFiltrados: Observable<TerceroCriterioContratista[]>;
+  private Proveedores2: Partial<TerceroCriterioProveedor>[];
+  listo: Map<string,boolean>;
 
   // Mensajes de error
   errMess: any;
@@ -124,6 +126,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
     this.Validador = [];
     this.uidDocumento = [];
     this.idDocumento = [];
+    this.listo = new Map<string,boolean>();
   }
 
   ngOnInit() {
@@ -135,6 +138,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
     this.listService.findEstadosElemento();
     this.listService.findTipoBien();
     this.loadLists();
+    this.loadProveedores();
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
     });
     this.searchStr2 = new Array<string>();
@@ -219,6 +223,17 @@ export class RegistroActaRecibidoComponent implements OnInit {
   muestraContratista(contr: TerceroCriterioContratista): string {
     if (contr) {
       return contr.Identificacion.Numero + ' - ' + contr.Tercero.NombreCompleto;
+    }
+  }
+
+  private loadProveedores(): void {
+    if (this.listo.get('proveedores') === undefined) {
+      this.listo.set('proveedores', false);
+      this.tercerosHelper.getTercerosByCriterio('proveedor').subscribe(res => {
+        this.Proveedores2 = res;
+        // console.log({Proveedores: this.Proveedores2});
+        this.listo.set('proveedores', true);
+      });
     }
   }
 
