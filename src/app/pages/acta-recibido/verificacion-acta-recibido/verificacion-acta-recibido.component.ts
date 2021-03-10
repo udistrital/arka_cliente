@@ -459,6 +459,7 @@ export class VerificacionActaRecibidoComponent implements OnInit {
 
       const Elemento__ = new Elemento;
       const valorTotal = (parseFloat(this.Pipe2Number(datos.Subtotal)) - parseFloat(this.Pipe2Number(datos.Descuento)));
+      const aux = this.Tarifas_Iva.find(tarifa => tarifa.Nombre === datos.PorcentajeIvaId) 
 
       Elemento__.Id = parseFloat(Datos.Id);
       Elemento__.Nombre = datos.Nombre;
@@ -470,12 +471,12 @@ export class VerificacionActaRecibidoComponent implements OnInit {
       Elemento__.Subtotal = parseFloat(this.Pipe2Number(datos.Subtotal));
       Elemento__.Descuento = parseFloat(this.Pipe2Number(datos.Descuento));
       Elemento__.ValorTotal = valorTotal;
-      Elemento__.PorcentajeIvaId = this.Tarifas_Iva.find(tarifa => tarifa.Nombre === datos.PorcentajeIvaId).Tarifa;
+      Elemento__.PorcentajeIvaId = aux ? aux.Tarifa : 0;
       Elemento__.ValorIva = parseFloat(this.Pipe2Number(datos.ValorIva));
       Elemento__.ValorFinal = parseFloat(this.Pipe2Number(datos.ValorTotal));
       Elemento__.SubgrupoCatalogoId = parseFloat(datos.SubgrupoCatalogoId);
       Elemento__.Verificado = datos.Verificado;
-      Elemento__.TipoBienId = this.Tipos_Bien.find(bien => bien.Nombre.toString() === datos.TipoBienId.toString());
+      Elemento__.TipoBienId = datos.TipoBienId ? this.Tipos_Bien.find(bien => bien.Nombre.toString() === datos.TipoBienId.toString()) : undefined;
       Elemento__.EstadoElementoId = this.Estados_Acta.find(estado => estado.Id === 2);
       Elemento__.SoporteActaId = Soporte;
       Elemento__.Activo = true;
