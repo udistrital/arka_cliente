@@ -41,7 +41,8 @@
                   </div>
                   <div class="form-group col-sm" [nbSpinner]="cargando_contratistas">
                       <label>{{'GLOBAL.Acta_Recibido.ContratistaAsignado' | translate}}</label>
-                      <input matInput type="text" class="form-control" placeholder="Nombre o Documento"
+                      <input matInput type="text" class="form-control"
+                      placeholder="{{'GLOBAL.Acta_Recibido.RegistroActa.SeleccioneFiltro' | translate}}"
                       formControlName="Contratista" [matAutocomplete]="autoContratista" />
                       <mat-autocomplete #autoContratista="matAutocomplete" [displayWith]="muestraContratista"
                       (optionSelected)="usarLocalStorage()">
@@ -81,13 +82,17 @@
                         <nb-card-body (click)="usarLocalStorage()">
                           <div class="row">
                             <div class="col">
-                              <div class="form-group col-sm">
+                              <div class="form-group col-sm" [nbSpinner]="!listo.get('proveedores')">
                                 <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Proveedor' | translate}}</label>
-                                <ng2-completer style="border: 0rem" inputClass="form-control" [clearUnselected]="true"
-                                  placeholder="{{'GLOBAL.Acta_Recibido.RegistroActa.SeleccioneFiltro' | translate}}"
-                                  nbInput [datasource]="dataService2" formControlName="Proveedor"
-                                  (keyup)="usarLocalStorage()" [minSearchLength]="3">
-                                </ng2-completer>
+                                <input matInput type="text" class="form-control"
+                                placeholder="{{'GLOBAL.Acta_Recibido.RegistroActa.SeleccioneFiltro' | translate}}"
+                                formControlName="Proveedor" [matAutocomplete]="autoProveedor" />
+                                <mat-autocomplete #autoProveedor="matAutocomplete" [displayWith]="muestraProveedor"
+                                (optionSelected)="usarLocalStorage()">
+                                  <mat-option *ngFor="let prov of proveedoresFiltrados | async" [value]="prov">
+                                    {{muestraProveedor(prov)}}
+                                  </mat-option>
+                                </mat-autocomplete>
                                 <p class="campo" *ngIf="firstForm.get('Formulario2').at(i).get('Proveedor').invalid">
                                   {{'GLOBAL.placeholder' | translate}}</p>
                               </div>
