@@ -116,7 +116,7 @@ export class RegistroComponent implements OnInit {
         UbicacionId: {
           title: this.translate.instant('GLOBAL.ubicacion'),
           valuePrepareFunction: (value: any) => {
-            return value.Nombre.toUpperCase();
+            return value.EspacioFisicoId.Nombre.toUpperCase();
           },
         },
         /*
@@ -143,7 +143,6 @@ export class RegistroComponent implements OnInit {
         const data = <Array<ActaRecibidoUbicacion>>res;
         this.actas = data;
         this.mostrarData();
-        // console.log({actas: this.actas});
       }
     });
   }
