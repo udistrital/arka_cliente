@@ -7,11 +7,13 @@ import { NuxeoService } from '../../../@core/utils/nuxeo.service';
 import { MatTable } from '@angular/material';
 import 'hammerjs';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
+import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
 import { ActaRecibido } from '../../../@core/data/models/acta_recibido/acta_recibido';
 import { Elemento, Impuesto } from '../../../@core/data/models/acta_recibido/elemento';
 import { TipoBien } from '../../../@core/data/models/acta_recibido/tipo_bien';
 import { SoporteActa, Ubicacion } from '../../../@core/data/models/acta_recibido/soporte_acta';
 import { Proveedor } from '../../../@core/data/models/acta_recibido/Proveedor';
+import { TerceroCriterioProveedor } from '../../../@core/data/models/terceros_criterio';
 import { EstadoActa } from '../../../@core/data/models/acta_recibido/estado_acta';
 import { EstadoElemento } from '../../../@core/data/models/acta_recibido/estado_elemento';
 import { HistoricoActa } from '../../../@core/data/models/acta_recibido/historico_acta';
@@ -79,7 +81,7 @@ export class VerDetalleComponent implements OnInit {
   Unidades: any;
   Tarifas_Iva: any;
   Ubicaciones: any;
-  Proveedores: any;
+  Proveedores: Partial<TerceroCriterioProveedor>[];
   Totales: any;
   Acta: TransaccionActaRecibido;
   fileDocumento: any;
@@ -93,6 +95,7 @@ export class VerDetalleComponent implements OnInit {
     private route: ActivatedRoute,
     private fb: FormBuilder,
     private Actas_Recibido: ActaRecibidoHelper,
+    private tercerosHelper: TercerosHelper,
     private cp: CurrencyPipe,
     private nuxeoService: NuxeoService,
     private completerService: CompleterService,
@@ -116,6 +119,7 @@ export class VerDetalleComponent implements OnInit {
     this.listService.findTipoBien();
     this.listService.findUnidades();
     this.listService.findImpuestoIVA();
+    this.loadProveedores();
   }
 
   public loadLists() {
@@ -127,27 +131,34 @@ export class VerDetalleComponent implements OnInit {
         this.Tipos_Bien = list.listTipoBien[0];
         this.Unidades = list.listUnidades[0];
         this.Tarifas_Iva = list.listIVA[0];
-        this.Proveedores = list.listProveedores[0];
         this.Dependencias = list.listDependencias[0];
         // this.Ubicaciones = list.listUbicaciones[0];
         this.Sedes = list.listSedes[0];
-        // console.log(this.Proveedores)
         // this.dataService = this.completerService.local(this.Ubicaciones, 'Nombre', 'Nombre');
-        if (this.Estados_Acta !== undefined && this.Estados_Elemento !== undefined &&
-          this.Tipos_Bien !== undefined && this.Unidades !== undefined &&
-          this.Tarifas_Iva !== undefined && this.Proveedores !== undefined &&
-          this.Dependencias !== undefined && this.Sedes !== undefined &&
-          this._ActaId !== undefined) {
-          // console.log(this._ActaId);
           this.cargarActa();
-        }
       },
     );
+  }
+  private loadProveedores() {
+    this.tercerosHelper.getTercerosByCriterio('proveedor').subscribe(res => {
+      this.Proveedores = res;
+      this.cargarActa();
+    });
   }
 
   private cargarActa() {
     // console.log('cargarActa');
-    if (this.carga_agregada === undefined) {
+    if (this.carga_agregada === undefined &&
+      this.Estados_Acta !== undefined &&
+      this.Estados_Elemento !== undefined &&
+      this.Tipos_Bien !== undefined &&
+      this.Unidades !== undefined &&
+      this.Tarifas_Iva !== undefined &&
+      this.Proveedores !== undefined &&
+      this.Dependencias !== undefined &&
+      this.Sedes !== undefined &&
+      this._ActaId !== undefined
+    ) {
       this.carga_agregada = false;
       // console.log('consultarActa');
           this.Actas_Recibido.getTransaccionActa(this._ActaId).subscribe(Acta => {
@@ -161,6 +172,14 @@ export class VerDetalleComponent implements OnInit {
   T_V(valor: string): string {
     return this.cp.transform(valor);
   }
+
+  muestraProveedor(prov: Partial<TerceroCriterioProveedor>): string {
+    if (prov) {
+      const str = prov.Identificacion ? prov.Identificacion.Numero + ' - ' : '';
+      return str + prov.Tercero.NombreCompleto;
+    }
+  }
+
   Cargar_Formularios(transaccion_: TransaccionActaRecibido) {
 
     this.Actas_Recibido.getSedeDependencia(transaccion_.ActaRecibido.UbicacionId).subscribe(res => {
@@ -178,9 +197,9 @@ export class VerDetalleComponent implements OnInit {
           Id: [Soporte.SoporteActa.Id],
           Proveedor: [
             Soporte.SoporteActa.ProveedorId === 0 ? null :
-              this.Proveedores.find((proveedor) =>
-                proveedor.Id.toString() === Soporte.SoporteActa.ProveedorId.toString()).compuesto,
-                Validators.required],
+              this.muestraProveedor(this.Proveedores.find((proveedor) =>
+              proveedor.Tercero.Id === Soporte.SoporteActa.ProveedorId)),
+          ],
           Consecutivo: [Soporte.SoporteActa.Consecutivo],
           Fecha_Factura: [Soporte.SoporteActa.FechaSoporte],
           Soporte: [Soporte.SoporteActa.DocumentoId],
