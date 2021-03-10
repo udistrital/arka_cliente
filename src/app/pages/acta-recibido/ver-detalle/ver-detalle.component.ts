@@ -69,8 +69,6 @@ export class VerDetalleComponent implements OnInit {
     this.loadLists();
   }
 
-  private actaCargada: boolean = false;
-
   // Modelos
 
   Acta__: ActaRecibido;
@@ -103,9 +101,10 @@ export class VerDetalleComponent implements OnInit {
     private listService: ListService,
     private pUpManager: PopUpManager,
     private sanitization: DomSanitizer,
-
-
   ) {
+  }
+
+  ngOnInit() {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
     });
     this.listService.findProveedores();
@@ -117,9 +116,6 @@ export class VerDetalleComponent implements OnInit {
     this.listService.findTipoBien();
     this.listService.findUnidades();
     this.listService.findImpuestoIVA();
-  }
-  ngOnInit() {
-
   }
 
   public loadLists() {
@@ -150,7 +146,10 @@ export class VerDetalleComponent implements OnInit {
   }
 
   private cargarActa() {
-    if (!this.actaCargada) {
+    // console.log('cargarActa');
+    if (this.carga_agregada === undefined) {
+      this.carga_agregada = false;
+      // console.log('consultarActa');
           this.Actas_Recibido.getTransaccionActa(this._ActaId).subscribe(Acta => {
             // console.log(Acta);
             this.Cargar_Formularios(Acta[0]);
@@ -234,7 +233,6 @@ export class VerDetalleComponent implements OnInit {
       });
       this.Traer_Relacion_Ubicaciones(valor, res[0].DependenciaId.Id, transaccion_.ActaRecibido.UbicacionId);
       this.carga_agregada = true;
-
     });
   }
 
