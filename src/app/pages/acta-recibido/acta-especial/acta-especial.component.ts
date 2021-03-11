@@ -360,6 +360,7 @@ export class ActaEspecialComponent implements OnInit {
     Acta_de_Recibido.Activo = true;
     Acta_de_Recibido.FechaCreacion = new Date();
     Acta_de_Recibido.FechaModificacion = new Date();
+    Acta_de_Recibido.FechaVistoBueno =  new Date();
     Acta_de_Recibido.RevisorId = this.userService.getPersonaId();
     Acta_de_Recibido.UbicacionId = parseFloat(Datos.Formulario1.Ubicacion);
     Acta_de_Recibido.Observaciones = Datos.Formulario3.Datos_Adicionales;
