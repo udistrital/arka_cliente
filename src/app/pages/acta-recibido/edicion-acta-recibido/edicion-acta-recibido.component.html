@@ -91,13 +91,17 @@
                           <div class="row">
 
                             <div class="col" *ngIf="!ActaEspecial">
-                              <div class="form-group col-sm">
+                              <div class="form-group col-sm" [nbSpinner]="!listo.get('proveedores')">
                                 <label>{{'GLOBAL.Acta_Recibido.EdicionActa.Proveedor' | translate}}</label>
-                                <ng2-completer style="border: 0rem" inputClass="form-control" (keyup)="usarLocalStorage()"
-                                  placeholder="{{'GLOBAL.Acta_Recibido.EdicionActa.SeleccioneFiltro' | translate}}"
-                                  [clearUnselected]="true" nbInput [datasource]="dataService2" formControlName="Proveedor"
-                                  [minSearchLength]="3" [disableInput]="!getPermisoEditar(permisos.Acta)">
-                                </ng2-completer>
+                                <input matInput type="text" class="form-control"
+                                placeholder="{{'GLOBAL.Acta_Recibido.EdicionActa.SeleccioneFiltro' | translate}}"
+                                formControlName="Proveedor" [matAutocomplete]="autoProveedor" />
+                                <mat-autocomplete #autoProveedor="matAutocomplete" [displayWith]="muestraProveedor"
+                                (optionSelected)="usarLocalStorage()">
+                                  <mat-option *ngFor="let prov of proveedoresFiltrados | async" [value]="prov">
+                                    {{muestraProveedor(prov)}}
+                                  </mat-option>
+                                </mat-autocomplete>
                                 <p class="campo" *ngIf="firstForm.get('Formulario2').at(i).get('Proveedor').invalid">
                                   {{'GLOBAL.placeholder' | translate}}</p>
                               </div>
