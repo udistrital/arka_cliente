@@ -84,8 +84,6 @@ export class VerificacionActaRecibidoComponent implements OnInit {
   bandera2: boolean;
   respuesta: any;
 
-  private actaCargada: boolean = false;
-
   constructor(
     private translate: TranslateService,
     private router: Router,
@@ -103,6 +101,9 @@ export class VerificacionActaRecibidoComponent implements OnInit {
     private userService: UserService,
 
   ) {
+  }
+
+  ngOnInit() {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
     });
     this.listService.findProveedores();
@@ -115,8 +116,6 @@ export class VerificacionActaRecibidoComponent implements OnInit {
     this.listService.findUnidades();
     this.listService.findImpuestoIVA();
     this.Verificar_tabla = new Array<boolean>();
-  }
-  ngOnInit() {
     this.loadLists();
   }
   public loadLists() {
@@ -147,7 +146,10 @@ export class VerificacionActaRecibidoComponent implements OnInit {
   }
 
   private cargarActa() {
-    if (!this.actaCargada) {
+    // console.log('cargarActa');
+    if (this.carga_agregada === undefined) {
+      this.carga_agregada = false;
+      // console.log('consultarActa');
           this.Actas_Recibido.getTransaccionActa(this._ActaId).subscribe(Acta => {
             // console.log(Acta);
             this.respuesta = true;
