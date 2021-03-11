@@ -12,7 +12,7 @@ Cliente del Sistema de Gestión Academica hecho con Angular 7
 ### Variables de Entorno
 ```shell
 # En Pipeline
-SLACK_AND_WEBHOOK: WEBHOOK de Slack Grupo ci-covid-serverles
+SLACK_AND_WEBHOOK: WEBHOOK telegram
 AWS_ACCESS_KEY_ID: llave de acceso ID Usuario AWS
 AWS_SECRET_ACCESS_KEY: Secreto de Usuario AWS
 ```
@@ -71,7 +71,7 @@ npm run test:ui
 
 | Develop | Relese 0.0.1 | Master |
 | -- | -- | -- |
-| [![Build Status](https://hubci.portaloas.udistrital.edu.co/api/badges/udistrital/arka_cliente/status.svg?ref=refs/heads/develp)](https://hubci.portaloas.udistrital.edu.co/udistrital/arka_cliente) | [![Build Status](https://hubci.portaloas.udistrital.edu.co/api/badges/udistrital/arka_cliente/status.svg?ref=refs/heads/release/0.0.1)](https://hubci.portaloas.udistrital.edu.co/udistrital/arka_cliente) | [![Build Status](https://hubci.portaloas.udistrital.edu.co/api/badges/udistrital/arka_cliente/status.svg)](https://hubci.portaloas.udistrital.edu.co/udistrital/arka_cliente) |
+| [![Build Status](https://hubci.portaloas.udistrital.edu.co/api/badges/udistrital/arka_cliente/status.svg?ref=refs/heads/develop)](https://hubci.portaloas.udistrital.edu.co/udistrital/arka_cliente) | [![Build Status](https://hubci.portaloas.udistrital.edu.co/api/badges/udistrital/arka_cliente/status.svg?ref=refs/heads/release/0.0.1)](https://hubci.portaloas.udistrital.edu.co/udistrital/arka_cliente) | [![Build Status](https://hubci.portaloas.udistrital.edu.co/api/badges/udistrital/arka_cliente/status.svg)](https://hubci.portaloas.udistrital.edu.co/udistrital/arka_cliente) |
 
 ## Licencia
 
