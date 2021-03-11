@@ -32,7 +32,7 @@ export class ReposicionComponent implements OnInit {
   uidDocumento: string;
   idDocumento: number;
   fileDocumento: any;
-  validar: boolean;
+  validar: boolean=true;
   formatoTipoMovimiento: any;
   tipoEntrada: any;
   proveedor: string;
@@ -194,56 +194,51 @@ export class ReposicionComponent implements OnInit {
    * Método para enviar registro
    */
   async onSubmit() {
-    if (this.validar && this.fileDocumento !== null ) {
-      if (this.encargado.length !== 0) {
-        await this.postSoporteNuxeo([this.fileDocumento]);
-      const detalle = {
-        acta_recibido_id: +this.actaRecibidoId,
-        consecutivo: 'P2',
-        documento_contable_id: 1, // REVISAR
-        placa_id: this.placa,
-        encargado_id: this.encargadoId,
-      };
-      const movimientoReposicion = {
-        Observacion: this.observacionForm.value.observacionCtrl,
-        Detalle: JSON.stringify(detalle),
-        Activo: true,
-        FormatoTipoMovimientoId: {
-          Id: this.formatoTipoMovimiento[0].Id,
-        },
-        EstadoMovimientoId: {
-          Id: 2, // REVISAR
-        },
-        Id: this.movimientoId ? this.movimientoId : 0,
-        SoporteMovimientoId: this.idDocumento,
-        IdTipoMovimiento: this.tipoEntrada.Id,
-      };
+    if (this.encargado.length !== 0) {
+    const detalle = {
+      acta_recibido_id: +this.actaRecibidoId,
+      consecutivo: 'P2',
+      documento_contable_id: 1, // REVISAR
+      placa_id: this.placa,
+      encargado_id: this.encargadoId,
+    };
+    const movimientoReposicion = {
+      Observacion: this.observacionForm.value.observacionCtrl,
+      Detalle: JSON.stringify(detalle),
+      Activo: true,
+      FormatoTipoMovimientoId: {
+        Id: this.formatoTipoMovimiento[0].Id,
+      },
+      EstadoMovimientoId: {
+        Id: 2, // REVISAR
+      },
+      Id: this.movimientoId ? this.movimientoId : 0,
+      SoporteMovimientoId: this.idDocumento,
+      IdTipoMovimiento: this.tipoEntrada.Id,
+    };
 
-      this.entradasHelper.postEntrada(movimientoReposicion).subscribe((res: any) => {
-        if (res !== null) {
-          const elstring = JSON.stringify(res.Detalle);
-          const posini = elstring.indexOf('consecutivo') + 16;
-          if (posini !== -1) {
-              const posfin = elstring.indexOf('\"', posini);
-              const elresultado = elstring.substr(posini, posfin - posini - 1);
-              detalle.consecutivo = elresultado;
-          }
-          (Swal as any).fire({
-            type: 'success',
-            title: 'Entrada N° ' + `${detalle.consecutivo}` + ' Registrada',
-            text: 'La Entrada N° ' + `${detalle.consecutivo}` + ' ha sido registrada de forma exitosa',
-          });
-          const navigationExtras: NavigationExtras = { state: { consecutivo: res.Id } };
-          this.router.navigate(['/pages/reportes/registro-entradas'], navigationExtras);
-        } else {
-          this.pUpManager.showErrorAlert('No es posible hacer el registro.');
+    this.entradasHelper.postEntrada(movimientoReposicion).subscribe((res: any) => {
+      if (res !== null) {
+        const elstring = JSON.stringify(res.Detalle);
+        const posini = elstring.indexOf('consecutivo') + 16;
+        if (posini !== -1) {
+            const posfin = elstring.indexOf('\"', posini);
+            const elresultado = elstring.substr(posini, posfin - posini - 1);
+            detalle.consecutivo = elresultado;
         }
-      });
-      }else {
-        this.pUpManager.showErrorAlert('Placa invalida o encargado no encontrado');
+        (Swal as any).fire({
+          type: 'success',
+          title: 'Entrada N° ' + `${detalle.consecutivo}` + ' Registrada',
+          text: 'La Entrada N° ' + `${detalle.consecutivo}` + ' ha sido registrada de forma exitosa',
+        });
+        const navigationExtras: NavigationExtras = { state: { consecutivo: res.Id } };
+        this.router.navigate(['/pages/reportes/registro-entradas'], navigationExtras);
+      } else {
+        this.pUpManager.showErrorAlert('No es posible hacer el registro.');
       }
-    } else {
-      this.pUpManager.showErrorAlert('No ha llenado todos los campos! No es posible hacer el registro.');
+    });
+    }else {
+      this.pUpManager.showErrorAlert('Placa invalida o encargado no encontrado');
     }
   }
 
