@@ -148,12 +148,12 @@ export class VerificacionActaRecibidoComponent implements OnInit {
 
   private cargarActa() {
     if (!this.actaCargada) {
-          this.Actas_Recibido.getTransaccionActa(this._ActaId).subscribe(Acta => {
-            // console.log(Acta);
-            this.respuesta = true;
-            this.Cargar_Formularios(Acta[0]);
-            // console.log('ok');
-          });
+      this.Actas_Recibido.getTransaccionActa(this._ActaId).subscribe(Acta => {
+        // console.log(Acta);
+        this.respuesta = true;
+        this.Cargar_Formularios(Acta[0]);
+        // console.log('ok');
+      });
     }
   }
 
@@ -207,57 +207,57 @@ export class VerificacionActaRecibidoComponent implements OnInit {
         this.Verificar_tabla.push(false);
 
         if (Array.isArray(Soporte.Elementos))
-        for (const _Elemento of Soporte.Elementos) {
+          for (const _Elemento of Soporte.Elementos) {
 
-          const Elemento___ = this.fb.group({
-            Id: [_Elemento.Id],
-            TipoBienId: [
-              (() => {
-                const criterio = bien => {
-                  if (bien.hasOwnProperty('Id')
-                  && _Elemento.hasOwnProperty('TipoBienId') && _Elemento.TipoBienId
-                  && _Elemento.TipoBienId.hasOwnProperty('Id') && _Elemento.TipoBienId.Id) {
-                    return bien.Id.toString() === _Elemento.TipoBienId.Id.toString();
-                  } else {
-                    return false;
+            const Elemento___ = this.fb.group({
+              Id: [_Elemento.Id],
+              TipoBienId: [
+                (() => {
+                  const criterio = bien => {
+                    if (bien.hasOwnProperty('Id')
+                      && _Elemento.hasOwnProperty('TipoBienId') && _Elemento.TipoBienId
+                      && _Elemento.TipoBienId.hasOwnProperty('Id') && _Elemento.TipoBienId.Id) {
+                      return bien.Id.toString() === _Elemento.TipoBienId.Id.toString();
+                    } else {
+                      return false;
+                    }
+                  };
+                  if (Array.isArray(this.Tipos_Bien) && this.Tipos_Bien.some(criterio)) {
+                    return this.Tipos_Bien.find(criterio).Nombre;
                   }
-                };
-                if (Array.isArray(this.Tipos_Bien) && this.Tipos_Bien.some(criterio)) {
-                  return this.Tipos_Bien.find(criterio).Nombre;
-                }
-                return undefined;
-              })(),
-            ],
-            SubgrupoCatalogoId: [_Elemento.SubgrupoCatalogoId],
-            Nombre: [_Elemento.Nombre],
-            Cantidad: [_Elemento.Cantidad],
-            Marca: [_Elemento.Marca],
-            Serie: [_Elemento.Serie],
-            UnidadMedida: [
-              this.Unidades.find(unidad => unidad.Id.toString() === _Elemento.UnidadMedida.toString()).Unidad,
-            ],
-            ValorUnitario: [this.T_V(_Elemento.ValorUnitario.toString())],
-            Subtotal: [this.T_V(_Elemento.ValorTotal.toString())],
-            Descuento: [this.T_V(_Elemento.Descuento.toString())],
-            PorcentajeIvaId: [
-              this.Tarifas_Iva.find(iva => +iva.Tarifa === +_Elemento.PorcentajeIvaId) ?
-              this.Tarifas_Iva.find(iva => +iva.Tarifa === +_Elemento.PorcentajeIvaId).Nombre : '',
-            ],
-            ValorIva: [this.T_V(_Elemento.ValorIva.toString())],
-            ValorTotal: [this.T_V(_Elemento.ValorFinal.toString())],
-            Verificado: [false],
-          });
+                  return undefined;
+                })(),
+              ],
+              SubgrupoCatalogoId: [_Elemento.SubgrupoCatalogoId],
+              Nombre: [_Elemento.Nombre],
+              Cantidad: [_Elemento.Cantidad],
+              Marca: [_Elemento.Marca],
+              Serie: [_Elemento.Serie],
+              UnidadMedida: [
+                this.Unidades.find(unidad => unidad.Id.toString() === _Elemento.UnidadMedida.toString()).Unidad,
+              ],
+              ValorUnitario: [this.T_V(_Elemento.ValorUnitario.toString())],
+              Subtotal: [this.T_V(_Elemento.ValorTotal.toString())],
+              Descuento: [this.T_V(_Elemento.Descuento.toString())],
+              PorcentajeIvaId: [
+                this.Tarifas_Iva.find(iva => +iva.Tarifa === +_Elemento.PorcentajeIvaId) ?
+                  this.Tarifas_Iva.find(iva => +iva.Tarifa === +_Elemento.PorcentajeIvaId).Nombre : '',
+              ],
+              ValorIva: [this.T_V(_Elemento.ValorIva.toString())],
+              ValorTotal: [this.T_V(_Elemento.ValorFinal.toString())],
+              Verificado: [false],
+            });
 
-          (Formulario__2.get('Elementos') as FormArray).push(Elemento___);
-        }
+            (Formulario__2.get('Elementos') as FormArray).push(Elemento___);
+          }
 
         Form2.push(Formulario__2);
       }
 
       let personarev: any = this.Proveedores.find(proveedor => proveedor.Id.toString() === transaccion_.ActaRecibido.PersonaAsignada.toString());
       if (typeof personarev === 'undefined') {
-          personarev = {proveedor: 0 };
-            // color is undefined
+        personarev = { proveedor: 0 };
+        // color is undefined
       }
 
 
@@ -351,8 +351,8 @@ export class VerificacionActaRecibidoComponent implements OnInit {
       if (res !== null) {
         (Swal as any).fire({
           type: 'success',
-          title: this.translate.instant('GLOBAL.Acta_Recibido.VerificacionActa.VerificadaTitle', {ID: res.ActaRecibido.Id}),
-          text: this.translate.instant('GLOBAL.Acta_Recibido.VerificacionActa.Verificada', {ID: res.ActaRecibido.Id}),
+          title: this.translate.instant('GLOBAL.Acta_Recibido.VerificacionActa.VerificadaTitle', { ID: res.ActaRecibido.Id }),
+          text: this.translate.instant('GLOBAL.Acta_Recibido.VerificacionActa.Verificada', { ID: res.ActaRecibido.Id }),
         }).then((willDelete) => {
           if (willDelete.value) {
             this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
@@ -386,8 +386,8 @@ export class VerificacionActaRecibidoComponent implements OnInit {
       if (res !== null) {
         (Swal as any).fire({
           type: 'success',
-          title: this.translate.instant('GLOBAL.Acta_Recibido.VerificacionActa.RechazadaTitle', {ID: res.ActaRecibido.Id}),
-          text: this.translate.instant('GLOBAL.Acta_Recibido.VerificacionActa.Rechazada', {ID: res.ActaRecibido.Id}),
+          title: this.translate.instant('GLOBAL.Acta_Recibido.VerificacionActa.RechazadaTitle', { ID: res.ActaRecibido.Id }),
+          text: this.translate.instant('GLOBAL.Acta_Recibido.VerificacionActa.Rechazada', { ID: res.ActaRecibido.Id }),
         }).then((willDelete) => {
           if (willDelete.value) {
             this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
@@ -414,7 +414,7 @@ export class VerificacionActaRecibidoComponent implements OnInit {
     Acta_de_Recibido.Activo = true;
     Acta_de_Recibido.FechaCreacion = new Date();
     Acta_de_Recibido.FechaModificacion = new Date();
-    Acta_de_Recibido.FechaVistoBueno =  new Date();
+    Acta_de_Recibido.FechaVistoBueno = new Date();
     Acta_de_Recibido.RevisorId = this.userService.getPersonaId();
     Acta_de_Recibido.UbicacionId = this.Ubicaciones.find(ubicacion => ubicacion.Nombre === Datos.Ubicacion).Id;
     Acta_de_Recibido.Observaciones = Datos2.Datos_Adicionales;
@@ -459,14 +459,14 @@ export class VerificacionActaRecibidoComponent implements OnInit {
 
       const Elemento__ = new Elemento;
       const valorTotal = (parseFloat(this.Pipe2Number(datos.Subtotal)) - parseFloat(this.Pipe2Number(datos.Descuento)));
-      const aux = this.Tarifas_Iva.find(tarifa => tarifa.Nombre === datos.PorcentajeIvaId) 
+      const aux = this.Tarifas_Iva.find(tarifa => tarifa.Nombre === datos.PorcentajeIvaId);
 
       Elemento__.Id = parseFloat(Datos.Id);
       Elemento__.Nombre = datos.Nombre;
       Elemento__.Cantidad = datos.Cantidad;
       Elemento__.Marca = datos.Marca;
       Elemento__.Serie = datos.Serie;
-      Elemento__.UnidadMedida =  this.Unidades.find(unidad => unidad.Unidad.toString() === datos.UnidadMedida.toString()).Id,
+      Elemento__.UnidadMedida = this.Unidades.find(unidad => unidad.Unidad.toString() === datos.UnidadMedida.toString()).Id;
       Elemento__.ValorUnitario = parseFloat(this.Pipe2Number(datos.ValorUnitario));
       Elemento__.Subtotal = parseFloat(this.Pipe2Number(datos.Subtotal));
       Elemento__.Descuento = parseFloat(this.Pipe2Number(datos.Descuento));
@@ -592,7 +592,7 @@ export class VerificacionActaRecibidoComponent implements OnInit {
             const obs = this.firstForm.value;
             this.firstForm.get('Formulario3').get('Datos_Adicionales').setValue(
               obs.Formulario3.Datos_Adicionales + ' // Razon de rechazo: ' + result2.value,
-              );
+            );
             this.onFirstSubmit2();
           }
         });
@@ -603,9 +603,9 @@ export class VerificacionActaRecibidoComponent implements OnInit {
 
   private hayElementos(): boolean {
     return (this.Acta
-    && this.Acta.hasOwnProperty('SoportesActa')
-    && Array.isArray(this.Acta.SoportesActa)
-    && this.Acta.SoportesActa.some(sop => Array.isArray(sop.Elementos))
+      && this.Acta.hasOwnProperty('SoportesActa')
+      && Array.isArray(this.Acta.SoportesActa)
+      && this.Acta.SoportesActa.some(sop => Array.isArray(sop.Elementos))
     );
   }
 
