@@ -492,8 +492,18 @@ export class EdicionActaRecibidoComponent implements OnInit {
                 proveedor.Tercero.Id === Soporte.SoporteActa.ProveedorId),
             Validators.required,
           ],
-          Consecutivo: [Soporte.SoporteActa.Consecutivo, Validators.required],
-          Fecha_Factura: [this.dateService.parse(Soporte.SoporteActa.FechaSoporte.toString(), 'MM dd yyyy'),
+          Consecutivo: [
+            {
+              value: Soporte.SoporteActa.Consecutivo,
+              disabled: !this.getPermisoEditar(this.permisos.Acta),
+            },
+            Validators.required,
+          ],
+          Fecha_Factura: [
+            {
+              value: this.dateService.parse(Soporte.SoporteActa.FechaSoporte.toString(), 'MM dd yyyy'),
+              disabled: !this.getPermisoEditar(this.permisos.Acta),
+            },
             Validators.required],
           Soporte: [Soporte.SoporteActa.DocumentoId, Validators.required],
         });
@@ -539,13 +549,19 @@ export class EdicionActaRecibidoComponent implements OnInit {
       this.firstForm = this.fb.group({
         Formulario1: this.fb.group({
           Id: [transaccion_.ActaRecibido.Id],
-          Sede: [ (() => {
-            const criterio = x => x && x.CodigoAbreviacion === valor.toString();
-            if (this.Sedes.some(criterio)) {
-              return this.Sedes.find(criterio).Id;
-            }
-            return '';
-          })(), Validators.required],
+          Sede: [
+            {
+              value: (() => {
+                const criterio = x => x && x.CodigoAbreviacion === valor.toString();
+                if (this.Sedes.some(criterio)) {
+                  return this.Sedes.find(criterio).Id;
+                }
+                return '';
+              })(),
+              disabled: !this.getPermisoEditar(this.permisos.Acta),
+            },
+            Validators.required,
+          ],
           Dependencia: [ (() => {
             const criterio = x => res[0].hasOwnProperty('DependenciaId') && x.Id === res[0].DependenciaId.Id;
             if (this.Dependencias.some(criterio)) {
@@ -554,15 +570,22 @@ export class EdicionActaRecibidoComponent implements OnInit {
             return '';
           })(), Validators.required],
           Ubicacion: [
-            transaccion_.ActaRecibido.UbicacionId,
+            {
+              value: transaccion_.ActaRecibido.UbicacionId,
+              disabled: !this.getPermisoEditar(this.permisos.Acta),
+            },
             Validators.required,
           ],
-          Contratista: [ (() => {
-            const criterio = (contratista: TerceroCriterioContratista) =>
-            contratista &&
-            contratista.Tercero.Id === transaccion_.ActaRecibido.PersonaAsignada;
-            return this.Contratistas.some(criterio) ? this.Contratistas.find(criterio) : '';
-          })(),
+          Contratista: [
+            {
+              value: (() => {
+                const criterio = (contratista: TerceroCriterioContratista) =>
+                  contratista &&
+                  contratista.Tercero.Id === transaccion_.ActaRecibido.PersonaAsignada;
+                return this.Contratistas.some(criterio) ? this.Contratistas.find(criterio) : '';
+              })(),
+              disabled: !this.getPermisoEditar(this.permisos.Acta),
+            },
             Validators.required,
           ],
         }),
