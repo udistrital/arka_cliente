@@ -1,76 +1,84 @@
-[![Build Status](https://travis-ci.org/akveo/ngx-admin.svg?branch=master)](https://travis-ci.org/akveo/ngx-admin)
-[![Join the chat at https://gitter.im/ng2-admin/Lobby](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/ng2-admin/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![Dependency Status](https://david-dm.org/akveo/ngx-admin/status.svg)](https://david-dm.org/akveo/ng2-admin)
+# arka_cliente
+Cliente del Sistema de Gestión Academica hecho con Angular 7
 
-[Who uses ngx-admin?](https://github.com/akveo/ngx-admin/issues/1645)| [Documentation](https://akveo.github.io/ngx-admin/?utm_source=github&utm_medium=ngx_admin_readme&utm_campaign=themes) | [Installation Guidelines](https://akveo.github.io/ngx-admin/docs/getting-started/what-is-ngxadmin?utm_source=github&utm_medium=ngx_admin_readme&utm_campaign=themes)
+## Especificaciones Técnicas
 
-# Admin template based on Angular 7+, Bootstrap 4 and <a href="https://github.com/akveo/nebular">Nebular</a>
-<a target="_blank" href="http://akveo.com/ngx-admin/pages/dashboard?theme=corporate&utm_source=github&utm_medium=ngx_admin_readme&utm_campaign=main_pic"><img src="https://i.imgur.com/OIL7rt8.png"/></a>
+### Tecnologías Implementadas y Versiones
+* [ngxAdmin](https://github.com/akveo/ngx-admin)
+* [Angular 7.0](https://angular.io/)
+* [Bootstrap 4](https://getbootstrap.com/docs/4.5/getting-started/introduction/)
+* [Nebular 4](https://akveo.github.io/nebular/4.6.0/)
 
-### Backend Integration Bundles
-Easy way to integrate ngx-admin with .NET, Node.js, Java or PHP. [Checkout our Store](https://store.akveo.com/?utm_source=github&utm_medium=ngx_admin_readme) for ready to use Backend Bundles.
+### Variables de Entorno
+```shell
+# En Pipeline
+SLACK_AND_WEBHOOK: WEBHOOK de Slack Grupo ci-covid-serverles
+AWS_ACCESS_KEY_ID: llave de acceso ID Usuario AWS
+AWS_SECRET_ACCESS_KEY: Secreto de Usuario AWS
+```
 
+### Ejecución del Proyecto
 
-### With 3 stunning visual themes
+Clonar el proyecto del repositorio de git
+```bash
+# clone the project
+git clone https://github.com/udistrital/arka_cliente.git
+# enter the project directory
+cd sga_cliente
+```
+Iniciar el servidor en local
+```bash
+# install dependency
+npx npm install
+or
+npm install
+# start server
+npx ng serve
+# Whenever you want to change the port just run
+npx ng dev --port = 9528
+```
+Linter
+```bash
+# Angular linter
+npm run lint
+# run linter and auto fix
+npm run lint:fix
+# run linter on styles
+npm run lint:styles
+# run lint UI
+npm run lint:ci
+```
 
-#### Cosmic
-<a target="_blank" href="http://akveo.com/ngx-admin/pages/dashboard?theme=cosmic&utm_source=github&utm_medium=ngx_admin_readme&utm_campaign=themes"><img src="https://i.imgur.com/tvAJJhW.png"/></a>
+### Ejecución Dockerfile
+```bash
+# Does not apply
+```
+### Ejecución docker-compose
+```bash
+# Does not apply
+```
+### Ejecución Pruebas
 
-#### Corporate
-<a target="_blank" href="http://akveo.com/ngx-admin/pages/dashboard?theme=corporate&utm_source=github&utm_medium=ngx_admin_readme&utm_campaign=themes"><img src="https://i.imgur.com/wbEtUX4.jpg"/></a>
+Pruebas unitarias powered by Jest
+```bash
+# run unit test
+npm run test
+# Runt linter + unit test
+npm run test:ui
+```
 
-#### Light
+## Estado CI
 
-<a target="_blank" href="http://akveo.com/ngx-admin/pages/dashboard?theme=default&utm_source=github&utm_medium=ngx_admin_readme&utm_campaign=themes"><img src="https://i.imgur.com/cb9U34M.jpg"/></a>
+| Develop | Relese 0.0.1 | Master |
+| -- | -- | -- |
+| [![Build Status](https://hubci.portaloas.udistrital.edu.co/api/badges/udistrital/arka_cliente/status.svg?ref=refs/heads/develp)](https://hubci.portaloas.udistrital.edu.co/udistrital/arka_cliente) | [![Build Status](https://hubci.portaloas.udistrital.edu.co/api/badges/udistrital/arka_cliente/status.svg?ref=refs/heads/release/0.0.1)](https://hubci.portaloas.udistrital.edu.co/udistrital/arka_cliente) | [![Build Status](https://hubci.portaloas.udistrital.edu.co/api/badges/udistrital/arka_cliente/status.svg)](https://hubci.portaloas.udistrital.edu.co/udistrital/arka_cliente) |
 
-### What's included:
+## Licencia
 
-- Angular 7+ & Typescript
-- Bootstrap 4+ & SCSS
-- Responsive layout
-- RTL support
-- High resolution
-- Flexibly configurable themes with **hot-reload** (3 themes included)
-- Authentication module with multiple providers
-- 40+ Angular Components
-- 60+ Usage Examples
+[This file is part of arka_cliente.](LICENSE)
 
-### Hot Themes Reload
+arka_cliente is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (atSara Sampaio your option) any later version.
 
-<a target="_blank" href="http://akveo.com/ngx-admin/pages/dashboard?utm_source=github&utm_medium=ngx_admin_readme&utm_campaign=demo"><img src="https://i.imgur.com/XoJtfvK.gif"/></a>
+arka_cliente is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-### Demo
-
-<a target="_blank" href="http://akveo.com/ngx-admin/">Live Demo</a>
-
-## Documentation
-This template is using [Nebular](https://github.com/akveo/nebular) modules set, [here you can find documentation and other useful articles](https://akveo.github.io/nebular/docs/guides/install-based-on-starter-kit).
-
-### Empty starter kit
-Don't need all the pages and modules and just looking for an empty starter kit for your next project? Check out our [starter-kit branch](https://github.com/akveo/ngx-admin/tree/starter-kit).
-
-### AngularJS 1.x version
-Here you can find AngularJS 1.x based version: [Blur Admin](http://akveo.github.io/blur-admin/)
-
-## BrowserStack
-This project runs its tests on multiple desktop and mobile browsers using [BrowserStack](http://www.browserstack.com).
-
-<img src="https://cloud.githubusercontent.com/assets/131406/22254249/534d889e-e254-11e6-8427-a759fb23b7bd.png" height="40" />
-
-## More from Akveo
-
-- [Eva Icons](https://github.com/akveo/eva-icons) - 480+ beautiful Open Source icons
-- [Nebular](https://github.com/akveo/nebular) - Angular Components, Auth and Security
-
-### How can I support developers?
-- Star our GitHub repo :star:
-- Create pull requests, submit bugs, suggest new features or documentation updates :wrench:
-- Follow us on [Twitter](https://twitter.com/akveo_inc) :feet:
-- Like our page on [Facebook](https://www.facebook.com/akveo/) :thumbsup:
-
-### Looking for engineering services? 
-Visit [our homepage](http://akveo.com/) or simply leave us a message to [contact@akveo.com](mailto:contact@akveo.com). We will be happy to work with you!
-
-### From Developers
-Made with :heart: by [Akveo team](http://akveo.com/). Follow us on [Twitter](https://twitter.com/akveo_inc) to get the latest news first!
-We're always happy to receive your feedback!
+You should have received a copy of the GNU General Public License along with arka_cliente. If not, see https://www.gnu.org/licenses/.
