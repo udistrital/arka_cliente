@@ -391,7 +391,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
     }
   }
   private filtroContratistas(nombre: string): TerceroCriterioContratista[] {
-    if (nombre.length >= 4) {
+    if (nombre.length >= 4 && Array.isArray(this.Contratistas)) {
       const valorFiltrado = nombre.toLowerCase();
       return this.Contratistas.filter(contr => this.muestraContratista(contr).toLowerCase().includes(valorFiltrado));
     } else return [];
@@ -415,10 +415,10 @@ export class EdicionActaRecibidoComponent implements OnInit {
   }
   private filtroProveedores(nombre: string): Partial<TerceroCriterioProveedor>[] {
     // console.log('filtroProveedores');
-    // if (nombre.length >= 4) {
+    if (nombre.length >= 4 && Array.isArray(this.Proveedores)) {
       const valorFiltrado = nombre.toLowerCase();
       return this.Proveedores.filter(prov => this.muestraProveedor(prov).toLowerCase().includes(valorFiltrado));
-    // } else return [];
+    } else return [];
   }
   muestraProveedor(prov: Partial<TerceroCriterioProveedor>): string {
     if (prov) {
