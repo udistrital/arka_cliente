@@ -124,7 +124,7 @@ export class RegistroComponent implements OnInit {
         UbicacionId: {
           title: this.translate.instant('GLOBAL.ubicacion'),
           valuePrepareFunction: (value: any) => {
-            return value.Nombre.toUpperCase();
+            return value.EspacioFisicoId.Nombre.toUpperCase();
           },
         },
         /*

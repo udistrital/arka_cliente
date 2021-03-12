@@ -41,6 +41,8 @@ export class TablaEntradaAprobadaComponent implements OnInit {
   Ordenador: any;
   Proveedores: any;
   Proveedor: any;
+  encargado: any;
+  Placa: any;
 
   constructor(
     private router: Router,
@@ -218,6 +220,10 @@ export class TablaEntradaAprobadaComponent implements OnInit {
           }
           case 'Aprovechamientos': {
             this.loadDetalleAprovechamientos(res);
+            break;
+          }
+          case 'Reposición': {
+            this.loadDetalleReposicion(res);
             break;
           }
           default: {
@@ -454,6 +460,18 @@ export class TablaEntradaAprobadaComponent implements OnInit {
     this.documentoId = false;
     // console.log(this.Proveedor)
   }
+  loadDetalleReposicion(info) {
+    const detalle = JSON.parse(info.Movimiento.Detalle);
+    this.loadEncargadoByPlaca(detalle.placa_id);
+    this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id; // ACTA RECIBIDO
+    this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
+    this.entradaEspecifica.TipoEntradaId.Nombre = info.TipoMovimiento.TipoMovimientoId.Nombre; // TIPO ENTRADA
+    this.entradaEspecifica.Observacion = info.Movimiento.Observacion; // OBSERVACIÓN
+    this.Placa = detalle.placa_id;
+    this.documentoId = false;
+    this.show = true;
+    // console.log(this.Proveedor)
+  }
 
   loadSupervisorById(id: number): void {
     this.tercerosHelper.getTercerosByCriterio('funcionarioPlanta', id).subscribe( res => {
@@ -472,6 +490,15 @@ export class TablaEntradaAprobadaComponent implements OnInit {
       }
     });
     this.show = true;
+  }
+  loadEncargadoByPlaca(placa: string) {
+    this.entradasHelper.getEncargadoElementoByPlaca(placa).subscribe(res => {
+      if (res != null && res !== undefined) {
+        this.encargado = res.NombreCompleto;
+      }else {
+        this.encargado = '';
+      }
+    });
   }
   loadProveedor(Compuesto: string) {
     this.Proveedor = this.Proveedores.find((prov) => prov.compuesto === Compuesto).NomProveedor;
