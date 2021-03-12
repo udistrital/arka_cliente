@@ -487,9 +487,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
                   proveedor.Tercero.Id === Soporte.SoporteActa.ProveedorId),
               disabled: !this.getPermisoEditar(this.permisos.Acta),
             },
-            Soporte.SoporteActa.ProveedorId === 0 ? null :
-              this.Proveedores.find((proveedor) =>
-                proveedor.Tercero.Id === Soporte.SoporteActa.ProveedorId),
             Validators.required,
           ],
           Consecutivo: [
