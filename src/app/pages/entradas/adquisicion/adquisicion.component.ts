@@ -12,6 +12,7 @@ import { TipoEntrada } from '../../../@core/data/models/entrada/tipo_entrada';
 import { Router, NavigationExtras } from '@angular/router';
 import { NbStepperComponent } from '@nebular/theme';
 import Swal from 'sweetalert2';
+import { isObject } from 'rxjs/internal-compatibility';
 
 @Component({
   selector: 'ngx-adquisicion',
@@ -55,7 +56,6 @@ export class AdquisicionComponent implements OnInit {
   @ViewChild('stepper') stepper: NbStepperComponent;
 
   @Input() actaRecibidoId: Number;
-  @Input() movimientoId: Number;
 
   constructor(private router: Router, private entradasHelper: EntradaHelper, private actaRecibidoHelper: ActaRecibidoHelper,
     private pUpManager: PopUpManager, private fb: FormBuilder) {
@@ -100,17 +100,16 @@ export class AdquisicionComponent implements OnInit {
    * Métodos para cargar los contratos.
    */
   loadContratos(): void {
+    this.contratos = [];
     if (this.opcionTipoContrato !== '' && this.opcionvigencia) {
       this.entradasHelper.getContratos(this.opcionTipoContrato, this.opcionvigencia).subscribe(res => {
         if (res !== null) {
-          while (this.contratos.length > 0) {
-            this.contratos.pop();
-          }
-          for (const index of Object.keys(res.contratos_suscritos.contrato_suscritos)) {
-            const contratoAux = new Contrato;
-            contratoAux.NumeroContratoSuscrito = res.contratos_suscritos.contrato_suscritos[index].numero_contrato;
-            this.contratos.push(contratoAux);
-          }
+          if (isObject(res.contratos_suscritos.contrato_suscritos))
+            for (const index of Object.keys(res.contratos_suscritos.contrato_suscritos)) {
+              const contratoAux = new Contrato;
+              contratoAux.NumeroContratoSuscrito = res.contratos_suscritos.contrato_suscritos[index].numero_contrato;
+              this.contratos.push(contratoAux);
+            }
         }
       });
     }
@@ -153,6 +152,9 @@ export class AdquisicionComponent implements OnInit {
           }
         }
       }
+      this.proveedor = this.soportes[0].Proveedor.NomProveedor;
+      const date = this.soportes[0].FechaSoporte.toString().split('T');
+      this.fechaFactura = date[0];
     });
   }
 
@@ -274,7 +276,6 @@ export class AdquisicionComponent implements OnInit {
         EstadoMovimientoId: {
           Id: 2, // Movimiento adecuado para registrar una entrada como aprobada
         },
-        Id: this.movimientoId ? this.movimientoId : 0,
         SoporteMovimientoId: 0,
         IdTipoMovimiento: this.tipoEntrada.Id,
       };
@@ -283,9 +284,9 @@ export class AdquisicionComponent implements OnInit {
           const elstring = JSON.stringify(res.Detalle);
           const posini = elstring.indexOf('consecutivo') + 16;
           if (posini !== -1) {
-              const posfin = elstring.indexOf('\"', posini);
-              const elresultado = elstring.substr(posini, posfin - posini - 1);
-              detalle.consecutivo = elresultado;
+            const posfin = elstring.indexOf('\"', posini);
+            const elresultado = elstring.substr(posini, posfin - posini - 1);
+            detalle.consecutivo = elresultado;
           }
           (Swal as any).fire({
             type: 'success',

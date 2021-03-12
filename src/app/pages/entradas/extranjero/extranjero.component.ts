@@ -10,6 +10,7 @@ import { OrdenadorGasto } from '../../../@core/data/models/entrada/ordenador_gas
 import { SoporteActaProveedor } from '../../../@core/data/models/acta_recibido/soporte_acta';
 import { Supervisor } from '../../../@core/data/models/entrada/supervisor';
 import Swal from 'sweetalert2';
+import { isObject } from 'rxjs/internal-compatibility';
 
 @Component({
   selector: 'ngx-extranjero',
@@ -26,7 +27,6 @@ export class ExtranjeroComponent implements OnInit {
   observacionForm: FormGroup;
 
   // Validadores
-  checked: boolean;
   tipoContratoSelect: boolean;
   vigenciaSelect: boolean;
 
@@ -48,7 +48,6 @@ export class ExtranjeroComponent implements OnInit {
   @ViewChild('stepper') stepper: NbStepperComponent;
 
   @Input() actaRecibidoId: Number;
-  @Input() movimientoId: Number;
 
   constructor(
     private router: Router,
@@ -57,7 +56,6 @@ export class ExtranjeroComponent implements OnInit {
     private actaRecibidoHelper: ActaRecibidoHelper,
     private fb: FormBuilder,
   ) {
-    this.checked = false;
     this.tipoContratoSelect = false;
     this.vigenciaSelect = false;
     this.contratos = new Array<Contrato>();
@@ -123,11 +121,11 @@ export class ExtranjeroComponent implements OnInit {
   }
 
   private loadContratos(): void {
+    this.contratos = [];
     if (this.opcionTipoContrato && this.opcionvigencia) {
       this.entradasHelper.getContratos(this.opcionTipoContrato, this.opcionvigencia).subscribe(res => {
         if (res !== null) {
-          this.contratos.length = 0;
-          if (res.contratos_suscritos && res.contratos_suscritos.contrato_suscritos)
+          if (isObject(res.contratos_suscritos.contrato_suscritos))
           for (const index of Object.keys(res.contratos_suscritos.contrato_suscritos)) {
             const contratoAux = new Contrato;
             contratoAux.NumeroContratoSuscrito = res.contratos_suscritos.contrato_suscritos[index].numero_contrato;
@@ -174,6 +172,9 @@ export class ExtranjeroComponent implements OnInit {
             this.soportes.push(soporte);
           }
         }
+        this.proveedor = this.soportes[0].Proveedor.NomProveedor;
+        const date = this.soportes[0].FechaSoporte.toString().split('T');
+        this.fechaFactura = date[0];
       }
     });
   }
@@ -205,10 +206,6 @@ export class ExtranjeroComponent implements OnInit {
         this.fechaFactura = date[0];
       }
     }
-  }
-
-  changeCheck() {
-    this.checked = !this.checked;
   }
 
   private iniciarContrato() {
@@ -262,7 +259,7 @@ export class ExtranjeroComponent implements OnInit {
         documento_contable_id: 1, // REVISAR
         contrato_id: +this.contratoEspecifico.NumeroContratoSuscrito,
         vigencia_contrato: this.contratoForm.value.vigenciaCtrl,
-        importacion: this.checked,
+        importacion: true,
         tipo_contrato: this.opcionTipoContrato === '14' ? 'Orden de Servicios' :
         this.opcionTipoContrato === '15' ? 'Orden de Compra' : '',
         num_reg_importacion: this.facturaForm.value.regImportCtrl,
@@ -278,7 +275,6 @@ export class ExtranjeroComponent implements OnInit {
         EstadoMovimientoId: {
           Id: 2, // Movimiento adecuado para registrar una entrada como aprobada
         },
-        Id: this.movimientoId ? this.movimientoId : 0,
         SoporteMovimientoId: 0,
         IdTipoMovimiento: this.tipoEntrada.Id,
       };
