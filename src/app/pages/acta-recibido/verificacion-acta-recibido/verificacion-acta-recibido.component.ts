@@ -218,7 +218,10 @@ export class VerificacionActaRecibidoComponent implements OnInit {
           Id: [Soporte.SoporteActa.Id],
           Proveedor: [this.muestraProveedor(this.Proveedores.find(proveedor => proveedor.Tercero.Id === Soporte.SoporteActa.ProveedorId))],
           Consecutivo: [Soporte.SoporteActa.Consecutivo],
-          Fecha_Factura: [Soporte.SoporteActa.FechaSoporte],
+          Fecha_Factura: [{
+            value: Soporte.SoporteActa.FechaSoporte,
+            disabled: true,
+          }],
           Soporte: [Soporte.SoporteActa.DocumentoId],
           Elementos: this.fb.array([]),
         });
