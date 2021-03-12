@@ -7,7 +7,9 @@ import { NuxeoService } from '../../../@core/utils/nuxeo.service';
 import { MatTable } from '@angular/material';
 import 'hammerjs';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
+import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
 import { ActaRecibido } from '../../../@core/data/models/acta_recibido/acta_recibido';
+import { TerceroCriterioProveedor } from '../../../@core/data/models/terceros_criterio';
 import { Elemento, Impuesto } from '../../../@core/data/models/acta_recibido/elemento';
 import { TipoBien } from '../../../@core/data/models/acta_recibido/tipo_bien';
 import { SoporteActa, Ubicacion } from '../../../@core/data/models/acta_recibido/soporte_acta';
@@ -75,7 +77,7 @@ export class VerificacionActaRecibidoComponent implements OnInit {
   Transaccion__: TransaccionActaRecibido;
   Unidades: any;
   Acta: TransaccionActaRecibido;
-  Proveedores: any;
+  Proveedores: Partial<TerceroCriterioProveedor>[];
   Ubicaciones: any;
   Tarifas_Iva: any;
   Dependencias: any;
@@ -90,6 +92,7 @@ export class VerificacionActaRecibidoComponent implements OnInit {
     private route: ActivatedRoute,
     private fb: FormBuilder,
     private Actas_Recibido: ActaRecibidoHelper,
+    private tercerosHelper: TercerosHelper,
     private toasterService: ToasterService,
     private cp: CurrencyPipe,
     private nuxeoService: NuxeoService,
@@ -106,7 +109,6 @@ export class VerificacionActaRecibidoComponent implements OnInit {
   ngOnInit() {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
     });
-    this.listService.findProveedores();
     this.listService.findDependencias();
     this.listService.findSedes();
     // this.listService.findUbicaciones();
@@ -117,6 +119,7 @@ export class VerificacionActaRecibidoComponent implements OnInit {
     this.listService.findImpuestoIVA();
     this.Verificar_tabla = new Array<boolean>();
     this.loadLists();
+    this.loadProveedores();
   }
 
   public loadLists() {
@@ -128,27 +131,39 @@ export class VerificacionActaRecibidoComponent implements OnInit {
         this.Tipos_Bien = list.listTipoBien[0];
         this.Unidades = list.listUnidades[0];
         this.Tarifas_Iva = list.listIVA[0];
-        this.Proveedores = list.listProveedores[0];
         this.Dependencias = list.listDependencias[0];
         // this.Ubicaciones = list.listUbicaciones[0];
         this.Sedes = list.listSedes[0];
         // console.log(this.Proveedores)
         // this.dataService = this.completerService.local(this.Ubicaciones, 'Nombre', 'Nombre');
-        if (this.Estados_Acta !== undefined && this.Estados_Elemento !== undefined &&
-          this.Tipos_Bien !== undefined && this.Unidades !== undefined &&
-          this.Tarifas_Iva !== undefined && this.Proveedores !== undefined &&
-          this.Dependencias !== undefined && this.Sedes !== undefined &&
-          this._ActaId !== undefined && this.respuesta === undefined) {
-          // console.log(this._ActaId);
           this.cargarActa();
-        }
       },
     );
   }
 
+  private loadProveedores() {
+    this.tercerosHelper.getTercerosByCriterio('proveedor').subscribe(res => {
+      this.Proveedores = res;
+      // console.log({'Proveedores': this.Proveedores});
+      this.cargarActa();
+    });
+  }
+  muestraProveedor(prov: Partial<TerceroCriterioProveedor>): string {
+    if (prov) {
+      const str = prov.Identificacion ? prov.Identificacion.Numero + ' - ' : '';
+      return str + prov.Tercero.NombreCompleto;
+    }
+  }
+
   private cargarActa() {
     // console.log('cargarActa');
-    if (this.carga_agregada === undefined) {
+    if (this.carga_agregada === undefined &&
+      this.Estados_Acta !== undefined && this.Estados_Elemento !== undefined &&
+      this.Tipos_Bien !== undefined && this.Unidades !== undefined &&
+      this.Tarifas_Iva !== undefined &&
+      this.Dependencias !== undefined && this.Sedes !== undefined &&
+      this._ActaId !== undefined && this.respuesta === undefined
+    ) {
       this.carga_agregada = false;
       // console.log('consultarActa');
           this.Actas_Recibido.getTransaccionActa(this._ActaId).subscribe(Acta => {
@@ -201,7 +216,7 @@ export class VerificacionActaRecibidoComponent implements OnInit {
 
         const Formulario__2 = this.fb.group({
           Id: [Soporte.SoporteActa.Id],
-          Proveedor: [this.Proveedores.find(proveedor => proveedor.Id === Soporte.SoporteActa.ProveedorId).compuesto],
+          Proveedor: [this.muestraProveedor(this.Proveedores.find(proveedor => proveedor.Tercero.Id === Soporte.SoporteActa.ProveedorId))],
           Consecutivo: [Soporte.SoporteActa.Consecutivo],
           Fecha_Factura: [Soporte.SoporteActa.FechaSoporte],
           Soporte: [Soporte.SoporteActa.DocumentoId],
@@ -257,7 +272,7 @@ export class VerificacionActaRecibidoComponent implements OnInit {
         Form2.push(Formulario__2);
       }
 
-      let personarev: any = this.Proveedores.find(proveedor => proveedor.Id.toString() === transaccion_.ActaRecibido.PersonaAsignada.toString());
+      let personarev: any = this.Proveedores.find(proveedor => proveedor.Tercero.Id === transaccion_.ActaRecibido.PersonaAsignada);
       if (typeof personarev === 'undefined') {
           personarev = {proveedor: 0 };
             // color is undefined
@@ -380,6 +395,7 @@ export class VerificacionActaRecibidoComponent implements OnInit {
   }
 
   Registrar_Acta(Datos: any, Datos2: any): ActaRecibido {
+    // console.log({Datos, Datos2});
 
     const Acta_de_Recibido = new ActaRecibido();
 
@@ -408,10 +424,10 @@ export class VerificacionActaRecibidoComponent implements OnInit {
     return Historico_;
   }
   Registrar_Soporte(Datos: any, Elementos_: any, __: ActaRecibido): TransaccionSoporteActa {
+    // console.log({Datos, Elementos_, __});
 
     const Soporte_Acta = new SoporteActa();
     const Transaccion = new TransaccionSoporteActa();
-    const proveedor___ = Datos.Proveedor.split(' ');
     Soporte_Acta.Id = parseFloat(Datos.Id);
     Soporte_Acta.ActaRecibidoId = __;
     Soporte_Acta.Activo = true;
@@ -419,7 +435,7 @@ export class VerificacionActaRecibidoComponent implements OnInit {
     Soporte_Acta.FechaCreacion = new Date();
     Soporte_Acta.FechaModificacion = new Date();
     Soporte_Acta.FechaSoporte = Datos.Fecha_Factura;
-    Soporte_Acta.ProveedorId = this.Proveedores.find(proveedor => proveedor.NumDocumento.toString() === proveedor___[0].toString()).Id;
+    Soporte_Acta.ProveedorId = Datos.Proveedor ? this.Proveedores.find(prov => this.muestraProveedor(prov) === Datos.Proveedor).Tercero.Id : 0;
     Transaccion.SoporteActa = Soporte_Acta;
     Transaccion.Elementos = this.Registrar_Elementos(Elementos_, Soporte_Acta);
 
