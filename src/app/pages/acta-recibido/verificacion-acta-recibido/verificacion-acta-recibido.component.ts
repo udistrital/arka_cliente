@@ -336,12 +336,12 @@ export class VerificacionActaRecibidoComponent implements OnInit {
         });
   }
 
-  // Acta Verificada
-  onFirstSubmit() {
+  private onFirstSubmit(aceptar: boolean = false) {
     this.Datos = this.firstForm.value;
     const Transaccion_Acta = new TransaccionActaRecibido();
     Transaccion_Acta.ActaRecibido = this.Registrar_Acta(this.Datos.Formulario1, this.Datos.Formulario3);
-    Transaccion_Acta.UltimoEstado = this.Registrar_Estado_Acta(Transaccion_Acta.ActaRecibido, EstadoActa_t.Aceptada);
+    const nuevoEstado = aceptar ? EstadoActa_t.Aceptada : EstadoActa_t.EnModificacion;
+    Transaccion_Acta.UltimoEstado = this.Registrar_Estado_Acta(Transaccion_Acta.ActaRecibido, nuevoEstado);
 
     const Soportes = new Array<TransaccionSoporteActa>();
     for (const soporte of this.Datos.Formulario2) {
@@ -350,47 +350,19 @@ export class VerificacionActaRecibidoComponent implements OnInit {
     Transaccion_Acta.SoportesActa = Soportes;
 
     this.Actas_Recibido.putTransaccionActa(Transaccion_Acta, Transaccion_Acta.ActaRecibido.Id).subscribe((res: any) => {
-      if (res !== null) {
-        (Swal as any).fire({
-          type: 'success',
-          title: this.translate.instant('GLOBAL.Acta_Recibido.VerificacionActa.VerificadaTitle', {ID: res.ActaRecibido.Id}),
-          text: this.translate.instant('GLOBAL.Acta_Recibido.VerificacionActa.Verificada', {ID: res.ActaRecibido.Id}),
-        }).then((willDelete) => {
-          if (willDelete.value) {
-            this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
-              this.router.navigateByUrl('/pages/acta_recibido/consulta_acta_recibido');
-            });
-          }
-        });
+      const base_i18n = 'GLOBAL.Acta_Recibido.VerificacionActa.';
+      let title: string;
+      let text: string;
+      const ID = res.ActaRecibido.Id;
+      if (res) {
+        title = this.translate.instant(base_i18n + (aceptar ? 'VerificadaTitle' : 'RechazadaTitle'), {ID});
+        text = this.translate.instant(base_i18n + (aceptar ? 'Verificada' : 'Rechazada'), {ID});
       } else {
-        (Swal as any).fire({
-          type: 'error',
-          title: this.translate.instant('GLOBAL.Acta_Recibido.VerificacionActa.VerificadaTitleNO'),
-          text: this.translate.instant('GLOBAL.Acta_Recibido.VerificacionActa.VerificadaNO'),
-        });
+        title = this.translate.instant(base_i18n + (aceptar ? 'VerificadaTitleNO' : 'RechazadaTitleNO'));
+        text = this.translate.instant(base_i18n + (aceptar ? 'VerificadaNO' : 'RechazadaNO'));
       }
-    });
-  }
-
-  // Acta rechazada
-  onFirstSubmit2() {
-
-    this.Datos = this.firstForm.value;
-    const Transaccion_Acta = new TransaccionActaRecibido();
-    Transaccion_Acta.ActaRecibido = this.Registrar_Acta(this.Datos.Formulario1, this.Datos.Formulario3);
-    Transaccion_Acta.UltimoEstado = this.Registrar_Estado_Acta(Transaccion_Acta.ActaRecibido, EstadoActa_t.EnModificacion);
-    const Soportes = new Array<TransaccionSoporteActa>();
-    for (const soporte of this.Datos.Formulario2) {
-      Soportes.push(this.Registrar_Soporte(soporte, soporte.Elementos, Transaccion_Acta.ActaRecibido));
-    }
-    Transaccion_Acta.SoportesActa = Soportes;
-    this.Actas_Recibido.putTransaccionActa(Transaccion_Acta, Transaccion_Acta.ActaRecibido.Id).subscribe((res: any) => {
       if (res !== null) {
-        (Swal as any).fire({
-          type: 'success',
-          title: this.translate.instant('GLOBAL.Acta_Recibido.VerificacionActa.RechazadaTitle', {ID: res.ActaRecibido.Id}),
-          text: this.translate.instant('GLOBAL.Acta_Recibido.VerificacionActa.Rechazada', {ID: res.ActaRecibido.Id}),
-        }).then((willDelete) => {
+        (Swal as any).fire({type: 'success', title, text}).then((willDelete) => {
           if (willDelete.value) {
             this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
               this.router.navigateByUrl('/pages/acta_recibido/consulta_acta_recibido');
@@ -398,11 +370,7 @@ export class VerificacionActaRecibidoComponent implements OnInit {
           }
         });
       } else {
-        (Swal as any).fire({
-          type: 'error',
-          title: this.translate.instant('GLOBAL.Acta_Recibido.VerificacionActa.RechazadaTitleNO'),
-          text: this.translate.instant('GLOBAL.Acta_Recibido.VerificacionActa.RechazadaNO'),
-        });
+        (Swal as any).fire({type: 'error', title, text});
       }
     });
   }
@@ -556,7 +524,7 @@ export class VerificacionActaRecibidoComponent implements OnInit {
       cancelButtonText: 'No',
     }).then((result) => {
       if (result.value) {
-        this.onFirstSubmit();
+        this.onFirstSubmit(true);
       }
     });
   }
@@ -594,7 +562,7 @@ export class VerificacionActaRecibidoComponent implements OnInit {
             this.firstForm.get('Formulario3').get('Datos_Adicionales').setValue(
               obs.Formulario3.Datos_Adicionales + ' // Razon de rechazo: ' + result2.value,
               );
-            this.onFirstSubmit2();
+            this.onFirstSubmit(false);
           }
         });
 
