@@ -118,6 +118,7 @@ export class VerificacionActaRecibidoComponent implements OnInit {
     this.Verificar_tabla = new Array<boolean>();
     this.loadLists();
   }
+
   public loadLists() {
     this.store.select((state) => state).subscribe(
       (list) => {
@@ -269,8 +270,8 @@ export class VerificacionActaRecibidoComponent implements OnInit {
           Sede: [this.Sedes.find(x => x.CodigoAbreviacion === valor.toString()).Nombre],
           Dependencia: [this.Dependencias.find(x => x.Id === res[0].DependenciaId.Id).Nombre],
           Ubicacion: [transaccion_.ActaRecibido.UbicacionId],
-          Revisor: [
-            personarev.compuesto,
+          Contratista: [
+            transaccion_.ActaRecibido.PersonaAsignada,
             Validators.required,
           ],
         }),
@@ -349,6 +350,8 @@ export class VerificacionActaRecibidoComponent implements OnInit {
     }
     Transaccion_Acta.SoportesActa = Soportes;
 
+    // console.log({Transaccion_Acta});
+    // /*
     this.Actas_Recibido.putTransaccionActa(Transaccion_Acta, Transaccion_Acta.ActaRecibido.Id).subscribe((res: any) => {
       const base_i18n = 'GLOBAL.Acta_Recibido.VerificacionActa.';
       let title: string;
@@ -373,12 +376,12 @@ export class VerificacionActaRecibidoComponent implements OnInit {
         (Swal as any).fire({type: 'error', title, text});
       }
     });
+    // */
   }
 
   Registrar_Acta(Datos: any, Datos2: any): ActaRecibido {
 
     const Acta_de_Recibido = new ActaRecibido();
-    const revisor___ = Datos.Revisor.split(' ');
 
     Acta_de_Recibido.Id = parseFloat(Datos.Id);
     Acta_de_Recibido.Activo = true;
@@ -388,7 +391,7 @@ export class VerificacionActaRecibidoComponent implements OnInit {
     Acta_de_Recibido.RevisorId = this.userService.getPersonaId();
     Acta_de_Recibido.UbicacionId = this.Ubicaciones.find(ubicacion => ubicacion.Nombre === Datos.Ubicacion).Id;
     Acta_de_Recibido.Observaciones = Datos2.Datos_Adicionales;
-    Acta_de_Recibido.PersonaAsignada = this.Proveedores.find(proveedor => proveedor.NumDocumento.toString() === revisor___[0].toString()).Id;
+    Acta_de_Recibido.PersonaAsignada = Datos.Contratista;
 
     return Acta_de_Recibido;
   }
