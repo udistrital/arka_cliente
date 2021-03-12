@@ -69,13 +69,14 @@
         <div class="form-group col-sm">
           <label>{{'GLOBAL.proveedor' | translate}}</label>
           <div class="input-group">
-            <input matInput type="text" class="form-control" placeholder="{{'GLOBAL.razon_social' | translate}}"
+            <!-- <input matInput type="text" class="form-control" placeholder="{{'GLOBAL.razon_social' | translate}}"
               formControlName="proveedorCtrl" [matAutocomplete]="autoProveedor"/>
             <mat-autocomplete #autoProveedor="matAutocomplete" [displayWith]="muestraProveedor">
               <mat-option *ngFor="let proveedor of proveedoresFiltrados | async" [value]="proveedor">
                 {{proveedor.compuesto}}
               </mat-option>
-            </mat-autocomplete>
+            </mat-autocomplete> -->
+            <output defaultValue="proveedor" class="form-control" [value]="proveedor"></output>
           </div>
         </div>
       </div>

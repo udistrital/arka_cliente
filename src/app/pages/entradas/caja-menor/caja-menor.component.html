@@ -31,7 +31,7 @@
         </datalist>
       </div>
       <div class="row float-right">
-        <button type="button" nbButton nbStepperNext>
+        <button type="button" nbButton nbStepperNext (click)="loadSoporte()">
           {{'GLOBAL.siguiente' | translate}}</button>
       </div>
     </form>
@@ -72,7 +72,7 @@
         <button nbButton nbStepperPrevious>{{'GLOBAL.anterior' | translate}}</button>
       </div>
       <div class="col" align="end">
-        <button nbButton nbStepperNext>{{'GLOBAL.siguiente' | translate}}</button>
+        <button nbButton nbStepperNext (click)="loadSoporte()">{{'GLOBAL.siguiente' | translate}}</button>
       </div>
     </div>
     </form>
@@ -88,7 +88,7 @@
           <div class="input-group">
             <select class="form-control" (change)="changeSelectSoporte($event)">
               <option disabled selected>{{'GLOBAL.seleccionar' | translate}}...</option>
-              <option *ngFor="let item of soportes" value="{{ item.Id }}">{{ item.Consecutivo }}</option>
+              <option *ngFor="let item of soportes" value="{{ item.Id }}" selected>{{ item.Consecutivo }}</option>
             </select>
           </div>
         </div>
@@ -107,8 +107,14 @@
           </div>
         </div>
       </div>
-      <button nbButton nbStepperPrevious>{{'GLOBAL.anterior' | translate}}</button>
-      <button type="button" nbButton nbStepperNext>{{'GLOBAL.siguiente' | translate}}</button>
+      <div class="row">
+        <div class="col">
+          <button nbButton nbStepperPrevious>{{'GLOBAL.anterior' | translate}}</button>
+        </div>
+        <div class="col" align="end">
+          <button type="button" nbButton nbStepperNext>{{'GLOBAL.siguiente' | translate}}</button>
+        </div>
+      </div>
     </form>
   </nb-step>
 
@@ -124,9 +130,14 @@
           </div>
         </div>
       </div>
-      <button nbButton nbStepperPrevious>{{'GLOBAL.anterior' | translate}}</button>
-      <button type="button" (click)="onObservacionSubmit()" nbButton
-        nbStepperNext>{{'GLOBAL.siguiente' | translate}}</button>
+      <div class="row">
+        <div class="col">
+          <button nbButton nbStepperPrevious>{{'GLOBAL.anterior' | translate}}</button>
+        </div>
+        <div class="col" align="end">
+          <button type="button" (click)="onObservacionSubmit()" nbButton
+          nbStepperNext>{{'GLOBAL.siguiente' | translate}}</button>        </div>
+      </div>
     </form>
   </nb-step>
 

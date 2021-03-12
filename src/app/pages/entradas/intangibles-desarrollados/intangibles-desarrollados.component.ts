@@ -57,7 +57,6 @@ export class IntangiblesDesarrolladosComponent implements OnInit {
   cargando_ordenadores: boolean = true;
 
   @Input() actaRecibidoId: Number;
-  @Input() movimientoId: Number;
 
   constructor(
     private router: Router,
@@ -274,7 +273,6 @@ changeSolicitante(event) {
         EstadoMovimientoId: {
           Id: 2, // REVISAR
         },
-        Id: this.movimientoId ? this.movimientoId : 0,
         SoporteMovimientoId: this.idDocumento,
         IdTipoMovimiento: this.tipoEntrada.Id,
       };

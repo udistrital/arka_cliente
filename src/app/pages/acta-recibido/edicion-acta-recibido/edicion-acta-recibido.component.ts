@@ -37,6 +37,7 @@ import { UserService } from '../../../@core/data/users.service';
 import { RolUsuario_t as Rol, PermisoUsuario_t as Permiso } from '../../../@core/data/models/roles/rol_usuario';
 import { permisosSeccionesActas } from './reglas';
 import { NbDateService } from '@nebular/theme';
+import { isObject } from 'rxjs/internal-compatibility';
 
 @Component({
   selector: 'ngx-edicion-acta-recibido',
@@ -109,6 +110,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
 
   Proveedores: any;
   Ubicaciones: any;
+  UbicacionesFiltradas: any;
   Sedes: any;
   Dependencias: any;
   DatosTotales: any;
@@ -537,11 +539,11 @@ export class EdicionActaRecibidoComponent implements OnInit {
           Datos_Adicionales: [transaccion_.ActaRecibido.Observaciones, Validators.required],
         }),
       });
+      this.Traer_Relacion_Ubicaciones();
       this.firstForm.get('Formulario1').statusChanges.subscribe(change => this.checkValidness(1, change));
       this.firstForm.get('Formulario2').statusChanges.subscribe(change => this.checkValidness(2, change));
       this.firstForm.get('Formulario3').statusChanges.subscribe(change => this.checkValidness(3, change));
       this.carga_agregada = true;
-      this.Traer_Relacion_Ubicaciones();
       this.contratistasFiltrados = this.firstForm.get('Formulario1').get('Contratista').valueChanges.pipe(
         startWith(''),
         map(val => typeof val === 'string' ? val : this.muestraContratista(val)),
@@ -611,22 +613,17 @@ export class EdicionActaRecibidoComponent implements OnInit {
   Traer_Relacion_Ubicaciones() {
     const sede = this.firstForm.get('Formulario1').get('Sede').value;
     const dependencia = this.firstForm.get('Formulario1').get('Dependencia').value;
-
-    if (this.firstForm.get('Formulario1').get('Sede').valid || this.firstForm.get('Formulario1').get('Dependencia').valid) {
+    if (this.firstForm.get('Formulario1').get('Sede').valid && this.firstForm.get('Formulario1').get('Dependencia').valid &&
+      sede !== undefined && dependencia !== undefined) {
+      this.UbicacionesFiltradas = [];
+      this.carga_agregada ? this.firstForm.patchValue({ Formulario1: { Ubicacion: '' } }) : null;
       const transaccion: any = {};
       transaccion.Sede = this.Sedes.find((x) => x.Id === parseFloat(sede));
       transaccion.Dependencia = this.Dependencias.find((x) => x.Nombre === dependencia);
-      // console.log(this.Sedes);
-      if (transaccion.Sede !== undefined && transaccion.Dependencia !== undefined) {
-        this.Actas_Recibido.postRelacionSedeDependencia(transaccion).subscribe((res: any) => {
-          // console.log(res)
-          if (Object.keys(res[0]).length !== 0) {
-            this.Ubicaciones = res[0].Relaciones;
-          } else {
-            this.Ubicaciones = undefined;
-          }
-        });
-      }
+      this.Actas_Recibido.postRelacionSedeDependencia(transaccion).subscribe((res: any) => {
+        if (isObject(res[0].Relaciones))
+          this.UbicacionesFiltradas = res[0].Relaciones;
+      });
     }
   }
 

@@ -15,8 +15,8 @@ import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
 import { ListService } from '../../../@core/store/services/list.service';
 import { Store } from '@ngrx/store';
 import { IAppState } from '../../../@core/store/app.state';
-import {Observable} from 'rxjs';
-import {map, startWith} from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { map, startWith } from 'rxjs/operators';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -54,7 +54,6 @@ export class AprovechamientosComponent implements OnInit {
   @ViewChild('stepper') stepper: NbStepperComponent;
 
   @Input() actaRecibidoId: Number;
-  @Input() movimientoId: Number;
 
   constructor(
     private router: Router,
@@ -96,17 +95,36 @@ export class AprovechamientosComponent implements OnInit {
   }
 
   private filtroProveedores(nombre: string): Proveedor[] {
-    if (nombre.length >= 4 ) {
+    if (nombre && nombre.length >= 4) {
       const valorFiltrado = nombre.toLowerCase();
-      return this.Proveedores.filter(prov => prov.compuesto.toLowerCase().includes(valorFiltrado));
-    } else return [];
+      if (this.Proveedores) {
+        this.proveedor = this.Proveedores.filter(prov => prov.compuesto.toLowerCase().includes(valorFiltrado))[0].compuesto;
+        return this.Proveedores.filter(prov => prov.compuesto.toLowerCase().includes(valorFiltrado));
+      }
+    } else { return []; }
   }
 
   private filtroSupervisores(nombre: string): TerceroCriterioPlanta[] {
     // if (nombre.length >= 4 ) {
-      const valorFiltrado = nombre.toLowerCase();
-      return this.Supervisores.filter(sup => sup.TerceroPrincipal.NombreCompleto.toLowerCase().includes(valorFiltrado));
+    const valorFiltrado = nombre.toLowerCase();
+    return this.Supervisores.filter(sup => sup.TerceroPrincipal.NombreCompleto.toLowerCase().includes(valorFiltrado));
     // } else return [];
+  }
+
+  private loadProveedor() {
+    this.actaRecibidoHelper.getSoporte(this.actaRecibidoId).subscribe(res => {
+      if (res !== null) {
+        for (const index in res) {
+          if (res.hasOwnProperty(index)) {
+            const soporte = new SoporteActaProveedor;
+            soporte.Proveedor = res[index].ProveedorId;
+            this.soportes.push(soporte);
+          }
+        }
+        const proveedor = this.soportes[0].Proveedor.NumDocumento;
+        this.filtroProveedores(proveedor);
+      }
+    });
   }
 
   private loadLists() {
@@ -122,13 +140,14 @@ export class AprovechamientosComponent implements OnInit {
             );
           this.cargando_proveedores = false;
           // console.log({proveedores: this.Proveedores});
+          this.loadProveedor();
         }
       },
     );
   }
 
   private loadSupervisores(): void {
-    this.tercerosHelper.getTercerosByCriterio('funcionarioPlanta').subscribe( res => {
+    this.tercerosHelper.getTercerosByCriterio('funcionarioPlanta').subscribe(res => {
       if (Array.isArray(res)) {
         this.Supervisores = res;
         this.supervisoresFiltrados = this.supervisorForm.get('supervisorCtrl').valueChanges
@@ -150,7 +169,7 @@ export class AprovechamientosComponent implements OnInit {
   muestraSupervisor(sup: TerceroCriterioPlanta): string {
     if (sup.TerceroPrincipal !== undefined) {
       return sup.TerceroPrincipal.NombreCompleto;
-    }else {
+    } else {
       return '';
     }
   }
@@ -158,7 +177,7 @@ export class AprovechamientosComponent implements OnInit {
   datosSupervisor(param: string): string {
     const supervisorSeleccionado: TerceroCriterioPlanta = <TerceroCriterioPlanta>this.supervisorForm.value.supervisorCtrl;
     // console.log({supervisorSeleccionado});
-    if (supervisorSeleccionado) {
+    if (supervisorSeleccionado && supervisorSeleccionado.Sede) {
       switch (param) {
         case 'sede':
           return supervisorSeleccionado.Sede.Nombre;
@@ -223,7 +242,6 @@ export class AprovechamientosComponent implements OnInit {
         EstadoMovimientoId: {
           Id: 2, // Movimiento adecuado para registrar una entrada como aprobada
         },
-        Id: this.movimientoId ? this.movimientoId : 0,
         SoporteMovimientoId: 0,
         IdTipoMovimiento: this.tipoEntrada.Id,
       };
@@ -233,9 +251,9 @@ export class AprovechamientosComponent implements OnInit {
           const elstring = JSON.stringify(res.Detalle);
           const posini = elstring.indexOf('consecutivo') + 16;
           if (posini !== -1) {
-              const posfin = elstring.indexOf('\"', posini);
-              const elresultado = elstring.substr(posini, posfin - posini - 1);
-              detalle.consecutivo = elresultado;
+            const posfin = elstring.indexOf('\"', posini);
+            const elresultado = elstring.substr(posini, posfin - posini - 1);
+            detalle.consecutivo = elresultado;
           }
           (Swal as any).fire({
             type: 'success',

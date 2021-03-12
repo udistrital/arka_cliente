@@ -317,6 +317,15 @@
             <p class="text-uppercase"><strong>Ordenador:</strong> {{ Ordenador.TerceroPrincipal.NombreCompleto }}</p>
           </div>
         </div>
+        <!-- REPOSICIÓN -->
+        <div *ngIf="detalle && entradaEspecifica.TipoEntradaId.Nombre === 'Reposición'" class="row">
+          <div class="col">
+            <p class="text-uppercase"><strong>Encargado: </strong>{{encargado}}</p>
+          </div>
+          <div class="col">
+            <p class="text-uppercase"><strong>Placa: </strong>{{Placa}}</p>
+          </div>
+        </div>
 
         <!-- APROVECHAMIENTOS -->
 
