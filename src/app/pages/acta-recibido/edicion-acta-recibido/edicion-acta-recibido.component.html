@@ -11,10 +11,6 @@
                 <div class="row" (click)="usarLocalStorage()">
                   <div class="form-group col-sm">
                     <label>{{'GLOBAL.Acta_Recibido.EdicionActa.Sede' | translate}}</label>
-                    <select nbInput type="text" class="form-control" formControlName="Sede" required
-                      disabled *ngIf="!getPermisoEditar(permisos.Acta)">
-                      <option *ngFor="let sede of Sedes" [(value)]="sede.Id">{{sede.Nombre}}</option>
-                    </select>
                     <mat-select type="text" class="form-control" formControlName="Sede" required *ngIf="getPermisoEditar(permisos.Acta)"
                       (selectionChange)="usarLocalStorage(); Traer_Relacion_Ubicaciones();">
                       <mat-option *ngFor="let sede of Sedes" [(value)]="sede.Id">{{sede.Nombre}}</mat-option>
@@ -34,11 +30,6 @@
                   </div>
                   <div class="form-group col-sm">
                     <label>{{'GLOBAL.Acta_Recibido.EdicionActa.Ubicacion' | translate}}</label>
-                    <select nbInput type="text" class="form-control" formControlName="Ubicacion"
-                    disabled *ngIf="!getPermisoEditar(permisos.Acta)">
-                      <option *ngFor="let ubicacion of Ubicaciones" [(value)]="ubicacion.Id">{{ubicacion.Nombre}}
-                      </option>
-                    </select>
                     <mat-select type="text" class="form-control" formControlName="Ubicacion" *ngIf="getPermisoEditar(permisos.Acta)"
                       (selectionChange)="usarLocalStorage()">
                       <mat-option *ngFor="let ubicacion of UbicacionesFiltradas" [(value)]="ubicacion.Id">{{ubicacion.Nombre}}
@@ -91,27 +82,26 @@
                           <div class="row">
 
                             <div class="col" *ngIf="!ActaEspecial">
-                              <div class="form-group col-sm">
+                              <div class="form-group col-sm" [nbSpinner]="!listo.get('proveedores')">
                                 <label>{{'GLOBAL.Acta_Recibido.EdicionActa.Proveedor' | translate}}</label>
-                                <ng2-completer style="border: 0rem" inputClass="form-control" (keyup)="usarLocalStorage()"
-                                  placeholder="{{'GLOBAL.Acta_Recibido.EdicionActa.SeleccioneFiltro' | translate}}"
-                                  [clearUnselected]="true" nbInput [datasource]="dataService2" formControlName="Proveedor"
-                                  [minSearchLength]="3" [disableInput]="!getPermisoEditar(permisos.Acta)">
-                                </ng2-completer>
+                                <input matInput type="text" class="form-control"
+                                placeholder="{{'GLOBAL.Acta_Recibido.EdicionActa.SeleccioneFiltro' | translate}}"
+                                formControlName="Proveedor" [matAutocomplete]="autoProveedor" />
+                                <mat-autocomplete #autoProveedor="matAutocomplete" [displayWith]="muestraProveedor"
+                                (optionSelected)="usarLocalStorage()">
+                                  <mat-option *ngFor="let prov of proveedoresFiltrados | async" [value]="prov">
+                                    {{muestraProveedor(prov)}}
+                                  </mat-option>
+                                </mat-autocomplete>
                                 <p class="campo" *ngIf="firstForm.get('Formulario2').at(i).get('Proveedor').invalid">
                                   {{'GLOBAL.placeholder' | translate}}</p>
                               </div>
                               <div class="form-group col-sm">
                                 <label>{{'GLOBAL.Acta_Recibido.EdicionActa.Consecutivo' | translate}}</label>
                                 <div class="input-group">
-                                  <input nbInput type="text"
-                                    placeholder="{{'GLOBAL.Acta_Recibido.EdicionActa.Consecutivo' | translate}}"
-                                    class="form-control" formControlName="Consecutivo"
-                                    required disabled *ngIf="!getPermisoEditar(permisos.Acta)">
                                   <input nbInput type="text" (keyup)="usarLocalStorage()"
                                     placeholder="{{'GLOBAL.Acta_Recibido.EdicionActa.Consecutivo' | translate}}"
-                                    class="form-control" formControlName="Consecutivo" (keyup)="usarLocalStorage()"
-                                    required *ngIf="getPermisoEditar(permisos.Acta)">
+                                    class="form-control" formControlName="Consecutivo" (keyup)="usarLocalStorage()" required />
                                 </div>
                                 <p class="campo" *ngIf="firstForm.get('Formulario2').at(i).get('Consecutivo').invalid">
                                   {{'GLOBAL.placeholder' | translate}}</p>
@@ -119,17 +109,12 @@
                               <div class="form-group col-sm">
                                 <label>{{'GLOBAL.Acta_Recibido.EdicionActa.FechaSoporte' | translate}}</label>
                                 <div class="input-group">
-                                  <input nbInput
-                                    placeholder="{{'GLOBAL.Acta_Recibido.EdicionActa.FechaFiltro' | translate}}"
-                                    class="form-control" [nbDatepicker]="formpicker"
-                                    formControlName="Fecha_Factura" required disabled *ngIf="!getPermisoEditar(permisos.Acta)">
                                   <input nbInput (click)="usarLocalStorage()"
                                     placeholder="{{'GLOBAL.Acta_Recibido.EdicionActa.FechaFiltro' | translate}}"
                                     class="form-control" [nbDatepicker]="formpicker" (keyup)="usarLocalStorage()"
-                                    formControlName="Fecha_Factura" required *ngIf="getPermisoEditar(permisos.Acta)">
+                                    formControlName="Fecha_Factura" required />
                                   <nb-datepicker #formpicker [max]="TodaysDate" (dateChange)="usarLocalStorage()"></nb-datepicker>
                                 </div>
-
                                 <p class="campo" *ngIf="firstForm.get('Formulario2').at(i).get('Fecha_Factura').invalid">
                                   {{'GLOBAL.placeholder' | translate}}</p>
                               </div>

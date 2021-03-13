@@ -1,6 +1,6 @@
 <nb-card>
   <nb-card-header><h2>{{'GLOBAL.Acta_Recibido.VerificacionActa.TitleId' | translate: {ID: _ActaId} }}</h2></nb-card-header>
-  <nb-card-body [nbSpinner]="!firstForm">
+  <nb-card-body [nbSpinner]="!carga_agregada">
     <form [formGroup]="firstForm" #fform="ngForm" class="step-container" *ngIf="firstForm">
 
         <nb-card formGroupName="Formulario1">
@@ -55,7 +55,7 @@
                           <label>{{'GLOBAL.Acta_Recibido.VerificacionActa.FechaSoporte' | translate}}</label>
                           <div class="input-group">
                             <input nbInput placeholder="Selecciona la Fecha" class="form-control"
-                              [nbDatepicker]="formpicker" formControlName="Fecha_Factura" readonly disabled>
+                              [nbDatepicker]="formpicker" formControlName="Fecha_Factura" readonly>
                             <nb-datepicker #formpicker readonly disabled></nb-datepicker>
                           </div>
                         </div>

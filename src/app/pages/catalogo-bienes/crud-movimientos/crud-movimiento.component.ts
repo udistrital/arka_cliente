@@ -5,9 +5,11 @@ import { ToasterService, ToasterConfig, Toast, BodyOutputType } from 'angular2-t
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import 'style-loader!angular2-toaster/toaster.css';
 import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/catalogoElementosHelper';
+import { UserService } from '../../../@core/data/users.service';
 import { CuentaGrupo, CuentasFormulario } from '../../../@core/data/models/catalogo/cuentas_grupo';
 import { Cuenta } from '../../../@core/data/models/catalogo/cuenta_contable';
 import { TipoMovimientoKronos } from '../../../@core/data/models/movimientos';
+import { RolUsuario_t as Rol } from '../../../@core/data/models/roles/rol_usuario';
 import { Store } from '@ngrx/store';
 import { IAppState } from '../../../@core/store/app.state';
 import { ListService } from '../../../@core/store/services/list.service';
@@ -92,8 +94,15 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
     private catalogoElementosService: CatalogoElementosHelper,
     private store: Store<IAppState>,
     private listService: ListService,
+    private userService: UserService,
   ) {
     const form = this.clone(FORM_MOVIMIENTO);
+    if (this.userService.tieneAlgunRol([Rol.AdminContable])) {
+      form.campos = form.campos.map(campo => {
+        campo.deshabilitar = false;
+        return campo;
+      });
+    }
     this.formMovimiento = form;
     this.listService.findPlanCuentasDebito();
     this.listService.findPlanCuentasCredito();

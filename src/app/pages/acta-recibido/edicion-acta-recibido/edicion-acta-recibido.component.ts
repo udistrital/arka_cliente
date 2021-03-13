@@ -18,7 +18,7 @@ import { EstadoActa_t } from '../../../@core/data/models/acta_recibido/estado_ac
 import { EstadoElemento } from '../../../@core/data/models/acta_recibido/estado_elemento';
 import { HistoricoActa } from '../../../@core/data/models/acta_recibido/historico_acta';
 import { TransaccionSoporteActa, TransaccionActaRecibido } from '../../../@core/data/models/acta_recibido/transaccion_acta_recibido';
-import { TerceroCriterioContratista } from '../../../@core/data/models/terceros_criterio';
+import { TerceroCriterioContratista, TerceroCriterioProveedor } from '../../../@core/data/models/terceros_criterio';
 import Swal from 'sweetalert2';
 import { ToasterService, ToasterConfig, Toast, BodyOutputType } from 'angular2-toaster';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
@@ -50,11 +50,12 @@ export class EdicionActaRecibidoComponent implements OnInit {
   searchStr: string;
   searchStr2: string[];
   searchStr3: string;
-  protected dataService: CompleterData;
-  dataService2: CompleterData;
   cargando_contratistas: boolean = true;
   private Contratistas: TerceroCriterioContratista[];
   contratistasFiltrados: Observable<TerceroCriterioContratista[]>;
+  private Proveedores: Partial<TerceroCriterioProveedor>[];
+  proveedoresFiltrados: Observable<Partial<TerceroCriterioProveedor>[]>;
+  listo: Map<string, boolean>;
 
   // Mensajes de error
   errMess: any;
@@ -108,7 +109,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
   TodaysDate: any;
   observable: any;
 
-  Proveedores: any;
   Ubicaciones: any;
   UbicacionesFiltradas: any;
   Sedes: any;
@@ -170,15 +170,14 @@ export class EdicionActaRecibidoComponent implements OnInit {
     this.DatosElementos = new Array<any>();
     this.Elementos__Soporte = new Array<any>();
     this.TodaysDate = new Date();
+    this.listo = new Map<string, boolean>();
   }
 
   ngOnInit() {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
     });
-    this.listService.findProveedores();
     this.listService.findDependencias();
     this.listService.findSedes();
-    // this.listService.findUbicaciones();
     this.listService.findEstadosActa();
     this.listService.findEstadosElemento();
     this.listService.findTipoBien();
@@ -186,6 +185,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
     this.listService.findImpuestoIVA();
     this.defineSiHayQueValidarElementosParaEnviar();
     this.loadLists();
+    this.loadProveedores();
     this.cargaPermisos();
     if (!this.userService.getPersonaId()) {
       this.errores.set('terceros', true);
@@ -357,16 +357,12 @@ export class EdicionActaRecibidoComponent implements OnInit {
         this.Tipos_Bien = list.listTipoBien[0];
         this.Unidades = list.listUnidades[0];
         this.Tarifas_Iva = list.listIVA[0];
-        this.Proveedores = list.listProveedores[0];
         this.Dependencias = list.listDependencias[0];
-        // this.Ubicaciones = list.listUbicaciones[0];
         this.Sedes = list.listSedes[0];
-        this.dataService2 = this.completerService.local(this.Proveedores, 'compuesto', 'compuesto');
         this.dataService3 = this.completerService.local(this.Dependencias, 'Nombre', 'Nombre');
-        // this.dataService = this.completerService.local(this.Ubicaciones, 'Nombre', 'Nombre');
         if (this.Estados_Acta !== undefined && this.Estados_Elemento !== undefined &&
           this.Tipos_Bien !== undefined && this.Unidades !== undefined &&
-          this.Tarifas_Iva !== undefined && this.Proveedores !== undefined &&
+          this.Tarifas_Iva !== undefined &&
           this.Dependencias !== undefined && this.Sedes !== undefined &&
           this._Acta_Id !== undefined) {
           // console.log(this._Acta_Id);
@@ -397,7 +393,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
     }
   }
   private filtroContratistas(nombre: string): TerceroCriterioContratista[] {
-    if (nombre.length >= 4) {
+    if (nombre.length >= 4 && Array.isArray(this.Contratistas)) {
       const valorFiltrado = nombre.toLowerCase();
       return this.Contratistas.filter(contr => this.muestraContratista(contr).toLowerCase().includes(valorFiltrado));
     } else return [];
@@ -406,6 +402,30 @@ export class EdicionActaRecibidoComponent implements OnInit {
     // console.log({contr});
     if (contr) {
       return contr.Identificacion.Numero + ' - ' + contr.Tercero.NombreCompleto;
+    }
+  }
+
+  private loadProveedores(): void {
+    if (this.listo.get('proveedores') === undefined) {
+      this.listo.set('proveedores', false);
+      this.tercerosHelper.getTercerosByCriterio('proveedor').subscribe(res => {
+        this.Proveedores = res;
+        // console.log({Proveedores: this.Proveedores});
+        this.listo.set('proveedores', true);
+      });
+    }
+  }
+  private filtroProveedores(nombre: string): Partial<TerceroCriterioProveedor>[] {
+    // console.log('filtroProveedores');
+    if (nombre.length >= 4 && Array.isArray(this.Proveedores)) {
+      const valorFiltrado = nombre.toLowerCase();
+      return this.Proveedores.filter(prov => this.muestraProveedor(prov).toLowerCase().includes(valorFiltrado));
+    } else return [];
+  }
+  muestraProveedor(prov: Partial<TerceroCriterioProveedor>): string {
+    if (prov) {
+      const str = prov.Identificacion ? prov.Identificacion.Numero + ' - ' : '';
+      return str + prov.Tercero.NombreCompleto;
     }
   }
 
@@ -463,12 +483,26 @@ export class EdicionActaRecibidoComponent implements OnInit {
         const Formulario__2 = this.fb.group({
           Id: [Soporte.SoporteActa.Id],
           Proveedor: [
-            Soporte.SoporteActa.ProveedorId === 0 ? null :
-              this.Proveedores.find((proveedor) =>
-                proveedor.Id.toString() === Soporte.SoporteActa.ProveedorId.toString()).compuesto,
-                Validators.required],
-          Consecutivo: [Soporte.SoporteActa.Consecutivo, Validators.required],
-          Fecha_Factura: [this.dateService.parse(Soporte.SoporteActa.FechaSoporte.toString(), 'MM dd yyyy'),
+            {
+              value: Soporte.SoporteActa.ProveedorId === 0 ? null :
+                this.Proveedores.find((proveedor) =>
+                  proveedor.Tercero.Id === Soporte.SoporteActa.ProveedorId),
+              disabled: !this.getPermisoEditar(this.permisos.Acta),
+            },
+            Validators.required,
+          ],
+          Consecutivo: [
+            {
+              value: Soporte.SoporteActa.Consecutivo,
+              disabled: !this.getPermisoEditar(this.permisos.Acta),
+            },
+            Validators.required,
+          ],
+          Fecha_Factura: [
+            {
+              value: this.dateService.parse(Soporte.SoporteActa.FechaSoporte.toString(), 'MM dd yyyy'),
+              disabled: !this.getPermisoEditar(this.permisos.Acta),
+            },
             Validators.required],
           Soporte: [Soporte.SoporteActa.DocumentoId, Validators.required],
         });
@@ -499,6 +533,13 @@ export class EdicionActaRecibidoComponent implements OnInit {
             elementoSoporte.push(Elemento___);
           }
         elementos.push(elementoSoporte);
+        // Nota: si se va a usar más de un soporte y el proveedor sigue haciendo parte del soporte,
+        // habrá que hacer de proveedoresFiltrados un arreglo.
+        this.proveedoresFiltrados = Formulario__2.get('Proveedor').valueChanges.pipe(
+          startWith(''),
+          map(val => typeof val === 'string' ? val : this.muestraProveedor(val)),
+          map(nombre => this.filtroProveedores(nombre)),
+        );
         Form2.push(Formulario__2);
       });
 
@@ -507,13 +548,19 @@ export class EdicionActaRecibidoComponent implements OnInit {
       this.firstForm = this.fb.group({
         Formulario1: this.fb.group({
           Id: [transaccion_.ActaRecibido.Id],
-          Sede: [ (() => {
-            const criterio = x => x && x.CodigoAbreviacion === valor.toString();
-            if (this.Sedes.some(criterio)) {
-              return this.Sedes.find(criterio).Id;
-            }
-            return '';
-          })(), Validators.required],
+          Sede: [
+            {
+              value: (() => {
+                const criterio = x => x && x.CodigoAbreviacion === valor.toString();
+                if (this.Sedes.some(criterio)) {
+                  return this.Sedes.find(criterio).Id;
+                }
+                return '';
+              })(),
+              disabled: !this.getPermisoEditar(this.permisos.Acta),
+            },
+            Validators.required,
+          ],
           Dependencia: [ (() => {
             const criterio = x => res[0].hasOwnProperty('DependenciaId') && x.Id === res[0].DependenciaId.Id;
             if (this.Dependencias.some(criterio)) {
@@ -522,15 +569,22 @@ export class EdicionActaRecibidoComponent implements OnInit {
             return '';
           })(), Validators.required],
           Ubicacion: [
-            transaccion_.ActaRecibido.UbicacionId,
+            {
+              value: transaccion_.ActaRecibido.UbicacionId,
+              disabled: !this.getPermisoEditar(this.permisos.Acta),
+            },
             Validators.required,
           ],
-          Contratista: [ (() => {
-            const criterio = (contratista: TerceroCriterioContratista) =>
-            contratista &&
-            contratista.Tercero.Id === transaccion_.ActaRecibido.PersonaAsignada;
-            return this.Contratistas.some(criterio) ? this.Contratistas.find(criterio) : '';
-          })(),
+          Contratista: [
+            {
+              value: (() => {
+                const criterio = (contratista: TerceroCriterioContratista) =>
+                  contratista &&
+                  contratista.Tercero.Id === transaccion_.ActaRecibido.PersonaAsignada;
+                return this.Contratistas.some(criterio) ? this.Contratistas.find(criterio) : '';
+              })(),
+              disabled: !this.getPermisoEditar(this.permisos.Acta),
+            },
             Validators.required,
           ],
         }),
@@ -837,6 +891,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
     });
     Transaccion_Acta.SoportesActa = Soportes;
     // console.log({Transaccion_Acta});
+    // /*
     this.Actas_Recibido.putTransaccionActa(Transaccion_Acta, Transaccion_Acta.ActaRecibido.Id).subscribe((res: any) => {
       // console.log(res);
       if (res !== null) {
@@ -894,6 +949,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
       }
       this.guardando = false;
     });
+    // */
   }
 
   Registrar_Acta(Datos: any, Datos2: any): ActaRecibido {
@@ -925,7 +981,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
     return Historico_;
   }
   Registrar_Soporte(Datos: any, Elementos_: any, __: ActaRecibido): TransaccionSoporteActa {
-
+    // console.log({Datos});
     const Soporte_Acta = new SoporteActa();
     const Transaccion = new TransaccionSoporteActa();
     Soporte_Acta.Id = parseFloat(Datos.Id);
@@ -935,9 +991,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
     Soporte_Acta.FechaCreacion = new Date();
     Soporte_Acta.FechaModificacion = new Date();
     Soporte_Acta.FechaSoporte = Datos.Fecha_Factura;
-    Soporte_Acta.ProveedorId = !this.ActaEspecial ?
-      this.Proveedores.find(proveedor =>
-        proveedor.NumDocumento.toString() === Datos.Proveedor.split(' ')[0].toString()).Id : 0;
+    Soporte_Acta.ProveedorId = this.ActaEspecial ? 0 : Datos.Proveedor.Tercero.Id;
     Transaccion.SoporteActa = Soporte_Acta;
     Transaccion.Elementos = this.Registrar_Elementos(Elementos_, Soporte_Acta);
 

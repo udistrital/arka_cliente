@@ -45,7 +45,7 @@ export class PagesComponent {
   private construirMenu (): void {
     const menu = MENU_ITEMS;
     this.moduloActa(menu);
-
+    this.moduloCatalogo(menu);
     this.menu = <NbMenuItem[]>menu.filter(modulo => (modulo.children && modulo.children.length));
   }
 
@@ -73,6 +73,15 @@ export class PagesComponent {
         this.translate.instant('GLOBAL.notificaciones.t_restante_alerta', {MINUTES: minutos}),
         this.translate.instant('GLOBAL.notificaciones.t_restante_titulo'));
     }, queda - T_ADV_TIMEOUT);
+  }
+
+  private moduloCatalogo(menu: any) {
+    if (this.user.tieneAlgunRol([Rol.AdminContable, Rol.Revisor])) {
+      menu.find(item => item.title === 'Catalogo de Elementos').children.push({
+        title: 'Asignacion de Cuentas',
+        link: '/pages/catalogo_bienes/registro_cuentas_catalogo',
+      });
+    }
   }
 
   private moduloActa(menu: any) {

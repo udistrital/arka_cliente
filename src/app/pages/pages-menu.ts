@@ -31,10 +31,6 @@ export const MENU_ITEMS = [
         title: 'Inactivar Grupos y Subgrupos',
         link: '/pages/catalogo_bienes/inactiva_grupos',
       },
-      {
-        title: 'Asignacion de Cuentas',
-        link: '/pages/catalogo_bienes/registro_cuentas_catalogo',
-      },
     ],
   },
   {
