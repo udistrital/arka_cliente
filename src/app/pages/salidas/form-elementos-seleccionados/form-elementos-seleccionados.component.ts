@@ -31,6 +31,7 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { DocumentoService } from '../../../@core/data/documento.service';
 import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
 import { NbStepperComponent } from '@nebular/theme';
+import { isObject } from 'rxjs/internal-compatibility';
 
 
 @Component({
@@ -48,13 +49,13 @@ export class FormElementosSeleccionadosComponent implements OnInit {
   Proveedores: any;
   Dependencias: any;
   Ubicaciones: any;
-  DependenciaV: any;
   Sedes: any;
   form_salida: FormGroup;
   Datos: any;
   proveedorfiltro: string;
   elementos: any;
   elementos2: any;
+  UbicacionesFiltradas: any;
 
   @Input('Datos')
   set name(datos_seleccionados: any) {
@@ -119,20 +120,17 @@ export class FormElementosSeleccionadosComponent implements OnInit {
   Traer_Relacion_Ubicaciones() {
     const sede = this.form_salida.get('Sede').value;
     const dependencia = this.form_salida.get('Dependencia').value;
-    if (this.DependenciaV !== dependencia) {
-      this.form_salida.patchValue({
-        Ubicacion: '',
-      });
-    }
-    if (this.form_salida.get('Sede').valid || this.form_salida.get('Dependencia').valid) {
+    if (this.form_salida.get('Sede').valid && this.form_salida.get('Dependencia').valid &&
+      sede !== undefined && dependencia !== undefined) {
+      this.UbicacionesFiltradas = [];
       const transaccion: any = {};
       transaccion.Sede = this.Sedes.find((x) => x.Id === parseFloat(sede));
       transaccion.Dependencia = this.Dependencias.find((x) => x.Nombre === dependencia);
       if (transaccion.Sede !== undefined && transaccion.Dependencia !== undefined) {
         this.Actas_Recibido.postRelacionSedeDependencia(transaccion).subscribe((res: any) => {
-          if (Object.keys(res[0]).length !== 0) {
-            this.Ubicaciones = res[0].Relaciones;
-            this.DependenciaV = this.form_salida.get('Dependencia').value;
+          if (isObject(res[0].Relaciones)) {
+            this.form_salida.patchValue({ Ubicacion: '' });
+            this.UbicacionesFiltradas = res[0].Relaciones;
           }
         });
       }
@@ -152,7 +150,7 @@ export class FormElementosSeleccionadosComponent implements OnInit {
         // elemento.Funcionario = this.Proveedores.find(z => z.compuesto === form.Proveedor);
         elemento.Sede = this.Sedes.find(y => y.Id === parseFloat(form.Sede));
         elemento.Dependencia = this.Dependencias.find(y => y.Nombre === form.Dependencia);
-        elemento.Ubicacion = this.Ubicaciones.find(w => w.Id === parseFloat(form.Ubicacion));
+        elemento.Ubicacion = this.UbicacionesFiltradas.find(w => w.Id === parseFloat(form.Ubicacion));
         elemento.Asignado = true;
         datos.find(element => {
           if (element.Id === elemento.Id) {

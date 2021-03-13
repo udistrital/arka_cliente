@@ -57,7 +57,6 @@ export class ElaboracionPropiaComponent implements OnInit {
   formatoTipoMovimiento: any;
 
   @Input() actaRecibidoId: Number;
-  @Input() movimientoId: Number;
 
   constructor(
     private router: Router,
@@ -325,7 +324,6 @@ export class ElaboracionPropiaComponent implements OnInit {
         EstadoMovimientoId: {
           Id: 2, // REVISAR
         },
-        Id: this.movimientoId ? this.movimientoId : 0,
         SoporteMovimientoId: this.idDocumento,
         IdTipoMovimiento: this.tipoEntrada.Id,
       };

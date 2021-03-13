@@ -38,6 +38,7 @@ import { Console } from 'console';
 import { INVALID } from '@angular/forms/src/model';
 import { NbDateService } from '@nebular/theme';
 import { RolUsuario_t as Rol, PermisoUsuario_t as Permiso } from '../../../@core/data/models/roles/rol_usuario';
+import { isObject } from 'rxjs/internal-compatibility';
 
 @Component({
   selector: 'ngx-acta-especial',
@@ -82,8 +83,7 @@ export class ActaEspecialComponent implements OnInit {
   Historico_Acta: HistoricoActa;
   Proveedores: any;
   Ubicaciones: any;
-  UbicacionesForm: any;
-  DependenciaV: any;
+  UbicacionesFiltradas: any;
   Sedes: any;
   Dependencias: any;
   DatosTotales: any;
@@ -107,9 +107,9 @@ export class ActaEspecialComponent implements OnInit {
     Acta: Permiso,
     Elementos: Permiso,
   } = {
-    Acta: Permiso.Ninguno,
-    Elementos: Permiso.Ninguno,
-  };
+      Acta: Permiso.Ninguno,
+      Elementos: Permiso.Ninguno,
+    };
 
   constructor(
     private translate: TranslateService,
@@ -252,21 +252,7 @@ export class ActaEspecialComponent implements OnInit {
         Datos_Adicionales: [transaccion_.Formulario3.Datos_Adicionales],
       }),
     });
-    const sede = this.firstForm.get('Formulario1').get('Sede').value;
-    const dependencia = this.firstForm.get('Formulario1').get('Dependencia').value;
-    if (this.firstForm.get('Formulario1').get('Sede').valid || this.firstForm.get('Formulario1').get('Dependencia').valid) {
-      const transaccion: any = {};
-      transaccion.Sede = this.Sedes.find((x) => x.Id === parseFloat(sede));
-      transaccion.Dependencia = this.Dependencias.find((x) => x.Nombre === dependencia);
-      if (transaccion.Sede !== undefined && transaccion.Dependencia !== undefined) {
-        this.Actas_Recibido.postRelacionSedeDependencia(transaccion).subscribe((res: any) => {
-          if (Object.keys(res[0]).length !== 0) {
-            this.UbicacionesForm = res[0].Relaciones;
-            this.DependenciaV = this.firstForm.get('Formulario1').get('Dependencia').value;
-          }
-        });
-      }
-    }
+    this.Traer_Relacion_Ubicaciones(transaccion_.Formulario1.Ubicacion);
     this.firstForm.get('Formulario1').statusChanges.subscribe(change => this.checkValidness(1, change));
     this.firstForm.get('Formulario2').statusChanges.subscribe(change => this.checkValidness(2, change));
     this.firstForm.get('Formulario3').statusChanges.subscribe(change => this.checkValidness(3, change));
@@ -352,8 +338,8 @@ export class ActaEspecialComponent implements OnInit {
       if (res !== null) {
         (Swal as any).fire({
           type: 'success',
-          title: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.RegistradaTitle', {ID: res.ActaRecibido.Id}),
-          text: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.Registrada', {ID: res.ActaRecibido.Id}),
+          title: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.RegistradaTitle', { ID: res.ActaRecibido.Id }),
+          text: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.Registrada', { ID: res.ActaRecibido.Id }),
         });
         sessionStorage.removeItem('Formulario_Acta_Especial');
         this.router.navigate(['/pages/acta_recibido/consulta_acta_recibido']);
@@ -374,6 +360,7 @@ export class ActaEspecialComponent implements OnInit {
     Acta_de_Recibido.Activo = true;
     Acta_de_Recibido.FechaCreacion = new Date();
     Acta_de_Recibido.FechaModificacion = new Date();
+    Acta_de_Recibido.FechaVistoBueno =  new Date();
     Acta_de_Recibido.RevisorId = this.userService.getPersonaId();
     Acta_de_Recibido.UbicacionId = parseFloat(Datos.Formulario1.Ubicacion);
     Acta_de_Recibido.Observaciones = Datos.Formulario3.Datos_Adicionales;
@@ -575,28 +562,21 @@ export class ActaEspecialComponent implements OnInit {
     }
   }
 
-  Traer_Relacion_Ubicaciones() {
+  Traer_Relacion_Ubicaciones(loadInicial: string) {
     const sede = this.firstForm.get('Formulario1').get('Sede').value;
     const dependencia = this.firstForm.get('Formulario1').get('Dependencia').value;
-    if (this.DependenciaV !== dependencia) {
-      this.firstForm.patchValue({
-        Formulario1: {
-          Ubicacion: '',
-        },
-      });
-    }
-    if (this.firstForm.get('Formulario1').get('Sede').valid || this.firstForm.get('Formulario1').get('Dependencia').valid) {
+    if (this.firstForm.get('Formulario1').get('Sede').valid && this.firstForm.get('Formulario1').get('Dependencia').valid &&
+      sede !== undefined && dependencia !== undefined) {
+      this.UbicacionesFiltradas = [];
       const transaccion: any = {};
       transaccion.Sede = this.Sedes.find((x) => x.Id === parseFloat(sede));
       transaccion.Dependencia = this.Dependencias.find((x) => x.Nombre === dependencia);
-      if (transaccion.Sede !== undefined && transaccion.Dependencia !== undefined) {
-        this.Actas_Recibido.postRelacionSedeDependencia(transaccion).subscribe((res: any) => {
-          if (Object.keys(res[0]).length !== 0) {
-            this.UbicacionesForm = res[0].Relaciones;
-            this.DependenciaV = this.firstForm.get('Formulario1').get('Dependencia').value;
-          }
-        });
-      }
+      this.Actas_Recibido.postRelacionSedeDependencia(transaccion).subscribe((res: any) => {
+        if (isObject(res[0].Relaciones)) {
+          this.firstForm.patchValue({ Formulario1: { Ubicacion: loadInicial ? loadInicial : '' } });
+          this.UbicacionesFiltradas = res[0].Relaciones;
+        }
+      });
     }
   }
 
@@ -604,7 +584,7 @@ export class ActaEspecialComponent implements OnInit {
     return true;
   }
 
-  ver2 (event: any) {
+  ver2(event: any) {
     this.DatosTotales = event;
     this.Totales = new Array<any>(this.DatosTotales);
     this.usarLocalStorage();

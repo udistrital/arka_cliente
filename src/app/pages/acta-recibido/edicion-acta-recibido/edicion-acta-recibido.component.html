@@ -11,10 +11,10 @@
                 <div class="row" (click)="usarLocalStorage()">
                   <div class="form-group col-sm">
                     <label>{{'GLOBAL.Acta_Recibido.EdicionActa.Sede' | translate}}</label>
-                    <select nbInput type="text" class="form-control" formControlName="Sede" required
-                      (click)="usarLocalStorage(); Traer_Relacion_Ubicaciones();">
-                      <option *ngFor="let sede of Sedes" [(value)]="sede.Id">{{sede.Nombre}}</option>
-                    </select>
+                    <mat-select type="text" class="form-control" formControlName="Sede" required *ngIf="getPermisoEditar(permisos.Acta)"
+                      (selectionChange)="usarLocalStorage(); Traer_Relacion_Ubicaciones();">
+                      <mat-option *ngFor="let sede of Sedes" [(value)]="sede.Id">{{sede.Nombre}}</mat-option>
+                    </mat-select>
                     <p class="campo" *ngIf="firstForm.get('Formulario1').get('Sede').invalid">
                       {{'GLOBAL.placeholder' | translate}}</p>
                   </div>
@@ -30,11 +30,11 @@
                   </div>
                   <div class="form-group col-sm">
                     <label>{{'GLOBAL.Acta_Recibido.EdicionActa.Ubicacion' | translate}}</label>
-                    <select nbInput type="text" class="form-control" formControlName="Ubicacion"
-                      (click)="usarLocalStorage()">
-                      <option *ngFor="let ubicacion of Ubicaciones" [(value)]="ubicacion.Id">{{ubicacion.Nombre}}
-                      </option>
-                    </select>
+                    <mat-select type="text" class="form-control" formControlName="Ubicacion" *ngIf="getPermisoEditar(permisos.Acta)"
+                      (selectionChange)="usarLocalStorage()">
+                      <mat-option *ngFor="let ubicacion of UbicacionesFiltradas" [(value)]="ubicacion.Id">{{ubicacion.Nombre}}
+                      </mat-option>
+                    </mat-select>
                     <p class="campo" *ngIf="firstForm.get('Formulario1').get('Ubicacion').invalid">
                       {{'GLOBAL.placeholder' | translate}}</p>
                   </div>

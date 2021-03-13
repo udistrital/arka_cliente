@@ -130,6 +130,14 @@
       </div>
 
       <!-- REPOSICIÓN -->
+      <div *ngIf="detalle && !edit && entradaEspecifica.TipoEntradaId.Nombre === 'Reposición'" class="row">
+        <div class="col">
+          <p class="text-uppercase"><strong>Encargado: </strong>{{encargado}}</p>
+        </div>
+        <div class="col">
+          <p class="text-uppercase"><strong>Placa: </strong>{{Placa}}</p>
+        </div>
+      </div>
       <!-- HACER CUANDO ESTE LISTO -->
 
       <!-- SOBRANTE -->

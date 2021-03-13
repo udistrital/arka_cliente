@@ -44,14 +44,6 @@ export class RegistroComponent implements OnInit {
   ) {
     this.source = new LocalDataSource();
     this.actaSeleccionada = '';
-    this.tiposDeEntradas = [
-      // De acuerdo a las HU:
-      'EA', 'ECM', 'ECE', 'EPPA', 'EAM', 'EPR', 'ESI', 'ED', 'EIA', 'EID', 'EBEMP',
-      // Los siguientes no están en las HU
-      /*
-      'EEP', 'ET',
-      // */
-    ];
   }
 
   ngOnInit() {
@@ -124,7 +116,7 @@ export class RegistroComponent implements OnInit {
         UbicacionId: {
           title: this.translate.instant('GLOBAL.ubicacion'),
           valuePrepareFunction: (value: any) => {
-            return value.Nombre.toUpperCase();
+            return value.EspacioFisicoId.Nombre.toUpperCase();
           },
         },
         /*
@@ -151,7 +143,6 @@ export class RegistroComponent implements OnInit {
         const data = <Array<ActaRecibidoUbicacion>>res;
         this.actas = data;
         this.mostrarData();
-        // console.log({actas: this.actas});
       }
     });
   }
@@ -182,7 +173,20 @@ export class RegistroComponent implements OnInit {
   }
 
   onCustom(event) {
-    this.actaSeleccionada = `${event.data.Id}`;
+    this.actaRecibidoHelper.getTransaccionActa(event.data.Id).subscribe(res => {
+      this.tiposDeEntradas = res[0].SoportesActa[0].SoporteActa.ProveedorId ? [
+        // De acuerdo a las HU:
+        'EA', 'ECM', 'ECE', 'EPPA', 'EAM', 'EIA', 'EBEMP', 'ED', 'EID',
+        // Los siguientes no están en las HU
+        // 'EEP', 'ET',
+      ] : [
+        // De acuerdo a las HU:
+        'EPR', 'ESI',
+        // Los siguientes no están en las HU
+        // 'EEP', 'ET',
+      ];
+      this.actaSeleccionada = `${event.data.Id}`;
+    });
   }
 
 }
