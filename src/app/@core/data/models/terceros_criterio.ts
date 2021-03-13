@@ -24,3 +24,8 @@ export class TerceroCriterioContratista {
     Identificacion: Partial<DatosIdentificacion>;
     Tercero: Partial<Tercero>;
 }
+
+export class TerceroCriterioProveedor {
+    Identificacion: Partial<DatosIdentificacion>;
+    Tercero: Partial<Tercero>;
+}

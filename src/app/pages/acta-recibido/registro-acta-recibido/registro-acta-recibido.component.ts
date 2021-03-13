@@ -18,7 +18,7 @@ import { ActaRecibidoUbicacion } from '../../../@core/data/models/acta_recibido/
 import { Proveedor } from '../../../@core/data/models/acta_recibido/Proveedor';
 import { EstadoActa_t } from '../../../@core/data/models/acta_recibido/estado_acta';
 import { EstadoElemento } from '../../../@core/data/models/acta_recibido/estado_elemento';
-import { TerceroCriterioContratista } from '../../../@core/data/models/terceros_criterio';
+import { TerceroCriterioContratista, TerceroCriterioProveedor } from '../../../@core/data/models/terceros_criterio';
 import { HistoricoActa } from '../../../@core/data/models/acta_recibido/historico_acta';
 import { TransaccionSoporteActa, TransaccionActaRecibido } from '../../../@core/data/models/acta_recibido/transaccion_acta_recibido';
 import Swal from 'sweetalert2';
@@ -37,7 +37,7 @@ import { DocumentoService } from '../../../@core/data/documento.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { UserService } from '../../../@core/data/users.service';
 import { Console } from 'console';
-import { INVALID } from '@angular/forms/src/model';
+import { AbstractControl } from '@angular/forms/src/model';
 import { NbDateService } from '@nebular/theme';
 import { map, startWith } from 'rxjs/operators';
 import { isObject } from 'rxjs/internal-compatibility';
@@ -59,6 +59,9 @@ export class RegistroActaRecibidoComponent implements OnInit {
   cargando_contratistas: boolean = true;
   private Contratistas: TerceroCriterioContratista[];
   contratistasFiltrados: Observable<TerceroCriterioContratista[]>;
+  private Proveedores: Partial<TerceroCriterioProveedor>[];
+  proveedoresFiltrados: Observable<Partial<TerceroCriterioProveedor>[]>;
+  listo: Map<string, boolean>;
 
   // Mensajes de error
   errMess: any;
@@ -84,7 +87,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
   // Elementos__Soporte: Array<any>;
   Soportes_Acta: Array<SoporteActa>;
   Historico_Acta: HistoricoActa;
-  Proveedores: any;
+  // Proveedores: any;
   Ubicaciones: any;
   UbicacionesFiltradas: any;
   Sedes: any;
@@ -124,6 +127,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
     this.Validador = [];
     this.uidDocumento = [];
     this.idDocumento = [];
+    this.listo = new Map<string, boolean>();
   }
 
   ngOnInit() {
@@ -135,6 +139,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
     this.listService.findEstadosElemento();
     this.listService.findTipoBien();
     this.loadLists();
+    this.loadProveedores();
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
     });
     this.searchStr2 = new Array<string>();
@@ -186,8 +191,8 @@ export class RegistroActaRecibidoComponent implements OnInit {
         this.Estados_Acta = list.listEstadosActa[0];
         this.Estados_Elemento = list.listEstadosElemento[0];
         this.Tipos_Bien = list.listTipoBien[0];
-        this.Proveedores = list.listProveedores[0];
-        this.dataService2 = this.completerService.local(this.Proveedores, 'compuesto', 'compuesto');
+        // this.Proveedores = list.listProveedores[0];
+        // this.dataService2 = this.completerService.local(this.Proveedores, 'compuesto', 'compuesto');
         this.dataService3 = this.completerService.local(this.Dependencias, 'Nombre', 'Nombre');
         // this.dataService = this.completerService.local(this.Ubicaciones, 'Nombre', 'Nombre');
       },
@@ -211,7 +216,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
     }
   }
   private filtroContratistas(nombre: string): TerceroCriterioContratista[] {
-    if (nombre.length >= 4) {
+    if (nombre.length >= 4 && Array.isArray(this.Contratistas)) {
       const valorFiltrado = nombre.toLowerCase();
       return this.Contratistas.filter(contr => this.muestraContratista(contr).toLowerCase().includes(valorFiltrado));
     } else return [];
@@ -220,6 +225,38 @@ export class RegistroActaRecibidoComponent implements OnInit {
     if (contr) {
       return contr.Identificacion.Numero + ' - ' + contr.Tercero.NombreCompleto;
     }
+  }
+
+  private loadProveedores(): void {
+    if (this.listo.get('proveedores') === undefined) {
+      this.listo.set('proveedores', false);
+      this.tercerosHelper.getTercerosByCriterio('proveedor').subscribe(res => {
+        this.Proveedores = res;
+        // console.log({Proveedores: this.Proveedores});
+        this.listo.set('proveedores', true);
+      });
+    }
+  }
+  private filtroProveedores(nombre: string): Partial<TerceroCriterioProveedor>[] {
+    // console.log('filtroProveedores');
+    if (nombre.length >= 4 && Array.isArray(this.Proveedores)) {
+      const valorFiltrado = nombre.toLowerCase();
+      return this.Proveedores.filter(prov => this.muestraProveedor(prov).toLowerCase().includes(valorFiltrado));
+    } else return [];
+  }
+  muestraProveedor(prov: Partial<TerceroCriterioProveedor>): string {
+    if (prov) {
+      const str = prov.Identificacion ? prov.Identificacion.Numero + ' - ' : '';
+      return str + prov.Tercero.NombreCompleto;
+    }
+  }
+  private cambiosProveedor(control: AbstractControl): Observable<Partial<TerceroCriterioProveedor>[]> {
+    return control.valueChanges
+    .pipe(
+      startWith(''),
+      map(val => typeof val === 'string' ? val : this.muestraProveedor(val)),
+      map(nombre => this.filtroProveedores(nombre)),
+    );
   }
 
   download(index) {
@@ -272,12 +309,14 @@ export class RegistroActaRecibidoComponent implements OnInit {
   }
 
   Cargar_Formularios() {
+    this.proveedoresFiltrados = this.cambiosProveedor(this.Formulario_2.get('Proveedor'));
 
     this.firstForm = this.fb.group({
       Formulario1: this.Formulario_1,
       Formulario2: this.fb.array([this.Formulario_2]),
     });
     this.loadContratistas();
+    // this.loadProveedores();
   }
 
   Cargar_Formularios2(transaccion_: any) {
@@ -291,6 +330,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
         Validators.required],
         Soporte: [Soporte.Soporte, Validators.required],
       });
+      this.proveedoresFiltrados = this.cambiosProveedor(Formulario__2.get('Proveedor'));
       Form2.push(Formulario__2);
     }
 
@@ -306,6 +346,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
     });
     this.Traer_Relacion_Ubicaciones(transaccion_.Formulario1.Ubicacion);
     this.loadContratistas();
+    // this.loadProveedores();
   }
 
   get Formulario_1(): FormGroup {
@@ -393,6 +434,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
     Transaccion_Acta.SoportesActa = Soportes;
     // console.log({Transaccion_Acta, validador: this.validador});
     if (this.validador === false) {
+      // /*
       this.Actas_Recibido.postTransaccionActa(Transaccion_Acta).subscribe((res: any) => {
         if (res !== null) {
           (Swal as any).fire({
@@ -411,6 +453,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
           });
         }
       });
+      // */
     } else {
       (Swal as any).fire({
         type: 'error',
@@ -449,11 +492,11 @@ export class RegistroActaRecibidoComponent implements OnInit {
   }
 
   Registrar_Soporte(Datos: any, Acta: ActaRecibido, index: number): TransaccionSoporteActa {
+    // console.log({Datos});
 
     const Soporte_Acta = new SoporteActa();
     const Transaccion = new TransaccionSoporteActa();
 
-    const proveedor___ = Datos.Proveedor.split(' ');
     Soporte_Acta.Id = null;
     Soporte_Acta.ActaRecibidoId = Acta;
     Soporte_Acta.Activo = true;
@@ -461,10 +504,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
     Soporte_Acta.FechaCreacion = new Date();
     Soporte_Acta.FechaModificacion = new Date();
     Soporte_Acta.FechaSoporte = Datos.Fecha_Factura;
-    Soporte_Acta.ProveedorId = this.Proveedores.find(proveedor => proveedor.NumDocumento.toString() === proveedor___[0].toString()).Id;
-
-
-
+    Soporte_Acta.ProveedorId = Datos.Proveedor.Tercero.Id;
     Soporte_Acta.DocumentoId = this.idDocumento[index];
 
     Transaccion.SoporteActa = Soporte_Acta;
