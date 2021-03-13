@@ -1,11 +1,13 @@
 import { Component, OnInit, Input, Output, EventEmitter, ViewChild, QueryList, ViewChildren } from '@angular/core';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/catalogoElementosHelper';
+import { UserService } from '../../../@core/data/users.service';
 import { Grupo, Subgrupo } from '../../../@core/data/models/catalogo/jerarquia';
 import { Nivel_t } from '../../../@core/data/models/catalogo/tipo_nivel';
 import { Catalogo } from '../../../@core/data/models/catalogo/catalogo';
 import { TipoMovimientoKronos } from '../../../@core/data/models/movimientos';
 import { BaseId } from '../../../@core/data/models/base';
+import { RolUsuario_t as Rol } from '../../../@core/data/models/roles/rol_usuario';
 import Swal from 'sweetalert2';
 import { Store } from '@ngrx/store';
 import { IAppState } from '../../../@core/store/app.state';
@@ -55,6 +57,7 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
 
   cargando_catalogos: boolean = true;
   guardando: boolean = false;
+  puede_editar: boolean;
 
   constructor(
     private translate: TranslateService,
@@ -62,7 +65,9 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
     private store: Store<IAppState>,
     private listService: ListService,
     private toasterService: ToasterService,
+    private userService: UserService,
   ) {
+    this.puede_editar = this.userService.tieneAlgunRol([Rol.AdminContable]);
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
     });
     this.catalogos = new Array<Catalogo>();

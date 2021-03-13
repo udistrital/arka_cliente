@@ -22,7 +22,7 @@
           <span class="font-weight-normal">{{ uid_1.Nombre }}</span>
       </nb-card-header>
       <nb-card-body [nbSpinner]="guardando">
-        <p><em>{{'GLOBAL.instr_asig_cuentas' | translate}}</em></p>
+        <p *ngIf="puede_editar"><em>{{'GLOBAL.instr_asig_cuentas' | translate}}</em></p>
         <mat-vertical-stepper #stepper>
 
           <ng-template #tipoMovimientoTemplate let-lbl="label" let-movs="mvtos">
@@ -48,7 +48,7 @@
           </ng-container>
 
         </mat-vertical-stepper>
-        <button nbButton (click)="onSubmit()" [disabled]="!all_mov_ok"
+        <button nbButton (click)="onSubmit()" [disabled]="!all_mov_ok" *ngIf="puede_editar"
           class="float-right">{{'GLOBAL.Acta_Recibido.RegistroActa.GuardarCambiosButton' | translate}}</button>
       </nb-card-body>
     </nb-card>
