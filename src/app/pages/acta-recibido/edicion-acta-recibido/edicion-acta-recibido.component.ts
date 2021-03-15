@@ -915,7 +915,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
         }).then((willDelete) => {
           if (willDelete.value && siguienteEtapa) {
               const formularios  = this.firstForm.value;
-              const cedulaprov = formularios.Formulario2[0].Proveedor.split(' ')[0].toString();
+              const cedulaprov = formularios.Formulario2[0].Proveedor.Identificacion.Numero;
               const cedularev = formularios.Formulario1.Contratista.Identificacion.Numero;
               if (enviara === 1) {
                  this.EnviarEmail(cedulaprov);
@@ -924,7 +924,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
               if (enviara === 2) {
                  this.EnviarEmail(cedularev);
               }
-              // const revisor___ = Datos.Revisor.split(' ');
+
               // Se usa una redirección "dummy", intermedia. Ver
               // https://stackoverflow.com/a/49509706/3180052
               this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
@@ -1173,10 +1173,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
        codigoL10n_desc = L10n_base + 'DatosVeridicos2';
     } else {
        codigoL10n_desc = L10n_base + ((enviara === 1) ? 'DatosVeridicos3' : 'DatosVeridicos4');
-       const formularios  = this.firstForm.value;
-      // Las siguientes variables no se usan, sin embargo se actualizaron:
-      const cedulaprov = formularios.Formulario2[0].Proveedor.split(' ')[0].toString();
-      const cedularev = formularios.Formulario1.Contratista.Identificacion.Numero;
     }
     (Swal as any).fire({
       title: this.translate.instant(codigoL10n_titulo),

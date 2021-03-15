@@ -235,13 +235,6 @@ export class ReposicionComponent implements OnInit {
         } else {
           this.pUpManager.showErrorAlert('No es posible hacer el registro.');
         }
-        (Swal as any).fire({
-          type: 'success',
-          title: 'Entrada N° ' + `${detalle.consecutivo}` + ' Registrada',
-          text: 'La Entrada N° ' + `${detalle.consecutivo}` + ' ha sido registrada de forma exitosa',
-        });
-        const navigationExtras: NavigationExtras = { state: { consecutivo: res.Id } };
-        this.router.navigate(['/pages/reportes/registro-entradas'], navigationExtras);
       });
     }
   }
