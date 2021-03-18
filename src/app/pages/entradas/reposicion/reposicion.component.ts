@@ -32,7 +32,7 @@ export class ReposicionComponent implements OnInit {
   uidDocumento: string;
   idDocumento: number;
   fileDocumento: any;
-  validar: boolean= true;
+  validar: boolean= false;
   formatoTipoMovimiento: any;
   tipoEntrada: any;
   proveedor: string;
@@ -62,7 +62,6 @@ export class ReposicionComponent implements OnInit {
     this.observacionForm = this.fb.group({
       observacionCtrl: ['', Validators.nullValidator],
     });
-    this.facturaForm = this.fb.group({});
     this.getFormatoEntrada();
     this.getTipoEntrada();
     this.loadSoporte();
@@ -121,30 +120,6 @@ export class ReposicionComponent implements OnInit {
     return this.sanitization.bypassSecurityTrustUrl(oldURL);
   }
 
-  postSoporteNuxeo(files) {
-    return new Promise((resolve, reject) => {
-      files.forEach((file) => {
-        file.Id = file.nombre;
-        file.nombre = 'soporte_' + file.IdDocumento + '_entradas';
-        // file.key = file.Id;
-        file.key = 'soporte_' + file.IdDocumento;
-      });
-      this.nuxeoService.getDocumentos$(files, this.documentoService)
-        .subscribe(response => {
-          if (Object.keys(response).length === files.length) {
-            // console.log("response", response);
-            files.forEach((file) => {
-              this.uidDocumento = file.uid;
-              this.idDocumento = response[file.key].Id;
-            });
-            resolve(true);
-          }
-        }, error => {
-          reject(error);
-        });
-    });
-  }
-
   loadSoporte(): void {
     this.actasHelper.getSoporte(this.actaRecibidoId).subscribe(res => {
       if (res !== null) {
@@ -178,23 +153,14 @@ export class ReposicionComponent implements OnInit {
     });
   }
 
-  changeSelectSoporte(event) {
-    const soporteId: string = event.target.options[event.target.options.selectedIndex].value;
-    for (const i in this.soportes) {
-      if (this.soportes[i].Id.toString() === soporteId) {
-        this.proveedor = this.soportes[i].Proveedor.NomProveedor;
-        const date = this.soportes[i].FechaSoporte.toString().split('T');
-        this.fechaFactura = date[0];
-      }
-    }
+  onObservacionSubmit() {
+    this.validar = true;
   }
-
     /**
    * Método para enviar registro
    */
   async onSubmit() {
-    if (this.encargado.length !== 0) {
-      await this.postSoporteNuxeo([this.fileDocumento]);
+    if (this.encargado.length !== 0 && this.validar === true) {
       const detalle = {
         acta_recibido_id: +this.actaRecibidoId,
         consecutivo: 'P2',
@@ -215,6 +181,7 @@ export class ReposicionComponent implements OnInit {
         SoporteMovimientoId: this.idDocumento,
         IdTipoMovimiento: this.tipoEntrada.Id,
       };
+      // console.log(movimientoReposicion);
 
       this.entradasHelper.postEntrada(movimientoReposicion).subscribe((res: any) => {
         if (res !== null) {
