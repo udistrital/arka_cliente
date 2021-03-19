@@ -259,7 +259,6 @@ export class CapturarElementosComponent implements OnInit {
   }
 
   TraerPlantilla() {
-
     NuxeoService.nuxeo.header('X-NXDocumentProperties', '*');
 
     // NuxeoService.nuxeo.request('/id/8e4d5b47-ba37-41dd-b549-4efc1777fef2') // PLANTILLA VIEJA
@@ -302,6 +301,7 @@ export class CapturarElementosComponent implements OnInit {
     });
   }
   onFileChange(event) {
+
 
     // console.log(event.target.files);
     const max_size = 1;
@@ -443,8 +443,8 @@ export class CapturarElementosComponent implements OnInit {
   }
 
   clearFile() {
-    this.Validador = false;
-    this.form.get('archivo').setValue('');
+    this.Validador = true;
+ //   this.form.get('archivo').setValue('');
   }
 
   onSubmit() {
