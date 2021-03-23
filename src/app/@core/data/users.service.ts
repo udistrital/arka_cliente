@@ -66,6 +66,10 @@ export class UserService {
     return this.tokenData.sub; // window.localStorage.getItem('usuario').toString() ;
   }
 
+  getRoles(): string[] {
+    return this.roles;
+  }
+
   public getPersonaId(): number {
     return this.terceroId;
   }

@@ -1,9 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { NbMenuItem } from '@nebular/theme';
-import { UserService } from '../@core/data/users.service';
 import { MenuService } from '../@core/data/menu.service';
-import { RolUsuario_t as Rol } from '../@core/data/models/roles/rol_usuario';
 import { Menu } from '../@core/data/models/configuracion_crud';
 import { AutenticationService } from '../@core/utils/authentication.service';
 import { PopUpManager } from '../managers/popUpManager';
@@ -33,7 +31,6 @@ export class PagesComponent implements OnInit {
 
   constructor(
     private translate: TranslateService,
-    private user: UserService,
     private auth: AutenticationService,
     private pUpManager: PopUpManager,
     private menuService: MenuService,

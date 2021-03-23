@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
+import { UserService } from './users.service';
 import { HttpErrorManager } from '../../managers/errorManager';
 import { RequestManager } from '../../managers/requestManager';
 import { catchError, map } from 'rxjs/operators';
@@ -14,14 +15,15 @@ export class MenuService {
     private reqManager: RequestManager,
     private errManager: HttpErrorManager,
     private translate: TranslateService,
+    private userService: UserService,
   ) {
   }
 
   // Peticiones "listas"
 
   traerMenus() {
-    // TODO: Usar los roles de UserService
-    const roles = 'ADMIN_ARKA';
+    const roles = this.userService.getRoles().join(',').replace('/', '%2F');
+    // console.log({roles});
     return this.get(roles + '/arka_ii_main').pipe(map(
       (res: Partial<Menu>[]) => {
         return res;
