@@ -1,13 +1,12 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { NbMenuItem } from '@nebular/theme';
 import { UserService } from '../@core/data/users.service';
+import { MenuService } from '../@core/data/menu.service';
 import { RolUsuario_t as Rol } from '../@core/data/models/roles/rol_usuario';
 import { AutenticationService } from '../@core/utils/authentication.service';
 import { PopUpManager } from '../managers/popUpManager';
 import { NbToastStatus as s } from '@nebular/theme/components/toastr/model';
-
-import { MENU_ITEMS } from './pages-menu';
 
 /**
  * Tiempo antes que expire el token, en milisegundos
@@ -25,7 +24,7 @@ const T_ADV_TIMEOUT: number = 1 * 60 * 1000;
     </ngx-sample-layout>
   `,
 })
-export class PagesComponent {
+export class PagesComponent implements OnInit {
 
   menu: NbMenuItem[];
 
@@ -34,7 +33,12 @@ export class PagesComponent {
     private user: UserService,
     private auth: AutenticationService,
     private pUpManager: PopUpManager,
+    private menuService: MenuService,
   ) {
+    this.menu = [];
+  }
+
+  ngOnInit() {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
     });
 
@@ -43,10 +47,9 @@ export class PagesComponent {
   }
 
   private construirMenu (): void {
-    const menu = MENU_ITEMS;
-    this.moduloActa(menu);
-    this.moduloCatalogo(menu);
-    this.menu = <NbMenuItem[]>menu.filter(modulo => (modulo.children && modulo.children.length));
+    this.menuService.traerMenus().subscribe(m => {
+      this.menu = m;
+    });
   }
 
   private ajustarNotificacionesTimeoutToken() {
@@ -73,40 +76,5 @@ export class PagesComponent {
         this.translate.instant('GLOBAL.notificaciones.t_restante_alerta', {MINUTES: minutos}),
         this.translate.instant('GLOBAL.notificaciones.t_restante_titulo'));
     }, queda - T_ADV_TIMEOUT);
-  }
-
-  private moduloCatalogo(menu: any) {
-    if (this.user.tieneAlgunRol([Rol.AdminContable, Rol.Revisor])) {
-      menu.find(item => item.title === 'Catalogo de Elementos').children.push({
-        title: 'Asignacion de Cuentas',
-        link: '/pages/catalogo_bienes/registro_cuentas_catalogo',
-      });
-    }
-  }
-
-  private moduloActa(menu: any) {
-
-    const hijos = [
-      {
-        title: 'Consulta de Actas',
-        link: '/pages/acta_recibido/consulta_acta_recibido',
-      },
-    ];
-
-    if (this.user.tieneAlgunRol([Rol.Secretaria, Rol.Admin, Rol.Revisor])) {
-      hijos.push({
-        title: 'Registro de Acta',
-        link: '/pages/acta_recibido/registro_acta_recibido',
-      });
-    }
-
-    if (this.user.tieneAlgunRol([Rol.Admin, Rol.Revisor])) {
-      hijos.push({
-        title: 'Registro de Acta Especial',
-        link: '/pages/acta_recibido/acta_especial',
-      });
-    }
-
-    menu.find(item => item.title === 'Acta de Recibido').children = hijos;
   }
 }

@@ -1,6 +1,9 @@
 // Modelos de datos asociados al CRUD de configuracion
 // en orden alfabetico
 
+// ESTRUCTURAS DE DATOS PRINCIPALES
+// (Relacionadas con tablas)
+
 export class Aplicacion {
   Id: number;
   Nombre: string;
@@ -101,5 +104,16 @@ export class PerfilXMenuOpcion {
 export enum TipoOpcion {
   Menu = 'Menú',
   Accion = 'Acción',
-  Boton = 'Botón'
+  Boton = 'Botón',
+}
+
+// ESTRUCTURAS UTILITARIAS/AUXILIARES
+
+/**
+ * Estructura retornada por los controladores
+ * - menu_opcion_padre/ArbolMenus/{roles}/{app}
+ * - perfil_x_menu_opcion/MenusPorAplicacion/{id}
+ */
+export class Menu extends MenuOpcion {
+  Opciones: Partial<Menu>[];
 }
