@@ -40,7 +40,7 @@ export class AprovechamientosComponent implements OnInit {
   soportes: Array<SoporteActaProveedor>; // Soportes
   proveedor: string;
   fechaFactura: string;
-  validar: boolean= false;
+  validar: boolean = false;
   cargando_proveedores: boolean = true;
   cargando_supervisores: boolean = true;
 

@@ -32,7 +32,7 @@ export class ReposicionComponent implements OnInit {
   uidDocumento: string;
   idDocumento: number;
   fileDocumento: any;
-  validar: boolean= false;
+  validar: boolean = false;
   formatoTipoMovimiento: any;
   tipoEntrada: any;
   proveedor: string;
