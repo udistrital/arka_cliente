@@ -43,6 +43,7 @@
       "varias": "Receipt Certificates",
       "id_forma1": "Receipt Certificate #{{ID}}",
       "id_forma2": "Certificate N° {{ID}}",
+      "ActaNo": "Receipt Certificate N°",
       "ContratistaAsignado": "Assigned Contractor",
       "Errores": {
         "Mensaje": "You must first fix the following issues:",
@@ -537,7 +538,7 @@
     "fecha_visto_bueno": "Approval Date",
     "revisor": "Reviewer",
     "ubicacion": "Location",
-    "observaciones": "comments",
+    "observaciones": "Comments",
 
     "movimientos": {
       "tipo": {
@@ -627,12 +628,15 @@
     "supervisor": "Supervisory",
     "supervisor_nombres": "Full Name",
     "nombres": "Full Name",
+    "Cargo":"Position",
     "sede": "Headquarters",
     "dependencia": "Dependency",
     "numero_factura": "Bill Number",
     "proveedor": "Supplier",
     "fecha_factura": "Bill Date",
     "importacion": "Import",
+    "registro_importacion": "Import registration",
+    "trm": "Representative market rate",
     "vigencia": "Vigency",
     "tipo_contrato": "Contract Type",
     "numero_contrato": "Contract Number",
@@ -646,6 +650,8 @@
     "contrato": "Contract",
     "solicitante": "Requesting",
     "soporte": "Support Document",
+    "Encargado":"In Charge",
+    "Placa": "Plate",
     "acta_produccion": "Production Document",
     "tercero_administracion": "Third in Administration",
     "error": "Error",
