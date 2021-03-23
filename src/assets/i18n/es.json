@@ -13,6 +13,126 @@
       "opciones": "Opciones",
       "configurar_rol": "Rol"
     },
+    "main": {
+      "catalogo": {
+        "name": "Catálogo de Elementos",
+        "children": {
+          "listar": {
+            "name": "Listar Catálogos"
+          },
+          "crear": {
+            "name": "Crear Catálogo"
+          },
+          "consultar": {
+            "name": "Consultar Catálogo"
+          },
+          "construir": {
+            "name": "Construcción de Catálogo"
+          },
+          "elementos": {
+            "name": "Registro Elementos"
+          },
+          "inactivar": {
+            "name": "Inactivar Niveles"
+          },
+          "cuentas": {
+            "name": "Asignación de Cuentas"
+          }
+        }
+      },
+      "acta": {
+        "name": "Acta de Recibido",
+        "children": {
+          "consulta": {
+            "name": "Consulta de Actas"
+          },
+          "registro": {
+            "name": "Registro de Acta"
+          },
+          "reg_especial": {
+            "name": "Registro de Acta Especial"
+          }
+        }
+      },
+      "entradas": {
+        "name": "Entradas",
+        "children": {
+          "consulta": {
+            "name": "Consultar Entradas"
+          },
+          "registro": {
+            "name": "Registrar Entrada"
+          }
+        }
+      },
+      "salidas": {
+        "name": "Salidas",
+        "children": {
+          "lista": {
+            "name": "Consultar Salidas"
+          },
+          "crear": {
+            "name": "Registrar Salida"
+          }
+        }
+      },
+      "bodega": {
+        "name": "Bodega de Consumo",
+        "children": {
+          "solicitar": {
+            "name": "Solicitar Elementos"
+          },
+          "sol_consulta": {
+            "name": "Consultar Solicitudes"
+          },
+          "sol_responder": {
+            "name": "Responder Solicitudes"
+          },
+          "kardex_asignar": {
+            "name": "Asignación a Kardex"
+          },
+          "kardex_consultar": {
+            "name": "Consulta de Kardex"
+          }
+        }
+      },
+      "bajas": {
+        "name": "Bajas",
+        "children": {
+          "consulta": {
+            "name": "Consultar Solicitudes"
+          },
+          "registro": {
+            "name": "Registrar Solicitud"
+          }
+        }
+      },
+      "movimientos": {
+        "name": "Movimientos",
+        "children": {
+          "consulta": {
+            "name": "Consultar Baja de Bien"
+          },
+          "solicitud": {
+            "name": "Solicitud de Baja de Bien"
+          },
+          "aprobacion": {
+            "name": "Aprobacion de Baja de Bien"
+          }
+        }
+      },
+      "reportes": {
+        "name": "Reportes",
+        "children": {
+          "entradas": {
+            "name": "Entradas"
+          },
+          "salidas": {
+            "name": "Salidas"
+          }
+        }
+      }
+    },
     "aplicaciones": "Aplicaciones",
     "roles": "Roles",
     "opciones": "Opciones",

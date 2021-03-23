@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { HttpErrorManager } from '../../managers/errorManager';
 import { RequestManager } from '../../managers/requestManager';
 import { catchError, map } from 'rxjs/operators';
@@ -12,6 +13,7 @@ export class MenuService {
   constructor(
     private reqManager: RequestManager,
     private errManager: HttpErrorManager,
+    private translate: TranslateService,
   ) {
   }
 
@@ -22,20 +24,20 @@ export class MenuService {
     const roles = 'ADMIN_ARKA';
     return this.get(roles + '/arka_ii_main').pipe(map(
       (res: Partial<Menu>[]) => {
-        const nm = this.convertirMenuNebular(res);
-        // console.log({res, nm});
-        return nm;
+        return res;
       },
     ));
   }
 
   // Funciones Auxiliares
 
-  convertirMenuNebular(m: Partial<Menu>[]): any[] {
+  convertirMenuNebular(m: Partial<Menu>[], base: string = ''): any[] {
+    const keyLevel = base ? base + '.' : '';
     return m.map(original => {
       const newm = {};
+      const level = keyLevel + original.Nombre;
       if (original.Nombre !== '') {
-        newm['title'] = original.Nombre;
+        newm['title'] = this.translate.instant(level + '.name');
       }
       if (original.Icono && original.Icono !== '') {
         newm['icon'] = original.Icono;
@@ -44,7 +46,7 @@ export class MenuService {
         newm['link'] = original.Url;
       }
       if (original.Opciones && Array.isArray(original.Opciones)) {
-        newm['children'] = this.convertirMenuNebular(original.Opciones);
+        newm['children'] = this.convertirMenuNebular(original.Opciones, level + '.children');
       }
       return newm;
     });

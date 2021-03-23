@@ -4,6 +4,7 @@ import { NbMenuItem } from '@nebular/theme';
 import { UserService } from '../@core/data/users.service';
 import { MenuService } from '../@core/data/menu.service';
 import { RolUsuario_t as Rol } from '../@core/data/models/roles/rol_usuario';
+import { Menu } from '../@core/data/models/configuracion_crud';
 import { AutenticationService } from '../@core/utils/authentication.service';
 import { PopUpManager } from '../managers/popUpManager';
 import { NbToastStatus as s } from '@nebular/theme/components/toastr/model';
@@ -28,6 +29,8 @@ export class PagesComponent implements OnInit {
 
   menu: NbMenuItem[];
 
+  private menus: Partial<Menu>[];
+
   constructor(
     private translate: TranslateService,
     private user: UserService,
@@ -40,6 +43,7 @@ export class PagesComponent implements OnInit {
 
   ngOnInit() {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
+      this.menu = this.menuService.convertirMenuNebular(this.menus, 'MENU.main');
     });
 
     this.construirMenu();
@@ -48,7 +52,8 @@ export class PagesComponent implements OnInit {
 
   private construirMenu (): void {
     this.menuService.traerMenus().subscribe(m => {
-      this.menu = m;
+      this.menus = m;
+      this.menu = this.menuService.convertirMenuNebular(this.menus, 'MENU.main');
     });
   }
 
