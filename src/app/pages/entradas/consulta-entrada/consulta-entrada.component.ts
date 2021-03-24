@@ -138,12 +138,12 @@ export class ConsultaEntradaComponent implements OnInit {
         TipoEntradaId: {
           title: this.translate.instant('GLOBAL.tipo_entrada'),
           valuePrepareFunction: (value: any) => {
-            return value.Nombre;
+            return value;
           },
           filter: {
             type: 'list',
             config: {
-              selectText: this.translate.instant('GLOBAL.seleccionar') + '...',
+              selectText: 'Select...',
               list: [
                 { value: 'Adquisición', title: 'Adquisición' },
                 { value: 'Elaboración Propia', title: 'Elaboración Propia' },
@@ -151,6 +151,13 @@ export class ConsultaEntradaComponent implements OnInit {
                 { value: 'Reposición', title: 'Reposición' },
                 { value: 'Sobrante', title: 'Sobrante' },
                 { value: 'Terceros', title: 'Terceros' },
+                { value: 'Caja menor', title: 'Caja Menor' },
+                { value: 'Desarrollo interior', title: 'Desarrollo interior' },
+                { value: 'Adiciones y mejoras', title: 'Adiciones y mejoras' },
+                { value: 'Intangibles', title: 'Intangibles' },
+                { value: 'Aprovechamientos', title: 'Aprovechamientos' },
+                { value: 'Compras extranjeras', title: 'Compras extranjeras' },
+                { value: 'Provisional', title: 'Provisional' },
               ],
             },
           },
@@ -161,7 +168,6 @@ export class ConsultaEntradaComponent implements OnInit {
 
   loadEntradas(): void {
     this.entradasHelper.getEntradas().subscribe(res => {
-      // console.log(res)
       if (res !== null) {
         const data = <Array<any>>res;
         for (const datos in Object.keys(data)) {
@@ -173,11 +179,12 @@ export class ConsultaEntradaComponent implements OnInit {
             entrada.ActaRecibidoId = detalle.acta_recibido_id;
             entrada.FechaCreacion = data[datos].Movimiento.FechaCreacion;
             entrada.Consecutivo = detalle.consecutivo;
-            tipoEntradaAux.Nombre = data[datos].TipoMovimiento.Nombre;
-            entrada.TipoEntradaId = tipoEntradaAux;
+            // tipoEntradaAux.Nombre = data[datos].TipoMovimiento.Nombre; // Innecesario, genera un error en el filter.
+            entrada.TipoEntradaId = data[datos].TipoMovimiento.Nombre;
             this.entradas.push(entrada);
           }
         }
+        // console.log(this.entradas)
         this.source.load(this.entradas);
         this.mostrar = true;
       }
@@ -552,9 +559,10 @@ export class ConsultaEntradaComponent implements OnInit {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
       this.loadTablaSettings();
     });
-    this.loadTablaSettings();
     this.loadEntradas();
     this.loadLists();
+    this.loadTablaSettings();
+
   }
 
 }
