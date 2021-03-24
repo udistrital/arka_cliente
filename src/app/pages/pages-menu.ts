@@ -124,6 +124,16 @@ export const MENU_ITEMS = [
     ],
   },
   {
+    title: 'Ajustes',
+    icon: 'nb-gear',
+    children: [
+      {
+        title: 'Ajustar Movimiento',
+        link: '/pages/ajustes/lista-movimientos',
+      },
+    ],
+  },
+  {
     title: 'Reportes',
     icon: 'nb-compose',
     children: [

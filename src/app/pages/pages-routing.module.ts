@@ -49,6 +49,10 @@ const routes: Routes = [{
       loadChildren: './bajas/bajas.module#BajasModule',
     },
     {
+      path: 'ajustes',
+      loadChildren: './ajustes/ajustes.module#AjustesModule',
+    },
+    {
       path: '',
       redirectTo: 'dashboard',
       pathMatch: 'full',
