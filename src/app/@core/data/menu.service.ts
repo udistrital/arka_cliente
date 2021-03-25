@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { UserService } from './users.service';
-import { HttpErrorManager } from '../../managers/errorManager';
 import { RequestManager } from '../../managers/requestManager';
-import { catchError, map } from 'rxjs/operators';
+import { map } from 'rxjs/operators';
 import { Menu, TipoOpcion } from './models/configuracion_crud';
 
 @Injectable()
@@ -13,7 +12,6 @@ export class MenuService {
 
   constructor(
     private reqManager: RequestManager,
-    private errManager: HttpErrorManager,
     private translate: TranslateService,
     private userService: UserService,
   ) {
@@ -31,6 +29,8 @@ export class MenuService {
     ));
   }
 
+  // Funciones Auxiliares
+
   filtrarMenus(original: Partial<Menu>[]): Partial<Menu>[] {
     return original.filter(opcion => {
       const dejar = opcion.TipoOpcion === TipoOpcion.Menu;
@@ -40,8 +40,6 @@ export class MenuService {
       return dejar;
     });
   }
-
-  // Funciones Auxiliares
 
   convertirMenuNebular(m: Partial<Menu>[], base: string = ''): any[] {
     const keyLevel = base ? base + '.' : '';
@@ -68,30 +66,22 @@ export class MenuService {
 
   get(endpoint) {
     this.reqManager.setPath(this.path);
-    return this.reqManager.get(endpoint).pipe(
-      catchError(this.errManager.handleError),
-    );
+    return this.reqManager.get(endpoint);
   }
 
   post(endpoint, element) {
     this.reqManager.setPath(this.path);
-    return this.reqManager.post(endpoint, element).pipe(
-      catchError(this.errManager.handleError),
-    );
+    return this.reqManager.post(endpoint, element);
   }
 
   put(endpoint, element) {
     this.reqManager.setPath(this.path);
-    return this.reqManager.put(endpoint + '/' + element.Id, element).pipe(
-      catchError(this.errManager.handleError),
-    );
+    return this.reqManager.put(endpoint + '/' + element.Id, element);
   }
 
   delete(endpoint, element) {
     this.reqManager.setPath(this.path);
-    return this.reqManager.delete(endpoint, element.Id).pipe(
-      catchError(this.errManager.handleError),
-    );
+    return this.reqManager.delete(endpoint, element.Id);
   }
 
 }
