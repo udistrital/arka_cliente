@@ -4,7 +4,7 @@ import { UserService } from './users.service';
 import { HttpErrorManager } from '../../managers/errorManager';
 import { RequestManager } from '../../managers/requestManager';
 import { catchError, map } from 'rxjs/operators';
-import { Menu } from './models/configuracion_crud';
+import { Menu, TipoOpcion } from './models/configuracion_crud';
 
 @Injectable()
 export class MenuService {
@@ -26,9 +26,19 @@ export class MenuService {
     // console.log({roles});
     return this.get(roles + '/arka_ii_main').pipe(map(
       (res: Partial<Menu>[]) => {
-        return res;
+        return this.filtrarMenus(res);
       },
     ));
+  }
+
+  filtrarMenus(original: Partial<Menu>[]): Partial<Menu>[] {
+    return original.filter(opcion => {
+      const dejar = opcion.TipoOpcion === TipoOpcion.Menu;
+      if (dejar && opcion.Opciones) {
+        opcion.Opciones = this.filtrarMenus(opcion.Opciones);
+      }
+      return dejar;
+    });
   }
 
   // Funciones Auxiliares
