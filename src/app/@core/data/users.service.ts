@@ -70,6 +70,17 @@ export class UserService {
     return this.roles;
   }
 
+  /**
+   * Obtiene un string con todos los roles, con el separador indicado.
+   * (de no especificarse, el separador es ',').
+   *
+   * Adicionalmente, si los roles tienen '/', se retornan sanitizados
+   * para poderlos usar en URLs
+   */
+  getStringRolesUrl(separador: string = ','): string {
+    return this.roles.join(separador).replace('/', '%2F');
+  }
+
   public getPersonaId(): number {
     return this.terceroId;
   }

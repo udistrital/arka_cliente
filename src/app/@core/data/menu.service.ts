@@ -22,7 +22,7 @@ export class MenuService {
   // Peticiones "listas"
 
   traerMenus() {
-    const roles = this.userService.getRoles().join(',').replace('/', '%2F');
+    const roles = this.userService.getStringRolesUrl();
     // console.log({roles});
     return this.get(roles + '/arka_ii_main').pipe(map(
       (res: Partial<Menu>[]) => {
