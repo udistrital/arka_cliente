@@ -657,5 +657,8 @@
     "error": "Error",
     "mensaje_seleccionar_entrada": "Select the type of entry you want to make",
     "documento": "Document"
+  },
+  "ajustes": {
+    "movimientos_relacionados": "Related transfers"
   }
 }

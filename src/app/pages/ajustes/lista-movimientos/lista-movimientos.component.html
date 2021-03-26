@@ -6,36 +6,40 @@
     <nb-card-body [nbSpinner]="!mostrar">
       <p class="h4 pb-4" *ngIf="actaSeleccionada === ''">{{'GLOBAL.mensaje_registrar_entrada' | translate}}</p>
 
-      <ng2-smart-table [settings]="settings" [source]="source" (custom)="CargarMovimientosAsociados($event)"
-        *ngIf="actaSeleccionada === ''"></ng2-smart-table>
-      <nb-card>
-        <ngx-ver-detalle *ngIf="actaSeleccionada !== ''" [Id_Acta]="actaSeleccionada"></ngx-ver-detalle>
-        <div>
-          <button mat-raised-button color="primary" class="float-right"
-            style="text-transform: uppercase; margin-bottom: 10px">
-            {{'GLOBAL.Acta_Recibido.Anular' | translate}}
-          </button>
-        </div>
+      <ng2-smart-table [settings]="settingsListaActas" [source]="ActasAsociadas"
+        (custom)="CargarMovimientosAsociados($event)" *ngIf="actaSeleccionada === ''"></ng2-smart-table>
+      <nb-card *ngIf="actaSeleccionada !== ''">
+        <nb-card-body>
+
+          <ngx-ver-detalle [Id_Acta]="actaSeleccionada"></ngx-ver-detalle>
+          <div>
+            <button mat-raised-button color="primary" class="float-right" style="text-transform: uppercase;">
+              {{'GLOBAL.Acta_Recibido.Anular' | translate}}
+            </button>
+          </div>
+        </nb-card-body>
+        <nb-card-body>
+
+          <hr>
+          <p class="h4 pb-4">{{'GLOBAL.ajustes.movimientos_relacionados' | translate}}</p>
+
+          <hr>
+          <p class="h4 pb-4">{{'GLOBAL.Entradas' | translate}}</p>
+          <ng2-smart-table [settings]="settingsEntrada" [source]="Entrada" (custom)="AnularEntrada($event)"
+            *ngIf="actaSeleccionada !== ''"></ng2-smart-table>
+
+          <hr>
+          <p class="h4 pb-4">{{'GLOBAL.Salidas' | translate}}</p>
+          <ng2-smart-table [settings]="settingsSalidas" [source]="ListaSalidas" (custom)="AnularSalidas($event)"
+            *ngIf="actaSeleccionada !== ''"></ng2-smart-table>
+
+          <hr>
+          <p class="h4 pb-4">{{'GLOBAL.movimientos.tipo.SOL_BAJA.nombre' | translate}}</p>
+          <ng2-smart-table [settings]="settingsBajas" [source]="ListaBajas" (custom)="AnularBajas($event)"
+            *ngIf="actaSeleccionada !== ''"></ng2-smart-table>
+
+        </nb-card-body>
       </nb-card>
-
-      <hr>
-      <p class="h4 pb-4" *ngIf="actaSeleccionada !== ''">Movimientos Asociados</p>
-      <hr>
-      <p class="h4 pb-4" *ngIf="actaSeleccionada !== ''">Entrada</p>
-
-      <ng2-smart-table [settings]="settings2" [source]="source2" (custom)="AnularEntrada($event)"
-        *ngIf="actaSeleccionada !== ''"></ng2-smart-table>
-      <hr>
-      <p class="h4 pb-4" *ngIf="actaSeleccionada !== ''">Salidas</p>
-
-      <ng2-smart-table [settings]="settings3" [source]="source3" (custom)="AnularSalidas($event)"
-        *ngIf="actaSeleccionada !== ''"></ng2-smart-table>
-      <hr>
-      <p class="h4 pb-4" *ngIf="actaSeleccionada !== ''">Bajas</p>
-
-      <ng2-smart-table [settings]="settings4" [source]="source4" (custom)="AnularBajas($event)"
-        *ngIf="actaSeleccionada !== ''"></ng2-smart-table>
-
     </nb-card-body>
   </nb-card>
 </div>

@@ -29,21 +29,17 @@ export class ListaMovimientosComponent implements OnInit {
   mostrarEntrada: boolean = false;
 
   // Datos Tabla
-  source: LocalDataSource;
-  source2: LocalDataSource;
-  source3: LocalDataSource;
-  source4: LocalDataSource;
-  tiposDeEntradas: string[];
+  ActasAsociadas: LocalDataSource;
+  Entrada: LocalDataSource;
+  ListaSalidas: LocalDataSource;
+  ListaBajas: LocalDataSource;
   // Acta de recibido
   actaSeleccionada: string;
-  settings: any;
-  settings2: any;
-  settings3: any;
-  settings4: any;
-  opcionEntrada: string;
-  movimientoId: number;
+  settingsListaActas: any;
+  settingsEntrada: any;
+  settingsSalidas: any;
+  settingsBajas: any;
 
-  @Input() EntradaEdit: any;
 
   private terceros: Partial<Tercero>[];
   private actas: any[];
@@ -62,10 +58,10 @@ export class ListaMovimientosComponent implements OnInit {
     private tercerosHelper: TercerosHelper,
 
   ) {
-    this.source = new LocalDataSource();
-    this.source2 = new LocalDataSource();
-    this.source3 = new LocalDataSource();
-    this.source4 = new LocalDataSource();
+    this.ActasAsociadas = new LocalDataSource();
+    this.Entrada = new LocalDataSource();
+    this.ListaSalidas = new LocalDataSource();
+    this.ListaBajas = new LocalDataSource();
     this.entradas = new Array<Entrada>();
     this.salidas = new Array<any>();
     this.actaSeleccionada = '';
@@ -83,7 +79,7 @@ export class ListaMovimientosComponent implements OnInit {
   }
 
   loadTablasSettings() {
-    this.settings = {
+    this.settingsListaActas = {
       hideSubHeader: false,
       noDataMessage: this.translate.instant('GLOBAL.no_data_actas_entrada'),
       actions: {
@@ -151,7 +147,7 @@ export class ListaMovimientosComponent implements OnInit {
         },
       },
     };
-    this.settings2 = {
+    this.settingsEntrada = {
       hideSubHeader: false,
       noDataMessage: this.translate.instant('GLOBAL.no_data_entradas'),
       actions: {
@@ -202,7 +198,7 @@ export class ListaMovimientosComponent implements OnInit {
         },
       },
     };
-    this.settings3 = {
+    this.settingsBajas = {
       hideSubHeader: false,
       noDataMessage: this.translate.instant('GLOBAL.no_data_entradas'),
       actions: {
@@ -342,7 +338,7 @@ export class ListaMovimientosComponent implements OnInit {
       },
     };
 
-    this.settings4 = {
+    this.settingsSalidas = {
       hideSubHeader: false,
       noDataMessage: 'Hay bajas asociadas a esta acta',
       actions: {
@@ -466,7 +462,7 @@ export class ListaMovimientosComponent implements OnInit {
           entrada.Observacion = res.Movimiento.Observacion;
           this.entradas.push(entrada);
         }
-        this.source2.load(this.entradas);
+        this.Entrada.load(this.entradas);
         this.mostrarEntrada = true;
       }
     });
@@ -482,7 +478,7 @@ export class ListaMovimientosComponent implements OnInit {
         this.salidas.push(salida);
       }
       console.log(this.salidas)
-      this.source3.load(this.salidas);
+      this.ListaSalidas.load(this.salidas);
 
     });
   }
@@ -490,7 +486,7 @@ export class ListaMovimientosComponent implements OnInit {
   private loadBajas() {
     this.bajasHelper.getSolicitudes().subscribe((res: any) => {
       if (res !== '200' && Object.keys(res[0]).length !== 0) {
-        this.source4.load(res);
+        this.ListaBajas.load(res);
       }
     });
   }
@@ -506,7 +502,7 @@ export class ListaMovimientosComponent implements OnInit {
     if (!this.mostrar
       && this.actas && this.actas.length
       && this.terceros && this.terceros.length) {
-      this.source.load(this.actas.map(acta => {
+      this.ActasAsociadas.load(this.actas.map(acta => {
         const buscar = (tercero: Tercero) => tercero.Id === acta.RevisorId;
         let nombre = '';
         if (this.terceros.some(buscar)) {
