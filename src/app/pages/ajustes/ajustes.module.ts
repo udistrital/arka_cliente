@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { AjustesComponent } from './ajustes.component';
 import { AjustesRoutingModule } from './ajustes-routing.module';
 import { ListaMovimientosComponent } from './lista-movimientos/lista-movimientos.component';
-import { ActaRecibidoModule } from '../acta-recibido/acta-recibido.module'
+import { ActaRecibidoModule } from '../acta-recibido/acta-recibido.module';
 import { Ng2SmartTableModule } from 'ngx-smart-table';
 import { OwlNativeDateTimeModule, OwlDateTimeModule } from 'ng-pick-datetime';
 import { TranslateModule } from '@ngx-translate/core';
@@ -42,6 +42,6 @@ import { ThemeModule } from '../../@theme/theme.module';
     MatPaginatorModule,
     MatSortModule,
     ActaRecibidoModule,
-  ]
+  ],
 })
 export class AjustesModule { }

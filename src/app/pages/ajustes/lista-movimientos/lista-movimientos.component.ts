@@ -3,7 +3,7 @@ import { LocalDataSource } from 'ngx-smart-table';
 import { ActaRecibido, ActaRecibidoUbicacion } from '../../../@core/data/models/acta_recibido/acta_recibido';
 import { Tercero } from '../../../@core/data/models/terceros';
 import { PopUpManager } from '../../../managers/popUpManager';
-import { VerDetalleComponent } from '../../acta-recibido/ver-detalle/ver-detalle.component'
+import { VerDetalleComponent } from '../../acta-recibido/ver-detalle/ver-detalle.component';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
 import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
 import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
@@ -18,9 +18,9 @@ import { BajasHelper } from '../../../helpers/bajas/bajasHelper';
 import Swal from 'sweetalert2';
 
 @Component({
-  selector: 'lista-movimientos',
+  selector: 'ngx-lista-movimientos',
   templateUrl: './lista-movimientos.component.html',
-  styleUrls: ['./lista-movimientos.component.scss']
+  styleUrls: ['./lista-movimientos.component.scss'],
 })
 
 export class ListaMovimientosComponent implements OnInit {
@@ -405,7 +405,7 @@ export class ListaMovimientosComponent implements OnInit {
             } else {
               return 'Por Aprobar';
             }
-  
+
           },
           filter: {
             type: 'daterange',
@@ -434,7 +434,7 @@ export class ListaMovimientosComponent implements OnInit {
             return value;
           },
         },
-      }
+      },
     };
   }
 
@@ -472,17 +472,14 @@ export class ListaMovimientosComponent implements OnInit {
 
     this.salidasHelper.getSalida(id).subscribe(res1 => {
       if (Object.keys(res1).length !== 0) {
-        console.log(res1)
         const salida = res1.Salida;
         salida.Id = res1.Salida.Id;
         this.salidas.push(salida);
       }
-      console.log(this.salidas)
       this.ListaSalidas.load(this.salidas);
-
     });
   }
-  
+
   private loadBajas() {
     this.bajasHelper.getSolicitudes().subscribe((res: any) => {
       if (res !== '200' && Object.keys(res[0]).length !== 0) {
