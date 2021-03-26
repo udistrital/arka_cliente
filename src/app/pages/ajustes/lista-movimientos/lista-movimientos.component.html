@@ -1,3 +1,41 @@
-<p>
-  lista-movimientos works!
-</p>
+<div class="col-lg-12">
+  <nb-card>
+    <nb-card-header>
+      Registrar Ajuste
+    </nb-card-header>
+    <nb-card-body [nbSpinner]="!mostrar">
+      <p class="h4 pb-4" *ngIf="actaSeleccionada === ''">{{'GLOBAL.mensaje_registrar_entrada' | translate}}</p>
+
+      <ng2-smart-table [settings]="settings" [source]="source" (custom)="CargarMovimientosAsociados($event)"
+        *ngIf="actaSeleccionada === ''"></ng2-smart-table>
+      <nb-card>
+        <ngx-ver-detalle *ngIf="actaSeleccionada !== ''" [Id_Acta]="actaSeleccionada"></ngx-ver-detalle>
+        <div>
+          <button mat-raised-button color="primary" class="float-right"
+            style="text-transform: uppercase; margin-bottom: 10px">
+            {{'GLOBAL.Acta_Recibido.Anular' | translate}}
+          </button>
+        </div>
+      </nb-card>
+
+      <hr>
+      <p class="h4 pb-4" *ngIf="actaSeleccionada !== ''">Movimientos Asociados</p>
+      <hr>
+      <p class="h4 pb-4" *ngIf="actaSeleccionada !== ''">Entrada</p>
+
+      <ng2-smart-table [settings]="settings2" [source]="source2" (custom)="AnularEntrada($event)"
+        *ngIf="actaSeleccionada !== ''"></ng2-smart-table>
+      <hr>
+      <p class="h4 pb-4" *ngIf="actaSeleccionada !== ''">Salidas</p>
+
+      <ng2-smart-table [settings]="settings3" [source]="source3" (custom)="AnularSalidas($event)"
+        *ngIf="actaSeleccionada !== ''"></ng2-smart-table>
+      <hr>
+      <p class="h4 pb-4" *ngIf="actaSeleccionada !== ''">Bajas</p>
+
+      <ng2-smart-table [settings]="settings4" [source]="source4" (custom)="AnularBajas($event)"
+        *ngIf="actaSeleccionada !== ''"></ng2-smart-table>
+
+    </nb-card-body>
+  </nb-card>
+</div>
