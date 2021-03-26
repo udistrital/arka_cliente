@@ -4,6 +4,7 @@ import { NbMenuItem } from '@nebular/theme';
 import { MenuService } from '../@core/data/menu.service';
 import { Menu } from '../@core/data/models/configuracion_crud';
 import { AutenticationService } from '../@core/utils/authentication.service';
+import { ConfiguracionService } from '../@core/data/configuracion.service';
 import { PopUpManager } from '../managers/popUpManager';
 import { NbToastStatus as s } from '@nebular/theme/components/toastr/model';
 
@@ -34,24 +35,29 @@ export class PagesComponent implements OnInit {
     private auth: AutenticationService,
     private pUpManager: PopUpManager,
     private menuService: MenuService,
+    private confService: ConfiguracionService,
   ) {
     this.menu = [];
   }
 
   ngOnInit() {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
-      this.menu = this.menuService.convertirMenuNebular(this.menus, 'MENU.main');
+      this.muestraMenu();
     });
 
     this.construirMenu();
     this.ajustarNotificacionesTimeoutToken();
   }
 
-  private construirMenu (): void {
+  private construirMenu(): void {
     this.menuService.traerMenus().subscribe(m => {
       this.menus = m;
-      this.menu = this.menuService.convertirMenuNebular(this.menus, 'MENU.main');
+      this.muestraMenu();
     });
+  }
+
+  private muestraMenu(): void {
+    this.menu = this.menuService.convertirMenuNebular(this.menus, 'MENU.main');
   }
 
   private ajustarNotificacionesTimeoutToken() {

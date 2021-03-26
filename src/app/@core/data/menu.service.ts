@@ -1,28 +1,31 @@
 import { Injectable } from '@angular/core';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
-import { UserService } from './users.service';
+import { ConfiguracionService } from './configuracion.service';
 import { RequestManager } from '../../managers/requestManager';
+import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Menu, TipoOpcion } from './models/configuracion_crud';
 
 @Injectable()
 export class MenuService {
 
+  /*
   private path = 'CONF_MENU_SERVICE';
+  // */
 
   constructor(
+    /*
     private reqManager: RequestManager,
+    // */
     private translate: TranslateService,
-    private userService: UserService,
+    private confService: ConfiguracionService,
   ) {
   }
 
   // Peticiones "listas"
 
-  traerMenus() {
-    const roles = this.userService.getStringRolesUrl();
-    // console.log({roles});
-    return this.get(roles + '/arka_ii_main').pipe(map(
+  traerMenus(): Observable<Partial<Menu>[]> {
+    return this.confService.getConfig().pipe(map(
       (res: Partial<Menu>[]) => {
         return this.filtrarMenus(res);
       },
@@ -30,6 +33,10 @@ export class MenuService {
   }
 
   // Funciones Auxiliares
+
+  extraerMenus(menus: Partial<Menu>[]) {
+    return this.filtrarMenus(menus);
+  }
 
   filtrarMenus(original: Partial<Menu>[]): Partial<Menu>[] {
     return original.filter(opcion => {
@@ -62,6 +69,7 @@ export class MenuService {
     });
   }
 
+  /*
   // Funciones CRUD
 
   get(endpoint) {
@@ -83,5 +91,6 @@ export class MenuService {
     this.reqManager.setPath(this.path);
     return this.reqManager.delete(endpoint, element.Id);
   }
+  // */
 
 }
