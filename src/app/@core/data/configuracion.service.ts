@@ -54,7 +54,11 @@ export class ConfiguracionService {
 
   getParametro(parametro: string) {
     const endpoint = 'parametro?query=Aplicacion__Nombre:' + this.app + ',Nombre:' + parametro;
-    return this.get(endpoint);
+    return this.get(endpoint).pipe(map(res => {
+      if (Array.isArray(res) && res.length === 1) {
+        return res[0];
+      }
+    }));
   }
 
   setParametro(parametro: Parametro) {
