@@ -28,8 +28,8 @@
           <ng-template #tipoMovimientoTemplate let-lbl="label" let-movs="mvtos">
           <mat-step>
             <ng-template matStepLabel>{{lbl | translate}}</ng-template>
-            <ngx-crud-movimiento *ngFor="let tab of movs"
-            [subgrupo_id]="uid_1" [movimiento_id]="tab" (formulario)="ver3($event)"
+            <ngx-crud-movimiento *ngFor="let tab of movs;let i = index"
+            [subgrupo_id]="uid_1" [movimiento_id]="tab" [tipo_movimiento]="lbl"  [indice] = "i" (formulario)="ver3($event)"
             (eventChange)="recargarCatalogo()"></ngx-crud-movimiento>
             <div class="justify-content-center">
               <button nbButton

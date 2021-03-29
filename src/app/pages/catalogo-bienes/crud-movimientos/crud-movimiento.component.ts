@@ -17,6 +17,7 @@ import {
     NbSortDirection,
     NbTreeGridRowComponent,
   } from '@nebular/theme';
+import { GlobalPositionStrategy } from '@angular/cdk/overlay';
 
 /**
  * Mapeo entre:
@@ -54,7 +55,8 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
   respuesta: CuentaGrupo;
   Subgrupo: Subgrupo;
   respuesta2: any;
-
+  tipo_movimiento: string;
+  indice: number;
 
   @Input('subgrupo_id')
   set name(subgrupo_id: Subgrupo) {
@@ -68,6 +70,20 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
   @Input('movimiento_id')
   set name2(movimiento_id: any) {
     this.movimiento_id = movimiento_id;
+  }
+
+
+
+
+
+  @Input('tipo_movimiento')
+  set name3(tipo_movimiento: string) {
+    this.tipo_movimiento = tipo_movimiento;
+  }
+
+  @Input('indice')
+  set name4(indice: number) {
+    this.indice = indice;
   }
 
   @Output() eventChange = new EventEmitter();
@@ -114,6 +130,7 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
   }
 
   ngOnInit() {
+
   }
 
   ngOnChanges() {
@@ -148,9 +165,10 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
     this.store.select((stte) => stte).subscribe(
       (list) => {
         if (list.listPlanCuentasCredito !== undefined || list.listPlanCuentasDebito !== undefined) {
-
           this.formMovimiento.campos[this.getIndexForm('CuentaDebitoId')].opciones = list.listPlanCuentasDebito[0];
           this.formMovimiento.campos[this.getIndexForm('CuentaCreditoId')].opciones = list.listPlanCuentasCredito[0];
+          if (this.formMovimiento.titulo === 'Salida')
+             this.formMovimiento.campos[this.getIndexForm('CuentaCreditoId')].opciones = list.listPlanCuentasDebito[0];
           // console.log(list.listPlanCuentasCredito[0]);
         }
       },
@@ -166,13 +184,16 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
 
   construirForm() {
     if (this.movimiento_id !== undefined) {
-
       // this.formulario.normalform = {...this.formulario.normalform, ...{ titulo: this.translate.instant('GLOBAL.' + this.movimiento_id)}} ;
       this.formMovimiento.titulo = this.translate.instant('GLOBAL.' + this.codigo_movimiento_i18n(this.movimiento_id));
       // this.formMovimiento.btn = this.translate.instant('GLOBAL.guardar');
       for (let i = 0; i < this.formMovimiento.campos.length; i++) {
         this.formMovimiento.campos[i].label = this.translate.instant('GLOBAL.' + this.formMovimiento.campos[i].label_i18n);
         this.formMovimiento.campos[i].placeholder = this.translate.instant('GLOBAL.placeholder_' + this.formMovimiento.campos[i].label_i18n);
+        this.formMovimiento.campos[i].deshabilitar = (this.tipo_movimiento === 'GLOBAL.Entradas' && i === 0 &&
+                        this.indice !== 0 || this.tipo_movimiento === 'GLOBAL.Salidas' && i === 1);
+        this.formMovimiento.campos[i].requerido = !(this.tipo_movimiento === 'GLOBAL.Entradas' && i === 0 &&
+                        this.indice !== 0 || this.tipo_movimiento === 'GLOBAL.Salidas' && i === 1);
       }
     }
   }
@@ -235,13 +256,14 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
   }
 
   validarForm(event) {
-    // console.log(event)
     if (event.valid) {
       if (this.respuesta !== undefined) {
         const cuentaDebito = event.data.CuentasFormulario.CuentaDebitoId;
         const cuentaCredito = event.data.CuentasFormulario.CuentaCreditoId;
         this.respuesta.CuentaCreditoId = cuentaCredito.Codigo;
         this.respuesta.CuentaDebitoId = cuentaDebito.Codigo;
+        this.respuesta.Tipo_Texto = this.tipo_movimiento;
+        this.respuesta.orden = this.indice;
         this.formulario.emit(this.respuesta);
       } else {
         const cuentaDebito = event.data.CuentasFormulario.CuentaDebitoId;
@@ -251,6 +273,8 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
         this.respuesta2.CuentaCreditoId = cuentaCredito.Codigo;
         this.respuesta2.CuentaDebitoId = cuentaDebito.Codigo;
         this.respuesta2.SubtipoMovimientoId = this.movimiento_id.Id;
+        this.respuesta.Tipo_Texto = this.tipo_movimiento;
+        this.respuesta.orden = this.indice;
         this.formulario.emit(this.respuesta2);
       }
     }

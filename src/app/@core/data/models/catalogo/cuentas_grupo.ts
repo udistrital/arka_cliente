@@ -11,6 +11,8 @@ export class CuentaGrupo {
     FechaModificacion: Date;
     Activo: boolean;
     SubgrupoId: Partial<SubgrupoID>;
+    Tipo_Texto: string;
+    orden: number;
 }
 export class CuentasFormulario {
     CuentaCreditoId: Cuenta;
