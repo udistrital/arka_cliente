@@ -62,6 +62,7 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
   guardando: boolean = false;
   puede_editar: boolean;
   texto_sesion_contable: string;
+  texto_estado: string;
   modificando_cuentas: boolean;
 
   private estadoAsignacionContable: Parametro;
@@ -73,16 +74,17 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
     private confService: ConfiguracionService,
     private listService: ListService,
     private toasterService: ToasterService,
-    private userService: UserService,
   ) {
     this.cargando_catalogos = true;
-    this.puede_editar = this.userService.tieneAlgunRol([Rol.AdminContable]);
+    this.puede_editar = false;
+    this.modificando_cuentas = false;
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
     });
     this.catalogos = new Array<Catalogo>();
     this.catalogoId = 0;
     this.Movimientos = [];
     this.texto_sesion_contable = '';
+    this.texto_estado = '';
   }
 
   ngOnInit() {
@@ -90,6 +92,7 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
     this.listService.findPlanCuentasDebito();
     this.listService.findPlanCuentasCredito();
     this.cargaMovimientos();
+    this.cargaPermisoEdicionCuentas();
     this.cargaEstadoSesionContable();
   }
 
@@ -125,6 +128,11 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
     });
   }
 
+  private cargaPermisoEdicionCuentas() {
+    const accion = this.confService.getAccion('puedeAsignarCuentas');
+    this.puede_editar = accion ? true : false;
+  }
+
   private cargaEstadoSesionContable() {
     if (this.estado_cargado === undefined) {
       this.estado_cargado = false;
@@ -138,6 +146,7 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
     this.estadoAsignacionContable = p;
     this.modificando_cuentas = p.Valor === 'true';
     this.texto_sesion_contable = this.modificando_cuentas ? 'Terminar Edición de Cuentas' : 'Iniciar Edición de Cuentas';
+    this.texto_estado = this.modificando_cuentas ? 'En Modificación (Transacciones Bloqueadas)' : 'Solo Lectura (Transacciones Habilitadas)';
     this.estado_cargado = true;
   }
 
@@ -163,9 +172,11 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
           this.estadoAsignacionContable.Valor = 'true';
         }
         // console.log({p_new: this.estadoAsignacionContable});
+        this.estado_cargado = false;
         this.confService.setParametro(this.estadoAsignacionContable).subscribe(res2 => {
           // console.log({p_new_put: res2});
           this.refrescaEstadoSesionContable(<Parametro><any>res2);
+          this.estado_cargado = true;
         });
       }
     });

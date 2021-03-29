@@ -22,12 +22,15 @@
           <span class="font-weight-normal">{{ uid_1.Nombre }}</span>
       </nb-card-header>
       <nb-card-body [nbSpinner]="guardando">
-        <div *ngIf="puede_editar" [nbSpinner]="!this.estado_cargado">
-          <button mat-stroked-button (click)="preguntaSesionAsignacionContable()">
+        <header [nbSpinner]="!this.estado_cargado"><strong>{{'GLOBAL.estado' | translate}}:</strong>
+          {{ texto_estado }}
+          <button type="button" mat-stroked-button class="float-right"
+          *ngIf="puede_editar" [disabled]="!this.estado_cargado"
+          (click)="preguntaSesionAsignacionContable()">
             {{ texto_sesion_contable }}
           </button>
-        </div>
-        <p *ngIf="puede_editar"><em>{{'GLOBAL.instr_asig_cuentas' | translate}}</em></p>
+          <p *ngIf="modificando_cuentas"><em>{{'GLOBAL.instr_asig_cuentas' | translate}}</em></p>
+        </header>
         <mat-vertical-stepper #stepper>
 
           <ng-template #tipoMovimientoTemplate let-lbl="label" let-movs="mvtos">
@@ -53,7 +56,7 @@
           </ng-container>
 
         </mat-vertical-stepper>
-        <button nbButton (click)="onSubmit()" [disabled]="!all_mov_ok" *ngIf="puede_editar"
+        <button nbButton (click)="onSubmit()" [disabled]="!all_mov_ok" *ngIf="modificando_cuentas"
           class="float-right">{{'GLOBAL.Acta_Recibido.RegistroActa.GuardarCambiosButton' | translate}}</button>
       </nb-card-body>
     </nb-card>
