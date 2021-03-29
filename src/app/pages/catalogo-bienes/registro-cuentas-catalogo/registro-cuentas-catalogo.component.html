@@ -36,7 +36,7 @@
           <ng-template #tipoMovimientoTemplate let-lbl="label" let-movs="mvtos">
           <mat-step>
             <ng-template matStepLabel>{{lbl | translate}}</ng-template>
-            <ngx-crud-movimiento *ngFor="let tab of movs"
+            <ngx-crud-movimiento *ngFor="let tab of movs" [escritura]="modificando_cuentas"
             [subgrupo_id]="uid_1" [movimiento_id]="tab" (formulario)="ver3($event)"
             (eventChange)="recargarCatalogo()"></ngx-crud-movimiento>
             <div class="justify-content-center">
