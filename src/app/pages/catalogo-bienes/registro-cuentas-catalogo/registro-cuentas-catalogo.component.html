@@ -22,6 +22,11 @@
           <span class="font-weight-normal">{{ uid_1.Nombre }}</span>
       </nb-card-header>
       <nb-card-body [nbSpinner]="guardando">
+        <div *ngIf="puede_editar" [nbSpinner]="!this.estado_cargado">
+          <button mat-stroked-button (click)="preguntaSesionAsignacionContable()">
+            {{ texto_sesion_contable }}
+          </button>
+        </div>
         <p *ngIf="puede_editar"><em>{{'GLOBAL.instr_asig_cuentas' | translate}}</em></p>
         <mat-vertical-stepper #stepper>
 

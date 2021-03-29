@@ -6,11 +6,13 @@ import { Grupo, Subgrupo } from '../../../@core/data/models/catalogo/jerarquia';
 import { Nivel_t } from '../../../@core/data/models/catalogo/tipo_nivel';
 import { Catalogo } from '../../../@core/data/models/catalogo/catalogo';
 import { TipoMovimientoKronos } from '../../../@core/data/models/movimientos';
+import { Parametro } from '../../../@core/data/models/configuracion_crud';
 import { BaseId } from '../../../@core/data/models/base';
 import { RolUsuario_t as Rol } from '../../../@core/data/models/roles/rol_usuario';
 import Swal from 'sweetalert2';
 import { Store } from '@ngrx/store';
 import { IAppState } from '../../../@core/store/app.state';
+import { ConfiguracionService } from '../../../@core/data/configuracion.service';
 import { ListService } from '../../../@core/store/services/list.service';
 import { CrudMovimientoComponent } from '../crud-movimientos/crud-movimiento.component';
 import { FormControl } from '@angular/forms';
@@ -55,24 +57,32 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
   depreciacion_ok: boolean;
   valorizacion_ok: boolean;
 
-  cargando_catalogos: boolean = true;
+  cargando_catalogos: boolean;
+  estado_cargado: boolean;
   guardando: boolean = false;
   puede_editar: boolean;
+  texto_sesion_contable: string;
+  modificando_cuentas: boolean;
+
+  private estadoAsignacionContable: Parametro;
 
   constructor(
     private translate: TranslateService,
     private catalogoElementosService: CatalogoElementosHelper,
     private store: Store<IAppState>,
+    private confService: ConfiguracionService,
     private listService: ListService,
     private toasterService: ToasterService,
     private userService: UserService,
   ) {
+    this.cargando_catalogos = true;
     this.puede_editar = this.userService.tieneAlgunRol([Rol.AdminContable]);
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
     });
     this.catalogos = new Array<Catalogo>();
     this.catalogoId = 0;
     this.Movimientos = [];
+    this.texto_sesion_contable = '';
   }
 
   ngOnInit() {
@@ -80,6 +90,7 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
     this.listService.findPlanCuentasDebito();
     this.listService.findPlanCuentasCredito();
     this.cargaMovimientos();
+    this.cargaEstadoSesionContable();
   }
 
   private cargaMovimientos () {
@@ -111,6 +122,52 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
       this.TiposMovimientos = movimientos.map(mov => desglose.find(d => d.tipo === mov.buscar));
       // console.log({mvtos:this.TiposMovimientos});
       this.all_mov = res.length - 1;
+    });
+  }
+
+  private cargaEstadoSesionContable() {
+    if (this.estado_cargado === undefined) {
+      this.estado_cargado = false;
+      this.confService.getParametro('modificandoCuentas').subscribe((p: Parametro) => {
+        this.refrescaEstadoSesionContable(p);
+      });
+    }
+  }
+  private refrescaEstadoSesionContable(p: Parametro) {
+    // console.log({p});
+    this.estadoAsignacionContable = p;
+    this.modificando_cuentas = p.Valor === 'true';
+    this.texto_sesion_contable = this.modificando_cuentas ? 'Terminar Edición de Cuentas' : 'Iniciar Edición de Cuentas';
+    this.estado_cargado = true;
+  }
+
+  preguntaSesionAsignacionContable() {
+    let title: string;
+    let text: string;
+    let type: string;
+    if (this.modificando_cuentas) {
+      title = '¿Finalizar Edicion de Cuentas?';
+      text = 'Se permitirá realizar movimientos. ¿Desea continuar?';
+      type = 'info';
+    } else {
+      title = '¿Iniciar Edición de Cuentas?';
+      text = 'Se bloqueará cualquier tipo de movimiento. ¿Desea continuar?';
+      type = 'warning';
+    }
+    (Swal as any).fire({title, text, type, showCancelButton: true}).then(res => {
+      // console.log({modif: this.modificando_cuentas, res});
+      if (res.value) {
+        if (this.modificando_cuentas) {
+          this.estadoAsignacionContable.Valor = 'false';
+        } else {
+          this.estadoAsignacionContable.Valor = 'true';
+        }
+        // console.log({p_new: this.estadoAsignacionContable});
+        this.confService.setParametro(this.estadoAsignacionContable).subscribe(res2 => {
+          // console.log({p_new_put: res2});
+          this.refrescaEstadoSesionContable(<Parametro><any>res2);
+        });
+      }
     });
   }
 
