@@ -302,7 +302,7 @@
     "placeholder_cuenta_credito":"Crédito",
     "placeholder_cuenta_debito":"Débito",
     "Entradas":"Entrada",
-    "Salidas":"Salida",
+    "Salidas":"Salidas",
     "Depreciacion":"Depreciación",
     "Valorizacion":"Valorización",
     "Salida de Almacen":"Salida",
@@ -656,6 +656,9 @@
     "tercero_administracion": "Tercero en Administración",
     "error": "Error",
     "mensaje_seleccionar_entrada": "Seleccione el tipo de entrada que desea realizar",
-    "documento": "Documento"
+    "documento": "Documento",
+    "ajustes": {
+      "movimientos_relacionados": "Movimientos relacionados"
+    }
   }
 }
