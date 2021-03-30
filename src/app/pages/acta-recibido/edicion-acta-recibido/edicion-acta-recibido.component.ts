@@ -161,6 +161,8 @@ export class EdicionActaRecibidoComponent implements OnInit {
     private userService: UserService,
     private dateService: NbDateService<Date>,
   ) {
+    this.Contratistas = [];
+    this.Proveedores = [];
     this.errores = new Map<string, boolean>();
     this.fileDocumento = [];
     this.Validador = [];
