@@ -2,14 +2,19 @@ import { RequestManager } from '../../managers/requestManager';
 import { Injectable } from '@angular/core';
 import { map } from 'rxjs/operators';
 import { PopUpManager } from '../../managers/popUpManager';
+import { DisponibilidadMovimientosService } from '../../@core/data/disponibilidad-movimientos.service';
 
 @Injectable({
     providedIn: 'root',
 })
 export class SalidaHelper {
 
-    constructor(private rqManager: RequestManager,
-        private pUpManager: PopUpManager) { }
+    constructor(
+        private rqManager: RequestManager,
+        private pUpManager: PopUpManager,
+        private dispMvtos: DisponibilidadMovimientosService,
+    ) {
+    }
 
     /**
      * Entradas Get
@@ -59,18 +64,23 @@ export class SalidaHelper {
     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
     */
     public postSalidas(salidasData) {
-        this.rqManager.setPath('ARKA_SERVICE');
-        return this.rqManager.post(`salida`, salidasData).pipe(
-            map(
-                (res) => {
-                    if (res['Type'] === 'error') {
-                        this.pUpManager.showErrorAlert('No se pudo registrar la entrada solicitada.');
-                        return undefined;
-                    }
-                    return res;
-                },
-            ),
-        );
+        // TODO: Posiblemente revisar si se pueden hacer movimientos...
+        return this.dispMvtos.movimientosPermitidos().pipe(map(disp => {
+            if (disp) {
+                this.rqManager.setPath('ARKA_SERVICE');
+                return this.rqManager.post(`salida`, salidasData).pipe(
+                    map(
+                        (res) => {
+                            if (res['Type'] === 'error') {
+                                this.pUpManager.showErrorAlert('No se pudo registrar la entrada solicitada.');
+                                return undefined;
+                            }
+                            return res;
+                        },
+                    ),
+                );
+            }
+        }));
     }
 
     /**

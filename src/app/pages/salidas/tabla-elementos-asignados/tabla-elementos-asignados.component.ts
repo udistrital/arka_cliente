@@ -1032,13 +1032,15 @@ export class TablaElementosAsignadosComponent implements OnInit {
       if (result.value) {
         this.salidasHelper.postSalidas(Salidas).subscribe(res => {
           // console.log(res);
-          (Swal as any).fire({
-            type: 'success',
-            title: 'Salida Registrada',
-            text: 'La Salida ha sido Registrada exitosamente',
-          });
+          if (res) {
+            (Swal as any).fire({
+              type: 'success',
+              title: 'Salida Registrada',
+              text: 'La Salida ha sido Registrada exitosamente',
+            });
+            this.router.navigate(['/pages/salidas/consulta_salidas']);
+          }
         });
-        this.router.navigate(['/pages/salidas/consulta_salidas']);
       }
     });
   }
