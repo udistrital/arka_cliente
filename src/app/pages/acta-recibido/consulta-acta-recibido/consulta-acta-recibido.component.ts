@@ -9,6 +9,7 @@ import Swal from 'sweetalert2';
 import { Store } from '@ngrx/store';
 import { IAppState } from '../../../@core/store/app.state';
 import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
+import { ConfiguracionService } from '../../../@core/data/configuracion.service';
 import { UserService } from '../../../@core/data/users.service';
 import { RolUsuario_t as Rol, PermisoUsuario_t as Permiso } from '../../../@core/data/models/roles/rol_usuario';
 import { TransaccionActaRecibido } from '../../../@core/data/models/acta_recibido/transaccion_acta_recibido';
@@ -50,9 +51,9 @@ export class ConsultaActaRecibidoComponent implements OnInit {
     private router: Router,
     private actaRecibidoHelper: ActaRecibidoHelper,
     private store: Store<IAppState>,
-
     private terceroshelper: TercerosHelper,
     private pUpManager: PopUpManager,
+    private confService: ConfiguracionService,
     private userService: UserService,
   ) {
 
@@ -126,8 +127,8 @@ export class ConsultaActaRecibidoComponent implements OnInit {
       actions: {
         columnTitle: this.translate.instant('GLOBAL.Acciones'),
         position: 'right',
-        delete: this.userService.tieneAlgunRol([Rol.Admin, Rol.Revisor]),
-        add: this.userService.tieneAlgunRol([Rol.Secretaria, Rol.Admin, Rol.Revisor]),
+        delete: !!this.confService.getAccion('anularActaRecibido'),
+        add: !!this.confService.getAccion('crearActaRecibido'),
       },
       add: {
         addButtonContent: '<i class="fas fa-plus" title="' + f.registrar + '" aria-label="' + f.registrar + '"></i>',
