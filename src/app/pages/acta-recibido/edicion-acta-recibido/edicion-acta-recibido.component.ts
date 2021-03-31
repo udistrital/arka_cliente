@@ -30,6 +30,7 @@ import { ListService } from '../../../@core/store/services/list.service';
 import { combineAll } from 'rxjs-compat/operator/combineAll';
 import { SafeResourceUrl, DomSanitizer } from '@angular/platform-browser';
 import { PopUpManager } from '../../../managers/popUpManager';
+import { ConfiguracionService } from '../../../@core/data/configuracion.service';
 import { DocumentoService } from '../../../@core/data/documento.service';
 import { analyzeAndValidateNgModules } from '@angular/compiler';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -153,6 +154,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
     private toasterService: ToasterService,
     private completerService: CompleterService,
     private store: Store<IAppState>,
+    private confService: ConfiguracionService,
     private listService: ListService,
     private pUpManager: PopUpManager,
     private sanitization: DomSanitizer,
@@ -215,10 +217,8 @@ export class EdicionActaRecibidoComponent implements OnInit {
       'Elementos',
     ].map(seccion => this.permisosRoles_EstadoSeccion(this.estadoActa, seccion))
       .map(permisosSeccion => {
-        return this.userService
-          .tieneAlgunRol(permisosSeccion.PuedenModificar) ? Permiso.Modificar : (
-            this.userService
-              .tieneAlgunRol(permisosSeccion.PuedenVer) ? Permiso.Ver : Permiso.Ninguno
+        return this.confService.getAccion(permisosSeccion.PuedenModificar) ? Permiso.Modificar : (
+            this.confService.getAccion(permisosSeccion.PuedenVer) ? Permiso.Ver : Permiso.Ninguno
           );
       });
 
@@ -232,8 +232,8 @@ export class EdicionActaRecibidoComponent implements OnInit {
   // Devuelve un objeto en que el nombre de cada propiedad es un permiso, y
   // los valores de cada propiedad son los roles que tienen dicho permiso.
   private permisosRoles_EstadoSeccion(estado: string, seccion: string) {
-    let PuedenModificar: Rol[] = [];
-    let PuedenVer: Rol[] = [];
+    let PuedenModificar: string = '';
+    let PuedenVer: string = '';
 
     permisosSeccionesActas.filter(PermSecciones => seccion === PermSecciones.Seccion)
       .forEach(PermSeccion => {
@@ -261,13 +261,13 @@ export class EdicionActaRecibidoComponent implements OnInit {
 
     // Pueden enviar a Proveedor
     const envioProveedor =
-      this.userService.tieneAlgunRol([Rol.Admin, Rol.Revisor, Rol.Secretaria])
+      this.confService.getAccion('edicionActaRecibidoCambioAElaboracion')
       && ['Registrada']
         .some(est => this.estadoActa === est);
 
     // Pueden enviar a Validacion
     const envioValidar =
-      this.userService.tieneAlgunRol([Rol.Admin, Rol.Revisor, Rol.Contratista])
+      this.confService.getAccion('edicionActaRecibidoCambioARevision')
       && ['En Elaboracion', 'En Modificacion']
         .some(est => this.estadoActa === est);
 
