@@ -167,13 +167,15 @@ export class ListaMovimientosComponent implements OnInit {
       columns: {
         Consecutivo: {
           title: this.translate.instant('GLOBAL.consecutivo'),
+          width: '120px',
         },
         ActaRecibidoId: {
           title: this.translate.instant('GLOBAL.Acta_Recibido.una'),
+          width: '130px',
         },
         FechaCreacion: {
           title: this.translate.instant('GLOBAL.fecha_entrada'),
-          width: '70px',
+          width: '150px',
           valuePrepareFunction: (value: any) => {
             const date = value.split('T');
             return date[0];
@@ -181,6 +183,7 @@ export class ListaMovimientosComponent implements OnInit {
         },
         TipoEntradaId: {
           title: this.translate.instant('GLOBAL.tipo_entrada'),
+          width: '230px',
           valuePrepareFunction: (value: any) => {
             return value;
           },
@@ -391,7 +394,7 @@ export class ListaMovimientosComponent implements OnInit {
           title: 'Fecha de Visto Bueno',
           width: '70px',
           valuePrepareFunction: (value: any) => {
-            if (value !== null ) {
+            if (value !== null) {
               const date = value.split('T');
               return date[0];
             } else {
@@ -443,17 +446,16 @@ export class ListaMovimientosComponent implements OnInit {
   loadEntradaEspecifica(): void {
     this.entradasHelper.getEntradaByActa(this.actaSeleccionada).subscribe(res => {
       if (res !== null) {
-        const entr = res.filter(entrada => JSON.parse((entrada.Detalle)).acta_recibido_id === 1)
-          const entradas = new Array<Entrada>();
-          const entrada = new Entrada
-          const detalle = JSON.parse((entr[0].Detalle));
-          entrada.Id = entr[0].Id;
-          entrada.FechaCreacion = entr[0].FechaCreacion;
-          entrada.TipoEntradaId = entr[0].FormatoTipoMovimientoId.Nombre;
-          entrada.Observacion = entr[0].Observacion;
-          entrada.ActaRecibidoId = detalle.acta_recibido_id;
-          entrada.Consecutivo = detalle.consecutivo;
-          entradas.push(entrada);
+        const entradas = new Array<Entrada>();
+        const entrada = new Entrada
+        const detalle = JSON.parse((res[0].Detalle));
+        entrada.Id = res[0].Id;
+        entrada.FechaCreacion = res[0].FechaCreacion;
+        entrada.TipoEntradaId = res[0].FormatoTipoMovimientoId.Nombre;
+        entrada.Observacion = res[0].Observacion;
+        entrada.ActaRecibidoId = detalle.acta_recibido_id;
+        entrada.Consecutivo = detalle.consecutivo;
+        entradas.push(entrada);
         this.Entrada.load(entradas);
         this.mostrarEntrada = true;
       }
