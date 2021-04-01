@@ -447,7 +447,7 @@ export class ListaMovimientosComponent implements OnInit {
     this.entradasHelper.getEntradaByActa(this.actaSeleccionada).subscribe(res => {
       if (res !== null) {
         const entradas = new Array<Entrada>();
-        const entrada = new Entrada
+        const entrada = new Entrada;
         const detalle = JSON.parse((res[0].Detalle));
         entrada.Id = res[0].Id;
         entrada.FechaCreacion = res[0].FechaCreacion;
