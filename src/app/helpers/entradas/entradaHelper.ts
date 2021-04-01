@@ -268,4 +268,19 @@ export class EntradaHelper {
         );
     }
 
+    public getEntradaByActa(acta_recibido_id) {
+        this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
+        return this.rqManager.get('movimiento?query=detalle__contains:"acta_recibido_id":' + acta_recibido_id + ',EstadoMovimientoId__Nombre:Entrada Aceptada&limit=-1').pipe(
+            map(
+                (res) => {
+                    if (res === 'error') {
+                        this.pUpManager.showErrorAlert('No se pudo consultar el contrato contratos');
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
+
 }
