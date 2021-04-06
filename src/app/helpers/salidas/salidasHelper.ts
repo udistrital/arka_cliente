@@ -66,7 +66,6 @@ export class SalidaHelper {
     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
     */
     public postSalidas(salidasData) {
-        // TODO: Posiblemente revisar si se pueden hacer movimientos...
         return this.dispMvtos.movimientosPermitidos().pipe(map(disp => {
             if (disp) {
                 this.rqManager.setPath('ARKA_SERVICE');

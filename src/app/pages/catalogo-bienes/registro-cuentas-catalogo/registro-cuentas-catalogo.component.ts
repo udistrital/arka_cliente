@@ -146,7 +146,7 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
     this.estadoAsignacionContable = p;
     this.modificando_cuentas = p.Valor === 'true';
     this.texto_sesion_contable = this.translate.instant('GLOBAL.cuentas.' + (this.modificando_cuentas ? 'terminar' : 'iniciar') + '_edicion_boton');
-    this.texto_estado = this.translate.instant('GLOBAL.cuentas.estado_'+ (this.modificando_cuentas ? 'modificando' : 'lectura') );
+    this.texto_estado = this.translate.instant('GLOBAL.cuentas.estado_' + (this.modificando_cuentas ? 'modificando' : 'lectura') );
     this.estado_cargado = true;
   }
 
