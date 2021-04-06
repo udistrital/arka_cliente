@@ -726,15 +726,31 @@
       "tab_consumo_controlado": "Elementos Devolutivos y de Consumo Controlado",
       "asignar": "REGISTRAR SALIDA",
       "asignar_funcionario": "ASIGNAR A FUNCIONARIO",
+      "error_entrada_no_registrada": "No se pudo registrar la entrada solicitada",
+      "error_salida_no_registrada": "No se pudo registrar la salida solicitada",
       "alerta_descargue": "Elementos sin descargar",
       "alerta_consumo": "Elementos de consumo sin asignar",
       "alerta_controlado": "Elementos de consumo controlado sin asignar",
       "alerta_ambos": "Elementos de consumo y consumo controlado sin asignar"
     },
 
+    "cuentas": {
+      "alerta_modificacion": "Cuentas en Modificación. Intente más tarde",
+      "estado_modificando": "En Modificación (Transacciones Bloqueadas)",
+      "estado_lectura": "Solo Lectura (Transacciones Habilitadas)",
+      "iniciar_edicion_boton": "Iniciar Edición de Cuentas",
+      "iniciar_edicion_titulo": "¿Iniciar Edición de Cuentas?",
+      "iniciar_edicion_texto": "Se bloqueará cualquier tipo de movimiento. ¿Desea continuar?",
+      "terminar_edicion_boton": "Terminar Edición de Cuentas",
+      "terminar_edicion_titulo": "¿Finalizar Edicion de Cuentas?",
+      "terminar_edicion_texto": "Se permitirá realizar movimientos. ¿Desea continuar?"
+    },
+
     "salidas": {
       "titulo_registrar": "Registrar Salida",
       "elementos": "Elementos",
+      "exito_registro_titulo": "Salida Registrada",
+      "exito_registro_texto": "La Salida ha sido Registrada exitosamente",
       "salida_instruccion": "En la siguiente tabla seleccione la entrada para poder generar la salida correspondiente",
       "consulta_salida_info": "En la siguiente tabla se muestran de forma general las salidas, seleccione una para ver la informacion asociada",
       "detalle_salida": "Detalle Salida"

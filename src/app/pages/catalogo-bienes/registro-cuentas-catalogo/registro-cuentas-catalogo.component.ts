@@ -145,24 +145,16 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
     // console.log({p});
     this.estadoAsignacionContable = p;
     this.modificando_cuentas = p.Valor === 'true';
-    this.texto_sesion_contable = this.modificando_cuentas ? 'Terminar Edición de Cuentas' : 'Iniciar Edición de Cuentas';
-    this.texto_estado = this.modificando_cuentas ? 'En Modificación (Transacciones Bloqueadas)' : 'Solo Lectura (Transacciones Habilitadas)';
+    this.texto_sesion_contable = this.translate.instant('GLOBAL.cuentas.' + (this.modificando_cuentas ? 'terminar' : 'iniciar') + '_edicion_boton');
+    this.texto_estado = this.translate.instant('GLOBAL.cuentas.estado_'+ (this.modificando_cuentas ? 'modificando' : 'lectura') );
     this.estado_cargado = true;
   }
 
   preguntaSesionAsignacionContable() {
-    let title: string;
-    let text: string;
-    let type: string;
-    if (this.modificando_cuentas) {
-      title = '¿Finalizar Edicion de Cuentas?';
-      text = 'Se permitirá realizar movimientos. ¿Desea continuar?';
-      type = 'info';
-    } else {
-      title = '¿Iniciar Edición de Cuentas?';
-      text = 'Se bloqueará cualquier tipo de movimiento. ¿Desea continuar?';
-      type = 'warning';
-    }
+    const cambioModo = this.modificando_cuentas ? 'terminar' : 'iniciar';
+    const title = this.translate.instant('GLOBAL.cuentas.' + cambioModo + '_edicion_titulo');
+    const text = this.translate.instant('GLOBAL.cuentas.' + cambioModo + '_edicion_texto');
+    const type = 'warning';
     (Swal as any).fire({title, text, type, showCancelButton: true}).then(res => {
       // console.log({modif: this.modificando_cuentas, res});
       if (res.value) {

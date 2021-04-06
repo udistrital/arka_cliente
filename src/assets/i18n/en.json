@@ -726,10 +726,24 @@
       "tab_consumo_controlado": "Elementos Devolutivos y de Consumo Controlado",
       "asignar": "ASIGN",
       "asignar_funcionario": "ASIGN TO CIVIL SERVANT",
+      "error_entrada_no_registrada": "The requested Input could not be registered",
+      "error_salida_no_registrada": "The requested Output could not be registered",
       "alerta_descargue": "Unassgined elements",
       "alerta_consumo": "Unassgined elements",
       "alerta_controlado": "Unassgined elements",
       "alerta_ambos": "Unassgined elements"
+    },
+
+    "cuentas": {
+      "alerta_modificacion": "Accounts in Modification. Please Try Later",
+      "estado_modificando": "In Modification (Transactions Locked)",
+      "estado_lectura": "Read Only (Transactions Enabled)",
+      "iniciar_edicion_boton": "Begin Account Edition",
+      "iniciar_edicion_titulo": "Begin Account Edition?",
+      "iniciar_edicion_texto": "Any kind of transaction will be Disabled. Continue?",
+      "terminar_edicion_boton": "Finish Account Edition",
+      "terminar_edicion_titulo": "Finish Account Edition?",
+      "terminar_edicion_texto": "Any kind of transaction will be Enabled. Continue?"
     },
 
     "salidas": {

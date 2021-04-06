@@ -1035,8 +1035,8 @@ export class TablaElementosAsignadosComponent implements OnInit {
           if (res) {
             (Swal as any).fire({
               type: 'success',
-              title: 'Salida Registrada',
-              text: 'La Salida ha sido Registrada exitosamente',
+              title: this.translate.instant('GLOBAL.salidas.exito_registro_titulo'),
+              text: this.translate.instant('GLOBAL.salidas.exito_registro_texto'),
             });
             this.router.navigate(['/pages/salidas/consulta_salidas']);
           }

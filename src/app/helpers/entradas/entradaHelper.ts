@@ -2,6 +2,7 @@ import { RequestManager } from '../../managers/requestManager';
 import { Injectable } from '@angular/core';
 import { map } from 'rxjs/operators';
 import { PopUpManager } from '../../managers/popUpManager';
+import { TranslateService } from '@ngx-translate/core';
 import { DisponibilidadMovimientosService } from '../../@core/data/disponibilidad-movimientos.service';
 
 @Injectable({
@@ -13,6 +14,7 @@ export class EntradaHelper {
         private rqManager: RequestManager,
         private pUpManager: PopUpManager,
         private dispMvtos: DisponibilidadMovimientosService,
+        private translate: TranslateService,
     ) {
     }
 
@@ -94,7 +96,7 @@ export class EntradaHelper {
                     map(
                         (res) => {
                             if (res['Type'] === 'error') {
-                                this.pUpManager.showErrorAlert('No se pudo registrar la entrada solicitada.');
+                                this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.error_entrada_no_registrada'));
                                 return undefined;
                             }
                             return res;
