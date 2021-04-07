@@ -167,7 +167,7 @@ export class ListaMovimientosComponent implements OnInit {
       columns: {
         Consecutivo: {
           title: this.translate.instant('GLOBAL.consecutivo'),
-          width: '120px',
+          width: '140px',
         },
         ActaRecibidoId: {
           title: this.translate.instant('GLOBAL.Acta_Recibido.una'),
@@ -353,6 +353,7 @@ export class ListaMovimientosComponent implements OnInit {
       mode: 'external',
       columns: {
         Id: {
+          width: '70px',
           title: 'Consecutivo',
           valuePrepareFunction: (value: any) => {
             return value;
