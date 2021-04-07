@@ -7,7 +7,7 @@ import { webSocket } from 'rxjs/webSocket';
 import { map } from 'rxjs-compat/operators/map';
 import { ImplicitAutenticationService } from './implicit_autentication.service';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
-import { NotificacionEstadoUsuario } from '../data/models/notificacion_estado_usuario';
+import { NotificacionEstadoUsuario } from '../data/models/configuracion_crud';
 
 const { NOTIFICACION_SERVICE, production } = environment;
 

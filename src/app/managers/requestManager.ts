@@ -38,6 +38,7 @@ export class RequestManager {
    */
   setPath(service: string) {
     this.path = environment[service];
+    // console.log({resPath: this.path});
   }
 
   /**
