@@ -80,7 +80,7 @@
         "name": "Consumer Warehouse",
         "children": {
           "solicitar": {
-            "name": "Request Elements"
+            "name": "Request Items"
           },
           "sol_consulta": {
             "name": "Browse Requests"
@@ -440,6 +440,7 @@
     "colapsar": "Collapse",
     "expandir": "Expand",
     "cerrar": "Close",
+    "enviarSolicitud": "Send Request",
 
     "nivel_jerarquico": "Hierarchical Level",
 
@@ -528,6 +529,13 @@
       "editar_nombre": "Edit Catalogue \"{{NOMBRE}}\"",
       "desactivar": "Disable Catalogue",
       "lista": "Catalogue List"
+    },
+
+    "BodegaConsumo": {
+      "Solicitud": {
+        "Titulo": "Consumer Warehouse Items Request",
+        "Ayuda": "To begin with the Items Request, please choose any item. The selected elements will be listed as they are selected"
+      }
     },
 
     "Advertencia": "Warning",
@@ -646,6 +654,7 @@
     "tipo_movimiento": "Tipo de Movimiento",
     "elementos_asociados": "Elementos Asociados",
     "cantidad": "Quantity",
+    "cantidadMax": "Maximum Quantity",
     "marca": "Brand Name",
     "serie": "Serie",
     "unidad_medida": "Measured Unit",

@@ -25,7 +25,6 @@ export class AgregarElementosComponent implements OnInit {
   source: LocalDataSource;
   source2: LocalDataSource;
   entradas: Array<Entrada>;
-  detalle: boolean;
   actaRecibidoId: number;
   consecutivoEntrada: string;
   entradaEspecifica: Entrada;
@@ -47,7 +46,6 @@ export class AgregarElementosComponent implements OnInit {
   ) {
     this.source = new LocalDataSource();
     this.entradas = new Array<Entrada>();
-    this.detalle = false;
     this.loadTablaSettings();
     this.loadEntradas();
   }
@@ -110,33 +108,13 @@ export class AgregarElementosComponent implements OnInit {
         this.mostrar = true;
         // console.log(res);
         this.source.load(res);
-        // res.forEach(element => {
-        //   this.actaRecibidoHelper.getElemento(element.ElementoActaId).subscribe((res2: any) => {
-        //     // console.log(res2);
-        //     const descripcion = res2.Nombre + ' ' + res2.Marca + ' ' + res2.Serie;
-        //     element.Descripcion = descripcion;
-        //     this.source.append(element);
-        //   });
-        // });
       }
     });
   }
 
   onCustom(event) {
-
     this.DatosEnviados = event.data;
-    this.detalle = true;
   }
-
-  onVolver() {
-    this.detalle = !this.detalle;
-    this.iniciarParametros();
-  }
-
-  iniciarParametros() {
-
-  }
-
 
   onRegister() {
     this.router.navigate(['/pages/entradas/registro']);

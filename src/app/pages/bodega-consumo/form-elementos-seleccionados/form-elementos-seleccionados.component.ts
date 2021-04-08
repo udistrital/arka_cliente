@@ -335,7 +335,7 @@ export class FormElementosSeleccionadosComponent implements OnInit {
   onCustom(event) {
     // console.log(event);
     this.source2.remove(event.data).then((res) => {
-      if (res.data === []) {
+      if (this.source2.count() === 0) {
         this.detalle2 = false;
       }
     });

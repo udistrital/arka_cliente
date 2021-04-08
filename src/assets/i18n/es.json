@@ -440,6 +440,7 @@
     "colapsar": "Colapsar",
     "expandir": "Expandir",
     "cerrar": "Cerrar",
+    "enviarSolicitud": "Enviar Solicitud",
 
     "nivel_jerarquico": "Nivel Jerárquico",
 
@@ -528,6 +529,13 @@
       "editar_nombre": "Editar Catálogo \"{{NOMBRE}}\"",
       "desactivar": "Desactivar Catálogo",
       "lista": "Lista de Catálogos"
+    },
+
+    "BodegaConsumo": {
+      "Solicitud": {
+        "Titulo": "Solicitud de Elementos de Bodega de Consumo",
+        "Ayuda": "Para iniciar la solicitud de elementos, por favor seleccione cualquier elemento. Los elementos solicitados seran listados conforme se van seleccionando."
+      }
     },
 
     "Advertencia": "Advertencia",
@@ -646,6 +654,7 @@
     "tipo_movimiento": "Tipo de Movimiento",
     "elementos_asociados": "Elementos Asociados",
     "cantidad": "Cantidad",
+    "cantidadMax": "Cantidad Máxima",
     "marca": "Marca",
     "serie": "Serie",
     "unidad_medida": "Unidad de Medida",
