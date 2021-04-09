@@ -20,6 +20,8 @@ export class ConsultaSolicitudComponent implements OnInit {
   mostrar: boolean;
   Editar: boolean = false;
 
+  private numSalidas: number;
+
   constructor(
     private translate: TranslateService,
     private bodegaHelper: BodegaConsumoHelper,
@@ -27,6 +29,7 @@ export class ConsultaSolicitudComponent implements OnInit {
     private route: ActivatedRoute,
   ) {
     this.source = new LocalDataSource();
+    this.numSalidas = Infinity;
   }
 
   ngOnInit() {
@@ -101,8 +104,8 @@ export class ConsultaSolicitudComponent implements OnInit {
   }
 
   private completarInfoTercero(res) {
-          this.mostrar = true;
           let detalle: any;
+          this.numSalidas = res.length;
           res.forEach((elemento, k) => {
             detalle = JSON.parse(elemento.Detalle);
             if (detalle.hasOwnProperty('Funcionario') && detalle.Funcionario) {
@@ -119,9 +122,19 @@ export class ConsultaSolicitudComponent implements OnInit {
                     // Cantidad: '50'
                   });
                 }
+                this.decSalidas();
               });
+            } else {
+              this.decSalidas();
             }
           });
+  }
+
+  private decSalidas() {
+    this.numSalidas--;
+    if (this.numSalidas === 0) {
+      this.mostrar = true;
+    }
   }
 
   onCustom(event) {
