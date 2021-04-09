@@ -1,4 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { LocalDataSource } from 'ngx-smart-table';
 import { TranslateService } from '@ngx-translate/core';
 import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
@@ -14,27 +15,29 @@ export class ConsultaSolicitudComponent implements OnInit {
   settings: any;
   source: LocalDataSource;
   kardex: any[];
-  detalle: boolean;
   listColumns: object;
   salidaId: any;
   mostrar: boolean;
   Editar: boolean = false;
-  @Input('Editar')
-  set name(edit: boolean){
-    this.Editar = edit;
-  }
 
   constructor(
     private translate: TranslateService,
     private bodegaHelper: BodegaConsumoHelper,
     private tercerosHelper: TercerosHelper,
+    private route: ActivatedRoute,
   ) {
     this.source = new LocalDataSource();
   }
 
   ngOnInit() {
-    this.loadTablaSettings();
-    this.loadSalidas();
+    this.route.data.subscribe(data => {
+      // console.log({data});
+      if (data && data.Editar !== null && data.Editar !== undefined) {
+        this.Editar = data.Editar;
+      }
+      this.loadTablaSettings();
+      this.loadSalidas();
+    });
   }
 
   loadTablaSettings() {
@@ -49,21 +52,10 @@ export class ConsultaSolicitudComponent implements OnInit {
           const date = value.split('T');
           return date[0];
         },
-
       },
       Solicitante: {
         title: 'solicitante',
       },
-
-      /* Elemento: {
-         title: 'Elemento',
-       },
-       Detalle: {
-         title: 'Detalle',
-       },
-       Cantidad: {
-         title: 'Cantidad',
-       },*/
 
     };
     this.settings = {
@@ -93,28 +85,7 @@ export class ConsultaSolicitudComponent implements OnInit {
       this.bodegaHelper.getSolicitudesBodegaPendiente().subscribe(res => {
         // console.log({resEditar: res});
         if (res !== null) {
-          this.mostrar = true;
-          // console.log(res)
-          let detalle: any;
-          res.forEach((elemento, k) => {
-            detalle = JSON.parse(elemento.Detalle);
-            if (detalle.hasOwnProperty('Funcionario') && detalle.Funcionario) {
-              this.tercerosHelper.getTerceroById(detalle.Funcionario).subscribe(res1 => {
-                // console.log({k, detalle, res1});
-                if (res1 !== null) {
-                  // console.log('funcionario', res1.NombreCompleto);
-                  this.source.append({
-                    Id: elemento.Id,
-                    FechaRegistro: elemento.FechaCreacion,
-                    Solicitante: res1.Numero + ' - ' + res1.NombreCompleto,
-                    // Elemento: '$20.000',
-                    // Detalle: elemento.Observacion,
-                    // Cantidad: '50'
-                  });
-                }
-              });
-            }
-          });
+          this.completarInfoTercero(res);
         }
       });
     } else {
@@ -123,6 +94,13 @@ export class ConsultaSolicitudComponent implements OnInit {
         // console.log({resConsulta: res});
         if (Object.keys(res[0]).length !== 0) {
           // console.log(res)
+          this.completarInfoTercero(res);
+        }
+      });
+    }
+  }
+
+  private completarInfoTercero(res) {
           this.mostrar = true;
           let detalle: any;
           res.forEach((elemento, k) => {
@@ -144,9 +122,6 @@ export class ConsultaSolicitudComponent implements OnInit {
               });
             }
           });
-        }
-      });
-    }
   }
 
   onCustom(event) {
@@ -156,11 +131,11 @@ export class ConsultaSolicitudComponent implements OnInit {
       Cedula: date[0],
       Funcionario: date[1],
     };
-    this.detalle = true;
+    // console.log({event, salidaId: this.salidaId});
   }
 
   onVolver() {
-    this.detalle = false;
+    this.salidaId = undefined;
   }
 
 }

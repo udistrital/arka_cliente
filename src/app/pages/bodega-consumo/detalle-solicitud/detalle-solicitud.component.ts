@@ -99,18 +99,10 @@ export class DetalleSolicitudComponent implements OnInit {
         delete: false,
         edit: this.Editar,
       },
-      add: {
-        addButtonContent: '<i class="nb-plus"></i>',
-        createButtonContent: '<i class="nb-checkmark"></i>',
-        cancelButtonContent: '<i class="nb-close"></i>',
-      },
       edit: {
         editButtonContent: '<i class="fas fa-pencil-alt"></i>',
         saveButtonContent: '<i class="nb-checkmark"></i>',
         cancelButtonContent: '<i class="nb-close"></i>',
-      },
-      delete: {
-        deleteButtonContent: '<i class="fas fa-eye"></i>',
       },
       mode: 'external',
       columns: {
@@ -222,9 +214,11 @@ export class DetalleSolicitudComponent implements OnInit {
 
   loadSolicitud(): void {
     this.bodegaHelper.getSolicitudBodega(this.salida_id.Id).subscribe(res => {
-      // console.log(res)
+      // console.log({res});
       if (Object.keys(res).length !== 0) {
-        this.source.load(res.Elementos);
+        if (Array.isArray(res.Elementos)) {
+          this.source.load(res.Elementos);
+        }
         this.Solicitud = res.Solicitud[0];
         this.Detalle_Solicitud = JSON.parse(this.Solicitud.Detalle);
       }
