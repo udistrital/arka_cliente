@@ -23,9 +23,6 @@ export class AjustarCantidadComponent implements OnInit {
     this.ref.close();
   }
 
-  prueba() {
-    // console.log(this.form_cantidad.get('Cantidad').validator);
-  }
   submit() {
 
     this.row.CantidadAprobada = this.form_cantidad.get('Cantidad').value;

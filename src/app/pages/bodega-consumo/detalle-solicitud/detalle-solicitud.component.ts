@@ -227,14 +227,16 @@ export class DetalleSolicitudComponent implements OnInit {
 
   onEdit(event) {
 
-    // console.log(event.data);
+    // console.log({event});
     this.dialogService.open(AjustarCantidadComponent, {
       context: {
         row: event.data,
       },
     }).onClose.subscribe(data => {
+      if (data) {
       this.AgregarElementos(data);
       this.RevisarCantidadesAprobadas();
+      }
     });
 
   }
