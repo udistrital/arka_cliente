@@ -17,7 +17,7 @@ export class AsignacionKardexComponent implements OnInit {
   entrada: any;
   apertura: any;
   ElementosKardex: any;
-
+  paso: number;
 
   constructor(
     private translate: TranslateService,
@@ -25,19 +25,25 @@ export class AsignacionKardexComponent implements OnInit {
     private fb: FormBuilder,
     private BodegaConsumo: BodegaConsumoHelper,
   ) {
+    this.paso = 0;
+  }
+
+  ngOnInit() {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
     });
-
   }
 
   Asignar_Elemento_Bodega(event) {
     this.ElementoSinAsignar = event;
+    this.paso = 1;
     // console.log(event);
   }
+
   Asignar_Elemento_Movimiento(event) {
     this.ElementoPorAsignar = event;
     // console.log(event);
   }
+
   Asignar_Elemento_Catalogo(event) {
     this.ElementoCatalogo = event;
 
@@ -50,23 +56,14 @@ export class AsignacionKardexComponent implements OnInit {
         this.apertura = true;
       }
     });
-
     // console.log(event);
-
+    this.paso = 2;
   }
+
   onVolver() {
-    if (this.ElementoPorAsignar !== undefined) {
-      this.ElementoPorAsignar = undefined;
-    } else {
-      this.ElementoCatalogo = undefined;
-      this.ElementoSinAsignar = undefined;
-      this.entrada = undefined;
-      this.apertura = undefined;
+    if (this.paso > 0) {
+      this.paso--;
     }
-
-  }
-  ngOnInit() {
-
   }
 
 }

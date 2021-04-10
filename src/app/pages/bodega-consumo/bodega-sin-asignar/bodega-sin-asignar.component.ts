@@ -14,7 +14,6 @@ import { SalidaHelper } from '../../../helpers/salidas/salidasHelper';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
 import { UserService } from '../../../@core/data/users.service';
 
-
 @Component({
   selector: 'ngx-bodega-sin-asignar',
   templateUrl: './bodega-sin-asignar.component.html',
@@ -50,8 +49,14 @@ export class BodegaSinAsignarComponent implements OnInit {
     this.source = new LocalDataSource();
     this.entradas = new Array<Entrada>();
     this.detalle = false;
+  }
+
+  ngOnInit() {
     this.loadTablaSettings();
     this.ElementosSinAsignar();
+    this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
+      this.loadTablaSettings();
+    });
   }
 
   loadTablaSettings() {
@@ -91,9 +96,9 @@ export class BodegaSinAsignarComponent implements OnInit {
           },
         },
         SubgrupoCatalogoId: {
-          title: 'Subgrupo',
+          title: 'Clase',
           valuePrepareFunction: (value: any) => {
-            return value.Nombre;
+            return value.Codigo + ' - ' + value.Nombre;
           },
           filterFunction: (cell?: any, search?: string): boolean => {
             // console.log(cell);
@@ -119,7 +124,6 @@ export class BodegaSinAsignarComponent implements OnInit {
     };
   }
 
-
   ElementosSinAsignar(): void {
     this.salidasHelper.getElementos2().subscribe((res: any) => {
       this.mostrar = true;
@@ -129,7 +133,6 @@ export class BodegaSinAsignarComponent implements OnInit {
   }
 
   onCustom(event) {
-
     this.DatosEnviados.emit(event.data);
     this.detalle = true;
   }
@@ -140,17 +143,10 @@ export class BodegaSinAsignarComponent implements OnInit {
   }
 
   iniciarParametros() {
-
   }
 
   onRegister() {
     this.router.navigate(['/pages/entradas/registro']);
-  }
-
-  ngOnInit() {
-    this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
-      this.loadTablaSettings();
-    });
   }
 
 }

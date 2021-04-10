@@ -1,19 +1,14 @@
-<div class="col-lg-12">
   <nb-card>
-    <nb-card-header>
-      <h1>Asignacion de elementos a Kardex</h1>
-    </nb-card-header>
     <nb-card-body>
 
       <!-- CARD PARA MOSTRAR LAS SOLICITUDES *ngIf="!detalle" -->
-      <p class="h4 pb-4">Selecciona el elemento de catalogo relacionado con el item anterior</p>
+      <p>
+        <span class="fas fa-info-circle"></span>&nbsp;
+        <em>Selecciona el elemento de catalogo relacionado con el item anterior</em>
+      </p>
 
       <ng2-smart-table [settings]="settings" [source]="source" (custom)="onCustom($event)">
       </ng2-smart-table>
-      <p></p>
 
     </nb-card-body>
-    <nb-card-footer>
-    </nb-card-footer>
   </nb-card>
-</div>

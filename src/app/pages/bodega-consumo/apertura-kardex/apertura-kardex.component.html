@@ -1,15 +1,10 @@
-<div class="col-lg-12" *ngIf="form_apertura">
-  <!-- <code>
-    <pre>
-      {{form_apertura.value | json}}
-    </pre>
-  </code> -->
-  <form [formGroup]="form_apertura" #fform="ngForm">
-    <div class="col-lg-12">
+<nb-card>
+  <form [formGroup]="form_apertura" #fform="ngForm" *ngIf="form_apertura">
+    <nb-card-header>
+      Apertura de Kardex
+    </nb-card-header>
+    <nb-card-body>
       <nb-card>
-        <nb-card-header>
-          <h1>Asignacion de elementos a Kardex</h1>
-        </nb-card-header>
         <nb-card-body>
 
           <!-- CARD PARA MOSTRAR LAS SOLICITUDES *ngIf="!detalle" -->
@@ -67,7 +62,6 @@
           <button nbButton (click)="onSubmit2()" *ngIf="ElementoMovimiento" class="float-right">Confirmar Apertura de Kardex</button>
         </nb-card-footer>
       </nb-card>
-    </div>
+    </nb-card-body>
   </form>
-
-</div>
+</nb-card>

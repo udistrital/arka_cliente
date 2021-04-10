@@ -1,22 +1,23 @@
 <nb-card>
+    <nb-card-header><h2>Asignacion de elementos a Kardex</h2></nb-card-header>
     <nb-card-body>
-        <ngx-bodega-sin-asignar *ngIf="!ElementoSinAsignar" (DatosEnviados)="Asignar_Elemento_Bodega($event)">
+        <ngx-bodega-sin-asignar *ngIf="paso === 0" (DatosEnviados)="Asignar_Elemento_Bodega($event)">
         </ngx-bodega-sin-asignar>
-        <ngx-relacion-catalogo *ngIf="ElementoSinAsignar && !ElementoCatalogo"
+        <ngx-relacion-catalogo *ngIf="paso === 1"
             [Subgrupo_Id]="ElementoSinAsignar.SubgrupoCatalogoId.Id"
             (DatosEnviados)="Asignar_Elemento_Catalogo($event)">
         </ngx-relacion-catalogo>
 
         <ngx-entrada-kardex [Elementos_K]="ElementosKardex" [Elemento_C]="ElementoCatalogo" [Elemento_B]="ElementoSinAsignar"
-            *ngIf="ElementoCatalogo && ElementoSinAsignar && entrada"
+            *ngIf="paso === 2 && entrada"
             (DatosEnviados)="Asignar_Elemento_Movimiento($event)"></ngx-entrada-kardex>
 
         <ngx-apertura-kardex [Elemento_C]="ElementoCatalogo" [Elemento_B]="ElementoSinAsignar"
             (DatosEnviados)="Asignar_Elemento_Movimiento($event)"
-            *ngIf="ElementoCatalogo && ElementoSinAsignar && apertura">
+            *ngIf="paso === 2 && apertura">
         </ngx-apertura-kardex>
     </nb-card-body>
-    <nb-card-footer>
+    <nb-card-footer *ngIf="paso > 0">
         <div class="pt-4">
             <button type="button" class="btn btn-secondary" data-dismiss="modal"
                 (click)="onVolver()">{{'GLOBAL.volver' | translate}}
