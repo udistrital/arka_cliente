@@ -266,8 +266,6 @@ export class ListaMovimientosComponent implements OnInit {
             }
           },
           filterFunction: (cell?: any, search?: string): boolean => {
-            // console.log(cell);
-            // console.log(search);
             if (Object.keys(cell).length !== 0) {
               if (cell.NombreCompleto.indexOf(search) > -1) {
                 return true;
@@ -310,8 +308,6 @@ export class ListaMovimientosComponent implements OnInit {
             }
           },
           filterFunction: (cell?: any, search?: string): boolean => {
-            // console.log(cell);
-            // console.log(search);
             if (Object.keys(cell).length !== 0) {
               if (cell.Nombre.indexOf(search) > -1) {
                 return true;
