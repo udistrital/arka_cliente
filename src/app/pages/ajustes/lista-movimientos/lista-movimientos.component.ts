@@ -39,7 +39,8 @@ export class ListaMovimientosComponent implements OnInit {
   settingsEntrada: any;
   settingsSalidas: any;
   settingsBajas: any;
-
+  formatosTipo: any;
+  estadosMovimiento: any;
 
   private terceros: Partial<Tercero>[];
   private actas: any[];
@@ -460,17 +461,20 @@ export class ListaMovimientosComponent implements OnInit {
   loadEntradaEspecifica(): void {
     this.entradasHelper.getEntradaByActa(this.actaSeleccionada).subscribe(res => {
       if (res !== null) {
-        const entradas = new Array<Entrada>();
-        const entrada = new Entrada;
-        const detalle = JSON.parse((res[0].Detalle));
-        entrada.Id = res[0].Id;
-        entrada.FechaCreacion = res[0].FechaCreacion;
-        entrada.TipoEntradaId = res[0].FormatoTipoMovimientoId.Nombre;
-        entrada.Observacion = res[0].Observacion;
-        entrada.ActaRecibidoId = detalle.acta_recibido_id;
-        entrada.Consecutivo = detalle.consecutivo;
-        entradas.push(entrada);
-        this.Entrada.load(entradas);
+        const data = <Array<any>>res;
+        for (const datos in Object.keys(data)) {
+            const entrada = new Entrada;
+            const detalle = JSON.parse((data[datos].Detalle));
+            entrada.Id = data[datos].Id;
+            entrada.Consecutivo = detalle.consecutivo;
+            entrada.ActaRecibidoId = detalle.acta_recibido_id;
+            entrada.FechaCreacion = data[datos].FechaCreacion;
+            entrada.TipoEntradaId = this.formatosTipo.find((x) => x.Id === data[datos].FormatoTipoMovimientoId.Id).Nombre;
+            entrada.EstadoMovimientoId = this.estadosMovimiento.find((x) => x.Id === data[datos].EstadoMovimientoId.Id).Nombre
+            entrada.Observacion = data[datos].Observacion;
+            this.entradas.push(entrada);
+        }
+        this.Entrada.load(this.entradas);
         this.mostrarEntrada = true;
       }
     });
