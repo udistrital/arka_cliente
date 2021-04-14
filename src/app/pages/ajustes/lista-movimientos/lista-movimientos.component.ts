@@ -499,6 +499,12 @@ export class ListaMovimientosComponent implements OnInit {
   private loadTerceros(): void {
     this.tercerosHelper.getTerceros().subscribe(terceros => {
       this.terceros = terceros;
+      this.entradasHelper.getFormatosTipoMovimiento().subscribe(res => {
+        this.formatosTipo = res
+        this.entradasHelper.getEstadosMovimiento().subscribe(res => {
+          this.estadosMovimiento = res
+        });
+      });
       this.mostrarData();
     });
   }
