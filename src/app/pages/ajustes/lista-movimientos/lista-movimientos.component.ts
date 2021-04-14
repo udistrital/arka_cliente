@@ -168,14 +168,17 @@ export class ListaMovimientosComponent implements OnInit {
         Consecutivo: {
           title: this.translate.instant('GLOBAL.consecutivo'),
           width: '140px',
+          filter: false,
         },
         ActaRecibidoId: {
           title: this.translate.instant('GLOBAL.Acta_Recibido.una'),
           width: '130px',
+          filter: false,
         },
         FechaCreacion: {
           title: this.translate.instant('GLOBAL.fecha_entrada'),
-          width: '150px',
+          width: '110px',
+          filter: false,
           valuePrepareFunction: (value: any) => {
             const date = value.split('T');
             return date[0];
@@ -183,13 +186,23 @@ export class ListaMovimientosComponent implements OnInit {
         },
         TipoEntradaId: {
           title: this.translate.instant('GLOBAL.tipo_entrada'),
+          width: '200px',
+          filter: false,
+          valuePrepareFunction: (value: any) => {
+            return value;
+          },
+        },
         EstadoMovimientoId: {
+          title: this.translate.instant('GLOBAL.estado_entrada'),
+          width: '160px',
+          filter: false,
           valuePrepareFunction: (value: any) => {
             return value;
           },
         },
         Observacion: {
           title: this.translate.instant('GLOBAL.observaciones'),
+          filter: false,
         },
       },
     };
