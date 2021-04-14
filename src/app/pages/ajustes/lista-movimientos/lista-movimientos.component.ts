@@ -183,7 +183,7 @@ export class ListaMovimientosComponent implements OnInit {
         },
         TipoEntradaId: {
           title: this.translate.instant('GLOBAL.tipo_entrada'),
-          width: '230px',
+        EstadoMovimientoId: {
           valuePrepareFunction: (value: any) => {
             return value;
           },
