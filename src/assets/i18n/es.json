@@ -512,6 +512,7 @@
     "consecutivo": "Consecutivo",
     "fecha_entrada": "Fecha de Entrada",
     "tipo_entrada": "Tipo Entrada",
+    "estado_entrada": "Estado Entrada",
     "detalle": "Detalle",
     "seleccionar": "Seleccionar",
     "no_data_entradas": "No se encontraron entradas asociadas.",

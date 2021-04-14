@@ -512,6 +512,7 @@
     "consecutivo": "Consecutive",
     "fecha_entrada": "Entry Date",
     "tipo_entrada": "Entry Type",
+    "estado_entrada": "Entry Status",
     "detalle": "Detail",
     "seleccionar": "Select",
     "no_data_entradas": "No associated entries found.",
