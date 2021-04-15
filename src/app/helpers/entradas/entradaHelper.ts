@@ -275,12 +275,12 @@ export class EntradaHelper {
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
      */
     public getEntradaByActa(acta_recibido_id) {
-        this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
-        return this.rqManager.get('movimiento/entrada/' + acta_recibido_id).pipe(
+        this.rqManager.setPath('ARKA_SERVICE');
+        return this.rqManager.get('entrada/movimientos/' + acta_recibido_id).pipe(
             map(
                 (res) => {
                     if (res === 'error') {
-                        this.pUpManager.showErrorAlert('No se pudo consultar el contrato contratos');
+                        this.pUpManager.showErrorAlert('No se pudieron consultar los movimientos asociados');
                         return undefined;
                     }
                     return res;
