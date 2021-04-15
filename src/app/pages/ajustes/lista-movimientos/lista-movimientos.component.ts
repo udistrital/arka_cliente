@@ -457,34 +457,30 @@ export class ListaMovimientosComponent implements OnInit {
   loadEntradaEspecifica(): void {
     this.entradasHelper.getEntradaByActa(this.actaSeleccionada).subscribe(res => {
       if (res !== null) {
-        const data = <Array<any>>res;
-        for (const datos in Object.keys(data)) {
+        if (res.Entradas) {
+          const data = <Array<any>>res.Entradas;
+          for (const datos in Object.keys(data)) {
             const entrada = new Entrada;
             const detalle = JSON.parse((data[datos].Detalle));
             entrada.Id = data[datos].Id;
             entrada.Consecutivo = detalle.consecutivo;
             entrada.ActaRecibidoId = detalle.acta_recibido_id;
             entrada.FechaCreacion = data[datos].FechaCreacion;
-            entrada.TipoEntradaId = this.formatosTipo.find((x) => x.Id === data[datos].FormatoTipoMovimientoId.Id).Nombre;
-            entrada.EstadoMovimientoId = this.estadosMovimiento.find((x) => x.Id === data[datos].EstadoMovimientoId.Id).Nombre
+            entrada.TipoEntradaId = data[datos].FormatoTipoMovimientoId.Nombre;
+            entrada.EstadoMovimientoId = data[datos].EstadoMovimientoId.Nombre
             entrada.Observacion = data[datos].Observacion;
             this.entradas.push(entrada);
+          }
+          this.Entrada.load(this.entradas);
         }
-        this.Entrada.load(this.entradas);
-        this.mostrarEntrada = true;
-      }
-    });
-  }
 
-  private loadSalidas(id) {
+        if (res.Salidas) {
+          this.ListaSalidas.load(res.Salidas);
+        }
 
-    this.salidasHelper.getSalida(id).subscribe(res1 => {
-      if (Object.keys(res1).length !== 0) {
-        const salida = res1.Salida;
-        salida.Id = res1.Salida.Id;
-        this.salidas.push(salida);
+        // Falta la carga de la tabla de bajas una vez el flujo esté completo
+        this.mostrarMovimientos = true;
       }
-      this.ListaSalidas.load(this.salidas);
     });
   }
 

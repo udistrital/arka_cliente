@@ -8,15 +8,11 @@
 
       <ng2-smart-table [settings]="settingsListaActas" [source]="ActasAsociadas"
         (custom)="CargarMovimientosAsociados($event)" *ngIf="actaSeleccionada === ''"></ng2-smart-table>
-      <nb-card *ngIf="actaSeleccionada !== ''">
+      <nb-card *ngIf="actaSeleccionada !== ''" [nbSpinner]="!mostrarActa || !mostrarMovimientos || anulando">
         <nb-card-body>
 
-          <ngx-ver-detalle [Id_Acta]="actaSeleccionada"></ngx-ver-detalle>
-          <div>
-            <button mat-raised-button color="primary" class="float-right" style="text-transform: uppercase;">
-              {{'GLOBAL.Acta_Recibido.Anular' | translate}}
-            </button>
-          </div>
+          <ngx-ver-detalle (mostrarData)="mostrarDetalleActa($event)" [Id_Acta]="actaSeleccionada"></ngx-ver-detalle>
+
         </nb-card-body>
         <nb-card-body>
 
@@ -25,18 +21,18 @@
 
           <hr>
           <p class="h4 pb-4">{{'GLOBAL.Entradas' | translate}}</p>
-          <ng2-smart-table [settings]="settingsEntrada" [source]="Entrada" (custom)="AnularEntrada($event)"
-            *ngIf="actaSeleccionada !== ''"></ng2-smart-table>
+          <ng2-smart-table [settings]="settingsEntrada" [source]="Entrada" (custom)="AnularEntrada($event)">
+          </ng2-smart-table>
 
           <hr>
           <p class="h4 pb-4">{{'GLOBAL.Salidas' | translate}}</p>
-          <ng2-smart-table [settings]="settingsSalidas" [source]="ListaSalidas" (custom)="AnularSalidas($event)"
-            *ngIf="actaSeleccionada !== ''"></ng2-smart-table>
+          <ng2-smart-table [settings]="settingsSalidas" [source]="ListaSalidas" (custom)="AnularSalidas($event)">
+          </ng2-smart-table>
 
           <hr>
           <p class="h4 pb-4">{{'GLOBAL.movimientos.tipo.SOL_BAJA.nombre' | translate}}</p>
-          <ng2-smart-table [settings]="settingsBajas" [source]="ListaBajas" (custom)="AnularBajas($event)"
-            *ngIf="actaSeleccionada !== ''"></ng2-smart-table>
+          <ng2-smart-table [settings]="settingsBajas" [source]="ListaBajas" (custom)="AnularBajas($event)">
+          </ng2-smart-table>
 
         </nb-card-body>
       </nb-card>
