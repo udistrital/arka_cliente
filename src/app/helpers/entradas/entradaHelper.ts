@@ -1,6 +1,7 @@
 import { RequestManager } from '../../managers/requestManager';
 import { Injectable } from '@angular/core';
-import { map } from 'rxjs/operators';
+import { map, switchMap } from 'rxjs/operators';
+import { iif } from 'rxjs';
 import { PopUpManager } from '../../managers/popUpManager';
 import { TranslateService } from '@ngx-translate/core';
 import { DisponibilidadMovimientosService } from '../../@core/data/disponibilidad-movimientos.service';
@@ -89,23 +90,24 @@ export class EntradaHelper {
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
      */
     public postEntrada(entradaData) {
-        return this.dispMvtos.movimientosPermitidos().pipe(map(disp => {
-            if (disp) {
-                this.rqManager.setPath('ARKA_SERVICE');
-                return this.rqManager.post(`entrada/`, entradaData).pipe(
-                    map(
-                        (res) => {
-                            if (res['Type'] === 'error') {
-                                this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.error_entrada_no_registrada'));
-                                return undefined;
-                            }
-                            return res;
-                        },
-                    ),
-                );
-            }
-            return undefined;
-        }));
+        return this.dispMvtos.movimientosPermitidos().pipe(
+            switchMap(disp => iif( () => disp, this.postEntradaFinal(entradaData) )),
+        );
+    }
+
+    private postEntradaFinal (entradaData) {
+        this.rqManager.setPath('ARKA_SERVICE');
+        return this.rqManager.post(`entrada/`, entradaData).pipe(
+            map(
+                (res) => {
+                    if (res['Type'] === 'error') {
+                        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.error_entrada_no_registrada'));
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
     }
 
     /**
