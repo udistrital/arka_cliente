@@ -450,6 +450,10 @@ export class ListaMovimientosComponent implements OnInit {
     });
   }
 
+  mostrarDetalleActa(event) {
+    this.mostrarActa = event;
+  }
+
   loadEntradaEspecifica(): void {
     this.entradasHelper.getEntradaByActa(this.actaSeleccionada).subscribe(res => {
       if (res !== null) {
