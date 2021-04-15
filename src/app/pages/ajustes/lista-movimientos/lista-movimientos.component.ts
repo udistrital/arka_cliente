@@ -460,7 +460,7 @@ export class ListaMovimientosComponent implements OnInit {
       if (res !== null) {
         if (res.Entradas) {
           const data = <Array<any>>res.Entradas;
-          for (const datos in Object.keys(data)) {
+          for (const datos of Object.keys(data)) {
             const entrada = new Entrada;
             const detalle = JSON.parse((data[datos].Detalle));
             entrada.Id = data[datos].Id;
@@ -468,7 +468,7 @@ export class ListaMovimientosComponent implements OnInit {
             entrada.ActaRecibidoId = detalle.acta_recibido_id;
             entrada.FechaCreacion = data[datos].FechaCreacion;
             entrada.TipoEntradaId = data[datos].FormatoTipoMovimientoId.Nombre;
-            entrada.EstadoMovimientoId = data[datos].EstadoMovimientoId.Nombre
+            entrada.EstadoMovimientoId = data[datos].EstadoMovimientoId.Nombre;
             entrada.Observacion = data[datos].Observacion;
             this.entradas.push(entrada);
           }
@@ -541,12 +541,12 @@ export class ListaMovimientosComponent implements OnInit {
           // if (res !== null) {
             (Swal as any).fire({
               type: 'success',
-              title: this.translate.instant('GLOBAL.ajustes.success_anular_entrada_title',),
+              title: this.translate.instant('GLOBAL.ajustes.success_anular_entrada_title'),
               text: this.translate.instant('GLOBAL.ajustes.success_anular_entrada'),
             });
             // this.router.navigate(['/pages/acta_recibido/consulta_acta_recibido']);
           // }
-          //else {
+          // else {
           // this.anulando = false;
           //   (Swal as any).fire({
           //     type: 'error',
