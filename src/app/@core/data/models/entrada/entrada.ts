@@ -18,4 +18,5 @@ export class Entrada {
     OrdenadorId: number;
     RegistroImportacion: string;
     TasaRepresentativaMercado: number;
+    EstadoMovimientoId: number;
 }

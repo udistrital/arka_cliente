@@ -13,6 +13,126 @@
       "opciones": "Opciones",
       "configurar_rol": "Rol"
     },
+    "main": {
+      "catalogo": {
+        "name": "Elements Catalogue",
+        "children": {
+          "listar": {
+            "name": "List Catalogues"
+          },
+          "crear": {
+            "name": "Create Catalog"
+          },
+          "consultar": {
+            "name": "Browse Catalog"
+          },
+          "construir": {
+            "name": "Catalog Building"
+          },
+          "elementos": {
+            "name": "Register Elements"
+          },
+          "inactivar": {
+            "name": "Disable Levels"
+          },
+          "cuentas": {
+            "name": "Accounts Assignment"
+          }
+        }
+      },
+      "acta": {
+        "name": "Receipt Certificates",
+        "children": {
+          "consulta": {
+            "name": "Browse Certificates"
+          },
+          "registro": {
+            "name": "Register Certificate"
+          },
+          "reg_especial": {
+            "name": "Register Special Certificate"
+          }
+        }
+      },
+      "entradas": {
+        "name": "Inputs",
+        "children": {
+          "consulta": {
+            "name": "Browse Inputs"
+          },
+          "registro": {
+            "name": "Record New Input"
+          }
+        }
+      },
+      "salidas": {
+        "name": "Outputs",
+        "children": {
+          "lista": {
+            "name": "Browse Outputs"
+          },
+          "crear": {
+            "name": "Record New Output"
+          }
+        }
+      },
+      "bodega": {
+        "name": "Consumer Warehouse",
+        "children": {
+          "solicitar": {
+            "name": "Request Elements"
+          },
+          "sol_consulta": {
+            "name": "Browse Requests"
+          },
+          "sol_responder": {
+            "name": "Answer Requests"
+          },
+          "kardex_asignar": {
+            "name": "Kardex Assignment"
+          },
+          "kardex_consultar": {
+            "name": "Browse Kardex"
+          }
+        }
+      },
+      "bajas": {
+        "name": "Deregister",
+        "children": {
+          "consulta": {
+            "name": "Browse Request"
+          },
+          "registro": {
+            "name": "New Request"
+          }
+        }
+      },
+      "movimientos": {
+        "name": "Movimientos",
+        "children": {
+          "consulta": {
+            "name": "Consultar Baja de Bien"
+          },
+          "solicitud": {
+            "name": "Solicitud de Baja de Bien"
+          },
+          "aprobacion": {
+            "name": "Aprobacion de Baja de Bien"
+          }
+        }
+      },
+      "reportes": {
+        "name": "Reports",
+        "children": {
+          "entradas": {
+            "name": "Inputs"
+          },
+          "salidas": {
+            "name": "Outputs"
+          }
+        }
+      }
+    },
     "aplicaciones": "Aplicaciones",
     "roles": "Roles",
     "opciones": "Opciones",
@@ -43,6 +163,7 @@
       "varias": "Receipt Certificates",
       "id_forma1": "Receipt Certificate #{{ID}}",
       "id_forma2": "Certificate N° {{ID}}",
+      "ActaNo": "Receipt Certificate N°",
       "ContratistaAsignado": "Assigned Contractor",
       "Errores": {
         "Mensaje": "You must first fix the following issues:",
@@ -511,10 +632,12 @@
     "consecutivo": "Consecutive",
     "fecha_entrada": "Entry Date",
     "tipo_entrada": "Entry Type",
+    "estado_entrada": "Entry Status",
     "detalle": "Detail",
     "seleccionar": "Select",
     "no_data_entradas": "No associated entries found.",
     "no_data_actas_entrada": "No received documents were found approved for making an entry",
+    "no_data_salidas": "No outputs were found for this entry",
     "detalle_entrada": "Entry Detail",
     "registrar_nueva_entrada": "New Entry",
     "elementos_entrada": "Entry Elements",
@@ -537,7 +660,7 @@
     "fecha_visto_bueno": "Approval Date",
     "revisor": "Reviewer",
     "ubicacion": "Location",
-    "observaciones": "comments",
+    "observaciones": "Comments",
 
     "movimientos": {
       "tipo": {
@@ -606,10 +729,24 @@
       "tab_consumo_controlado": "Elementos Devolutivos y de Consumo Controlado",
       "asignar": "ASIGN",
       "asignar_funcionario": "ASIGN TO CIVIL SERVANT",
+      "error_entrada_no_registrada": "The requested Input could not be registered",
+      "error_salida_no_registrada": "The requested Output could not be registered",
       "alerta_descargue": "Unassgined elements",
       "alerta_consumo": "Unassgined elements",
       "alerta_controlado": "Unassgined elements",
       "alerta_ambos": "Unassgined elements"
+    },
+
+    "cuentas": {
+      "alerta_modificacion": "Accounts in Modification. Please Try Later",
+      "estado_modificando": "In Modification (Transactions Locked)",
+      "estado_lectura": "Read Only (Transactions Enabled)",
+      "iniciar_edicion_boton": "Begin Account Edition",
+      "iniciar_edicion_titulo": "Begin Account Edition?",
+      "iniciar_edicion_texto": "Any kind of transaction will be Disabled. Continue?",
+      "terminar_edicion_boton": "Finish Account Edition",
+      "terminar_edicion_titulo": "Finish Account Edition?",
+      "terminar_edicion_texto": "Any kind of transaction will be Enabled. Continue?"
     },
 
     "salidas": {
@@ -627,12 +764,15 @@
     "supervisor": "Supervisory",
     "supervisor_nombres": "Full Name",
     "nombres": "Full Name",
+    "Cargo":"Position",
     "sede": "Headquarters",
     "dependencia": "Dependency",
     "numero_factura": "Bill Number",
     "proveedor": "Supplier",
     "fecha_factura": "Bill Date",
     "importacion": "Import",
+    "registro_importacion": "Import registration",
+    "trm": "Representative market rate",
     "vigencia": "Vigency",
     "tipo_contrato": "Contract Type",
     "numero_contrato": "Contract Number",
@@ -646,10 +786,20 @@
     "contrato": "Contract",
     "solicitante": "Requesting",
     "soporte": "Support Document",
+    "Encargado":"In Charge",
+    "Placa": "Plate",
     "acta_produccion": "Production Document",
     "tercero_administracion": "Third in Administration",
     "error": "Error",
     "mensaje_seleccionar_entrada": "Select the type of entry you want to make",
     "documento": "Document"
+  },
+  "ajustes": {
+    "movimientos_relacionados": "Related transfers",
+    "confirmar_anular_entrada": "The related accounting and inventory entries will be reversed",
+    "success_anular_entrada_title": "Reversed Input",
+    "success_anular_entrada": "The related entries were successfully reversed",
+    "error_anular_entrada_title": "Input not reversed",
+    "error_anular_entrada": "The related entries could not be reversed"
   }
 }

@@ -126,7 +126,7 @@ export class TablaEntradaAprobadaComponent implements OnInit {
         TipoEntradaId: {
           title: this.translate.instant('GLOBAL.tipo_entrada'),
           valuePrepareFunction: (value: any) => {
-            return value.Nombre;
+            return value;
           },
           filter: {
             type: 'list',
@@ -139,6 +139,13 @@ export class TablaEntradaAprobadaComponent implements OnInit {
                 { value: 'Reposición', title: 'Reposición' },
                 { value: 'Sobrante', title: 'Sobrante' },
                 { value: 'Terceros', title: 'Terceros' },
+                { value: 'Caja menor', title: 'Caja Menor' },
+                { value: 'Desarrollo interior', title: 'Desarrollo interior' },
+                { value: 'Adiciones y mejoras', title: 'Adiciones y mejoras' },
+                { value: 'Intangibles', title: 'Intangibles' },
+                { value: 'Aprovechamientos', title: 'Aprovechamientos' },
+                { value: 'Compras extranjeras', title: 'Compras extranjeras' },
+                { value: 'Provisional', title: 'Provisional' },
               ],
             },
           },
@@ -159,8 +166,8 @@ export class TablaEntradaAprobadaComponent implements OnInit {
           entrada.ActaRecibidoId = detalle.acta_recibido_id;
           entrada.FechaCreacion = datos.FechaCreacion;
           entrada.Consecutivo = detalle.consecutivo;
-          tipoEntradaAux.Nombre = datos.FormatoTipoMovimientoId.Nombre;
-          entrada.TipoEntradaId = tipoEntradaAux;
+          // tipoEntradaAux.Nombre = datos.FormatoTipoMovimientoId.Nombre;// Innecesario genera conflictos con el filter
+          entrada.TipoEntradaId = datos.FormatoTipoMovimientoId.Nombre;
           this.entradas.push(entrada);
         }
         this.source.load(this.entradas);

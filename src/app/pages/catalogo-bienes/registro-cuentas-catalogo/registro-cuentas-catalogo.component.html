@@ -22,13 +22,21 @@
           <span class="font-weight-normal">{{ uid_1.Nombre }}</span>
       </nb-card-header>
       <nb-card-body [nbSpinner]="guardando">
-        <p *ngIf="puede_editar"><em>{{'GLOBAL.instr_asig_cuentas' | translate}}</em></p>
+        <header [nbSpinner]="!this.estado_cargado"><strong>{{'GLOBAL.estado' | translate}}:</strong>
+          {{ texto_estado }}
+          <button type="button" mat-stroked-button class="float-right"
+          *ngIf="puede_editar" [disabled]="!this.estado_cargado"
+          (click)="preguntaSesionAsignacionContable()">
+            {{ texto_sesion_contable }}
+          </button>
+          <p *ngIf="modificando_cuentas && puede_editar"><em>{{'GLOBAL.instr_asig_cuentas' | translate}}</em></p>
+        </header>
         <mat-vertical-stepper #stepper>
 
           <ng-template #tipoMovimientoTemplate let-lbl="label" let-movs="mvtos">
           <mat-step>
             <ng-template matStepLabel>{{lbl | translate}}</ng-template>
-            <ngx-crud-movimiento *ngFor="let tab of movs"
+            <ngx-crud-movimiento *ngFor="let tab of movs" [escritura]="modificando_cuentas && puede_editar"
             [subgrupo_id]="uid_1" [movimiento_id]="tab" (formulario)="ver3($event)"
             (eventChange)="recargarCatalogo()"></ngx-crud-movimiento>
             <div class="justify-content-center">
@@ -48,7 +56,7 @@
           </ng-container>
 
         </mat-vertical-stepper>
-        <button nbButton (click)="onSubmit()" [disabled]="!all_mov_ok" *ngIf="puede_editar"
+        <button nbButton (click)="onSubmit()" [disabled]="!all_mov_ok" *ngIf="modificando_cuentas && puede_editar"
           class="float-right">{{'GLOBAL.Acta_Recibido.RegistroActa.GuardarCambiosButton' | translate}}</button>
       </nb-card-body>
     </nb-card>

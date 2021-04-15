@@ -1,15 +1,23 @@
 import { RequestManager } from '../../managers/requestManager';
 import { Injectable } from '@angular/core';
-import { map } from 'rxjs/operators';
+import { map, switchMap } from 'rxjs/operators';
+import { iif } from 'rxjs';
 import { PopUpManager } from '../../managers/popUpManager';
+import { TranslateService } from '@ngx-translate/core';
+import { DisponibilidadMovimientosService } from '../../@core/data/disponibilidad-movimientos.service';
 
 @Injectable({
     providedIn: 'root',
 })
 export class SalidaHelper {
 
-    constructor(private rqManager: RequestManager,
-        private pUpManager: PopUpManager) { }
+    constructor(
+        private rqManager: RequestManager,
+        private pUpManager: PopUpManager,
+        private dispMvtos: DisponibilidadMovimientosService,
+        private translate: TranslateService,
+    ) {
+    }
 
     /**
      * Entradas Get
@@ -59,12 +67,18 @@ export class SalidaHelper {
     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
     */
     public postSalidas(salidasData) {
+        return this.dispMvtos.movimientosPermitidos().pipe(
+            switchMap(disp => iif( () => disp, this.postSalidasFinal(salidasData) )),
+        );
+    }
+
+    private postSalidasFinal(salidasData) {
         this.rqManager.setPath('ARKA_SERVICE');
         return this.rqManager.post(`salida`, salidasData).pipe(
             map(
                 (res) => {
                     if (res['Type'] === 'error') {
-                        this.pUpManager.showErrorAlert('No se pudo registrar la entrada solicitada.');
+                        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.error_salida_no_registrada'));
                         return undefined;
                     }
                     return res;

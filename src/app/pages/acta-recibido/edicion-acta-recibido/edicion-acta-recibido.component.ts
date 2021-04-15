@@ -30,6 +30,7 @@ import { ListService } from '../../../@core/store/services/list.service';
 import { combineAll } from 'rxjs-compat/operator/combineAll';
 import { SafeResourceUrl, DomSanitizer } from '@angular/platform-browser';
 import { PopUpManager } from '../../../managers/popUpManager';
+import { ConfiguracionService } from '../../../@core/data/configuracion.service';
 import { DocumentoService } from '../../../@core/data/documento.service';
 import { analyzeAndValidateNgModules } from '@angular/compiler';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -153,6 +154,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
     private toasterService: ToasterService,
     private completerService: CompleterService,
     private store: Store<IAppState>,
+    private confService: ConfiguracionService,
     private listService: ListService,
     private pUpManager: PopUpManager,
     private sanitization: DomSanitizer,
@@ -161,6 +163,8 @@ export class EdicionActaRecibidoComponent implements OnInit {
     private userService: UserService,
     private dateService: NbDateService<Date>,
   ) {
+    this.Contratistas = [];
+    this.Proveedores = [];
     this.errores = new Map<string, boolean>();
     this.fileDocumento = [];
     this.Validador = [];
@@ -213,10 +217,8 @@ export class EdicionActaRecibidoComponent implements OnInit {
       'Elementos',
     ].map(seccion => this.permisosRoles_EstadoSeccion(this.estadoActa, seccion))
       .map(permisosSeccion => {
-        return this.userService
-          .tieneAlgunRol(permisosSeccion.PuedenModificar) ? Permiso.Modificar : (
-            this.userService
-              .tieneAlgunRol(permisosSeccion.PuedenVer) ? Permiso.Ver : Permiso.Ninguno
+        return this.confService.getAccion(permisosSeccion.PuedenModificar) ? Permiso.Modificar : (
+            this.confService.getAccion(permisosSeccion.PuedenVer) ? Permiso.Ver : Permiso.Ninguno
           );
       });
 
@@ -230,8 +232,8 @@ export class EdicionActaRecibidoComponent implements OnInit {
   // Devuelve un objeto en que el nombre de cada propiedad es un permiso, y
   // los valores de cada propiedad son los roles que tienen dicho permiso.
   private permisosRoles_EstadoSeccion(estado: string, seccion: string) {
-    let PuedenModificar: Rol[] = [];
-    let PuedenVer: Rol[] = [];
+    let PuedenModificar: string = '';
+    let PuedenVer: string = '';
 
     permisosSeccionesActas.filter(PermSecciones => seccion === PermSecciones.Seccion)
       .forEach(PermSeccion => {
@@ -259,13 +261,13 @@ export class EdicionActaRecibidoComponent implements OnInit {
 
     // Pueden enviar a Proveedor
     const envioProveedor =
-      this.userService.tieneAlgunRol([Rol.Admin, Rol.Revisor, Rol.Secretaria])
+      this.confService.getAccion('edicionActaRecibidoCambioAElaboracion')
       && ['Registrada']
         .some(est => this.estadoActa === est);
 
     // Pueden enviar a Validacion
     const envioValidar =
-      this.userService.tieneAlgunRol([Rol.Admin, Rol.Revisor, Rol.Contratista])
+      this.confService.getAccion('edicionActaRecibidoCambioARevision')
       && ['En Elaboracion', 'En Modificacion']
         .some(est => this.estadoActa === est);
 
@@ -360,20 +362,22 @@ export class EdicionActaRecibidoComponent implements OnInit {
         this.Dependencias = list.listDependencias[0];
         this.Sedes = list.listSedes[0];
         this.dataService3 = this.completerService.local(this.Dependencias, 'Nombre', 'Nombre');
-        if (this.Estados_Acta !== undefined && this.Estados_Elemento !== undefined &&
-          this.Tipos_Bien !== undefined && this.Unidades !== undefined &&
-          this.Tarifas_Iva !== undefined &&
-          this.Dependencias !== undefined && this.Sedes !== undefined &&
-          this._Acta_Id !== undefined) {
-          // console.log(this._Acta_Id);
           this.cargaActa();
-        }
       },
     );
   }
 
   private cargaActa() {
-    if (!this.actaCargada) {
+    if (!this.actaCargada &&
+    this.Estados_Acta !== undefined &&
+    this.Estados_Elemento !== undefined &&
+    this.Tipos_Bien !== undefined &&
+    this.Unidades !== undefined &&
+    this.Tarifas_Iva !== undefined &&
+    this.Dependencias !== undefined &&
+    this.Sedes !== undefined &&
+    this._Acta_Id !== undefined
+    ) {
           this.Actas_Recibido.getTransaccionActa(this._Acta_Id).subscribe(Acta => {
             // console.log(Acta);
             this.Cargar_Formularios(Acta[0]);
@@ -545,29 +549,35 @@ export class EdicionActaRecibidoComponent implements OnInit {
 
       this.Elementos__Soporte = elementos;
       this.SoporteElementosValidos = new Array<boolean>(this.Elementos__Soporte.length);
+
+      const sede = (() => {
+        const criterio = x => x && x.CodigoAbreviacion === valor.toString();
+        if (this.Sedes.some(criterio)) {
+          return this.Sedes.find(criterio).Id;
+        }
+        return '';
+      })();
+
+      const dependencia = (() => {
+        const criterio = x => res[0].hasOwnProperty('DependenciaId') && x.Id === res[0].DependenciaId.Id;
+        if (this.Dependencias.some(criterio)) {
+          return this.Dependencias.find(criterio).Nombre;
+        }
+        return '';
+      })();
+
       this.firstForm = this.fb.group({
         Formulario1: this.fb.group({
           Id: [transaccion_.ActaRecibido.Id],
           Sede: [
             {
-              value: (() => {
-                const criterio = x => x && x.CodigoAbreviacion === valor.toString();
-                if (this.Sedes.some(criterio)) {
-                  return this.Sedes.find(criterio).Id;
-                }
-                return '';
-              })(),
+              value: sede,
               disabled: !this.getPermisoEditar(this.permisos.Acta),
             },
             Validators.required,
           ],
-          Dependencia: [ (() => {
-            const criterio = x => res[0].hasOwnProperty('DependenciaId') && x.Id === res[0].DependenciaId.Id;
-            if (this.Dependencias.some(criterio)) {
-              return this.Dependencias.find(criterio).Nombre;
-            }
-            return '';
-          })(), Validators.required],
+          Dependencia: [ dependencia,
+            Validators.required],
           Ubicacion: [
             {
               value: transaccion_.ActaRecibido.UbicacionId,
@@ -593,7 +603,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
           Datos_Adicionales: [transaccion_.ActaRecibido.Observaciones, Validators.required],
         }),
       });
-      this.Traer_Relacion_Ubicaciones();
+      this.Traer_Relacion_Ubicaciones(sede, dependencia);
       this.firstForm.get('Formulario1').statusChanges.subscribe(change => this.checkValidness(1, change));
       this.firstForm.get('Formulario2').statusChanges.subscribe(change => this.checkValidness(2, change));
       this.firstForm.get('Formulario3').statusChanges.subscribe(change => this.checkValidness(3, change));
@@ -650,7 +660,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
       }),
     });
     this.carga_agregada = true;
-    this.Traer_Relacion_Ubicaciones();
+    this.Traer_Relacion_Ubicaciones(transaccion_.Formulario1.Sede, transaccion_.Formulario1.Dependencia);
   }
 
   async Traer_Sede_Dependencia(id) {
@@ -664,11 +674,8 @@ export class EdicionActaRecibidoComponent implements OnInit {
       return [Sede, _Dependencia];
     });
   }
-  Traer_Relacion_Ubicaciones() {
-    const sede = this.firstForm.get('Formulario1').get('Sede').value;
-    const dependencia = this.firstForm.get('Formulario1').get('Dependencia').value;
-    if (this.firstForm.get('Formulario1').get('Sede').valid && this.firstForm.get('Formulario1').get('Dependencia').valid &&
-      sede !== undefined && dependencia !== undefined) {
+
+  Traer_Relacion_Ubicaciones(sede, dependencia) {
       this.UbicacionesFiltradas = [];
       this.carga_agregada ? this.firstForm.patchValue({ Formulario1: { Ubicacion: '' } }) : null;
       const transaccion: any = {};
@@ -678,7 +685,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
         if (isObject(res[0].Relaciones))
           this.UbicacionesFiltradas = res[0].Relaciones;
       });
-    }
   }
 
 
@@ -915,7 +921,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
         }).then((willDelete) => {
           if (willDelete.value && siguienteEtapa) {
               const formularios  = this.firstForm.value;
-              const cedulaprov = formularios.Formulario2[0].Proveedor.split(' ')[0].toString();
+              const cedulaprov = formularios.Formulario2[0].Proveedor.Identificacion.Numero;
               const cedularev = formularios.Formulario1.Contratista.Identificacion.Numero;
               if (enviara === 1) {
                  this.EnviarEmail(cedulaprov);
@@ -924,7 +930,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
               if (enviara === 2) {
                  this.EnviarEmail(cedularev);
               }
-              // const revisor___ = Datos.Revisor.split(' ');
+
               // Se usa una redirección "dummy", intermedia. Ver
               // https://stackoverflow.com/a/49509706/3180052
               this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
@@ -1173,10 +1179,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
        codigoL10n_desc = L10n_base + 'DatosVeridicos2';
     } else {
        codigoL10n_desc = L10n_base + ((enviara === 1) ? 'DatosVeridicos3' : 'DatosVeridicos4');
-       const formularios  = this.firstForm.value;
-      // Las siguientes variables no se usan, sin embargo se actualizaron:
-      const cedulaprov = formularios.Formulario2[0].Proveedor.split(' ')[0].toString();
-      const cedularev = formularios.Formulario1.Contratista.Identificacion.Numero;
     }
     (Swal as any).fire({
       title: this.translate.instant(codigoL10n_titulo),

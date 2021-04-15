@@ -6,11 +6,13 @@ import { Grupo, Subgrupo } from '../../../@core/data/models/catalogo/jerarquia';
 import { Nivel_t } from '../../../@core/data/models/catalogo/tipo_nivel';
 import { Catalogo } from '../../../@core/data/models/catalogo/catalogo';
 import { TipoMovimientoKronos } from '../../../@core/data/models/movimientos';
+import { Parametro } from '../../../@core/data/models/configuracion_crud';
 import { BaseId } from '../../../@core/data/models/base';
 import { RolUsuario_t as Rol } from '../../../@core/data/models/roles/rol_usuario';
 import Swal from 'sweetalert2';
 import { Store } from '@ngrx/store';
 import { IAppState } from '../../../@core/store/app.state';
+import { ConfiguracionService } from '../../../@core/data/configuracion.service';
 import { ListService } from '../../../@core/store/services/list.service';
 import { CrudMovimientoComponent } from '../crud-movimientos/crud-movimiento.component';
 import { FormControl } from '@angular/forms';
@@ -55,24 +57,34 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
   depreciacion_ok: boolean;
   valorizacion_ok: boolean;
 
-  cargando_catalogos: boolean = true;
+  cargando_catalogos: boolean;
+  estado_cargado: boolean;
   guardando: boolean = false;
   puede_editar: boolean;
+  texto_sesion_contable: string;
+  texto_estado: string;
+  modificando_cuentas: boolean;
+
+  private estadoAsignacionContable: Parametro;
 
   constructor(
     private translate: TranslateService,
     private catalogoElementosService: CatalogoElementosHelper,
     private store: Store<IAppState>,
+    private confService: ConfiguracionService,
     private listService: ListService,
     private toasterService: ToasterService,
-    private userService: UserService,
   ) {
-    this.puede_editar = this.userService.tieneAlgunRol([Rol.AdminContable]);
+    this.cargando_catalogos = true;
+    this.puede_editar = false;
+    this.modificando_cuentas = false;
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
     });
     this.catalogos = new Array<Catalogo>();
     this.catalogoId = 0;
     this.Movimientos = [];
+    this.texto_sesion_contable = '';
+    this.texto_estado = '';
   }
 
   ngOnInit() {
@@ -80,6 +92,8 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
     this.listService.findPlanCuentasDebito();
     this.listService.findPlanCuentasCredito();
     this.cargaMovimientos();
+    this.cargaPermisoEdicionCuentas();
+    this.cargaEstadoSesionContable();
   }
 
   private cargaMovimientos () {
@@ -111,6 +125,52 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
       this.TiposMovimientos = movimientos.map(mov => desglose.find(d => d.tipo === mov.buscar));
       // console.log({mvtos:this.TiposMovimientos});
       this.all_mov = res.length - 1;
+    });
+  }
+
+  private cargaPermisoEdicionCuentas() {
+    const accion = this.confService.getAccion('puedeAsignarCuentas');
+    this.puede_editar = accion ? true : false;
+  }
+
+  private cargaEstadoSesionContable() {
+    if (this.estado_cargado === undefined) {
+      this.estado_cargado = false;
+      this.confService.getParametro('modificandoCuentas').subscribe((p: Parametro) => {
+        this.refrescaEstadoSesionContable(p);
+      });
+    }
+  }
+  private refrescaEstadoSesionContable(p: Parametro) {
+    // console.log({p});
+    this.estadoAsignacionContable = p;
+    this.modificando_cuentas = p.Valor === 'true';
+    this.texto_sesion_contable = this.translate.instant('GLOBAL.cuentas.' + (this.modificando_cuentas ? 'terminar' : 'iniciar') + '_edicion_boton');
+    this.texto_estado = this.translate.instant('GLOBAL.cuentas.estado_' + (this.modificando_cuentas ? 'modificando' : 'lectura') );
+    this.estado_cargado = true;
+  }
+
+  preguntaSesionAsignacionContable() {
+    const cambioModo = this.modificando_cuentas ? 'terminar' : 'iniciar';
+    const title = this.translate.instant('GLOBAL.cuentas.' + cambioModo + '_edicion_titulo');
+    const text = this.translate.instant('GLOBAL.cuentas.' + cambioModo + '_edicion_texto');
+    const type = 'warning';
+    (Swal as any).fire({title, text, type, showCancelButton: true}).then(res => {
+      // console.log({modif: this.modificando_cuentas, res});
+      if (res.value) {
+        if (this.modificando_cuentas) {
+          this.estadoAsignacionContable.Valor = 'false';
+        } else {
+          this.estadoAsignacionContable.Valor = 'true';
+        }
+        // console.log({p_new: this.estadoAsignacionContable});
+        this.estado_cargado = false;
+        this.confService.setParametro(this.estadoAsignacionContable).subscribe(res2 => {
+          // console.log({p_new_put: res2});
+          this.refrescaEstadoSesionContable(<Parametro><any>res2);
+          this.estado_cargado = true;
+        });
+      }
     });
   }
 

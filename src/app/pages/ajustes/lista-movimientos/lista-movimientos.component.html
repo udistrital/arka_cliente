@@ -1,0 +1,41 @@
+<div class="col-lg-12">
+  <nb-card>
+    <nb-card-header>
+      Registrar Ajuste
+    </nb-card-header>
+    <nb-card-body [nbSpinner]="!mostrar">
+      <p class="h4 pb-4" *ngIf="actaSeleccionada === ''">{{'GLOBAL.mensaje_registrar_entrada' | translate}}</p>
+
+      <ng2-smart-table [settings]="settingsListaActas" [source]="ActasAsociadas"
+        (custom)="CargarMovimientosAsociados($event)" *ngIf="actaSeleccionada === ''"></ng2-smart-table>
+      <nb-card *ngIf="actaSeleccionada !== ''" [nbSpinner]="!mostrarActa || !mostrarMovimientos || anulando">
+        <nb-card-body>
+
+          <ngx-ver-detalle (mostrarData)="mostrarDetalleActa($event)" [Id_Acta]="actaSeleccionada"></ngx-ver-detalle>
+
+        </nb-card-body>
+        <nb-card-body>
+
+          <hr>
+          <p class="h4 pb-4">{{'GLOBAL.ajustes.movimientos_relacionados' | translate}}</p>
+
+          <hr>
+          <p class="h4 pb-4">{{'GLOBAL.Entradas' | translate}}</p>
+          <ng2-smart-table [settings]="settingsEntrada" [source]="Entrada" (custom)="AnularEntrada($event)">
+          </ng2-smart-table>
+
+          <hr>
+          <p class="h4 pb-4">{{'GLOBAL.Salidas' | translate}}</p>
+          <ng2-smart-table [settings]="settingsSalidas" [source]="ListaSalidas" (custom)="AnularSalidas($event)">
+          </ng2-smart-table>
+
+          <hr>
+          <p class="h4 pb-4">{{'GLOBAL.movimientos.tipo.SOL_BAJA.nombre' | translate}}</p>
+          <ng2-smart-table [settings]="settingsBajas" [source]="ListaBajas" (custom)="AnularBajas($event)">
+          </ng2-smart-table>
+
+        </nb-card-body>
+      </nb-card>
+    </nb-card-body>
+  </nb-card>
+</div>

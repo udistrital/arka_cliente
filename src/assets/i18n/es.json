@@ -13,6 +13,126 @@
       "opciones": "Opciones",
       "configurar_rol": "Rol"
     },
+    "main": {
+      "catalogo": {
+        "name": "Catálogo de Elementos",
+        "children": {
+          "listar": {
+            "name": "Listar Catálogos"
+          },
+          "crear": {
+            "name": "Crear Catálogo"
+          },
+          "consultar": {
+            "name": "Consultar Catálogo"
+          },
+          "construir": {
+            "name": "Construcción de Catálogo"
+          },
+          "elementos": {
+            "name": "Registro Elementos"
+          },
+          "inactivar": {
+            "name": "Inactivar Niveles"
+          },
+          "cuentas": {
+            "name": "Asignación de Cuentas"
+          }
+        }
+      },
+      "acta": {
+        "name": "Acta de Recibido",
+        "children": {
+          "consulta": {
+            "name": "Consulta de Actas"
+          },
+          "registro": {
+            "name": "Registro de Acta"
+          },
+          "reg_especial": {
+            "name": "Registro de Acta Especial"
+          }
+        }
+      },
+      "entradas": {
+        "name": "Entradas",
+        "children": {
+          "consulta": {
+            "name": "Consultar Entradas"
+          },
+          "registro": {
+            "name": "Registrar Entrada"
+          }
+        }
+      },
+      "salidas": {
+        "name": "Salidas",
+        "children": {
+          "lista": {
+            "name": "Consultar Salidas"
+          },
+          "crear": {
+            "name": "Registrar Salida"
+          }
+        }
+      },
+      "bodega": {
+        "name": "Bodega de Consumo",
+        "children": {
+          "solicitar": {
+            "name": "Solicitar Elementos"
+          },
+          "sol_consulta": {
+            "name": "Consultar Solicitudes"
+          },
+          "sol_responder": {
+            "name": "Responder Solicitudes"
+          },
+          "kardex_asignar": {
+            "name": "Asignación a Kardex"
+          },
+          "kardex_consultar": {
+            "name": "Consulta de Kardex"
+          }
+        }
+      },
+      "bajas": {
+        "name": "Bajas",
+        "children": {
+          "consulta": {
+            "name": "Consultar Solicitudes"
+          },
+          "registro": {
+            "name": "Registrar Solicitud"
+          }
+        }
+      },
+      "movimientos": {
+        "name": "Movimientos",
+        "children": {
+          "consulta": {
+            "name": "Consultar Baja de Bien"
+          },
+          "solicitud": {
+            "name": "Solicitud de Baja de Bien"
+          },
+          "aprobacion": {
+            "name": "Aprobacion de Baja de Bien"
+          }
+        }
+      },
+      "reportes": {
+        "name": "Reportes",
+        "children": {
+          "entradas": {
+            "name": "Entradas"
+          },
+          "salidas": {
+            "name": "Salidas"
+          }
+        }
+      }
+    },
     "aplicaciones": "Aplicaciones",
     "roles": "Roles",
     "opciones": "Opciones",
@@ -43,6 +163,7 @@
       "varias": "Actas de Recibido",
       "id_forma1": "Acta de Recibido #{{ID}}",
       "id_forma2": "Acta N° {{ID}}",
+      "ActaNo": "Acta de Recibido N°",
       "ContratistaAsignado": "Contratista Asignado",
       "Errores": {
         "Mensaje": "Corrija primero los siguientes problemas:",
@@ -134,7 +255,7 @@
         "Total":"Gran Total:",
         "Observaciones2":"Proporciona datos adicionales que no se pueden expresar en el formulario (Obligatorio)",
         "DatosVeridicos":"¿Está seguro de la información registrada?",
-        "DatosVeridicosTitle":"Está seguro?",
+        "DatosVeridicosTitle":"¿Está seguro?",
         "CargaElementosTitle":"Carga de Elementos",
         "CargaElementos":"Por favor verificar la carga de elementos, valores y totales asociados al soporte antes de generar el registro",
         "RegistradaTitle":"Acta N° {{ID}} Registrada",
@@ -301,7 +422,7 @@
     "placeholder_cuenta_credito":"Crédito",
     "placeholder_cuenta_debito":"Débito",
     "Entradas":"Entrada",
-    "Salidas":"Salida",
+    "Salidas":"Salidas",
     "Depreciacion":"Depreciación",
     "Valorizacion":"Valorización",
     "Salida de Almacen":"Salida",
@@ -511,10 +632,12 @@
     "consecutivo": "Consecutivo",
     "fecha_entrada": "Fecha de Entrada",
     "tipo_entrada": "Tipo Entrada",
+    "estado_entrada": "Estado Entrada",
     "detalle": "Detalle",
     "seleccionar": "Seleccionar",
     "no_data_entradas": "No se encontraron entradas asociadas.",
     "no_data_actas_entrada": "No se encontraron actas de recibido aprobadas para realizar una entrada",
+    "no_data_salidas": "No se encontraron salidas asociadas a esta entrada",
     "detalle_entrada": "Detalle Entrada",
     "registrar_nueva_entrada": "Registrar Nueva Entrada",
     "elementos_entrada": "Elementos Entrada",
@@ -606,15 +729,31 @@
       "tab_consumo_controlado": "Elementos Devolutivos y de Consumo Controlado",
       "asignar": "REGISTRAR SALIDA",
       "asignar_funcionario": "ASIGNAR A FUNCIONARIO",
+      "error_entrada_no_registrada": "No se pudo registrar la entrada solicitada",
+      "error_salida_no_registrada": "No se pudo registrar la salida solicitada",
       "alerta_descargue": "Elementos sin descargar",
       "alerta_consumo": "Elementos de consumo sin asignar",
       "alerta_controlado": "Elementos de consumo controlado sin asignar",
       "alerta_ambos": "Elementos de consumo y consumo controlado sin asignar"
     },
 
+    "cuentas": {
+      "alerta_modificacion": "Cuentas en Modificación. Intente más tarde",
+      "estado_modificando": "En Modificación (Transacciones Bloqueadas)",
+      "estado_lectura": "Solo Lectura (Transacciones Habilitadas)",
+      "iniciar_edicion_boton": "Iniciar Edición de Cuentas",
+      "iniciar_edicion_titulo": "¿Iniciar Edición de Cuentas?",
+      "iniciar_edicion_texto": "Se bloqueará cualquier tipo de movimiento. ¿Desea continuar?",
+      "terminar_edicion_boton": "Terminar Edición de Cuentas",
+      "terminar_edicion_titulo": "¿Finalizar Edicion de Cuentas?",
+      "terminar_edicion_texto": "Se permitirá realizar movimientos. ¿Desea continuar?"
+    },
+
     "salidas": {
       "titulo_registrar": "Registrar Salida",
       "elementos": "Elementos",
+      "exito_registro_titulo": "Salida Registrada",
+      "exito_registro_texto": "La Salida ha sido Registrada exitosamente",
       "salida_instruccion": "En la siguiente tabla seleccione la entrada para poder generar la salida correspondiente",
       "consulta_salida_info": "En la siguiente tabla se muestran de forma general las salidas, seleccione una para ver la informacion asociada",
       "detalle_salida": "Detalle Salida"
@@ -626,6 +765,7 @@
     "ordenador_gasto": "Ordenador de Gasto",
     "supervisor": "Supervisor",
     "supervisor_nombres": "Nombres y Apellidos",
+    "Cargo":"Cargo",
     "nombres": "Nombres y Apellidos",
     "sede": "Sede",
     "dependencia": "Dependencia",
@@ -633,9 +773,11 @@
     "proveedor": "Proveedor",
     "fecha_factura": "Fecha de Factura",
     "importacion": "Importación",
+    "registro_importacion": "Registro de Importación",
+    "trm": "Tasa Representativa del mercado",
     "vigencia": "Vigencia",
-    "tipo_contrato": "Tipo Contrato",
-    "numero_contrato": "Número Contrato",
+    "tipo_contrato": "Tipo de Contrato",
+    "numero_contrato": "Número de Contrato",
     "placeholder_contrato": "Contrato",
     "asignacion": "Asignación",
     "razon_social": "NIT o Razón Social",
@@ -645,11 +787,21 @@
     "mensaje_registrar": "Click en Registrar Entrada para continuar",
     "contrato": "Contrato",
     "solicitante": "Solicitante",
+    "Encargado":"Encargado",
+    "Placa": "Placa",
     "soporte": "Soporte",
     "acta_produccion": "Acta de Producción",
     "tercero_administracion": "Tercero en Administración",
     "error": "Error",
     "mensaje_seleccionar_entrada": "Seleccione el tipo de entrada que desea realizar",
-    "documento": "Documento"
+    "documento": "Documento",
+    "ajustes": {
+      "movimientos_relacionados": "Movimientos relacionados",
+      "confirmar_anular_entrada": "Los movimientos de inventario y contables asociados a esta entrada serán anulados",
+      "success_anular_entrada_title": "Entrada anulada",
+      "success_anular_entrada": "La entrada y los movimientos asociados se anularon correctamente",
+      "error_anular_entrada_title": "Entrada no anulada",
+      "error_anular_entrada": "La entrada no ha podido ser anulada correctamente, intente más tarde"
+    }
   }
 }

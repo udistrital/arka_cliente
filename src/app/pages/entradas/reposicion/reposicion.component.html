@@ -34,65 +34,29 @@
       </div>
     </form>
   </nb-step>
-
-  <!-- FACTURA -->
-  <nb-step [stepControl]="facturaForm" label="{{'GLOBAL.factura' | translate}}">
-      <form [formGroup]="facturaForm" class="step-container">
-        <h5>{{'GLOBAL.factura' | translate}}</h5>
-        <div class="row">
-          <div class="form-group col-sm">
-            <label>{{'GLOBAL.numero_factura' | translate}}</label>
-            <div class="input-group">
-              <select class="form-control" (change)="changeSelectSoporte($event)">
-                <option disabled selected>{{'GLOBAL.seleccionar' | translate}}...</option>
-                <option *ngFor="let item of soportes" value="{{ item.Id }}">{{ item.Consecutivo }}</option>
-              </select>
-            </div>
-          </div>
-          <div class="form-group col-sm">
-            <label>{{'GLOBAL.proveedor' | translate}}</label>
-            <div class="input-group">
-              <input nbInput type="text" shape="semi-round" placeholder="{{'GLOBAL.razon_social' | translate}}"
-                class="form-control" value="{{proveedor}}" [readonly]="true" />
-            </div>
-          </div>
-          <div class="form-group col-sm">
-            <label>{{'GLOBAL.fecha_factura' | translate}}</label>
-            <div class="input-group">
-              <input nbInput type="text" shape="semi-round" placeholder="{{'GLOBAL.fecha_factura' | translate}}"
-                class="form-control" value="{{ fechaFactura }}" [readonly]="true">
-            </div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col">
-            <button nbButton nbStepperPrevious>{{'GLOBAL.anterior' | translate}}</button>
-          </div>
-          <div class="col" align="end">
-            <button type="button" nbButton nbStepperNext>{{'GLOBAL.siguiente' | translate}}</button>
-          </div>
-        </div>
-      </form>
-    </nb-step>
-    
+  
   <!-- OBSERVACIONES -->
-  <nb-step [stepControl]="observacionForm" label="Observaciones">
-    <h5>Observaciones</h5>
-    <div class="row">
-      <div class="form-group  col-lg-12">
-        <div class="input-group">
-          <textarea rows="5" placeholder="Observaciones" class="form-control"></textarea>
+  <nb-step [stepControl]="observacionForm" label="{{'GLOBAL.observaciones' | translate}}">
+    <form [formGroup]="observacionForm" class="step-container">
+      <h5>{{'GLOBAL.observaciones' | translate}}</h5>
+      <div class="row">
+        <div class="form-group  col-lg-12">
+          <div class="input-group">
+            <textarea rows="5" shape="semi-round" placeholder="{{'GLOBAL.observaciones' | translate}}"
+              class="form-control" formControlName="observacionCtrl"></textarea>
+          </div>
         </div>
       </div>
-    </div>
-    <div class="row">
-      <div class="col">
-        <button nbButton nbStepperPrevious>{{'GLOBAL.anterior' | translate}}</button>
+      <div class="row">
+        <div class="col">
+          <button nbButton nbStepperPrevious>{{'GLOBAL.anterior' | translate}}</button>
+        </div>
+        <div class="col" align="end">
+          <button type="button" (click)="onObservacionSubmit()" nbButton nbStepperNext>{{'GLOBAL.siguiente' |
+            translate}}</button>
+        </div>
       </div>
-      <div class="col" align="end">
-        <button type="button" nbButton nbStepperNext>{{'GLOBAL.siguiente' | translate}}</button>
-      </div>
-    </div>
+    </form>
   </nb-step>
 
   <!-- FINALIZAR -->

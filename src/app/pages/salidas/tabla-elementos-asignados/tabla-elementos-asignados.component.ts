@@ -835,11 +835,11 @@ export class TablaElementosAsignadosComponent implements OnInit {
     const alertConsumo = (this.DatosConsumo && this.DatosConsumo.length) &&
       (this.ElementosConsumoSinAsignar && this.ElementosConsumoSinAsignar.length) ? true : false;
 
-    const alert = alertControlado && alertConsumo ? 'GLOBAL.entradas.alerta_ambos' :
-      alertConsumo ? 'GLOBAL.entradas.alerta_consumo' : alertControlado ? 'GLOBAL.entradas.alerta_controlado' : null;
+    const alert = (alertControlado && alertConsumo) ? 'GLOBAL.movimientos.alerta_ambos' :
+      (alertConsumo ? 'GLOBAL.movimientos.alerta_consumo' : (alertControlado ? 'GLOBAL.movimientos.alerta_controlado' : null));
 
     alert ? (Swal as any).fire({
-      title: this.translate.instant('GLOBAL.entradas.alerta_descargue'),
+      title: this.translate.instant('GLOBAL.movimientos.alerta_descargue'),
       text: this.translate.instant(alert),
       type: 'warning',
     }) : this.onSubmit();
@@ -1032,13 +1032,15 @@ export class TablaElementosAsignadosComponent implements OnInit {
       if (result.value) {
         this.salidasHelper.postSalidas(Salidas).subscribe(res => {
           // console.log(res);
-          (Swal as any).fire({
-            type: 'success',
-            title: 'Salida Registrada',
-            text: 'La Salida ha sido Registrada exitosamente',
-          });
+          if (res) {
+            (Swal as any).fire({
+              type: 'success',
+              title: this.translate.instant('GLOBAL.salidas.exito_registro_titulo'),
+              text: this.translate.instant('GLOBAL.salidas.exito_registro_texto'),
+            });
+            this.router.navigate(['/pages/salidas/consulta_salidas']);
+          }
         });
-        this.router.navigate(['/pages/salidas/consulta_salidas']);
       }
     });
   }

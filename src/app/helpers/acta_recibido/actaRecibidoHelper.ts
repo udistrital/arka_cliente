@@ -125,9 +125,9 @@ export class ActaRecibidoHelper {
         );
     }
 
-    public getActasRecibidoPorEstados(estados: string[]) {
+    public getActasRecibidoPorEstados(estado) {
         this.rqManager.setPath('ARKA_SERVICE');
-        return this.rqManager.get('acta_recibido/get_all_actas?states=' + estados.join()).pipe(
+        return this.rqManager.get('acta_recibido/get_actas_recibido_tipo/' + estado).pipe(
             map(
                 (res) => {
                     if (res === 'error') {
