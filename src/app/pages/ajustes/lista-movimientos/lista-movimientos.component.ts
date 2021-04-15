@@ -39,8 +39,6 @@ export class ListaMovimientosComponent implements OnInit {
   settingsEntrada: any;
   settingsSalidas: any;
   settingsBajas: any;
-  formatosTipo: any;
-  estadosMovimiento: any;
 
   private terceros: Partial<Tercero>[];
   private actas: any[];
@@ -499,12 +497,6 @@ export class ListaMovimientosComponent implements OnInit {
   private loadTerceros(): void {
     this.tercerosHelper.getTerceros().subscribe(terceros => {
       this.terceros = terceros;
-      this.entradasHelper.getFormatosTipoMovimiento().subscribe(res => {
-        this.formatosTipo = res
-        this.entradasHelper.getEstadosMovimiento().subscribe(res => {
-          this.estadosMovimiento = res
-        });
-      });
       this.mostrarData();
     });
   }
