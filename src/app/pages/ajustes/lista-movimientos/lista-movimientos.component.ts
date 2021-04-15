@@ -97,9 +97,11 @@ export class ListaMovimientosComponent implements OnInit {
       columns: {
         Id: {
           title: this.translate.instant('GLOBAL.consecutivo'),
+          width: '70px',
         },
         FechaCreacion: {
           title: this.translate.instant('GLOBAL.fecha_creacion'),
+          width: '110px',
           valuePrepareFunction: (value: any) => {
             const date = value.split('T');
             return date[0];
@@ -115,6 +117,7 @@ export class ListaMovimientosComponent implements OnInit {
         },
         FechaVistoBueno: {
           title: this.translate.instant('GLOBAL.fecha_visto_bueno'),
+          width: '110px',
           valuePrepareFunction: (value: any) => {
             const date = value.split('T');
             return date[0];
@@ -138,7 +141,6 @@ export class ListaMovimientosComponent implements OnInit {
           },
         },
         Observaciones: {
-          width: '20px',
           title: this.translate.instant('GLOBAL.observaciones'),
           valuePrepareFunction: (value: any) => {
             return value.toUpperCase();
@@ -146,6 +148,7 @@ export class ListaMovimientosComponent implements OnInit {
         },
       },
     };
+
     this.settingsEntrada = {
       hideSubHeader: false,
       noDataMessage: this.translate.instant('GLOBAL.no_data_entradas'),
