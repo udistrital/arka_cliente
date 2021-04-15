@@ -16,6 +16,7 @@ import { TipoEntrada } from '../../../@core/data/models/entrada/tipo_entrada';
 import { SalidaHelper } from '../../../helpers/salidas/salidasHelper';
 import { BajasHelper } from '../../../helpers/bajas/bajasHelper';
 import Swal from 'sweetalert2';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'ngx-lista-movimientos',
@@ -26,8 +27,9 @@ import Swal from 'sweetalert2';
 export class ListaMovimientosComponent implements OnInit {
 
   mostrar: boolean = false;
-  mostrarEntrada: boolean = false;
-
+  mostrarMovimientos: boolean = false;
+  mostrarActa: boolean = false;
+  anulando: boolean = false;
   // Datos Tabla
   ActasAsociadas: LocalDataSource;
   Entrada: LocalDataSource;
@@ -40,14 +42,13 @@ export class ListaMovimientosComponent implements OnInit {
   settingsSalidas: any;
   settingsBajas: any;
 
-
   private terceros: Partial<Tercero>[];
   private actas: any[];
   entradas: any;
-  salidas: any;
 
   constructor(
     private actaRecibidoHelper: ActaRecibidoHelper,
+    private router: Router,
     private pUpManager: PopUpManager,
     private entradasHelper: EntradaHelper,
     private salidasHelper: SalidaHelper,
@@ -63,7 +64,6 @@ export class ListaMovimientosComponent implements OnInit {
     this.ListaSalidas = new LocalDataSource();
     this.ListaBajas = new LocalDataSource();
     this.entradas = new Array<Entrada>();
-    this.salidas = new Array<any>();
     this.actaSeleccionada = '';
   }
 
@@ -98,9 +98,11 @@ export class ListaMovimientosComponent implements OnInit {
       columns: {
         Id: {
           title: this.translate.instant('GLOBAL.consecutivo'),
+          width: '70px',
         },
         FechaCreacion: {
           title: this.translate.instant('GLOBAL.fecha_creacion'),
+          width: '110px',
           valuePrepareFunction: (value: any) => {
             const date = value.split('T');
             return date[0];
@@ -116,6 +118,7 @@ export class ListaMovimientosComponent implements OnInit {
         },
         FechaVistoBueno: {
           title: this.translate.instant('GLOBAL.fecha_visto_bueno'),
+          width: '110px',
           valuePrepareFunction: (value: any) => {
             const date = value.split('T');
             return date[0];
@@ -139,7 +142,6 @@ export class ListaMovimientosComponent implements OnInit {
           },
         },
         Observaciones: {
-          width: '20px',
           title: this.translate.instant('GLOBAL.observaciones'),
           valuePrepareFunction: (value: any) => {
             return value.toUpperCase();
@@ -147,6 +149,7 @@ export class ListaMovimientosComponent implements OnInit {
         },
       },
     };
+
     this.settingsEntrada = {
       hideSubHeader: false,
       noDataMessage: this.translate.instant('GLOBAL.no_data_entradas'),
@@ -167,40 +170,49 @@ export class ListaMovimientosComponent implements OnInit {
       columns: {
         Consecutivo: {
           title: this.translate.instant('GLOBAL.consecutivo'),
+          width: '140px',
+          filter: false,
         },
         ActaRecibidoId: {
           title: this.translate.instant('GLOBAL.Acta_Recibido.una'),
+          width: '130px',
+          filter: false,
         },
         FechaCreacion: {
           title: this.translate.instant('GLOBAL.fecha_entrada'),
-          width: '70px',
+          width: '110px',
+          filter: false,
           valuePrepareFunction: (value: any) => {
             const date = value.split('T');
             return date[0];
           },
-          filter: {
-            type: 'daterange',
-            config: {
-              daterange: {
-                format: 'yyyy/mm/dd',
-              },
-            },
-          },
         },
         TipoEntradaId: {
           title: this.translate.instant('GLOBAL.tipo_entrada'),
+          width: '230px',
+          filter: false,
+          valuePrepareFunction: (value: any) => {
+            return value;
+          },
+        },
+        EstadoMovimientoId: {
+          title: this.translate.instant('GLOBAL.estado_entrada'),
+          width: '160px',
+          filter: false,
           valuePrepareFunction: (value: any) => {
             return value;
           },
         },
         Observacion: {
           title: this.translate.instant('GLOBAL.observaciones'),
+          filter: false,
         },
       },
     };
-    this.settingsBajas = {
+
+    this.settingsSalidas = {
       hideSubHeader: false,
-      noDataMessage: this.translate.instant('GLOBAL.no_data_entradas'),
+      noDataMessage: this.translate.instant('GLOBAL.no_data_salidas'),
       actions: {
         columnTitle: this.translate.instant('GLOBAL.Acciones'),
         position: 'right',
@@ -216,39 +228,30 @@ export class ListaMovimientosComponent implements OnInit {
       },
       columns: {
         Id: {
-          title: 'Consecutivo',
-        },
-        Observacion: {
-          title: 'Observaciones',
-        },
-        FechaCreacion: {
-          title: 'Fecha de Creacion',
+          title: this.translate.instant('GLOBAL.consecutivo'),
           width: '70px',
-          valuePrepareFunction: (value: any) => {
-            const date = value.split('T');
-            return date[0];
-          },
-          filter: {
-            type: 'daterange',
-            config: {
-              daterange: {
-                format: 'yyyy/mm/dd',
-              },
-            },
-          },
         },
         MovimientoPadreId: {
           title: 'Entrada Asociada',
+          width: '140px',
           valuePrepareFunction: (value: any) => {
             if (value !== null) {
-              return value.Id;
+              return JSON.parse((value.Detalle)).consecutivo;
             } else {
               return '';
             }
           },
         },
+        FechaCreacion: {
+          title: this.translate.instant('GLOBAL.fecha_creacion'),
+          width: '110px',
+          valuePrepareFunction: (value: any) => {
+            const date = value.split('T');
+            return date[0];
+          },
+        },
         Funcionario: {
-          title: 'Funcionario',
+          title: this.translate.instant('GLOBAL.funcionario'),
           valuePrepareFunction: (value: any) => {
             if (value !== null) {
               return value.NombreCompleto;
@@ -257,8 +260,6 @@ export class ListaMovimientosComponent implements OnInit {
             }
           },
           filterFunction: (cell?: any, search?: string): boolean => {
-            // console.log(cell);
-            // console.log(search);
             if (Object.keys(cell).length !== 0) {
               if (cell.NombreCompleto.indexOf(search) > -1) {
                 return true;
@@ -271,7 +272,7 @@ export class ListaMovimientosComponent implements OnInit {
           },
         },
         Sede: {
-          title: 'Sede',
+          title: this.translate.instant('GLOBAL.sede'),
           valuePrepareFunction: (value: any) => {
             if (value !== null) {
               return value.Nombre;
@@ -292,7 +293,7 @@ export class ListaMovimientosComponent implements OnInit {
           },
         },
         Dependencia: {
-          title: 'Dependencia',
+          title: this.translate.instant('GLOBAL.dependencia'),
           valuePrepareFunction: (value: any) => {
             if (value !== null) {
               return value.Nombre;
@@ -301,8 +302,6 @@ export class ListaMovimientosComponent implements OnInit {
             }
           },
           filterFunction: (cell?: any, search?: string): boolean => {
-            // console.log(cell);
-            // console.log(search);
             if (Object.keys(cell).length !== 0) {
               if (cell.Nombre.indexOf(search) > -1) {
                 return true;
@@ -315,7 +314,7 @@ export class ListaMovimientosComponent implements OnInit {
           },
         },
         Ubicacion: {
-          title: 'Ubicacion',
+          title: this.translate.instant('GLOBAL.ubicacion'),
           valuePrepareFunction: (value: any) => {
             if (value !== null) {
               return value.Nombre;
@@ -335,10 +334,13 @@ export class ListaMovimientosComponent implements OnInit {
             }
           },
         },
+        Observacion: {
+          title: this.translate.instant('GLOBAL.observaciones'),
+        },
       },
     };
 
-    this.settingsSalidas = {
+    this.settingsBajas = {
       hideSubHeader: false,
       noDataMessage: 'Hay bajas asociadas a esta acta',
       actions: {
@@ -358,6 +360,7 @@ export class ListaMovimientosComponent implements OnInit {
       mode: 'external',
       columns: {
         Id: {
+          width: '70px',
           title: 'Consecutivo',
           valuePrepareFunction: (value: any) => {
             return value;
@@ -399,7 +402,7 @@ export class ListaMovimientosComponent implements OnInit {
           title: 'Fecha de Visto Bueno',
           width: '70px',
           valuePrepareFunction: (value: any) => {
-            if (value !== null ) {
+            if (value !== null) {
               const date = value.split('T');
               return date[0];
             } else {
@@ -448,35 +451,37 @@ export class ListaMovimientosComponent implements OnInit {
     });
   }
 
-  loadEntradaEspecifica(): void {
-    this.entradasHelper.getEntrada(200).subscribe(res => {
-      if (res !== null) {
-        if (res.Movimiento) {
-          const entrada = new Entrada;
-          const detalle = JSON.parse((res.Movimiento.Detalle));
-          entrada.Id = res.Movimiento.Id;
-          entrada.ActaRecibidoId = detalle.acta_recibido_id;
-          entrada.FechaCreacion = res.Movimiento.FechaCreacion;
-          entrada.Consecutivo = detalle.consecutivo;
-          entrada.TipoEntradaId = res.TipoMovimiento.TipoMovimientoId.Nombre;
-          entrada.Observacion = res.Movimiento.Observacion;
-          this.entradas.push(entrada);
-        }
-        this.Entrada.load(this.entradas);
-        this.mostrarEntrada = true;
-      }
-    });
+  mostrarDetalleActa(event) {
+    this.mostrarActa = event;
   }
 
-  private loadSalidas(id) {
+  loadEntradaEspecifica(): void {
+    this.entradasHelper.getEntradaByActa(this.actaSeleccionada).subscribe(res => {
+      if (res !== null) {
+        if (res.Entradas) {
+          const data = <Array<any>>res.Entradas;
+          for (const datos of Object.keys(data)) {
+            const entrada = new Entrada;
+            const detalle = JSON.parse((data[datos].Detalle));
+            entrada.Id = data[datos].Id;
+            entrada.Consecutivo = detalle.consecutivo;
+            entrada.ActaRecibidoId = detalle.acta_recibido_id;
+            entrada.FechaCreacion = data[datos].FechaCreacion;
+            entrada.TipoEntradaId = data[datos].FormatoTipoMovimientoId.Nombre;
+            entrada.EstadoMovimientoId = data[datos].EstadoMovimientoId.Nombre;
+            entrada.Observacion = data[datos].Observacion;
+            this.entradas.push(entrada);
+          }
+          this.Entrada.load(this.entradas);
+        }
 
-    this.salidasHelper.getSalida(id).subscribe(res1 => {
-      if (Object.keys(res1).length !== 0) {
-        const salida = res1.Salida;
-        salida.Id = res1.Salida.Id;
-        this.salidas.push(salida);
+        if (res.Salidas) {
+          this.ListaSalidas.load(res.Salidas);
+        }
+
+        // Falta la carga de la tabla de bajas una vez el flujo esté completo
+        this.mostrarMovimientos = true;
       }
-      this.ListaSalidas.load(this.salidas);
     });
   }
 
@@ -515,15 +520,43 @@ export class ListaMovimientosComponent implements OnInit {
   CargarMovimientosAsociados(event) {
     this.actaSeleccionada = `${event.data.Id}`;
     this.loadEntradaEspecifica();
-    this.loadSalidas(354);
     this.loadBajas();
   }
 
   AnularEntrada(event) {
     (Swal as any).fire({
-      title: 'Anular Entrada',
-      text: '¿Está seguro de anular esta entrada?, tenga en cuenta de que se anularán los movimientos asociados',
+      title: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.DatosVeridicosTitle'),
+      text: this.translate.instant('GLOBAL.ajustes.confirmar_anular_entrada'),
       type: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Si',
+      cancelButtonText: 'No',
+    }).then((result) => {
+      if (result.value) {
+        // this.anulando = true;
+        // this.entradasHelper.anularMovimientosByEntrada(event.data.Id).subscribe((res: any) => {
+          // console.log(res)
+          // if (res !== null) {
+            (Swal as any).fire({
+              type: 'success',
+              title: this.translate.instant('GLOBAL.ajustes.success_anular_entrada_title'),
+              text: this.translate.instant('GLOBAL.ajustes.success_anular_entrada'),
+            });
+            // this.router.navigate(['/pages/acta_recibido/consulta_acta_recibido']);
+          // }
+          // else {
+          // this.anulando = false;
+          //   (Swal as any).fire({
+          //     type: 'error',
+          //     title: this.translate.instant('GLOBAL.ajustes.error_anular_entrada_title'),
+          //     text: this.translate.instant('GLOBAL.ajustes.error_anular_entrada'),
+          //   });
+          //   this.anulando = false;
+          // }
+        // });
+      }
     });
   }
 

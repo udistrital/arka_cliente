@@ -632,10 +632,12 @@
     "consecutivo": "Consecutive",
     "fecha_entrada": "Entry Date",
     "tipo_entrada": "Entry Type",
+    "estado_entrada": "Entry Status",
     "detalle": "Detail",
     "seleccionar": "Select",
     "no_data_entradas": "No associated entries found.",
     "no_data_actas_entrada": "No received documents were found approved for making an entry",
+    "no_data_salidas": "No outputs were found for this entry",
     "detalle_entrada": "Entry Detail",
     "registrar_nueva_entrada": "New Entry",
     "elementos_entrada": "Entry Elements",
@@ -793,6 +795,11 @@
     "documento": "Document"
   },
   "ajustes": {
-    "movimientos_relacionados": "Related transfers"
+    "movimientos_relacionados": "Related transfers",
+    "confirmar_anular_entrada": "The related accounting and inventory entries will be reversed",
+    "success_anular_entrada_title": "Reversed Input",
+    "success_anular_entrada": "The related entries were successfully reversed",
+    "error_anular_entrada_title": "Input not reversed",
+    "error_anular_entrada": "The related entries could not be reversed"
   }
 }

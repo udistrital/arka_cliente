@@ -238,7 +238,7 @@ export class EntradaHelper {
     }
 
 
-        /**
+    /**
      * Entradas Get
      * If the response has errors in the OAS API it should show a popup message with an error.
      * If the response is successs, it returns the object's data.
@@ -258,5 +258,47 @@ export class EntradaHelper {
             ),
         );
     }
+
+    /**
+     * EntradaByActa Get
+     * If the response has errors in the OAS API it should show a popup message with an error.
+     * If the response is successs, it returns the object's data.
+     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
+     */
+    public getEntradaByActa(acta_recibido_id) {
+        this.rqManager.setPath('ARKA_SERVICE');
+        return this.rqManager.get('entrada/movimientos/' + acta_recibido_id).pipe(
+            map(
+                (res) => {
+                    if (res === 'error') {
+                        this.pUpManager.showErrorAlert('No se pudieron consultar los movimientos asociados');
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
+
+        /**
+     * anularMovimientosByEntrada Get
+     * If the response has errors in the OAS API it should show a popup message with an error.
+     * If the response is successs, it returns the object's data.
+     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
+     */
+         public anularMovimientosByEntrada(entrada_id) {
+            this.rqManager.setPath('ARKA_SERVICE');
+            return this.rqManager.get('entrada/anular/' + entrada_id).pipe(
+                map(
+                    (res) => {
+                        if (res === 'error') {
+                            this.pUpManager.showErrorAlert('No se pudieron anular los movimientos asociados');
+                            return undefined;
+                        }
+                        return res;
+                    },
+                ),
+            );
+        }
 
 }

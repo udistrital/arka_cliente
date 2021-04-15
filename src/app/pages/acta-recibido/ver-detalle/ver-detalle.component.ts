@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ViewChildren, QueryList, Input } from '@angular/core';
+import { Component, OnInit, ViewChild, ViewChildren, QueryList, Input, Output, EventEmitter } from '@angular/core';
 import { Subscription, combineLatest } from 'rxjs';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, FormControl, FormArray } from '@angular/forms';
@@ -39,7 +39,7 @@ import { HttpErrorResponse } from '@angular/common/http';
   styleUrls: ['./ver-detalle.component.scss'],
 })
 export class VerDetalleComponent implements OnInit {
-
+  @Output() mostrarData = new EventEmitter<boolean>();
 
   config: ToasterConfig;
 
@@ -252,6 +252,7 @@ export class VerDetalleComponent implements OnInit {
       });
       this.Traer_Relacion_Ubicaciones(valor, res[0].DependenciaId.Id, transaccion_.ActaRecibido.UbicacionId);
       this.carga_agregada = true;
+      this.mostrarData.emit(true);
     });
   }
 
