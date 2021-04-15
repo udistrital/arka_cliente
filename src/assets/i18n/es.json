@@ -517,6 +517,7 @@
     "seleccionar": "Seleccionar",
     "no_data_entradas": "No se encontraron entradas asociadas.",
     "no_data_actas_entrada": "No se encontraron actas de recibido aprobadas para realizar una entrada",
+    "no_data_salidas": "No se encontraron salidas asociadas a esta entrada",
     "detalle_entrada": "Detalle Entrada",
     "registrar_nueva_entrada": "Registrar Nueva Entrada",
     "elementos_entrada": "Elementos Entrada",

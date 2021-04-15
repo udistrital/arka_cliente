@@ -26,8 +26,8 @@ import Swal from 'sweetalert2';
 export class ListaMovimientosComponent implements OnInit {
 
   mostrar: boolean = false;
-  mostrarEntrada: boolean = false;
-
+  mostrarMovimientos: boolean = false;
+  mostrarActa: boolean = false;
   // Datos Tabla
   ActasAsociadas: LocalDataSource;
   Entrada: LocalDataSource;
@@ -185,7 +185,7 @@ export class ListaMovimientosComponent implements OnInit {
         },
         TipoEntradaId: {
           title: this.translate.instant('GLOBAL.tipo_entrada'),
-          width: '200px',
+          width: '230px',
           filter: false,
           valuePrepareFunction: (value: any) => {
             return value;
@@ -205,9 +205,10 @@ export class ListaMovimientosComponent implements OnInit {
         },
       },
     };
-    this.settingsBajas = {
+
+    this.settingsSalidas = {
       hideSubHeader: false,
-      noDataMessage: this.translate.instant('GLOBAL.no_data_entradas'),
+      noDataMessage: this.translate.instant('GLOBAL.no_data_salidas'),
       actions: {
         columnTitle: this.translate.instant('GLOBAL.Acciones'),
         position: 'right',
@@ -223,39 +224,30 @@ export class ListaMovimientosComponent implements OnInit {
       },
       columns: {
         Id: {
-          title: 'Consecutivo',
-        },
-        Observacion: {
-          title: 'Observaciones',
-        },
-        FechaCreacion: {
-          title: 'Fecha de Creacion',
+          title: this.translate.instant('GLOBAL.consecutivo'),
           width: '70px',
-          valuePrepareFunction: (value: any) => {
-            const date = value.split('T');
-            return date[0];
-          },
-          filter: {
-            type: 'daterange',
-            config: {
-              daterange: {
-                format: 'yyyy/mm/dd',
-              },
-            },
-          },
         },
         MovimientoPadreId: {
           title: 'Entrada Asociada',
+          width: '140px',
           valuePrepareFunction: (value: any) => {
             if (value !== null) {
-              return value.Id;
+              return JSON.parse((value.Detalle)).consecutivo;
             } else {
               return '';
             }
           },
         },
+        FechaCreacion: {
+          title: this.translate.instant('GLOBAL.fecha_creacion'),
+          width: '110px',
+          valuePrepareFunction: (value: any) => {
+            const date = value.split('T');
+            return date[0];
+          },
+        },
         Funcionario: {
-          title: 'Funcionario',
+          title: this.translate.instant('GLOBAL.funcionario'),
           valuePrepareFunction: (value: any) => {
             if (value !== null) {
               return value.NombreCompleto;
@@ -276,7 +268,7 @@ export class ListaMovimientosComponent implements OnInit {
           },
         },
         Sede: {
-          title: 'Sede',
+          title: this.translate.instant('GLOBAL.sede'),
           valuePrepareFunction: (value: any) => {
             if (value !== null) {
               return value.Nombre;
@@ -297,7 +289,7 @@ export class ListaMovimientosComponent implements OnInit {
           },
         },
         Dependencia: {
-          title: 'Dependencia',
+          title: this.translate.instant('GLOBAL.dependencia'),
           valuePrepareFunction: (value: any) => {
             if (value !== null) {
               return value.Nombre;
@@ -318,7 +310,7 @@ export class ListaMovimientosComponent implements OnInit {
           },
         },
         Ubicacion: {
-          title: 'Ubicacion',
+          title: this.translate.instant('GLOBAL.ubicacion'),
           valuePrepareFunction: (value: any) => {
             if (value !== null) {
               return value.Nombre;
@@ -338,10 +330,13 @@ export class ListaMovimientosComponent implements OnInit {
             }
           },
         },
+        Observacion: {
+          title: this.translate.instant('GLOBAL.observaciones'),
+        },
       },
     };
 
-    this.settingsSalidas = {
+    this.settingsBajas = {
       hideSubHeader: false,
       noDataMessage: 'Hay bajas asociadas a esta acta',
       actions: {

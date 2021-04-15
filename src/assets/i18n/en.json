@@ -517,6 +517,7 @@
     "seleccionar": "Select",
     "no_data_entradas": "No associated entries found.",
     "no_data_actas_entrada": "No received documents were found approved for making an entry",
+    "no_data_salidas": "No outputs were found for this entry",
     "detalle_entrada": "Entry Detail",
     "registrar_nueva_entrada": "New Entry",
     "elementos_entrada": "Entry Elements",
