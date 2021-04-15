@@ -135,7 +135,7 @@
         "Total":"Gran Total:",
         "Observaciones2":"Proporciona datos adicionales que no se pueden expresar en el formulario (Obligatorio)",
         "DatosVeridicos":"¿Está seguro de la información registrada?",
-        "DatosVeridicosTitle":"Está seguro?",
+        "DatosVeridicosTitle":"¿Está seguro?",
         "CargaElementosTitle":"Carga de Elementos",
         "CargaElementos":"Por favor verificar la carga de elementos, valores y totales asociados al soporte antes de generar el registro",
         "RegistradaTitle":"Acta N° {{ID}} Registrada",
@@ -660,7 +660,12 @@
     "mensaje_seleccionar_entrada": "Seleccione el tipo de entrada que desea realizar",
     "documento": "Documento",
     "ajustes": {
-      "movimientos_relacionados": "Movimientos relacionados"
+      "movimientos_relacionados": "Movimientos relacionados",
+      "confirmar_anular_entrada": "Los movimientos de inventario y contables asociados a esta entrada serán anulados",
+      "success_anular_entrada_title": "Entrada anulada",
+      "success_anular_entrada": "La entrada y los movimientos asociados se anularon correctamente",
+      "error_anular_entrada_title": "Entrada no anulada",
+      "error_anular_entrada": "La entrada no ha podido ser anulada correctamente, intente más tarde"
     }
   }
 }

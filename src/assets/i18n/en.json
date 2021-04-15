@@ -661,6 +661,11 @@
     "documento": "Document"
   },
   "ajustes": {
-    "movimientos_relacionados": "Related transfers"
+    "movimientos_relacionados": "Related transfers",
+    "confirmar_anular_entrada": "The related accounting and inventory entries will be reversed",
+    "success_anular_entrada_title": "Reversed Input",
+    "success_anular_entrada": "The related entries were successfully reversed",
+    "error_anular_entrada_title": "Input not reversed",
+    "error_anular_entrada": "The related entries could not be reversed"
   }
 }

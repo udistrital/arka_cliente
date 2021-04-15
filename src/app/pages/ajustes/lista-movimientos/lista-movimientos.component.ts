@@ -16,6 +16,7 @@ import { TipoEntrada } from '../../../@core/data/models/entrada/tipo_entrada';
 import { SalidaHelper } from '../../../helpers/salidas/salidasHelper';
 import { BajasHelper } from '../../../helpers/bajas/bajasHelper';
 import Swal from 'sweetalert2';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'ngx-lista-movimientos',
@@ -28,6 +29,7 @@ export class ListaMovimientosComponent implements OnInit {
   mostrar: boolean = false;
   mostrarMovimientos: boolean = false;
   mostrarActa: boolean = false;
+  anulando: boolean = false;
   // Datos Tabla
   ActasAsociadas: LocalDataSource;
   Entrada: LocalDataSource;
@@ -43,10 +45,10 @@ export class ListaMovimientosComponent implements OnInit {
   private terceros: Partial<Tercero>[];
   private actas: any[];
   entradas: any;
-  salidas: any;
 
   constructor(
     private actaRecibidoHelper: ActaRecibidoHelper,
+    private router: Router,
     private pUpManager: PopUpManager,
     private entradasHelper: EntradaHelper,
     private salidasHelper: SalidaHelper,
@@ -62,7 +64,6 @@ export class ListaMovimientosComponent implements OnInit {
     this.ListaSalidas = new LocalDataSource();
     this.ListaBajas = new LocalDataSource();
     this.entradas = new Array<Entrada>();
-    this.salidas = new Array<any>();
     this.actaSeleccionada = '';
   }
 
@@ -519,15 +520,43 @@ export class ListaMovimientosComponent implements OnInit {
   CargarMovimientosAsociados(event) {
     this.actaSeleccionada = `${event.data.Id}`;
     this.loadEntradaEspecifica();
-    this.loadSalidas(354);
     this.loadBajas();
   }
 
   AnularEntrada(event) {
     (Swal as any).fire({
-      title: 'Anular Entrada',
-      text: '¿Está seguro de anular esta entrada?, tenga en cuenta de que se anularán los movimientos asociados',
+      title: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.DatosVeridicosTitle'),
+      text: this.translate.instant('GLOBAL.ajustes.confirmar_anular_entrada'),
       type: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Si',
+      cancelButtonText: 'No',
+    }).then((result) => {
+      if (result.value) {
+        // this.anulando = true;
+        // this.entradasHelper.anularMovimientosByEntrada(event.data.Id).subscribe((res: any) => {
+          // console.log(res)
+          // if (res !== null) {
+            (Swal as any).fire({
+              type: 'success',
+              title: this.translate.instant('GLOBAL.ajustes.success_anular_entrada_title',),
+              text: this.translate.instant('GLOBAL.ajustes.success_anular_entrada'),
+            });
+            // this.router.navigate(['/pages/acta_recibido/consulta_acta_recibido']);
+          // }
+          //else {
+          // this.anulando = false;
+          //   (Swal as any).fire({
+          //     type: 'error',
+          //     title: this.translate.instant('GLOBAL.ajustes.error_anular_entrada_title'),
+          //     text: this.translate.instant('GLOBAL.ajustes.error_anular_entrada'),
+          //   });
+          //   this.anulando = false;
+          // }
+        // });
+      }
     });
   }
 
