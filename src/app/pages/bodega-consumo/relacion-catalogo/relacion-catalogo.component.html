@@ -4,7 +4,8 @@
       <!-- CARD PARA MOSTRAR LAS SOLICITUDES *ngIf="!detalle" -->
       <p>
         <span class="fas fa-info-circle"></span>&nbsp;
-        <em>Selecciona el elemento de catalogo relacionado con el item anterior</em>
+        <em>Selecciona el tipo de Elemento del Catalogo de Bienes y Servicios, al que pertenece el elemento seleccionado anteriormente<br />
+        Si no está listado el tipo de Elemento necesario, revisar en el Módulo Catálogo de Elementos, en Registro de Elementos</em>
       </p>
 
       <ng2-smart-table [settings]="settings" [source]="source" (custom)="onCustom($event)">

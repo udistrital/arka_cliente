@@ -3,6 +3,23 @@
     <nb-card-body>
         <ngx-bodega-sin-asignar *ngIf="paso === 0" (DatosEnviados)="Asignar_Elemento_Bodega($event)">
         </ngx-bodega-sin-asignar>
+
+        <nb-card *ngIf="paso === 1"><nb-card-body><table>
+            <tr>
+                <th>Elemento</th>
+                <th>Marca</th>
+                <th>Serie</th>
+                <th>Clase</th>
+                <th>Saldo</th>
+            </tr>
+            <tr>
+                <td>{{ElementoSinAsignar.Nombre}}</td>
+                <td>{{ElementoSinAsignar.Marca}}</td>
+                <td>{{ElementoSinAsignar.Serie}}</td>
+                <td>{{ElementoSinAsignar.SubgrupoCatalogoId.Codigo + ' - ' + ElementoSinAsignar.SubgrupoCatalogoId.Nombre}}</td>
+                <td>{{ElementoSinAsignar.SaldoCantidad}}</td>
+            </tr>
+        </table></nb-card-body></nb-card>
         <ngx-relacion-catalogo *ngIf="paso === 1"
             [Subgrupo_Id]="ElementoSinAsignar.SubgrupoCatalogoId.Id"
             (DatosEnviados)="Asignar_Elemento_Catalogo($event)">

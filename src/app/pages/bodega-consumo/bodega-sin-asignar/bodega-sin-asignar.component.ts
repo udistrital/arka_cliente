@@ -64,15 +64,15 @@ export class BodegaSinAsignarComponent implements OnInit {
       hideSubHeader: false,
       noDataMessage: this.translate.instant('GLOBAL.no_data_entradas'),
       actions: {
-        columnTitle: 'Solicitar',
+        columnTitle: 'Seleccionar',
         position: 'right',
         add: false,
         edit: false,
         delete: false,
         custom: [
           {
-            name: 'Solicitar',
-            title: '<i class="fas fa-pencil-alt" title="Ver"></i>',
+            name: 'Seleccionar',
+            title: '<i class="fas fa-arrow-right" title="Ver"></i>',
           },
         ],
       },
@@ -139,10 +139,6 @@ export class BodegaSinAsignarComponent implements OnInit {
 
   onVolver() {
     this.detalle = !this.detalle;
-    this.iniciarParametros();
-  }
-
-  iniciarParametros() {
   }
 
   onRegister() {

@@ -68,15 +68,15 @@ export class RelacionCatalogoComponent implements OnInit {
       hideSubHeader: false,
       noDataMessage: this.translate.instant('GLOBAL.no_data_entradas'),
       actions: {
-        columnTitle: 'Solicitar',
+        columnTitle: 'Asociar',
         position: 'right',
         add: false,
         edit: false,
         delete: false,
         custom: [
           {
-            name: 'Solicitar',
-            title: '<i class="fas fa-pencil-alt" title="Ver"></i>',
+            name: 'Asociar',
+            title: '<i class="fas fa-arrow-right" title="Ver"></i>',
           },
         ],
       },
