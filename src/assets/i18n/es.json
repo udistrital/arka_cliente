@@ -13,6 +13,134 @@
       "opciones": "Opciones",
       "configurar_rol": "Rol"
     },
+    "main": {
+      "catalogo": {
+        "name": "Catálogo de Elementos",
+        "children": {
+          "listar": {
+            "name": "Listar Catálogos"
+          },
+          "crear": {
+            "name": "Crear Catálogo"
+          },
+          "consultar": {
+            "name": "Consultar Catálogo"
+          },
+          "construir": {
+            "name": "Construcción de Catálogo"
+          },
+          "elementos": {
+            "name": "Registro Elementos"
+          },
+          "inactivar": {
+            "name": "Inactivar Niveles"
+          },
+          "cuentas": {
+            "name": "Asignación de Cuentas"
+          }
+        }
+      },
+      "acta": {
+        "name": "Acta de Recibido",
+        "children": {
+          "consulta": {
+            "name": "Consulta de Actas"
+          },
+          "registro": {
+            "name": "Registro de Acta"
+          },
+          "reg_especial": {
+            "name": "Registro de Acta Especial"
+          }
+        }
+      },
+      "entradas": {
+        "name": "Entradas",
+        "children": {
+          "consulta": {
+            "name": "Consultar Entradas"
+          },
+          "registro": {
+            "name": "Registrar Entrada"
+          }
+        }
+      },
+      "salidas": {
+        "name": "Salidas",
+        "children": {
+          "lista": {
+            "name": "Consultar Salidas"
+          },
+          "crear": {
+            "name": "Registrar Salida"
+          }
+        }
+      },
+      "bodega": {
+        "name": "Bodega de Consumo",
+        "children": {
+          "solicitar": {
+            "name": "Solicitar Elementos"
+          },
+          "sol_consulta": {
+            "name": "Consultar Solicitudes"
+          },
+          "sol_responder": {
+            "name": "Responder Solicitudes"
+          },
+          "kardex_asignar": {
+            "name": "Asignación a Kardex"
+          },
+          "kardex_consultar": {
+            "name": "Consulta de Kardex"
+          }
+        }
+      },
+      "bajas": {
+        "name": "Bajas",
+        "children": {
+          "consulta": {
+            "name": "Consultar Solicitudes"
+          },
+          "registro": {
+            "name": "Registrar Solicitud"
+          }
+        }
+      },
+      "movimientos": {
+        "name": "Movimientos",
+        "children": {
+          "consulta": {
+            "name": "Consultar Baja de Bien"
+          },
+          "solicitud": {
+            "name": "Solicitud de Baja de Bien"
+          },
+          "aprobacion": {
+            "name": "Aprobacion de Baja de Bien"
+          }
+        }
+      },
+      "reportes": {
+        "name": "Reportes",
+        "children": {
+          "entradas": {
+            "name": "Entradas"
+          },
+          "salidas": {
+            "name": "Salidas"
+          }
+        }
+      },
+      "ajustes": {
+        "name": "Ajustes",
+        "children": {
+          "registrarAjuste": {
+            "name": "Registrar Ajuste"
+          }
+        }
+      }
+    },
     "aplicaciones": "Aplicaciones",
     "roles": "Roles",
     "opciones": "Opciones",
@@ -609,15 +737,31 @@
       "tab_consumo_controlado": "Elementos Devolutivos y de Consumo Controlado",
       "asignar": "REGISTRAR SALIDA",
       "asignar_funcionario": "ASIGNAR A FUNCIONARIO",
+      "error_entrada_no_registrada": "No se pudo registrar la entrada solicitada",
+      "error_salida_no_registrada": "No se pudo registrar la salida solicitada",
       "alerta_descargue": "Elementos sin descargar",
       "alerta_consumo": "Elementos de consumo sin asignar",
       "alerta_controlado": "Elementos de consumo controlado sin asignar",
       "alerta_ambos": "Elementos de consumo y consumo controlado sin asignar"
     },
 
+    "cuentas": {
+      "alerta_modificacion": "Cuentas en Modificación. Intente más tarde",
+      "estado_modificando": "En Modificación (Transacciones Bloqueadas)",
+      "estado_lectura": "Solo Lectura (Transacciones Habilitadas)",
+      "iniciar_edicion_boton": "Iniciar Edición de Cuentas",
+      "iniciar_edicion_titulo": "¿Iniciar Edición de Cuentas?",
+      "iniciar_edicion_texto": "Se bloqueará cualquier tipo de movimiento. ¿Desea continuar?",
+      "terminar_edicion_boton": "Terminar Edición de Cuentas",
+      "terminar_edicion_titulo": "¿Finalizar Edicion de Cuentas?",
+      "terminar_edicion_texto": "Se permitirá realizar movimientos. ¿Desea continuar?"
+    },
+
     "salidas": {
       "titulo_registrar": "Registrar Salida",
       "elementos": "Elementos",
+      "exito_registro_titulo": "Salida Registrada",
+      "exito_registro_texto": "La Salida ha sido Registrada exitosamente",
       "salida_instruccion": "En la siguiente tabla seleccione la entrada para poder generar la salida correspondiente",
       "consulta_salida_info": "En la siguiente tabla se muestran de forma general las salidas, seleccione una para ver la informacion asociada",
       "detalle_salida": "Detalle Salida"
