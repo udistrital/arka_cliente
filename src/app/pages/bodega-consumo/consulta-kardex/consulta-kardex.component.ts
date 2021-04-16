@@ -40,6 +40,7 @@ export class ConsultaKardexComponent implements OnInit {
   Proveedores: any;
   Dependencias: any;
   Sedes: any;
+  cargandoListaKardex: boolean;
 
   Metodos: any[] = [
     {
@@ -71,12 +72,12 @@ export class ConsultaKardexComponent implements OnInit {
   ) {
     this.source = new LocalDataSource();
     this.detalle = false;
-    this.loadTablaSettings();
   }
 
 
 
   ngOnInit() {
+    this.loadTablaSettings();
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
       this.loadTablaSettings();
     });
@@ -190,6 +191,7 @@ export class ConsultaKardexComponent implements OnInit {
     };
   }
   loadSalidas(): void {
+    this.cargandoListaKardex = true;
 
     this.BodegaConsumoService.getAperturasKardex().subscribe(res1 => {
       if (Object.keys(res1[0]).length !== 0) {
@@ -199,6 +201,7 @@ export class ConsultaKardexComponent implements OnInit {
         });
         this.source.load(res1);
       }
+      this.cargandoListaKardex = false;
     });
   }
   onCustom(event) {

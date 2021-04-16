@@ -33,6 +33,7 @@ export class RelacionCatalogoComponent implements OnInit {
   settings: any;
   documentoId: boolean;
   settings2: any;
+  cargando: boolean;
 
   @Output() DatosEnviados = new EventEmitter();
   @Output() DatosTotales = new EventEmitter();
@@ -131,12 +132,13 @@ export class RelacionCatalogoComponent implements OnInit {
 
   ElementosSinAsignar(subgrupo_id): void {
     // console.log(subgrupo_id);
+    this.cargando = true;
     this.catalogoHelper.getElementosSubgrupo(subgrupo_id).subscribe((res: any) => {
       // console.log(res[0]);
       if (Object.keys(res[0]).length !== 0) {
         this.source.load(res);
       }
-
+      this.cargando = false;
     });
   }
 
