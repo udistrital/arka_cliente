@@ -131,6 +131,14 @@
             "name": "Salidas"
           }
         }
+      },
+      "ajustes": {
+        "name": "Ajustes",
+        "children": {
+          "registrarAjuste": {
+            "name": "Registrar Ajuste"
+          }
+        }
       }
     },
     "aplicaciones": "Aplicaciones",

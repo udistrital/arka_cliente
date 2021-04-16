@@ -131,6 +131,14 @@
             "name": "Outputs"
           }
         }
+      },
+      "ajustes": {
+        "name": "Adjustments",
+        "children": {
+          "registrarAjuste": {
+            "name": "Register reversal"
+          }
+        }
       }
     },
     "aplicaciones": "Aplicaciones",
