@@ -1,16 +1,14 @@
-<div class="col-lg-12">
   <nb-card>
     <nb-card-header>
-      <!-- <h1>{{'GLOBAL.consultar_entrada' | translate}}</h1> -->
-      Consultar Kardex
+      <h2>{{'Consultar Kardex' | translate}}</h2>
     </nb-card-header>
-    <nb-card-body>
+    <nb-card-body><nb-card><nb-card-body>
 
       <!-- CARD PARA MOSTRAR LAS SOLICITUDES *ngIf="!detalle" -->
       <!-- <p class="h4 pb-4" *ngIf="!detalle">{{'GLOBAL.mensaje_consulta_entrada' | translate}}</p> -->
-      <p class="h4 pb-4" *ngIf="!kardex">
+      <p *ngIf="!kardex"><span class="fas fa-info-circle"></span>&nbsp;<em>
         En la siguiente tabla se muestran de forma general los kardex de inventario de consumo, seleccione una para ver
-        la informacion asociada</p>
+        la informacion asociada</em></p>
       <ng2-smart-table [settings]="settings" [source]="source" (custom)="onCustom($event)" *ngIf="!kardex">
       </ng2-smart-table>
       <nb-card *ngIf="kardex">
@@ -42,19 +40,16 @@
               </div>
             </div>
           </div>
-    
+
         </nb-card-body>
       </nb-card>
       <ngx-kardex *ngIf="kardex" [Kardex]="kardex"></ngx-kardex>
 
-      
-    </nb-card-body>
-    <nb-card-footer>
-      <div class="pt-4">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="onVolver()"
-          *ngIf="kardex">{{'GLOBAL.volver' | translate}}
+
+    </nb-card-body></nb-card></nb-card-body>
+    <nb-card-footer *ngIf="kardex">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="onVolver()">
+          {{'GLOBAL.volver' | translate}}
         </button>
-      </div>
     </nb-card-footer>
   </nb-card>
-</div>
