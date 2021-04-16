@@ -1,6 +1,5 @@
 import { Component, OnInit, ViewChild, ElementRef, Input, Output, EventEmitter, OnChanges, SimpleChanges, HostListener } from '@angular/core';
 import * as XLSX from 'xlsx';
-import * as FileSaver from 'file-saver';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
@@ -15,6 +14,7 @@ import { Impuesto } from '../../../@core/data/models/acta_recibido/elemento';
 import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/catalogoElementosHelper';
 import { Store } from '@ngrx/store';
 import { IAppState } from '../../../@core/store/app.state';
+import { ConfiguracionService } from '../../../@core/data/configuracion.service';
 import { ListService } from '../../../@core/store/services/list.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { NuxeoService } from '../../../@core/utils/nuxeo.service';
@@ -73,7 +73,7 @@ export class CapturarElementosComponent implements OnInit {
   displayedColumns: any[];
   checkTodos: boolean = false;
   checkParcial: boolean = false;
-  Proveedor: boolean;
+  ocultarAsignacionCatalogo: boolean;
   ErroresCarga: string = '';
   cargando: boolean = true;
 
@@ -84,6 +84,7 @@ export class CapturarElementosComponent implements OnInit {
     private store: Store<IAppState>,
     private listService: ListService,
     private nuxeoService: NuxeoService,
+    private confService: ConfiguracionService,
     private documentoService: DocumentoService,
     private catalogoHelper: CatalogoElementosHelper,
     private userService: UserService,
@@ -173,8 +174,8 @@ export class CapturarElementosComponent implements OnInit {
   }
 
   ReglasColumnas() {
-    if (this.userService.tieneAlgunRol([Rol.Proveedor])) {
-      this.Proveedor = true;
+    this.ocultarAsignacionCatalogo = !this.confService.getAccion('mostrarAsignacionCatalogo');
+    if (this.ocultarAsignacionCatalogo) {
       this.displayedColumns = [
         'AccionesMacro',
         'Nombre',

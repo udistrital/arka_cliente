@@ -11,7 +11,7 @@
                 <div class="row" (click)="usarLocalStorage()">
                   <div class="form-group col-sm">
                     <label>{{'GLOBAL.Acta_Recibido.EdicionActa.Sede' | translate}}</label>
-                    <mat-select type="text" class="form-control" formControlName="Sede" required *ngIf="getPermisoEditar(permisos.Acta)"
+                    <mat-select type="text" class="form-control" formControlName="Sede" required
                       (selectionChange)="usarLocalStorage(); Traer_Relacion_Ubicaciones();">
                       <mat-option *ngFor="let sede of Sedes" [(value)]="sede.Id">{{sede.Nombre}}</mat-option>
                     </mat-select>
@@ -30,7 +30,7 @@
                   </div>
                   <div class="form-group col-sm">
                     <label>{{'GLOBAL.Acta_Recibido.EdicionActa.Ubicacion' | translate}}</label>
-                    <mat-select type="text" class="form-control" formControlName="Ubicacion" *ngIf="getPermisoEditar(permisos.Acta)"
+                    <mat-select type="text" class="form-control" formControlName="Ubicacion"
                       (selectionChange)="usarLocalStorage()">
                       <mat-option *ngFor="let ubicacion of UbicacionesFiltradas" [(value)]="ubicacion.Id">{{ubicacion.Nombre}}
                       </mat-option>

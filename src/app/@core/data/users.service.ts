@@ -66,6 +66,28 @@ export class UserService {
     return this.tokenData.sub; // window.localStorage.getItem('usuario').toString() ;
   }
 
+  getRoles(): string[] {
+    return this.roles;
+  }
+
+  /**
+   * Obtiene un string con todos los roles, con el separador indicado.
+   * (de no especificarse, el separador es ',').
+   *
+   * NOTA: Hay algo en Autenticación(WSO2) que no deja que lo siguiente
+   * funcione adecuadamente (permitir roles con '/')...:
+   *
+   * Adicionalmente, si los roles tienen '/', se retornan sanitizados
+   * para poderlos usar en URLs
+   *
+   * ... Una vez se arregle, comentar/eliminar el .filter
+   */
+  getStringRolesUrl(separador: string = ','): string {
+    return this.roles
+    .filter(rol => !rol.includes('/'))
+    .join(separador).replace('/', '%2F');
+  }
+
   public getPersonaId(): number {
     return this.terceroId;
   }
