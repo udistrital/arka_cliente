@@ -6,9 +6,9 @@
         <div class="form-group col-sm">
           <label>Cantidad</label>
           <div class="input-group">
-            <input currencyMask [options]="{allowNegative: false, prefix: '',align: 'left', precision: 0}" nbInput
-              type="text" placeholder="{{'GLOBAL.Acta_Recibido.CapturarElementos.CantidadHeader' | translate }}"
-              formControlName="Cantidad" class="form-control" >
+            <input nbInput type="number" min="0" [max]="maxAsignable"
+              placeholder="{{'GLOBAL.Acta_Recibido.CapturarElementos.CantidadHeader' | translate }}"
+              formControlName="Cantidad" class="form-control">
           </div>
           <p></p>
           <p class="campo">

@@ -12,6 +12,7 @@ export class AjustarCantidadComponent implements OnInit {
   @Input() row: any;
   @ViewChild('fform') firstFormDirective;
   form_cantidad: FormGroup;
+  maxAsignable: number;
 
   constructor(
     protected ref: NbDialogRef<AjustarCantidadComponent>,
@@ -24,15 +25,14 @@ export class AjustarCantidadComponent implements OnInit {
   }
 
   submit() {
-
     this.row.CantidadAprobada = this.form_cantidad.get('Cantidad').value;
     this.ref.close(this.row);
   }
 
   ngOnInit() {
-
+    this.maxAsignable = Math.min(this.row.Cantidad, this.row.SaldoCantidad);
    this.form_cantidad = this.fb.group({
-    Cantidad: ['', [Validators.required, Validators.max(this.row.Cantidad), Validators.max(this.row.SaldoCantidad)]],
+    Cantidad: ['', [Validators.required, Validators.min(0), Validators.max(this.maxAsignable)]],
   });
   }
 
