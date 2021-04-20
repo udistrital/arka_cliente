@@ -79,7 +79,9 @@ export class EntradaKardexComponent implements OnInit {
     this.form_apertura = this.fb.group({
       Observaciones: ['', Validators.required],
     });
+  }
 
+  ngOnInit() {
   }
 
   public loadLists() {
@@ -92,9 +94,7 @@ export class EntradaKardexComponent implements OnInit {
       },
     );
   }
-  ngOnInit() {
 
-  }
   onSubmit() {
 
     const ultimo_elemento = this.elementos_kardex[this.elementos_kardex.length - 1];
@@ -130,7 +130,8 @@ export class EntradaKardexComponent implements OnInit {
         Elementos: [this.ElementoMovimiento],
       },
     );
-    // console.log(AperturaKardex);
+    // console.log({AperturaKardex});
+    // /*
     this.BodegaConsumo.postMovimientoKardex(AperturaKardex).subscribe((res: any) => {
       const opt: any = {
         title: 'Entrada Realizada',
@@ -140,5 +141,6 @@ export class EntradaKardexComponent implements OnInit {
       (Swal as any).fire(opt);
       this.router.navigate(['/pages/bodega_consumo/consulta_kardex']);
     });
+    // */
   }
 }
