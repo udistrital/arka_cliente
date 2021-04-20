@@ -301,6 +301,7 @@ export class DetalleSolicitudComponent implements OnInit {
     );
 
     this.source.getAll().then((res) => {
+      // console.log({res});
       res.forEach(element => {
 
         const elemento: any = {};
@@ -311,12 +312,15 @@ export class DetalleSolicitudComponent implements OnInit {
         elemento.ElementoCatalogoId = element.ElementoCatalogoId.Id;
         elemento.Unidad = element.CantidadAprobada;
         elemento.ValorUnitario = valor_promedio;
+        elemento.SaldoCantidad = element.SaldoCantidad - element.CantidadAprobada;
         elemento.SaldoValor = element.SaldoValor - (valor_promedio * element.CantidadAprobada);
 
         SalidaKardex.Movimiento[0].Elementos.push(elemento);
 
       });
 
+      // console.log({SalidaKardex});
+      //*
       this.BodegaConsumo.postResponderSolicitud(SalidaKardex).subscribe((res2: any) => {
         if (res2 !== null) {
           const opt: any = {
@@ -328,6 +332,7 @@ export class DetalleSolicitudComponent implements OnInit {
           this.router.navigate(['/pages/bodega_consumo/consulta_solicitud']);
         }
       });
+      // */
     });
 
   }
