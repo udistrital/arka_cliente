@@ -320,7 +320,7 @@ export class DetalleSolicitudComponent implements OnInit {
       });
 
       // console.log({SalidaKardex});
-      //*
+      // /*
       this.BodegaConsumo.postResponderSolicitud(SalidaKardex).subscribe((res2: any) => {
         if (res2 !== null) {
           const opt: any = {

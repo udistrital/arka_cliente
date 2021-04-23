@@ -119,7 +119,7 @@ export class KardexComponent implements OnInit {
     kardex_.ValorUnitario_E = elemento_.ValorUnitario;
     kardex_.ValorTotal_E = elemento_.ValorTotal;
     kardex_.SaldoValorUnitario = elemento_.SaldoValor / elemento_.SaldoCantidad;
-    kardex_.FechaCreacion = new Date().toISOString()
+    kardex_.FechaCreacion = new Date().toISOString();
     this.kardex.push(kardex_);
 
   }
