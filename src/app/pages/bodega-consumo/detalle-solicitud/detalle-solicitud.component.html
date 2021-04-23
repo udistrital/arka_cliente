@@ -50,6 +50,6 @@
     </form>
 
 <div class="pt-4" *ngIf="Editar">
-    <button *ngIf="!verificar" nbButton (click)="onSubmit()" class="float-right">Aprobar Solicitud</button>
+    <button [disabled]="verificar" nbButton (click)="onSubmit()" class="float-right">Aprobar Solicitud</button>
     <button nbButton (click)="onSubmit2()">Rechazar Solicitud</button>
 </div>

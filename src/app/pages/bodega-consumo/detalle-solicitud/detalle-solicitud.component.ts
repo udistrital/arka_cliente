@@ -110,10 +110,15 @@ export class DetalleSolicitudComponent implements OnInit {
           title: 'Elemento Relacionado',
         },
         ElementoCatalogoId: {
-          title: 'Descripcion',
+          title: 'Catalogo: Codigo/Clase/Elemento',
+          type: 'html',
           valuePrepareFunction: (value: any) => {
-            if (value !== null) {
-              return value.Descripcion;
+            if (value !== null && value.SubgrupoId !== null) {
+              return [
+                value.SubgrupoId.Codigo,
+                value.SubgrupoId.Nombre,
+                value.Descripcion,
+              ].join('/');
             } else {
               return '';
             }
