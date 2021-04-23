@@ -139,6 +139,14 @@
             "name": "Registrar Ajuste"
           }
         }
+      },
+      "bienes-inmuebles": {
+        "name": "bienes-inmuebles",
+        "children": {
+          "listaBienes": {
+            "name": "lista de bienes"
+          }
+        }
       }
     },
     "aplicaciones": "Aplicaciones",
