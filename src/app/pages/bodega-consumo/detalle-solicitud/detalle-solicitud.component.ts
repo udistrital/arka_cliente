@@ -44,7 +44,8 @@ export class DetalleSolicitudComponent implements OnInit {
     this.salida_id = salida_id;
     // console.log(this.subgrupo_id);
     if (this.salida_id !== undefined && this.Editar !== undefined) {
-      this.loadTablaSettings();
+      // console.log({salida_id: this.salida_id, Editar: this.Editar});
+      this.loadTablaSettings(this.Editar);
       this.loadSolicitud();
     }
   }
@@ -86,11 +87,10 @@ export class DetalleSolicitudComponent implements OnInit {
         Observaciones: ['', Validators.required],
       });
     }
-
   }
-  loadTablaSettings() {
 
-    this.settings = {
+  loadTablaSettings(editar: boolean) {
+    let settings = {
       noDataMessage: 'No se encontraron elementos asociados.',
       actions: {
         columnTitle: 'Acciones',
@@ -204,12 +204,18 @@ export class DetalleSolicitudComponent implements OnInit {
         Cantidad: {
           title: 'Cantidad Solicitada',
         },
-        CantidadAprobada: {
-          title: 'Cantidad Aprobada',
-        },
-
       },
     };
+    if (editar) {
+      settings.columns["SaldoCantidad"] = {
+        title: 'Cantidad Disponible',
+      }
+    }
+    settings.columns["CantidadAprobada"] = {
+      title: 'Cantidad Aprobada',
+    }
+
+    this.settings = settings;
   }
 
   loadSolicitud(): void {
