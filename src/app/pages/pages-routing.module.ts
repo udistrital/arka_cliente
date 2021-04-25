@@ -53,6 +53,10 @@ const routes: Routes = [{
       loadChildren: './ajustes/ajustes.module#AjustesModule',
     },
     {
+      path: 'parametros',
+      loadChildren: './parametros/parametros.module#ParametrosModule',
+    },
+    {
       path: '',
       redirectTo: 'dashboard',
       pathMatch: 'full',
