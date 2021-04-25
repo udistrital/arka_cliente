@@ -333,4 +333,20 @@ export class EntradaHelper {
         );
     }
 
+    public getTiposEntradaByOrden(NumeroOrden) {
+        this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
+        return this.rqManager.get('formato_tipo_movimiento?query=Activo:true,NumeroOrden:' +
+            NumeroOrden + '&fields=CodigoAbreviacion&sortby=Id&order=asc&limit=-1').pipe(
+                map(
+                    (res) => {
+                        if (res === 'error') {
+                            this.pUpManager.showErrorAlert('No se pudo consultar el contrato contratos');
+                            return undefined;
+                        }
+                        return res;
+                    },
+                ),
+            );
+    }
+
 }
