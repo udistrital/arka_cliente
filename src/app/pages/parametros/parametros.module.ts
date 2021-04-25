@@ -15,6 +15,6 @@ import { TiposEntradaComponent } from './tipos-entrada/tipos-entrada.component';
     ParametrosRoutingModule,
     Ng2SmartTableModule,
     ThemeModule,
-  ]
+  ],
 })
 export class ParametrosModule { }
