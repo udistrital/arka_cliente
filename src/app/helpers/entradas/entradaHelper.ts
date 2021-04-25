@@ -91,11 +91,11 @@ export class EntradaHelper {
      */
     public postEntrada(entradaData) {
         return this.dispMvtos.movimientosPermitidos().pipe(
-            switchMap(disp => iif( () => disp, this.postEntradaFinal(entradaData) )),
+            switchMap(disp => iif(() => disp, this.postEntradaFinal(entradaData))),
         );
     }
 
-    private postEntradaFinal (entradaData) {
+    private postEntradaFinal(entradaData) {
         this.rqManager.setPath('ARKA_SERVICE');
         return this.rqManager.post(`entrada/`, entradaData).pipe(
             map(
@@ -246,7 +246,7 @@ export class EntradaHelper {
      */
     public getEncargadoElementoByPlaca(placa) {
         this.rqManager.setPath('ARKA_SERVICE');
-        return this.rqManager.get('entrada/encargado/' + placa ).pipe(
+        return this.rqManager.get('entrada/encargado/' + placa).pipe(
             map(
                 (res) => {
                     if (res === 'error') {
@@ -280,25 +280,25 @@ export class EntradaHelper {
         );
     }
 
-        /**
+    /**
      * anularMovimientosByEntrada Get
      * If the response has errors in the OAS API it should show a popup message with an error.
      * If the response is successs, it returns the object's data.
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
      */
-         public anularMovimientosByEntrada(entrada_id) {
-            this.rqManager.setPath('ARKA_SERVICE');
-            return this.rqManager.get('entrada/anular/' + entrada_id).pipe(
-                map(
-                    (res) => {
-                        if (res === 'error') {
-                            this.pUpManager.showErrorAlert('No se pudieron anular los movimientos asociados');
-                            return undefined;
-                        }
-                        return res;
-                    },
-                ),
-            );
-        }
+    public anularMovimientosByEntrada(entrada_id) {
+        this.rqManager.setPath('ARKA_SERVICE');
+        return this.rqManager.get('entrada/anular/' + entrada_id).pipe(
+            map(
+                (res) => {
+                    if (res === 'error') {
+                        this.pUpManager.showErrorAlert('No se pudieron anular los movimientos asociados');
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
 
 }

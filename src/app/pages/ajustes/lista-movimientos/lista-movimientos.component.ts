@@ -54,8 +54,6 @@ export class ListaMovimientosComponent implements OnInit {
     private salidasHelper: SalidaHelper,
     private bajasHelper: BajasHelper,
     private translate: TranslateService,
-    private listService: ListService,
-    private store: Store<IAppState>,
     private tercerosHelper: TercerosHelper,
 
   ) {
@@ -70,12 +68,9 @@ export class ListaMovimientosComponent implements OnInit {
   ngOnInit() {
     this.loadTablasSettings();
     this.loadActas();
-    this.listService.findClases();
-    this.listService.findImpuestoIVA();
-    this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
-      this.loadTablasSettings();
-    });
     this.loadTerceros();
+    this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
+    });
   }
 
   loadTablasSettings() {

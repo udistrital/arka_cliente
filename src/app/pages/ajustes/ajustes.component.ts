@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 
 @Component({
-  selector: 'ngx-bajas',
+  selector: 'ngx-ajustes',
   template: `<router-outlet></router-outlet>`,
 })
 export class AjustesComponent implements OnInit {
