@@ -301,4 +301,36 @@ export class EntradaHelper {
         );
     }
 
+    public getFormatoEntrada() {
+        this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
+        return this.rqManager.get('formato_tipo_movimiento?query=NumeroOrden__lte:2&sortby=Id&order=asc&limit=-1').pipe(
+            map(
+                (res) => {
+                    if (res === 'error') {
+                        this.pUpManager.showErrorAlert('No se pudo consultar el contrato contratos');
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
+
+    public putFormatoEntrada(FormatoTipoMovimiento) {
+        this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
+        return this.rqManager.put('formato_tipo_movimiento', FormatoTipoMovimiento).pipe(
+            map(
+                (res) => {
+                    if (res) {
+                        return res;
+                    } else {
+                        this.pUpManager.showErrorAlert('No se pudo consultar el contrato contratos');
+                        return undefined;
+
+                    }
+                },
+            ),
+        );
+    }
+
 }
