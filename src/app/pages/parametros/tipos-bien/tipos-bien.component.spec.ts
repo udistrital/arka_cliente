@@ -9,7 +9,7 @@ describe('TiposBienComponent', () => {
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [
-        TiposBienComponent
+        TiposBienComponent,
       ],
     })
     .compileComponents();
