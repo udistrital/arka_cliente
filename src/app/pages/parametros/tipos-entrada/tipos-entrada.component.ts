@@ -112,9 +112,9 @@ export class TiposEntradaComponent implements OnInit {
 
     (Swal as any).fire({
       title: this.translate.instant(FormatoTipoMovimiento.Activo ?
-        'GLOBAL.parametros.title_desactivacion_entrada' : 'GLOBAL.parametros.title_activacion_entrada'),
+        'GLOBAL.parametros.tiposEntradas.title_desactivacion_entrada' : 'GLOBAL.parametros.tiposEntradas.title_activacion_entrada'),
       text: this.translate.instant(FormatoTipoMovimiento.Activo ?
-        'GLOBAL.parametros.confirmar_desactivacion_entrada' : 'GLOBAL.parametros.confirmar_activacion_entrada'),
+        'GLOBAL.parametros.tiposEntradas.confirmar_desactivacion_entrada' : 'GLOBAL.parametros.tiposEntradas.confirmar_activacion_entrada'),
       type: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
@@ -131,9 +131,9 @@ export class TiposEntradaComponent implements OnInit {
             (Swal as any).fire({
               type: 'success',
               title: this.translate.instant(FormatoTipoMovimiento.Activo ?
-                'GLOBAL.parametros.title_success_activacion' : 'GLOBAL.parametros.title_success_desactivacion'),
+                'GLOBAL.parametros.tiposEntradas.title_success_activacion' : 'GLOBAL.parametros.tiposEntradas.title_success_desactivacion'),
               text: this.translate.instant(FormatoTipoMovimiento.Activo ?
-                'GLOBAL.parametros.success_activacion' : 'GLOBAL.parametros.success_desactivacion'),
+                'GLOBAL.parametros.tiposEntradas.success_activacion' : 'GLOBAL.parametros.tiposEntradas.success_desactivacion'),
             });
             this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
               this.router.navigate(['/pages/parametros/tipos-entrada']);
@@ -144,9 +144,9 @@ export class TiposEntradaComponent implements OnInit {
             (Swal as any).fire({
               type: 'error',
               title: this.translate.instant(FormatoTipoMovimiento.Activo ?
-                'GLOBAL.parametros.title_error_activacion' : 'GLOBAL.parametros.title_error_desactivacion'),
+                'GLOBAL.parametros.tiposEntradas.title_error_activacion' : 'GLOBAL.parametros.tiposEntradas.title_error_desactivacion'),
               text: this.translate.instant(FormatoTipoMovimiento.Activo ?
-                'GLOBAL.parametros.error_activacion' : 'GLOBAL.parametros.error_desactivacion'),
+                'GLOBAL.parametros.tiposEntradas.error_activacion' : 'GLOBAL.parametros.tiposEntradas.error_desactivacion'),
             });
           }
         });

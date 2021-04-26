@@ -145,6 +145,9 @@
         "children": {
           "tiposEntrada": {
             "name": "Entry types"
+          },
+          "tiposBien": {
+            "name": "Good Types"
           }
         }
       }
@@ -819,19 +822,21 @@
     "error_anular_entrada": "The related entries could not be reversed"
   },
   "parametros": {
+    "tiposEntradas": {
     "title": "Manage entry types",
     "subtitle": "Select an entry type to change its state",
     "title_activacion_entrada": "Enable Entry Type",
     "title_desactivacion_entrada": "Disable Entry Type",
     "confirmar_activacion_entrada": "Are you sure to Enable the selected entry type?",
-    "confirmar_desactivacion_entrada": "Are you sure to disnable the selected entry type?",
-    "title_success_activacion": "Enabled Entry",
-    "title_success_desactivacion": "Disabled Entry",
-    "success_activacion": "The entry has been successfully enabled",
-    "success_desactivacion": "The entry has been successfully disabled",
+    "confirmar_desactivacion_entrada": "Are you sure to disable the selected entry type?",
+    "title_success_activacion": "Entry Type Enabled",
+    "title_success_desactivacion": "Entry Type Disabled",
+    "success_activacion": "The entry type has been successfully enabled",
+    "success_desactivacion": "The entry type has been successfully disabled",
     "title_error_activacion": "Error when trying to enable the Entry Type",
     "title_error_desactivacion": "Error when trying to disable the Entry Type",
-    "error_activacion": "The entry could not be enabled",
-    "error_desactivacion": "The entry could not be disabled"
+    "error_activacion": "The entry type could not be enabled",
+    "error_desactivacion": "The entry type could not be disabled"
+   },
   }
 }
