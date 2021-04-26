@@ -10,8 +10,12 @@
           <option *ngFor="let item of catalogos" value="{{ item.Id }}">{{ item.Nombre }}</option>
         </select>
 
-        <ngx-arbol *ngIf="catalogoId !== 0" [catalogoId]="catalogoId" (fila)="receiveMessage($event)"
-          ></ngx-arbol>
+        <ngx-arbol *ngIf="catalogoId !== 0" [catalogoId]="catalogoId" (fila)="receiveMessage($event)" acciones=true>
+          <p>
+            <span class="fas fa-info-circle"></span>&nbsp;
+            <em>Para agregar elementos, seleccione una fila correspondiente a una Clase</em>
+          </p>
+        </ngx-arbol>
   </nb-card-body>
 </nb-card>
 <div class="col" *ngIf="ver_formulario">
