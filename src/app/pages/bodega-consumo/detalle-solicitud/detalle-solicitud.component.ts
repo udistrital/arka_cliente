@@ -354,8 +354,10 @@ export class DetalleSolicitudComponent implements OnInit {
     this.Detalle_Solicitud.Elementos.forEach((element: any) => {
         element.CantidadAprobada = 0;
     });
-    this.Solicitud.Detalle = this.Detalle_Solicitud;
+    this.Solicitud.Detalle = JSON.stringify(this.Detalle_Solicitud);
 
+    // console.log({Solicitud: this.Solicitud, Detalle_Solicitud: this.Detalle_Solicitud});
+    // /*
     this.BodegaConsumo.postRechazarSolicitud(this.Solicitud).subscribe((res: any) => {
       const opt: any = {
         title: 'Salida Rechazada',
@@ -365,6 +367,7 @@ export class DetalleSolicitudComponent implements OnInit {
       (Swal as any).fire(opt);
       this.router.navigate(['/pages/bodega_consumo/consulta_solicitud']);
     });
+    // */
   }
 
 }
