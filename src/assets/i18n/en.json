@@ -838,5 +838,21 @@
     "error_activacion": "The entry type could not be enabled",
     "error_desactivacion": "The entry type could not be disabled"
    },
+   "tiposBien": {
+     "title": "Manage good types",
+     "subtitle": "Select a good type to change its state",
+     "title_activacion": "Enable Good Type",
+     "title_desactivacion": "Disable Good Type",
+     "confirmar_activacion": "Are you sure to Enable the selected good type?",
+     "confirmar_desactivacion": "Are you sure to Disable the selected good type?",
+     "title_success_activacion": "Good Type Enabled",
+     "title_success_desactivacion": "Good Type Disabled",
+     "success_activacion": "The good type has been successfully enablede",
+     "success_desactivacion": "The good type has been successfully disabled",
+     "title_error_activacion": "Error when trying to enable the Good Type",
+     "title_error_desactivacion": "Error when trying to disable the Good Type",
+     "error_activacion": "The good type could not be enabled",
+     "error_desactivacion": "The good type could not be disabled"
+   }
   }
 }

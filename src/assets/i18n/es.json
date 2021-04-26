@@ -839,6 +839,23 @@
         "error_activacion": "La entrada no ha sido habilitada correctamente",
         "error_desactivacion": "La entrada no ha sido inhabilitada correctamente"
       },
+      "tiposBien": {
+        "title": "Administrar tipos de bien",
+        "subtitle": "Seleccione un tipo de bien para cambiar su estado",
+        "title_activacion": "Habilitar Tipo de Bien",
+        "title_desactivacion": "Inhabilitar Tipo de Bien",
+        "confirmar_activacion": "¿Desea habilitar este tipo de bien?",
+        "confirmar_desactivacion": "¿Desea inhabilitar este tipo de bien?",
+        "title_success_activacion": "Tipo de Bien Habilitado",
+        "title_success_desactivacion": "Tipo de Bien Inhabilitado",
+        "success_activacion": "El tipo de bien ha sido habilitado correctamente",
+        "success_desactivacion": "El tipo de bien ha sido inhabilitado correctamente",
+        "title_error_activacion": "Error Habilitar Tipo Bien",
+        "title_error_desactivacion": "Error Inhabilitar Tipo Bien",
+        "error_activacion": "El tipo de bien no ha sido habilitado correctamente",
+        "error_desactivacion": "El tipo de bien no ha sido inhabilitado correctamente",
+        "asignable_kardex": "Asignable a Kárdex"
+      }
     }
   }
 }
