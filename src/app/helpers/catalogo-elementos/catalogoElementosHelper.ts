@@ -371,14 +371,14 @@ export class CatalogoElementosHelper {
         );
     }
     /**
-         * Tipo de Bien Acta Get
-         * If the response has errors in the OAS API it should show a popup message with an error.
-         * If the response is successs, it returns the object's data.
-         * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
-         */
+     * Retorna los Tipo de Bien Activos Get
+     * If the response has errors in the OAS API it should show a popup message with an error.
+     * If the response is successs, it returns the object's data.
+     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
+     */
     public getTipoBien() {
         this.rqManager.setPath('CATALOGO_ELEMENTOS_SERVICE');
-        return this.rqManager.get('tipo_bien?limit=-1').pipe(
+        return this.rqManager.get('tipo_bien?query=Activo:true&limit=-1').pipe(
             map(
                 (res) => {
                     if (res === 'error') {
