@@ -26,7 +26,7 @@
         </ngx-relacion-catalogo>
 
         <ngx-entrada-kardex [Elementos_K]="ElementosKardex" [Elemento_C]="ElementoCatalogo" [Elemento_B]="ElementoSinAsignar"
-            *ngIf="paso === 2 && entrada"
+            *ngIf="paso === 2 && !apertura"
             (DatosEnviados)="Asignar_Elemento_Movimiento($event)"></ngx-entrada-kardex>
 
         <ngx-apertura-kardex [Elemento_C]="ElementoCatalogo" [Elemento_B]="ElementoSinAsignar"

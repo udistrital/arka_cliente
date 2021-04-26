@@ -14,7 +14,6 @@ export class AsignacionKardexComponent implements OnInit {
   ElementoSinAsignar: any;
   ElementoCatalogo: any;
   ElementoPorAsignar: any;
-  entrada: any;
   apertura: any;
   ElementosKardex: any;
   paso: number;
@@ -51,7 +50,7 @@ export class AsignacionKardexComponent implements OnInit {
 
       if (Object.keys(res[0]).length !== 0) {
         this.ElementosKardex = res;
-        this.entrada = true;
+        this.apertura = false;
       } else {
         this.apertura = true;
       }
