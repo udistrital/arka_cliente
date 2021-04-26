@@ -7,11 +7,11 @@ const routes: Routes = [
   {
     path: 'lista-bienes',
     component: ListaBienesComponent,
-  }
+  },
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
 export class BienesInmueblesRoutingModule { }

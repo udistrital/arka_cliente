@@ -27,7 +27,7 @@ export class MenuService {
   traerMenus(): Observable<Partial<Menu>[]> {
     return this.confService.getConfig().pipe(map(
       (res: Partial<Menu>[]) => {
-        console.log(this.filtrarMenus(res));
+        // console.log(this.filtrarMenus(res));
         return this.filtrarMenus(res);
       },
     ));

@@ -9,7 +9,7 @@ import { BienesInmueblesComponent } from './bienes-inmuebles.component';
   declarations: [ListaBienesComponent, BienesInmueblesComponent],
   imports: [
     CommonModule,
-    BienesInmueblesRoutingModule
-  ]
+    BienesInmueblesRoutingModule,
+  ],
 })
 export class BienesInmueblesModule { }
