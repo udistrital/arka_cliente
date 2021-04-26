@@ -7,9 +7,14 @@ import { ThemeModule } from '../../@theme/theme.module';
 import { ParametrosRoutingModule } from './parametros-routing.module';
 import { ParametrosComponent } from './parametros.component';
 import { TiposEntradaComponent } from './tipos-entrada/tipos-entrada.component';
+import { TiposBienComponent } from './tipos-bien/tipos-bien.component';
 
 @NgModule({
-  declarations: [ParametrosComponent, TiposEntradaComponent],
+  declarations: [
+    ParametrosComponent,
+    TiposEntradaComponent,
+    TiposBienComponent
+  ],
   imports: [
     CommonModule,
     ParametrosRoutingModule,
