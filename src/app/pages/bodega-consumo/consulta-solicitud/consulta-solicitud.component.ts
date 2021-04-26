@@ -1,7 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { LocalDataSource } from 'ngx-smart-table';
-import { TranslateService } from '@ngx-translate/core';
+import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
 import { BodegaConsumoHelper } from '../../../helpers/bodega_consumo/bodegaConsumoHelper';
 
@@ -33,6 +33,9 @@ export class ConsultaSolicitudComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
+      this.loadTablaSettings();
+    });
     this.route.data.subscribe(data => {
       // console.log({data});
       if (data && data.Editar !== null && data.Editar !== undefined) {
@@ -57,15 +60,14 @@ export class ConsultaSolicitudComponent implements OnInit {
         },
       },
       Solicitante: {
-        title: 'solicitante',
+        title: this.translate.instant('GLOBAL.solicitante'),
       },
-
     };
     this.settings = {
       hideSubHeader: false,
       noDataMessage: this.translate.instant('GLOBAL.no_data_entradas'),
       actions: {
-        columnTitle: this.translate.instant('GLOBAL.detalle'),
+        columnTitle: this.translate.instant('GLOBAL.seleccionar'),
         position: 'right',
         add: false,
         edit: false,
@@ -74,7 +76,7 @@ export class ConsultaSolicitudComponent implements OnInit {
           {
             // name: this.translate.instant('GLOBAL.detalle'),
             name: 'Seleccionar',
-            title: '<i class="fas fa-eye"></i>',
+            title: '<span class="fas fas fa-arrow-right"></span>',
           },
         ],
       },
