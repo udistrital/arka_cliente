@@ -13,7 +13,7 @@ import { TiposBienComponent } from './tipos-bien/tipos-bien.component';
   declarations: [
     ParametrosComponent,
     TiposEntradaComponent,
-    TiposBienComponent
+    TiposBienComponent,
   ],
   imports: [
     CommonModule,
