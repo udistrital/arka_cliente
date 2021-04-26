@@ -9,7 +9,7 @@ import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/cat
 @Component({
   selector: 'ngx-tipos-bien',
   templateUrl: './tipos-bien.component.html',
-  styleUrls: ['./tipos-bien.component.scss']
+  styleUrls: ['./tipos-bien.component.scss'],
 })
 
 export class TiposBienComponent implements OnInit {
@@ -35,7 +35,6 @@ export class TiposBienComponent implements OnInit {
 
   loadTiposBien(): void {
     this.catalogoHelper.getAllTiposBien().subscribe(res => {
-      console.log(res);
       if (Array.isArray(res) && res.length !== 0) {
         this.mostrar = true;
         this.TiposBien.load(res);
