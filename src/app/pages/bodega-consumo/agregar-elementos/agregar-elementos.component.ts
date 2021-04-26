@@ -104,11 +104,8 @@ export class AgregarElementosComponent implements OnInit {
 
   loadEntradas(): void {
     this.bodegaConsumo.getExistenciasKardex().subscribe((res: any) => {
-      if (Object.keys(res).length !== 0) {
-        this.mostrar = true;
-        // console.log(res);
-        this.source.load(res);
-      }
+      this.source.load(res);
+      this.mostrar = true;
     });
   }
 
