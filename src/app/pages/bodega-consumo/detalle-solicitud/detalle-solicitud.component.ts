@@ -90,7 +90,7 @@ export class DetalleSolicitudComponent implements OnInit {
   }
 
   loadTablaSettings(editar: boolean) {
-    let settings = {
+    const settings = {
       noDataMessage: 'No se encontraron elementos asociados.',
       actions: {
         columnTitle: 'Acciones',
@@ -212,13 +212,13 @@ export class DetalleSolicitudComponent implements OnInit {
       },
     };
     if (editar) {
-      settings.columns["SaldoCantidad"] = {
+      settings.columns['SaldoCantidad'] = {
         title: 'Cantidad Disponible',
-      }
+      };
     }
-    settings.columns["CantidadAprobada"] = {
+    settings.columns['CantidadAprobada'] = {
       title: 'Cantidad Aprobada',
-    }
+    };
 
     this.settings = settings;
   }
