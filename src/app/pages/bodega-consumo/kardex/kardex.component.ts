@@ -17,9 +17,11 @@ export class KardexComponent implements OnInit {
   elementos: any[];
   sales: any[];
   kardex: Kardex[];
+  cargando: boolean;
 
   @Input('Kardex')
   set name(elemento: number) {
+    this.cargando = true;
 
     if (elemento !== undefined) {
       this.bodegaConsumoService.getElementosKardex(elemento).subscribe((res: any) => {
@@ -27,21 +29,24 @@ export class KardexComponent implements OnInit {
         if (Object.keys(res[0]).length !== 0) {
           this.ArmarHojaKardex(res);
         }
+        this.cargando = false;
       });
     }
   }
 
   @Input('Apertura')
   set name2(elemento: any[]) {
+    this.cargando = true;
     // console.log('ok');
     if (Object.keys(elemento).length !== 0) {
       this.ArmarMovimientoPrevio(elemento);
     }
-
+    this.cargando = false;
   }
 
   @Input('Entrada')
   set name3(elemento: any) {
+    this.cargando = true;
 
     if (Object.keys(elemento).length !== 0) {
       this.bodegaConsumoService.getElementosKardex(elemento.ElementoCatalogoId).subscribe((res: any) => {
@@ -49,6 +54,7 @@ export class KardexComponent implements OnInit {
           this.ArmarHojaKardex(res);
           this.ArmarMovimientoPrevio(elemento);
         }
+        this.cargando = false;
       });
     }
   }
@@ -63,6 +69,9 @@ export class KardexComponent implements OnInit {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
     });
     this.kardex = new Array<Kardex>();
+  }
+
+  ngOnInit() {
   }
 
   ArmarHojaKardex(elementos: any[]) {
@@ -105,21 +114,16 @@ export class KardexComponent implements OnInit {
 
   ArmarMovimientoPrevio(elemento_: any) {
 
-    const kardex_ = elemento_;
+    const kardex_: Kardex = elemento_;
     kardex_.Unidad_E = elemento_.Unidad;
     kardex_.ValorUnitario_E = elemento_.ValorUnitario;
     kardex_.ValorTotal_E = elemento_.ValorTotal;
     kardex_.SaldoValorUnitario = elemento_.SaldoValor / elemento_.SaldoCantidad;
+    kardex_.FechaCreacion = new Date().toISOString();
     this.kardex.push(kardex_);
 
   }
-  ngOnInit() {
 
-
-  }
-  onSubmit() {
-    // console.log('entrra')
-  }
 }
 
 @Pipe({ name: 'currencycustom' })

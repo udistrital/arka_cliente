@@ -14,7 +14,6 @@ import { SalidaHelper } from '../../../helpers/salidas/salidasHelper';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
 import { UserService } from '../../../@core/data/users.service';
 
-
 @Component({
   selector: 'ngx-bodega-sin-asignar',
   templateUrl: './bodega-sin-asignar.component.html',
@@ -50,8 +49,14 @@ export class BodegaSinAsignarComponent implements OnInit {
     this.source = new LocalDataSource();
     this.entradas = new Array<Entrada>();
     this.detalle = false;
+  }
+
+  ngOnInit() {
     this.loadTablaSettings();
     this.ElementosSinAsignar();
+    this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
+      this.loadTablaSettings();
+    });
   }
 
   loadTablaSettings() {
@@ -59,41 +64,41 @@ export class BodegaSinAsignarComponent implements OnInit {
       hideSubHeader: false,
       noDataMessage: this.translate.instant('GLOBAL.no_data_entradas'),
       actions: {
-        columnTitle: 'Solicitar',
+        columnTitle: this.translate.instant('GLOBAL.seleccionar'),
         position: 'right',
         add: false,
         edit: false,
         delete: false,
         custom: [
           {
-            name: 'Solicitar',
-            title: '<i class="fas fa-pencil-alt" title="Ver"></i>',
+            name: this.translate.instant('GLOBAL.seleccionar'),
+            title: '<span class="fas fa-arrow-right" title="' + this.translate.instant('GLOBAL.seleccionar') + '"></span>',
           },
         ],
       },
       columns: {
         Nombre: {
-          title: 'Elemento',
+          title: this.translate.instant('GLOBAL.Elemento.Uno'),
           valuePrepareFunction: (value: any) => {
             return value;
           },
         },
         Marca: {
-          title: 'Marca',
+          title: this.translate.instant('GLOBAL.marca'),
           valuePrepareFunction: (value: any) => {
             return value;
           },
         },
         Serie: {
-          title: 'Serie',
+          title: this.translate.instant('GLOBAL.serie'),
           valuePrepareFunction: (value: any) => {
             return value;
           },
         },
         SubgrupoCatalogoId: {
-          title: 'Subgrupo',
+          title: this.translate.instant('GLOBAL.subgrupo.clase.nombre'),
           valuePrepareFunction: (value: any) => {
-            return value.Nombre;
+            return value.Codigo + ' - ' + value.Nombre;
           },
           filterFunction: (cell?: any, search?: string): boolean => {
             // console.log(cell);
@@ -110,7 +115,7 @@ export class BodegaSinAsignarComponent implements OnInit {
           },
         },
         SaldoCantidad: {
-          title: 'Saldo',
+          title: this.translate.instant('GLOBAL.Existencias'),
           valuePrepareFunction: (value: any) => {
             return value;
           },
@@ -118,7 +123,6 @@ export class BodegaSinAsignarComponent implements OnInit {
       },
     };
   }
-
 
   ElementosSinAsignar(): void {
     this.salidasHelper.getElementos2().subscribe((res: any) => {
@@ -129,28 +133,16 @@ export class BodegaSinAsignarComponent implements OnInit {
   }
 
   onCustom(event) {
-
     this.DatosEnviados.emit(event.data);
     this.detalle = true;
   }
 
   onVolver() {
     this.detalle = !this.detalle;
-    this.iniciarParametros();
-  }
-
-  iniciarParametros() {
-
   }
 
   onRegister() {
     this.router.navigate(['/pages/entradas/registro']);
-  }
-
-  ngOnInit() {
-    this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
-      this.loadTablaSettings();
-    });
   }
 
 }

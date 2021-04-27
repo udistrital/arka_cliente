@@ -1,6 +1,7 @@
 <div [nbSpinner]="!mostrar">
     <label class="search-label" for="search">{{'GLOBAL.search' | translate}}:</label>
     <input nbInput [(ngModel)]="stringBusqueda" (ngModelChange)="filterSearch()" id="search" class="search-input">
+    <ng-content></ng-content>
     <!-- <input nbInput [nbFilterInput]="dataSource" id="search" class="search-input"> -->
     <table [nbTreeGrid]="dataSource" nbSort (sort)="updateSort($event)">
 

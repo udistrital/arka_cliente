@@ -80,7 +80,7 @@
         "name": "Consumer Warehouse",
         "children": {
           "solicitar": {
-            "name": "Request Elements"
+            "name": "Request Items"
           },
           "sol_consulta": {
             "name": "Browse Requests"
@@ -429,8 +429,10 @@
     "cuenta_debito": "Debit",
     "placeholder_cuenta_credito": "Credit",
     "placeholder_cuenta_debito": "Debit",
+    "Entrada": "Entry",
     "Entradas": "Entries",
     "Salidas": "Outputs",
+    "Saldo": "Balance",
     "Depreciacion": "Depreciation",
     "Valorización": "Valorization",
     "Salida de Almacen": "Output",
@@ -447,7 +449,9 @@
     "Deshacer": "Undo",
     "colapsar": "Collapse",
     "expandir": "Expand",
+    "editar": "Edit",
     "cerrar": "Close",
+    "enviarSolicitud": "Send Request",
 
     "nivel_jerarquico": "Hierarchical Level",
 
@@ -534,8 +538,46 @@
       "crear": "Create Catalogue",
       "editar": "Edit Catalogue",
       "editar_nombre": "Edit Catalogue \"{{NOMBRE}}\"",
+      "constrInfo": "To modify or add \"descendants\" to a row, please choose a row",
+      "claseInfo": "Pick a row corresponding to a Class",
+      "elementosInfo": "To add elements to a Class, please choose a Class row",
       "desactivar": "Disable Catalogue",
       "lista": "Catalogue List"
+    },
+
+    "BodegaConsumo": {
+      "Asignacion": {
+        "Titulo": "Assignment of Elements to Kardex",
+        "Ninguna": "Elements To Be Assigned to Kardex",
+        "Placeholder": "Description of the Record that will be added within the Kardex Card",
+        "Paso1": "Choose an element to begin with the Kardex Assignment or Creation",
+        "Paso2_p1": "Choose the Element Type from the Goods & Services Catalog, that haves the previously choosen element",
+        "Paso2_p2": "If not listed, check the Elements Record from the Elements Catalogue Module",
+        "Existente": "Assignment to Existing Kardex Card",
+        "Apertura": "Kardex Card Creation",
+        "BotonPreparar": "Prepare Record",
+        "VistaPrevia": "Kardex Record Preview",
+        "BotonConfirmar": "Confirm Kardex Entry"
+      },
+      "Consulta": {
+        "Titulo": "Browse Kardex Cards",
+        "Indice": "Indice of Kardex Cards associated to Consumer Warehouse. Choose one to see its records"
+      },
+      "MetodoInventario": {
+        "Nombre": "Inventory Method",
+        "PP": "Weighted Average",
+        "PEPS": "FIFO - First In, First Out",
+        "UEPS": "LIFO - Last In, First Out"
+      },
+      "Solicitud": {
+        "TituloPendientes": "Pending Requests of Consumer Warehouse",
+        "TituloTodas": "Consumer Warehouse Requests",
+        "ListaPendientes": "List of Pending Requests of Elements to Consumer Warehouse",
+        "ListaTodas": "List of all the Requests of Elements to Consumer Warehouse",
+        "Titulo": "Consumer Warehouse Items Request",
+        "ColumnaElementoCatalogo": "Catalogue: Code/Class/Element",
+        "Ayuda": "To begin with the Items Request, please choose any item. The selected elements will be listed as they are selected"
+      }
     },
 
     "Advertencia": "Warning",
@@ -595,14 +637,14 @@
     "placeholder_fecha_creacion": "fecha_creacion",
     "notificacion_estado_usuario": "notificacion_estado_usuario",
     "placeholder_notificacion_estado_usuario": "notificacion_estado_usuario",
-    "fecha": "fecha",
+    "fecha": "Date",
     "placeholder_fecha": "Select Date",
-    "usuario": "usuario",
-    "placeholder_usuario": "usuario",
-    "parametro": "parametro",
-    "placeholder_parametro": "parametro",
-    "valor": "valor",
-    "placeholder_valor": "valor",
+    "usuario": "User",
+    "placeholder_usuario": "User",
+    "parametro": "Parameter",
+    "placeholder_parametro": "Parameter",
+    "valor": "Value",
+    "placeholder_valor": "Value",
     "notificacion_configuracion_perfil": "notificacion_configuracion_perfil",
     "placeholder_notificacion_configuracion_perfil": "notificacion_configuracion_perfil",
     "menu_opcion": "menu_opcion",
@@ -626,9 +668,10 @@
     "aceptar": "Confirm",
     "cancelar": "Cancel",
     "salir": "leave",
-    "eliminar": "delete",
-    "actualizar": "update",
+    "eliminar": "Delete",
+    "actualizar": "Update",
     "crear": "create",
+    "Relacionar": "Relate",
     "registrar": "register",
     "guardar": "save",
     "formulario": "Form",
@@ -656,6 +699,7 @@
     "tipo_movimiento": "Tipo de Movimiento",
     "elementos_asociados": "Elementos Asociados",
     "cantidad": "Quantity",
+    "cantidadMax": "Maximum Quantity",
     "marca": "Brand Name",
     "serie": "Serie",
     "unidad_medida": "Measured Unit",
@@ -739,6 +783,8 @@
       "asignar_funcionario": "ASIGN TO CIVIL SERVANT",
       "error_entrada_no_registrada": "The requested Input could not be registered",
       "error_salida_no_registrada": "The requested Output could not be registered",
+      "SalidaRechazadaTitle": "Output Rejected",
+      "SalidaRechazadaText": "The Output Request has been Rejected",
       "alerta_descargue": "Unassgined elements",
       "alerta_consumo": "Unassgined elements",
       "alerta_controlado": "Unassgined elements",
@@ -760,9 +806,30 @@
     "salidas": {
       "titulo_registrar": "Register Output",
       "elementos": "Elements",
+      "exito_registro_titulo": "Output Recorded",
+      "exito_registro_texto": "The Output has been successfully recorded",
       "salida_instruccion": "Select an entry from the following list",
       "consulta_salida_info": "Select an output from the following list",
       "detalle_salida": "Output Detail"
+    },
+
+    "Existencias": "Stock",
+    "Elemento": {
+      "Uno": "Element",
+      "Varios": "Elements",
+      "Relacionado": "Related Element"
+    },
+
+    "Solicitudes": {
+      "Accion": "Request",
+      "Aprobar": "Approve Request",
+      "Rechazar": "Reject Request",
+      "Detalle": "Detalle de la Solicitud",
+      "CantSolicitada": "Requested Quantity",
+      "CantDisponible": "Available Quantity",
+      "CantMax": "Maximum Quantity",
+      "CantMin": "Minimum Quantity",
+      "CantAprobada": "Approved Quantity"
     },
 
     "registrar_entrada": "Register Entry",

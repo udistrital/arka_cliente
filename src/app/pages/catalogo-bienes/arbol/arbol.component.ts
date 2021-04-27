@@ -37,7 +37,7 @@ export class ArbolComponent implements OnInit, OnChanges {
   data: TreeNode<CatalogoArbol>[];
   data2: TreeNode<CatalogoArbol>[];
   customColumn = 'Codigo';
-  defaultColumns = ['Nombre', 'Descripcion'];
+  defaultColumns: string[];
   allColumns: string[];
   stringBusqueda: any;
   mostrar: boolean = false;
@@ -77,10 +77,6 @@ export class ArbolComponent implements OnInit, OnChanges {
   }
 
   ngOnInit() {
-    if (this.acciones) {
-      this.defaultColumns.push('Acciones');
-    }
-    this.allColumns = [this.customColumn, ...this.defaultColumns];
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
       this.construirForm();
     });
@@ -102,11 +98,17 @@ export class ArbolComponent implements OnInit, OnChanges {
   }
 
   construirForm() {
+    this.defaultColumns = ['Nombre', 'Descripcion'];
+    if (this.acciones) {
+      this.defaultColumns.push('Acciones');
+    }
+    this.allColumns = [this.customColumn, ...this.defaultColumns];
+
     this.customColumn2 = this.translate.instant('GLOBAL.codigo');
     this.defaultColumns2 = [
       this.translate.instant('GLOBAL.Nombre'),
       this.translate.instant('GLOBAL.Descripcion'),
-      this.translate.instant('GLOBAL.Acciones'),
+      this.translate.instant('GLOBAL.info'),
     ];
     this.allColumns2 = [this.customColumn, ...this.defaultColumns];
   }

@@ -1,19 +1,17 @@
-<div class="col-lg-12">
   <nb-card>
-    <nb-card-header>
-      <h1>Asignacion de elementos a Kardex</h1>
-    </nb-card-header>
-    <nb-card-body>
+    <nb-card-body [nbSpinner]="cargando">
 
       <!-- CARD PARA MOSTRAR LAS SOLICITUDES *ngIf="!detalle" -->
-      <p class="h4 pb-4">Selecciona el elemento de catalogo relacionado con el item anterior</p>
+      <p>
+        <span class="fas fa-info-circle"></span>&nbsp;
+        <em>
+          {{'GLOBAL.BodegaConsumo.Asignacion.Paso2_p1' | translate}}<br />
+          {{'GLOBAL.BodegaConsumo.Asignacion.Paso2_p2' | translate}}
+        </em>
+      </p>
 
       <ng2-smart-table [settings]="settings" [source]="source" (custom)="onCustom($event)">
       </ng2-smart-table>
-      <p></p>
 
     </nb-card-body>
-    <nb-card-footer>
-    </nb-card-footer>
   </nb-card>
-</div>

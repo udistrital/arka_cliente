@@ -10,8 +10,12 @@
           <option disabled selected>{{'GLOBAL.seleccionar' | translate}}...</option>
           <option *ngFor="let item of catalogos" value="{{ item.Id }}">{{ item.Nombre }}</option>
         </select>
-        <ngx-arbol *ngIf="catalogoId !== 0" [catalogoId]="catalogoId" (fila)="receiveMessage($event)"
-          [updateSignal]="eventChange"></ngx-arbol>
+        <ngx-arbol *ngIf="catalogoId !== 0" [catalogoId]="catalogoId" (fila)="receiveMessage($event)" [updateSignal]="eventChange">
+          <p>
+            <span class="fas fa-info-circle"></span>&nbsp;
+            <em>{{'GLOBAL.catalogo.claseInfo' | translate}}</em>
+          </p>
+        </ngx-arbol>
     </nb-card-body>
   </nb-card>
 

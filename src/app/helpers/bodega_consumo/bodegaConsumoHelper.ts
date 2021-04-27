@@ -1,15 +1,21 @@
 import { RequestManager } from '../../managers/requestManager';
 import { Injectable } from '@angular/core';
-import { map } from 'rxjs/operators';
+import { iif } from 'rxjs';
+import { map, switchMap } from 'rxjs/operators';
 import { PopUpManager } from '../../managers/popUpManager';
+import { DisponibilidadMovimientosService } from '../../@core/data/disponibilidad-movimientos.service';
 
 @Injectable({
     providedIn: 'root',
 })
 export class BodegaConsumoHelper {
 
-    constructor(private rqManager: RequestManager,
-        private pUpManager: PopUpManager) { }
+    constructor(
+        private rqManager: RequestManager,
+        private pUpManager: PopUpManager,
+        private dispMvtos: DisponibilidadMovimientosService,
+    ) {
+    }
 
     /**
      * Entradas Get
@@ -145,6 +151,11 @@ export class BodegaConsumoHelper {
     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
     */
     public postResponderSolicitud(salidasData) {
+        return this.dispMvtos.movimientosPermitidos().pipe(
+            switchMap(disp => iif( () => disp, this.postResponderSolicitudFinal(salidasData) )),
+        );
+    }
+    private postResponderSolicitudFinal(salidasData) {
         this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
         return this.rqManager.post(`tr_kardex/responder_solicitud`, salidasData).pipe(
             map(
@@ -158,6 +169,7 @@ export class BodegaConsumoHelper {
             ),
         );
     }
+
     /**
      * Entradas Get
      * If the response has errors in the OAS API it should show a popup message with an error.
