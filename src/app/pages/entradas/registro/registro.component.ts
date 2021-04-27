@@ -9,6 +9,7 @@ import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
 import { ListService } from '../../../@core/store/services/list.service';
 import { Store } from '@ngrx/store';
 import { IAppState } from '../../../@core/store/app.state';
+import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
 
 @Component({
   selector: 'ngx-registro',
@@ -21,7 +22,7 @@ export class RegistroComponent implements OnInit {
 
   // Datos Tabla
   source: LocalDataSource;
-  tiposDeEntradas: string[];
+  tiposDeEntradas: any;
   // Acta de recibido
   actaSeleccionada: string;
   settings: any;
@@ -35,6 +36,7 @@ export class RegistroComponent implements OnInit {
 
   constructor(
     private actaRecibidoHelper: ActaRecibidoHelper,
+    private entradasHelper: EntradaHelper,
     private pUpManager: PopUpManager,
     private translate: TranslateService,
     private listService: ListService,
@@ -157,8 +159,8 @@ export class RegistroComponent implements OnInit {
 
   private mostrarData(): void {
     if (!this.mostrar
-    && this.actas && this.actas.length
-    && this.terceros && this.terceros.length) {
+      && this.actas && this.actas.length
+      && this.terceros && this.terceros.length) {
       this.source.load(this.actas.map(acta => {
         const buscar = (tercero: Tercero) => tercero.Id === acta.RevisorId;
         let nombre = '';
@@ -174,17 +176,12 @@ export class RegistroComponent implements OnInit {
 
   onCustom(event) {
     this.actaRecibidoHelper.getTransaccionActa(event.data.Id).subscribe(res => {
-      this.tiposDeEntradas = res[0].SoportesActa[0].SoporteActa.ProveedorId ? [
-        // De acuerdo a las HU:
-        'EA', 'ECM', 'ECE', 'EPPA', 'EAM', 'EIA', 'EBEMP', 'ED', 'EID',
-        // Los siguientes no están en las HU
-        // 'EEP', 'ET',
-      ] : [
-        // De acuerdo a las HU:
-        'EPR', 'ESI',
-        // Los siguientes no están en las HU
-        // 'EEP', 'ET',
-      ];
+      res[0].SoportesActa[0].SoporteActa.ProveedorId ?
+        this.entradasHelper.getTiposEntradaByOrden(1).subscribe(res_ => {
+          this.tiposDeEntradas = res_;
+        }) : this.entradasHelper.getTiposEntradaByOrden(2).subscribe(res__ => {
+          this.tiposDeEntradas = res__;
+        });
       this.actaSeleccionada = `${event.data.Id}`;
     });
   }

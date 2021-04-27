@@ -91,11 +91,11 @@ export class EntradaHelper {
      */
     public postEntrada(entradaData) {
         return this.dispMvtos.movimientosPermitidos().pipe(
-            switchMap(disp => iif( () => disp, this.postEntradaFinal(entradaData) )),
+            switchMap(disp => iif(() => disp, this.postEntradaFinal(entradaData))),
         );
     }
 
-    private postEntradaFinal (entradaData) {
+    private postEntradaFinal(entradaData) {
         this.rqManager.setPath('ARKA_SERVICE');
         return this.rqManager.post(`entrada/`, entradaData).pipe(
             map(
@@ -246,7 +246,7 @@ export class EntradaHelper {
      */
     public getEncargadoElementoByPlaca(placa) {
         this.rqManager.setPath('ARKA_SERVICE');
-        return this.rqManager.get('entrada/encargado/' + placa ).pipe(
+        return this.rqManager.get('entrada/encargado/' + placa).pipe(
             map(
                 (res) => {
                     if (res === 'error') {
@@ -280,25 +280,73 @@ export class EntradaHelper {
         );
     }
 
-        /**
+    /**
      * anularMovimientosByEntrada Get
      * If the response has errors in the OAS API it should show a popup message with an error.
      * If the response is successs, it returns the object's data.
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
      */
-         public anularMovimientosByEntrada(entrada_id) {
-            this.rqManager.setPath('ARKA_SERVICE');
-            return this.rqManager.get('entrada/anular/' + entrada_id).pipe(
+    public anularMovimientosByEntrada(entrada_id) {
+        this.rqManager.setPath('ARKA_SERVICE');
+        return this.rqManager.get('entrada/anular/' + entrada_id).pipe(
+            map(
+                (res) => {
+                    if (res === 'error') {
+                        this.pUpManager.showErrorAlert('No se pudieron anular los movimientos asociados');
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
+
+    public getFormatoEntrada() {
+        this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
+        return this.rqManager.get('formato_tipo_movimiento?query=NumeroOrden__lte:2&sortby=Id&order=asc&limit=-1').pipe(
+            map(
+                (res) => {
+                    if (res === 'error') {
+                        this.pUpManager.showErrorAlert('No se pudo consultar el contrato contratos');
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
+
+    public putFormatoEntrada(FormatoTipoMovimiento) {
+        this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
+        return this.rqManager.put('formato_tipo_movimiento', FormatoTipoMovimiento).pipe(
+            map(
+                (res) => {
+                    if (res) {
+                        return res;
+                    } else {
+                        this.pUpManager.showErrorAlert('No se pudo consultar el contrato contratos');
+                        return undefined;
+
+                    }
+                },
+            ),
+        );
+    }
+
+    public getTiposEntradaByOrden(NumeroOrden) {
+        this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
+        return this.rqManager.get('formato_tipo_movimiento?query=Activo:true,NumeroOrden:' +
+            NumeroOrden + '&fields=CodigoAbreviacion&sortby=Id&order=asc&limit=-1').pipe(
                 map(
                     (res) => {
                         if (res === 'error') {
-                            this.pUpManager.showErrorAlert('No se pudieron anular los movimientos asociados');
+                            this.pUpManager.showErrorAlert('No se pudo consultar el contrato contratos');
                             return undefined;
                         }
                         return res;
                     },
                 ),
             );
-        }
+    }
 
 }

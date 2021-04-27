@@ -139,6 +139,17 @@
             "name": "Registrar Ajuste"
           }
         }
+      },
+      "parametros": {
+        "name": "Parametrización",
+        "children": {
+          "tiposEntrada": {
+            "name": "Tipos de Entrada"
+          },
+          "tiposBien": {
+            "name": "Tipos de Bien"
+          }
+        }
       }
     },
     "aplicaciones": "Aplicaciones",
@@ -875,6 +886,41 @@
       "success_anular_entrada": "La entrada y los movimientos asociados se anularon correctamente",
       "error_anular_entrada_title": "Entrada no anulada",
       "error_anular_entrada": "La entrada no ha podido ser anulada correctamente, intente más tarde"
+    },
+    "parametros": {
+      "tiposEntradas": {
+        "title": "Administrar tipos de entrada",
+        "subtitle": "Seleccione un tipo de entrada para cambiar su estado",
+        "title_activacion_entrada": "Habilitar Tipo de Entrada",
+        "title_desactivacion_entrada": "Inhabilitar Tipo de Entrada",
+        "confirmar_activacion_entrada": "¿Desea habilitar este tipo de entrada?",
+        "confirmar_desactivacion_entrada": "¿Desea inhabilitar este tipo de entrada?",
+        "title_success_activacion": "Entrada Habilitada",
+        "title_success_desactivacion": "Entrada Inhabilitada",
+        "success_activacion": "La entrada ha sido habilitada correctamente",
+        "success_desactivacion": "La entrada ha sido inhabilitada correctamente",
+        "title_error_activacion": "Error Habilitar Entrada",
+        "title_error_desactivacion": "Error Inhabilitar Entrada",
+        "error_activacion": "La entrada no ha sido habilitada correctamente",
+        "error_desactivacion": "La entrada no ha sido inhabilitada correctamente"
+      },
+      "tiposBien": {
+        "title": "Administrar tipos de bien",
+        "subtitle": "Seleccione un tipo de bien para cambiar su estado",
+        "title_activacion": "Habilitar Tipo de Bien",
+        "title_desactivacion": "Inhabilitar Tipo de Bien",
+        "confirmar_activacion": "¿Desea habilitar este tipo de bien?",
+        "confirmar_desactivacion": "¿Desea inhabilitar este tipo de bien?",
+        "title_success_activacion": "Tipo de Bien Habilitado",
+        "title_success_desactivacion": "Tipo de Bien Inhabilitado",
+        "success_activacion": "El tipo de bien ha sido habilitado correctamente",
+        "success_desactivacion": "El tipo de bien ha sido inhabilitado correctamente",
+        "title_error_activacion": "Error Habilitar Tipo Bien",
+        "title_error_desactivacion": "Error Inhabilitar Tipo Bien",
+        "error_activacion": "El tipo de bien no ha sido habilitado correctamente",
+        "error_desactivacion": "El tipo de bien no ha sido inhabilitado correctamente",
+        "asignable_kardex": "Asignable a Kárdex"
+      }
     }
   }
 }
