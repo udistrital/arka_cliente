@@ -541,10 +541,12 @@
       "Asignacion": {
         "Titulo": "Asignación de Elementos a Kardex",
         "Ninguna": "Elementos por Asignar a Kardex",
+        "Placeholder": "Descripción del Registro que se creará en la Ficha Kardex",
         "Paso1": "Seleccione un elemento para iniciar la apertura o asignación a Kardex",
         "Paso2_p1": "Selecciona el tipo de Elemento del Catalogo de Bienes y Servicios, al que pertenece el elemento seleccionado anteriormente",
         "Paso2_p2": "Si no está listado el tipo de Elemento necesario, revisar en el Módulo Catálogo de Elementos, en Registro de Elementos",
         "Existente": "Asignación a Ficha Kardex Existente",
+        "Apertura": "Apertura de Ficha Kardex",
         "BotonPreparar": "Preparar Registro",
         "VistaPrevia": "Vista Previa Planilla Kardex",
         "BotonConfirmar": "Confirmar Entrada de Kardex"
@@ -627,7 +629,7 @@
     "placeholder_fecha_creacion": "fecha_creacion",
     "notificacion_estado_usuario": "notificacion_estado_usuario",
     "placeholder_notificacion_estado_usuario": "notificacion_estado_usuario",
-    "fecha": "fecha",
+    "fecha": "Fecha",
     "placeholder_fecha": "Seleccionar Fecha",
     "usuario": "usuario",
     "placeholder_usuario": "usuario",

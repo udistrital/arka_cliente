@@ -1,18 +1,10 @@
-<nb-card>
-  <form [formGroup]="form_apertura" #fform="ngForm" *ngIf="form_apertura">
-    <nb-card-header>
-      Apertura de Kardex
-    </nb-card-header>
-    <nb-card-body>
+<form [formGroup]="form_apertura" #fform="ngForm" *ngIf="form_apertura">
       <nb-card>
-        <nb-card-body>
-
-          <!-- CARD PARA MOSTRAR LAS SOLICITUDES *ngIf="!detalle" -->
-          <p class="h4 pb-4">Datos Generales</p>
-
+        <nb-card-header>{{'GLOBAL.BodegaConsumo.Asignacion.Apertura' | translate}}</nb-card-header>
+        <nb-card-body [nbSpinner]="!cargaLista">
           <div class="form-group col-sm">
             <div class="form-group col-sm">
-              <label>Metodo de Valoracion</label>
+              <label>{{'GLOBAL.BodegaConsumo.MetodoInventario.Nombre' | translate}}</label>
               <select nbInput type="text" class="form-control" formControlName="Metodo_Valoracion">
                 <option *ngFor="let metodo of Metodos" [(value)]="metodo.Id">{{metodo.Nombre}}
                 </option>
@@ -20,7 +12,7 @@
             </div>
             <div class="row-sm">
               <div class="form-group col-sm">
-                <label>Cantidad Minima</label>
+                <label>{{'GLOBAL.Solicitudes.CantMin' | translate}}</label>
                 <div class="input-group">
                   <input currencyMask [options]="{allowNegative: false, prefix: '',align: 'left', precision: 0}" nbInput
                     type="text" placeholder="{{'GLOBAL.Acta_Recibido.CapturarElementos.CantidadHeader' | translate }}"
@@ -28,7 +20,7 @@
                 </div>
               </div>
               <div class="form-group col-sm">
-                <label>Cantidad Maxima</label>
+                <label>{{'GLOBAL.Solicitudes.CantMax' | translate}}</label>
                 <div class="input-group">
                   <input currencyMask [options]="{allowNegative: false, prefix: '',align: 'left', precision: 0}" nbInput
                     type="text" placeholder="{{'GLOBAL.Acta_Recibido.CapturarElementos.CantidadHeader' | translate }}"
@@ -37,31 +29,34 @@
               </div>
             </div>
             <div class="form-group  col-lg-12">
-              <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Observaciones' | translate}}</label>
+              <label>{{'GLOBAL.Detalle' | translate}}</label>
               <div class="input-group">
-                <textarea rows="5" placeholder="{{'GLOBAL.Acta_Recibido.RegistroActa.Observaciones2' | translate}}"
+                <textarea rows="5" placeholder="{{'GLOBAL.BodegaConsumo.Asignacion.Placeholder' | translate}}"
                   class="form-control" formControlName="Observaciones" required></textarea>
               </div>
             </div>
           </div>
-
         </nb-card-body>
         <nb-card-footer>
-          <button nbButton (click)="onSubmit()" [disabled]="!form_apertura.valid" class="float-right">Crear Registro</button>
+          <button nbButton (click)="onSubmit()" [disabled]="!form_apertura.valid" class="float-right">
+            {{'GLOBAL.BodegaConsumo.Asignacion.BotonPreparar' | translate}}
+          </button>
         </nb-card-footer>
       </nb-card>
+
       <nb-card *ngIf="ElementoMovimiento">
         <nb-card-header>
-          Planilla de Kardex Inicial
+          {{'GLOBAL.BodegaConsumo.Asignacion.VistaPrevia' | translate}}
         </nb-card-header>
         <nb-card-body>
           <ngx-kardex *ngIf="ElementoMovimiento" [Apertura]="ElementoMovimiento">
           </ngx-kardex>
         </nb-card-body>
         <nb-card-footer>
-          <button nbButton (click)="onSubmit2()" *ngIf="ElementoMovimiento" class="float-right">Confirmar Apertura de Kardex</button>
+          <button nbButton (click)="onSubmit2()" *ngIf="ElementoMovimiento" class="float-right">
+            {{'GLOBAL.BodegaConsumo.Asignacion.BotonConfirmar' | translate}}
+          </button>
         </nb-card-footer>
       </nb-card>
-    </nb-card-body>
-  </form>
-</nb-card>
+
+</form>

@@ -17,6 +17,7 @@ export class AsignacionKardexComponent implements OnInit {
   apertura: any;
   ElementosKardex: any;
   paso: number;
+  modoKardexCargado: boolean;
 
   constructor(
     private translate: TranslateService,
@@ -44,8 +45,10 @@ export class AsignacionKardexComponent implements OnInit {
   }
 
   Asignar_Elemento_Catalogo(event) {
+    this.paso = 2;
     this.ElementoCatalogo = event;
 
+    this.modoKardexCargado = false;
     this.BodegaConsumo.getElementosKardex(event.Id).subscribe((res: any) => {
 
       if (Object.keys(res[0]).length !== 0) {
@@ -54,14 +57,31 @@ export class AsignacionKardexComponent implements OnInit {
       } else {
         this.apertura = true;
       }
+      this.modoKardexCargado = true;
     });
     // console.log(event);
-    this.paso = 2;
   }
 
   onVolver() {
     if (this.paso > 0) {
       this.paso--;
+    }
+
+    switch (this.paso) {
+
+      case 0:
+        this.ElementoSinAsignar = undefined;
+        break;
+
+      case 1:
+        this.ElementoCatalogo = undefined;
+        this.ElementosKardex = undefined;
+        this.apertura = undefined;
+        this.modoKardexCargado = false;
+        break;
+
+      default:
+        break;
     }
   }
 

@@ -3,12 +3,10 @@
         <nb-card-header>
           {{'GLOBAL.BodegaConsumo.Asignacion.Existente' | translate}}
         </nb-card-header>
-        <nb-card-body>
-
-          <!-- CARD PARA MOSTRAR LAS SOLICITUDES *ngIf="!detalle" -->
+        <nb-card-body [nbSpinner]="!cargaLista">
               <label>{{'GLOBAL.Detalle' | translate}}</label>
               <div class="input-group">
-                <textarea rows="5" placeholder="{{'GLOBAL.Acta_Recibido.RegistroActa.Observaciones2' | translate}}"
+                <textarea rows="5" placeholder="{{'GLOBAL.BodegaConsumo.Asignacion.Placeholder' | translate}}"
                   class="form-control" formControlName="Observaciones" required></textarea>
               </div>
         </nb-card-body>
