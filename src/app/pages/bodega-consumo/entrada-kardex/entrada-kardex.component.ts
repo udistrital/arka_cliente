@@ -75,7 +75,6 @@ export class EntradaKardexComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log("holiEntrada", this.cargaLista);
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
     });
     this.listService.findformatosKardex();
@@ -106,7 +105,7 @@ export class EntradaKardexComponent implements OnInit {
       && this.EstadosMovimiento !== null && this.EstadosMovimiento !== undefined
     ) {
       this.cargaLista = true;
-    };
+    }
   }
 
   onSubmit() {

@@ -67,7 +67,6 @@ export class AperturaKardexComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log("holiAsignacion", this.cargaLista);
     // this.cargaLista = undefined;
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
     });
@@ -83,7 +82,7 @@ export class AperturaKardexComponent implements OnInit {
   }
 
   public loadLists() {
-    if (this.cargaLista == undefined) {
+    if (this.cargaLista === undefined) {
       this.cargaLista = false;
     this.store.select((state) => state).subscribe(
       (list) => {
