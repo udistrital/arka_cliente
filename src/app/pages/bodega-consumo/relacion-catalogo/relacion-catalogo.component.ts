@@ -68,31 +68,34 @@ export class RelacionCatalogoComponent implements OnInit {
       hideSubHeader: false,
       noDataMessage: this.translate.instant('GLOBAL.no_data_entradas'),
       actions: {
-        columnTitle: 'Asociar',
+        columnTitle: this.translate.instant('GLOBAL.Relacionar'),
         position: 'right',
         add: false,
         edit: false,
         delete: false,
         custom: [
           {
-            name: 'Asociar',
-            title: '<i class="fas fa-arrow-right" title="Ver"></i>',
+            name: this.translate.instant('GLOBAL.Relacionar'),
+            title: '<span class="fas fa-arrow-right" title="' + this.translate.instant('GLOBAL.Relacionar') + '"></span>',
           },
         ],
       },
       columns: {
         Nombre: {
-          title: 'Nombre',
+          title: this.translate.instant('GLOBAL.nombre'),
           valuePrepareFunction: (value: any) => {
             return value;
           },
         },
         Descripcion: {
-          title: 'Descripcion',
+          title: this.translate.instant('GLOBAL.descripcion'),
           valuePrepareFunction: (value: any) => {
             return value;
           },
         },
+        /*
+        // Estas columnas pueden ser innecesarias/irrelevantes
+        // Considerar si deberían eliminarse
         FechaInicio: {
           title: 'Fecha de Inicio',
           width: '70px',
@@ -125,10 +128,10 @@ export class RelacionCatalogoComponent implements OnInit {
             },
           },
         },
+        // */
       },
     };
   }
-
 
   ElementosSinAsignar(subgrupo_id): void {
     // console.log(subgrupo_id);
@@ -150,13 +153,7 @@ export class RelacionCatalogoComponent implements OnInit {
 
   onVolver() {
     this.detalle = !this.detalle;
-    this.iniciarParametros();
   }
-
-  iniciarParametros() {
-
-  }
-
 
   onRegister() {
     this.router.navigate(['/pages/entradas/registro']);
@@ -167,6 +164,5 @@ export class RelacionCatalogoComponent implements OnInit {
       this.loadTablaSettings();
     });
   }
-
 
 }

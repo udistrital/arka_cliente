@@ -111,16 +111,15 @@ export class EntradaKardexComponent implements OnInit {
     this.elemento_bodega.ElementoCatalogoId = this.elemento_catalogo.Id;
     this.elemento_bodega.MovimientoId = this.Movimiento;
 
-
     this.elemento_bodega.SaldoCantidad += ultimo_elemento.SaldoCantidad;
     this.elemento_bodega.SaldoValor += ultimo_elemento.SaldoValor;
 
     this.ElementoMovimiento = this.elemento_bodega;
     // console.log(this.ElementoMovimiento);
-
+    // console.log({ultimo_elemento, elementos_kardex: this.elementos_kardex});
+    // console.log({Movimiento: this.Movimiento, ElementoMovimiento: this.ElementoMovimiento});
   }
   onSubmit2() {
-
     const AperturaKardex = {
       Movimiento: [],
     };

@@ -35,7 +35,8 @@ export class AgregarElementosComponent implements OnInit {
   mostrar: boolean;
   settings2: any;
 
-  constructor(private router: Router,
+  constructor(
+    private router: Router,
     private salidasHelper: SalidaHelper,
     private translate: TranslateService,
     private nuxeoService: NuxeoService,
@@ -46,8 +47,14 @@ export class AgregarElementosComponent implements OnInit {
   ) {
     this.source = new LocalDataSource();
     this.entradas = new Array<Entrada>();
+  }
+
+  ngOnInit() {
     this.loadTablaSettings();
     this.loadEntradas();
+    this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
+      this.loadTablaSettings();
+    });
   }
 
   loadTablaSettings() {
@@ -55,24 +62,24 @@ export class AgregarElementosComponent implements OnInit {
       hideSubHeader: false,
       noDataMessage: this.translate.instant('GLOBAL.no_data_entradas'),
       actions: {
-        columnTitle: 'Solicitar',
+        columnTitle: this.translate.instant('GLOBAL.Solicitudes.Accion'),
         position: 'right',
         add: false,
         edit: false,
         delete: false,
         custom: [
           {
-            name: 'Solicitar',
-            title: '<i class="fas fa-pencil-alt" title="Ver"></i>',
+            name: this.translate.instant('GLOBAL.Solicitudes.Accion'),
+            title: '<span class="fas fa-plus" title="' + this.translate.instant('GLOBAL.Solicitudes.Accion') + '"></span>',
           },
         ],
       },
       columns: {
         Nombre: {
-          title: 'Nombre',
+          title: this.translate.instant('GLOBAL.Elemento.Uno'),
         },
         ElementoCatalogoId: {
-          title: 'Descripcion',
+          title: this.translate.instant('GLOBAL.Descripcion'),
           valuePrepareFunction: (value: any) => {
             if (value !== null) {
               return value.Descripcion;
@@ -95,7 +102,7 @@ export class AgregarElementosComponent implements OnInit {
           },
         },
         SaldoCantidad: {
-          title: 'Existencias',
+          title: this.translate.instant('GLOBAL.Existencias'),
         },
       },
     };
@@ -115,12 +122,6 @@ export class AgregarElementosComponent implements OnInit {
 
   onRegister() {
     this.router.navigate(['/pages/entradas/registro']);
-  }
-
-  ngOnInit() {
-    this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
-      this.loadTablaSettings();
-    });
   }
 
 }

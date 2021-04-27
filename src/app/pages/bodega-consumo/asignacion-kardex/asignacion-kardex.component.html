@@ -1,16 +1,16 @@
 <nb-card>
-    <nb-card-header><h2>Asignacion de elementos a Kardex</h2></nb-card-header>
+    <nb-card-header><h2>{{ 'GLOBAL.BodegaConsumo.Asignacion.Titulo' | translate }}</h2></nb-card-header>
     <nb-card-body>
         <ngx-bodega-sin-asignar *ngIf="paso === 0" (DatosEnviados)="Asignar_Elemento_Bodega($event)">
         </ngx-bodega-sin-asignar>
 
         <nb-card *ngIf="paso === 1"><nb-card-body><table>
             <tr>
-                <th>Elemento</th>
-                <th>Marca</th>
-                <th>Serie</th>
-                <th>Clase</th>
-                <th>Saldo</th>
+                <th>{{ 'GLOBAL.Elemento.Uno' | translate }}</th>
+                <th>{{ 'GLOBAL.marca' | translate }}</th>
+                <th>{{ 'GLOBAL.serie' | translate }}</th>
+                <th>{{ 'GLOBAL.subgrupo.clase.nombre' | translate }}</th>
+                <th>{{ 'GLOBAL.cantidad' | translate }}</th>
             </tr>
             <tr>
                 <td>{{ElementoSinAsignar.Nombre}}</td>

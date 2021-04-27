@@ -1,7 +1,7 @@
   <form [formGroup]="form_apertura" #fform="ngForm" *ngIf="form_apertura">
       <nb-card>
         <nb-card-header>
-          Asignación a Kardex
+          {{'GLOBAL.BodegaConsumo.Asignacion.Existente' | translate}}
         </nb-card-header>
         <nb-card-body>
 
@@ -13,19 +13,23 @@
               </div>
         </nb-card-body>
         <nb-card-footer>
-          <button nbButton (click)="onSubmit()" [disabled]="!form_apertura.valid" class="float-right">Crear Registro</button>
+          <button nbButton (click)="onSubmit()" [disabled]="!form_apertura.valid" class="float-right">
+            {{'GLOBAL.BodegaConsumo.Asignacion.BotonPreparar' | translate}}
+          </button>
         </nb-card-footer>
       </nb-card>
       <nb-card *ngIf="ElementoMovimiento">
         <nb-card-header>
-          Planilla de Kardex
+          {{'GLOBAL.BodegaConsumo.Asignacion.VistaPrevia' | translate}}
         </nb-card-header>
         <nb-card-body>
           <ngx-kardex *ngIf="ElementoMovimiento" [Entrada]="ElementoMovimiento">
           </ngx-kardex>
         </nb-card-body>
         <nb-card-footer>
-          <button nbButton (click)="onSubmit2()" *ngIf="ElementoMovimiento" class="float-right">Confirmar Entrada de Kardex</button>
+          <button nbButton (click)="onSubmit2()" *ngIf="ElementoMovimiento" class="float-right">
+            {{'GLOBAL.BodegaConsumo.Asignacion.BotonConfirmar' | translate}}
+          </button>
         </nb-card-footer>
       </nb-card>
   </form>

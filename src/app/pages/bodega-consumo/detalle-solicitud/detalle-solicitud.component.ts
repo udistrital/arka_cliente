@@ -49,6 +49,7 @@ export class DetalleSolicitudComponent implements OnInit {
       this.loadSolicitud();
     }
   }
+
   constructor(
     private translate: TranslateService,
     private dialogService: NbDialogService,
@@ -66,6 +67,7 @@ export class DetalleSolicitudComponent implements OnInit {
       this.Editar = false;
     }
   }
+
   public loadLists() {
     this.store.select((state) => state).subscribe(
       (list) => {
@@ -91,27 +93,25 @@ export class DetalleSolicitudComponent implements OnInit {
 
   loadTablaSettings(editar: boolean) {
     const settings = {
-      noDataMessage: 'No se encontraron elementos asociados.',
+      noDataMessage: this.translate.instant('GLOBAL.no_data_entradas'),
       actions: {
-        columnTitle: 'Acciones',
+        columnTitle: this.translate.instant('GLOBAL.Acciones'),
         position: 'right',
         add: false,
         delete: false,
         edit: this.Editar,
       },
       edit: {
-        editButtonContent: '<i class="fas fa-pencil-alt"></i>',
-        saveButtonContent: '<i class="nb-checkmark"></i>',
-        cancelButtonContent: '<i class="nb-close"></i>',
+        editButtonContent: '<i class="fas fa-pencil-alt" title="' + this.translate.instant('GLOBAL.editar') + '"></i>',
       },
       mode: 'external',
       columns: {
         Nombre: {
-          title: 'Elemento Relacionado',
+          title: this.translate.instant('GLOBAL.Elemento.Relacionado'),
         },
         ElementoCatalogoId: {
-          title: 'Catalogo: Codigo/Clase/Elemento',
-          type: 'html',
+          title: this.translate.instant('GLOBAL.BodegaConsumo.Solicitud.ColumnaElementoCatalogo'),
+          type: 'text',
           valuePrepareFunction: (value: any) => {
             if (value !== null && value.SubgrupoId !== null) {
               return [
@@ -138,7 +138,7 @@ export class DetalleSolicitudComponent implements OnInit {
           },
         },
         Sede: {
-          title: 'Sede',
+          title: this.translate.instant('GLOBAL.sede'),
           valuePrepareFunction: (value: any) => {
             if (value !== null) {
               return value.Nombre;
@@ -161,7 +161,7 @@ export class DetalleSolicitudComponent implements OnInit {
           },
         },
         Dependencia: {
-          title: 'Dependencia',
+          title: this.translate.instant('GLOBAL.dependencia'),
           valuePrepareFunction: (value: any) => {
             if (value !== null) {
               return value.Nombre;
@@ -184,7 +184,7 @@ export class DetalleSolicitudComponent implements OnInit {
           },
         },
         Ubicacion: {
-          title: 'Ubicacion',
+          title: this.translate.instant('GLOBAL.ubicacion'),
           valuePrepareFunction: (value: any) => {
             if (value !== null) {
               return value.Nombre;
@@ -207,17 +207,17 @@ export class DetalleSolicitudComponent implements OnInit {
           },
         },
         Cantidad: {
-          title: 'Cantidad Solicitada',
+          title: this.translate.instant('GLOBAL.Solicitudes.CantSolicitada'),
         },
       },
     };
     if (editar) {
       settings.columns['SaldoCantidad'] = {
-        title: 'Cantidad Disponible',
+        title: this.translate.instant('GLOBAL.Solicitudes.CantDisponible'),
       };
     }
     settings.columns['CantidadAprobada'] = {
-      title: 'Cantidad Aprobada',
+      title: this.translate.instant('GLOBAL.Solicitudes.CantAprobada'),
     };
 
     this.settings = settings;
@@ -237,7 +237,6 @@ export class DetalleSolicitudComponent implements OnInit {
   }
 
   onEdit(event) {
-
     // console.log({event});
     this.dialogService.open(AjustarCantidadComponent, {
       context: {
@@ -249,9 +248,7 @@ export class DetalleSolicitudComponent implements OnInit {
       this.RevisarCantidadesAprobadas();
       }
     });
-
   }
-
 
   RevisarCantidadesAprobadas() {
     this.source.getAll().then((res) => {
@@ -290,7 +287,6 @@ export class DetalleSolicitudComponent implements OnInit {
   }
 
   onSubmit() {
-
     const SalidaKardex = {
       Movimiento: [],
     };
@@ -335,8 +331,8 @@ export class DetalleSolicitudComponent implements OnInit {
       this.BodegaConsumo.postResponderSolicitud(SalidaKardex).subscribe((res2: any) => {
         if (res2 !== null) {
           const opt: any = {
-            title: 'Salida Realizada',
-            text: 'Se ha registrado la salida de los elementos relacionados',
+            title: this.translate.instant('GLOBAL.salidas.exito_registro_titulo'),
+            text: this.translate.instant('GLOBAL.salidas.exito_registro_texto'),
             type: 'success',
           };
           (Swal as any).fire(opt);
@@ -349,7 +345,6 @@ export class DetalleSolicitudComponent implements OnInit {
   }
 
   onSubmit2() {
-
     this.Solicitud.EstadoMovimientoId = this.EstadosMovimiento.find(x => x.Id === 8);
     this.Detalle_Solicitud.Elementos.forEach((element: any) => {
         element.CantidadAprobada = 0;
@@ -360,9 +355,9 @@ export class DetalleSolicitudComponent implements OnInit {
     // /*
     this.BodegaConsumo.postRechazarSolicitud(this.Solicitud).subscribe((res: any) => {
       const opt: any = {
-        title: 'Salida Rechazada',
-        text: 'Se ha rechazado la solicitud',
-        type: 'warning',
+        title: this.translate.instant('GLOBAL.movimientos.SalidaRechazadaTitle'),
+        text: this.translate.instant('GLOBAL.movimientos.SalidaRechazadaText'),
+        type: 'info',
       };
       (Swal as any).fire(opt);
       this.router.navigate(['/pages/bodega_consumo/consulta_solicitud']);

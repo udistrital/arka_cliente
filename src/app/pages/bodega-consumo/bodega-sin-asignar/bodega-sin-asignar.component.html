@@ -1,10 +1,10 @@
   <nb-card>
+    <nb-card-header>{{ 'GLOBAL.BodegaConsumo.Asignacion.Ninguna' | translate }}</nb-card-header>
     <nb-card-body [nbSpinner]="!mostrar">
 
-      <!-- CARD PARA MOSTRAR LAS SOLICITUDES *ngIf="!detalle" -->
       <p>
         <span class="fas fa-info-circle"></span>&nbsp;
-        <em>Para iniciar la apertura o entrada de kardex inicia seleccionando un elemento sin asignar</em>
+        <em>{{ 'GLOBAL.BodegaConsumo.Asignacion.Paso1' | translate }}</em>
       </p>
 
       <ng2-smart-table [settings]="settings" [source]="source" (custom)="onCustom($event)">

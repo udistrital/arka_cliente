@@ -45,15 +45,15 @@ export class ConsultaKardexComponent implements OnInit {
   Metodos: any[] = [
     {
       Id: 1,
-      Nombre: 'Promedio Ponderado',
+      Nombre: 'GLOBAL.BodegaConsumo.MetodoInventario.PP',
     },
     {
       Id: 2,
-      Nombre: 'PEPS',
+      Nombre: 'GLOBAL.BodegaConsumo.MetodoInventario.PEPS',
     },
     {
       Id: 3,
-      Nombre: 'UEPS',
+      Nombre: 'GLOBAL.BodegaConsumo.MetodoInventario.UEPS',
     },
   ];
   kardex: any;
@@ -96,21 +96,20 @@ export class ConsultaKardexComponent implements OnInit {
         delete: false,
         custom: [
           {
-            // name: this.translate.instant('GLOBAL.detalle'),
-            name: 'Seleccionar',
+            name: this.translate.instant('GLOBAL.seleccionar'),
             title: '<i class="fas fa-eye"></i>',
           },
         ],
       },
       columns: {
         Id: {
-          title: 'Consecutivo',
+          title: this.translate.instant('GLOBAL.consecutivo'),
         },
         Observaciones: {
-          title: 'Observaciones',
+          title: this.translate.instant('GLOBAL.observaciones'),
         },
         ElementoCatalogoId: {
-          title: 'Elemento',
+          title: this.translate.instant('GLOBAL.Elemento.Uno'),
           valuePrepareFunction: (value: any) => {
             if (value !== null) {
               return value.Descripcion;
@@ -133,7 +132,7 @@ export class ConsultaKardexComponent implements OnInit {
           },
         },
         FechaCreacion: {
-          title: 'Fecha de Creacion',
+          title: this.translate.instant('GLOBAL.fecha_creacion'),
           width: '70px',
           valuePrepareFunction: (value: any) => {
             const date = value.split('T');
@@ -148,6 +147,7 @@ export class ConsultaKardexComponent implements OnInit {
             },
           },
         },
+        /* // Esta columna no tiene sentido, una ficha se puede llenar de varias salidas
         MovimientoPadreId: {
           title: 'Salida Asociada',
           valuePrepareFunction: (value: any) => {
@@ -158,8 +158,9 @@ export class ConsultaKardexComponent implements OnInit {
             }
           },
         },
+        // */
         MetodoValoracion: {
-          title: 'Metodo de Valoracion',
+          title: this.translate.instant('GLOBAL.BodegaConsumo.MetodoInventario.Nombre'),
           valuePrepareFunction: (value: any) => {
             if (value !== null) {
               return value.Nombre;
@@ -182,10 +183,10 @@ export class ConsultaKardexComponent implements OnInit {
           },
         },
         CantidadMinima: {
-          title: 'Cantidad Minima',
+          title: this.translate.instant('GLOBAL.Solicitudes.CantMin'),
         },
         CantidadMaxima: {
-          title: 'Cantidad Maxima',
+          title: this.translate.instant('GLOBAL.Solicitudes.CantMax'),
         },
       },
     };

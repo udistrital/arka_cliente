@@ -1,10 +1,10 @@
 <!-- nb-card para mostrar las solicitudes existentes -->
 <nb-card *ngIf="!salidaId">
   <nb-card-header>
-    <h2>{{ Editar ? 'Solicitudes Pendientes' : 'Solicitudes Resueltas' }}</h2>
+    <h2>{{ 'GLOBAL.BodegaConsumo.Solicitud.Titulo' + (Editar ? 'Pendientes' : 'Todas') | translate }}</h2>
   </nb-card-header>
   <nb-card-body [nbSpinner]="!mostrar"><nb-card><nb-card-body>
-    <p><em>Lista de solicitudes de elementos a la bodega de consumo, {{ Editar ? 'pendientes' : 'resueltas' }}.</em></p>
+    <p><em>{{ 'GLOBAL.BodegaConsumo.Solicitud.Lista' + (Editar ? 'Pendientes' : 'Todas') | translate }}</em></p>
     <ng2-smart-table [settings]="settings" [source]="source" (custom)="onCustom($event)" *ngIf="!salidaId">
     </ng2-smart-table>
   </nb-card-body></nb-card></nb-card-body>
@@ -13,7 +13,7 @@
 <!--Card para mostrar el detalle de un elemento-->
 <nb-card *ngIf="salidaId">
   <nb-card-header>
-    <h1>Detalle de solicitud</h1>
+    <h1>{{'GLOBAL.Solicitudes.Detalle' | translate}}</h1>
   </nb-card-header>
   <nb-card-body><nb-card><nb-card-body>
     <ngx-detalle-solicitud [Editar]="Editar" [salida_id]="salidaId"></ngx-detalle-solicitud>

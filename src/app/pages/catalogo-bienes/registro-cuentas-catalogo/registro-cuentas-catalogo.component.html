@@ -13,7 +13,7 @@
         <ngx-arbol *ngIf="catalogoId !== 0" [catalogoId]="catalogoId" (fila)="receiveMessage($event)" [updateSignal]="eventChange">
           <p>
             <span class="fas fa-info-circle"></span>&nbsp;
-            <em>Seleccione una fila correspondiente a una Clase</em>
+            <em>{{'GLOBAL.catalogo.claseInfo' | translate}}</em>
           </p>
         </ngx-arbol>
     </nb-card-body>

@@ -64,39 +64,39 @@ export class BodegaSinAsignarComponent implements OnInit {
       hideSubHeader: false,
       noDataMessage: this.translate.instant('GLOBAL.no_data_entradas'),
       actions: {
-        columnTitle: 'Seleccionar',
+        columnTitle: this.translate.instant('GLOBAL.seleccionar'),
         position: 'right',
         add: false,
         edit: false,
         delete: false,
         custom: [
           {
-            name: 'Seleccionar',
-            title: '<i class="fas fa-arrow-right" title="Ver"></i>',
+            name: this.translate.instant('GLOBAL.seleccionar'),
+            title: '<span class="fas fa-arrow-right" title="' + this.translate.instant('GLOBAL.seleccionar') + '"></span>',
           },
         ],
       },
       columns: {
         Nombre: {
-          title: 'Elemento',
+          title: this.translate.instant('GLOBAL.Elemento.Uno'),
           valuePrepareFunction: (value: any) => {
             return value;
           },
         },
         Marca: {
-          title: 'Marca',
+          title: this.translate.instant('GLOBAL.marca'),
           valuePrepareFunction: (value: any) => {
             return value;
           },
         },
         Serie: {
-          title: 'Serie',
+          title: this.translate.instant('GLOBAL.serie'),
           valuePrepareFunction: (value: any) => {
             return value;
           },
         },
         SubgrupoCatalogoId: {
-          title: 'Clase',
+          title: this.translate.instant('GLOBAL.subgrupo.clase.nombre'),
           valuePrepareFunction: (value: any) => {
             return value.Codigo + ' - ' + value.Nombre;
           },
@@ -115,7 +115,7 @@ export class BodegaSinAsignarComponent implements OnInit {
           },
         },
         SaldoCantidad: {
-          title: 'Saldo',
+          title: this.translate.instant('GLOBAL.Existencias'),
           valuePrepareFunction: (value: any) => {
             return value;
           },

@@ -4,8 +4,10 @@
       <!-- CARD PARA MOSTRAR LAS SOLICITUDES *ngIf="!detalle" -->
       <p>
         <span class="fas fa-info-circle"></span>&nbsp;
-        <em>Selecciona el tipo de Elemento del Catalogo de Bienes y Servicios, al que pertenece el elemento seleccionado anteriormente<br />
-        Si no está listado el tipo de Elemento necesario, revisar en el Módulo Catálogo de Elementos, en Registro de Elementos</em>
+        <em>
+          {{'GLOBAL.BodegaConsumo.Asignacion.Paso2_p1' | translate}}<br />
+          {{'GLOBAL.BodegaConsumo.Asignacion.Paso2_p2' | translate}}
+        </em>
       </p>
 
       <ng2-smart-table [settings]="settings" [source]="source" (custom)="onCustom($event)">

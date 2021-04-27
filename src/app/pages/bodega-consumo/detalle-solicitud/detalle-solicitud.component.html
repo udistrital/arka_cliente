@@ -28,7 +28,7 @@
                 {{Solicitud.Observacion}} </p>
         </div>
         <div class="col">
-            <p class="text-uppercase"><strong>Estado:</strong>
+            <p class="text-uppercase"><strong>{{'GLOBAL.estado' | translate}}:</strong>
                 {{Solicitud.EstadoMovimientoId.Nombre}} </p>
         </div>
     </div>
@@ -50,6 +50,6 @@
     </form>
 
 <div class="pt-4" *ngIf="Editar">
-    <button [disabled]="verificar" nbButton (click)="onSubmit()" class="float-right">Aprobar Solicitud</button>
-    <button nbButton (click)="onSubmit2()">Rechazar Solicitud</button>
+    <button [disabled]="verificar" nbButton (click)="onSubmit()" class="float-right">{{'GLOBAL.Solicitudes.Aprobar' | translate}}</button>
+    <button nbButton (click)="onSubmit2()">{{'GLOBAL.Solicitudes.Rechazar' | translate}}</button>
 </div>

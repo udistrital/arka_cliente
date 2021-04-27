@@ -209,32 +209,29 @@ export class FormElementosSeleccionadosComponent implements OnInit {
       });
     });
   }
-  usarLocalStorage() {
-  }
+
   loadTablaSettings() {
-
     this.settings2 = {
-
-      noDataMessage: 'No se encontraron elementos asociados.',
+      noDataMessage: this.translate.instant('GLOBAL.no_data_entradas'),
       actions: {
-        columnTitle: 'Acciones',
+        columnTitle: this.translate.instant('GLOBAL.eliminar'),
         position: 'right',
         add: false,
         edit: false,
         delete: false,
         custom: [
           {
-            name: 'Eliminar',
+            name: this.translate.instant('GLOBAL.eliminar'),
             title: '<i class="fas fa-times" title="Ver"></i>',
           },
         ],
       },
       columns: {
         Nombre: {
-          title: 'Nombre',
+          title: this.translate.instant('GLOBAL.Nombre'),
         },
         ElementoCatalogoId: {
-          title: 'Descripcion',
+          title: this.translate.instant('GLOBAL.Descripcion'),
           valuePrepareFunction: (value: any) => {
             if (value !== null) {
               return value.Descripcion;
@@ -257,10 +254,10 @@ export class FormElementosSeleccionadosComponent implements OnInit {
           },
         },
         Cantidad: {
-          title: 'Cantidad',
+          title: this.translate.instant('GLOBAL.cantidad'),
         },
         Sede: {
-          title: 'Sede',
+          title: this.translate.instant('GLOBAL.sede'),
           valuePrepareFunction: (value: any) => {
             if (value !== null) {
               return value.Nombre;
@@ -283,7 +280,7 @@ export class FormElementosSeleccionadosComponent implements OnInit {
           },
         },
         Dependencia: {
-          title: 'Dependencia',
+          title: this.translate.instant('GLOBAL.dependencia'),
           valuePrepareFunction: (value: any) => {
             if (value !== null) {
               return value.Nombre;
@@ -306,7 +303,7 @@ export class FormElementosSeleccionadosComponent implements OnInit {
           },
         },
         Ubicacion: {
-          title: 'Ubicacion',
+          title: this.translate.instant('GLOBAL.ubicacion'),
           valuePrepareFunction: (value: any) => {
             if (value !== null) {
               return value.EspacioFisicoId.Nombre;

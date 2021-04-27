@@ -49,10 +49,10 @@ export class ConsultaSolicitudComponent implements OnInit {
   loadTablaSettings() {
     this.listColumns = {
       Id: {
-        title: 'Consecutivo',
+        title: this.translate.instant('GLOBAL.consecutivo'),
       },
       FechaRegistro: {
-        title: 'Fecha de registro',
+        title: this.translate.instant('GLOBAL.fecha_creacion'),
         // width: '70px',
         valuePrepareFunction: (value: any) => {
           const date = value.split('T');
@@ -75,8 +75,8 @@ export class ConsultaSolicitudComponent implements OnInit {
         custom: [
           {
             // name: this.translate.instant('GLOBAL.detalle'),
-            name: 'Seleccionar',
-            title: '<span class="fas fas fa-arrow-right"></span>',
+            name: this.translate.instant('GLOBAL.seleccionar'),
+            title: '<span class="fas fas fa-arrow-right" title="' + this.translate.instant('GLOBAL.seleccionar') + '"></span>',
           },
         ],
       },

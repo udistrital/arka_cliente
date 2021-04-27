@@ -11,7 +11,7 @@
         <ngx-arbol *ngIf="catalogoId !== 0" [catalogoId]="catalogoId" (fila)="receiveMessage($event)" [updateSignal]="eventChange">
           <p>
             <span class="fas fa-info-circle"></span>&nbsp;
-            <em>Para modificar la información o agregar "descencientes" de una fila, seleccione la fila.</em>
+            <em>{{'GLOBAL.catalogo.constrInfo' | translate}}</em>
           </p>
         </ngx-arbol>
     </nb-card-body>
