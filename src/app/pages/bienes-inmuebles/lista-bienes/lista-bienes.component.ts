@@ -22,11 +22,10 @@ export class ListaBienesComponent implements OnInit {
   // Datos Tabla
   source: LocalDataSource;
   tiposDeEntradas: string[];
-  // Acta de recibido
-  actaSeleccionada: string;
+  // Bienes
+  bienSeleccionado: string;
   settings: any;
   opcionEntrada: string;
-  movimientoId: number;
   data:any;
 
 
@@ -40,12 +39,11 @@ export class ListaBienesComponent implements OnInit {
     private pUpManager: PopUpManager,
     private translate: TranslateService,
     private listService: ListService,
-    private store: Store<IAppState>,
     private tercerosHelper: TercerosHelper,
 
   ) {
     this.source = new LocalDataSource();
-    this.actaSeleccionada = '';
+    this.bienSeleccionado = '';
   }
 
   ngOnInit() {
@@ -58,8 +56,7 @@ export class ListaBienesComponent implements OnInit {
       this.loadTablaSettings();
     });
     this.loadTerceros();
-    this.actaSeleccionada = this.EntradaEdit ? this.EntradaEdit.ActaRecibidoId : '';
-    this.movimientoId = this.EntradaEdit ? this.EntradaEdit.Id : '';
+    this.bienSeleccionado = this.EntradaEdit ? this.EntradaEdit.ActaRecibidoId : '';
   }
   loadData()
   { 
@@ -70,10 +67,6 @@ export class ListaBienesComponent implements OnInit {
       {Id:3,FechaRegistro:"2021/01/02",BienInmueble:"Edificio Macarena B"}
     ]
     this.data= Prueba;
-    // this.data[0]={Id:0,FechaRegistro:"2021/01/02",BienInmueble:"Edificio Sabio Caldas"}
-    // this.data[1]={Id:1,FechaRegistro:"2021/01/02",BienInmueble:"Edificio Arturo Suarez copete"}
-    // this.data[2]={Id:2,FechaRegistro:"2021/01/02",BienInmueble:"Edificio Macarena A"}
-    // this.data[3]={Id:3,FechaRegistro:"2021/01/02",BienInmueble:"Edificio Macarena B"}
     console.log({Prueba:this.data})
     
   }
@@ -99,7 +92,7 @@ export class ListaBienesComponent implements OnInit {
         Id: {
           title: this.translate.instant('GLOBAL.consecutivo'),
         },
-        FechaCreacion: {
+        FechaRegistro: {
           title: this.translate.instant('GLOBAL.fecha_creacion'),
           valuePrepareFunction: (value: any) => {
             const date = value.split('T');
@@ -162,6 +155,8 @@ export class ListaBienesComponent implements OnInit {
   }
 
   onCustom(event) {
+    console.log(event.data.Id)
+    this.bienSeleccionado = event.data.Id
   }
 
 }

@@ -5,25 +5,16 @@
     </nb-card-header>
     <nb-card-body [nbSpinner]="!mostrar">
 
-      <p class="h4 pb-4" >Seleccione el bien inmueble sobre el cual desea realizar un avalúo, 
+      <p class="h4 pb-4" *ngIf="bienSeleccionado === ''">Seleccione el bien inmueble sobre el cual desea realizar un avalúo, 
         o presione el boton Registrar para Ingresar un nuevo bien
       </p>
       <div class="col" align="center">
-        <button nbButton >Registrar Bien +</button>
+        <button nbButton  *ngIf="bienSeleccionado === ''">Registrar Bien +</button>
       </div>
 
       <ng2-smart-table [settings]="settings" [source]="source" (custom)="onCustom($event)"
-        *ngIf="actaSeleccionada === ''"></ng2-smart-table>
-
-      <p class="h4 pb-4" *ngIf="actaSeleccionada != ''">{{'GLOBAL.mensaje_seleccionar_entrada' | translate}}</p>
-
-      <h5 *ngIf="actaSeleccionada != ''">{{'GLOBAL.tipo_entrada' | translate}}</h5>
-
-      <select class="form-control mb-4" [(ngModel)]="opcionEntrada" *ngIf="actaSeleccionada != '' || EntradaEdit" >
-        <option *ngFor="let entrada of tiposDeEntradas" [value]="entrada">
-          {{ 'GLOBAL.movimientos.tipo.'+entrada+'.nombre' | translate }}
-        </option>
-      </select>
+        *ngIf="bienSeleccionado=== ''"></ng2-smart-table>
+      <ngx-avaluo *ngIf="bienSeleccionado !== ''" [bienSeleccionadoId]="bienSeleccionado"></ngx-avaluo>
     </nb-card-body>
   </nb-card>
 </div>

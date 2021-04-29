@@ -6,9 +6,10 @@ import { BienesInmueblesRoutingModule } from './bienes-inmuebles-routing.module'
 import { ListaBienesComponent } from './lista-bienes/lista-bienes.component';
 import { BienesInmueblesComponent } from './bienes-inmuebles.component';
 import { Ng2SmartTableModule } from 'ngx-smart-table';
+import { AvaluoComponent } from './avaluo/avaluo.component';
 
 @NgModule({
-  declarations: [ListaBienesComponent, BienesInmueblesComponent],
+  declarations: [ListaBienesComponent, BienesInmueblesComponent, AvaluoComponent],
   imports: [
     CommonModule,
     BienesInmueblesRoutingModule,
