@@ -35,11 +35,8 @@ export class ListaBienesComponent implements OnInit {
   private actas: any[];
 
   constructor(
-    private actaRecibidoHelper: ActaRecibidoHelper,
     private pUpManager: PopUpManager,
     private translate: TranslateService,
-    private listService: ListService,
-    private tercerosHelper: TercerosHelper,
 
   ) {
     this.source = new LocalDataSource();
@@ -49,13 +46,10 @@ export class ListaBienesComponent implements OnInit {
   ngOnInit() {
     this.loadData();
     this.loadTablaSettings();
-    this.loadActas();
-    this.listService.findClases();
-    this.listService.findImpuestoIVA();
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
       this.loadTablaSettings();
     });
-    this.loadTerceros();
+    this.mostrarData();
     this.bienSeleccionado = this.EntradaEdit ? this.EntradaEdit.ActaRecibidoId : '';
   }
   loadData()
@@ -127,25 +121,6 @@ export class ListaBienesComponent implements OnInit {
       },
     };
   }
-
-  loadActas(): void {
-    this.actaRecibidoHelper.getActasRecibido().subscribe(res => {
-      if (Array.isArray(res) && res.length !== 0) {
-        const data = <Array<ActaRecibidoUbicacion>>res;
-        this.actas = data;
-        this.mostrarData();
-      }
-    });
-  }
-
-  private loadTerceros(): void {
-    this.tercerosHelper.getTerceros().subscribe(terceros => {
-      this.terceros = terceros;
-      this.mostrarData();
-      // console.log({terceros: this.terceros});
-    });
-  }
-
   private mostrarData(): void {
     if (!this.mostrar) {
       this.source.load(this.data);
