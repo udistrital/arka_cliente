@@ -548,6 +548,7 @@
       "uno": "Catalogue",
       "crear": "Create Catalogue",
       "editar": "Edit Catalogue",
+      "cuentas": "Accounts Assignment",
       "editar_nombre": "Edit Catalogue \"{{NOMBRE}}\"",
       "constrInfo": "To modify or add \"descendants\" to a row, please choose a row",
       "claseInfo": "Pick a row corresponding to a Class",

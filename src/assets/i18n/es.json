@@ -548,6 +548,7 @@
       "uno": "Catálogo",
       "crear": "Crear Catálogo",
       "editar": "Editar Catálogo",
+      "cuentas": "Asignación de Cuentas",
       "editar_nombre": "Editar Catálogo \"{{NOMBRE}}\"",
       "constrInfo": "Para modificar la información o agregar \"descencientes\" de una fila, seleccione la fila.",
       "claseInfo": "Seleccione una fila correspondiente a una Clase",
