@@ -27,6 +27,7 @@ export class ListaBienesComponent implements OnInit {
   settings: any;
   opcionEntrada: string;
   data: any;
+  click: boolean= false;
 
 
   @Input() EntradaEdit: any;
@@ -126,6 +127,10 @@ export class ListaBienesComponent implements OnInit {
       this.mostrar = true;
       // console.log({Data: this.source});
     }
+  }
+  onClick(event) {
+    this.click = true;
+
   }
 
   onCustom(event) {

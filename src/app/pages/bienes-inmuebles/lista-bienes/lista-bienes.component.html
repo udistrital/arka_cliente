@@ -5,16 +5,17 @@
     </nb-card-header>
     <nb-card-body [nbSpinner]="!mostrar">
 
-      <p class="h4 pb-4" *ngIf="bienSeleccionado === ''">Seleccione el bien inmueble sobre el cual desea realizar un avalúo, 
+      <p class="h4 pb-4" *ngIf="bienSeleccionado === ''&& click === false">Seleccione el bien inmueble sobre el cual desea realizar un avalúo, 
         o presione el boton Registrar para Ingresar un nuevo bien
       </p>
       <div class="col" align="center">
-        <button nbButton  *ngIf="bienSeleccionado === ''">Registrar Bien +</button>
+        <button nbButton (click)="onClick($event)"  *ngIf="bienSeleccionado === ''&& click === false">Registrar Bien +</button>
       </div>
 
       <ng2-smart-table [settings]="settings" [source]="source" (custom)="onCustom($event)"
-        *ngIf="bienSeleccionado=== ''"></ng2-smart-table>
+        *ngIf="bienSeleccionado=== ''&& click === false"></ng2-smart-table>
       <ngx-avaluo *ngIf="bienSeleccionado !== ''" [bienSeleccionadoId]="bienSeleccionado"></ngx-avaluo>
+      <ngx-registro-inmuebles *ngIf="bienSeleccionado ===''&& click === true"></ngx-registro-inmuebles>
     </nb-card-body>
   </nb-card>
 </div>
