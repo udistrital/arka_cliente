@@ -141,10 +141,10 @@
         }
       },
       "bienes-inmuebles": {
-        "name": "bienes-inmuebles",
+        "name": "Bienes Inmuebles",
         "children": {
           "listaBienes": {
-            "name": "lista de bienes"
+            "name": "Lista de Bienes Inmuebles"
           }
         }
       }
