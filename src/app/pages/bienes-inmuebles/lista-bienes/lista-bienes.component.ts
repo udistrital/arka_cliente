@@ -26,7 +26,7 @@ export class ListaBienesComponent implements OnInit {
   bienSeleccionado: string;
   settings: any;
   opcionEntrada: string;
-  data:any;
+  data: any;
 
 
   @Input() EntradaEdit: any;
@@ -52,17 +52,16 @@ export class ListaBienesComponent implements OnInit {
     this.mostrarData();
     this.bienSeleccionado = this.EntradaEdit ? this.EntradaEdit.ActaRecibidoId : '';
   }
-  loadData()
-  { 
-    let Prueba = [
-      {Id:0,FechaRegistro:"2021/01/02",BienInmueble:"Edificio Sabio Caldas"},
-      {Id:1,FechaRegistro:"2021/01/02",BienInmueble:"Edificio Arturo Suarez copete"},
-      {Id:2,FechaRegistro:"2021/01/02",BienInmueble:"Edificio Macarena A"},
-      {Id:3,FechaRegistro:"2021/01/02",BienInmueble:"Edificio Macarena B"}
-    ]
-    this.data= Prueba;
-    console.log({Prueba:this.data})
-    
+  loadData() {
+    const Prueba = [
+      {Id: 0, FechaRegistro: '2021/01/02', BienInmueble: 'Edificio Sabio Caldas'},
+      {Id: 1, FechaRegistro: '2021/01/02', BienInmueble: 'Edificio Arturo Suarez copete'},
+      {Id: 2, FechaRegistro: '2021/01/02', BienInmueble: 'Edificio Macarena A'},
+      {Id: 3, FechaRegistro: '2021/01/02', BienInmueble: 'Edificio Macarena B'},
+    ];
+    this.data = Prueba;
+    // console.log({Prueba: this.data});
+
   }
 
   loadTablaSettings() {
@@ -125,13 +124,13 @@ export class ListaBienesComponent implements OnInit {
     if (!this.mostrar) {
       this.source.load(this.data);
       this.mostrar = true;
-      console.log({Data:this.source})
+      // console.log({Data: this.source});
     }
   }
 
   onCustom(event) {
-    console.log(event.data.Id)
-    this.bienSeleccionado = event.data.Id
+    // console.log(event.data.Id);
+    this.bienSeleccionado = event.data.Id;
   }
 
 }

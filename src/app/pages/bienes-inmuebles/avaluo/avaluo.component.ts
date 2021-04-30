@@ -12,7 +12,7 @@ import { isObject } from 'rxjs/internal-compatibility';
 @Component({
   selector: 'ngx-avaluo',
   templateUrl: './avaluo.component.html',
-  styleUrls: ['./avaluo.component.scss']
+  styleUrls: ['./avaluo.component.scss'],
 })
 export class AvaluoComponent implements OnInit {
   // FORMULARIOS
@@ -24,16 +24,16 @@ export class AvaluoComponent implements OnInit {
 
   @Input() bienSeleccionadoId: Number;
 
-  //VALIDADORES
+  // VALIDADORES
   checked: boolean;
-
+  validar: boolean= false;
   // VARIABLES
-  data:any;
-  datatable:any;
+  data: any;
+  datatable: any;
   settings: any;
   source: LocalDataSource;
 
-  constructor(private fb: FormBuilder,private router: Router,private translate: TranslateService,) {
+  constructor(private fb: FormBuilder, private router: Router, private translate: TranslateService) {
     this.source = new LocalDataSource();
     this.LoadTabla();
     this.loadTablaSettings();
@@ -48,24 +48,26 @@ export class AvaluoComponent implements OnInit {
       this.loadTablaSettings();
     });
    }
-  loadData() { 
-    let Prueba = [
-      {Id:0,FechaRegistro:"2021/01/02",BienInmueble:"Edificio Sabio Caldas"},
-      {Id:1,FechaRegistro:"2021/01/02",BienInmueble:"Edificio Arturo Suarez copete"},
-      {Id:2,FechaRegistro:"2021/01/02",BienInmueble:"Edificio Macarena A"},
-      {Id:3,FechaRegistro:"2021/01/02",BienInmueble:"Edificio Macarena B"}
-    ]
-    this.data= Prueba;
-    console.log({Prueba:this.data})
-    
+  loadData() {
+    const Prueba = [
+      {Id: 0, FechaRegistro: '2021/01/02', BienInmueble: 'Edificio Sabio Caldas'},
+      {Id: 1, FechaRegistro: '2021/01/02', BienInmueble: 'Edificio Arturo Suarez copete'},
+      {Id: 2, FechaRegistro: '2021/01/02', BienInmueble: 'Edificio Macarena A'},
+      {Id: 3, FechaRegistro: '2021/01/02', BienInmueble: 'Edificio Macarena B'},
+    ];
+    this.data = Prueba;
+    // console.log({Prueba: this.data});
+
   }
   LoadTabla() {
-    let PruebaTabla = [
-      {Secuencia:0,NIT:"571589",Cuenta:"2-3-11-27",NombreCuenta:"XXXXX",Detalle:"Diferencia por conciliar RA 42 Giro sin registrar en libros",
-      Debito:"X",Credito:"6104175"},
-      {Secuencia:1,NIT:"6664489",Cuenta:"2-3-11-15",NombreCuenta:"XXXXX",Detalle:"Diferencia por conciliar RA 42 Giro sin registrar en libros",
-      Debito:"6104175",Credito:"X"}
-    ]
+    const PruebaTabla = [
+      {Secuencia: 0, NIT: '571589', Cuenta: '2-3-11-27', NombreCuenta: 'XXXXX',
+      Detalle: 'Diferencia por conciliar RA 42 Giro sin registrar en libros',
+      Debito: 'X', Credito: '6104175'},
+      {Secuencia: 1, NIT: '6664489', Cuenta: '2-3-11-15', NombreCuenta: 'XXXXX',
+      Detalle: 'Diferencia por conciliar RA 42 Giro sin registrar en libros',
+      Debito: '6104175', Credito: 'X'},
+    ];
     this.source.load(PruebaTabla);
 
   }
@@ -100,46 +102,57 @@ export class AvaluoComponent implements OnInit {
       },
       columns: {
         Secuencia: {
-          title: "Secuencia",
+          title: 'Secuencia',
           valuePrepareFunction: (value: any) => {
             return value;
           },
         },
         NIT: {
-          title: "NIT",
+          title: 'NIT',
           valuePrepareFunction: (value: any) => {
             return value;
           },
         },
         Cuenta: {
-          title: "Cuenta",
+          title: 'Cuenta',
           valuePrepareFunction: (value: any) => {
             return value;
           },
         },
         NombreCuenta: {
-          title: "NombreCuenta",
+          title: 'NombreCuenta',
           valuePrepareFunction: (value: any) => {
             return value;
           },
         },
         Detalle: {
-          title: "Detalle",
+          title: 'Detalle',
         },
         Debito: {
-          title: "Débito",
+          title: 'Débito',
           valuePrepareFunction: (value: any) => {
             return value;
           },
         },
         Credito: {
-          title: "Crédito",
+          title: 'Crédito',
           valuePrepareFunction: (value: any) => {
             return value;
           },
         },
       },
     };
+  }
+
+  onSubmit() {
+    (Swal as any).fire({
+      type: 'success',
+      title: 'Avalúo realizado',
+      text: 'La Entrada N° X fue registrado',
+    });
+    const navigationExtras: NavigationExtras = {state: {cons: 'dsadas'}};
+    this.router.navigateByUrl('/', {skipLocationChange: true}).then(() => this.router.navigate(['pages/bienes-inmuebles/lista-bienes']));
+
   }
 
 
