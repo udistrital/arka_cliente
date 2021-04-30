@@ -8,7 +8,6 @@ import { DetalleSolicitudComponent } from './detalle-solicitud/detalle-solicitud
 import { AsignacionKardexComponent } from './asignacion-kardex/asignacion-kardex.component';
 import { BodegaSinAsignarComponent } from './bodega-sin-asignar/bodega-sin-asignar.component';
 import { ConsultaKardexComponent } from './consulta-kardex/consulta-kardex.component';
-import { RespuestaSolicitudesComponent } from './respuesta-solicitudes/respuesta-solicitudes.component';
 
 const routes: Routes = [{
   path: '',
@@ -48,7 +47,8 @@ const routes: Routes = [{
     },
     {
       path: 'responder_solicitudes',
-      component: RespuestaSolicitudesComponent,
+      component: ConsultaSolicitudComponent,
+      data: { Editar: true },
     },
   ],
 }];

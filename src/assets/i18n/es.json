@@ -147,6 +147,17 @@
             "name": "Lista de Bienes Inmuebles"
           }
         }
+      },
+      "parametros": {
+        "name": "Parametrización",
+        "children": {
+          "tiposEntrada": {
+            "name": "Tipos de Entrada"
+          },
+          "tiposBien": {
+            "name": "Tipos de Bien"
+          }
+        }
       }
     },
     "aplicaciones": "Aplicaciones",
@@ -437,8 +448,10 @@
     "cuenta_debito":"Débito",
     "placeholder_cuenta_credito":"Crédito",
     "placeholder_cuenta_debito":"Débito",
-    "Entradas":"Entrada",
+    "Entrada": "Entrada",
+    "Entradas": "Entradas",
     "Salidas":"Salidas",
+    "Saldo": "Saldo",
     "Depreciacion":"Depreciación",
     "Valorizacion":"Valorización",
     "Salida de Almacen":"Salida",
@@ -455,7 +468,9 @@
     "Deshacer":"Deshacer",
     "colapsar": "Colapsar",
     "expandir": "Expandir",
+    "editar": "Editar",
     "cerrar": "Cerrar",
+    "enviarSolicitud": "Enviar Solicitud",
 
     "nivel_jerarquico": "Nivel Jerárquico",
 
@@ -541,9 +556,48 @@
       "uno": "Catálogo",
       "crear": "Crear Catálogo",
       "editar": "Editar Catálogo",
+      "cuentas": "Asignación de Cuentas",
       "editar_nombre": "Editar Catálogo \"{{NOMBRE}}\"",
+      "constrInfo": "Para modificar la información o agregar \"descencientes\" de una fila, seleccione la fila.",
+      "claseInfo": "Seleccione una fila correspondiente a una Clase",
+      "elementosInfo": "Para agregar elementos a una clase, seleccione una fila correspondiente a una Clase",
       "desactivar": "Desactivar Catálogo",
       "lista": "Lista de Catálogos"
+    },
+
+    "BodegaConsumo": {
+      "Asignacion": {
+        "Titulo": "Asignación de Elementos a Kardex",
+        "Ninguna": "Elementos por Asignar a Kardex",
+        "Placeholder": "Descripción del Registro que se creará en la Ficha Kardex",
+        "Paso1": "Seleccione un elemento para iniciar la apertura o asignación a Kardex",
+        "Paso2_p1": "Selecciona el tipo de Elemento del Catalogo de Bienes y Servicios, al que pertenece el elemento seleccionado anteriormente",
+        "Paso2_p2": "Si no está listado el tipo de Elemento necesario, revisar en el Módulo Catálogo de Elementos, en Registro de Elementos",
+        "Existente": "Asignación a Ficha Kardex Existente",
+        "Apertura": "Apertura de Ficha Kardex",
+        "BotonPreparar": "Preparar Registro",
+        "VistaPrevia": "Vista Previa Planilla Kardex",
+        "BotonConfirmar": "Confirmar Entrada de Kardex"
+      },
+      "Consulta": {
+        "Titulo": "Consultar Kardex",
+        "Indice": "Indice de Fichas Kardex asociadas a Inventario de Consumo. Seleccione una para ver sus registros"
+      },
+      "MetodoInventario": {
+        "Nombre": "Método de Inventario",
+        "PP": "Promedio Ponderado",
+        "PEPS": "PEPS - Primero en Entrar, Primero en Salir",
+        "UEPS": "UEPS - Ultimo en Entrar, Primero en Salir"
+      },
+      "Solicitud": {
+        "TituloPendientes": "Solicitudes Pendientes de Elementos de Consumo",
+        "TituloTodas": "Solicitudes de Elementos de Consumo",
+        "ListaPendientes": "Lista de Solicitudes de Elementos a la Bodega de Consumo, Pendientes por Resolver",
+        "ListaTodas": "Lista de Todas las Solicitudes de Elementos a la Bodega de Consumo",
+        "Titulo": "Solicitud de Elementos de Bodega de Consumo",
+        "ColumnaElementoCatalogo": "Catalogo: Codigo/Clase/Elemento",
+        "Ayuda": "Para iniciar la solicitud de elementos, por favor seleccione cualquier elemento. Los elementos solicitados seran listados conforme se van seleccionando."
+      }
     },
 
     "Advertencia": "Advertencia",
@@ -603,7 +657,7 @@
     "placeholder_fecha_creacion": "fecha_creacion",
     "notificacion_estado_usuario": "notificacion_estado_usuario",
     "placeholder_notificacion_estado_usuario": "notificacion_estado_usuario",
-    "fecha": "fecha",
+    "fecha": "Fecha",
     "placeholder_fecha": "Seleccionar Fecha",
     "usuario": "usuario",
     "placeholder_usuario": "usuario",
@@ -634,9 +688,10 @@
     "aceptar": "Aceptar",
     "cancelar": "Cancelar",
     "salir": "salir",
-    "eliminar": "eliminar",
-    "actualizar": "actualizar",
+    "eliminar": "Eliminar",
+    "actualizar": "Actualizar",
     "crear": "crear",
+    "Relacionar": "Asociar",
     "registrar": "registrar",
     "guardar": "guardar",
     "formulario": "Formulario",
@@ -664,6 +719,7 @@
     "tipo_movimiento": "Tipo de Movimiento",
     "elementos_asociados": "Elementos Asociados",
     "cantidad": "Cantidad",
+    "cantidadMax": "Cantidad Máxima",
     "marca": "Marca",
     "serie": "Serie",
     "unidad_medida": "Unidad de Medida",
@@ -747,6 +803,8 @@
       "asignar_funcionario": "ASIGNAR A FUNCIONARIO",
       "error_entrada_no_registrada": "No se pudo registrar la entrada solicitada",
       "error_salida_no_registrada": "No se pudo registrar la salida solicitada",
+      "SalidaRechazadaTitle": "Salida Rechazada",
+      "SalidaRechazadaText": "Se ha rechazado la solicitud",
       "alerta_descargue": "Elementos sin descargar",
       "alerta_consumo": "Elementos de consumo sin asignar",
       "alerta_controlado": "Elementos de consumo controlado sin asignar",
@@ -773,6 +831,25 @@
       "salida_instruccion": "En la siguiente tabla seleccione la entrada para poder generar la salida correspondiente",
       "consulta_salida_info": "En la siguiente tabla se muestran de forma general las salidas, seleccione una para ver la informacion asociada",
       "detalle_salida": "Detalle Salida"
+    },
+
+    "Existencias": "Existencias",
+    "Elemento": {
+      "Uno": "Elemento",
+      "Varios": "Elementos",
+      "Relacionado": "Elemento Relacionado"
+    },
+
+    "Solicitudes": {
+      "Accion": "Solicitar",
+      "Aprobar": "Aprobar Solicitud",
+      "Rechazar": "Rechazar Solicitud",
+      "Detalle": "Detalle de la Solicitud",
+      "CantSolicitada": "Cantidad Solicitada",
+      "CantDisponible": "Cantidad Disponible",
+      "CantMax": "Cantidad Máxima",
+      "CantMin": "Cantidad Mínima",
+      "CantAprobada": "Cantidad Aprobada"
     },
 
     "registrar_entrada": "Registrar Entrada",
@@ -818,6 +895,41 @@
       "success_anular_entrada": "La entrada y los movimientos asociados se anularon correctamente",
       "error_anular_entrada_title": "Entrada no anulada",
       "error_anular_entrada": "La entrada no ha podido ser anulada correctamente, intente más tarde"
+    },
+    "parametros": {
+      "tiposEntradas": {
+        "title": "Administrar tipos de entrada",
+        "subtitle": "Seleccione un tipo de entrada para cambiar su estado",
+        "title_activacion_entrada": "Habilitar Tipo de Entrada",
+        "title_desactivacion_entrada": "Inhabilitar Tipo de Entrada",
+        "confirmar_activacion_entrada": "¿Desea habilitar este tipo de entrada?",
+        "confirmar_desactivacion_entrada": "¿Desea inhabilitar este tipo de entrada?",
+        "title_success_activacion": "Entrada Habilitada",
+        "title_success_desactivacion": "Entrada Inhabilitada",
+        "success_activacion": "La entrada ha sido habilitada correctamente",
+        "success_desactivacion": "La entrada ha sido inhabilitada correctamente",
+        "title_error_activacion": "Error Habilitar Entrada",
+        "title_error_desactivacion": "Error Inhabilitar Entrada",
+        "error_activacion": "La entrada no ha sido habilitada correctamente",
+        "error_desactivacion": "La entrada no ha sido inhabilitada correctamente"
+      },
+      "tiposBien": {
+        "title": "Administrar tipos de bien",
+        "subtitle": "Seleccione un tipo de bien para cambiar su estado",
+        "title_activacion": "Habilitar Tipo de Bien",
+        "title_desactivacion": "Inhabilitar Tipo de Bien",
+        "confirmar_activacion": "¿Desea habilitar este tipo de bien?",
+        "confirmar_desactivacion": "¿Desea inhabilitar este tipo de bien?",
+        "title_success_activacion": "Tipo de Bien Habilitado",
+        "title_success_desactivacion": "Tipo de Bien Inhabilitado",
+        "success_activacion": "El tipo de bien ha sido habilitado correctamente",
+        "success_desactivacion": "El tipo de bien ha sido inhabilitado correctamente",
+        "title_error_activacion": "Error Habilitar Tipo Bien",
+        "title_error_desactivacion": "Error Inhabilitar Tipo Bien",
+        "error_activacion": "El tipo de bien no ha sido habilitado correctamente",
+        "error_desactivacion": "El tipo de bien no ha sido inhabilitado correctamente",
+        "asignable_kardex": "Asignable a Kárdex"
+      }
     }
   }
 }

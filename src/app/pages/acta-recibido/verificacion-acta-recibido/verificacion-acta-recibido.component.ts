@@ -295,7 +295,10 @@ export class VerificacionActaRecibidoComponent implements OnInit {
         }),
         Formulario2: Form2,
         Formulario3: this.fb.group({
-          Datos_Adicionales: [transaccion_.ActaRecibido.Observaciones],
+          Datos_Adicionales: [{
+            value: transaccion_.ActaRecibido.Observaciones,
+            disabled: true,
+          }],
         }),
       });
       this.Traer_Relacion_Ubicaciones(valor, res[0].DependenciaId.Id, transaccion_.ActaRecibido.UbicacionId);

@@ -57,6 +57,10 @@ const routes: Routes = [{
       loadChildren: './bienes-inmuebles/bienes-inmuebles.module#BienesInmueblesModule',
     },
     {
+      path: 'parametros',
+      loadChildren: './parametros/parametros.module#ParametrosModule',
+    },
+    {
       path: '',
       redirectTo: 'dashboard',
       pathMatch: 'full',
