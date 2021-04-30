@@ -140,6 +140,14 @@
           }
         }
       },
+      "bienes-inmuebles": {
+        "name": "bienes-inmuebles",
+        "children": {
+          "listaBienes": {
+            "name": "lista de bienes"
+          }
+        }
+      },
       "parametros": {
         "name": "Parameters",
         "children": {

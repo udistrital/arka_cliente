@@ -53,6 +53,10 @@ const routes: Routes = [{
       loadChildren: './ajustes/ajustes.module#AjustesModule',
     },
     {
+      path: 'bienes-inmuebles',
+      loadChildren: './bienes-inmuebles/bienes-inmuebles.module#BienesInmueblesModule',
+    },
+    {
       path: 'parametros',
       loadChildren: './parametros/parametros.module#ParametrosModule',
     },
