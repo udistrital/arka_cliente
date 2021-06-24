@@ -72,7 +72,7 @@ steps:
 #     event:
 #     - push
 
-- name: nodejs_release
+- name: nodejs_develop
   image: node:12.6.0
   commands:
   - node --version
@@ -80,7 +80,7 @@ steps:
   - npm run build:test
   when:
     branch:
-    - release/*
+    - develop
     event:
     - push
 
@@ -91,10 +91,9 @@ steps:
   - npm i
   - npm run build:prod
   when:
-    branch:
-    - master
-    event:
-    - push
+    ref:
+      include:
+      - refs/tags/v*.*.*
 
 - name: publish_s3_release
   image: plugins/s3
@@ -110,7 +109,7 @@ steps:
     strip_prefix: dist/
   when:
     branch:
-    - release/*
+    - develop
     event:
     - push
 
@@ -127,10 +126,9 @@ steps:
     target: /${DRONE_REPO_NAME%%_cliente}.portaloas.udistrital.edu.co
     strip_prefix: dist/
   when:
-    branch:
-    - master
-    event:
-    - push
+    ref:
+      include:
+      - refs/tags/v*.*.*
 
 - name: notify_telegram
   image: appleboy/drone-telegram
