@@ -9,6 +9,7 @@ import Swal from 'sweetalert2';
 import { Store } from '@ngrx/store';
 import { IAppState } from '../../../@core/store/app.state';
 import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
+import { ConfiguracionService } from '../../../@core/data/configuracion.service';
 import { UserService } from '../../../@core/data/users.service';
 import { RolUsuario_t as Rol, PermisoUsuario_t as Permiso } from '../../../@core/data/models/roles/rol_usuario';
 import { TransaccionActaRecibido } from '../../../@core/data/models/acta_recibido/transaccion_acta_recibido';
@@ -50,9 +51,9 @@ export class ConsultaActaRecibidoComponent implements OnInit {
     private router: Router,
     private actaRecibidoHelper: ActaRecibidoHelper,
     private store: Store<IAppState>,
-
     private terceroshelper: TercerosHelper,
     private pUpManager: PopUpManager,
+    private confService: ConfiguracionService,
     private userService: UserService,
   ) {
 
@@ -90,24 +91,53 @@ export class ConsultaActaRecibidoComponent implements OnInit {
     this.actaRecibidoHelper.getActasRecibidoUsuario(usuario).subscribe((res: any) => {
       // console.log(res);
       if (Array.isArray(res) && res.length !== 0) {
+        res = this.calculaRevisores(res);
         this.source.load(res);
       }
       this.mostrar = true;
     });
   }
 
+  // TODO: Lo ideal sería que el MID, así como retorna 'FechaVistoBueno'
+  // de una vez retorne la persona que dió dicho visto bueno
+  // (Si se llega a implementar, esta función sería innecesaria y se podría eliminar)
+  private calculaRevisores(actas) {
+
+    const estadosAceptada = ['Aceptada', 'Asociada a Entrada'];
+
+    const data = actas.map(acta => {
+      let aceptada = '';
+      if (estadosAceptada.some(est => acta.Estado === est)) {
+        aceptada = acta.RevisorId;
+      }
+      acta.AceptadaPor = aceptada;
+      return acta;
+    });
+    return data;
+  }
 
   cargarCampos() {
+    const f = {
+      registrar: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.Title'),
+      editar: this.translate.instant('GLOBAL.Acta_Recibido.EdicionActa.Title'),
+      anular: this.translate.instant('GLOBAL.Acta_Recibido.Anular'),
+    };
     this.settings = {
       noDataMessage: 'No se encontraron elementos asociados.',
       actions: {
-        columnTitle: 'Acciones',
+        columnTitle: this.translate.instant('GLOBAL.Acciones'),
         position: 'right',
-        delete: false,
-        add: false,
+        delete: !!this.confService.getAccion('anularActaRecibido'),
+        add: !!this.confService.getAccion('crearActaRecibido'),
+      },
+      add: {
+        addButtonContent: '<i class="fas fa-plus" title="' + f.registrar + '" aria-label="' + f.registrar + '"></i>',
       },
       edit: {
-        editButtonContent: '<i class="far fa-edit" title="Editar Acta" aria-label="Editar Acta"></i>',
+        editButtonContent: '<i class="far fa-edit" title="' + f.editar + '" aria-label="' + f.editar + '"></i>',
+      },
+      delete: {
+        deleteButtonContent: '<i class="fas fa-ban" title="' + f.anular + '" aria-label="' + f.anular + '"></i>',
       },
       mode: 'external',
       columns: {
@@ -150,6 +180,12 @@ export class ConsultaActaRecibidoComponent implements OnInit {
             },
           },
         },
+        RevisorId: {
+          title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.ModificadaPor'),
+          valuePrepareFunction: (value: any) => {
+            return value;
+          },
+        },
         FechaVistoBueno: {
           title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.FechaVistoBuenoHeader'),
           width: '70px',
@@ -166,14 +202,14 @@ export class ConsultaActaRecibidoComponent implements OnInit {
             },
           },
         },
-        RevisorId: {
-          title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.RevisorHeader'),
+        AceptadaPor: {
+          title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.AceptadaPor'),
           valuePrepareFunction: (value: any) => {
             return value;
           },
         },
         PersonaAsignada: {
-          title: 'Asignado',
+          title: this.translate.instant('GLOBAL.Acta_Recibido.ContratistaAsignado'),
           valuePrepareFunction: (value: any) => {
             return value;
           },
@@ -200,7 +236,7 @@ export class ConsultaActaRecibidoComponent implements OnInit {
           },
         },
         UbicacionId: {
-          title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.UbicacionHeader'),
+          title: this.translate.instant('GLOBAL.dependencia'),
           valuePrepareFunction: (value: any) => {
             return value;
           },
@@ -213,20 +249,6 @@ export class ConsultaActaRecibidoComponent implements OnInit {
         },
       },
     };
-
-    if (this.userService.tieneAlgunRol([Rol.Secretaria, Rol.Admin, Rol.Revisor])) {
-      this.settings.add = {
-        addButtonContent: '<i class="nb-plus" title="Registrar Acta Nueva" aria-label="Registrar Acta Nueva"></i>',
-      };
-      this.settings.actions.add = true;
-    }
-
-    if (this.userService.tieneAlgunRol([Rol.Admin, Rol.Revisor])) {
-      this.settings.delete = {
-        deleteButtonContent: '<i class="fas fa-ban" title="Anular Acta" aria-label="Anular Acta"></i>',
-      };
-      this.settings.actions.delete = true;
-    }
   }
 
   anularActa(id: number, obs: string) {
@@ -290,9 +312,12 @@ export class ConsultaActaRecibidoComponent implements OnInit {
 
       default: {
         (Swal as any).fire({
-          type: 'warning',
-          title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.OpcionNoValida'),
-          text: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.OpcionNoValida2'),
+          type: 'error',
+          title: this.translate.instant('GLOBAL.error'),
+          text: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.EdicionBloqueada', {
+            NUM: event.data.Id,
+            STATE: event.data.Estado,
+          }),
         });
         break;
       }

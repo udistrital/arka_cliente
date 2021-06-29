@@ -1,27 +1,27 @@
 <form [formGroup]="form_cantidad" #fform="ngForm" *ngIf="form_cantidad">
   <nb-card>
-    <nb-card-header>Cantidad Aprobada</nb-card-header>
+    <nb-card-header>{{ 'GLOBAL.Solicitudes.CantAprobada' | translate }}</nb-card-header>
     <nb-card-body>
       <div class="row">
         <div class="form-group col-sm">
-          <label>Cantidad</label>
+          <label>{{ 'GLOBAL.cantidad' | translate }}</label>
           <div class="input-group">
-            <input currencyMask [options]="{allowNegative: false, prefix: '',align: 'left', precision: 0}" nbInput
-              type="text" placeholder="{{'GLOBAL.Acta_Recibido.CapturarElementos.CantidadHeader' | translate }}"
-              formControlName="Cantidad" class="form-control" (keyup)="prueba()">
+            <input nbInput type="number" min="0" [max]="maxAsignable"
+              placeholder="{{'GLOBAL.Acta_Recibido.CapturarElementos.CantidadHeader' | translate }}"
+              formControlName="Cantidad" class="form-control">
           </div>
           <p></p>
           <p class="campo">
-            Cantidad Solicitada: {{row.Cantidad}}</p>
+            {{ 'GLOBAL.Solicitudes.CantSolicitada' | translate }}: {{row.Cantidad}}</p>
           <p></p>
           <p class="campo">
-            Cantidad Maxima: {{row.SaldoCantidad}}</p>
+            {{ 'GLOBAL.Solicitudes.CantDisponible' | translate }}: {{row.SaldoCantidad}}</p>
         </div>
       </div>
     </nb-card-body>
     <nb-card-footer>
-      <button nbButton (click)="cancel()">Cancelar</button>
-      <button [disabled]="form_cantidad.invalid" nbButton (click)="submit()" class="float-right">Actualizar</button>
+      <button type="button" nbButton (click)="cancel()">{{ 'GLOBAL.cancelar' | translate }}</button>
+      <button type="button" [disabled]="form_cantidad.invalid" nbButton (click)="submit()" class="float-right">{{ 'GLOBAL.actualizar' | translate }}</button>
     </nb-card-footer>
   </nb-card>
 </form>

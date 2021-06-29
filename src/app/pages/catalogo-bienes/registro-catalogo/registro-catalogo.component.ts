@@ -37,6 +37,7 @@ export class RegistroCatalogoComponent implements OnInit {
   nivel_hijo: string;
 
   permitir_crear_subgrupo: boolean;
+  cargando_catalogos: boolean = true;
 
   constructor(
     private translate: TranslateService,
@@ -68,6 +69,7 @@ export class RegistroCatalogoComponent implements OnInit {
             this.catalogos.push(data[datos]);
           }
         }
+        this.cargando_catalogos = false;
       }
     });
   }

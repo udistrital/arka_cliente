@@ -10,7 +10,7 @@ import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoH
 import { ActaRecibido } from '../../../@core/data/models/acta_recibido/acta_recibido';
 import { Elemento, Impuesto } from '../../../@core/data/models/acta_recibido/elemento';
 import { TipoBien } from '../../../@core/data/models/acta_recibido/tipo_bien';
-import { SoporteActa, Ubicacion, Dependencia } from '../../../@core/data/models/acta_recibido/soporte_acta';
+import { SoporteActa, Ubicacion } from '../../../@core/data/models/acta_recibido/soporte_acta';
 import { Proveedor } from '../../../@core/data/models/acta_recibido/Proveedor';
 import { EstadoActa } from '../../../@core/data/models/acta_recibido/estado_acta';
 import { EstadoElemento } from '../../../@core/data/models/acta_recibido/estado_elemento';
@@ -31,6 +31,7 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { DocumentoService } from '../../../@core/data/documento.service';
 import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
 import { NbStepperComponent } from '@nebular/theme';
+import { isObject } from 'rxjs/internal-compatibility';
 
 
 @Component({
@@ -54,6 +55,7 @@ export class FormElementosSeleccionadosComponent implements OnInit {
   proveedorfiltro: string;
   elementos: any;
   elementos2: any;
+  UbicacionesFiltradas: any;
 
   @Input('Datos')
   set name(datos_seleccionados: any) {
@@ -118,18 +120,17 @@ export class FormElementosSeleccionadosComponent implements OnInit {
   Traer_Relacion_Ubicaciones() {
     const sede = this.form_salida.get('Sede').value;
     const dependencia = this.form_salida.get('Dependencia').value;
-    if (this.form_salida.get('Sede').valid || this.form_salida.get('Dependencia').valid) {
+    if (this.form_salida.get('Sede').valid && this.form_salida.get('Dependencia').valid &&
+      sede !== undefined && dependencia !== undefined) {
+      this.UbicacionesFiltradas = [];
       const transaccion: any = {};
       transaccion.Sede = this.Sedes.find((x) => x.Id === parseFloat(sede));
       transaccion.Dependencia = this.Dependencias.find((x) => x.Nombre === dependencia);
-      // console.log({Sede:this.form_salida.get('Sede'),Dep:this.form_salida.get('Dependencia')})
       if (transaccion.Sede !== undefined && transaccion.Dependencia !== undefined) {
         this.Actas_Recibido.postRelacionSedeDependencia(transaccion).subscribe((res: any) => {
-          if (Object.keys(res[0]).length !== 0) {
-            this.Ubicaciones = res[0].Relaciones;
-            // console.log(res[0].Relaciones);
-          } else {
-            this.Ubicaciones = undefined;
+          if (isObject(res[0].Relaciones)) {
+            this.form_salida.patchValue({ Ubicacion: '' });
+            this.UbicacionesFiltradas = res[0].Relaciones;
           }
         });
       }
@@ -149,7 +150,7 @@ export class FormElementosSeleccionadosComponent implements OnInit {
         // elemento.Funcionario = this.Proveedores.find(z => z.compuesto === form.Proveedor);
         elemento.Sede = this.Sedes.find(y => y.Id === parseFloat(form.Sede));
         elemento.Dependencia = this.Dependencias.find(y => y.Nombre === form.Dependencia);
-        elemento.Ubicacion = this.Ubicaciones.find(w => w.Id === parseFloat(form.Ubicacion));
+        elemento.Ubicacion = this.UbicacionesFiltradas.find(w => w.Id === parseFloat(form.Ubicacion));
         elemento.Asignado = true;
         datos.find(element => {
           if (element.Id === elemento.Id) {
@@ -162,7 +163,6 @@ export class FormElementosSeleccionadosComponent implements OnInit {
     }
 
   }
-  usarLocalStorage() { }
 
   // MÉTODO PARA BUSCAR PROVEEDORES EXISTENTES
   loadProveedoresElementos(): void {
@@ -193,7 +193,7 @@ export class FormElementosSeleccionadosComponent implements OnInit {
     this.loadProveedoresElementos();
 
   }
-// MÉTODO PARA VERIFICAR QUE EL DATO EN EL INPUT CORRESPONDA CON UNO EN LA LISTA
+  // MÉTODO PARA VERIFICAR QUE EL DATO EN EL INPUT CORRESPONDA CON UNO EN LA LISTA
   verfificarProveedor() {
     if (this.elementos.length !== 0) {
 

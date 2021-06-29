@@ -14,10 +14,10 @@ export class AsignacionKardexComponent implements OnInit {
   ElementoSinAsignar: any;
   ElementoCatalogo: any;
   ElementoPorAsignar: any;
-  entrada: any;
   apertura: any;
   ElementosKardex: any;
-
+  paso: number;
+  modoKardexCargado: boolean;
 
   constructor(
     private translate: TranslateService,
@@ -25,48 +25,64 @@ export class AsignacionKardexComponent implements OnInit {
     private fb: FormBuilder,
     private BodegaConsumo: BodegaConsumoHelper,
   ) {
+    this.paso = 0;
+  }
+
+  ngOnInit() {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
     });
-
   }
 
   Asignar_Elemento_Bodega(event) {
     this.ElementoSinAsignar = event;
+    this.paso = 1;
     // console.log(event);
   }
+
   Asignar_Elemento_Movimiento(event) {
     this.ElementoPorAsignar = event;
     // console.log(event);
   }
+
   Asignar_Elemento_Catalogo(event) {
+    this.paso = 2;
     this.ElementoCatalogo = event;
 
+    this.modoKardexCargado = false;
     this.BodegaConsumo.getElementosKardex(event.Id).subscribe((res: any) => {
 
       if (Object.keys(res[0]).length !== 0) {
         this.ElementosKardex = res;
-        this.entrada = true;
+        this.apertura = false;
       } else {
         this.apertura = true;
       }
+      this.modoKardexCargado = true;
     });
-
     // console.log(event);
-
   }
+
   onVolver() {
-    if (this.ElementoPorAsignar !== undefined) {
-      this.ElementoPorAsignar = undefined;
-    } else {
-      this.ElementoCatalogo = undefined;
-      this.ElementoSinAsignar = undefined;
-      this.entrada = undefined;
-      this.apertura = undefined;
+    if (this.paso > 0) {
+      this.paso--;
     }
 
-  }
-  ngOnInit() {
+    switch (this.paso) {
 
+      case 0:
+        this.ElementoSinAsignar = undefined;
+        break;
+
+      case 1:
+        this.ElementoCatalogo = undefined;
+        this.ElementosKardex = undefined;
+        this.apertura = undefined;
+        this.modoKardexCargado = false;
+        break;
+
+      default:
+        break;
+    }
   }
 
 }

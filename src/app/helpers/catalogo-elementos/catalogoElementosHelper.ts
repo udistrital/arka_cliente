@@ -17,9 +17,13 @@ export class CatalogoElementosHelper {
      * If the response is successs, it returns the object's data.
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
      */
-    public getCatalogo() {
+    public getCatalogo(activo: boolean = true) {
         this.rqManager.setPath('CATALOGO_ELEMENTOS_SERVICE');
-        return this.rqManager.get('catalogo?limit=-1').pipe(
+        let endpoint = 'catalogo?limit=-1';
+        if (activo) {
+            endpoint += '&query=Activo:true';
+        }
+        return this.rqManager.get(endpoint).pipe(
             map(
                 (res) => {
                     if (res === 'error') {
@@ -367,14 +371,14 @@ export class CatalogoElementosHelper {
         );
     }
     /**
-         * Tipo de Bien Acta Get
-         * If the response has errors in the OAS API it should show a popup message with an error.
-         * If the response is successs, it returns the object's data.
-         * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
-         */
+     * Retorna los Tipo de Bien Activos Get
+     * If the response has errors in the OAS API it should show a popup message with an error.
+     * If the response is successs, it returns the object's data.
+     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
+     */
     public getTipoBien() {
         this.rqManager.setPath('CATALOGO_ELEMENTOS_SERVICE');
-        return this.rqManager.get('tipo_bien?limit=-1').pipe(
+        return this.rqManager.get('tipo_bien?query=Activo:true&limit=-1').pipe(
             map(
                 (res) => {
                     if (res === 'error') {
@@ -395,17 +399,17 @@ export class CatalogoElementosHelper {
      */
     public getPlanCuentas(naturaleza) {
         this.rqManager.setPath('CUENTAS_CONTABLES_SERVICE');
-                return this.rqManager.get('nodo_cuenta_contable/getNodosCuentasArka/' + naturaleza).pipe(
-                map(
-                    (res) => {
-                        if (res === 'error') {
-                            this.pUpManager.showErrorAlert('No se pudo consultar los tipos de bien');
-                            return undefined;
-                        }
-                        return res;
-                    },
-                ),
-            );
+        return this.rqManager.get('nodo_cuenta_contable/getNodosCuentasArka/' + naturaleza).pipe(
+            map(
+                (res) => {
+                    if (res === 'error') {
+                        this.pUpManager.showErrorAlert('No se pudo consultar los tipos de bien');
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
     }
 
     /**
@@ -439,16 +443,16 @@ export class CatalogoElementosHelper {
         this.rqManager.setPath('CATALOGO_ELEMENTOS_SERVICE');
         return this.rqManager.get('cuentas_subgrupo?query=SubgrupoId.Id:'
             + id_Subgrupo + ',Activo:true,SubtipoMovimientoId:' + idmovimiento + '').pipe(
-            map(
-                (res) => {
-                    if (res === 'error') {
-                        this.pUpManager.showErrorAlert('No se pudo consultar los tipos de bien');
-                        return undefined;
-                    }
-                    return res;
-                },
-            ),
-        );
+                map(
+                    (res) => {
+                        if (res === 'error') {
+                            this.pUpManager.showErrorAlert('No se pudo consultar los tipos de bien');
+                            return undefined;
+                        }
+                        return res;
+                    },
+                ),
+            );
     }
 
     /**
@@ -522,27 +526,6 @@ export class CatalogoElementosHelper {
     public getArbolCatalogo(catalogo) {
         this.rqManager.setPath('CATALOGO_ELEMENTOS_SERVICE');
         return this.rqManager.get('tr_catalogo/' + catalogo).pipe(
-            map(
-                (res) => {
-                    if (res === 'error') {
-                        this.pUpManager.showErrorAlert('No se pudo consultar el catálogo de bienes');
-                        return undefined;
-                    }
-                    return res;
-                },
-            ),
-        );
-    }
-
-    /**
-     * Catalogo Get
-     * If the response has errors in the OAS API it should show a popup message with an error.
-     * If the response is successs, it returns the object's data.
-     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
-     */
-    public getCatalogos() {
-        this.rqManager.setPath('CATALOGO_ELEMENTOS_SERVICE');
-        return this.rqManager.get('catalogo').pipe(
             map(
                 (res) => {
                     if (res === 'error') {
@@ -744,5 +727,46 @@ export class CatalogoElementosHelper {
         );
     }
 
+/**
+ * Retorna Todos los Tipos de Bien Get
+ * If the response has errors in the OAS API it should show a popup message with an error.
+ * If the response is successs, it returns the object's data.
+ * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
+ */
+    public getAllTiposBien() {
+        this.rqManager.setPath('CATALOGO_ELEMENTOS_SERVICE');
+        return this.rqManager.get('tipo_bien?limit=-1&sortby=Id&order=asc').pipe(
+            map(
+                (res) => {
+                    if (res === 'error') {
+                        this.pUpManager.showErrorAlert('No se pudo consultar los tipos de bien');
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
+
+/**
+ * Put tipo de bien
+ * If the response has errors in the OAS API it should show a popup message with an error.
+ * If the response is successs, it returns the object's data.
+ * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
+ */
+ public putTipoBien(TipoBien) {
+    this.rqManager.setPath('CATALOGO_ELEMENTOS_SERVICE');
+    return this.rqManager.put('tipo_bien', TipoBien).pipe(
+        map(
+            (res) => {
+                if (res) {
+                    return res;
+                }
+                this.pUpManager.showErrorAlert('No se pudo consultar los tipos de bien');
+                return undefined;
+            },
+        ),
+    );
+}
 
 }

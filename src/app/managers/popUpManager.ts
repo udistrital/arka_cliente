@@ -34,8 +34,6 @@ export class PopUpManager {
 
     public showSuccesToast(message: string) {
         this.showToast({status: s.SUCCESS}, message, this.translate.instant('GLOBAL.info'));
-        const status: any = 'success';
-        this.toast.show(message, this.translate.instant('GLOBAL.info'), { status });
     }
 
     public showAlert(status: string, text: string, titulo: string = status) {

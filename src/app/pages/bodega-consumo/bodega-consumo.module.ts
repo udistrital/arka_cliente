@@ -21,7 +21,6 @@ import { ConsultaKardexComponent } from './consulta-kardex/consulta-kardex.compo
 import { EntradaKardexComponent } from './entrada-kardex/entrada-kardex.component';
 import { AjustarCantidadComponent } from './ajustar-cantidad/ajustar-cantidad.component';
 import { NbDialogModule } from '@nebular/theme';
-import { RespuestaSolicitudesComponent } from './respuesta-solicitudes/respuesta-solicitudes.component';
 
 @NgModule({
   declarations: [
@@ -39,7 +38,6 @@ import { RespuestaSolicitudesComponent } from './respuesta-solicitudes/respuesta
     CurrencyCustomPipe,
     EntradaKardexComponent,
     AjustarCantidadComponent,
-    RespuestaSolicitudesComponent,
   ],
   imports: [
     TranslateModule,

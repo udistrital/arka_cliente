@@ -1,35 +1,35 @@
-<nb-card>
+<div class="row">
+<nb-card class="col">
   <nb-card-header>
-    <h1>{{'GLOBAL.registro_elementos' | translate}}</h1>
+    <h2>{{'GLOBAL.registro_elementos' | translate}}</h2>
   </nb-card-header>
-  <nb-card-body>
-
-    <div class="row">
-
-      <div class="col">
-        <h5>{{'GLOBAL.catalogo' | translate}}</h5>
+  <nb-card-body [nbSpinner]="cargando_catalogos">
+        <h5>{{'GLOBAL.catalogo.uno' | translate}}</h5>
         <select class="form-control mb-4" (change)="onChange($event.target.value)">
           <option disabled selected>{{'GLOBAL.seleccionar' | translate}}...</option>
           <option *ngFor="let item of catalogos" value="{{ item.Id }}">{{ item.Nombre }}</option>
         </select>
 
-        <ngx-arbol *ngIf="catalogoId !== 0" [catalogoId]="catalogoId" (grupo)="receiveMessage($event)"
-          [updateSignal]="eventChange"></ngx-arbol>
-      </div>
-
-      <div class="col" *ngIf="ver_formulario">
-          <div>
-              <h2>Detalle</h2>
-              <p class="font-weight-bold text-uppercase pt-4 pb-4">Grupo:
+        <ngx-arbol *ngIf="catalogoId !== 0" [catalogoId]="catalogoId" (fila)="receiveMessage($event)" acciones=true>
+          <p>
+            <span class="fas fa-info-circle"></span>&nbsp;
+            <em>{{'GLOBAL.catalogo.elementosInfo' | translate}}</em>
+          </p>
+        </ngx-arbol>
+  </nb-card-body>
+</nb-card>
+<div class="col" *ngIf="ver_formulario">
+  <nb-card>
+    <nb-card-body>
+              <h2>{{ 'GLOBAL.detalle' | translate }}</h2>
+              <p class="font-weight-bold text-uppercase pt-4 pb-4">{{ 'GLOBAL.subgrupo.clase.nombre' | translate }}:
                   <span class="font-weight-normal">{{ subgrupo.Consecutivo }}: {{ subgrupo.Nombre }}</span></p>
-          </div>          
         <toaster-container [toasterconfig]="config"></toaster-container>
         <ngx-dinamicform [normalform]="formElemento" [modeloData]="info_elemento" (result)="validarForm($event)"
           [clean]="clean">
         </ngx-dinamicform>
-      </div>
 
-    </div>
-
-  </nb-card-body>
-</nb-card>
+    </nb-card-body>
+  </nb-card>
+</div>
+</div>

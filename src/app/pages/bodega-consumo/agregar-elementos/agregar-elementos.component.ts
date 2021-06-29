@@ -25,7 +25,6 @@ export class AgregarElementosComponent implements OnInit {
   source: LocalDataSource;
   source2: LocalDataSource;
   entradas: Array<Entrada>;
-  detalle: boolean;
   actaRecibidoId: number;
   consecutivoEntrada: string;
   entradaEspecifica: Entrada;
@@ -36,7 +35,8 @@ export class AgregarElementosComponent implements OnInit {
   mostrar: boolean;
   settings2: any;
 
-  constructor(private router: Router,
+  constructor(
+    private router: Router,
     private salidasHelper: SalidaHelper,
     private translate: TranslateService,
     private nuxeoService: NuxeoService,
@@ -47,9 +47,14 @@ export class AgregarElementosComponent implements OnInit {
   ) {
     this.source = new LocalDataSource();
     this.entradas = new Array<Entrada>();
-    this.detalle = false;
+  }
+
+  ngOnInit() {
     this.loadTablaSettings();
     this.loadEntradas();
+    this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
+      this.loadTablaSettings();
+    });
   }
 
   loadTablaSettings() {
@@ -57,24 +62,24 @@ export class AgregarElementosComponent implements OnInit {
       hideSubHeader: false,
       noDataMessage: this.translate.instant('GLOBAL.no_data_entradas'),
       actions: {
-        columnTitle: 'Solicitar',
+        columnTitle: this.translate.instant('GLOBAL.Solicitudes.Accion'),
         position: 'right',
         add: false,
         edit: false,
         delete: false,
         custom: [
           {
-            name: 'Solicitar',
-            title: '<i class="fas fa-pencil-alt" title="Ver"></i>',
+            name: this.translate.instant('GLOBAL.Solicitudes.Accion'),
+            title: '<span class="fas fa-plus" title="' + this.translate.instant('GLOBAL.Solicitudes.Accion') + '"></span>',
           },
         ],
       },
       columns: {
         Nombre: {
-          title: 'Nombre',
+          title: this.translate.instant('GLOBAL.Elemento.Uno'),
         },
         ElementoCatalogoId: {
-          title: 'Descripcion',
+          title: this.translate.instant('GLOBAL.Descripcion'),
           valuePrepareFunction: (value: any) => {
             if (value !== null) {
               return value.Descripcion;
@@ -97,7 +102,7 @@ export class AgregarElementosComponent implements OnInit {
           },
         },
         SaldoCantidad: {
-          title: 'Existencias',
+          title: this.translate.instant('GLOBAL.Existencias'),
         },
       },
     };
@@ -106,46 +111,17 @@ export class AgregarElementosComponent implements OnInit {
 
   loadEntradas(): void {
     this.bodegaConsumo.getExistenciasKardex().subscribe((res: any) => {
-      if (Object.keys(res).length !== 0) {
-        this.mostrar = true;
-        // console.log(res);
-        this.source.load(res);
-        // res.forEach(element => {
-        //   this.actaRecibidoHelper.getElemento(element.ElementoActaId).subscribe((res2: any) => {
-        //     // console.log(res2);
-        //     const descripcion = res2.Nombre + ' ' + res2.Marca + ' ' + res2.Serie;
-        //     element.Descripcion = descripcion;
-        //     this.source.append(element);
-        //   });
-        // });
-      }
+      this.source.load(res);
+      this.mostrar = true;
     });
   }
 
   onCustom(event) {
-
     this.DatosEnviados = event.data;
-    this.detalle = true;
   }
-
-  onVolver() {
-    this.detalle = !this.detalle;
-    this.iniciarParametros();
-  }
-
-  iniciarParametros() {
-
-  }
-
 
   onRegister() {
     this.router.navigate(['/pages/entradas/registro']);
-  }
-
-  ngOnInit() {
-    this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
-      this.loadTablaSettings();
-    });
   }
 
 }

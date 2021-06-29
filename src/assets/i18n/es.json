@@ -13,6 +13,153 @@
       "opciones": "Opciones",
       "configurar_rol": "Rol"
     },
+    "main": {
+      "catalogo": {
+        "name": "Catálogo de Elementos",
+        "children": {
+          "listar": {
+            "name": "Listar Catálogos"
+          },
+          "crear": {
+            "name": "Crear Catálogo"
+          },
+          "consultar": {
+            "name": "Consultar Catálogo"
+          },
+          "construir": {
+            "name": "Construcción de Catálogo"
+          },
+          "elementos": {
+            "name": "Registro Elementos"
+          },
+          "inactivar": {
+            "name": "Inactivar Niveles"
+          },
+          "cuentas": {
+            "name": "Asignación de Cuentas"
+          }
+        }
+      },
+      "acta": {
+        "name": "Acta de Recibido",
+        "children": {
+          "consulta": {
+            "name": "Consulta de Actas"
+          },
+          "registro": {
+            "name": "Registro de Acta"
+          },
+          "reg_especial": {
+            "name": "Registro de Acta Especial"
+          }
+        }
+      },
+      "entradas": {
+        "name": "Entradas",
+        "children": {
+          "consulta": {
+            "name": "Consultar Entradas"
+          },
+          "registro": {
+            "name": "Registrar Entrada"
+          }
+        }
+      },
+      "salidas": {
+        "name": "Salidas",
+        "children": {
+          "lista": {
+            "name": "Consultar Salidas"
+          },
+          "crear": {
+            "name": "Registrar Salida"
+          }
+        }
+      },
+      "bodega": {
+        "name": "Bodega de Consumo",
+        "children": {
+          "solicitar": {
+            "name": "Solicitar Elementos"
+          },
+          "sol_consulta": {
+            "name": "Consultar Solicitudes"
+          },
+          "sol_responder": {
+            "name": "Responder Solicitudes"
+          },
+          "kardex_asignar": {
+            "name": "Asignación a Kardex"
+          },
+          "kardex_consultar": {
+            "name": "Consulta de Kardex"
+          }
+        }
+      },
+      "bajas": {
+        "name": "Bajas",
+        "children": {
+          "consulta": {
+            "name": "Consultar Solicitudes"
+          },
+          "registro": {
+            "name": "Registrar Solicitud"
+          }
+        }
+      },
+      "movimientos": {
+        "name": "Movimientos",
+        "children": {
+          "consulta": {
+            "name": "Consultar Baja de Bien"
+          },
+          "solicitud": {
+            "name": "Solicitud de Baja de Bien"
+          },
+          "aprobacion": {
+            "name": "Aprobacion de Baja de Bien"
+          }
+        }
+      },
+      "reportes": {
+        "name": "Reportes",
+        "children": {
+          "entradas": {
+            "name": "Entradas"
+          },
+          "salidas": {
+            "name": "Salidas"
+          }
+        }
+      },
+      "ajustes": {
+        "name": "Ajustes",
+        "children": {
+          "registrarAjuste": {
+            "name": "Registrar Ajuste"
+          }
+        }
+      },
+      "bienes-inmuebles": {
+        "name": "Bienes Inmuebles",
+        "children": {
+          "listaBienes": {
+            "name": "Lista de Bienes Inmuebles"
+          }
+        }
+      },
+      "parametros": {
+        "name": "Parametrización",
+        "children": {
+          "tiposEntrada": {
+            "name": "Tipos de Entrada"
+          },
+          "tiposBien": {
+            "name": "Tipos de Bien"
+          }
+        }
+      }
+    },
     "aplicaciones": "Aplicaciones",
     "roles": "Roles",
     "opciones": "Opciones",
@@ -36,12 +183,24 @@
   "GLOBAL": {
     "Acta_Recibido":{
       "ErrorAnularMsg": "No se puede anular el Acta {{ACTA}} por tener estado \"{{ESTADO}}\"",
+      "Anular": "Anular Acta de Recibido",
       "AnuladaOkTitulo":"Acta {{ACTA}} Anulada",
       "AnuladaOkMsg":"El Acta {{ACTA}} fue Anulada exitosamente",
+      "una": "Acta Recibido",
+      "varias": "Actas de Recibido",
+      "id_forma1": "Acta de Recibido #{{ID}}",
+      "id_forma2": "Acta N° {{ID}}",
+      "ActaNo": "Acta de Recibido N°",
+      "ContratistaAsignado": "Contratista Asignado",
+      "Errores": {
+        "Mensaje": "Corrija primero los siguientes problemas:",
+        "Terceros": "Su usuario no está registrado en la Base de Datos de Terceros",
+        "Formularios": "Hay campos incorrectos y/o pendientes por llenar",
+        "Clases": "Debe existir al menos un elemento, y cada uno con su clase asignada"
+      },
       "CapturarElementos":{
         "CargaMasivaTitle":"Carga Masiva",
-        "ValidadorPlaceholder":"El archivo debe tener extension (*.xlsx)",
-        "ValidadorPlaceholder2":"El archivo debe tener extension (*.pdf)",
+        "ValidadorPlaceholder":"El archivo debe tener extensión {{EXT}} (*.{{EXT}})",
         "LimpiarEspacioButton":"Descartar Archivo",
         "CargarElementosButton":"Cargar Elementos",
         "ArticulosRelacionadosTitle":"Articulos Relacionados",
@@ -58,6 +217,7 @@
         "IVAHeader":"% IVA",
         "ValorIVAHeader":"Valor de IVA",
         "ValorTotalHeader":"ValorTotal",
+        "AvisoSobreescritura": "La Carga Masiva ELIMINARÁ {{CANT}} elemento(s) actualmente en la Lista. ¿Desea continuar con la Carga Masiva?",
         "AgregarElemento":"Agregar Elemento",
         "EliminarElemento":"Eliminar Elemento",
         "ElementosCargadosTitleOK":"Elementos Cargados",
@@ -72,13 +232,14 @@
         "ValidacionCargaMasivaText": "Hay {{cantidad}} error(es) en carga masiva, verificar en tabla"
       },
       "ConsultaActas":{
-        "Title":"Actas de Recibido",
         "NuevaActa":"Registrar Nueva Acta",
         "ConsecutivoHeader":"Consecutivo",
         "FechaCreacionHeader":"Fecha de Creación",
         "FechaModificacionHeader":"Fecha de Modificación",
         "FechaVistoBuenoHeader":"Fecha de Visto Bueno",
         "RevisorHeader":"Último Revisor",
+        "ModificadaPor": "Modificada Por",
+        "AceptadaPor": "Aceptada Por",
         "EstadoHeader":"Estado Actual",
         "UbicacionHeader":"Ubicación",
         "ObservacionesHeader":"Observaciones",
@@ -89,10 +250,10 @@
         "Aceptada":"Aceptada",
         "Asociada":"Asociada a Entrada",
         "Anulada":"Anulada",
+        "Instrucciones": "Para ver un Acta, dé click en la fila del Acta",
         "DialogoAnularTitulo":"¿Anular Acta {{ACTA}}?",
         "DialogoAnularMsg":"Esta acción no se puede deshacer. ¿Está seguro de ANULAR el Acta {{ACTA}}?",
-        "OpcionNoValida":"Opción no válida",
-        "OpcionNoValida2":"Opción no válida para el estado de esta acta"
+        "EdicionBloqueada":"No se puede Editar el Acta Nº {{NUM}} por tener Estado \"{{STATE}}\""
       },
       "RegistroActa":{
         "Title": "Registrar Acta de Recibido",
@@ -121,18 +282,18 @@
         "Total":"Gran Total:",
         "Observaciones2":"Proporciona datos adicionales que no se pueden expresar en el formulario (Obligatorio)",
         "DatosVeridicos":"¿Está seguro de la información registrada?",
-        "DatosVeridicosTitle":"Está seguro?",
+        "DatosVeridicosTitle":"¿Está seguro?",
         "CargaElementosTitle":"Carga de Elementos",
         "CargaElementos":"Por favor verificar la carga de elementos, valores y totales asociados al soporte antes de generar el registro",
-        "RegistradaTitle":" Registrada",
-        "Acta":"Acta N° ",
-        "Registrada":" ha sido registrada de forma exitosa",
+        "RegistradaTitle":"Acta N° {{ID}} Registrada",
+        "Registrada":"Acta N° {{ID}} ha sido registrada de forma exitosa",
         "RegistradaTitleNO":"Acta No Registrada",
         "RegistradaNO":"El Acta no ha podido ser registrada de forma exitosa, intenta más tarde",
         "ErrorRevisorMsg": "El Revisor Asignado no está registrado en la Base de Datos de Terceros. Por favor escoja un revisor registrado e Intente Nuevamente"
       },
       "EdicionActa":{
         "Title": "Editar Acta de Recibido",
+        "TitleId": "Editar Acta de Recibido #{{ID}}",
         "DatosTitle":"Datos Iniciales",
         "Sede":"Sede",
         "Dependencia":"Dependencia",
@@ -157,30 +318,29 @@
         "Total":"Gran Total:",
         "Observaciones2":"Proporciona datos adicionales que no se pueden expresar en el formulario (Obligatorio)",
         "DatosVeridicos":"Está seguro que desea guardar los cambios?",
-        "DatosVeridicos2":"¿Está seguro que desea enviar el acta a verificación?",
-        "DatosVeridicos3":"¿Está seguro que desea enviar el acta al Proveedor?",
+        "DatosVeridicos2":"¿Está seguro que desea enviar el acta a Verificación?",
+        "DatosVeridicos3":"¿Está seguro que desea enviar el acta al Proveedor y al Contratista?",
+        "DatosVeridicos4":"¿Está seguro que desea enviar el acta al Contratista?",
         "DatosVeridicosTitle":"¿Está seguro?",
         "CargaElementosTitle":"Carga de Elementos",
         "CargaElementos":"Por favor verificar la carga de elementos, valores y totales asociados al soporte antes de generar el registro",
-        "ModificadaTitle":" Modificada",
-        "Acta":"Acta N° ",
-        "Modificada":" ha sido Modificada de forma exitosa",
+        "ModificadaTitle":"Acta N° {{ID}} Modificada",
         "Modificada2":"Acta N° {{id}} ha sido Modificada de forma exitosa",
         "ModificadaTitleNO":"Acta No Modificada",
         "ModificadaNO":"El Acta no ha podido ser modificada de forma exitosa, intenta más tarde",
-        "VerificadaTitle":" Enviada",
         "VerificadaTitle2":"Acta N° {{id}} Enviada",
-        "Verificada":" ha sido Enviada a Verificación de forma exitosa",
         "Verificada2":"Acta N° {{id}} ha sido Enviada a Verificación de forma exitosa",
         "Verificada3":"Acta N° {{id}} ha sido Enviada al Proveedor de forma exitosa",
         "VerificadaTitleNO":"Acta No Enviada",
         "VerificadaNO":"El Acta no ha podido ser enviada a verificación de forma exitosa, intenta más tarde",
         "ProveedorNO":"El Acta no ha podido ser enviada al proveedor de forma exitosa, intenta más tarde",
         "VerificacionButton":"Enviar a Verificación",
-        "EnviarProveedorButton": "Enviar a Proveedor"
+        "EnviarProveedorButton": "Enviar a Proveedor",
+        "EnviarContratistaButton": "Enviar a Contratista"
       },
       "DetalleActa":{
         "Title": "Detalle Acta de Recibido",
+        "TitleId": "Detalle Acta de Recibido #{{ID}}",
         "DatosTitle":"Datos Iniciales",
         "Sede":"Sede",
         "Dependencia":"Dependencia",
@@ -220,6 +380,7 @@
       },
       "VerificacionActa":{
         "Title": "Detalle Acta de Recibido",
+        "TitleId": "Detalle Acta de Recibido #{{ID}}",
         "DatosTitle":"Datos Iniciales",
         "Sede":"Sede",
         "Dependencia":"Dependencia",
@@ -259,16 +420,15 @@
         "Verificar":"Verificar",
         "Rechazar":"Rechazar",
         "Volver":"Volver",
-        "Acta":"Acta N° ",
         "DatosVeridicosTitle":"Está Seguro?",
         "VerificadaPre":"Está seguro de que desea verificar el acta?",
         "RechazadaPre":"Está seguro de que desea rechazar el acta?",
-        "VerificadaTitle":" Verificada",
-        "Verificada":" ha sido verificada de forma exitosa",
+        "VerificadaTitle":"Acta N° {{ID}} Verificada",
+        "Verificada":"El Acta N° {{ID}} ha sido verificada de forma exitosa",
         "VerificadaTitleNO":"Acta No Verificada",
         "VerificadaNO":"El Acta no ha podido ser verificada de forma exitosa, intente más tarde",
-        "RechazadaTitle":" Devuelta",
-        "Rechazada":" ha sido Devuelta de forma exitosa",
+        "RechazadaTitle":"Acta N° {{ID}} Devuelta",
+        "Rechazada":"El Acta N° {{ID}} ha sido Devuelta de forma exitosa",
         "RechazadaTitleNO":"Acta No Devuelta",
         "RechazadaNO":"El Acta no ha podido ser Devuelta de forma exitosa, intente más tarde"
       }
@@ -284,28 +444,19 @@
     "registro_elementos":"Registro de Elementos",
     "registrar_elementos":"Registrar Elemento",
     "consultar_catalogo":"Consultar Arbol de Catálogo",
-    "depreciacion":"Depreciación",
-    "valorizacion":"Valorización",
     "cuenta_credito":"Crédito",
     "cuenta_debito":"Débito",
     "placeholder_cuenta_credito":"Crédito",
     "placeholder_cuenta_debito":"Débito",
-    "Entradas":"Entrada",
-    "Salidas":"Salida",
+    "Entrada": "Entrada",
+    "Entradas": "Entradas",
+    "Salidas":"Salidas",
+    "Saldo": "Saldo",
     "Depreciacion":"Depreciación",
     "Valorizacion":"Valorización",
     "Salida de Almacen":"Salida",
     "Depreciacion Almacen":"Depreciación",
     "Valorizacion Almacen":"Valorización",
-    "Adquisición":"Adquisición",
-    "Donación":"Donación",
-    "Reposición":"Reposición",
-    "Sobrante":"Sobrante",
-    "Terceros":"Terceros",
-    "Elaboración Propia":"Elaboración Propia",
-    "Caja menor": "Caja menor",
-    "Compras extranjeras": "Compras extranjeras",
-    "Aprovechamientos": "Aprovechamientos",
     "Adiciones y mejoras": "Adiciones y mejoras",
     "Intangibles": "Intangibles",
     "Provisional": "Provisional",
@@ -315,6 +466,11 @@
     "Acciones":"Acciones",
 
     "Deshacer":"Deshacer",
+    "colapsar": "Colapsar",
+    "expandir": "Expandir",
+    "editar": "Editar",
+    "cerrar": "Cerrar",
+    "enviarSolicitud": "Enviar Solicitud",
 
     "nivel_jerarquico": "Nivel Jerárquico",
 
@@ -323,40 +479,53 @@
         "nombre": "Grupo",
         "agregar": "Agregar Grupo",
         "modificar": "Modificar Grupo",
+        "seleccionado": "Grupo Seleccionado",
         "pregunta_actualizar": "¿Está seguro de actualizar el grupo?",
         "respuesta_actualizar_ok": "Grupo actualizado exitosamente",
         "pregunta_crear": "¿Está seguro de crear el Grupo?",
         "respuesta_crear_ok": "Grupo creado exitosamente",
-        "pregunta_inactivar": "¿Inactivar grupo?",
-        "respuesta_inactivar_ok": "Grupo inactivado exitosamente",
-        "respuesta_inactivar_err": "¡No se pudo inactivar el grupo!"
+        "pregunta_inactivar": "¿Inactivar grupo \"{{CODE}}\"?",
+        "respuesta_inactivar_ok": "Grupo \"{{CODE}}\" inactivado exitosamente",
+        "respuesta_inactivar_err": "¡No se pudo inactivar el grupo \"{{CODE}}\"!"
       },
       "segmento": {
         "nombre": "Segmento",
         "agregar": "Agregar Segmento",
         "modificar": "Modificar Segmento",
+        "seleccionado": "Segmento Seleccionado",
         "pregunta_actualizar": "¿Está seguro de actualizar el segmento?",
         "respuesta_actualizar_ok": "Segmento actualizado exitosamente",
         "pregunta_crear": "¿Está seguro de crear el Segmento?",
-        "respuesta_crear_ok": "Segmento creado exitosamente"
+        "respuesta_crear_ok": "Segmento creado exitosamente",
+        "pregunta_inactivar": "¿Inactivar segmento \"{{CODE}}\"?",
+        "respuesta_inactivar_ok": "Segmento \"{{CODE}}\" inactivado exitosamente",
+        "respuesta_inactivar_err": "¡No se pudo inactivar el segmento \"{{CODE}}\"!"
       },
       "familia": {
         "nombre": "Familia",
         "agregar": "Agregar Familia",
         "modificar": "Modificar Familia",
+        "seleccionado": "Familia Seleccionada",
         "pregunta_actualizar": "¿Está seguro de actualizar la familia?",
         "respuesta_actualizar_ok": "Familia actualizada exitosamente",
         "pregunta_crear": "¿Está seguro de crear la Familia?",
-        "respuesta_crear_ok": "Familia creada exitosamente"
+        "respuesta_crear_ok": "Familia creada exitosamente",
+        "pregunta_inactivar": "¿Inactivar familia \"{{CODE}}\"?",
+        "respuesta_inactivar_ok": "Familia \"{{CODE}}\" inactivada exitosamente",
+        "respuesta_inactivar_err": "¡No se pudo inactivar la Familia \"{{CODE}}\"!"
       },
       "clase": {
         "nombre": "Clase",
         "agregar": "Agregar Clase",
         "modificar": "Modificar Clase",
+        "seleccionado": "Clase Seleccionada",
         "pregunta_actualizar": "¿Está seguro de actualizar la clase?",
         "respuesta_actualizar_ok": "Clase actualizada exitosamente",
         "pregunta_crear": "¿Está seguro de crear la Clase?",
-        "respuesta_crear_ok": "Clase creada exitosamente"
+        "respuesta_crear_ok": "Clase creada exitosamente",
+        "pregunta_inactivar": "¿Inactivar Clase \"{{CODE}}\"?",
+        "respuesta_inactivar_ok": "Clase \"{{CODE}}\" inactivada exitosamente",
+        "respuesta_inactivar_err": "¡No se pudo inactivar la Clase \"{{CODE}}\"!"
       }
     },
 
@@ -375,17 +544,69 @@
     "Crear_Movimientos_placeholder":"Está seguro de crear las cuentas?",
     "Creado_Movimientos_placeholder":"Cuentas creadas exitosamente",
 
+    "instr_asig_cuentas": "Ingrese las cuentas crédito y débito asociadas a cada movimiento contable:",
+
     "notificaciones": {
       "t_restante": "La sesion expirará en {{MINUTES}} minuto(s)",
       "t_restante_titulo": "La sesión está por expirar",
       "t_restante_alerta": "Queda(n) menos de {{MINUTES}} minuto(s). Por favor guarde los cambios que tenga pendientes"
     },
 
+    "catalogo": {
+      "uno": "Catálogo",
+      "crear": "Crear Catálogo",
+      "editar": "Editar Catálogo",
+      "cuentas": "Asignación de Cuentas",
+      "editar_nombre": "Editar Catálogo \"{{NOMBRE}}\"",
+      "constrInfo": "Para modificar la información o agregar \"descencientes\" de una fila, seleccione la fila.",
+      "claseInfo": "Seleccione una fila correspondiente a una Clase",
+      "elementosInfo": "Para agregar elementos a una clase, seleccione una fila correspondiente a una Clase",
+      "desactivar": "Desactivar Catálogo",
+      "lista": "Lista de Catálogos"
+    },
+
+    "BodegaConsumo": {
+      "Asignacion": {
+        "Titulo": "Asignación de Elementos a Kardex",
+        "Ninguna": "Elementos por Asignar a Kardex",
+        "Placeholder": "Descripción del Registro que se creará en la Ficha Kardex",
+        "Paso1": "Seleccione un elemento para iniciar la apertura o asignación a Kardex",
+        "Paso2_p1": "Selecciona el tipo de Elemento del Catalogo de Bienes y Servicios, al que pertenece el elemento seleccionado anteriormente",
+        "Paso2_p2": "Si no está listado el tipo de Elemento necesario, revisar en el Módulo Catálogo de Elementos, en Registro de Elementos",
+        "Existente": "Asignación a Ficha Kardex Existente",
+        "Apertura": "Apertura de Ficha Kardex",
+        "BotonPreparar": "Preparar Registro",
+        "VistaPrevia": "Vista Previa Planilla Kardex",
+        "BotonConfirmar": "Confirmar Entrada de Kardex"
+      },
+      "Consulta": {
+        "Titulo": "Consultar Kardex",
+        "Indice": "Indice de Fichas Kardex asociadas a Inventario de Consumo. Seleccione una para ver sus registros"
+      },
+      "MetodoInventario": {
+        "Nombre": "Método de Inventario",
+        "PP": "Promedio Ponderado",
+        "PEPS": "PEPS - Primero en Entrar, Primero en Salir",
+        "UEPS": "UEPS - Ultimo en Entrar, Primero en Salir"
+      },
+      "Solicitud": {
+        "TituloPendientes": "Solicitudes Pendientes de Elementos de Consumo",
+        "TituloTodas": "Solicitudes de Elementos de Consumo",
+        "ListaPendientes": "Lista de Solicitudes de Elementos a la Bodega de Consumo, Pendientes por Resolver",
+        "ListaTodas": "Lista de Todas las Solicitudes de Elementos a la Bodega de Consumo",
+        "Titulo": "Solicitud de Elementos de Bodega de Consumo",
+        "ColumnaElementoCatalogo": "Catalogo: Codigo/Clase/Elemento",
+        "Ayuda": "Para iniciar la solicitud de elementos, por favor seleccione cualquier elemento. Los elementos solicitados seran listados conforme se van seleccionando."
+      }
+    },
+
+    "Advertencia": "Advertencia",
     "info": "Información",
+    "info_adicional": "Información Adicional",
     "Detalle":"Detalle",
     "placeholder":"Este Campo es Obligatorio",
+    "funcionario":"Funcionario",
     "search": "Buscar",
-    "catalogo": "Catálogo",
     "inactivar_grupos_subgrupos": "Inactivar grupos y subgrupos",
     "inactivar": "Inactivar",
     "inactivar_info": "Esta acción no se puede revertir!",
@@ -401,6 +622,7 @@
     "placeholder_codigo_abreviacion": "codigo_abreviacion",
     "descripcion": "Descripción",
     "placeholder_descripcion": "descripción",
+    "inactivo": "Inactivo",
     "activo": "Activo",
     "placeholder_activo": "activo",
     "numero_orden": "numero_orden",
@@ -435,7 +657,7 @@
     "placeholder_fecha_creacion": "fecha_creacion",
     "notificacion_estado_usuario": "notificacion_estado_usuario",
     "placeholder_notificacion_estado_usuario": "notificacion_estado_usuario",
-    "fecha": "fecha",
+    "fecha": "Fecha",
     "placeholder_fecha": "Seleccionar Fecha",
     "usuario": "usuario",
     "placeholder_usuario": "usuario",
@@ -466,9 +688,10 @@
     "aceptar": "Aceptar",
     "cancelar": "Cancelar",
     "salir": "salir",
-    "eliminar": "eliminar",
-    "actualizar": "actualizar",
+    "eliminar": "Eliminar",
+    "actualizar": "Actualizar",
     "crear": "crear",
+    "Relacionar": "Asociar",
     "registrar": "registrar",
     "guardar": "guardar",
     "formulario": "Formulario",
@@ -478,13 +701,14 @@
     "consultar_entrada": "Consultar Entradas",
     "mensaje_consulta_entrada": "Lista de entradas realizadas. Para ver el detalle de la entrada presione el ícono de acciones ubicado al costado derecho de la tabla.",
     "consecutivo": "Consecutivo",
-    "acta_recibido": "Acta de Recibido",
     "fecha_entrada": "Fecha de Entrada",
     "tipo_entrada": "Tipo Entrada",
+    "estado_entrada": "Estado Entrada",
     "detalle": "Detalle",
     "seleccionar": "Seleccionar",
     "no_data_entradas": "No se encontraron entradas asociadas.",
     "no_data_actas_entrada": "No se encontraron actas de recibido aprobadas para realizar una entrada",
+    "no_data_salidas": "No se encontraron salidas asociadas a esta entrada",
     "detalle_entrada": "Detalle Entrada",
     "registrar_nueva_entrada": "Registrar Nueva Entrada",
     "elementos_entrada": "Elementos Entrada",
@@ -492,7 +716,10 @@
     "factura": "Factura",
     "tipo_bien": "Tipo de Bien",
     "placeholder_tipo_bien": "Tipo de Bien",
+    "tipo_movimiento": "Tipo de Movimiento",
+    "elementos_asociados": "Elementos Asociados",
     "cantidad": "Cantidad",
+    "cantidadMax": "Cantidad Máxima",
     "marca": "Marca",
     "serie": "Serie",
     "unidad_medida": "Unidad de Medida",
@@ -505,20 +732,133 @@
     "fecha_visto_bueno": "Fecha de Visto Bueno",
     "revisor": "Revisor",
     "ubicacion": "Ubicación",
-    "acciones": "Acciones",
     "observaciones": "Observaciones",
+
+    "movimientos": {
+      "tipo": {
+        "EA": {
+          "nombre": "Adquisición",
+          "descripcion": "Entrada por Adquisición"
+        },
+        "EEP": {
+          "nombre": "Elaboración Propia",
+          "descripcion": "Entrada por Elaboración Propia"
+        },
+        "ED": {
+          "nombre": "Donación",
+          "descripcion": "Entrada por Donación"
+        },
+        "ESI": {
+          "nombre": "Sobrante",
+          "descripcion": "Entrada por Sobrante de Inventario"
+        },
+        "ET": {
+          "nombre": "Terceros",
+          "descripcion": "Entrada de Bienes de Terceros"
+        },
+        "EPR": {
+          "nombre": "Reposición",
+          "descripcion": "Entrada por Reposición"
+        },
+        "ECM": {
+          "nombre": "Caja menor",
+          "descripcion": "Entrada por Adquisición por Caja Menor"
+        },
+        "EAM": {
+          "nombre": "Adiciones y mejoras",
+          "descripcion": "Entrada por Adiciones y mejoras"
+        },
+        "EIA": {
+          "nombre": "Intangibles adquiridos",
+          "descripcion": "Entrada por Intangibles adquiridos "
+        },
+        "ECE": {
+          "nombre": "Compras extranjeras",
+          "descripcion": "Entrada por Compra en el Extranjero"
+        },
+        "EPPA": {
+          "nombre": "Aprovechamiento de Partes",
+          "descripcion": "Entrada de partes por aprovechamiento"
+        },
+        "EID": {
+          "nombre": "Intangibles desarrollados",
+          "descripcion": "Entrada por Intangibles desarrollados al Interior de los Entes y Entidades"
+        },
+        "EBEMP": {
+          "nombre": "Entregados de manera Provisional",
+          "descripcion": "Entrada Entregados al Ente o Entidad de manera provisional"
+        },
+        "SOL_BAJA": {
+          "nombre": "Baja",
+          "descripcion": "Solicitud de Baja"
+        },
+        "SOL_TRD": {
+          "nombre": "Traslado",
+          "descripcion": "Solicitud de Traslado"
+        }
+      },
+      "tab_consumo": "Elementos de Consumo",
+      "tab_consumo_controlado": "Elementos Devolutivos y de Consumo Controlado",
+      "asignar": "REGISTRAR SALIDA",
+      "asignar_funcionario": "ASIGNAR A FUNCIONARIO",
+      "error_entrada_no_registrada": "No se pudo registrar la entrada solicitada",
+      "error_salida_no_registrada": "No se pudo registrar la salida solicitada",
+      "SalidaRechazadaTitle": "Salida Rechazada",
+      "SalidaRechazadaText": "Se ha rechazado la solicitud",
+      "alerta_descargue": "Elementos sin descargar",
+      "alerta_consumo": "Elementos de consumo sin asignar",
+      "alerta_controlado": "Elementos de consumo controlado sin asignar",
+      "alerta_ambos": "Elementos de consumo y consumo controlado sin asignar"
+    },
+
+    "cuentas": {
+      "alerta_modificacion": "Cuentas en Modificación. Intente más tarde",
+      "estado_modificando": "En Modificación (Transacciones Bloqueadas)",
+      "estado_lectura": "Solo Lectura (Transacciones Habilitadas)",
+      "iniciar_edicion_boton": "Iniciar Edición de Cuentas",
+      "iniciar_edicion_titulo": "¿Iniciar Edición de Cuentas?",
+      "iniciar_edicion_texto": "Se bloqueará cualquier tipo de movimiento. ¿Desea continuar?",
+      "terminar_edicion_boton": "Terminar Edición de Cuentas",
+      "terminar_edicion_titulo": "¿Finalizar Edicion de Cuentas?",
+      "terminar_edicion_texto": "Se permitirá realizar movimientos. ¿Desea continuar?"
+    },
+
+    "salidas": {
+      "titulo_registrar": "Registrar Salida",
+      "elementos": "Elementos",
+      "exito_registro_titulo": "Salida Registrada",
+      "exito_registro_texto": "La Salida ha sido Registrada exitosamente",
+      "salida_instruccion": "En la siguiente tabla seleccione la entrada para poder generar la salida correspondiente",
+      "consulta_salida_info": "En la siguiente tabla se muestran de forma general las salidas, seleccione una para ver la informacion asociada",
+      "detalle_salida": "Detalle Salida"
+    },
+
+    "Existencias": "Existencias",
+    "Elemento": {
+      "Uno": "Elemento",
+      "Varios": "Elementos",
+      "Relacionado": "Elemento Relacionado"
+    },
+
+    "Solicitudes": {
+      "Accion": "Solicitar",
+      "Aprobar": "Aprobar Solicitud",
+      "Rechazar": "Rechazar Solicitud",
+      "Detalle": "Detalle de la Solicitud",
+      "CantSolicitada": "Cantidad Solicitada",
+      "CantDisponible": "Cantidad Disponible",
+      "CantMax": "Cantidad Máxima",
+      "CantMin": "Cantidad Mínima",
+      "CantAprobada": "Cantidad Aprobada"
+    },
+
     "registrar_entrada": "Registrar Entrada",
     "mensaje_registrar_entrada": "Seleccione el acta de recibido a la cual desea realizarle entrada dando clic en el ícono de acciones ubicado al costado derecho de la tabla.",
-    "entrada_adquisicion": "Entrada por Adquisición",
-    "entrada_reposicion": "Entrada por Reposición",
-    "entrada_elaboracion_propia": "Entrada por Elaboración Propia",
-    "entrada_donacion": "Entrada por Donación",
-    "entrada_sobrante": "Entrada por Sobrante de Inventario",
-    "entrada_terceros": "Entrada de Bienes de Terceros",
     "datos_contrato": "Datos de Contrato",
     "ordenador_gasto": "Ordenador de Gasto",
     "supervisor": "Supervisor",
     "supervisor_nombres": "Nombres y Apellidos",
+    "Cargo":"Cargo",
     "nombres": "Nombres y Apellidos",
     "sede": "Sede",
     "dependencia": "Dependencia",
@@ -526,9 +866,11 @@
     "proveedor": "Proveedor",
     "fecha_factura": "Fecha de Factura",
     "importacion": "Importación",
+    "registro_importacion": "Registro de Importación",
+    "trm": "Tasa Representativa del mercado",
     "vigencia": "Vigencia",
-    "tipo_contrato": "Tipo Contrato",
-    "numero_contrato": "Número Contrato",
+    "tipo_contrato": "Tipo de Contrato",
+    "numero_contrato": "Número de Contrato",
     "placeholder_contrato": "Contrato",
     "asignacion": "Asignación",
     "razon_social": "NIT o Razón Social",
@@ -538,11 +880,56 @@
     "mensaje_registrar": "Click en Registrar Entrada para continuar",
     "contrato": "Contrato",
     "solicitante": "Solicitante",
+    "Encargado":"Encargado",
+    "Placa": "Placa",
     "soporte": "Soporte",
     "acta_produccion": "Acta de Producción",
     "tercero_administracion": "Tercero en Administración",
     "error": "Error",
     "mensaje_seleccionar_entrada": "Seleccione el tipo de entrada que desea realizar",
-    "documento": "Documento"
+    "documento": "Documento",
+    "ajustes": {
+      "movimientos_relacionados": "Movimientos relacionados",
+      "confirmar_anular_entrada": "Los movimientos de inventario y contables asociados a esta entrada serán anulados",
+      "success_anular_entrada_title": "Entrada anulada",
+      "success_anular_entrada": "La entrada y los movimientos asociados se anularon correctamente",
+      "error_anular_entrada_title": "Entrada no anulada",
+      "error_anular_entrada": "La entrada no ha podido ser anulada correctamente, intente más tarde"
+    },
+    "parametros": {
+      "tiposEntradas": {
+        "title": "Administrar tipos de entrada",
+        "subtitle": "Seleccione un tipo de entrada para cambiar su estado",
+        "title_activacion_entrada": "Habilitar Tipo de Entrada",
+        "title_desactivacion_entrada": "Inhabilitar Tipo de Entrada",
+        "confirmar_activacion_entrada": "¿Desea habilitar este tipo de entrada?",
+        "confirmar_desactivacion_entrada": "¿Desea inhabilitar este tipo de entrada?",
+        "title_success_activacion": "Entrada Habilitada",
+        "title_success_desactivacion": "Entrada Inhabilitada",
+        "success_activacion": "La entrada ha sido habilitada correctamente",
+        "success_desactivacion": "La entrada ha sido inhabilitada correctamente",
+        "title_error_activacion": "Error Habilitar Entrada",
+        "title_error_desactivacion": "Error Inhabilitar Entrada",
+        "error_activacion": "La entrada no ha sido habilitada correctamente",
+        "error_desactivacion": "La entrada no ha sido inhabilitada correctamente"
+      },
+      "tiposBien": {
+        "title": "Administrar tipos de bien",
+        "subtitle": "Seleccione un tipo de bien para cambiar su estado",
+        "title_activacion": "Habilitar Tipo de Bien",
+        "title_desactivacion": "Inhabilitar Tipo de Bien",
+        "confirmar_activacion": "¿Desea habilitar este tipo de bien?",
+        "confirmar_desactivacion": "¿Desea inhabilitar este tipo de bien?",
+        "title_success_activacion": "Tipo de Bien Habilitado",
+        "title_success_desactivacion": "Tipo de Bien Inhabilitado",
+        "success_activacion": "El tipo de bien ha sido habilitado correctamente",
+        "success_desactivacion": "El tipo de bien ha sido inhabilitado correctamente",
+        "title_error_activacion": "Error Habilitar Tipo Bien",
+        "title_error_desactivacion": "Error Inhabilitar Tipo Bien",
+        "error_activacion": "El tipo de bien no ha sido habilitado correctamente",
+        "error_desactivacion": "El tipo de bien no ha sido inhabilitado correctamente",
+        "asignable_kardex": "Asignable a Kárdex"
+      }
+    }
   }
 }

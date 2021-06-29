@@ -12,6 +12,56 @@ export class ActaRecibidoHelper {
     constructor(private rqManager: RequestManager,
         private pUpManager: PopUpManager) { }
 
+
+        public sendCorreo(elemento) {
+            this.rqManager.setPath('GOOGLE_SERVICE');
+            return this.rqManager.post('notificacion', elemento).pipe(
+                map(
+                    (res) => {
+                        if (res['Type'] === 'error') {
+                            this.pUpManager.showErrorAlert('No se pudo enviar correo');
+                            return undefined;
+                        }
+                        return res;
+                    },
+                ),
+            );
+        }
+
+
+        public getEmailTercero(id: any) {
+            this.rqManager.setPath('TERCEROS_SERVICE');
+            return this.rqManager.get('info_complementaria_tercero/?query=TerceroId__Id:' + id + ',Activo:true,info_complementaria_id:53').pipe(
+                map(
+                    (res) => {
+                        if (res === 'error') {
+                            this.pUpManager.showErrorAlert('No se pudo consultar el email del tercero');
+                            return undefined;
+                        }
+                        return res;
+                    },
+                ),
+            );
+        }
+
+        public getIdDelTercero(documento: any) {
+            this.rqManager.setPath('TERCEROS_SERVICE');
+            return this.rqManager.get('datos_identificacion/?query=numero:' + documento + ',Activo:true').pipe(
+                map(
+                    (res) => {
+                        if (res === 'error') {
+                            this.pUpManager.showErrorAlert('No se pudo consultar el email del tercero');
+                            return undefined;
+                        }
+                        return res;
+                    },
+                ),
+            );
+        }
+
+
+
+
     /**
      * Actas de Recibido Get
      * If the response has errors in the OAS API it should show a popup message with an error.
@@ -75,9 +125,9 @@ export class ActaRecibidoHelper {
         );
     }
 
-    public getActasRecibidoPorEstados(estados: string[]) {
+    public getActasRecibidoPorEstados(estado) {
         this.rqManager.setPath('ARKA_SERVICE');
-        return this.rqManager.get('acta_recibido/get_all_actas?states=' + estados.join()).pipe(
+        return this.rqManager.get('acta_recibido/get_actas_recibido_tipo/' + estado).pipe(
             map(
                 (res) => {
                     if (res === 'error') {
@@ -169,6 +219,20 @@ export class ActaRecibidoHelper {
         );
     }
 
+    public getActaById(Id: number) {
+        this.rqManager.setPath('ACTA_RECIBIDO_SERVICE');
+        return this.rqManager.get('historico_acta?query=Activo:true,ActaRecibidoId__Id:' + Id).pipe(
+            map(
+                (res) => {
+                    if (res === 'error') {
+                        this.pUpManager.showErrorAlert('No se pudo consultar los tipos de bien');
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
     /**
      * Estados Acta Get
      * If the response has errors in the OAS API it should show a popup message with an error.

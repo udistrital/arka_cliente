@@ -1,0 +1,241 @@
+<nb-stepper #stepper orientation= "horizontal">
+
+  <!-- DATOS GENERALES -->
+  <nb-step [stepControl]="inicioForm" label="Datos Generales">
+    <h5>Datos generales</h5>
+    <form [formGroup]= "inicioForm" class="step-container">
+      <div class="row">
+        <div class="form-group col-sm">
+          <label>Nombree del inmueble</label>
+          <div class="input-group">
+            <input nbInput type="text" shape="semi-round" placeholder="Inserte Nombre" class="form-control" 
+            formControlName="inicioCtrl" required>
+          </div>
+        </div>
+        <!-- <div class="form-group col-sm">
+          <label>Fecha de registro</label>
+          <div class="input-group">
+            <input nbInput shape="semi-round" placeholder="{{'GLOBAL.placeholder_fecha' | translate}}"
+               class="form-control" [nbDatepicker]="formpicker" required>
+            <nb-datepicker  #formpicker></nb-datepicker>
+          </div>
+        </div> -->
+        <div class="form-group col-sm">
+          <label>Dirección del inmueble</label>
+          <div class="input-group">
+            <input nbInput type="text" shape="semi-round" placeholder="Dirección" class="form-control" 
+             required>
+          </div>
+        </div>
+
+        <div class="form-group col-sm">
+          <label>Clase Catalogo</label>
+          <div class="input-group">
+            <input nbInput type="text" shape="semi-round" placeholder="Clase" class="form-control" 
+             required>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="form-group col-sm">
+          <label>Registro Catastro</label>
+          <div class="input-group">
+            <button nbButton type="button" (click)="fileInputDocumento.click();">
+              <i class="fas fa-file-upload fa-2x"></i>
+              <input #fileInputDocumento formControlName="inicioCtrl" type="file"
+                style="display:none;" accept="application/pdf" data-max-size="5120" />
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="row float-right">
+        <button type="button"  nbButton nbStepperNext>
+          {{'GLOBAL.siguiente' | translate}}</button>
+      </div>
+    </form>
+  </nb-step>
+
+  <!-- PLANTA FISICA -->
+
+  <nb-step [stepControl]="plantaForm" label="Normas de Ávaluo">
+    <h5>Normas de Avalúo</h5>
+    <form [formGroup]= "plantaForm" class="step-container">
+      <div class="row">
+        <div class="form-group col-sm">
+          <label>Tipo de edificación</label>
+          <div class="input-group">
+            <input nbInput type="text" shape="semi-round" placeholder="Inserte Área" class="form-control" 
+            formControlName="plantaCtrl" required>
+          </div>
+        </div>
+
+        <div class="form-group col-sm">
+          <label>Tipo de terreno o edificación</label>
+          <div class="input-group">
+            <input nbInput type="text" shape="semi-round" placeholder="Tipo de Edificacion" class="form-control" 
+             required>
+          </div>
+        </div>
+
+        <div class="form-group col-sm">
+          <label>Tipo de terreno o edificación</label>
+          <div class="input-group">
+            <input nbInput type="text" shape="semi-round" placeholder="Tipo de Edificacion" class="form-control" 
+             required>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="row">
+
+        <div class="form-group col-sm">
+          <label>Área(m2)</label>
+          <div class="input-group">
+            <input nbInput type="text" shape="semi-round" placeholder="Tipo de Edificacion" class="form-control" 
+             required>
+          </div>
+        </div>
+
+        <div class="form-group col-sm">
+          <label>Planos del bien inmueble</label>
+          <div class="input-group">
+            <button nbButton type="button" (click)="fileInputDocumento.click();">
+              <i class="fas fa-file-upload fa-2x"></i>
+              <input #fileInputDocumento formControlName="plantaCtrl" type="file"
+                style="display:none;" accept="application/pdf" data-max-size="5120" />
+            </button>
+          </div>
+        </div>
+        <div class="form-group col-sm"></div>
+      </div>
+
+      <div class="col">
+        <button nbButton nbStepperPrevious>{{'GLOBAL.anterior' | translate}}</button>
+      </div>
+      <div class="col" align="end">
+        <button type="button"  nbButton nbStepperNext>{{'GLOBAL.siguiente' | translate}}</button>
+      </div>
+    </form>
+  </nb-step>
+
+  <!-- CONTABILIZACION -->
+  <nb-step [stepControl]="contabilidadForm" label="Contabilización">
+    <h5>Contabilización</h5>
+    <form [formGroup]= "contabilidadForm" class="step-container">
+      <div class="row">
+        <div class="form-group col-sm">
+          <label>Número del comprobante</label>
+          <div class="input-group">
+            <input nbInput type="text" shape="semi-round" placeholder="Inserte Número" class="form-control" 
+            formControlName="contabilidadCtrl" required>
+          </div>
+        </div>
+
+        <div class="form-group col-sm">
+          <label>Tipo del comprobante</label>
+          <div class="input-group">
+            <input nbInput type="text" shape="semi-round" placeholder="Inserte Tipo" class="form-control" 
+             required>
+          </div>
+        </div>
+
+        <div class="form-group col-sm">
+          <label>Jerarquía del valor razonable($)</label>
+          <div class="input-group">
+            <input nbInput type="text" shape="semi-round" placeholder="Inserte Valor" class="form-control" 
+            align="left" required>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="row">
+        <div class="form-group col-sm">
+          <label>Concepto</label>
+          <div class="input-group">
+            <input nbInput type="text" shape="semi-round" placeholder="Inserte Concepto" class="form-control" 
+             required>
+          </div>
+        </div>
+        <div class="form-group col-sm">
+          <label>Consecutivo</label>
+          <div class="input-group">
+            <input nbInput type="text" shape="semi-round" placeholder="Inserte Consecutivo" class="form-control" 
+             required>
+          </div>
+        </div>
+        <div class="form-group col-sm">
+          <label>Fecha de registro</label>
+          <div class="input-group">
+            <input nbInput shape="semi-round" placeholder="{{'GLOBAL.placeholder_fecha' | translate}}"
+               class="form-control" [nbDatepicker]="formpicker" required>
+            <nb-datepicker  #formpicker></nb-datepicker>
+          </div>
+        </div>
+      </div>
+      <ng2-smart-table [settings]="settings" [source]="source"></ng2-smart-table>
+
+      <div class="col">
+        <button nbButton nbStepperPrevious>{{'GLOBAL.anterior' | translate}}</button>
+      </div>
+      <div class="col" align="end">
+        <button type="button"  nbButton nbStepperNext>{{'GLOBAL.siguiente' | translate}}</button>
+      </div>
+    </form>
+  </nb-step>
+
+  <!-- SOPORTE  -->
+  <nb-step [stepControl]="soporteForm" label="Soporte">
+    <h5>Soporte</h5>
+    <form [formGroup]= "soporteForm" class="step-container">
+      <div class="row">
+        <div class="form-group col-sm">
+          <label>Observaciones</label>
+          <div class="input-group">
+            <textarea rows="5" shape="semi-round" placeholder="{{'GLOBAL.observaciones' | translate}}"
+              class="form-control" formControlName="soporteCtrl"></textarea>
+          </div>
+        </div>
+
+        <div class="form-group col-sm">
+          <label>Soporte</label>
+          <div class="input-group">
+            <button nbButton type="button" (click)="fileInputDocumento.click();">
+              <i class="fas fa-file-upload fa-2x"></i>
+              <input #fileInputDocumento formControlName="soporteCtrl" type="file"
+                style="display:none;" accept="application/pdf" data-max-size="5120" />
+            </button>
+          </div>
+        </div>
+
+
+      </div>
+
+      <div class="col">
+        <button nbButton nbStepperPrevious>{{'GLOBAL.anterior' | translate}}</button>
+      </div>
+      <div class="col" align="end">
+        <button type="button"  nbButton nbStepperNext>{{'GLOBAL.siguiente' | translate}}</button>
+      </div>
+    </form>
+  </nb-step>  
+
+  <!-- FINALIZAR -->
+  <nb-step [hidden]="true">
+    <div class="step-container d-flex justify-content-center">
+      <h3>{{'GLOBAL.datos_correctos' | translate}}!</h3>
+    </div>
+    <div class="step-container d-flex justify-content-center">
+      <p>Click en Registrar Bien Inmueble para continuar</p>
+    </div>
+    <div class="row float-right">
+      <button type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off"
+       (click)="onSubmit()">
+        Registrar Bien Inmueble</button>
+    </div>
+  </nb-step>
+
+  
+</nb-stepper>

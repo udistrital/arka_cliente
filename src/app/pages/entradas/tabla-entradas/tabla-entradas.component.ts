@@ -6,7 +6,9 @@ import { TipoBien } from '../../../@core/data/models/acta_recibido/tipo_bien';
 import { SoporteActa } from '../../../@core/data/models/acta_recibido/soporte_acta';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
-
+import { ListService } from '../../../@core/store/services/list.service';
+import { Store } from '@ngrx/store';
+import { IAppState } from '../../../@core/store/app.state';
 @Component({
   selector: 'ngx-tabla-entradas',
   templateUrl: './tabla-entradas.component.html',
@@ -14,21 +16,43 @@ import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 })
 export class TablaEntradasComponent implements OnInit {
 
+  ready: boolean = false;
+
   source: LocalDataSource;
+  Clases: any;
   elementos: Array<ElementoActa>;
   settings: any;
+  Tarifas_Iva: any;
 
   @Input() actaRecibidoId: string;
 
-  constructor(private actaRecibidoHelper: ActaRecibidoHelper, private pUpManager: PopUpManager, private translate: TranslateService) {
+  constructor(
+    private actaRecibidoHelper: ActaRecibidoHelper,
+    private pUpManager: PopUpManager,
+    private translate: TranslateService,
+    private listService: ListService,
+    private store: Store<IAppState>) {
+
     this.source = new LocalDataSource();
     this.elementos = new Array<ElementoActa>();
+    this.loadLists();
     this.loadTablaSettings();
+  }
+  loadLists() {
+    this.store.select((state) => state).subscribe(
+      (list) => {
+        this.Clases = list.listClases[0];
+        this.Tarifas_Iva = list.listIVA[0];
+      },
+    );
+
   }
 
   loadElementos(): void {
+    if (this.actaRecibidoId) {
     this.actaRecibidoHelper.getElementosActa(this.actaRecibidoId).subscribe(res => {
       if (res !== null) {
+        // console.log(res);
         const data = <Array<any>>res;
         for (const datos in Object.keys(data)) {
           if (data.hasOwnProperty(datos) && data[datos].Id !== undefined) {
@@ -58,14 +82,17 @@ export class TablaEntradasComponent implements OnInit {
             elemento.TipoBienId = tipoBien;
             soporteActa.Consecutivo = data[datos].SoporteActaId.Consecutivo;
             elemento.SoporteActaId = soporteActa;
-            elemento.SubgrupoCatalogoId = data[datos].SubgrupoCatalogoId;
+            elemento.SubgrupoCatalogoId = this.Clases.find((clase) => clase.SubgrupoId.Id === data[datos].SubgrupoCatalogoId).SubgrupoId.Nombre;
+            // elemento.SubgrupoCatalogoId = data[datos].SubgrupoCatalogoId;
 
             this.elementos.push(elemento);
           }
         }
         this.source.load(this.elementos);
+        this.ready = true;
       }
     });
+    }
   }
 
   loadTablaSettings() {
@@ -94,7 +121,7 @@ export class TablaEntradasComponent implements OnInit {
         },
         SubgrupoCatalogoId: {
           // TODO: Actualizar dinamicamente este texto:
-          title: this.translate.instant('GLOBAL.subgrupo.segmento.nombre'),
+          title: this.translate.instant('GLOBAL.subgrupo.clase.nombre'),
         },
         Nombre: {
           title: this.translate.instant('GLOBAL.descripcion'),
@@ -186,6 +213,7 @@ export class TablaEntradasComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.loadLists();
     this.loadElementos();
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
       this.loadTablaSettings();

@@ -1,42 +1,22 @@
-import { Component, OnInit, Input, EventEmitter, Output, OnChanges } from '@angular/core';
-import { NbTreeGridDataSource, NbSortDirection, NbSortRequest, NbTreeGridDataSourceBuilder } from '@nebular/theme';
-import { Observable, combineLatest, from } from 'rxjs';
-import { CuentaContable } from '../../../@core/data/models/catalogo/cuenta_contable';
+import { Component, OnInit, Input, EventEmitter, Output, OnChanges, TemplateRef } from '@angular/core';
+import { NbTreeGridDataSource, NbSortDirection, NbSortRequest, NbTreeGridDataSourceBuilder, NbDialogService } from '@nebular/theme';
+import { Observable, combineLatest } from 'rxjs';
 import { PopUpManager } from '../../../managers/popUpManager';
 import { CuentasGrupoTransaccion } from '../../../@core/data/models/catalogo/cuentas_subgrupo';
-import {TipoNivelID} from '../../../@core/data/models/catalogo/tipo_nivel';
-import { SubgrupoTransaccion } from '../../../@core/data/models/catalogo/transacciones';
 import { Subgrupo } from '../../../@core/data/models/catalogo/jerarquia';
 import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/catalogoElementosHelper';
 import { TipoBien } from '../../../@core/data/models/acta_recibido/tipo_bien';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { TipoNivel } from '../../../@core/data/models/catalogo/tipo_nivel';
-import { request } from 'http';
-import { exists } from 'fs';
-import { shiftInitState } from '@angular/core/src/view';
+import { NivelHelper as nh } from '../../../@core/utils/niveles.helper';
 
 interface TreeNode<T> {
   data: T;
   children?: TreeNode<T>[];
   expanded?: boolean;
 }
-interface TreeNode2<T> {
-  data: T;
-  children?: TreeNode2<T>[];
-  expanded?: boolean;
-}
 
 interface CatalogoArbol {
-  Id: number;
-  Nombre: string;
-  Descripcion: string;
-  FechaCreacion: string;
-  FechaModificacion: string;
-  Activo: boolean;
-  Codigo: string;
-  TipoNivelId: TipoNivel;
-}
-interface CatalogoArbol2 {
   Id: number;
   Nombre: string;
   Descripcion: string;
@@ -55,10 +35,10 @@ interface CatalogoArbol2 {
 export class ArbolComponent implements OnInit, OnChanges {
 
   data: TreeNode<CatalogoArbol>[];
-  data2: TreeNode2<CatalogoArbol2>[];
+  data2: TreeNode<CatalogoArbol>[];
   customColumn = 'Codigo';
-  defaultColumns = ['Nombre', 'Descripcion', 'Acciones'];
-  allColumns = [this.customColumn, ...this.defaultColumns];
+  defaultColumns: string[];
+  allColumns: string[];
   stringBusqueda: any;
   mostrar: boolean = false;
 
@@ -72,11 +52,12 @@ export class ArbolComponent implements OnInit, OnChanges {
   detalle: boolean;
   cuentasContables: Array<CuentasGrupoTransaccion>;
   grupoSeleccionado: Subgrupo;
+  nivelSeleccionado: string;
 
   @Input() catalogoId: number;
   @Input() updateSignal: Observable<string[]>;
-  @Output() grupo = new EventEmitter<CatalogoArbol>();
-  @Output() subgrupo = new EventEmitter<CatalogoArbol>();
+  @Input() acciones: boolean = false;
+  @Output() fila = new EventEmitter<CatalogoArbol>();
   tipos_de_bien: TipoBien;
   elementosSubgrupo: TipoBien;
   customColumn2: any;
@@ -88,9 +69,14 @@ export class ArbolComponent implements OnInit, OnChanges {
     private dataSourceBuilder: NbTreeGridDataSourceBuilder<CatalogoArbol>,
     private catalogoHelper: CatalogoElementosHelper,
     private translate: TranslateService,
-    private pUpManager: PopUpManager) {
+    private pUpManager: PopUpManager,
+    private dialogService: NbDialogService,
+  ) {
     this.stringBusqueda = '';
     this.aux = 0;
+  }
+
+  ngOnInit() {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
       this.construirForm();
     });
@@ -100,32 +86,37 @@ export class ArbolComponent implements OnInit, OnChanges {
       this.Movimientos = res;
 
     });
+    this.catalogoSeleccionado = 0;
+    this.detalle = false;
+    this.cuentasContables = new Array<CuentasGrupoTransaccion>();
+
+    if (this.updateSignal) {
+      this.updateSignal.subscribe(() => {
+        this.loadTreeCatalogo();
+      });
+    }
   }
 
   construirForm() {
+    this.defaultColumns = ['Nombre', 'Descripcion'];
+    if (this.acciones) {
+      this.defaultColumns.push('Acciones');
+    }
+    this.allColumns = [this.customColumn, ...this.defaultColumns];
+
     this.customColumn2 = this.translate.instant('GLOBAL.codigo');
     this.defaultColumns2 = [
       this.translate.instant('GLOBAL.Nombre'),
       this.translate.instant('GLOBAL.Descripcion'),
-      this.translate.instant('GLOBAL.Acciones'),
+      this.translate.instant('GLOBAL.info'),
     ];
     this.allColumns2 = [this.customColumn, ...this.defaultColumns];
   }
-  ngOnInit() {
-    this.catalogoSeleccionado = 0;
-    this.detalle = false;
-    this.cuentasContables = new Array<CuentasGrupoTransaccion>();
-  }
 
   ngOnChanges(changes) {
-    if (this.catalogoId !== this.catalogoSeleccionado) {
+    if (changes.hasOwnProperty('catalogoId')) {
+      this.catalogoSeleccionado = changes.catalogoId.currentValue;
       this.loadTreeCatalogo();
-      this.catalogoSeleccionado = this.catalogoId;
-    }
-    if (changes['updateSignal'] && this.updateSignal) {
-      this.updateSignal.subscribe(() => {
-        this.loadTreeCatalogo();
-      });
     }
   }
 
@@ -247,9 +238,6 @@ export class ArbolComponent implements OnInit, OnChanges {
     return minWithForMultipleColumns + (nextColumnStep * index);
   }
 
-  getSelectedRow2(selectedRow) {
-    this.grupo.emit(selectedRow);
-  }
   loadTreeCatalogo() {
     this.mostrar = false;
     this.catalogoHelper.getArbolCatalogo(this.catalogoId).subscribe((res) => {
@@ -259,15 +247,23 @@ export class ArbolComponent implements OnInit, OnChanges {
           this.data = res;
           this.aux = res;
           this.dataSource = this.dataSourceBuilder.create(this.data);
-          // this.dataSource.sortService.sort = ()
-          // console.log(this.dataSource)
+        } else {
+          this.dataSource = this.dataSourceBuilder.create([]);
         }
       }
     });
   }
 
   getSelectedRow(selectedRow) {
-    this.subgrupo.emit(selectedRow);
+    this.fila.emit(selectedRow);
+  }
+
+  /**
+   * Usar únicamente para depurar!
+   * Por ejemplo, dentro de una etiqueta 'pre'
+  */
+  imprime(t: any): string {
+    return JSON.stringify(t, undefined, 2);
   }
 
   volver() {
@@ -275,9 +271,12 @@ export class ArbolComponent implements OnInit, OnChanges {
     this.cuentasContables = undefined;
     this.tipos_de_bien = undefined;
     this.elementosSubgrupo = undefined;
-
   }
-  getDetalle(selectedRow) {
+
+  getDetalle(selectedRow, dialog: TemplateRef<any>) {
+    this.detalle = false;
+    this.dialogService.open(dialog);
+
     // console.log(selectedRow);
     this.grupoSeleccionado = selectedRow;
     const observable = combineLatest([
@@ -285,6 +284,7 @@ export class ArbolComponent implements OnInit, OnChanges {
       this.catalogoHelper.getDetalleSubgrupo(selectedRow.Id),
       this.catalogoHelper.getElementosSubgrupo(selectedRow.Id),
     ]);
+    this.nivelSeleccionado = this.translate.instant('GLOBAL.subgrupo.' + nh.Texto(selectedRow.TipoNivelId.Id) + '.nombre');
 
     observable.subscribe(([cuentas, detalle, elementos]: any[]) => {
       // console.log([cuentas, detalle, elementos]);
@@ -302,31 +302,16 @@ export class ArbolComponent implements OnInit, OnChanges {
       }
       if (Object.keys(detalle[0]).length !== 0) {
         this.tipos_de_bien = <TipoBien>detalle[0].TipoBienId;
+      } else {
+        this.tipos_de_bien = undefined;
       }
       if (Object.keys(elementos[0]).length !== 0) {
         this.elementosSubgrupo = elementos;
+      } else {
+        this.elementosSubgrupo = undefined;
       }
       // this.pUpManager.showErrorAlert('no existen cuentas asociadas a este grupo');
       this.detalle = true;
     });
-  }
-}
-@Component({
-  selector: 'ngx-nb-fs-icon',
-  template: `
-    <nb-tree-grid-row-toggle
-      [expanded]="expanded"
-      *ngIf="isDir(); else fileIcon"
-    >
-    </nb-tree-grid-row-toggle>
-    <ng-template #fileIcon> </ng-template>
-  `,
-})
-export class FsIconAComponent {
-  @Input() kind: string;
-  @Input() expanded: boolean;
-
-  isDir(): boolean {
-    return this.kind === 'dir';
   }
 }

@@ -14,23 +14,23 @@ export const permisosSeccionesActas = [
     Permisos: [
       {
         Estado: 'Registrada',
-        PuedenModificar: [Rol.Admin, Rol.Secretaria, Rol.Revisor],
-        PuedenVer: [],
+        PuedenModificar: 'edicionActaSeccActaEstRegistradaEditar',
+        PuedenVer: 'edicionActaSeccActaEstRegistradaVer',
       },
       {
         Estado: 'En Elaboracion',
-        PuedenModificar: [Rol.Admin, Rol.Revisor],
-        PuedenVer: [Rol.Contratista, Rol.Proveedor],
+        PuedenModificar: 'edicionActaSeccActaEstElaboracionEditar',
+        PuedenVer: 'edicionActaSeccActaEstElaboracionVer',
       },
       {
         Estado: 'En Modificacion',
-        PuedenModificar: [Rol.Admin, Rol.Revisor],
-        PuedenVer: [Rol.Contratista],
+        PuedenModificar: 'edicionActaSeccActaEstModificacionEditar',
+        PuedenVer: 'edicionActaSeccActaEstModificacionVer',
       },
       {
         Estado: 'Aceptada',
-        PuedenModificar: [Rol.Admin, Rol.Revisor],
-        PuedenVer: [],
+        PuedenModificar: 'edicionActaSeccActaEstAceptadaEditar',
+        PuedenVer: 'edicionActaSeccActaEstAceptadaVer',
       },
     ],
   },
@@ -39,23 +39,23 @@ export const permisosSeccionesActas = [
     Permisos: [
       {
         Estado: 'Registrada',
-        PuedenModificar: [Rol.Admin, Rol.Revisor],
-        PuedenVer: [],
+        PuedenModificar: 'edicionActaSeccElementosEstRegistradaEditar',
+        PuedenVer: 'edicionActaSeccElementosEstRegistradaVer',
       },
       {
         Estado: 'En Elaboracion',
-        PuedenModificar: [Rol.Admin, Rol.Contratista, Rol.Proveedor, Rol.Revisor],
-        PuedenVer: [],
+        PuedenModificar: 'edicionActaSeccElementosEstElaboracionEditar',
+        PuedenVer: 'edicionActaSeccElementosEstElaboracionVer',
       },
       {
         Estado: 'En Modificacion',
-        PuedenModificar: [Rol.Admin, Rol.Contratista, Rol.Revisor],
-        PuedenVer: [],
+        PuedenModificar: 'edicionActaSeccElementosEstModificacionEditar',
+        PuedenVer: 'edicionActaSeccElementosEstModificacionVer',
       },
       {
         Estado: 'Aceptada',
-        PuedenModificar: [Rol.Admin, Rol.Revisor],
-        PuedenVer: [],
+        PuedenModificar: 'edicionActaSeccElementosEstAceptadaEditar',
+        PuedenVer: 'edicionActaSeccElementosEstAceptadaVer',
       },
     ],
   },

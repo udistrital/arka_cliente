@@ -1,24 +1,8 @@
-<div *ngIf="!firstForm" [nbSpinner]="!firstForm">
-  <nb-card>
-    <nb-card-header>
-
-    </nb-card-header>
-    <nb-card-body>
-
-    </nb-card-body>
-  </nb-card>
-</div>
-<!-- <code *ngIf="firstForm">
-    <pre>
-      {{firstForm.value | json}}
-    </pre>
-  </code> -->
-<div class="col-lg-12" *ngIf="firstForm">
-  <form [formGroup]="firstForm" #fform="ngForm" class="step-container">
-    <nb-card>
-      <nb-card-header>{{'GLOBAL.Acta_Recibido.EdicionActa.Title' | translate}}</nb-card-header>
-      <nb-card-body>
-        <mat-vertical-stepper [linear]="true" #stepper>
+<nb-card>
+  <nb-card-header><h2>{{'GLOBAL.Acta_Recibido.EdicionActa.TitleId' | translate: {ID: _Acta_Id} }}</h2></nb-card-header>
+  <nb-card-body [nbSpinner]="!firstForm || guardando">
+    <form *ngIf="firstForm" [formGroup]="firstForm" #fform="ngForm" class="step-container">
+      <mat-vertical-stepper [linear]="true" #stepper>
 
           <!-- Datos iniciales -->
           <mat-step label="{{'GLOBAL.Acta_Recibido.EdicionActa.DatosTitle' | translate}}" formGroupName="Formulario1">
@@ -27,14 +11,10 @@
                 <div class="row" (click)="usarLocalStorage()">
                   <div class="form-group col-sm">
                     <label>{{'GLOBAL.Acta_Recibido.EdicionActa.Sede' | translate}}</label>
-                    <select nbInput type="text" class="form-control" formControlName="Sede" required
-                      disabled *ngIf="!getPermisoEditar(permisos.Acta)">
-                      <option *ngFor="let sede of Sedes" [(value)]="sede.Id">{{sede.Nombre}}</option>
-                    </select>
-                    <select nbInput type="text" class="form-control" formControlName="Sede" required *ngIf="getPermisoEditar(permisos.Acta)"
-                      (click)="usarLocalStorage(); Traer_Relacion_Ubicaciones();">
-                      <option *ngFor="let sede of Sedes" [(value)]="sede.Id">{{sede.Nombre}}</option>
-                    </select>
+                    <mat-select type="text" class="form-control" formControlName="Sede" required
+                      (selectionChange)="usarLocalStorage(); Traer_Relacion_Ubicaciones();">
+                      <mat-option *ngFor="let sede of Sedes" [(value)]="sede.Id">{{sede.Nombre}}</mat-option>
+                    </mat-select>
                     <p class="campo" *ngIf="firstForm.get('Formulario1').get('Sede').invalid">
                       {{'GLOBAL.placeholder' | translate}}</p>
                   </div>
@@ -50,42 +30,27 @@
                   </div>
                   <div class="form-group col-sm">
                     <label>{{'GLOBAL.Acta_Recibido.EdicionActa.Ubicacion' | translate}}</label>
-                    <!-- <ng2-completer style="border: 0rem" inputClass="form-control" nbInput [datasource]="dataService" (keyup)="usarLocalStorage()" (click)="usarLocalStorage()"
-                      formControlName="Ubicacion" [minSearchLength]="3" [clearUnselected]="true">
-                    </ng2-completer> -->
-
-                    <select nbInput type="text" class="form-control" formControlName="Ubicacion"
-                    disabled *ngIf="!getPermisoEditar(permisos.Acta)">
-                      <option *ngFor="let ubicacion of Ubicaciones" [(value)]="ubicacion.Id">{{ubicacion.Nombre}}
-                      </option>
-                    </select>
-                    <select nbInput type="text" class="form-control" formControlName="Ubicacion" *ngIf="getPermisoEditar(permisos.Acta)"
-                      (click)="usarLocalStorage()">
-                      <option *ngFor="let ubicacion of Ubicaciones" [(value)]="ubicacion.Id">{{ubicacion.Nombre}}
-                      </option>
-                    </select>
+                    <mat-select type="text" class="form-control" formControlName="Ubicacion"
+                      (selectionChange)="usarLocalStorage()">
+                      <mat-option *ngFor="let ubicacion of UbicacionesFiltradas" [(value)]="ubicacion.Id">{{ubicacion.Nombre}}
+                      </mat-option>
+                    </mat-select>
                     <p class="campo" *ngIf="firstForm.get('Formulario1').get('Ubicacion').invalid">
                       {{'GLOBAL.placeholder' | translate}}</p>
                   </div>
-
-
-                  <div class="form-group col-sm">
-                    <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Revisor' | translate}}</label>
-                    <ng2-completer style="border: 0rem" inputClass="form-control" (keyup)="usarLocalStorage()"
-                      placeholder="{{'GLOBAL.Acta_Recibido.EdicionActa.SeleccioneFiltro' | translate}}"
-                      [clearUnselected]="true" nbInput [datasource]="dataService2" formControlName="Revisor"
-                      [minSearchLength]="3">
-                    </ng2-completer>
-                    <p class="campo" *ngIf="firstForm.get('Formulario1').get('Revisor').invalid">
+                  <div class="form-group col-sm" [nbSpinner]="cargando_contratistas">
+                    <label>{{'GLOBAL.Acta_Recibido.ContratistaAsignado' | translate}}</label>
+                    <input matInput type="text" class="form-control" placeholder="Nombre o Documento"
+                      formControlName="Contratista" [matAutocomplete]="autoContratista" />
+                      <mat-autocomplete #autoContratista="matAutocomplete" [displayWith]="muestraContratista"
+                      (optionSelected)="usarLocalStorage()">
+                        <mat-option *ngFor="let contr of contratistasFiltrados | async" [value]="contr">
+                          {{muestraContratista(contr)}}
+                        </mat-option>
+                      </mat-autocomplete>
+                    <p class="campo" *ngIf="firstForm.get('Formulario1').get('Contratista').invalid">
                       {{'GLOBAL.placeholder' | translate}}</p>
                   </div>
-
-
-
-
-
-
-
                 </div>
               </nb-card-body>
               <nb-card-footer>
@@ -103,7 +68,7 @@
                 <mat-tab-group [selectedIndex]="selected.value" (selectedIndexChange)="selected.setValue($event)">
 
                   <!-- cada soporte -->
-                  <mat-tab *ngFor="let soporte of firstForm.get('Formulario2').controls; let i = index"
+                  <mat-tab *ngFor="let soporte of firstForm.get('Formulario2')['controls']; let i = index"
                     [formGroupName]="i">
                     <ng-template mat-tab-label>
                       {{'GLOBAL.Acta_Recibido.EdicionActa.SoporteSubTitle' | translate}} &nbsp; {{i + 1}} &nbsp; &nbsp;
@@ -117,27 +82,26 @@
                           <div class="row">
 
                             <div class="col" *ngIf="!ActaEspecial">
-                              <div class="form-group col-sm">
+                              <div class="form-group col-sm" [nbSpinner]="!listo.get('proveedores')">
                                 <label>{{'GLOBAL.Acta_Recibido.EdicionActa.Proveedor' | translate}}</label>
-                                <ng2-completer style="border: 0rem" inputClass="form-control" (keyup)="usarLocalStorage()"
-                                  placeholder="{{'GLOBAL.Acta_Recibido.EdicionActa.SeleccioneFiltro' | translate}}"
-                                  [clearUnselected]="true" nbInput [datasource]="dataService2" formControlName="Proveedor"
-                                  [minSearchLength]="3" [disableInput]="!getPermisoEditar(permisos.Acta)">
-                                </ng2-completer>
+                                <input matInput type="text" class="form-control"
+                                placeholder="{{'GLOBAL.Acta_Recibido.EdicionActa.SeleccioneFiltro' | translate}}"
+                                formControlName="Proveedor" [matAutocomplete]="autoProveedor" />
+                                <mat-autocomplete #autoProveedor="matAutocomplete" [displayWith]="muestraProveedor"
+                                (optionSelected)="usarLocalStorage()">
+                                  <mat-option *ngFor="let prov of proveedoresFiltrados | async" [value]="prov">
+                                    {{muestraProveedor(prov)}}
+                                  </mat-option>
+                                </mat-autocomplete>
                                 <p class="campo" *ngIf="firstForm.get('Formulario2').at(i).get('Proveedor').invalid">
                                   {{'GLOBAL.placeholder' | translate}}</p>
                               </div>
                               <div class="form-group col-sm">
                                 <label>{{'GLOBAL.Acta_Recibido.EdicionActa.Consecutivo' | translate}}</label>
                                 <div class="input-group">
-                                  <input nbInput type="text"
-                                    placeholder="{{'GLOBAL.Acta_Recibido.EdicionActa.Consecutivo' | translate}}"
-                                    class="form-control" formControlName="Consecutivo"
-                                    required disabled *ngIf="!getPermisoEditar(permisos.Acta)">
                                   <input nbInput type="text" (keyup)="usarLocalStorage()"
                                     placeholder="{{'GLOBAL.Acta_Recibido.EdicionActa.Consecutivo' | translate}}"
-                                    class="form-control" formControlName="Consecutivo" (keyup)="usarLocalStorage()"
-                                    required *ngIf="getPermisoEditar(permisos.Acta)">
+                                    class="form-control" formControlName="Consecutivo" (keyup)="usarLocalStorage()" required />
                                 </div>
                                 <p class="campo" *ngIf="firstForm.get('Formulario2').at(i).get('Consecutivo').invalid">
                                   {{'GLOBAL.placeholder' | translate}}</p>
@@ -145,64 +109,21 @@
                               <div class="form-group col-sm">
                                 <label>{{'GLOBAL.Acta_Recibido.EdicionActa.FechaSoporte' | translate}}</label>
                                 <div class="input-group">
-                                  <input nbInput
-                                    placeholder="{{'GLOBAL.Acta_Recibido.EdicionActa.FechaFiltro' | translate}}"
-                                    class="form-control" [nbDatepicker]="formpicker"
-                                    formControlName="Fecha_Factura" required disabled *ngIf="!getPermisoEditar(permisos.Acta)">
                                   <input nbInput (click)="usarLocalStorage()"
                                     placeholder="{{'GLOBAL.Acta_Recibido.EdicionActa.FechaFiltro' | translate}}"
                                     class="form-control" [nbDatepicker]="formpicker" (keyup)="usarLocalStorage()"
-                                    formControlName="Fecha_Factura" required *ngIf="getPermisoEditar(permisos.Acta)">
+                                    formControlName="Fecha_Factura" required />
                                   <nb-datepicker #formpicker [max]="TodaysDate" (dateChange)="usarLocalStorage()"></nb-datepicker>
                                 </div>
-
                                 <p class="campo" *ngIf="firstForm.get('Formulario2').at(i).get('Fecha_Factura').invalid">
                                   {{'GLOBAL.placeholder' | translate}}</p>
                               </div>
-
-
-                              <!--<div class="form-group col-sm">
-                                  <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Revisor' | translate}}</label>
-                                  <ng2-completer style="border: 0rem" inputClass="form-control" [clearUnselected]="true"
-                                    placeholder="{{'GLOBAL.Acta_Recibido.RegistroActa.SeleccioneFiltro' | translate}}"
-                                    nbInput [datasource]="dataService2" formControlName="Revisor"
-                                    (keyup)="usarLocalStorage()" [minSearchLength]="3">
-                                  </ng2-completer>
-                                  <p class="campo" *ngIf="firstForm.get('Formulario2').at(i).get('Revisor').invalid">
-                                    {{'GLOBAL.placeholder' | translate}}</p>
-                              </div>-->
-
-<!--
-
-                              <div class="form-group col-sm">
-                                <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Revisor' | translate}}</label>
-                                <ng2-completer style="border: 0rem" inputClass="form-control" (keyup)="usarLocalStorage()"
-                                  placeholder="{{'GLOBAL.Acta_Recibido.EdicionActa.SeleccioneFiltro' | translate}}"
-                                  [clearUnselected]="true" nbInput [datasource]="dataService2" formControlName="Revisor"
-                                  [minSearchLength]="3">
-                                </ng2-completer>
-                                <p class="campo" *ngIf="firstForm.get('Formulario2').at(i).get('Revisor').invalid">
-                                  {{'GLOBAL.placeholder' | translate}}</p>
-                              </div>
-                            -->
-
-
-
-
-
-
                             </div>
 
                             <div class="col">
                               <div class="form-group col-sm">
-                                <!-- <label>{{'GLOBAL.Acta_Recibido.EdicionActa.Soporte' | translate}}</label>
-                                <input nbInput type="file" class="form-control-file" id="factura"
-                                  formControlName="Soporte" (click)="usarLocalStorage()" required>
-                                  <p class="campo" *ngIf="firstForm.get('Formulario2').at(i).get('Soporte').invalid">{{'GLOBAL.placeholder' | translate}}</p> -->
-
                                 <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Soporte' | translate}}</label>
                                 <nb-card>
-
                                   <nb-card-body>
                                     <div class="col-sm soporte">
                                       <div>
@@ -216,7 +137,7 @@
                                       <p></p>
                                       <p *ngIf="Validador[i] && fileDocumento[i]">{{fileDocumento[i].name}}</p>
                                       <p *ngIf="!Validador[i]">
-                                        {{'GLOBAL.Acta_Recibido.CapturarElementos.ValidadorPlaceholder2' | translate }}
+                                        {{'GLOBAL.Acta_Recibido.CapturarElementos.ValidadorPlaceholder' | translate: {EXT: 'pdf'} }}
                                       </p>
                                       <div>
                                         <button nbButton type="button" *ngIf="fileDocumento[i]" target="_blank"
@@ -238,9 +159,9 @@
                                     </div>
                                   </nb-card-body>
                                 </nb-card>
-
                               </div>
                             </div>
+
                           </div>
                         </nb-card-body>
                       </nb-card>
@@ -249,7 +170,7 @@
                       <ngx-capturar-elementos
                         *ngIf="getPermisoEditar(permisos.Elementos)"
                         [DatosRecibidos]="Elementos__Soporte[i]" (DatosTotales)="ver2($event,i)"
-                        (DatosEnviados)="ver($event, i)">
+                        (DatosEnviados)="ver($event, i)" (ElementosValidos)="setElementosValidos(i,$event)">
                       </ngx-capturar-elementos>
 
                     </div>
@@ -279,42 +200,22 @@
             <nb-card *ngIf="Totales">
               <nb-card-header>{{'GLOBAL.Acta_Recibido.EdicionActa.Consolidado' | translate}}</nb-card-header>
               <nb-card-body>
-                <table>
+                <table class="consolidado">
                   <tr>
-                    <td class="cell-3"></td>
-                    <td class="cell-3"></td>
-                    <td class="cell-3">{{'GLOBAL.Acta_Recibido.EdicionActa.Subtotal' | translate}}</td>
-                    <td class="cell-3"></td>
+                    <th class="cell-3">{{'GLOBAL.Acta_Recibido.EdicionActa.Subtotal' | translate}}</th>
                     <td class="cell-3">{{getGranSubtotal() | currency}}</td>
-                    <td class="cell-3"></td>
-                    <td class="cell-3"></td>
                   </tr>
                   <tr>
-                    <td class="cell-3"></td>
-                    <td class="cell-3"></td>
-                    <td class="cell-3">{{'GLOBAL.Acta_Recibido.EdicionActa.Descuento' | translate}}</td>
-                    <td class="cell-3"></td>
+                    <th class="cell-3">{{'GLOBAL.Acta_Recibido.EdicionActa.Descuento' | translate}}</th>
                     <td class="cell-3">{{getGranDescuentos() | currency}}</td>
-                    <td class="cell-3"></td>
-                    <td class="cell-3"></td>
                   </tr>
                   <tr>
-                    <td class="cell-3"></td>
-                    <td class="cell-3"></td>
-                    <td class="cell-3">{{'GLOBAL.Acta_Recibido.EdicionActa.ValorIva' | translate}}</td>
-                    <td class="cell-3"></td>
+                    <th class="cell-3">{{'GLOBAL.Acta_Recibido.EdicionActa.ValorIva' | translate}}</th>
                     <td class="cell-3">{{getGranValorIva() | currency}}</td>
-                    <td class="cell-3"></td>
-                    <td class="cell-3"></td>
                   </tr>
                   <tr>
-                    <td class="cell-3"></td>
-                    <td class="cell-3"></td>
-                    <td class="cell-3">{{'GLOBAL.Acta_Recibido.EdicionActa.Total' | translate}}</td>
-                    <td class="cell-3"></td>
+                    <th class="cell-3">{{'GLOBAL.Acta_Recibido.EdicionActa.Total' | translate}}</th>
                     <td class="cell-3">{{getGranTotal() | currency}}</td>
-                    <td class="cell-3"></td>
-                    <td class="cell-3"></td>
                   </tr>
                 </table>
               </nb-card-body>
@@ -329,9 +230,9 @@
                     <textarea rows="5" (keyup)="usarLocalStorage()"
                       placeholder="Proporciona datos adicionales que no se pueden expresar en el formulario"
                       class="form-control" formControlName="Datos_Adicionales" required></textarea>
+                  </div>
                     <p class="campo" *ngIf="firstForm.get('Formulario3').get('Datos_Adicionales').invalid">
                       {{'GLOBAL.placeholder' | translate}}</p>
-                  </div>
                 </div>
               </nb-card-body>
               <nb-card-footer>
@@ -339,26 +240,36 @@
                   <button nbButton
                     matStepperPrevious>{{'GLOBAL.Acta_Recibido.EdicionActa.AnteriorButton' | translate}}</button>
                   <button nbButton (click)="Revisar_Totales2()" *ngIf="getPermisoEditar(permisos.Acta) || getPermisoEditar(permisos.Elementos)"
-                    [disabled]="!firstForm.get('Formulario3').valid || (!firstForm.get('Formulario2').valid && !ActaEspecial) || !firstForm.get('Formulario3').valid"
+                    [disabled]="!firstForm.get('Formulario3').valid || (!firstForm.get('Formulario2').valid && !ActaEspecial)
+                    || !firstForm.get('Formulario3').valid || (this.estadoActa === 'Aceptada' && errores.size > 0)"
                     class="float-right">{{'GLOBAL.Acta_Recibido.EdicionActa.GuardarCambiosButton' | translate}}</button>
                 </div>
               </nb-card-footer>
             </nb-card>
 
-            <div class="justify-content-center">
-              <button nbButton (click)="Revisar_Totales3()" *ngIf="accion.envHabilitado" [disabled]="formNoValido()"
-                class="float-right">{{ accion.envTexto }}</button>
+            <div class="float-right">
+              <button mat-icon-button type="button"
+              *ngIf="errores.size > 0" [nbPopover]="erroresTemplate" nbPopoverTrigger="hover">
+                <span class="fas fa-exclamation-triangle fa-2x"></span>
+              </button>
+              <button nbButton (click)="Revisar_Totales3(1)" *ngIf="accion.envHabilitado"
+              [disabled]="this.errores.size > 0">{{ accion.envTexto }}</button>
+              <button nbButton (click)="Revisar_Totales3(2)" *ngIf="accion.envContratistaHabilitado"
+              [disabled]="this.errores.size > 0">{{ accion.envContratista }}</button>
             </div>
+
           </mat-step>
+
         </mat-vertical-stepper>
-      </nb-card-body>
-    </nb-card>
-  </form>
-</div>
-<!-- <div *ngIf="firstForm">
-  <code>
-    <pre>
-      {{firstForm.value | json}}
-    </pre>
-  </code>
-</div> -->
+      </form>
+    </nb-card-body>
+  </nb-card>
+
+<ng-template #erroresTemplate><nb-card><nb-card-body>
+  {{ 'GLOBAL.Acta_Recibido.Errores.Mensaje' | translate }}
+  <ul>
+    <li *ngIf="errores.get('terceros')">{{ 'GLOBAL.Acta_Recibido.Errores.Terceros' | translate }}</li>
+    <li *ngIf="errores.get('formularios')">{{ 'GLOBAL.Acta_Recibido.Errores.Formularios' | translate }}</li>
+    <li *ngIf="errores.get('clases')">{{ 'GLOBAL.Acta_Recibido.Errores.Clases' | translate }}</li>
+  </ul>
+</nb-card-body></nb-card></ng-template>

@@ -1,15 +1,20 @@
 import { RequestManager } from '../../managers/requestManager';
 import { Injectable } from '@angular/core';
-import { map } from 'rxjs/operators';
+import { iif } from 'rxjs';
+import { map, switchMap } from 'rxjs/operators';
 import { PopUpManager } from '../../managers/popUpManager';
+import { DisponibilidadMovimientosService } from '../../@core/data/disponibilidad-movimientos.service';
 
 @Injectable({
     providedIn: 'root',
 })
 export class BajasHelper {
 
-    constructor(private rqManager: RequestManager,
-        private pUpManager: PopUpManager) { }
+    constructor(
+        private rqManager: RequestManager,
+        private pUpManager: PopUpManager,
+        private dispMvtos: DisponibilidadMovimientosService,
+    ) { }
 
     /**
      * Entradas Get
@@ -39,6 +44,11 @@ export class BajasHelper {
     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
     */
     public postSolicitud(salidasData) {
+        return this.dispMvtos.movimientosPermitidos().pipe(
+            switchMap(disp => iif( () => disp, this.postSolicitudFinal(salidasData) )),
+        );
+    }
+    private postSolicitudFinal(salidasData) {
         this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
         return this.rqManager.post(`movimiento`, salidasData).pipe(
             map(

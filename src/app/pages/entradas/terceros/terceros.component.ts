@@ -12,6 +12,7 @@ import { TipoEntrada } from '../../../@core/data/models/entrada/tipo_entrada';
 import { NavigationExtras, Router } from '@angular/router';
 import { NbStepperComponent } from '@nebular/theme';
 import Swal from 'sweetalert2';
+import { isObject } from 'rxjs/internal-compatibility';
 
 @Component({
   selector: 'ngx-terceros',
@@ -51,7 +52,7 @@ export class TercerosComponent implements OnInit {
 
   @ViewChild('stepper') stepper: NbStepperComponent;
 
-  @Input() actaRecibidoId: string;
+  @Input() actaRecibidoId: Number;
 
   constructor(private router: Router, private entradasHelper: EntradaHelper, private actaRecibidoHelper: ActaRecibidoHelper,
     private pUpManager: PopUpManager, private fb: FormBuilder) {
@@ -91,18 +92,17 @@ export class TercerosComponent implements OnInit {
     this.getVigencia();
   }
 
-  onFacturaSubmit() {}
+  onFacturaSubmit() { }
 
   /**
    * Métodos para cargar los contratos.
    */
   loadContratos(): void {
+    this.contratos = [];
     if (this.opcionTipoContrato !== '' && this.opcionvigencia) {
       this.entradasHelper.getContratos(this.opcionTipoContrato, this.opcionvigencia).subscribe(res => {
         if (res !== null) {
-          while (this.contratos.length > 0) {
-            this.contratos.pop();
-          }
+          if (isObject(res.contratos_suscritos.contrato_suscritos))
           for (const index of Object.keys(res.contratos_suscritos.contrato_suscritos)) {
             const contratoAux = new Contrato;
             contratoAux.NumeroContratoSuscrito = res.contratos_suscritos.contrato_suscritos[index].numero_contrato;
@@ -149,6 +149,9 @@ export class TercerosComponent implements OnInit {
             this.soportes.push(soporte);
           }
         }
+        this.proveedor = this.soportes[0].Proveedor.NomProveedor;
+        const date = this.soportes[0].FechaSoporte.toString().split('T');
+        this.fechaFactura = date[0];
       }
     });
   }
@@ -226,14 +229,9 @@ export class TercerosComponent implements OnInit {
   }
 
   getTipoEntrada() {
-    this.entradasHelper.getTipoEntradaByAcronimo('e_arka').subscribe(res => {
-      if (res !== null) {
-        const data = <Array<any>>res;
-        for (const datos in Object.keys(data)) {
-          if (data.hasOwnProperty(datos) && data[datos].Nombre !== undefined && data[datos].Nombre === 'Terceros') {
-            this.tipoEntrada = data[datos];
-          }
-        }
+    this.entradasHelper.getTipoEntradaByAcronimoAndNombre('e_arka', 'Terceros').subscribe(res => {
+      if (res !== undefined) {
+        this.tipoEntrada = res;
       }
     });
   }
@@ -266,7 +264,7 @@ export class TercerosComponent implements OnInit {
         vigencia_contrato: this.contratoForm.value.vigenciaCtrl,
         tercero_id: 0, // REVISAR
         tipo_contrato: this.opcionTipoContrato === '14' ? 'Orden de Servicios' :
-        this.opcionTipoContrato === '15' ? 'Orden de Compra' : '',
+          this.opcionTipoContrato === '15' ? 'Orden de Compra' : '',
       };
       const movimientoAdquisicion = {
         Observacion: this.observacionForm.value.observacionCtrl,

@@ -15,6 +15,14 @@ import { ConsultaEntradaComponent } from './consulta-entrada/consulta-entrada.co
 import { Ng2SmartTableModule } from 'ngx-smart-table';
 import { OwlDateTimeModule, OwlNativeDateTimeModule } from 'ng-pick-datetime';
 import { TablaEntradasComponent } from './tabla-entradas/tabla-entradas.component';
+import { CajaMenorComponent } from './caja-menor/caja-menor.component';
+import { AprovechamientosComponent } from './aprovechamientos/aprovechamientos.component';
+import { AdicionesMejorasComponent } from './adiciones-mejoras/adiciones-mejoras.component';
+import { IntangiblesAdquiridosComponent } from './intangibles-adquiridos/intangibles-adquiridos.component';
+import { ExtranjeroComponent } from './extranjero/extranjero.component';
+import { ProvisionalComponent } from './provisional/provisional.component';
+import { IntangiblesDesarrolladosComponent } from './intangibles-desarrollados/intangibles-desarrollados.component';
+
 
 @NgModule({
   declarations: [
@@ -29,6 +37,14 @@ import { TablaEntradasComponent } from './tabla-entradas/tabla-entradas.componen
     TercerosComponent,
     ConsultaEntradaComponent,
     TablaEntradasComponent,
+    CajaMenorComponent,
+    AprovechamientosComponent,
+    AdicionesMejorasComponent,
+    IntangiblesAdquiridosComponent,
+    ExtranjeroComponent,
+    ProvisionalComponent,
+    IntangiblesDesarrolladosComponent,
+
   ],
   imports: [
     CommonModule,

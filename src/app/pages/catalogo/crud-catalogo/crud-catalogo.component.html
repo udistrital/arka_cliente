@@ -1,5 +1,11 @@
-
-<toaster-container [toasterconfig]="config"></toaster-container>
-<ngx-dinamicform [normalform]="formCatalogo" [modeloData]="info_catalogo" (result)="validarForm($event)" [clean]="clean">
-</ngx-dinamicform>
-
+<nb-card>
+  <nb-card-header><h2>{{titulo}}</h2></nb-card-header>
+  <nb-card-body [nbSpinner]="cargando">
+    <toaster-container [toasterconfig]="config"></toaster-container>
+    <ngx-dinamicform [normalform]="formCatalogo" [modeloData]="info_catalogo" (result)="validarForm($event)" [clean]="clean">
+    </ngx-dinamicform>
+  </nb-card-body>
+  <nb-card-footer *ngIf="catalogo_id">
+    <button type="button" class="btn btn-primary float-right" (click)="volver()">{{ 'GLOBAL.volver' | translate }}</button>
+  </nb-card-footer>
+</nb-card>

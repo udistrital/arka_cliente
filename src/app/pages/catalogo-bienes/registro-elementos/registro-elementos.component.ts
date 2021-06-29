@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/catalogoElementosHelper';
 import { ToasterService } from 'angular2-toaster';
@@ -7,6 +7,7 @@ import { Catalogo } from '../../../@core/data/models/catalogo/catalogo';
 import { FORM_ELEMENTO } from './form-elemento';
 import { Elemento } from '../../../@core/data/models/catalogo/elemento';
 import { Subgrupo } from '../../../@core/data/models/catalogo/jerarquia';
+import { Nivel_t } from '../../../@core/data/models/catalogo/tipo_nivel';
 
 @Component({
   selector: 'ngx-registro-elementos',
@@ -15,8 +16,6 @@ import { Subgrupo } from '../../../@core/data/models/catalogo/jerarquia';
 })
 export class RegistroElementosComponent implements OnInit {
 
-  @Output() eventChange = new EventEmitter();
-
   formElemento: any;
   info_elemento: Elemento;
   clean: boolean;
@@ -24,6 +23,7 @@ export class RegistroElementosComponent implements OnInit {
   catalogoId: number;
   subgrupo: Subgrupo;
   ver_formulario: boolean;
+  cargando_catalogos: boolean = true;
 
   constructor(private translate: TranslateService,
     private catalogoElementosService: CatalogoElementosHelper,
@@ -57,6 +57,7 @@ export class RegistroElementosComponent implements OnInit {
             this.catalogos.push(data[datos]);
           }
         }
+        this.cargando_catalogos = false;
       }
     });
   }
@@ -66,12 +67,15 @@ export class RegistroElementosComponent implements OnInit {
   }
 
   onChange(catalogo) {
+    this.ver_formulario = false;
     this.catalogoId = catalogo;
   }
 
   receiveMessage(event) {
-    this.catalogoElementosService.getSubgrupoById(event.Id).subscribe(
-      res => {
+    if (event.hasOwnProperty('TipoNivelId')
+    && event.TipoNivelId.hasOwnProperty('Id')
+    && event.TipoNivelId.Id === Nivel_t.Clase ) {
+      this.catalogoElementosService.getSubgrupoById(event.Id).subscribe(res => {
         // console.log(res[0]);
         if (Object.keys(res[0]).length !== 0) {
           this.subgrupo = event;
@@ -80,6 +84,7 @@ export class RegistroElementosComponent implements OnInit {
           this.ver_formulario = false;
         }
       });
+    } else this.ver_formulario = false;
   }
 
   validarForm(event) {
@@ -112,6 +117,5 @@ export class RegistroElementosComponent implements OnInit {
     this.clean = !this.clean;
     this.info_elemento = undefined;
   }
-
 
 }

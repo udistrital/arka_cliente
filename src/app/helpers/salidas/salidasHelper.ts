@@ -1,15 +1,23 @@
 import { RequestManager } from '../../managers/requestManager';
 import { Injectable } from '@angular/core';
-import { map } from 'rxjs/operators';
+import { map, switchMap } from 'rxjs/operators';
+import { iif } from 'rxjs';
 import { PopUpManager } from '../../managers/popUpManager';
+import { TranslateService } from '@ngx-translate/core';
+import { DisponibilidadMovimientosService } from '../../@core/data/disponibilidad-movimientos.service';
 
 @Injectable({
     providedIn: 'root',
 })
 export class SalidaHelper {
 
-    constructor(private rqManager: RequestManager,
-        private pUpManager: PopUpManager) { }
+    constructor(
+        private rqManager: RequestManager,
+        private pUpManager: PopUpManager,
+        private dispMvtos: DisponibilidadMovimientosService,
+        private translate: TranslateService,
+    ) {
+    }
 
     /**
      * Entradas Get
@@ -59,12 +67,18 @@ export class SalidaHelper {
     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
     */
     public postSalidas(salidasData) {
+        return this.dispMvtos.movimientosPermitidos().pipe(
+            switchMap(disp => iif( () => disp, this.postSalidasFinal(salidasData) )),
+        );
+    }
+
+    private postSalidasFinal(salidasData) {
         this.rqManager.setPath('ARKA_SERVICE');
         return this.rqManager.post(`salida`, salidasData).pipe(
             map(
                 (res) => {
                     if (res['Type'] === 'error') {
-                        this.pUpManager.showErrorAlert('No se pudo registrar la entrada solicitada.');
+                        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.error_salida_no_registrada'));
                         return undefined;
                     }
                     return res;
@@ -115,6 +129,45 @@ export class SalidaHelper {
         );
     }
 
+
+    public getElemento(elemento) {
+
+        this.rqManager.setPath('ACTA_RECIBIDO_SERVICE');
+        return this.rqManager.get('elemento/' + elemento.Id).pipe(
+            map(
+                (res) => {
+                    if (res === 'error') {
+                        this.pUpManager.showErrorAlert('No se pudo consultar el contrato contratos');
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
+
+
+
+
+    public putElemento(elemento) {
+
+        this.rqManager.setPath('ARKA_SERVICE');
+        return this.rqManager.post('elemento',  elemento).pipe(
+           map(
+              (res) => {
+                 if (res['Type'] === 'error') {
+                    this.pUpManager.showErrorAlert('No se pudo asignar la placa');
+                    return undefined;
+                 }
+                 return res;
+              },
+           ),
+        );
+    }
+
+
+
+
     /**
      * Entradas Get
      * If the response has errors in the OAS API it should show a popup message with an error.
@@ -123,11 +176,26 @@ export class SalidaHelper {
      */
     public getEntradasSinSalida() {
         this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
-        return this.rqManager.get('movimiento?query=FormatoTipoMovimientoId.Descripcion__contains:entrada,EstadoMovimientoId.Id:2&limit=-1').pipe(
+        return this.rqManager.get('movimiento?query=EstadoMovimientoId.Id:2&limit=-1').pipe(
             map(
                 (res) => {
                     if (res === 'error') {
                         this.pUpManager.showErrorAlert('No se pudo consultar el contrato contratos');
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
+
+    public getJefeOficina() {
+        this.rqManager.setPath('TERCEROS_SERVICE');
+        return this.rqManager.get('vinculacion?query=CargoId:312').pipe(
+            map(
+                (res) => {
+                    if (res === 'error') {
+                        this.pUpManager.showErrorAlert('No se pudo consultar el encargado del elemento');
                         return undefined;
                     }
                     return res;

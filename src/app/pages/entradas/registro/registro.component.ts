@@ -1,9 +1,15 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { LocalDataSource } from 'ngx-smart-table';
 import { ActaRecibido, ActaRecibidoUbicacion } from '../../../@core/data/models/acta_recibido/acta_recibido';
+import { Tercero } from '../../../@core/data/models/terceros';
 import { PopUpManager } from '../../../managers/popUpManager';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
+import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
 import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
+import { ListService } from '../../../@core/store/services/list.service';
+import { Store } from '@ngrx/store';
+import { IAppState } from '../../../@core/store/app.state';
+import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
 
 @Component({
   selector: 'ngx-registro',
@@ -12,18 +18,47 @@ import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
 })
 export class RegistroComponent implements OnInit {
 
+  mostrar: boolean = false;
+
   // Datos Tabla
   source: LocalDataSource;
+  tiposDeEntradas: any;
   // Acta de recibido
   actaSeleccionada: string;
   settings: any;
   opcionEntrada: string;
+  movimientoId: number;
 
-  constructor(private actaRecibidoHelper: ActaRecibidoHelper, private pUpManager: PopUpManager, private translate: TranslateService) {
+  @Input() EntradaEdit: any;
+
+  private terceros: Partial<Tercero>[];
+  private actas: any[];
+
+  constructor(
+    private actaRecibidoHelper: ActaRecibidoHelper,
+    private entradasHelper: EntradaHelper,
+    private pUpManager: PopUpManager,
+    private translate: TranslateService,
+    private listService: ListService,
+    private store: Store<IAppState>,
+    private tercerosHelper: TercerosHelper,
+
+  ) {
     this.source = new LocalDataSource();
     this.actaSeleccionada = '';
+  }
+
+  ngOnInit() {
     this.loadTablaSettings();
     this.loadActas();
+    this.listService.findClases();
+    this.listService.findImpuestoIVA();
+    this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
+      this.loadTablaSettings();
+    });
+    this.loadTerceros();
+    this.actaSeleccionada = this.EntradaEdit ? this.EntradaEdit.ActaRecibidoId : '';
+    this.movimientoId = this.EntradaEdit ? this.EntradaEdit.Id : '';
   }
 
   loadTablaSettings() {
@@ -31,7 +66,7 @@ export class RegistroComponent implements OnInit {
       hideSubHeader: false,
       noDataMessage: this.translate.instant('GLOBAL.no_data_actas_entrada'),
       actions: {
-        columnTitle: this.translate.instant('GLOBAL.acciones'),
+        columnTitle: this.translate.instant('GLOBAL.Acciones'),
         position: 'right',
         add: false,
         edit: false,
@@ -83,42 +118,72 @@ export class RegistroComponent implements OnInit {
         UbicacionId: {
           title: this.translate.instant('GLOBAL.ubicacion'),
           valuePrepareFunction: (value: any) => {
-            return value.Nombre.toUpperCase( );
+            return value.EspacioFisicoId.Nombre.toUpperCase();
           },
         },
+        /*
         EstadoActaId: {
           title: this.translate.instant('GLOBAL.estado'),
           valuePrepareFunction: (value: any) => {
-            return value.CodigoAbreviacion.toUpperCase( );
+            return value.CodigoAbreviacion.toUpperCase();
           },
         },
+        // */
         Observaciones: {
           title: this.translate.instant('GLOBAL.observaciones'),
           valuePrepareFunction: (value: any) => {
-            return value.toUpperCase( );
+            return value.toUpperCase();
           },
         },
       },
     };
   }
 
-  ngOnInit() {
-    this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
-      this.loadTablaSettings();
-    });
-  }
-
   loadActas(): void {
     this.actaRecibidoHelper.getActasRecibido().subscribe(res => {
       if (Array.isArray(res) && res.length !== 0) {
         const data = <Array<ActaRecibidoUbicacion>>res;
-        this.source.load(data);
+        this.actas = data;
+        this.mostrarData();
       }
     });
   }
 
+  private loadTerceros(): void {
+    this.tercerosHelper.getTerceros().subscribe(terceros => {
+      this.terceros = terceros;
+      this.mostrarData();
+      // console.log({terceros: this.terceros});
+    });
+  }
+
+  private mostrarData(): void {
+    if (!this.mostrar
+      && this.actas && this.actas.length
+      && this.terceros && this.terceros.length) {
+      this.source.load(this.actas.map(acta => {
+        const buscar = (tercero: Tercero) => tercero.Id === acta.RevisorId;
+        let nombre = '';
+        if (this.terceros.some(buscar)) {
+          nombre = this.terceros.find(buscar).NombreCompleto;
+        }
+        acta.RevisorId = nombre;
+        return acta;
+      }));
+      this.mostrar = true;
+    }
+  }
+
   onCustom(event) {
-    this.actaSeleccionada = `${event.data.Id}`;
+    this.actaRecibidoHelper.getTransaccionActa(event.data.Id).subscribe(res => {
+      res[0].SoportesActa[0].SoporteActa.ProveedorId ?
+        this.entradasHelper.getTiposEntradaByOrden(1).subscribe(res_ => {
+          this.tiposDeEntradas = res_;
+        }) : this.entradasHelper.getTiposEntradaByOrden(2).subscribe(res__ => {
+          this.tiposDeEntradas = res__;
+        });
+      this.actaSeleccionada = `${event.data.Id}`;
+    });
   }
 
 }

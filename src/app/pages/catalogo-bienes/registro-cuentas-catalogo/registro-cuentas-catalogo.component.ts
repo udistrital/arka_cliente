@@ -1,12 +1,18 @@
 import { Component, OnInit, Input, Output, EventEmitter, ViewChild, QueryList, ViewChildren } from '@angular/core';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/catalogoElementosHelper';
+import { UserService } from '../../../@core/data/users.service';
 import { Grupo, Subgrupo } from '../../../@core/data/models/catalogo/jerarquia';
 import { Nivel_t } from '../../../@core/data/models/catalogo/tipo_nivel';
 import { Catalogo } from '../../../@core/data/models/catalogo/catalogo';
+import { TipoMovimientoKronos } from '../../../@core/data/models/movimientos';
+import { Parametro } from '../../../@core/data/models/configuracion_crud';
+import { BaseId } from '../../../@core/data/models/base';
+import { RolUsuario_t as Rol } from '../../../@core/data/models/roles/rol_usuario';
 import Swal from 'sweetalert2';
 import { Store } from '@ngrx/store';
 import { IAppState } from '../../../@core/store/app.state';
+import { ConfiguracionService } from '../../../@core/data/configuracion.service';
 import { ListService } from '../../../@core/store/services/list.service';
 import { CrudMovimientoComponent } from '../crud-movimientos/crud-movimiento.component';
 import { FormControl } from '@angular/forms';
@@ -14,6 +20,13 @@ import { CuentasFormulario, CuentaGrupo } from '../../../@core/data/models/catal
 import { CuentasGrupoTransaccion } from '../../../@core/data/models/catalogo/cuentas_subgrupo';
 import { element } from '@angular/core/src/render3';
 import { ToasterConfig, Toast, BodyOutputType, ToasterService } from 'angular2-toaster';
+
+class TiposMovimiento {
+  tipo: string;
+  data: TipoMovimientoKronos[];
+  i18n: string;
+  mostrar: () => boolean;
+}
 
 @Component({
   selector: 'ngx-registro-cuentas-catalogo',
@@ -34,14 +47,8 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
   subgrupoHijo: Subgrupo;
   uid_1: Subgrupo;
   ModificarGrupo: boolean;
-  uid_2: Subgrupo;
-  uid_3: Subgrupo;
-  uid_4: Subgrupo;
   Movimiento: number;
-  Movimientos_Entradas;
-  Movimientos_Salidas;
-  Movimientos_Depreciacion;
-  Movimientos_Valorizacion;
+  TiposMovimientos: TiposMovimiento[] = [];
   selected = new FormControl(0);
   Movimientos: any[];
   config: ToasterConfig;
@@ -50,34 +57,123 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
   depreciacion_ok: boolean;
   valorizacion_ok: boolean;
 
+  cargando_catalogos: boolean;
+  estado_cargado: boolean;
+  guardando: boolean = false;
+  puede_editar: boolean;
+  texto_sesion_contable: string;
+  texto_estado: string;
+  modificando_cuentas: boolean;
+
+  private estadoAsignacionContable: Parametro;
 
   constructor(
     private translate: TranslateService,
     private catalogoElementosService: CatalogoElementosHelper,
     private store: Store<IAppState>,
+    private confService: ConfiguracionService,
     private listService: ListService,
     private toasterService: ToasterService,
   ) {
+    this.cargando_catalogos = true;
+    this.puede_editar = false;
+    this.modificando_cuentas = false;
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
     });
     this.catalogos = new Array<Catalogo>();
     this.catalogoId = 0;
-    this.loadCatalogos();
-    this.listService.findPlanCuentasDebito();
-    this.listService.findPlanCuentasCredito();
-    this.catalogoElementosService.getTiposMovimientoKronos().subscribe((res: any[]) => {
-      this.Movimientos_Entradas = res.filter((x: any) => x.Descripcion.indexOf('Entrada') !== -1);
-      this.Movimientos_Salidas = res.filter((x: any) => x.Descripcion.indexOf('Salida') !== -1);
-      this.Movimientos_Depreciacion = res.filter((x: any) => x.Descripcion.indexOf('Depreciacion') !== -1);
-      this.Movimientos_Valorizacion = res.filter((x: any) => x.Descripcion.indexOf('Valorizacion') !== -1);
-      this.all_mov = res.length - 1;
-
-    });
     this.Movimientos = [];
+    this.texto_sesion_contable = '';
+    this.texto_estado = '';
   }
 
   ngOnInit() {
+    this.loadCatalogos();
+    this.listService.findPlanCuentasDebito();
+    this.listService.findPlanCuentasCredito();
+    this.cargaMovimientos();
+    this.cargaPermisoEdicionCuentas();
+    this.cargaEstadoSesionContable();
   }
+
+  private cargaMovimientos () {
+    const movimientos = [
+      {buscar: 'Entrada', i18n: 'GLOBAL.Entradas', mostrar: () => true},
+      {buscar: 'Salida', i18n: 'GLOBAL.Salidas', mostrar: () => true},
+      {buscar: 'Depreciacion', i18n: 'GLOBAL.Depreciacion', mostrar: () => this.depreciacion_ok},
+      {buscar: 'Valorizacion', i18n: 'GLOBAL.Valorizacion', mostrar: () => this.valorizacion_ok},
+      {buscar: 'Baja', i18n: 'GLOBAL.movimientos.tipo.SOL_BAJA.nombre', mostrar: () => true},
+      {buscar: 'Traslado', i18n: 'GLOBAL.movimientos.tipo.SOL_TRD.nombre', mostrar: () => true},
+    ];
+
+    this.catalogoElementosService.getTiposMovimientoKronos().subscribe((res: TipoMovimientoKronos[]) => {
+      // console.log({res});
+      const desglose = res.reduce((acc: TiposMovimiento[], val): TiposMovimiento[] => {
+        const tipo = movimientos.find(mov => val.Descripcion.indexOf(mov.buscar) !== -1);
+        const criterio = (t: TiposMovimiento) => tipo && (t.tipo === tipo.buscar);
+        if (acc.some(criterio)) {
+          acc.find(criterio).data.push(val);
+        } else {
+          if (tipo) {
+            acc.push({tipo: tipo.buscar, data: [val], i18n: tipo.i18n, mostrar: tipo.mostrar});
+          }
+        }
+        return acc;
+      }, <TiposMovimiento[]>[]);
+      // console.log({desglose});
+
+      this.TiposMovimientos = movimientos.map(mov => desglose.find(d => d.tipo === mov.buscar));
+      // console.log({mvtos:this.TiposMovimientos});
+      this.all_mov = res.length - 1;
+    });
+  }
+
+  private cargaPermisoEdicionCuentas() {
+    const accion = this.confService.getAccion('puedeAsignarCuentas');
+    this.puede_editar = accion ? true : false;
+  }
+
+  private cargaEstadoSesionContable() {
+    if (this.estado_cargado === undefined) {
+      this.estado_cargado = false;
+      this.confService.getParametro('modificandoCuentas').subscribe((p: Parametro) => {
+        this.refrescaEstadoSesionContable(p);
+      });
+    }
+  }
+  private refrescaEstadoSesionContable(p: Parametro) {
+    // console.log({p});
+    this.estadoAsignacionContable = p;
+    this.modificando_cuentas = p.Valor === 'true';
+    this.texto_sesion_contable = this.translate.instant('GLOBAL.cuentas.' + (this.modificando_cuentas ? 'terminar' : 'iniciar') + '_edicion_boton');
+    this.texto_estado = this.translate.instant('GLOBAL.cuentas.estado_' + (this.modificando_cuentas ? 'modificando' : 'lectura') );
+    this.estado_cargado = true;
+  }
+
+  preguntaSesionAsignacionContable() {
+    const cambioModo = this.modificando_cuentas ? 'terminar' : 'iniciar';
+    const title = this.translate.instant('GLOBAL.cuentas.' + cambioModo + '_edicion_titulo');
+    const text = this.translate.instant('GLOBAL.cuentas.' + cambioModo + '_edicion_texto');
+    const type = 'warning';
+    (Swal as any).fire({title, text, type, showCancelButton: true}).then(res => {
+      // console.log({modif: this.modificando_cuentas, res});
+      if (res.value) {
+        if (this.modificando_cuentas) {
+          this.estadoAsignacionContable.Valor = 'false';
+        } else {
+          this.estadoAsignacionContable.Valor = 'true';
+        }
+        // console.log({p_new: this.estadoAsignacionContable});
+        this.estado_cargado = false;
+        this.confService.setParametro(this.estadoAsignacionContable).subscribe(res2 => {
+          // console.log({p_new_put: res2});
+          this.refrescaEstadoSesionContable(<Parametro><any>res2);
+          this.estado_cargado = true;
+        });
+      }
+    });
+  }
+
   // Se ve si ya tiene cuentas asignadas para mostrarlas en el formulario
   ver3(event) {
     // console.log(event); REVISAR AQUI
@@ -127,37 +223,32 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
             this.catalogos.push(data[datos]);
           }
         }
+        this.cargando_catalogos = false;
       }
     });
   }
 
-  recargarCatalogo(event) {
-    // console.log(event);
+  recargarCatalogo() {
     this.eventChange.emit(true);
-
-
   }
 
   onChange(catalogo) {
+    this.uid_1 = undefined;
     this.catalogoId = catalogo;
   }
 
   QuitarVista() {
     this.uid_1 = undefined;
-    this.uid_2 = undefined;
   }
   receiveMessage(event) {
+    if (event.TipoNivelId.Id === Nivel_t.Clase) {
+      if (this.uid_1 === undefined || this.uid_1.Id !== event.Id) {
+        this.uid_1 = event;
     const opt: any = {
       title: this.translate.instant('No hay detalle asociado'),
       text: this.translate.instant('Revisar las caracteristicas del catalogo'),
       type: 'warning',
     };
-    this.catalogoElementosService.getSubgrupoById(event.Id).subscribe(
-      res => {
-
-        if (event.TipoNivelId.Id === Nivel_t.Clase) {
-          // console.log(event.TipoNivelId.Id);
-          if (Object.keys(res[0]).length !== 0) {
             this.catalogoElementosService.getDetalleSubgrupo(event.Id).subscribe(res2 => {
               if (Object.keys(res2[0]).length !== 0) {
                 this.Movimientos = [];
@@ -165,46 +256,22 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
                 this.valorizacion_ok = res2[0].Valorizacion;
                 this.Total_Movimientos();
                 // console.log(this.all_mov);
-                this.uid_1 = event;
-                this.uid_2 = undefined;
               } else {
                 this.Movimientos = [];
                 this.depreciacion_ok = false;
                 this.valorizacion_ok = false;
                 this.Total_Movimientos();
-                this.uid_1 = event;
-                this.uid_2 = undefined;
                 (Swal as any).fire(opt);
               }
             });
-          } else {
-            this.Movimientos = [];
-            this.depreciacion_ok = false;
-            this.valorizacion_ok = false;
-            this.Total_Movimientos();
-            this.uid_1 = undefined;
-            this.uid_2 = event;
-            (Swal as any).fire(opt);
-          }
-        }
-      });
-    // console.log(event);
-  }
-  onSubmit() {
-    let mov_existente: boolean;
-    this.Movimientos.forEach((element3: CuentaGrupo) => {
-      // console.log(element3)
-      if (element3.Id !== null && element3.Id !== undefined) {
-        mov_existente = true;
       }
-    });
-
-    if (mov_existente !== true) {
-      this.createMovimientos(this.Movimientos);
-    } else {
-      this.updateMovimientos(this.Movimientos);
-    }
+    } else this.uid_1 = undefined;
   }
+
+  onSubmit() {
+      this.updateMovimientos(this.Movimientos);
+  }
+
   updateMovimientos(subgrupo: any): void {
 
     const opt: any = {
@@ -216,14 +283,20 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
     (Swal as any).fire(opt)
       .then((willDelete) => {
         if (willDelete.value) {
-          const mov: any = {};
-          mov['Cuentas'] = subgrupo;
+          this.guardando = true;
+          const mov = {Cuentas: subgrupo.map( (cuenta: CuentaGrupo) => {
+            const subgrupo_id: BaseId = {Id: cuenta.SubgrupoId.Id};
+            cuenta.SubgrupoId = subgrupo_id;
+            cuenta.FechaCreacion = undefined;
+            cuenta.FechaModificacion = undefined;
+            return cuenta;
+          })};
           // console.log(mov)
           // console.log(this.uid_1.Id);
           this.catalogoElementosService.putTransaccionCuentasSubgrupo(mov, this.uid_1.Id)
             .subscribe(res => {
               // console.log(res);
-              this.eventChange.emit(true);
+              this.recargarCatalogo();
               this.Movimientos = [];
               this.showToast(
                 'info',
@@ -232,38 +305,13 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
               );
               setTimeout(() => {
                 this.QuitarVista();
+                this.guardando = false;
               }, 2000);
             });
         }
       });
   }
 
-  createMovimientos(subgrupo: any): void {
-    const opt: any = {
-      title: this.translate.instant('GLOBAL.Crear'),
-      text: this.translate.instant('GLOBAL.Crear_Movimientos_placeholder'),
-      type: 'warning',
-      showCancelButton: true,
-    };
-    (Swal as any).fire(opt)
-      .then((willDelete) => {
-        if (willDelete.value) {
-          const mov: any = {};
-          mov['Cuentas'] = subgrupo;
-          // console.log(mov['Cuentas'])
-          this.catalogoElementosService.postTransaccionCuentasSubgrupo(mov)
-            .subscribe(res => {
-              // console.log(res);
-              this.eventChange.emit(true);
-              this.Movimientos = [];
-              this.showToast('info', this.translate.instant('GLOBAL.Creado'), this.translate.instant('GLOBAL.Creado_Movimientos_placeholder'));
-              setTimeout(() => {
-                this.QuitarVista();
-              }, 2000);
-            });
-        }
-      });
-  }
   private showToast(type: string, title: string, body: string) {
     this.config = new ToasterConfig({
       // 'toast-top-full-width', 'toast-bottom-full-width', 'toast-top-left', 'toast-top-center'
@@ -293,8 +341,7 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
   }
 
   Total_Movimientos() {
-    this.all_mov = this.Movimientos_Entradas.length + this.Movimientos_Salidas.length +
-      this.Bool2Number(this.valorizacion_ok, this.Movimientos_Valorizacion.length) +
-      this.Bool2Number(this.depreciacion_ok, this.Movimientos_Depreciacion.length);
+    this.all_mov = this.TiposMovimientos
+    .reduce((acc: number, tipoMov: TiposMovimiento) => acc + (tipoMov.mostrar() ? tipoMov.data.length : 0), 0);
   }
 }

@@ -54,6 +54,9 @@ import { ActaEspecialComponent } from './acta-especial/acta-especial.component';
     MatPaginatorModule,
     MatSortModule,
   ],
+  exports: [
+    VerDetalleComponent,
+  ],
   providers: [
     CurrencyPipe,
     ListService,

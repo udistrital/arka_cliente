@@ -1,4 +1,3 @@
-
 import { Catalogo } from '../../../@core/data/models/catalogo/catalogo';
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { FORM_CATALOGO } from './form-catalogo';
@@ -6,7 +5,6 @@ import { ToasterService, ToasterConfig, Toast, BodyOutputType } from 'angular2-t
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import {Router} from '@angular/router';
 import Swal from 'sweetalert2';
-import { ActivatedRoute, Params } from '@angular/router';
 import 'style-loader!angular2-toaster/toaster.css';
 import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/catalogoElementosHelper';
 
@@ -32,29 +30,31 @@ export class CrudCatalogoComponent implements OnInit {
   formCatalogo: any;
   regCatalogo: any;
   clean: boolean;
+  cargando: boolean = true;
+  titulo: string = '';
 
   constructor(
     private translate: TranslateService,
     private catalogoElementosService: CatalogoElementosHelper,
     private toasterService: ToasterService,
-    private route: ActivatedRoute,
     public router: Router,
     ) {
-
-
     this.formCatalogo = FORM_CATALOGO;
+    if (this.router.getCurrentNavigation().extras.state !== undefined) {
+      this.catalogo_id = this.router.getCurrentNavigation().extras.state.example;
+    }
+  }
+
+  ngOnInit() {
     this.construirForm();
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
       this.construirForm();
     });
-    if (this.router.getCurrentNavigation().extras.state !== undefined) {
-      this.catalogo_id = this.router.getCurrentNavigation().extras.state.example;
-      this.loadCatalogo();
-    }
-   }
+    this.loadCatalogo();
+  }
 
   construirForm() {
-    this.formCatalogo.titulo = this.translate.instant('GLOBAL.catalogo');
+    this.formCatalogo.titulo = this.translate.instant('GLOBAL.catalogo.uno');
     this.formCatalogo.btn = this.translate.instant('GLOBAL.guardar');
     for (let i = 0; i < this.formCatalogo.campos.length; i++) {
       this.formCatalogo.campos[i].label = this.translate.instant('GLOBAL.' + this.formCatalogo.campos[i].label_i18n);
@@ -85,10 +85,14 @@ export class CrudCatalogoComponent implements OnInit {
           if (res !== null) {
             this.info_catalogo = <Catalogo>res;
           }
+          this.titulo = this.translate.instant('GLOBAL.catalogo.editar_nombre', {NOMBRE: this.info_catalogo.Nombre});
+          this.cargando = false;
         });
     } else  {
       this.info_catalogo = undefined;
       this.clean = !this.clean;
+      this.titulo = this.translate.instant('GLOBAL.catalogo.crear');
+      this.cargando = false;
     }
   }
 
@@ -140,10 +144,6 @@ export class CrudCatalogoComponent implements OnInit {
     });
   }
 
-  ngOnInit() {
-    this.loadCatalogo();
-  }
-
   validarForm(event) {
     if (event.valid) {
       if (this.info_catalogo === undefined) {
@@ -173,6 +173,10 @@ export class CrudCatalogoComponent implements OnInit {
       bodyOutputType: BodyOutputType.TrustedHtml,
     };
     this.toasterService.popAsync(toast);
+    this.volver();
+  }
+
+  volver() {
     this.router.navigate(['/pages/catalogo/list-catalogo']);
   }
 

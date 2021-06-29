@@ -1,0 +1,12 @@
+:host /deep/ ng2-smart-table thead th {
+    text-align: center;
+  }
+  
+  :host /deep/ ng2-st-tbody-custom a.ng2-smart-action.ng2-smart-action-custom-custom:hover {
+    color: #5dcfe3;
+  }
+  
+  :host /deep/ ng2-st-tbody-edit-delete {
+    display: block !important;
+    height: 0 !important;
+  }

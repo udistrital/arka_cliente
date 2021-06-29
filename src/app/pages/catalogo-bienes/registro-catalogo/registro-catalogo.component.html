@@ -1,14 +1,19 @@
 <div class="row">
   <nb-card class="col">
     <nb-card-header>
-      {{'GLOBAL.catalogo' | translate}}
+      <h2>{{'GLOBAL.catalogo.uno' | translate}}</h2>
     </nb-card-header>
-    <nb-card-body>
+    <nb-card-body [nbSpinner]="cargando_catalogos">
         <select class="form-control mb-4" (change)="onChange($event.target.value)">
           <option disabled selected>{{'GLOBAL.seleccionar' | translate}}...</option>
           <option *ngFor="let item of catalogos" value="{{ item.Id }}">{{ item.Nombre }}</option>
         </select>
-        <ngx-arbol *ngIf="catalogoId !== 0" [catalogoId]="catalogoId" (grupo)="receiveMessage($event)" [updateSignal]="eventChange"></ngx-arbol>
+        <ngx-arbol *ngIf="catalogoId !== 0" [catalogoId]="catalogoId" (fila)="receiveMessage($event)" [updateSignal]="eventChange">
+          <p>
+            <span class="fas fa-info-circle"></span>&nbsp;
+            <em>{{'GLOBAL.catalogo.constrInfo' | translate}}</em>
+          </p>
+        </ngx-arbol>
     </nb-card-body>
     <nb-card-footer *ngIf="catalogoId !== 0">
         <button nbButton class="float-right" (click)="AgregarGrupo(1)">{{'GLOBAL.subgrupo.grupo.agregar' | translate}}</button>

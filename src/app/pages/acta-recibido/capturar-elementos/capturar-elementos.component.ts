@@ -1,6 +1,5 @@
 import { Component, OnInit, ViewChild, ElementRef, Input, Output, EventEmitter, OnChanges, SimpleChanges, HostListener } from '@angular/core';
 import * as XLSX from 'xlsx';
-import * as FileSaver from 'file-saver';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
@@ -15,6 +14,7 @@ import { Impuesto } from '../../../@core/data/models/acta_recibido/elemento';
 import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/catalogoElementosHelper';
 import { Store } from '@ngrx/store';
 import { IAppState } from '../../../@core/store/app.state';
+import { ConfiguracionService } from '../../../@core/data/configuracion.service';
 import { ListService } from '../../../@core/store/services/list.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { NuxeoService } from '../../../@core/utils/nuxeo.service';
@@ -57,7 +57,9 @@ export class CapturarElementosComponent implements OnInit {
   @Input() DatosRecibidos: any;
   @Output() DatosEnviados = new EventEmitter();
   @Output() DatosTotales = new EventEmitter();
+  @Output() ElementosValidos = new EventEmitter<boolean>();
 
+  private lists: IAppState;
   respuesta: any;
   Tipos_Bien: any;
   Unidades: any;
@@ -71,20 +73,35 @@ export class CapturarElementosComponent implements OnInit {
   displayedColumns: any[];
   checkTodos: boolean = false;
   checkParcial: boolean = false;
-  Proveedor: boolean;
+  ocultarAsignacionCatalogo: boolean;
   ErroresCarga: string = '';
+  cargando: boolean = true;
 
-  constructor(private fb: FormBuilder,
+  constructor(
+    private fb: FormBuilder,
     private translate: TranslateService,
     private actaRecibidoHelper: ActaRecibidoHelper,
     private store: Store<IAppState>,
     private listService: ListService,
     private nuxeoService: NuxeoService,
+    private confService: ConfiguracionService,
     private documentoService: DocumentoService,
     private catalogoHelper: CatalogoElementosHelper,
     private userService: UserService,
-    private completerService: CompleterService) {
+    private completerService: CompleterService,
+  ) {
+    this.Totales = new DatosLocales();
+  }
 
+  ngOnInit() {
+    this.loadLists();
+    this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
+    });
+    this.createForm();
+    this.ReglasColumnas();
+  }
+
+  public loadLists() {
     this.listService.findSubgruposConsumo();
     this.listService.findSubgruposConsumoControlado();
     this.listService.findSubgruposDevolutivo();
@@ -93,60 +110,72 @@ export class CapturarElementosComponent implements OnInit {
     this.listService.findUnidades();
     this.listService.findImpuestoIVA();
     this.listService.findClases();
-    this.loadLists();
-    this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
-    });
-  }
 
-  public loadLists() {
     this.store.select((state) => state).subscribe(
       (list) => {
-        this.Consumo = list.listConsumo[0];
-        this.ConsumoControlado = list.listConsumoControlado[0];
-        this.Devolutivo = list.listDevolutivo[0];
-        this.Tipos_Bien = list.listTipoBien[0];
-        this.Unidades = list.listUnidades[0];
-        this.Tarifas_Iva = list.listIVA[0];
-        this.Clases = list.listClases[0];
-        this.dataService = this.completerService.local(this.Clases, 'SubgrupoId.Nombre', 'SubgrupoId.Nombre');
-        // console.log({pollito:this.Tarifas_Iva})
+        this.lists = list;
+        this.muestraData();
       },
     );
   }
-  useLanguage(language: string) {
-    this.translate.use(language);
-  }
 
-  ngOnInit() {
-    this.createForm();
-    this.Totales = new DatosLocales();
-    if (this.DatosRecibidos !== undefined) {
-      this.dataSource = new MatTableDataSource(this.DatosRecibidos);
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
-      this.respuesta = this.DatosRecibidos;
-      this.getDescuentos();
-      this.getSubtotales();
-      this.getIVA();
-      this.getTotales();
-      this.getClasesElementos();
-      this.ver();
-    } else {
-      this.dataSource = new MatTableDataSource();
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
-    }
-    for (let i = 0; i < this.dataSource.data.length; i++) {
-      if (this.dataSource.data[i].CodigoSubgrupo === undefined) {
-        this.dataSource.data[i].CodigoSubgrupo = '';
+  private muestraData() {
+    let clases;
+    const todoCargado = (
+      this.cargando && this.lists
+      && Array.isArray(this.lists.listConsumo) && this.lists.listConsumo[0]
+      && Array.isArray(this.lists.listConsumoControlado) && this.lists.listConsumoControlado[0]
+      && Array.isArray(this.lists.listDevolutivo) && this.lists.listDevolutivo[0]
+      && Array.isArray(this.lists.listTipoBien) && this.lists.listTipoBien[0]
+      && Array.isArray(this.lists.listUnidades) && this.lists.listUnidades[0]
+      && Array.isArray(this.lists.listIVA) && this.lists.listIVA[0]
+      && Array.isArray(this.lists.listClases) && this.lists.listClases[0]
+      && (() => {
+        clases = this.lists.listClases[0];
+        return Array.isArray(clases) && clases.length;
+      })()
+    );
+    if (todoCargado) {
+      this.Consumo = this.lists.listConsumo[0];
+      this.ConsumoControlado = this.lists.listConsumoControlado[0];
+      this.Devolutivo = this.lists.listDevolutivo[0];
+      this.Tipos_Bien = this.lists.listTipoBien[0];
+      this.Unidades = this.lists.listUnidades[0];
+      this.Tarifas_Iva = this.lists.listIVA[0];
+
+      this.Clases = clases.map(v => {
+        v.mostrar = v.SubgrupoId.Codigo + ' - ' + v.SubgrupoId.Nombre;
+        return v;
+      });
+      this.dataService = this.completerService.local(this.Clases, 'mostrar', 'mostrar');
+
+      if (this.DatosRecibidos !== undefined) {
+        this.dataSource = new MatTableDataSource(this.DatosRecibidos);
+        this.respuesta = this.DatosRecibidos;
+        this.getDescuentos();
+        this.getSubtotales();
+        this.getIVA();
+        this.getTotales();
+        this.getClasesElementos();
+      } else {
+        this.dataSource = new MatTableDataSource();
       }
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
+      for (let i = 0; i < this.dataSource.data.length; i++) {
+        if (this.dataSource.data[i].CodigoSubgrupo === undefined) {
+          this.dataSource.data[i].CodigoSubgrupo = '';
+        }
+      }
+
+      this.ver();
+      this.cargando = false;
     }
-    this.ReglasColumnas();
   }
 
   ReglasColumnas() {
-    if (this.userService.tieneAlgunRol([Rol.Proveedor])) {
-      this.Proveedor = true;
+    this.ocultarAsignacionCatalogo = !this.confService.getAccion('mostrarAsignacionCatalogo');
+    if (this.ocultarAsignacionCatalogo) {
       this.displayedColumns = [
         'AccionesMacro',
         'Nombre',
@@ -185,24 +214,52 @@ export class CapturarElementosComponent implements OnInit {
   }
 
   onSelectedClase(selected: CompleterItem, fila: number) {
+    if (selected) {
     this.dataSource.data[fila].CodigoSubgrupo = selected.originalObject.SubgrupoId.Codigo;
     this.dataSource.data[fila].TipoBienId = selected.originalObject.TipoBienId.Id;
     this.dataSource.data[fila].SubgrupoCatalogoId = selected.originalObject.SubgrupoId.Id;
     this.dataSource.data[fila].TipoBienNombre = selected.originalObject.TipoBienId.Nombre;
+    } else {
+      this.dataSource.data[fila].CodigoSubgrupo = '';
+      this.dataSource.data[fila].TipoBienId = '';
+      this.dataSource.data[fila].SubgrupoCatalogoId = '';
+      this.dataSource.data[fila].TipoBienNombre = '';
+    }
   }
 
+  onBlurClase(idx: number) {
+    if (!this.dataSource.data[idx].NombreClase) {
+      this.dataSource.data[idx].CodigoSubgrupo = '';
+      this.dataSource.data[idx].TipoBienId = '';
+      this.dataSource.data[idx].SubgrupoCatalogoId = '';
+      this.dataSource.data[idx].TipoBienNombre = '';
+    }
+  }
 
+  // TODO: De ser necesario, agregar otras validaciones asociadas
+  // a cada elemento
+  private validarElementos(): boolean {
+    return (
+      Array.isArray(this.dataSource.data)
+      && this.dataSource.data.length // Al menos un elemento
+      && this.dataSource.data.every(elem => (
+          elem.hasOwnProperty('SubgrupoCatalogoId')
+          && elem.SubgrupoCatalogoId
+          && !isNaN(elem.SubgrupoCatalogoId)
+      ))
+    );
+  }
 
   ver() {
     this.refrescaCheckTotal();
     // console.log(this.DatosEnviados)
     this.DatosEnviados.emit(this.dataSource.data);
     this.DatosTotales.emit(this.Totales);
+    this.ElementosValidos.emit(this.validarElementos());
     // console.log(this.dataSource.data)
   }
 
   TraerPlantilla() {
-
     NuxeoService.nuxeo.header('X-NXDocumentProperties', '*');
 
     // NuxeoService.nuxeo.request('/id/8e4d5b47-ba37-41dd-b549-4efc1777fef2') // PLANTILLA VIEJA
@@ -246,6 +303,7 @@ export class CapturarElementosComponent implements OnInit {
   }
   onFileChange(event) {
 
+
     // console.log(event.target.files);
     const max_size = 1;
 
@@ -284,6 +342,7 @@ export class CapturarElementosComponent implements OnInit {
 
   readThis(): void {
 
+    this.cargando = true;
     const formModel: FormData = this.prepareSave();
     this.actaRecibidoHelper.postArchivo(formModel).subscribe(res => {
       if (res !== null) {
@@ -297,7 +356,6 @@ export class CapturarElementosComponent implements OnInit {
         } else {
           this.respuesta = res;
           this.dataSource.data = this.respuesta[0].Elementos;
-          this.ver();
           this.dataSource.paginator = this.paginator;
           this.dataSource.sort = this.sort;
           const validacion = this.validarCargaMasiva();
@@ -308,7 +366,6 @@ export class CapturarElementosComponent implements OnInit {
               text: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.ElementosCargadosTextOK'),
             });
             this.ErroresCarga = validacion.errores[4];
-            this.clearFile();
           } else {
             (Swal as any).fire({
               type: 'warning',
@@ -316,8 +373,9 @@ export class CapturarElementosComponent implements OnInit {
               text: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.ValidacionCargaMasivaText', {cantidad: validacion.cont_err}),
             });
             this.ErroresCarga = '';
-            this.clearFile();
           }
+          this.clearFile();
+          this.ver();
         }
 
       } else {
@@ -328,6 +386,7 @@ export class CapturarElementosComponent implements OnInit {
         });
         this.clearFile();
       }
+      this.cargando = false;
     });
   }
 
@@ -385,21 +444,35 @@ export class CapturarElementosComponent implements OnInit {
   }
 
   clearFile() {
-    this.Validador = false;
-    this.form.get('archivo').setValue('');
-
+    this.Validador = true;
+ //   this.form.get('archivo').setValue('');
   }
 
   onSubmit() {
-    this.checkAnterior = undefined;
-    this.basePaginas = 0;
-    this.readThis();
+    const cargar = () => {
+      this.checkAnterior = undefined;
+      this.basePaginas = 0;
+      this.readThis();
+    };
+    if (this.dataSource.data.length) {
+      (Swal as any).fire({
+        title: this.translate.instant('GLOBAL.Advertencia'),
+        text: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.AvisoSobreescritura', {CANT: this.dataSource.data.length}),
+        type: 'warning',
+        showCancelButton: true,
+      }).then( res => {
+        if (res.value) {
+          cargar();
+        }
+      });
+    } else {
+      cargar();
+    }
   }
 
 
 
   getDescuentos() {
-
     if (this.dataSource.data.length !== 0) {
       this.Totales.Descuento = this.dataSource.data.map(t => t.Descuento).reduce((acc, value) => parseFloat(acc) + parseFloat(value));
       const total = this.dataSource.data.map(t => t.Descuento).reduce((acc, value) => parseFloat(acc) + parseFloat(value));
@@ -428,7 +501,6 @@ export class CapturarElementosComponent implements OnInit {
   }
 
   getIVA() {
-
     if (this.dataSource.data.length !== 0) {
       this.Totales.ValorIva = this.dataSource.data.map(t => t.ValorIva).reduce((acc, value) => parseFloat(acc) + parseFloat(value));
       const total = this.dataSource.data.map(t => t.ValorIva).reduce((acc, value) => parseFloat(acc) + parseFloat(value));
@@ -441,23 +513,36 @@ export class CapturarElementosComponent implements OnInit {
       return '0';
     }
   }
+
   getClasesElementos() {
     if (this.Clases && this.Clases.length) {
       this.dataSource.data.map((elemento) => {
-        elemento.TipoBienNombre = elemento.TipoBienId !== 0 ?
-          this.Tipos_Bien.find((x) => x.Id === elemento.TipoBienId).Nombre : '';
-        elemento.CodigoSubgrupo = elemento.TipoBienId !== 0 ?
-        this.Clases.find((x) => x.SubgrupoId.Id === elemento.SubgrupoCatalogoId).SubgrupoId.Codigo : '';
-        elemento.NombreClase = elemento.TipoBienId !== 0 ?
-        this.Clases.find((x) => x.SubgrupoId.Id === elemento.SubgrupoCatalogoId).SubgrupoId.Nombre : '';
+        elemento.TipoBienNombre = elemento.TipoBienId !== 0 ? (() => {
+          const criterio = x => x && x.Id === elemento.TipoBienId;
+          if (this.Tipos_Bien.some(criterio)) {
+            return this.Tipos_Bien.find(criterio).Nombre;
+          }
+          return '';
+        })() : '';
+        elemento.CodigoSubgrupo = elemento.TipoBienId !== 0 ? (() => {
+          const criterio = x => x && x.SubgrupoId.Id === elemento.SubgrupoCatalogoId;
+          if (this.Clases.some(criterio)) {
+            return this.Clases.find(criterio).SubgrupoId.Codigo;
+          }
+          return '';
+        })() : '';
+        elemento.NombreClase = elemento.TipoBienId !== 0 ? (() => {
+          const criterio = x => x.SubgrupoId.Id === elemento.SubgrupoCatalogoId;
+          if (this.Clases.some(criterio)) {
+            return this.Clases.find((x) => x.SubgrupoId.Id === elemento.SubgrupoCatalogoId).SubgrupoId.Nombre;
+          }
+          return '';
+        })() : '';
       });
     }
   }
 
-
-
   getTotales() {
-
     if (this.dataSource.data.length !== 0) {
       this.Totales.ValorTotal = this.dataSource.data.map(t => t.ValorTotal).reduce((acc, value) => parseFloat(acc) + parseFloat(value));
       const total = this.dataSource.data.map(t => t.ValorTotal).reduce((acc, value) => parseFloat(acc) + parseFloat(value));
@@ -589,7 +674,7 @@ export class CapturarElementosComponent implements OnInit {
       this.dataSource.data[index].NombreClase = selected.originalObject.SubgrupoId.Nombre;
       this.dataSource.data[index].seleccionado = false;
     });
-    this.refrescaCheckTotal();
+    this.ver();
   }
 
   refrescaCheckTotal() {

@@ -9,8 +9,6 @@ import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import Swal from 'sweetalert2';
 import 'style-loader!angular2-toaster/toaster.css';
 import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/catalogoElementosHelper';
-import { Dependencia } from '../../../@core/data/models/acta_recibido/soporte_acta';
-
 
 @Component({
   selector: 'ngx-crud-grupo',
@@ -40,16 +38,21 @@ export class CrudGrupoComponent implements OnInit {
   formGrupo: any;
   regGrupo: any;
   clean: boolean;
+  cargando: boolean = true;
 
   constructor(
     private translate: TranslateService,
     private catalogoElementosService: CatalogoElementosHelper,
     private toasterService: ToasterService,
   ) {
+  }
+
+  ngOnInit() {
     this.construirForm();
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
       this.construirForm();
     });
+    this.loadGrupo();
   }
 
   construirForm() {
@@ -62,10 +65,6 @@ export class CrudGrupoComponent implements OnInit {
     }
   }
 
-  useLanguage(language: string) {
-    this.translate.use(language);
-  }
-
   getIndexForm(nombre: String): number {
     for (let index = 0; index < this.formGrupo.campos.length; index++) {
       const element = this.formGrupo.campos[index];
@@ -76,7 +75,6 @@ export class CrudGrupoComponent implements OnInit {
     return 0;
   }
 
-
   public loadGrupo(): void {
     if (this.grupo_id !== undefined && this.grupo_id !== 0) {
       this.catalogoElementosService.getGrupoTransaccionById(this.grupo_id)
@@ -85,6 +83,7 @@ export class CrudGrupoComponent implements OnInit {
           if (Object.keys(res[0]).length !== 0) {
             this.info_grupo = <Grupo>res[0].Subgrupo;
             this.mostrar.emit(true);
+            this.cargando = false;
           } else {
             this.info_grupo = undefined;
             this.clean = !this.clean;
@@ -93,6 +92,7 @@ export class CrudGrupoComponent implements OnInit {
         });
     } else {
       this.clean = !this.clean;
+      this.cargando = false;
     }
   }
 
@@ -163,10 +163,6 @@ export class CrudGrupoComponent implements OnInit {
             });
         }
       });
-  }
-
-  ngOnInit() {
-    this.loadGrupo();
   }
 
   validarForm(event) {
