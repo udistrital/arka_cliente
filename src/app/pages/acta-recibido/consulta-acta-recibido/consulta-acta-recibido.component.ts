@@ -85,7 +85,7 @@ export class ConsultaActaRecibidoComponent implements OnInit {
 
   ngOnInit() {
     // const estados = ['Registrada', 'Anulada'];
-    const usuario = this.userService.getUsuario();
+    const usuario = this.userService.getUserMail();
 
     // this.actaRecibidoHelper.getActasRecibidoPorEstados(estados).subscribe((res: any) => {
     this.actaRecibidoHelper.getActasRecibidoUsuario(usuario).subscribe((res: any) => {

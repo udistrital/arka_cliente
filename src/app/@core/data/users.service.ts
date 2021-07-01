@@ -62,8 +62,8 @@ export class UserService {
     return parseInt(window.localStorage.getItem('programa'), 10);
   }
 
-  public getUsuario(): string {
-    return this.tokenData.sub; // window.localStorage.getItem('usuario').toString() ;
+  public getUserMail(): string {
+    return this.tokenData.email; // window.localStorage.getItem('usuario').toString() ;
   }
 
   getRoles(): string[] {
