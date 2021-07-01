@@ -10,6 +10,7 @@ steps:
     branch:
     - develop
     - feature/*
+    - hotfix/*
     - release/*
     event:
     - push
@@ -35,6 +36,7 @@ steps:
     branch:
     - develop
     - feature/*
+    - hotfix/*
     - release/*
     event:
     - push
@@ -48,14 +50,17 @@ steps:
 #     branch:
 #     - unitest
 #
-# - name:  pruebas_linter
-#   image: node:12.6.0
-#   commands:
-#   - npm i
-#   - npm run lint
-#   when:
-#     branch:
-#     - unitest
+- name:  pruebas_linter
+  image: node:12.6.0
+  commands:
+  - npm i
+  - npm run lint
+  when:
+    branch:
+    - develop
+    # - unitest
+    event:
+    - push
 
 # - name: run_sonar_scanner
 #   image: aosapps/drone-sonar-plugin
@@ -72,7 +77,7 @@ steps:
 #     event:
 #     - push
 
-- name: nodejs_develop
+- name: nodejs_release
   image: node:12.6.0
   commands:
   - node --version
@@ -81,6 +86,7 @@ steps:
   when:
     branch:
     - develop
+    - release/*
     event:
     - push
 
@@ -91,9 +97,10 @@ steps:
   - npm i
   - npm run build:prod
   when:
-    ref:
-      include:
-      - refs/tags/v*.*.*
+    branch:
+    - master
+    event:
+    - push
 
 - name: publish_s3_release
   image: plugins/s3
@@ -109,7 +116,7 @@ steps:
     strip_prefix: dist/
   when:
     branch:
-    - develop
+    - release/*
     event:
     - push
 
@@ -126,9 +133,10 @@ steps:
     target: /${DRONE_REPO_NAME%%_cliente}.portaloas.udistrital.edu.co
     strip_prefix: dist/
   when:
-    ref:
-      include:
-      - refs/tags/v*.*.*
+    branch:
+    - master
+    event:
+    - push
 
 - name: notify_telegram
   image: appleboy/drone-telegram
