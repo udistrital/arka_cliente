@@ -269,6 +269,16 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
   }
 
   onSubmit() {
+      const movimiento = this.Movimientos.filter(elemento => elemento.orden === 0 && elemento.Tipo_Texto === 'GLOBAL.Entradas');
+      if (movimiento.length === 1) {
+
+          const cuentadebito = movimiento[0].CuentaDebitoId;
+          this.Movimientos.forEach(elemento => { if (elemento.Tipo_Texto === 'GLOBAL.Entradas')
+            elemento.CuentaDebitoId = cuentadebito;
+            if (elemento.Tipo_Texto === 'GLOBAL.Salidas') {
+               elemento.CuentaCreditoId = cuentadebito;  }});
+
+      }
       this.updateMovimientos(this.Movimientos);
   }
 
