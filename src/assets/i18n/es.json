@@ -784,6 +784,10 @@
           "nombre": "Intangibles desarrollados",
           "descripcion": "Entrada por Intangibles desarrollados al Interior de los Entes y Entidades"
         },
+        "EAMA": {
+          "nombre": "Entrada Anulada",
+          "descripcion": "Entrada anulada por medio del módulo de ajustes"
+        },
         "EBEMP": {
           "nombre": "Entregados de manera Provisional",
           "descripcion": "Entrada Entregados al Ente o Entidad de manera provisional"

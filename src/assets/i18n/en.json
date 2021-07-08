@@ -788,6 +788,10 @@
           "nombre": "Delivered Goods on a provisional basis",
           "descripcion": "Input of Delivered Goods on a provisional basis"
         },
+        "EAMA": {
+          "nombre": "Cancelled input",
+          "descripcion": "Cancelled input by the adjust module"
+        },
         "SOL_BAJA": {
           "nombre": "Derecognition",
           "descripcion": "Derecognition Request"
