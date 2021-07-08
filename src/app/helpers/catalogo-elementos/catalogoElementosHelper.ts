@@ -587,6 +587,7 @@ export class CatalogoElementosHelper {
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
      */
     public getDetalleSubgrupo(subgrupo) {
+        console.log("El subgrupo", subgrupo)
         this.rqManager.setPath('CATALOGO_ELEMENTOS_SERVICE');
         return this.rqManager.get('detalle_subgrupo?query=SubgrupoId.Id:' + subgrupo + ',Activo:true&limit=-1').pipe(
             map(

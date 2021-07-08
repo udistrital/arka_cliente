@@ -107,7 +107,6 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
     ];
 
     this.catalogoElementosService.getTiposMovimientoKronos().subscribe((res: TipoMovimientoKronos[]) => {
-      // console.log({res});
       const desglose = res.reduce((acc: TiposMovimiento[], val): TiposMovimiento[] => {
         const tipo = movimientos.find(mov => val.Descripcion.indexOf(mov.buscar) !== -1);
         const criterio = (t: TiposMovimiento) => tipo && (t.tipo === tipo.buscar);
@@ -176,7 +175,7 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
 
   // Se ve si ya tiene cuentas asignadas para mostrarlas en el formulario
   ver3(event) {
-    // console.log(event); REVISAR AQUI
+
     let mov_existente: boolean;
     if (event.Id === undefined) {
       this.Movimientos.forEach((element1: CuentaGrupo) => {
@@ -192,8 +191,11 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
 
     } else {
       this.Movimientos.forEach((element2: CuentaGrupo) => {
-        // console.log(element2)
+        if (event.Id == 568)
+           console.log(event)
+ 
         if (element2.Id === event.Id) {
+          console.log("repetido ", element2.Id)
           element2.CuentaCreditoId = event.CuentaCreditoId;
           element2.CuentaDebitoId = event.CuentaDebitoId;
           mov_existente = true;
@@ -206,7 +208,7 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
     if (this.Movimientos.length === this.all_mov) {
       this.all_mov_ok = true;
     }
-    // console.log(this.Movimientos);
+     console.log("pasa por esta función", this.Movimientos.length, this.all_mov);
   }
 
   useLanguage(language: string) {
@@ -216,7 +218,7 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
   loadCatalogos() {
     this.catalogoElementosService.getCatalogo().subscribe((res) => {
       if (res !== null) {
-        // console.log(res);
+        console.log(res);
         const data = <Array<Catalogo>>res;
         for (const datos in Object.keys(data)) {
           if (data.hasOwnProperty(datos)) {
@@ -229,6 +231,7 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
   }
 
   recargarCatalogo() {
+    console.log("llego aqui");
     this.eventChange.emit(true);
   }
 
@@ -241,6 +244,7 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
     this.uid_1 = undefined;
   }
   receiveMessage(event) {
+    console.log("Evento receive message", event)
     if (event.TipoNivelId.Id === Nivel_t.Clase) {
       if (this.uid_1 === undefined || this.uid_1.Id !== event.Id) {
         this.uid_1 = event;

@@ -206,9 +206,11 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
     if (this.subgrupo_id.Id !== undefined && this.subgrupo_id.Id !== 0) {
       // console.log(this.movimiento_id);
       this.cargando = true;
+
+
       this.catalogoElementosService.getMovimiento(this.subgrupo_id.Id, this.movimiento_id.Id)
         .subscribe(res => {
-          // console.log(res);
+
           if (Object.keys(res[0]).length !== 0) {
             const cuentasAsociadas = new CuentasFormulario();
             this.respuesta = <CuentaGrupo>res[0];
@@ -220,6 +222,7 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
             cuentasAsociadas.CuentaDebitoId = cuentaDebito;
             this.info_movimiento = cuentasAsociadas;
           } else {
+            console.log("mira ", res, this.subgrupo_id.Id, this.movimiento_id.Id);
             const cuentasAsociadas = new CuentasFormulario();
             const cuentaCredito = new Cuenta();
             const cuentaDebito = new Cuenta();
@@ -230,6 +233,7 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
             this.info_movimiento = cuentasAsociadas;
             // console.log(this.info_movimiento);
             this.clean = !this.clean;
+            console.log("una vez")
             this.respuesta = undefined;
           }
           this.cargando = false;
@@ -251,6 +255,7 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
   }
 
   validarForm(event) {
+    console.log("cuando pasa por aquí", this.respuesta)
     if (event.valid) {
       if (this.respuesta !== undefined) {
         const cuentaDebito = event.data.CuentasFormulario.CuentaDebitoId;
@@ -268,8 +273,8 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
         this.respuesta2.CuentaCreditoId = cuentaCredito.Codigo;
         this.respuesta2.CuentaDebitoId = cuentaDebito.Codigo;
         this.respuesta2.SubtipoMovimientoId = this.movimiento_id.Id;
-        this.respuesta.Tipo_Texto = this.tipo_movimiento;
-        this.respuesta.orden = this.indice;
+        this.respuesta2.Tipo_Texto = this.tipo_movimiento;
+        this.respuesta2.orden = this.indice;
         this.formulario.emit(this.respuesta2);
       }
     }
