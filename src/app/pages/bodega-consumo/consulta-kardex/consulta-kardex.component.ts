@@ -45,15 +45,17 @@ export class ConsultaKardexComponent implements OnInit {
   Metodos: any[] = [
     {
       Id: 1,
-      Nombre: 'GLOBAL.BodegaConsumo.MetodoInventario.PP',
+      Nombre: 'PP',
+      // Estaba con los global pero la descripción es muy larga para el tamaño de la tabla.
+      // Nombre: this.translate.instant('GLOBAL.BodegaConsumo.MetodoInventario.PP'),
     },
     {
       Id: 2,
-      Nombre: 'GLOBAL.BodegaConsumo.MetodoInventario.PEPS',
+      Nombre: 'PEPS',
     },
     {
       Id: 3,
-      Nombre: 'GLOBAL.BodegaConsumo.MetodoInventario.UEPS',
+      Nombre: 'UEPS',
     },
   ];
   kardex: any;
@@ -200,6 +202,7 @@ export class ConsultaKardexComponent implements OnInit {
           const met = this.Metodos.find(x => x.Id === element.MetodoValoracion);
           element.MetodoValoracion = met;
         });
+        // console.log(res1);
         this.source.load(res1);
       }
       this.cargandoListaKardex = false;
