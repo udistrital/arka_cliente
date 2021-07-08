@@ -562,6 +562,7 @@
       "claseInfo": "Seleccione una fila correspondiente a una Clase",
       "elementosInfo": "Para agregar elementos a una clase, seleccione una fila correspondiente a una Clase",
       "desactivar": "Desactivar Catálogo",
+      "validacion_desactivar" :"¿Está seguro que desea desactivar el catálogo?",
       "lista": "Lista de Catálogos"
     },
 
