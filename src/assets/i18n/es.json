@@ -699,6 +699,7 @@
     "regresar": "regresar",
     "operacion_exitosa": "Operación Exitosa",
     "consultar_entrada": "Consultar Entradas",
+    "consultar_salida" : "Consultar Salidas",
     "mensaje_consulta_entrada": "Lista de entradas realizadas. Para ver el detalle de la entrada presione el ícono de acciones ubicado al costado derecho de la tabla.",
     "consecutivo": "Consecutivo",
     "fecha_entrada": "Fecha de Entrada",

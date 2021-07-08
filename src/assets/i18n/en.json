@@ -699,6 +699,7 @@
     "regresar": "back",
     "operacion_exitosa": "Successful Operation",
     "consultar_entrada": "View Entries",
+    "consultar_salida" : "View Outputs",
     "mensaje_consulta_entrada": "List of entries made. To see the detail of the entry press the action icon located on the right side of the table.",
     "consecutivo": "Consecutive",
     "fecha_entrada": "Entry Date",
