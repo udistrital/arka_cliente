@@ -930,6 +930,9 @@
         "error_desactivacion": "El tipo de bien no ha sido inhabilitado correctamente",
         "asignable_kardex": "Asignable a Kárdex"
       }
+    },
+    "reportes": {
+      "entrada_titulo": "Reporte de Entrada"
     }
   }
 }
