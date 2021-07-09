@@ -147,7 +147,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
       this.Cargar_Formularios();
       sessionStorage.setItem('Formulario_Registro', JSON.stringify(this.firstForm.value));
       const formulario2 = JSON.parse(sessionStorage.Formulario_Registro);
-      this.cargar(formulario2)
+      this.cargar(formulario2);
     } else {
       const formulario = JSON.parse(sessionStorage.Formulario_Registro);
 
@@ -162,7 +162,6 @@ export class RegistroActaRecibidoComponent implements OnInit {
         cancelButtonText: 'Nuevo Registro, se eliminara el registro anterior',
       }).then((result) => {
         if (result.value) {
-          console.log("aceptar")
           this.cargar(formulario);
         } else {
           (Swal as any).fire({
@@ -179,7 +178,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
               this.Cargar_Formularios();
               sessionStorage.setItem('Formulario_Registro', JSON.stringify(this.firstForm.value));
               const formulario3 = JSON.parse(sessionStorage.Formulario_Registro);
-              this.cargar(formulario3)
+              this.cargar(formulario3);
             } else {
               this.cargar(formulario);
             }
