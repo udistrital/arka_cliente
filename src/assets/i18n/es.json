@@ -562,6 +562,7 @@
       "claseInfo": "Seleccione una fila correspondiente a una Clase",
       "elementosInfo": "Para agregar elementos a una clase, seleccione una fila correspondiente a una Clase",
       "desactivar": "Desactivar Catálogo",
+      "validacion_desactivar" :"¿Está seguro que desea desactivar el catálogo?",
       "lista": "Lista de Catálogos"
     },
 
@@ -699,6 +700,7 @@
     "regresar": "regresar",
     "operacion_exitosa": "Operación Exitosa",
     "consultar_entrada": "Consultar Entradas",
+    "consultar_salida" : "Consultar Salidas",
     "mensaje_consulta_entrada": "Lista de entradas realizadas. Para ver el detalle de la entrada presione el ícono de acciones ubicado al costado derecho de la tabla.",
     "consecutivo": "Consecutivo",
     "fecha_entrada": "Fecha de Entrada",
@@ -783,6 +785,10 @@
         "EID": {
           "nombre": "Intangibles desarrollados",
           "descripcion": "Entrada por Intangibles desarrollados al Interior de los Entes y Entidades"
+        },
+        "EAMA": {
+          "nombre": "Entrada Anulada",
+          "descripcion": "Entrada anulada por medio del módulo de ajustes"
         },
         "EBEMP": {
           "nombre": "Entregados de manera Provisional",

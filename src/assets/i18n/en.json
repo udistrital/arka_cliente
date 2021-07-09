@@ -562,6 +562,7 @@
       "claseInfo": "Pick a row corresponding to a Class",
       "elementosInfo": "To add elements to a Class, please choose a Class row",
       "desactivar": "Disable Catalogue",
+      "validacion_desactivar": "¿Are you sure you want to disable the catalog? ",
       "lista": "Catalogue List"
     },
 
@@ -699,6 +700,7 @@
     "regresar": "back",
     "operacion_exitosa": "Successful Operation",
     "consultar_entrada": "View Entries",
+    "consultar_salida" : "View Outputs",
     "mensaje_consulta_entrada": "List of entries made. To see the detail of the entry press the action icon located on the right side of the table.",
     "consecutivo": "Consecutive",
     "fecha_entrada": "Entry Date",
@@ -787,6 +789,10 @@
         "EBEMP": {
           "nombre": "Delivered Goods on a provisional basis",
           "descripcion": "Input of Delivered Goods on a provisional basis"
+        },
+        "EAMA": {
+          "nombre": "Cancelled input",
+          "descripcion": "Cancelled input by the adjust module"
         },
         "SOL_BAJA": {
           "nombre": "Derecognition",
