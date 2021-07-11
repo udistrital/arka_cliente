@@ -50,7 +50,6 @@ export const environment = {
     CONTEXTPATH: 'knowage',
     USER: 'desarrollooas',
     PASSWORD: 'desarrollooas',
-    DOCUMENTLABEL: 'RteEntradaARKA',
   },
   TOKEN: {
     AUTORIZATION_URL: 'https://autenticacion.portaloas.udistrital.edu.co/oauth2/authorize',

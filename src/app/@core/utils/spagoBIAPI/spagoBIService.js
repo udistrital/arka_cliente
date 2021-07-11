@@ -11,7 +11,6 @@ function authenticate(config) {
 }
 
 function getDocumentHtml(config) {
-    config.documentLabel = SPAGOBI.DOCUMENTLABEL;
     var html = Sbi.sdk.api.getDocumentHtml(config);
     return html;
 }
