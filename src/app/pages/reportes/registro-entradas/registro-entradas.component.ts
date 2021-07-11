@@ -3,6 +3,7 @@ import { ToasterConfig, ToasterService, Toast, BodyOutputType } from 'angular2-t
 import { TranslateService } from '@ngx-translate/core';
 import { spagoBIService } from '../../../@core/utils/spagoBIAPI/spagoBIService';
 import { Router } from '@angular/router';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'ngx-registro-entradas',
@@ -36,7 +37,7 @@ export class RegistroEntradasComponent implements OnInit {
   initReportConfig() {
     if (this.consecutivo === '') {
       this.reportConfig = {
-        documentLabel: 'RteEntradaARKA',
+        documentLabel: environment.SPAGOBI.DOCUMENT_LABEL_ENTRADAS,
         executionRole: '/spagobi/user',
         displayToolbar: true,
         displaySliders: true,
@@ -49,7 +50,7 @@ export class RegistroEntradasComponent implements OnInit {
     } else {
       const parametros = 'consecutivo=' + this.consecutivo;
       this.reportConfig = {
-        documentLabel: 'RteEntradaARKA',
+        documentLabel: environment.SPAGOBI.DOCUMENT_LABEL_ENTRADAS,
         executionRole: '/spagobi/user',
         parameters: { 'PARAMETERS': parametros },
         displayToolbar: true,
@@ -65,7 +66,6 @@ export class RegistroEntradasComponent implements OnInit {
 
   callbackFunction() {
     const iframeSpago = spagoBIService.getDocumentHtml(this.reportConfig);
-    console.log(iframeSpago);
     this.url = iframeSpago.split('"')[3];
     this.loading = false;
   }
