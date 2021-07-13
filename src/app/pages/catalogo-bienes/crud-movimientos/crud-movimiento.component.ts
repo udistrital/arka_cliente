@@ -55,6 +55,7 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
   respuesta2: any;
   tipo_movimiento: string;
   indice: number;
+  deshabilitar : boolean;
 
   @Input('subgrupo_id')
   set name(subgrupo_id: Subgrupo) {
@@ -177,6 +178,8 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
       });
     }
     this.formMovimiento = form;
+    this.deshabilitar = !this.escritura;
+    console.log("Mira en lo que está " ,this.deshabilitar, this.escritura) 
 
     if (this.movimiento_id !== undefined) {
       // this.formulario.normalform = {...this.formulario.normalform, ...{ titulo: this.translate.instant('GLOBAL.' + this.movimiento_id)}} ;
@@ -185,7 +188,7 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
       for (let i = 0; i < this.formMovimiento.campos.length; i++) {
         this.formMovimiento.campos[i].label = this.translate.instant('GLOBAL.' + this.formMovimiento.campos[i].label_i18n);
         this.formMovimiento.campos[i].placeholder = this.translate.instant('GLOBAL.placeholder_' + this.formMovimiento.campos[i].label_i18n);
-        this.formMovimiento.campos[i].deshabilitar = (this.tipo_movimiento === 'GLOBAL.Entradas' && i === 0 &&
+        this.formMovimiento.campos[i].deshabilitar = this.deshabilitar || (this.tipo_movimiento === 'GLOBAL.Entradas' && i === 0 &&
                         this.indice !== 0 || this.tipo_movimiento === 'GLOBAL.Salidas' && i === 1);
         this.formMovimiento.campos[i].requerido = !(this.tipo_movimiento === 'GLOBAL.Entradas' && i === 0 &&
                         this.indice !== 0 || this.tipo_movimiento === 'GLOBAL.Salidas' && i === 1);
@@ -210,9 +213,12 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
 
       this.catalogoElementosService.getMovimiento(this.subgrupo_id.Id, this.movimiento_id.Id)
         .subscribe(res => {
+            
+//          console.log("Este es el importante", res, this.subgrupo_id.Id, this.movimiento_id.Id, res[0].Id)
 
           if (Object.keys(res[0]).length !== 0) {
             const cuentasAsociadas = new CuentasFormulario();
+            console.log("********* punto ********")
             this.respuesta = <CuentaGrupo>res[0];
             const cuentaCredito = new Cuenta();
             const cuentaDebito = new Cuenta();
@@ -222,7 +228,7 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
             cuentasAsociadas.CuentaDebitoId = cuentaDebito;
             this.info_movimiento = cuentasAsociadas;
           } else {
-            console.log("mira ", res, this.subgrupo_id.Id, this.movimiento_id.Id);
+     //       console.log("mira ", res, this.subgrupo_id.Id, this.movimiento_id.Id);
             const cuentasAsociadas = new CuentasFormulario();
             const cuentaCredito = new Cuenta();
             const cuentaDebito = new Cuenta();
@@ -233,7 +239,6 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
             this.info_movimiento = cuentasAsociadas;
             // console.log(this.info_movimiento);
             this.clean = !this.clean;
-            console.log("una vez")
             this.respuesta = undefined;
           }
           this.cargando = false;
@@ -255,7 +260,7 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
   }
 
   validarForm(event) {
-    console.log("cuando pasa por aquí", this.respuesta)
+    console.log("cuando pasa por aquí", event)
     if (event.valid) {
       if (this.respuesta !== undefined) {
         const cuentaDebito = event.data.CuentasFormulario.CuentaDebitoId;
@@ -264,6 +269,7 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
         this.respuesta.CuentaDebitoId = cuentaDebito.Codigo;
         this.respuesta.Tipo_Texto = this.tipo_movimiento;
         this.respuesta.orden = this.indice;
+        console.log("Lo que envia", this.respuesta)
         this.formulario.emit(this.respuesta);
       } else {
         const cuentaDebito = event.data.CuentasFormulario.CuentaDebitoId;
@@ -275,6 +281,7 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
         this.respuesta2.SubtipoMovimientoId = this.movimiento_id.Id;
         this.respuesta2.Tipo_Texto = this.tipo_movimiento;
         this.respuesta2.orden = this.indice;
+        console.log("Lo que envia 1", this.respuesta2)
         this.formulario.emit(this.respuesta2);
       }
     }
