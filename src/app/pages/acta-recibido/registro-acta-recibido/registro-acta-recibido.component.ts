@@ -147,7 +147,8 @@ export class RegistroActaRecibidoComponent implements OnInit {
       this.Cargar_Formularios();
       sessionStorage.setItem('Formulario_Registro', JSON.stringify(this.firstForm.value));
       const formulario2 = JSON.parse(sessionStorage.Formulario_Registro);
-      this.cargar(formulario2);
+      this.Cargar_Formularios2(formulario2);
+
     } else {
       const formulario = JSON.parse(sessionStorage.Formulario_Registro);
 
@@ -316,7 +317,6 @@ export class RegistroActaRecibidoComponent implements OnInit {
 
   Cargar_Formularios() {
     this.proveedoresFiltrados = this.cambiosProveedor(this.Formulario_2.get('Proveedor'));
-
     this.firstForm = this.fb.group({
       Formulario1: this.Formulario_1,
       Formulario2: this.fb.array([this.Formulario_2]),
