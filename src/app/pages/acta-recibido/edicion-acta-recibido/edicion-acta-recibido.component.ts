@@ -188,13 +188,14 @@ export class EdicionActaRecibidoComponent implements OnInit {
     this.listService.findUnidades();
     this.listService.findImpuestoIVA();
     this.defineSiHayQueValidarElementosParaEnviar();
+    this.loadContratistas();
     this.loadLists();
     this.loadProveedores();
     this.cargaPermisos();
     if (!this.userService.getPersonaId()) {
       this.errores.set('terceros', true);
     }
-    this.loadContratistas();
+
   }
 
   // Los permisos en cada sección dependen del estado del acta y del rol.
@@ -403,9 +404,13 @@ export class EdicionActaRecibidoComponent implements OnInit {
     } else return [];
   }
   muestraContratista(contr: TerceroCriterioContratista): string {
-    // console.log({contr});
-    if (contr) {
+    // console.log(contr);
+    if (contr && contr.Identificacion) {
       return contr.Identificacion.Numero + ' - ' + contr.Tercero.NombreCompleto;
+    } else {
+      if (contr) {
+        return contr.Tercero.NombreCompleto;
+      }
     }
   }
 
@@ -608,11 +613,13 @@ export class EdicionActaRecibidoComponent implements OnInit {
       this.firstForm.get('Formulario2').statusChanges.subscribe(change => this.checkValidness(2, change));
       this.firstForm.get('Formulario3').statusChanges.subscribe(change => this.checkValidness(3, change));
       this.carga_agregada = true;
+
       this.contratistasFiltrados = this.firstForm.get('Formulario1').get('Contratista').valueChanges.pipe(
         startWith(''),
         map(val => typeof val === 'string' ? val : this.muestraContratista(val)),
         map(nombre => this.filtroContratistas(nombre)),
       );
+      // console.log(this.contratistasFiltrados)
     });
   }
 

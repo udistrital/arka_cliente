@@ -229,8 +229,12 @@ export class RegistroActaRecibidoComponent implements OnInit {
     } else return [];
   }
   muestraContratista(contr: TerceroCriterioContratista): string {
-    if (contr) {
+    if (contr && contr.Identificacion) {
       return contr.Identificacion.Numero + ' - ' + contr.Tercero.NombreCompleto;
+    } else {
+      if (contr) {
+        return contr.Tercero.NombreCompleto;
+      }
     }
   }
 
