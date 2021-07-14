@@ -573,19 +573,19 @@ export class VerificacionActaRecibidoComponent implements OnInit {
       if (result.value) {
         (Swal as any).mixin({
           input: 'text',
-          confirmButtonText: 'Rechazar',
+          confirmButtonText: this.translate.instant('GLOBAL.Acta_Recibido.VerificacionActa.Rechazar'),
           showCancelButton: true,
           progressSteps: ['1'],
         }).queue([
           {
-            title: 'Observaciones',
-            text: 'Inserte la razon de rechazo',
+            title: this.translate.instant('GLOBAL.Acta_Recibido.VerificacionActa.Observaciones'),
+            text: this.translate.instant('GLOBAL.Acta_Recibido.VerificacionActa.RechazadaRazon'),
           },
         ]).then((result2) => {
           if (result2.value) {
             const obs = this.firstForm.get('Formulario3').get('Datos_Adicionales').value;
             this.firstForm.get('Formulario3').get('Datos_Adicionales').setValue(
-              obs + ' // Razon de rechazo: ' + result2.value,
+              obs + ' // Razón de rechazo: ' + result2.value,
               );
             this.onFirstSubmit(false);
           }
