@@ -179,7 +179,6 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
     }
     this.formMovimiento = form;
     this.deshabilitar = !this.escritura;
-    console.log("Mira en lo que está " ,this.deshabilitar, this.escritura) 
 
     if (this.movimiento_id !== undefined) {
       // this.formulario.normalform = {...this.formulario.normalform, ...{ titulo: this.translate.instant('GLOBAL.' + this.movimiento_id)}} ;
@@ -260,7 +259,6 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
   }
 
   validarForm(event) {
-    console.log("cuando pasa por aquí", event)
     if (event.valid) {
       if (this.respuesta !== undefined) {
         const cuentaDebito = event.data.CuentasFormulario.CuentaDebitoId;
@@ -269,7 +267,6 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
         this.respuesta.CuentaDebitoId = cuentaDebito.Codigo;
         this.respuesta.Tipo_Texto = this.tipo_movimiento;
         this.respuesta.orden = this.indice;
-        console.log("Lo que envia", this.respuesta)
         this.formulario.emit(this.respuesta);
       } else {
         const cuentaDebito = event.data.CuentasFormulario.CuentaDebitoId;
@@ -281,7 +278,6 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
         this.respuesta2.SubtipoMovimientoId = this.movimiento_id.Id;
         this.respuesta2.Tipo_Texto = this.tipo_movimiento;
         this.respuesta2.orden = this.indice;
-        console.log("Lo que envia 1", this.respuesta2)
         this.formulario.emit(this.respuesta2);
       }
     }

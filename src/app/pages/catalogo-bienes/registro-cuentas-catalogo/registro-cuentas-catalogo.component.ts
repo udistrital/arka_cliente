@@ -20,6 +20,7 @@ import { CuentasFormulario, CuentaGrupo } from '../../../@core/data/models/catal
 import { CuentasGrupoTransaccion } from '../../../@core/data/models/catalogo/cuentas_subgrupo';
 import { element } from '@angular/core/src/render3';
 import { ToasterConfig, Toast, BodyOutputType, ToasterService } from 'angular2-toaster';
+import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 
 class TiposMovimiento {
   tipo: string;
@@ -42,6 +43,9 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
   formGrupo: any;
   regGrupo1: any;
   clean: boolean;
+  cuentaCreditoIdEntradas: String
+  cuentaDebitoIdEntradas: String
+  movOk: boolean = true;
   catalogos: Array<Catalogo>;
   catalogoId: number;
   subgrupoHijo: Subgrupo;
@@ -96,18 +100,18 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
     this.cargaEstadoSesionContable();
   }
 
-  private cargaMovimientos () {
+  private cargaMovimientos() {
     const movimientos = [
-      {buscar: 'Entrada', i18n: 'GLOBAL.Entradas', mostrar: () => true},
-      {buscar: 'Salida', i18n: 'GLOBAL.Salidas', mostrar: () => true},
-      {buscar: 'Depreciacion', i18n: 'GLOBAL.Depreciacion', mostrar: () => this.depreciacion_ok},
-      {buscar: 'Valorizacion', i18n: 'GLOBAL.Valorizacion', mostrar: () => this.valorizacion_ok},
-      {buscar: 'Baja', i18n: 'GLOBAL.movimientos.tipo.SOL_BAJA.nombre', mostrar: () => true},
-      {buscar: 'Traslado', i18n: 'GLOBAL.movimientos.tipo.SOL_TRD.nombre', mostrar: () => true},
+      { buscar: 'Entrada', i18n: 'GLOBAL.Entradas', mostrar: () => true },
+      { buscar: 'Salida', i18n: 'GLOBAL.Salidas', mostrar: () => true },
+      { buscar: 'Depreciacion', i18n: 'GLOBAL.Depreciacion', mostrar: () => this.depreciacion_ok },
+      { buscar: 'Valorizacion', i18n: 'GLOBAL.Valorizacion', mostrar: () => this.valorizacion_ok },
+      { buscar: 'Baja', i18n: 'GLOBAL.movimientos.tipo.SOL_BAJA.nombre', mostrar: () => true },
+      { buscar: 'Traslado', i18n: 'GLOBAL.movimientos.tipo.SOL_TRD.nombre', mostrar: () => true },
     ];
 
     this.catalogoElementosService.getTiposMovimientoKronos().subscribe((res: TipoMovimientoKronos[]) => {
-    //  console.log("El resultado ", res)
+      //  console.log("El resultado ", res)
       const desglose = res.reduce((acc: TiposMovimiento[], val): TiposMovimiento[] => {
         const tipo = movimientos.find(mov => val.Descripcion.indexOf(mov.buscar) !== -1);
         const criterio = (t: TiposMovimiento) => tipo && (t.tipo === tipo.buscar);
@@ -115,7 +119,7 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
           acc.find(criterio).data.push(val);
         } else {
           if (tipo) {
-            acc.push({tipo: tipo.buscar, data: [val], i18n: tipo.i18n, mostrar: tipo.mostrar});
+            acc.push({ tipo: tipo.buscar, data: [val], i18n: tipo.i18n, mostrar: tipo.mostrar });
           }
         }
         return acc;
@@ -147,7 +151,7 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
     this.estadoAsignacionContable = p;
     this.modificando_cuentas = p.Valor === 'true';
     this.texto_sesion_contable = this.translate.instant('GLOBAL.cuentas.' + (this.modificando_cuentas ? 'terminar' : 'iniciar') + '_edicion_boton');
-    this.texto_estado = this.translate.instant('GLOBAL.cuentas.estado_' + (this.modificando_cuentas ? 'modificando' : 'lectura') );
+    this.texto_estado = this.translate.instant('GLOBAL.cuentas.estado_' + (this.modificando_cuentas ? 'modificando' : 'lectura'));
     this.estado_cargado = true;
   }
 
@@ -156,7 +160,7 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
     const title = this.translate.instant('GLOBAL.cuentas.' + cambioModo + '_edicion_titulo');
     const text = this.translate.instant('GLOBAL.cuentas.' + cambioModo + '_edicion_texto');
     const type = 'warning';
-    (Swal as any).fire({title, text, type, showCancelButton: true}).then(res => {
+    (Swal as any).fire({ title, text, type, showCancelButton: true }).then(res => {
       // console.log({modif: this.modificando_cuentas, res});
       if (res.value) {
         if (this.modificando_cuentas) {
@@ -177,7 +181,19 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
 
   // Se ve si ya tiene cuentas asignadas para mostrarlas en el formulario
   ver3(event) {
-  //  console.log("lo que recibe", event)
+    
+    if (event.CuentaDebitoId == "") {
+      if (event.CuentaDebitoId == "" && (event.Tipo_Texto != "GLOBAL.Entradas" || event.orden == 0)) {
+        console.log("aca puso en false");
+        this.movOk = false;
+      }
+    }
+
+      if (event.CuentaCreditoId == "" && event.Tipo_Texto != "GLOBAL.Salidas") {
+        console.log("aca puso en false");
+        this.movOk = false;
+      }
+
     let mov_existente: boolean;
     if (event.Id === undefined) {
       this.Movimientos.forEach((element1: CuentaGrupo) => {
@@ -194,10 +210,10 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
     } else {
       this.Movimientos.forEach((element2: CuentaGrupo) => {
         if (event.Id == 568)
-           console.log(event)
- 
+          console.log(event)
+
         if (element2.Id === event.Id) {
-         // console.log("repetido ", element2.Id)
+          // console.log("repetido ", element2.Id)
           element2.CuentaCreditoId = event.CuentaCreditoId;
           element2.CuentaDebitoId = event.CuentaDebitoId;
           mov_existente = true;
@@ -207,10 +223,17 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
         this.Movimientos.push(<CuentaGrupo>event);
       }
     }
+
+
+    //    console.log("En este es que hay que concentrarse ", this.Movimientos);
+
+    //    this.Movimientos.filter(el => el. > 6)
+
+
     if (this.Movimientos.length === this.all_mov) {
       this.all_mov_ok = true;
     }
-   //  console.log("pasa por esta función", this.Movimientos.length, this.all_mov);
+    //  console.log("pasa por esta función", this.Movimientos.length, this.all_mov);
   }
 
   useLanguage(language: string) {
@@ -220,7 +243,7 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
   loadCatalogos() {
     this.catalogoElementosService.getCatalogo().subscribe((res) => {
       if (res !== null) {
-      //  console.log(res);
+        //  console.log(res);
         const data = <Array<Catalogo>>res;
         for (const datos in Object.keys(data)) {
           if (data.hasOwnProperty(datos)) {
@@ -233,7 +256,7 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
   }
 
   recargarCatalogo() {
-  //  console.log("llego aqui");
+    //  console.log("llego aqui");
     this.eventChange.emit(true);
   }
 
@@ -246,46 +269,49 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
     this.uid_1 = undefined;
   }
   receiveMessage(event) {
-   // console.log("Evento receive message", event)
+    // console.log("Evento receive message", event)
     if (event.TipoNivelId.Id === Nivel_t.Clase) {
       if (this.uid_1 === undefined || this.uid_1.Id !== event.Id) {
         this.uid_1 = event;
-    const opt: any = {
-      title: this.translate.instant('No hay detalle asociado'),
-      text: this.translate.instant('Revisar las caracteristicas del catalogo'),
-      type: 'warning',
-    };
-            this.catalogoElementosService.getDetalleSubgrupo(event.Id).subscribe(res2 => {
-              if (Object.keys(res2[0]).length !== 0) {
-                this.Movimientos = [];
-                this.depreciacion_ok = res2[0].Depreciacion;
-                this.valorizacion_ok = res2[0].Valorizacion;
-                this.Total_Movimientos();
-                // console.log(this.all_mov);
-              } else {
-                this.Movimientos = [];
-                this.depreciacion_ok = false;
-                this.valorizacion_ok = false;
-                this.Total_Movimientos();
-                (Swal as any).fire(opt);
-              }
-            });
+        const opt: any = {
+          title: this.translate.instant('No hay detalle asociado'),
+          text: this.translate.instant('Revisar las caracteristicas del catalogo'),
+          type: 'warning',
+        };
+        this.catalogoElementosService.getDetalleSubgrupo(event.Id).subscribe(res2 => {
+          if (Object.keys(res2[0]).length !== 0) {
+            this.Movimientos = [];
+            this.depreciacion_ok = res2[0].Depreciacion;
+            this.valorizacion_ok = res2[0].Valorizacion;
+            this.Total_Movimientos();
+            // console.log(this.all_mov);
+          } else {
+            this.Movimientos = [];
+            this.depreciacion_ok = false;
+            this.valorizacion_ok = false;
+            this.Total_Movimientos();
+            (Swal as any).fire(opt);
+          }
+        });
       }
     } else this.uid_1 = undefined;
   }
 
   onSubmit() {
-      const movimiento = this.Movimientos.filter(elemento => elemento.orden === 0 && elemento.Tipo_Texto === 'GLOBAL.Entradas');
-      if (movimiento.length === 1) {
+    const movimiento = this.Movimientos.filter(elemento => elemento.orden === 0 && elemento.Tipo_Texto === 'GLOBAL.Entradas');
+    if (movimiento.length === 1) {
 
-          const cuentadebito = movimiento[0].CuentaDebitoId;
-          this.Movimientos.forEach(elemento => { if (elemento.Tipo_Texto === 'GLOBAL.Entradas')
-            elemento.CuentaDebitoId = cuentadebito;
-            if (elemento.Tipo_Texto === 'GLOBAL.Salidas') {
-               elemento.CuentaCreditoId = cuentadebito;  }});
+      const cuentadebito = movimiento[0].CuentaDebitoId;
+      this.Movimientos.forEach(elemento => {
+        if (elemento.Tipo_Texto === 'GLOBAL.Entradas')
+          elemento.CuentaDebitoId = cuentadebito;
+        if (elemento.Tipo_Texto === 'GLOBAL.Salidas') {
+          elemento.CuentaCreditoId = cuentadebito;
+        }
+      });
 
-      }
-      this.updateMovimientos(this.Movimientos);
+    }
+    this.updateMovimientos(this.Movimientos);
   }
 
   updateMovimientos(subgrupo: any): void {
@@ -300,13 +326,15 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
       .then((willDelete) => {
         if (willDelete.value) {
           this.guardando = true;
-          const mov = {Cuentas: subgrupo.map( (cuenta: CuentaGrupo) => {
-            const subgrupo_id: BaseId = {Id: cuenta.SubgrupoId.Id};
-            cuenta.SubgrupoId = subgrupo_id;
-            cuenta.FechaCreacion = undefined;
-            cuenta.FechaModificacion = undefined;
-            return cuenta;
-          })};
+          const mov = {
+            Cuentas: subgrupo.map((cuenta: CuentaGrupo) => {
+              const subgrupo_id: BaseId = { Id: cuenta.SubgrupoId.Id };
+              cuenta.SubgrupoId = subgrupo_id;
+              cuenta.FechaCreacion = undefined;
+              cuenta.FechaModificacion = undefined;
+              return cuenta;
+            })
+          };
           // console.log(mov)
           // console.log(this.uid_1.Id);
           this.catalogoElementosService.putTransaccionCuentasSubgrupo(mov, this.uid_1.Id)
@@ -358,6 +386,6 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
 
   Total_Movimientos() {
     this.all_mov = this.TiposMovimientos
-    .reduce((acc: number, tipoMov: TiposMovimiento) => acc + (tipoMov.mostrar() ? tipoMov.data.length : 0), 0);
+      .reduce((acc: number, tipoMov: TiposMovimiento) => acc + (tipoMov.mostrar() ? tipoMov.data.length : 0), 0);
   }
 }
