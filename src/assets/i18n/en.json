@@ -423,6 +423,7 @@
         "DatosVeridicosTitle": "Are You Sure?",
         "VerificadaPre": "Are you sure you want to verify this certificate?",
         "RechazadaPre": "Are you sure you want to reject this certificate?",
+        "RechazadaRazon": "Insert the rejection reason",
         "VerificadaTitle": "Certificate N° {{ID}} Verified",
         "Verificada": "Certificate N° {{ID}} has been succesfully verified",
         "VerificadaTitleNO": "Unverified Certificate",

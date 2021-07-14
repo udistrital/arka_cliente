@@ -423,6 +423,7 @@
         "DatosVeridicosTitle":"Está Seguro?",
         "VerificadaPre":"Está seguro de que desea verificar el acta?",
         "RechazadaPre":"Está seguro de que desea rechazar el acta?",
+        "RechazadaRazon": "Inserte la razón de rechazo",
         "VerificadaTitle":"Acta N° {{ID}} Verificada",
         "Verificada":"El Acta N° {{ID}} ha sido verificada de forma exitosa",
         "VerificadaTitleNO":"Acta No Verificada",
