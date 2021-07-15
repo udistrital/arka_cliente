@@ -182,25 +182,34 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
   // Se ve si ya tiene cuentas asignadas para mostrarlas en el formulario
   ver3(event) {
     
-    if (event.CuentaDebitoId == "") {
+    console.log("otro punto");
+    this.movOk = true;
+    let mov_existente: boolean;
+    if (event.Id === undefined) {
+ //     console.log("es indefinido");
+      this.Movimientos.forEach((element1: CuentaGrupo) => {
+        if (element1.SubtipoMovimientoId === event.SubtipoMovimientoId) {
+          mov_existente = true;
+          element1.CuentaCreditoId = event.CuentaCreditoId;
+          element1.CuentaDebitoId = event.CuentaDebitoId;
+
+/*
+    if (element1.CuentaDebitoId == "") {
       if (event.CuentaDebitoId == "" && (event.Tipo_Texto != "GLOBAL.Entradas" || event.orden == 0)) {
         console.log("aca puso en false");
         this.movOk = false;
       }
     }
 
-      if (event.CuentaCreditoId == "" && event.Tipo_Texto != "GLOBAL.Salidas") {
+      if (element1.CuentaCreditoId == "" && event.Tipo_Texto != "GLOBAL.Salidas") {
         console.log("aca puso en false");
         this.movOk = false;
       }
+*/
 
-    let mov_existente: boolean;
-    if (event.Id === undefined) {
-      this.Movimientos.forEach((element1: CuentaGrupo) => {
-        if (element1.SubtipoMovimientoId === event.SubtipoMovimientoId) {
-          mov_existente = true;
-          element1.CuentaCreditoId = event.CuentaCreditoId;
-          element1.CuentaDebitoId = event.CuentaDebitoId;
+
+
+
         }
       });
       if (mov_existente !== true) {
@@ -208,6 +217,7 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
       }
 
     } else {
+//      console.log("es definido", event);
       this.Movimientos.forEach((element2: CuentaGrupo) => {
         if (event.Id == 568)
           console.log(event)
@@ -229,8 +239,7 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
 
     //    this.Movimientos.filter(el => el. > 6)
 
-
-    if (this.Movimientos.length === this.all_mov) {
+    if (this.movOk && this.Movimientos.length === this.all_mov) {
       this.all_mov_ok = true;
     }
     //  console.log("pasa por esta función", this.Movimientos.length, this.all_mov);

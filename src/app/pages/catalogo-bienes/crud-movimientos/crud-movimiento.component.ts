@@ -227,6 +227,7 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
             cuentasAsociadas.CuentaDebitoId = cuentaDebito;
             this.info_movimiento = cuentasAsociadas;
           } else {
+            console.log("********* por este punto x ********")
      //       console.log("mira ", res, this.subgrupo_id.Id, this.movimiento_id.Id);
             const cuentasAsociadas = new CuentasFormulario();
             const cuentaCredito = new Cuenta();
@@ -239,6 +240,14 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
             // console.log(this.info_movimiento);
             this.clean = !this.clean;
             this.respuesta = undefined;
+        this.respuesta2 = {};
+        this.respuesta2.SubgrupoId = this.subgrupo_id;
+        this.respuesta2.CuentaCreditoId = null;
+        this.respuesta2.CuentaDebitoId = null;
+        this.respuesta2.SubtipoMovimientoId = this.movimiento_id.Id;
+        this.respuesta2.Tipo_Texto = this.tipo_movimiento;
+        this.respuesta2.orden = this.indice;
+        this.formulario.emit(this.respuesta2);
           }
           this.cargando = false;
           // console.log(this.respuesta)
@@ -259,6 +268,7 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
   }
 
   validarForm(event) {
+        console.log("valida");
     if (event.valid) {
       if (this.respuesta !== undefined) {
         const cuentaDebito = event.data.CuentasFormulario.CuentaDebitoId;
@@ -269,6 +279,7 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
         this.respuesta.orden = this.indice;
         this.formulario.emit(this.respuesta);
       } else {
+        console.log("Emite por aquí");
         const cuentaDebito = event.data.CuentasFormulario.CuentaDebitoId;
         const cuentaCredito = event.data.CuentasFormulario.CuentaCreditoId;
         this.respuesta2 = {};
