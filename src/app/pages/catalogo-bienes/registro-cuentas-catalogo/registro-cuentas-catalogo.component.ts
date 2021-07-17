@@ -51,21 +51,21 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
   TiposMovimientos: TiposMovimiento[] = [];
   selected = new FormControl(0);
   Movimientos: any[];
+  private CuentasSubgrupos: CuentaGrupo[];
   config: ToasterConfig;
   all_mov: number;
-  all_mov_ok: boolean;
   depreciacion_ok: boolean;
   valorizacion_ok: boolean;
 
-  cargando_catalogos: boolean;
+  cargando_catalogos: boolean = true;
+  private cuentas_cargadas: boolean = false;
+  private estadoAsignacionContable: Parametro;
   estado_cargado: boolean;
   guardando: boolean = false;
   puede_editar: boolean;
   texto_sesion_contable: string;
   texto_estado: string;
   modificando_cuentas: boolean;
-
-  private estadoAsignacionContable: Parametro;
 
   constructor(
     private translate: TranslateService,
@@ -203,10 +203,11 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
         this.Movimientos.push(<CuentaGrupo>event);
       }
     }
-    if (this.Movimientos.length === this.all_mov) {
-      this.all_mov_ok = true;
-    }
     // console.log(this.Movimientos);
+  }
+
+  all_mov_ok(): boolean {
+    return this.Movimientos.length === this.all_mov;
   }
 
   useLanguage(language: string) {
@@ -249,23 +250,41 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
       text: this.translate.instant('Revisar las caracteristicas del catalogo'),
       type: 'warning',
     };
+    this.cuentas_cargadas = false;
+    this.catalogoElementosService.getCuentasMovimientosSubgrupo(event.Id).subscribe( res => {
+      if (Array.isArray(res) && res.length && res[0].hasOwnProperty('Id')) {
+        this.CuentasSubgrupos = res;
+        // console.log({res: this.CuentasSubgrupos});
+      } else this.CuentasSubgrupos = [];
+      this.cuentas_cargadas = true;
+    });
             this.catalogoElementosService.getDetalleSubgrupo(event.Id).subscribe(res2 => {
+              this.Movimientos = [];
               if (Object.keys(res2[0]).length !== 0) {
-                this.Movimientos = [];
                 this.depreciacion_ok = res2[0].Depreciacion;
                 this.valorizacion_ok = res2[0].Valorizacion;
-                this.Total_Movimientos();
                 // console.log(this.all_mov);
               } else {
-                this.Movimientos = [];
                 this.depreciacion_ok = false;
                 this.valorizacion_ok = false;
-                this.Total_Movimientos();
                 (Swal as any).fire(opt);
               }
+              this.Total_Movimientos();
             });
       }
     } else this.uid_1 = undefined;
+  }
+
+  cargandoCuentas(): boolean {
+    return !(this.all_mov && this.cuentas_cargadas);
+  }
+
+  getCuentasCrDb(SubtipoMovimientoId: number): CuentaGrupo {
+    const criterio = (cuenta: CuentaGrupo) => cuenta.SubtipoMovimientoId === SubtipoMovimientoId;
+    if (Array.isArray(this.CuentasSubgrupos) && this.CuentasSubgrupos.length
+    && this.CuentasSubgrupos.some(criterio)) {
+      return this.CuentasSubgrupos.find(criterio);
+    } else return new CuentaGrupo;
   }
 
   onSubmit() {

@@ -434,6 +434,27 @@ export class CatalogoElementosHelper {
     }
 
     /**
+     * getMovimientosSubgrupo
+     *
+     * Trae todas las cuentas contables asociadas al subgrupo especificado
+     * @param id_Subgrupo id del subgrupo
+     */
+    public getCuentasMovimientosSubgrupo(id_Subgrupo: number) {
+        this.rqManager.setPath('CATALOGO_ELEMENTOS_SERVICE');
+        return this.rqManager.get('cuentas_subgrupo?limit=-1&query=Activo:true,SubgrupoId.Id:' + id_Subgrupo ).pipe(
+            map(
+                (res) => {
+                    if (res === 'error') {
+                        this.pUpManager.showErrorAlert('No se pudo consultar los tipos de bien');
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
+
+    /**
      * Tipo de Bien Acta Get
      * If the response has errors in the OAS API it should show a popup message with an error.
      * If the response is successs, it returns the object's data.
