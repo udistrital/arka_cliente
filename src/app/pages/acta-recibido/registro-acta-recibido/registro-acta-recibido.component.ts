@@ -339,7 +339,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
         Proveedor: [Soporte.Proveedor],
         Consecutivo: [Soporte.Consecutivo],
         Fecha_Factura: [Soporte.Fecha_Factura ? this.dateService.parse(Soporte.Fecha_Factura, 'MM dd yyyy') : ''],
-        Soporte: [Soporte.Soporte, Validators.required],
+        Soporte: ['', Validators.required],
       });
       this.proveedoresFiltrados = this.cambiosProveedor(Formulario__2.get('Proveedor'));
       Form2.push(Formulario__2);
@@ -482,8 +482,8 @@ export class RegistroActaRecibidoComponent implements OnInit {
     Acta_de_Recibido.FechaCreacion = new Date();
     Acta_de_Recibido.FechaModificacion = new Date();
     Acta_de_Recibido.RevisorId = this.userService.getPersonaId();
-    Acta_de_Recibido.UbicacionId = parseFloat(Datos.Ubicacion);
-    Acta_de_Recibido.Observaciones = '';
+    Acta_de_Recibido.UbicacionId = Datos.Ubicacion ? Datos.Ubicacion : null;
+    Acta_de_Recibido.Observaciones = null;
     Acta_de_Recibido.PersonaAsignada = Datos.Contratista.Tercero.Id;
     return Acta_de_Recibido;
   }
@@ -514,8 +514,8 @@ export class RegistroActaRecibidoComponent implements OnInit {
     Soporte_Acta.Consecutivo = Datos.Consecutivo;
     Soporte_Acta.FechaCreacion = new Date();
     Soporte_Acta.FechaModificacion = new Date();
-    Soporte_Acta.FechaSoporte = Datos.Fecha_Factura;
-    Soporte_Acta.ProveedorId = Datos.Proveedor.Tercero.Id;
+    Soporte_Acta.FechaSoporte = Datos.Fecha_Factura ? Datos.Fecha_Factura : null;
+    Soporte_Acta.ProveedorId = Datos.Proveedor ? Datos.Proveedor.Tercero.Id : null;
     Soporte_Acta.DocumentoId = this.idDocumento[index];
 
     Transaccion.SoporteActa = Soporte_Acta;
@@ -580,7 +580,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
     const sede = this.firstForm.get('Formulario1').get('Sede').value;
     const dependencia = this.firstForm.get('Formulario1').get('Dependencia').value;
     if (this.firstForm.get('Formulario1').get('Sede').valid && this.firstForm.get('Formulario1').get('Dependencia').valid &&
-      sede !== undefined && dependencia !== undefined) {
+      sede !== undefined && dependencia !== undefined && this.Sedes && this.Dependencias) {
       this.UbicacionesFiltradas = [];
       const transaccion: any = {};
       transaccion.Sede = this.Sedes.find((x) => x.Id === parseFloat(sede));
