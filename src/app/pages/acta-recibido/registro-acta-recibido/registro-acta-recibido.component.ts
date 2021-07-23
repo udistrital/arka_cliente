@@ -131,13 +131,10 @@ export class RegistroActaRecibidoComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.listService.findUbicaciones();
     this.listService.findDependencias();
     this.listService.findSedes();
     this.listService.findProveedores();
     this.listService.findEstadosActa();
-    this.listService.findEstadosElemento();
-    this.listService.findTipoBien();
     this.loadLists();
     this.loadProveedores();
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
@@ -148,7 +145,6 @@ export class RegistroActaRecibidoComponent implements OnInit {
       sessionStorage.setItem('Formulario_Registro', JSON.stringify(this.firstForm.value));
       const formulario2 = JSON.parse(sessionStorage.Formulario_Registro);
       this.Cargar_Formularios2(formulario2);
-
     } else {
       const formulario = JSON.parse(sessionStorage.Formulario_Registro);
 
@@ -196,8 +192,6 @@ export class RegistroActaRecibidoComponent implements OnInit {
         this.Sedes = list.listSedes[0];
         this.Dependencias = list.listDependencias[0];
         this.Estados_Acta = list.listEstadosActa[0];
-        this.Estados_Elemento = list.listEstadosElemento[0];
-        this.Tipos_Bien = list.listTipoBien[0];
         // this.Proveedores = list.listProveedores[0];
         // this.dataService2 = this.completerService.local(this.Proveedores, 'compuesto', 'compuesto');
         this.dataService3 = this.completerService.local(this.Dependencias, 'Nombre', 'Nombre');
@@ -294,7 +288,6 @@ export class RegistroActaRecibidoComponent implements OnInit {
           file.file = event.target.files[0];
           this.fileDocumento[index] = file;
           this.Validador[index] = true;
-
         } else {
           (Swal as any).fire({
             title: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.Tamaño_title'),
@@ -311,7 +304,6 @@ export class RegistroActaRecibidoComponent implements OnInit {
   }
 
   clearFile(index) {
-    console.log(this.firstForm.status);
     (this.firstForm.get('Formulario2') as FormArray).at(index).get('Soporte').setValue('');
     this.fileDocumento[index] = undefined;
     this.Validador[index] = undefined;
@@ -445,7 +437,6 @@ export class RegistroActaRecibidoComponent implements OnInit {
     Transaccion_Acta.SoportesActa = Soportes;
     // console.log({Transaccion_Acta, validador: this.validador});
     if (this.validador === false) {
-      // /*
       this.Actas_Recibido.postTransaccionActa(Transaccion_Acta).subscribe((res: any) => {
         if (res !== null) {
           (Swal as any).fire({
@@ -464,7 +455,6 @@ export class RegistroActaRecibidoComponent implements OnInit {
           });
         }
       });
-      // */
     } else {
       (Swal as any).fire({
         type: 'error',
