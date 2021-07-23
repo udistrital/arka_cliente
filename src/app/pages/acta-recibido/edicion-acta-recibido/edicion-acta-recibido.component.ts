@@ -377,7 +377,9 @@ export class EdicionActaRecibidoComponent implements OnInit {
     this.Tarifas_Iva !== undefined &&
     this.Dependencias !== undefined &&
     this.Sedes !== undefined &&
-    this._Acta_Id !== undefined
+    this._Acta_Id !== undefined &&
+    this.Contratistas !== undefined &&
+    this.Proveedores !== undefined
     ) {
           this.Actas_Recibido.getTransaccionActa(this._Acta_Id).subscribe(Acta => {
             // console.log(Acta);
@@ -507,10 +509,10 @@ export class EdicionActaRecibidoComponent implements OnInit {
           ],
           Fecha_Factura: [
             {
-              value: this.dateService.parse(Soporte.SoporteActa.FechaSoporte.toString(), 'MM dd yyyy'),
+              value: Soporte.SoporteActa.FechaSoporte.toString() !== '0001-01-01T00:00:00Z' ?
+                this.dateService.parse(Soporte.SoporteActa.FechaSoporte.toString(), 'MM dd yyyy') : '',
               disabled: !this.getPermisoEditar(this.permisos.Acta),
-            },
-            Validators.required],
+            }],
           Soporte: [Soporte.SoporteActa.DocumentoId, Validators.required],
         });
         this.Validador[index] = true;
@@ -577,7 +579,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
               value: sede,
               disabled: !this.getPermisoEditar(this.permisos.Acta),
             },
-            Validators.required,
           ],
           Dependencia: [dependencia],
           Ubicacion: [
@@ -585,7 +586,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
               value: transaccion_.ActaRecibido.UbicacionId,
               disabled: !this.getPermisoEditar(this.permisos.Acta),
             },
-            Validators.required,
           ],
           Contratista: [
             {
