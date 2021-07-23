@@ -1,6 +1,6 @@
 <nb-card>
   <nb-card-header><h2>{{'GLOBAL.Acta_Recibido.EdicionActa.TitleId' | translate: {ID: _Acta_Id} }}</h2></nb-card-header>
-  <nb-card-body [nbSpinner]="!firstForm || guardando">
+  <nb-card-body [nbSpinner]="!firstForm || guardando || cargando_contratistas">
     <form *ngIf="firstForm" [formGroup]="firstForm" #fform="ngForm" class="step-container">
       <mat-vertical-stepper [linear]="true" #stepper>
 
@@ -38,10 +38,10 @@
                     <p class="campo" *ngIf="firstForm.get('Formulario1').get('Ubicacion').invalid">
                       {{'GLOBAL.placeholder' | translate}}</p>
                   </div>
-                  <div class="form-group col-sm" [nbSpinner]="cargando_contratistas">
+                <div class="form-group col-sm">
                     <label>{{'GLOBAL.Acta_Recibido.ContratistaAsignado' | translate}}</label>
                     <input matInput type="text" class="form-control" placeholder="Nombre o Documento"
-                      formControlName="Contratista" [matAutocomplete]="autoContratista" />
+                      formControlName="Contratista" [matAutocomplete]="autoContratista">
                       <mat-autocomplete #autoContratista="matAutocomplete" [displayWith]="muestraContratista"
                       (optionSelected)="usarLocalStorage()">
                         <mat-option *ngFor="let contr of contratistasFiltrados | async" [value]="contr">
@@ -247,9 +247,7 @@
               </nb-card-footer>
             </nb-card>
 
-            <div class="float-right">
-              <button mat-icon-button type="button"
-              *ngIf="errores.size > 0" [nbPopover]="erroresTemplate" nbPopoverTrigger="hover">
+            <button mat-icon-button type="button" *ngIf="errores && (errores.size > 0)" [nbPopover]="erroresTemplate" nbPopoverTrigger="hover">
                 <span class="fas fa-exclamation-triangle fa-2x"></span>
               </button>
               <button nbButton (click)="Revisar_Totales3(1)" *ngIf="accion.envHabilitado"

@@ -606,6 +606,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
           Datos_Adicionales: [transaccion_.ActaRecibido.Observaciones],
         }),
       });
+      sede && dependencia ? this.Traer_Relacion_Ubicaciones(sede, dependencia) : null;
       this.checkValidness();
       this.firstForm.get('Formulario1').statusChanges.subscribe(() => this.checkValidness());
       this.firstForm.get('Formulario2').statusChanges.subscribe(() => this.checkValidness());
@@ -1212,7 +1213,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
   }
 
   getGranSubtotal() {
-    if (this.Totales !== []) {
+    if (this.Totales !== [] && this.Totales !== undefined) {
       return this.Totales.map(t => t.Subtotal).reduce((acc, value) => parseFloat(acc) + parseFloat(value));
     } else {
       return '0';
@@ -1220,7 +1221,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
   }
   getGranDescuentos() {
 
-    if (this.Totales !== []) {
+    if (this.Totales !== [] && this.Totales !== undefined) {
       return this.Totales.map(t => t.Descuento).reduce((acc, value) => parseFloat(acc) + parseFloat(value));
     } else {
       return '0';
@@ -1228,7 +1229,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
   }
   getGranValorIva() {
 
-    if (this.Totales !== []) {
+    if (this.Totales !== [] && this.Totales !== undefined) {
       return this.Totales.map(t => t.ValorIva).reduce((acc, value) => parseFloat(acc) + parseFloat(value));
     } else {
       return '0';
@@ -1236,7 +1237,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
   }
   getGranTotal() {
 
-    if (this.Totales !== []) {
+    if (this.Totales !== [] && this.Totales !== undefined) {
       return this.Totales.map(t => t.ValorTotal).reduce((acc, value) => parseFloat(acc) + parseFloat(value));
     } else {
       return '0';
