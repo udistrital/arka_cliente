@@ -498,14 +498,12 @@ export class EdicionActaRecibidoComponent implements OnInit {
                   proveedor.Tercero.Id === Soporte.SoporteActa.ProveedorId),
               disabled: !this.getPermisoEditar(this.permisos.Acta),
             },
-            Validators.required,
           ],
           Consecutivo: [
             {
               value: Soporte.SoporteActa.Consecutivo,
               disabled: !this.getPermisoEditar(this.permisos.Acta),
             },
-            Validators.required,
           ],
           Fecha_Factura: [
             {
@@ -581,8 +579,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
             },
             Validators.required,
           ],
-          Dependencia: [ dependencia,
-            Validators.required],
+          Dependencia: [dependencia],
           Ubicacion: [
             {
               value: transaccion_.ActaRecibido.UbicacionId,
@@ -605,7 +602,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
         }),
         Formulario2: Form2,
         Formulario3: this.fb.group({
-          Datos_Adicionales: [transaccion_.ActaRecibido.Observaciones, Validators.required],
+          Datos_Adicionales: [transaccion_.ActaRecibido.Observaciones],
         }),
       });
       this.Traer_Relacion_Ubicaciones(sede, dependencia);
@@ -644,9 +641,9 @@ export class EdicionActaRecibidoComponent implements OnInit {
     for (const Soporte of transaccion_.Formulario2) {
       const Formulario__2 = this.fb.group({
         Id: [''],
-        Proveedor: [Soporte.Proveedor, Validators.required],
-        Consecutivo: [Soporte.Consecutivo, Validators.required],
-        Fecha_Factura: [Soporte.Fecha_Factura, Validators.required],
+        Proveedor: [Soporte.Proveedor],
+        Consecutivo: [Soporte.Consecutivo],
+        Fecha_Factura: [Soporte.Fecha_Factura],
         Soporte: [Soporte.Soporte, Validators.required],
       });
       Form2.push(Formulario__2);
@@ -656,14 +653,14 @@ export class EdicionActaRecibidoComponent implements OnInit {
     this.firstForm = this.fb.group({
       Formulario1: this.fb.group({
         Id: [''],
-        Sede: [transaccion_.Formulario1.Sede, Validators.required],
-        Dependencia: [transaccion_.Formulario1.Dependencia, Validators.required],
-        Ubicacion: [transaccion_.Formulario1.Ubicacion, Validators.required],
+        Sede: [transaccion_.Formulario1.Sede],
+        Dependencia: [transaccion_.Formulario1.Dependencia],
+        Ubicacion: [transaccion_.Formulario1.Ubicacion],
         Contratista: [transaccion_.Formulario1.Contratista, Validators.required],
       }),
       Formulario2: Form2,
       Formulario3: this.fb.group({
-        Datos_Adicionales: [transaccion_.Formulario3.Datos_Adicionales, Validators.required],
+        Datos_Adicionales: [transaccion_.Formulario3.Datos_Adicionales],
       }),
     });
     this.carga_agregada = true;
@@ -698,18 +695,18 @@ export class EdicionActaRecibidoComponent implements OnInit {
   get Formulario_1(): FormGroup {
     return this.fb.group({
       Id: [0],
-      Sede: ['', Validators.required],
-      Dependencia: ['', Validators.required],
-      Ubicacion: ['', Validators.required],
+      Sede: [''],
+      Dependencia: [''],
+      Ubicacion: [''],
       Contratista: ['', Validators.required],
     });
   }
   get Formulario_2(): FormGroup {
     return this.fb.group({
       Id: [0],
-      Proveedor: ['', Validators.required],
-      Consecutivo: ['', Validators.required],
-      Fecha_Factura: ['', Validators.required],
+      Proveedor: [''],
+      Consecutivo: [''],
+      Fecha_Factura: [''],
       Soporte: ['', Validators.required],
       Elementos: this.fb.array([this.Elementos]),
     });
@@ -734,7 +731,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
   }
   get Formulario_3(): FormGroup {
     return this.fb.group({
-      Datos_Adicionales: ['', Validators.required],
+      Datos_Adicionales: [''],
     });
   }
 
@@ -1003,8 +1000,8 @@ export class EdicionActaRecibidoComponent implements OnInit {
     Soporte_Acta.Consecutivo = Datos.Consecutivo;
     Soporte_Acta.FechaCreacion = new Date();
     Soporte_Acta.FechaModificacion = new Date();
-    Soporte_Acta.FechaSoporte = Datos.Fecha_Factura;
-    Soporte_Acta.ProveedorId = this.ActaEspecial ? 0 : Datos.Proveedor.Tercero.Id;
+    Soporte_Acta.FechaSoporte = Datos.Fecha_Factura ? Datos.Fecha_Factura : null;
+    Soporte_Acta.ProveedorId = this.ActaEspecial ? 0 : Datos.Proveedor ? Datos.Proveedor.Tercero.Id : 0;
     Transaccion.SoporteActa = Soporte_Acta;
     Transaccion.Elementos = this.Registrar_Elementos(Elementos_, Soporte_Acta);
 

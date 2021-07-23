@@ -11,7 +11,7 @@
                 <div class="row" (click)="usarLocalStorage()">
                   <div class="form-group col-sm">
                     <label>{{'GLOBAL.Acta_Recibido.EdicionActa.Sede' | translate}}</label>
-                    <mat-select type="text" class="form-control" formControlName="Sede" required
+                    <mat-select type="text" class="form-control" formControlName="Sede"
                       (selectionChange)="usarLocalStorage(); Traer_Relacion_Ubicaciones();">
                       <mat-option *ngFor="let sede of Sedes" [(value)]="sede.Id">{{sede.Nombre}}</mat-option>
                     </mat-select>
@@ -101,7 +101,7 @@
                                 <div class="input-group">
                                   <input nbInput type="text" (keyup)="usarLocalStorage()"
                                     placeholder="{{'GLOBAL.Acta_Recibido.EdicionActa.Consecutivo' | translate}}"
-                                    class="form-control" formControlName="Consecutivo" (keyup)="usarLocalStorage()" required />
+                                    class="form-control" formControlName="Consecutivo" (keyup)="usarLocalStorage()">
                                 </div>
                                 <p class="campo" *ngIf="firstForm.get('Formulario2').at(i).get('Consecutivo').invalid">
                                   {{'GLOBAL.placeholder' | translate}}</p>
@@ -112,7 +112,7 @@
                                   <input nbInput (click)="usarLocalStorage()"
                                     placeholder="{{'GLOBAL.Acta_Recibido.EdicionActa.FechaFiltro' | translate}}"
                                     class="form-control" [nbDatepicker]="formpicker" (keyup)="usarLocalStorage()"
-                                    formControlName="Fecha_Factura" required />
+                                    formControlName="Fecha_Factura">
                                   <nb-datepicker #formpicker [max]="TodaysDate" (dateChange)="usarLocalStorage()"></nb-datepicker>
                                 </div>
                                 <p class="campo" *ngIf="firstForm.get('Formulario2').at(i).get('Fecha_Factura').invalid">
@@ -229,7 +229,7 @@
                   <div class="input-group">
                     <textarea rows="5" (keyup)="usarLocalStorage()"
                       placeholder="Proporciona datos adicionales que no se pueden expresar en el formulario"
-                      class="form-control" formControlName="Datos_Adicionales" required></textarea>
+                      class="form-control" formControlName="Datos_Adicionales"></textarea>
                   </div>
                     <p class="campo" *ngIf="firstForm.get('Formulario3').get('Datos_Adicionales').invalid">
                       {{'GLOBAL.placeholder' | translate}}</p>
