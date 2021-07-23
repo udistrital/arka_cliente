@@ -490,7 +490,8 @@ export class EdicionActaRecibidoComponent implements OnInit {
       const Form2 = this.fb.array([]);
       const elementos = new Array<any[]>();
       transaccion_.SoportesActa.forEach((Soporte, index) => {
-        this.ActaEspecial = Soporte.SoporteActa.ProveedorId.toString() === '0' ? true : false;
+        // this.ActaEspecial = Soporte.SoporteActa.ProveedorId.toString() === '0' ? true : false;
+        this.ActaEspecial = false;
         const Formulario__2 = this.fb.group({
           Id: [Soporte.SoporteActa.Id],
           Proveedor: [
