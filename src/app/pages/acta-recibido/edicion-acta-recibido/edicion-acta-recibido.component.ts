@@ -560,7 +560,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
         }
         return '';
       })();
-
       const dependencia = (() => {
         const criterio = x => res[0].hasOwnProperty('DependenciaId') && x.Id === res[0].DependenciaId.Id;
         if (this.Dependencias.some(criterio)) {
@@ -689,14 +688,17 @@ export class EdicionActaRecibidoComponent implements OnInit {
   }
 
   Traer_Relacion_Ubicaciones(sede, dependencia) {
+    sede = (sede) ? sede : this.firstForm.get('Formulario1').get('Sede').value;
+    dependencia = (dependencia) ? dependencia : this.firstForm.get('Formulario1').get('Dependencia').value;
     this.UbicacionesFiltradas = [];
     this.carga_agregada ? this.firstForm.patchValue({ Formulario1: { Ubicacion: '' } }) : null;
     const transaccion: any = {};
     transaccion.Sede = this.Sedes.find((x) => x.Id === parseFloat(sede));
     transaccion.Dependencia = this.Dependencias.find((x) => x.Nombre === dependencia);
     this.Actas_Recibido.postRelacionSedeDependencia(transaccion).subscribe((res: any) => {
-      if (isObject(res[0].Relaciones))
+      if (isObject(res[0].Relaciones)) {
         this.UbicacionesFiltradas = res[0].Relaciones;
+        }
     });
   }
 
