@@ -605,10 +605,10 @@ export class EdicionActaRecibidoComponent implements OnInit {
           Datos_Adicionales: [transaccion_.ActaRecibido.Observaciones],
         }),
       });
-      this.Traer_Relacion_Ubicaciones(sede, dependencia);
-      this.firstForm.get('Formulario1').statusChanges.subscribe(change => this.checkValidness(1, change));
-      this.firstForm.get('Formulario2').statusChanges.subscribe(change => this.checkValidness(2, change));
-      this.firstForm.get('Formulario3').statusChanges.subscribe(change => this.checkValidness(3, change));
+      this.checkValidness();
+      this.firstForm.get('Formulario1').statusChanges.subscribe(() => this.checkValidness());
+      this.firstForm.get('Formulario2').statusChanges.subscribe(() => this.checkValidness());
+      this.firstForm.get('Formulario3').statusChanges.subscribe(() => this.checkValidness());
       this.carga_agregada = true;
 
       this.contratistasFiltrados = this.firstForm.get('Formulario1').get('Contratista').valueChanges.pipe(
@@ -620,14 +620,24 @@ export class EdicionActaRecibidoComponent implements OnInit {
     });
   }
 
-  private checkValidness(form, change) {
-    // console.log({form, change});
-    const errorForms = !(
-      this.firstForm.get('Formulario1').valid
-      && this.firstForm.get('Formulario2').valid
-      && this.firstForm.get('Formulario3').valid
+  private checkValidness() {
+
+    const camposObligatorios = !(
+      this.firstForm.controls.Formulario1.value.Contratista !== '' &&
+      this.firstForm.controls.Formulario2.value[0].Soporte !== ''
     );
-    if (errorForms) {
+
+    const errorForms = !(
+      this.firstForm.controls.Formulario3.value.Datos_Adicionales !== ''
+      && this.firstForm.controls.Formulario1.value.Ubicacion !== ''
+      && this.firstForm.controls.Formulario2.value[0].Proveedor !== ''
+      && this.firstForm.controls.Formulario2.value[0].Consecutivo !== ''
+      && this.firstForm.controls.Formulario2.value[0].Fecha_Factura !== ''
+    );
+
+    if ((camposObligatorios || errorForms) && this.accion.envHabilitado && !this.accion.envContratistaHabilitado) {
+      this.errores.set('formularios', true);
+    } else if (camposObligatorios && this.accion.envContratistaHabilitado && this.accion.envHabilitado) {
       this.errores.set('formularios', true);
     } else {
       this.errores.delete('formularios');
