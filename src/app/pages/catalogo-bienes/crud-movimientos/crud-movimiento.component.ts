@@ -191,6 +191,11 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
                         this.indice !== 0 || this.tipo_movimiento === 'GLOBAL.Salidas' && i === 1);
         this.formMovimiento.campos[i].requerido = !(this.tipo_movimiento === 'GLOBAL.Entradas' && i === 0 &&
                         this.indice !== 0 || this.tipo_movimiento === 'GLOBAL.Salidas' && i === 1);
+        console.log("El campo", this.formMovimiento.campos[i]);
+        if (this.formMovimiento.campos[i].deshabilitar == true && this.formMovimiento.campos[i].valor === undefined) {
+            console.log("Mira el valor",this.tipo_movimiento,  this.formMovimiento.campos[i].valor)
+           this.formMovimiento.campos[i].valor = "1-3-01-01-01";
+        }
       }
     }
   }
@@ -291,6 +296,8 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
         this.respuesta2.orden = this.indice;
         this.formulario.emit(this.respuesta2);
       }
+    } else {
+       console.log("no emite");
     }
 
   }

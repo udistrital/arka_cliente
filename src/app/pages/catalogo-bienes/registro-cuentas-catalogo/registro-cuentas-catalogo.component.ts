@@ -182,7 +182,7 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
   // Se ve si ya tiene cuentas asignadas para mostrarlas en el formulario
   ver3(event) {
     
-    console.log("otro punto");
+  //  console.log("otro punto");
     this.movOk = true;
     let mov_existente: boolean;
     if (event.Id === undefined) {
@@ -237,7 +237,33 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
 
     //    console.log("En este es que hay que concentrarse ", this.Movimientos);
 
-    //    this.Movimientos.filter(el => el. > 6)
+    this.all_mov_ok = false;
+    this.Movimientos.forEach(element => {
+       if (element.CuentaCreditoId === undefined || element.CuentaCreditoId === null || element.CuentaDebitoId === undefined || element.CuentaDebitoId === undefined) {
+           switch (element.Tipo_Texto) {
+            case "GLOBAL.Salidas": 
+                if (element.CuentaDebitoId === undefined || element.CuentaDebitoId === null)  {
+            //    console.log("no pasa sal", element);
+                this.movOk = false;
+                }
+                break;
+            case "GLOBAL.Entradas": 
+                if (element.CuentaCreditoId === undefined || element.CuentaCreditoId === null)  {
+             //   console.log("no pasa ent", element);
+                this.movOk = false;
+                }
+                break;
+            default:
+              //  console.log("no pasa otro", element);
+                this.movOk = false;
+                break;
+           }
+
+
+       }
+    });
+//    console.log(this.Movimientos)
+
 
     if (this.movOk && this.Movimientos.length === this.all_mov) {
       this.all_mov_ok = true;
