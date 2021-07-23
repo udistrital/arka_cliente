@@ -130,7 +130,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
   } = {
       Acta: Permiso.Ninguno,
       Elementos: Permiso.Ninguno,
-  };
+    };
 
   accion: {
     envHabilitado: boolean,
@@ -138,11 +138,11 @@ export class EdicionActaRecibidoComponent implements OnInit {
     envContratista: string,
     envContratistaHabilitado: boolean,
   } = {
-    envHabilitado: false,
-    envTexto: '',
-    envContratista: '',
-    envContratistaHabilitado: false,
-  };
+      envHabilitado: false,
+      envTexto: '',
+      envContratista: '',
+      envContratistaHabilitado: false,
+    };
 
   constructor(
     private translate: TranslateService,
@@ -219,8 +219,8 @@ export class EdicionActaRecibidoComponent implements OnInit {
     ].map(seccion => this.permisosRoles_EstadoSeccion(this.estadoActa, seccion))
       .map(permisosSeccion => {
         return this.confService.getAccion(permisosSeccion.PuedenModificar) ? Permiso.Modificar : (
-            this.confService.getAccion(permisosSeccion.PuedenVer) ? Permiso.Ver : Permiso.Ninguno
-          );
+          this.confService.getAccion(permisosSeccion.PuedenVer) ? Permiso.Ver : Permiso.Ninguno
+        );
       });
 
     // Guardar permisos requeridos para cada parte del componente
@@ -274,7 +274,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
 
     this.accion.envHabilitado = envioProveedor || envioValidar;
     this.accion.envContratistaHabilitado = envioProveedor;
-
     // Texto del botón según el estado
     if (envioProveedor) {
       this.accion.envTexto = this.translate.instant('GLOBAL.Acta_Recibido.EdicionActa.EnviarProveedorButton');
@@ -363,7 +362,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
         this.Dependencias = list.listDependencias[0];
         this.Sedes = list.listSedes[0];
         this.dataService3 = this.completerService.local(this.Dependencias, 'Nombre', 'Nombre');
-          this.cargaActa();
+        this.cargaActa();
       },
     );
   }
@@ -381,12 +380,10 @@ export class EdicionActaRecibidoComponent implements OnInit {
     this.Contratistas !== undefined &&
     this.Proveedores !== undefined
     ) {
-          this.Actas_Recibido.getTransaccionActa(this._Acta_Id).subscribe(Acta => {
-            // console.log(Acta);
-            this.Cargar_Formularios(Acta[0]);
-            // console.log('ok');
-            this.actaCargada = true;
-          });
+      this.Actas_Recibido.getTransaccionActa(this._Acta_Id).subscribe(Acta => {
+        this.Cargar_Formularios(Acta[0]);
+        this.actaCargada = true;
+      });
     }
   }
 
@@ -456,32 +453,32 @@ export class EdicionActaRecibidoComponent implements OnInit {
       idtercero = res[0].TerceroId.Id;
 
       this.Actas_Recibido.getEmailTercero(idtercero).subscribe((restercero: any) => {
-          if (restercero == null) {
-             return '';
-          }
-          const objemail = JSON.parse(restercero[0].Dato);
-          const objetomail = {
-              'to': [objemail.email],
-              'cc': [],
-              'bcc': [],
-              'subject': 'El subject pendiente por definir',
-              'TemplateName': 'invitacion_par_evaluador.html',
-              'TemplateData': {
-                  'Destinatario': 'Nombre docente',
-                  'Remitente': 'Oficina de docencia',
-                  'OtroDato': 'x_x',
-               },
-          };
-          this.Actas_Recibido.sendCorreo(objetomail).subscribe((resemail: any) => {
-              if (resemail == null) {}
-          });
+        if (restercero == null) {
+          return '';
+        }
+        const objemail = JSON.parse(restercero[0].Dato);
+        const objetomail = {
+          'to': [objemail.email],
+          'cc': [],
+          'bcc': [],
+          'subject': 'El subject pendiente por definir',
+          'TemplateName': 'invitacion_par_evaluador.html',
+          'TemplateData': {
+            'Destinatario': 'Nombre docente',
+            'Remitente': 'Oficina de docencia',
+            'OtroDato': 'x_x',
+          },
+        };
+        this.Actas_Recibido.sendCorreo(objetomail).subscribe((resemail: any) => {
+          if (resemail == null) { }
+        });
       });
 
     });
 
   }
 
-  Cargar_Formularios( transaccion_: TransaccionActaRecibido ) {
+  Cargar_Formularios(transaccion_: TransaccionActaRecibido) {
     this.Actas_Recibido.getSedeDependencia(transaccion_.ActaRecibido.UbicacionId).subscribe(res => {
       let valor = '';
       if (res[0].hasOwnProperty('EspacioFisicoId') && res[0].EspacioFisicoId.hasOwnProperty('Codigo')) {
@@ -536,7 +533,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
               Subtotal: _Elemento.ValorTotal,
               Descuento: _Elemento.Descuento,
               PorcentajeIvaId: this.Tarifas_Iva.find(tarifa => tarifa.Tarifa === _Elemento.PorcentajeIvaId) ?
-                                this.Tarifas_Iva.find(tarifa => tarifa.Tarifa === _Elemento.PorcentajeIvaId).Tarifa : '',
+                this.Tarifas_Iva.find(tarifa => tarifa.Tarifa === _Elemento.PorcentajeIvaId).Tarifa : '',
               ValorIva: _Elemento.ValorIva,
               ValorTotal: _Elemento.ValorFinal,
             };
@@ -692,15 +689,15 @@ export class EdicionActaRecibidoComponent implements OnInit {
   }
 
   Traer_Relacion_Ubicaciones(sede, dependencia) {
-      this.UbicacionesFiltradas = [];
-      this.carga_agregada ? this.firstForm.patchValue({ Formulario1: { Ubicacion: '' } }) : null;
-      const transaccion: any = {};
-      transaccion.Sede = this.Sedes.find((x) => x.Id === parseFloat(sede));
-      transaccion.Dependencia = this.Dependencias.find((x) => x.Nombre === dependencia);
-      this.Actas_Recibido.postRelacionSedeDependencia(transaccion).subscribe((res: any) => {
-        if (isObject(res[0].Relaciones))
-          this.UbicacionesFiltradas = res[0].Relaciones;
-      });
+    this.UbicacionesFiltradas = [];
+    this.carga_agregada ? this.firstForm.patchValue({ Formulario1: { Ubicacion: '' } }) : null;
+    const transaccion: any = {};
+    transaccion.Sede = this.Sedes.find((x) => x.Id === parseFloat(sede));
+    transaccion.Dependencia = this.Dependencias.find((x) => x.Nombre === dependencia);
+    this.Actas_Recibido.postRelacionSedeDependencia(transaccion).subscribe((res: any) => {
+      if (isObject(res[0].Relaciones))
+        this.UbicacionesFiltradas = res[0].Relaciones;
+    });
   }
 
 
@@ -886,14 +883,14 @@ export class EdicionActaRecibidoComponent implements OnInit {
   private async onFirstSubmit(siguienteEtapa: boolean = false, enviara: number = 0) {
     this.guardando = true;
     if (!siguienteEtapa) {
-    const start = async () => {
-      await this.asyncForEach(this.fileDocumento, async (file) => {
-        await this.postSoporteNuxeo([file]);
-        // console.log(file);
-      });
-      // console.log('Done');
-    };
-    await start();
+      const start = async () => {
+        await this.asyncForEach(this.fileDocumento, async (file) => {
+          await this.postSoporteNuxeo([file]);
+          // console.log(file);
+        });
+        // console.log('Done');
+      };
+      await start();
     }
     this.Datos = this.firstForm.value;
     // console.log(this.Elementos__Soporte);
@@ -926,9 +923,9 @@ export class EdicionActaRecibidoComponent implements OnInit {
           idDescripcion = { id: res.ActaRecibido.Id };
         } else {
           titulo = 'GLOBAL.Acta_Recibido.EdicionActa.ModificadaTitle';
-          idTitulo = {ID: res.ActaRecibido.Id};
+          idTitulo = { ID: res.ActaRecibido.Id };
           descripcion = 'GLOBAL.Acta_Recibido.EdicionActa.Modificada2';
-          idDescripcion = {id: res.ActaRecibido.Id};
+          idDescripcion = { id: res.ActaRecibido.Id };
         }
         (Swal as any).fire({
           type: 'success',
@@ -936,22 +933,22 @@ export class EdicionActaRecibidoComponent implements OnInit {
           text: this.translate.instant(descripcion, idDescripcion),
         }).then((willDelete) => {
           if (willDelete.value && siguienteEtapa) {
-              const formularios  = this.firstForm.value;
-              const cedulaprov = formularios.Formulario2[0].Proveedor.Identificacion.Numero;
-              const cedularev = formularios.Formulario1.Contratista.Identificacion.Numero;
-              if (enviara === 1) {
-                 this.EnviarEmail(cedulaprov);
-                 this.EnviarEmail(cedularev);
-              }
-              if (enviara === 2) {
-                 this.EnviarEmail(cedularev);
-              }
+            const formularios = this.firstForm.value;
+            const cedulaprov = formularios.Formulario2[0].Proveedor.Identificacion.Numero;
+            const cedularev = formularios.Formulario1.Contratista.Identificacion.Numero;
+            if (enviara === 1) {
+              this.EnviarEmail(cedulaprov);
+              this.EnviarEmail(cedularev);
+            }
+            if (enviara === 2) {
+              this.EnviarEmail(cedularev);
+            }
 
-              // Se usa una redirección "dummy", intermedia. Ver
-              // https://stackoverflow.com/a/49509706/3180052
-              this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
-                this.router.navigateByUrl('/pages/acta_recibido/consulta_acta_recibido');
-              });
+            // Se usa una redirección "dummy", intermedia. Ver
+            // https://stackoverflow.com/a/49509706/3180052
+            this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+              this.router.navigateByUrl('/pages/acta_recibido/consulta_acta_recibido');
+            });
           }
         });
       } else {
@@ -1003,7 +1000,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
     return Historico_;
   }
   Registrar_Soporte(Datos: any, Elementos_: any, __: ActaRecibido): TransaccionSoporteActa {
-    // console.log({Datos});
     const Soporte_Acta = new SoporteActa();
     const Transaccion = new TransaccionSoporteActa();
     Soporte_Acta.Id = parseFloat(Datos.Id);
@@ -1192,9 +1188,9 @@ export class EdicionActaRecibidoComponent implements OnInit {
     const codigoL10n_titulo = L10n_base + 'DatosVeridicosTitle';
     let codigoL10n_desc = '';
     if (this.estadoActa !== 'Registrada') {
-       codigoL10n_desc = L10n_base + 'DatosVeridicos2';
+      codigoL10n_desc = L10n_base + 'DatosVeridicos2';
     } else {
-       codigoL10n_desc = L10n_base + ((enviara === 1) ? 'DatosVeridicos3' : 'DatosVeridicos4');
+      codigoL10n_desc = L10n_base + ((enviara === 1) ? 'DatosVeridicos3' : 'DatosVeridicos4');
     }
     (Swal as any).fire({
       title: this.translate.instant(codigoL10n_titulo),
