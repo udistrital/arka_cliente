@@ -228,7 +228,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
     } else if (contr && contr.Tercero) {
         return contr.Tercero.NombreCompleto;
       }
-    }
+  }
 
   private loadProveedores(): void {
     if (this.listo.get('proveedores') === undefined) {

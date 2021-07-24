@@ -4,7 +4,8 @@
   </nb-card-header>
   <nb-card-body [nbSpinner]="Registrando || !firstForm">
     <form *ngIf="firstForm" [formGroup]="firstForm" #fform="ngForm" class="step-container">
-      <mat-vertical-stepper [linear]="true" #stepper [nbSpinner]="Sedes && Dependencias && cargando_contratistas && !listo.get('proveedores')">
+      <mat-vertical-stepper [linear]="true" #stepper
+        [nbSpinner]="Sedes && Dependencias && cargando_contratistas && !listo.get('proveedores')">
 
         <!-- Datos iniciales -->
         <mat-step label="{{'GLOBAL.Acta_Recibido.RegistroActa.DatosTitle' | translate}}" formGroupName="Formulario1">
