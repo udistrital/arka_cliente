@@ -95,12 +95,12 @@
                                   {{muestraProveedor(prov)}}
                                 </mat-option>
                               </mat-autocomplete>
-                                <p class="campo"
-                                  *ngIf="soporte.get('Proveedor').errors && soporte.get('Proveedor').errors.errorLongitudMinima ? true : false">
-                                  {{'GLOBAL.Errores.ErrorMinLength' | translate}}</p>
-                                <p class="campo"
-                                  *ngIf="soporte.get('Proveedor').errors && soporte.get('Proveedor').errors.terceroNoValido ? true : false">
-                                  {{'GLOBAL.Errores.ErrorTercero' | translate}}</p>
+                              <p class="campo"
+                                *ngIf="soporte.get('Proveedor').errors && soporte.get('Proveedor').errors.errorLongitudMinima ? true : false">
+                                {{'GLOBAL.Errores.ErrorMinLength' | translate}}</p>
+                              <p class="campo"
+                                *ngIf="soporte.get('Proveedor').errors && soporte.get('Proveedor').errors.terceroNoValido ? true : false">
+                                {{'GLOBAL.Errores.ErrorTercero' | translate}}</p>
                             </div>
                             <div class="form-group col-sm">
                               <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Consecutivo' | translate}}</label>
