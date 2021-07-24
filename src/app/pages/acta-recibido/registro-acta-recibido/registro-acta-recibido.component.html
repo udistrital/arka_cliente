@@ -17,8 +17,6 @@
                     (selectionChange)="usarLocalStorage(); Traer_Relacion_Ubicaciones()">
                     <mat-option *ngFor="let sede of Sedes" [(value)]="sede.Id">{{sede.Nombre}}</mat-option>
                   </mat-select>
-                  <p class="campo" *ngIf="firstForm.get('Formulario1').get('Sede').invalid">
-                    {{'GLOBAL.placeholder' | translate}}</p>
                 </div>
                 <div class="form-group col-sm">
                   <label id="lbl-dependencia">{{'GLOBAL.Acta_Recibido.RegistroActa.Dependencia' | translate}}</label>
@@ -28,8 +26,6 @@
                     (change)="usarLocalStorage(); Traer_Relacion_Ubicaciones();"
                     placeholder="{{'GLOBAL.Acta_Recibido.RegistroActa.SeleccioneFiltro' | translate}}">
                   </ng2-completer>
-                  <p class="campo" *ngIf="firstForm.get('Formulario1').get('Dependencia').invalid">
-                    {{'GLOBAL.placeholder' | translate}}</p>
                 </div>
                 <div class="form-group col-sm">
                   <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Ubicacion' | translate}}</label>
@@ -39,8 +35,6 @@
                       {{ubicacion.Nombre}}
                     </mat-option>
                   </mat-select>
-                  <p class="campo" *ngIf="firstForm.get('Formulario1').get('Ubicacion').invalid">
-                    {{'GLOBAL.placeholder' | translate}}</p>
                 </div>
                 <div class="form-group col-sm">
                   <label>{{'GLOBAL.Acta_Recibido.ContratistaAsignado' | translate}}</label>
@@ -66,9 +60,8 @@
               </div>
             </nb-card-body>
             <nb-card-footer>
-              <button nbButton matStepperNext [disabled]="!firstForm.get('Formulario1').valid"
-                (click)="usarLocalStorage()" class="float-right">{{'GLOBAL.Acta_Recibido.RegistroActa.SiguienteButton' |
-                translate}}</button>
+              <button nbButton matStepperNext (click)="usarLocalStorage()" class="float-right">
+                {{'GLOBAL.Acta_Recibido.RegistroActa.SiguienteButton' | translate}}</button>
             </nb-card-footer>
           </nb-card>
         </mat-step>
@@ -116,8 +109,6 @@
                                   placeholder="{{'GLOBAL.Acta_Recibido.RegistroActa.SeleccioneFiltro' | translate}}"
                                   class="form-control" formControlName="Consecutivo" (keyup)="usarLocalStorage()">
                               </div>
-                              <p class="campo" *ngIf="firstForm.get('Formulario2').at(i).get('Consecutivo').invalid">
-                                {{'GLOBAL.placeholder' | translate}}</p>
                             </div>
                             <div class="form-group col-sm">
                               <label>{{'GLOBAL.Acta_Recibido.RegistroActa.FechaSoporte' | translate}}</label>

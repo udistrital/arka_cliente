@@ -184,6 +184,8 @@
     "Errores": {
       "ErrorTercero": "Enter a valid third-party",
       "ErrorMinLength": "Enter at least three characters",
+      "ErrorFecha": "Enter a valid date",
+      "ErrorSoporte": "Upload a document"
     },
     "Acta_Recibido": {
       "ErrorAnularMsg": "The Act {{ACTA}} cannot be voided by having state \"{{ESTADO}}\"",
