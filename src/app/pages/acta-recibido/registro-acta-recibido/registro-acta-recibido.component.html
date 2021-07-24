@@ -133,11 +133,11 @@
                                 <nb-card-body>
                                   <div class="col-sm soporte">
                                     <div>
-                                      <button nbButton type="button" (click)="fileInputDocumento.click();">
+                                      <button nbButton type="button" [disabled]="fileDocumento[i] !== undefined" (click)="fileInputDocumento.click();">
                                         <i class="fas fa-file-upload fa-2x"></i>
                                         <input #fileInputDocumento formControlName="Soporte" type="file"
                                           (change)="onInputFileDocumento($event, i)" style="display:none;"
-                                          accept="application/pdf" data-max-size="5120" />
+                                          accept="application/pdf" data-max-size="5120">
                                       </button>
                                     </div>
                                     <p></p>
@@ -159,7 +159,7 @@
                                         {{'GLOBAL.Acta_Recibido.CapturarElementos.LimpiarEspacioButton' | translate }}
                                       </button>
                                       <p class="campo" *ngIf="soporte.get('Soporte').invalid">
-                                        {{'GLOBAL.Errores.ErrorSoporte' | translate}}</p>
+                                        {{'GLOBAL.Errores.ErrorRequerido' | translate}}</p>
                                     </div>
                                   </div>
                                 </nb-card-body>
