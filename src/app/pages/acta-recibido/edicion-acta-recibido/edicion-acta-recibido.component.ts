@@ -669,14 +669,17 @@ export class EdicionActaRecibidoComponent implements OnInit {
   }
 
   Traer_Relacion_Ubicaciones(sede, dependencia) {
+    sede = (sede) ? sede : this.firstForm.get('Formulario1').get('Sede').value;
+    dependencia = (dependencia) ? dependencia : this.firstForm.get('Formulario1').get('Dependencia').value;
     this.UbicacionesFiltradas = [];
     this.carga_agregada ? this.firstForm.patchValue({ Formulario1: { Ubicacion: '' } }) : null;
     const transaccion: any = {};
     transaccion.Sede = this.Sedes.find((x) => x.Id === parseFloat(sede));
     transaccion.Dependencia = this.Dependencias.find((x) => x.Nombre === dependencia);
     this.Actas_Recibido.postRelacionSedeDependencia(transaccion).subscribe((res: any) => {
-      if (isObject(res[0].Relaciones))
+      if (isObject(res[0].Relaciones)) {
         this.UbicacionesFiltradas = res[0].Relaciones;
+      }
     });
   }
 
@@ -725,7 +728,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
   }
 
   download(index) {
-
     const new_tab = window.open(this.fileDocumento[index].urlTemp, this.fileDocumento[index].urlTemp, '_blank');
     new_tab.onload = () => {
       new_tab.location = this.fileDocumento[index].urlTemp;
@@ -765,7 +767,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
     // console.log(event.target.files);
     // console.log(event.srcElement.files);
     const max_size = 1;
-
     if (event.target.files.length > 0) {
       const file = event.target.files[0];
       if (file.type === 'application/pdf') {
@@ -890,7 +891,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
     });
     Transaccion_Acta.SoportesActa = Soportes;
     // console.log({Transaccion_Acta});
-    // /*
     this.Actas_Recibido.putTransaccionActa(Transaccion_Acta, Transaccion_Acta.ActaRecibido.Id).subscribe((res: any) => {
       // console.log(res);
       if (res !== null) {
@@ -948,7 +948,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
       }
       this.guardando = false;
     });
-    // */
   }
 
   Registrar_Acta(Datos: any, Datos2: any): ActaRecibido {

@@ -183,7 +183,7 @@
   "GLOBAL": {
     "Errores": {
       "ErrorTercero": "Enter a valid third-party",
-      "ErrorMinLength": "Enter at least three characters",
+      "ErrorMinLength": "Enter at least {{NUM}} characters",
       "ErrorFecha": "Enter a valid date",
       "ErrorRequerido": "This is a mandatory field"
     },

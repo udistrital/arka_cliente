@@ -25,7 +25,7 @@
                     (keyup)="usarLocalStorage(); Traer_Relacion_Ubicaciones();" [datasource]="dataService3"
                     formControlName="Dependencia" [minSearchLength]="2"
                     (change)="usarLocalStorage(); Traer_Relacion_Ubicaciones();"
-                    placeholder="{{'GLOBAL.Acta_Recibido.RegistroActa.SeleccioneFiltro' | translate}}">
+                    placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : '4'} }}">
                   </ng2-completer>
                 </div>
                 <div class="form-group col-sm">
@@ -40,7 +40,7 @@
                 <div class="form-group col-sm">
                   <label>{{'GLOBAL.Acta_Recibido.ContratistaAsignado' | translate}}</label>
                   <input matInput type="text" class="form-control"
-                    placeholder="{{'GLOBAL.Acta_Recibido.RegistroActa.SeleccioneFiltro' | translate}}"
+                    placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : '4'} }}"
                     formControlName="Contratista" [matAutocomplete]="autoContratista" />
                   <mat-autocomplete #autoContratista="matAutocomplete" [displayWith]="muestraContratista"
                     (optionSelected)="usarLocalStorage()">
@@ -53,7 +53,7 @@
                     {{'GLOBAL.placeholder' | translate}}</p>
                   <p class="campo"
                     *ngIf="firstForm.get('Formulario1.Contratista').errors && firstForm.get('Formulario1.Contratista').errors.errorLongitudMinima ? true : false">
-                    {{'GLOBAL.Errores.ErrorMinLength' | translate}}</p>
+                    {{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : '4'} }}</p>
                   <p class="campo"
                     *ngIf="firstForm.get('Formulario1.Contratista').errors && firstForm.get('Formulario1.Contratista').errors.terceroNoValido ? true : false">
                     {{'GLOBAL.Errores.ErrorTercero' | translate}}</p>
@@ -88,7 +88,7 @@
                             <div class="form-group col-sm">
                               <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Proveedor' | translate}}</label>
                               <input matInput type="text" class="form-control"
-                                placeholder="{{'GLOBAL.Acta_Recibido.RegistroActa.SeleccioneFiltro' | translate}}"
+                                placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : '4'} }}"
                                 formControlName="Proveedor" [matAutocomplete]="autoProveedor" />
                               <mat-autocomplete #autoProveedor="matAutocomplete" [displayWith]="muestraProveedor"
                                 (optionSelected)="usarLocalStorage()">
@@ -98,7 +98,7 @@
                               </mat-autocomplete>
                               <p class="campo"
                                 *ngIf="soporte.get('Proveedor').errors && soporte.get('Proveedor').errors.errorLongitudMinima ? true : false">
-                                {{'GLOBAL.Errores.ErrorMinLength' | translate}}</p>
+                                {{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : '4'} }}</p>
                               <p class="campo"
                                 *ngIf="soporte.get('Proveedor').errors && soporte.get('Proveedor').errors.terceroNoValido ? true : false">
                                 {{'GLOBAL.Errores.ErrorTercero' | translate}}</p>
