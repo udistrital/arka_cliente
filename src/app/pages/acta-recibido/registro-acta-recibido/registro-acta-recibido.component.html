@@ -80,8 +80,7 @@
               <mat-tab-group [selectedIndex]="selected.value" (selectedIndexChange)="selected.setValue($event)">
 
                 <!-- cada soporte -->
-                <mat-tab *ngFor="let soporte of firstForm.get('Formulario2').controls; let i = index"
-                  [formGroupName]="i">
+                <mat-tab *ngFor="let soporte of Formulario2.controls; let i = index" [formGroupName]="i">
                   <ng-template mat-tab-label>
                     {{'GLOBAL.Acta_Recibido.RegistroActa.SoporteSubTitle' | translate}} &nbsp; {{i + 1}} &nbsp; &nbsp;
                     &nbsp; &nbsp;<i class="fas fa-window-close" (click)="removeTab(i); usarLocalStorage()"
@@ -129,8 +128,8 @@
                                 <nb-datepicker #formpicker [max]="TodaysDate" (dateChange)="usarLocalStorage()">
                                 </nb-datepicker>
                               </div>
-                              <p class="campo" *ngIf="firstForm.get('Formulario2').at(i).get('Fecha_Factura').invalid">
-                                {{'GLOBAL.placeholder' | translate}}</p>
+                              <p class="campo" *ngIf="soporte.get('Fecha_Factura').invalid">
+                                {{'GLOBAL.Errores.ErrorFecha' | translate}}</p>
                             </div>
 
 
@@ -167,6 +166,8 @@
                                         (click)="clearFile(i)">
                                         {{'GLOBAL.Acta_Recibido.CapturarElementos.LimpiarEspacioButton' | translate }}
                                       </button>
+                                      <p class="campo" *ngIf="soporte.get('Soporte').invalid">
+                                        {{'GLOBAL.Errores.ErrorSoporte' | translate}}</p>
                                     </div>
                                   </div>
                                 </nb-card-body>

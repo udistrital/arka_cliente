@@ -353,6 +353,10 @@ export class RegistroActaRecibidoComponent implements OnInit {
     // this.loadProveedores();
   }
 
+  get Formulario2() {
+    return this.firstForm.controls.Formulario2 as FormArray;
+  }
+
   get Formulario_1(): FormGroup {
     return this.fb.group({
       Sede: [''],
