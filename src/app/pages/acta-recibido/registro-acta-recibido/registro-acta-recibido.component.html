@@ -74,7 +74,7 @@
               <mat-tab-group [selectedIndex]="selected.value" (selectedIndexChange)="selected.setValue($event)">
 
                 <!-- cada soporte -->
-                <mat-tab *ngFor="let soporte of Formulario2.controls; let i = index" [formGroupName]="i">
+                <mat-tab *ngFor="let soporte of firstForm.get('Formulario2')['controls']; let i = index" [formGroupName]="i">
                   <ng-template mat-tab-label>
                     {{'GLOBAL.Acta_Recibido.RegistroActa.SoporteSubTitle' | translate}} &nbsp; {{i + 1}} &nbsp; &nbsp;
                     &nbsp; &nbsp;<i class="fas fa-window-close" (click)="removeTab(i); usarLocalStorage()"
