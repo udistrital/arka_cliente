@@ -181,6 +181,10 @@
     }
   },
   "GLOBAL": {
+    "Errores": {
+      "ErrorTercero": "Ingrese un tercero válido",
+      "ErrorMinLength": "Escriba 3 o más caracteres",
+    },
     "Acta_Recibido":{
       "ErrorAnularMsg": "No se puede anular el Acta {{ACTA}} por tener estado \"{{ESTADO}}\"",
       "Anular": "Anular Acta de Recibido",

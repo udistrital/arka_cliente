@@ -181,6 +181,10 @@
     }
   },
   "GLOBAL": {
+    "Errores": {
+      "ErrorTercero": "Enter a valid third-party",
+      "ErrorMinLength": "Enter at least three characters",
+    },
     "Acta_Recibido": {
       "ErrorAnularMsg": "The Act {{ACTA}} cannot be voided by having state \"{{ESTADO}}\"",
       "Anular": "Void Receipt Certificate",
