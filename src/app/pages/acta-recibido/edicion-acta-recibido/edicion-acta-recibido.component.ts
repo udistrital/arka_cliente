@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild, ViewChildren, QueryList, Input } from '@a
 import { Subscription, Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import { Router, ActivatedRoute } from '@angular/router';
-import { FormBuilder, FormGroup, Validators, FormControl, FormArray } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, FormControl, FormArray, ValidatorFn, AbstractControl, ValidationErrors } from '@angular/forms';
 import { NuxeoService } from '../../../@core/utils/nuxeo.service';
 import { AuthInterceptor } from './../../../@core/_Interceptor/auth.Interceptor';
 import { MatTable } from '@angular/material';
@@ -93,6 +93,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
   }
 
   @Input('estado') estadoActa: string;
+  actaRegistrada: boolean;
   Estados_Acta: any;
   Tipos_Bien: any;
   Estados_Elemento: any;
@@ -195,7 +196,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
     if (!this.userService.getPersonaId()) {
       this.errores.set('terceros', true);
     }
-
+  this.actaRegistrada = this.estadoActa === 'Registrada' ? true : false;
   }
 
   // Los permisos en cada sección dependen del estado del acta y del rol.
@@ -498,20 +499,23 @@ export class EdicionActaRecibidoComponent implements OnInit {
                   proveedor.Tercero.Id === Soporte.SoporteActa.ProveedorId),
               disabled: !this.getPermisoEditar(this.permisos.Acta),
             },
+              { validators: this.actaRegistrada ? [this.validarTercero()] : [Validators.required, this.validarTercero()]}
           ],
           Consecutivo: [
             {
               value: Soporte.SoporteActa.Consecutivo,
               disabled: !this.getPermisoEditar(this.permisos.Acta),
             },
+            { validators: this.actaRegistrada ? [] : [Validators.required] }
           ],
           Fecha_Factura: [
             {
               value: Soporte.SoporteActa.FechaSoporte.toString() !== '0001-01-01T00:00:00Z' ?
                 this.dateService.parse(Soporte.SoporteActa.FechaSoporte.toString(), 'MM dd yyyy') : '',
               disabled: !this.getPermisoEditar(this.permisos.Acta),
-            }],
-          Soporte: [Soporte.SoporteActa.DocumentoId, Validators.required],
+            },
+            { validators: this.actaRegistrada ? [] : [Validators.required] }],
+          Soporte: [Soporte.SoporteActa.DocumentoId + '.pdf', Validators.required],
         });
         this.Validador[index] = true;
         this.uidDocumento[index] = Soporte.SoporteActa.DocumentoId;
@@ -577,13 +581,16 @@ export class EdicionActaRecibidoComponent implements OnInit {
               value: sede,
               disabled: !this.getPermisoEditar(this.permisos.Acta),
             },
+            { validators: this.actaRegistrada ? [] : [Validators.required] }
           ],
-          Dependencia: [dependencia],
+          Dependencia: [dependencia,
+            { validators: this.actaRegistrada ? [] : [Validators.required] }],
           Ubicacion: [
             {
-              value: transaccion_.ActaRecibido.UbicacionId,
+              value: transaccion_.ActaRecibido.UbicacionId === 0 ? '' : transaccion_.ActaRecibido.UbicacionId,
               disabled: !this.getPermisoEditar(this.permisos.Acta),
             },
+            { validators: this.actaRegistrada ? [] : [Validators.required] }
           ],
           Contratista: [
             {
@@ -595,14 +602,15 @@ export class EdicionActaRecibidoComponent implements OnInit {
               })(),
               disabled: !this.getPermisoEditar(this.permisos.Acta),
             },
-            Validators.required,
+            [Validators.required, this.validarTercero()],
           ],
         }),
         Formulario2: Form2,
         Formulario3: this.fb.group({
-          Datos_Adicionales: [transaccion_.ActaRecibido.Observaciones],
+          Datos_Adicionales: [transaccion_.ActaRecibido.Observaciones,
+            { validators: this.actaRegistrada ? [] : [Validators.required] }],
         }),
-      });
+      }, { validators: this.checkValidness });
       sede && dependencia ? this.Traer_Relacion_Ubicaciones(sede, dependencia) : null;
       this.checkValidness();
       this.firstForm.get('Formulario1').statusChanges.subscribe(() => this.checkValidness());
@@ -1247,5 +1255,25 @@ export class EdicionActaRecibidoComponent implements OnInit {
       sessionStorage.setItem('Formulario_Edicion', JSON.stringify(this.firstForm.value));
       sessionStorage.setItem('Elementos_Formulario_Edicion', JSON.stringify(this.Elementos__Soporte));
     }
+  }
+
+  private validarTercero(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const valor = control.value;
+      const checkStringLength = valor && typeof(valor) === 'string' && valor.length < 4 && valor !== '' ? true : false;
+      const checkInvalidString = valor && typeof(valor) === 'string' && valor !== '' ? true : false;
+      const checkInvalidTercero = valor && typeof(valor) === 'object' && !valor.Tercero ? true : false;
+      return checkStringLength ? {errorLongitudMinima: true} :
+      checkInvalidString || checkInvalidTercero ? {terceroNoValido: true} : null;
+    };
+  }
+
+  private checkValidness: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
+    const errors = !(
+      control.get('Formulario1').valid &&
+      control.get('Formulario2').valid &&
+      control.get('Formulario3').valid);
+    errors ? this.errores.set('formularios', true) : this.errores.delete('formularios');
+    return errors ? { formularios: true } : null;
   }
 }
