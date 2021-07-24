@@ -612,10 +612,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
         }),
       }, { validators: this.checkValidness });
       sede && dependencia ? this.Traer_Relacion_Ubicaciones(sede, dependencia) : null;
-      this.checkValidness();
-      this.firstForm.get('Formulario1').statusChanges.subscribe(() => this.checkValidness());
-      this.firstForm.get('Formulario2').statusChanges.subscribe(() => this.checkValidness());
-      this.firstForm.get('Formulario3').statusChanges.subscribe(() => this.checkValidness());
       this.carga_agregada = true;
 
       this.contratistasFiltrados = this.firstForm.get('Formulario1').get('Contratista').valueChanges.pipe(
@@ -625,30 +621,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
       );
       // console.log(this.contratistasFiltrados)
     });
-  }
-
-  private checkValidness() {
-
-    const camposObligatorios = !(
-      this.firstForm.controls.Formulario1.value.Contratista !== '' &&
-      this.firstForm.controls.Formulario2.value[0].Soporte !== ''
-    );
-
-    const errorForms = !(
-      this.firstForm.controls.Formulario3.value.Datos_Adicionales !== ''
-      && this.firstForm.controls.Formulario1.value.Ubicacion !== ''
-      && this.firstForm.controls.Formulario2.value[0].Proveedor !== ''
-      && this.firstForm.controls.Formulario2.value[0].Consecutivo !== ''
-      && this.firstForm.controls.Formulario2.value[0].Fecha_Factura !== ''
-    );
-
-    if ((camposObligatorios || errorForms) && this.accion.envHabilitado && !this.accion.envContratistaHabilitado) {
-      this.errores.set('formularios', true);
-    } else if (camposObligatorios && this.accion.envContratistaHabilitado && this.accion.envHabilitado) {
-      this.errores.set('formularios', true);
-    } else {
-      this.errores.delete('formularios');
-    }
   }
 
   Cargar_Formularios2(transaccion_: any, elementos_: any) {
