@@ -141,7 +141,8 @@
                                   <nb-card-body>
                                     <div class="col-sm soporte">
                                       <div>
-                                        <button nbButton type="button" (click)="fileInputDocumento.click()" *ngIf="getPermisoEditar(permisos.Acta)">
+                                        <button nbButton type="button" [disabled]="fileDocumento[i] !== undefined || uidDocumento[i] !== undefined"
+                                        (click)="fileInputDocumento.click()" *ngIf="getPermisoEditar(permisos.Acta)">
                                           <i class="fas fa-file-upload fa-2x"></i>
                                           <input #fileInputDocumento type="file"
                                             (change)="onInputFileDocumento($event, i)" style="display:none;"
@@ -149,7 +150,7 @@
                                         </button>
                                       </div>
                                       <p></p>
-                                      <p *ngIf="Validador[i] && fileDocumento[i]">{{fileDocumento[i].name}}</p>
+                                      <p *ngIf="Validador[i] && fileDocumento[i] !== undefined">{{fileDocumento[i].name}}</p>
                                       <p *ngIf="!Validador[i]">
                                         {{'GLOBAL.Acta_Recibido.CapturarElementos.ValidadorPlaceholder' | translate: {EXT: 'pdf'} }}
                                       </p>
@@ -158,15 +159,16 @@
                                           (click)="download(i)">
                                           Ver
                                         </button>
-                                        <button nbButton type="button" *ngIf="fileDocumento[i] === undefined" target="_blank"
+                                        <button nbButton type="button" *ngIf="fileDocumento[i] === undefined && uidDocumento[i] !== undefined" target="_blank"
                                           (click)="downloadFile(uidDocumento[i])">
                                           Ver
                                         </button>
                                       </div>
                                       <p></p>
                                       <div>
-                                        <button type="button" *ngIf="Validador[i] && getPermisoEditar(permisos.Acta)" class="btn btn-primary"
-                                          (click)="clearFile(i)">
+                                        <button type="button"
+                                          *ngIf="(fileDocumento[i] !== undefined || uidDocumento[i] !== undefined) && getPermisoEditar(permisos.Acta)"
+                                          class="btn btn-primary" (click)="clearFile(i)">
                                           {{'GLOBAL.Acta_Recibido.CapturarElementos.LimpiarEspacioButton' | translate }}
                                         </button>
                                         <p class="campo" *ngIf="soporte.get('Soporte').invalid">

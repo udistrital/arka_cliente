@@ -185,7 +185,7 @@
       "ErrorTercero": "Ingrese un tercero válido",
       "ErrorMinLength": "Escriba 3 o más caracteres",
       "ErrorFecha": "Ingrese una fecha válida",
-      "ErrorSoporte": "Cargue un documento"
+      "ErrorRequerido": "Este campo es obligatorio"
     },
     "Acta_Recibido":{
       "ErrorAnularMsg": "No se puede anular el Acta {{ACTA}} por tener estado \"{{ESTADO}}\"",
