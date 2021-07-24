@@ -223,15 +223,12 @@ export class RegistroActaRecibidoComponent implements OnInit {
     } else return [];
   }
   muestraContratista(contr: TerceroCriterioContratista): string {
-    // console.info(this.firstForm.controls.Formulario1);
-    if (contr && contr.Identificacion) {
+    if (contr && contr.Identificacion && contr.Tercero) {
       return contr.Identificacion.Numero + ' - ' + contr.Tercero.NombreCompleto;
-    } else {
-      if (contr) {
+    } else if (contr && contr.Tercero) {
         return contr.Tercero.NombreCompleto;
       }
     }
-  }
 
   private loadProveedores(): void {
     if (this.listo.get('proveedores') === undefined) {
@@ -251,9 +248,10 @@ export class RegistroActaRecibidoComponent implements OnInit {
     } else return [];
   }
   muestraProveedor(prov: Partial<TerceroCriterioProveedor>): string {
-    if (prov) {
-      const str = prov.Identificacion ? prov.Identificacion.Numero + ' - ' : '';
-      return str + prov.Tercero.NombreCompleto;
+    if (prov && prov.Identificacion && prov.Tercero) {
+      return prov.Identificacion.Numero + ' - ' + prov.Tercero.NombreCompleto;
+    } else if (prov && prov.Tercero) {
+        return prov.Tercero.NombreCompleto;
     }
   }
   private cambiosProveedor(control: AbstractControl): Observable<Partial<TerceroCriterioProveedor>[]> {
