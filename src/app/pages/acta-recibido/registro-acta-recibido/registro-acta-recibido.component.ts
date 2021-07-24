@@ -573,7 +573,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
     const sede = this.firstForm.get('Formulario1').get('Sede').value;
     const dependencia = this.firstForm.get('Formulario1').get('Dependencia').value;
     if (this.firstForm.get('Formulario1').get('Sede').valid && this.firstForm.get('Formulario1').get('Dependencia').valid &&
-      sede !== undefined && dependencia !== undefined) {
+      sede !== undefined && dependencia !== undefined && this.Sedes && this.Dependencias) {
       this.UbicacionesFiltradas = [];
       const transaccion: any = {};
       transaccion.Sede = this.Sedes.find((x) => x.Id === parseFloat(sede));
