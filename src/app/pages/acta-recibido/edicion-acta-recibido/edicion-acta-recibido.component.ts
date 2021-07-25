@@ -196,7 +196,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
     if (!this.userService.getPersonaId()) {
       this.errores.set('terceros', true);
     }
-  this.actaRegistrada = this.estadoActa === 'Registrada' ? true : false;
+    this.actaRegistrada = this.estadoActa === 'Registrada' ? true : false;
   }
 
   // Los permisos en cada sección dependen del estado del acta y del rol.
@@ -370,16 +370,16 @@ export class EdicionActaRecibidoComponent implements OnInit {
 
   private cargaActa() {
     if (!this.actaCargada &&
-    this.Estados_Acta !== undefined &&
-    this.Estados_Elemento !== undefined &&
-    this.Tipos_Bien !== undefined &&
-    this.Unidades !== undefined &&
-    this.Tarifas_Iva !== undefined &&
-    this.Dependencias !== undefined &&
-    this.Sedes !== undefined &&
-    this._Acta_Id !== undefined &&
-    this.Contratistas !== undefined &&
-    this.Proveedores !== undefined
+      this.Estados_Acta !== undefined &&
+      this.Estados_Elemento !== undefined &&
+      this.Tipos_Bien !== undefined &&
+      this.Unidades !== undefined &&
+      this.Tarifas_Iva !== undefined &&
+      this.Dependencias !== undefined &&
+      this.Sedes !== undefined &&
+      this._Acta_Id !== undefined &&
+      this.Contratistas !== undefined &&
+      this.Proveedores !== undefined
     ) {
       this.Actas_Recibido.getTransaccionActa(this._Acta_Id).subscribe(Acta => {
         this.Cargar_Formularios(Acta[0]);
@@ -499,7 +499,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
                   proveedor.Tercero.Id === Soporte.SoporteActa.ProveedorId),
               disabled: !this.getPermisoEditar(this.permisos.Acta),
             },
-              { validators: this.actaRegistrada ? [this.validarTercero()] : [Validators.required, this.validarTercero()]}
+            { validators: this.actaRegistrada ? [this.validarTercero()] : [Validators.required, this.validarTercero()] }
           ],
           Consecutivo: [
             {
@@ -590,7 +590,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
               value: transaccion_.ActaRecibido.UbicacionId === 0 ? '' : transaccion_.ActaRecibido.UbicacionId,
               disabled: !this.getPermisoEditar(this.permisos.Acta),
             },
-            { validators: this.actaRegistrada ? [] : [Validators.required] }
+            { validators: this.actaRegistrada ? [] : [Validators.required] },
           ],
           Contratista: [
             {
@@ -608,7 +608,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
         Formulario2: Form2,
         Formulario3: this.fb.group({
           Datos_Adicionales: [transaccion_.ActaRecibido.Observaciones,
-            { validators: this.actaRegistrada ? [] : [Validators.required] }],
+          { validators: this.actaRegistrada ? [] : [Validators.required] }],
         }),
       }, { validators: this.checkValidness });
       sede && dependencia ? this.Traer_Relacion_Ubicaciones(sede, dependencia) : null;
@@ -1231,11 +1231,11 @@ export class EdicionActaRecibidoComponent implements OnInit {
   private validarTercero(): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
       const valor = control.value;
-      const checkStringLength = valor && typeof(valor) === 'string' && valor.length < 4 && valor !== '' ? true : false;
-      const checkInvalidString = valor && typeof(valor) === 'string' && valor !== '' ? true : false;
-      const checkInvalidTercero = valor && typeof(valor) === 'object' && !valor.Tercero ? true : false;
-      return checkStringLength ? {errorLongitudMinima: true} :
-      checkInvalidString || checkInvalidTercero ? {terceroNoValido: true} : null;
+      const checkStringLength = valor && typeof (valor) === 'string' && valor.length < 4 && valor !== '' ? true : false;
+      const checkInvalidString = valor && typeof (valor) === 'string' && valor !== '' ? true : false;
+      const checkInvalidTercero = valor && typeof (valor) === 'object' && !valor.Tercero ? true : false;
+      return checkStringLength ? { errorLongitudMinima: true } :
+        checkInvalidString || checkInvalidTercero ? { terceroNoValido: true } : null;
     };
   }
 
