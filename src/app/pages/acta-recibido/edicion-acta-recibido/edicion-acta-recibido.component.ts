@@ -499,14 +499,14 @@ export class EdicionActaRecibidoComponent implements OnInit {
                   proveedor.Tercero.Id === Soporte.SoporteActa.ProveedorId),
               disabled: !this.getPermisoEditar(this.permisos.Acta),
             },
-            { validators: this.actaRegistrada ? [this.validarTercero()] : [Validators.required, this.validarTercero()] }
+            { validators: this.actaRegistrada ? [this.validarTercero()] : [Validators.required, this.validarTercero()] },
           ],
           Consecutivo: [
             {
               value: Soporte.SoporteActa.Consecutivo,
               disabled: !this.getPermisoEditar(this.permisos.Acta),
             },
-            { validators: this.actaRegistrada ? [] : [Validators.required] }
+            { validators: this.actaRegistrada ? [] : [Validators.required] },
           ],
           Fecha_Factura: [
             {
@@ -581,7 +581,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
               value: sede,
               disabled: !this.getPermisoEditar(this.permisos.Acta),
             },
-            { validators: this.actaRegistrada ? [] : [Validators.required] }
+            { validators: this.actaRegistrada ? [] : [Validators.required] },
           ],
           Dependencia: [dependencia,
             { validators: this.actaRegistrada ? [] : [Validators.required] }],
