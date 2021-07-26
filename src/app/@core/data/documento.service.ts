@@ -4,6 +4,8 @@ import { environment } from '../../../environments/environment';
 import { HttpErrorResponse } from '@angular/common/http';
 import { throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
+import Swal from 'sweetalert2';
+import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 
 const httpOptions = {
     headers: new HttpHeaders({
@@ -15,7 +17,7 @@ const path = environment.DOCUMENTO_SERVICE;
 
 @Injectable()
 export class DocumentoService {
-    constructor(private http: HttpClient) {
+    constructor(private http: HttpClient,private translate: TranslateService,) {
     }
 
     get(endpoint) {
@@ -52,6 +54,13 @@ export class DocumentoService {
             console.error(
                 `Backend returned code ${error.status}, ` +
                 `body was: ${error.error}`);
+                (Swal as any).fire({ 
+                    type: 'error',
+                    title: 'Error al obtener el soporte',
+                    text: 'Soporte corrupto o no registrado.',
+                    // title:this.translate.instant('GLOBAL.aceptar'),
+                    // text: this.translate.instant('GLOBAL.aceptar')
+                });
         }
         // return an observable with a user-facing error message
         return throwError({
