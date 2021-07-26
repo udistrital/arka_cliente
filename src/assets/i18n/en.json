@@ -181,6 +181,12 @@
     }
   },
   "GLOBAL": {
+    "Errores": {
+      "ErrorTercero": "Enter a valid third-party",
+      "ErrorMinLength": "Enter at least {{NUM}} characters",
+      "ErrorFecha": "Enter a valid date",
+      "ErrorRequerido": "This is a mandatory field"
+    },
     "Acta_Recibido": {
       "ErrorAnularMsg": "The Act {{ACTA}} cannot be voided by having state \"{{ESTADO}}\"",
       "Anular": "Void Receipt Certificate",
@@ -192,6 +198,7 @@
       "id_forma2": "Certificate N° {{ID}}",
       "ActaNo": "Receipt Certificate N°",
       "ContratistaAsignado": "Assigned Contractor",
+      "Ver": "See document",
       "Errores": {
         "Mensaje": "You must first fix the following issues:",
         "Terceros": "Your user is not currently recorded in the Third-Party Database",

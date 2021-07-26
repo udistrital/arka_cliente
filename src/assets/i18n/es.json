@@ -181,6 +181,12 @@
     }
   },
   "GLOBAL": {
+    "Errores": {
+      "ErrorTercero": "Ingrese un tercero válido",
+      "ErrorMinLength": "Escriba {{NUM}} o más caracteres",
+      "ErrorFecha": "Ingrese una fecha válida",
+      "ErrorRequerido": "Este campo es obligatorio"
+    },
     "Acta_Recibido":{
       "ErrorAnularMsg": "No se puede anular el Acta {{ACTA}} por tener estado \"{{ESTADO}}\"",
       "Anular": "Anular Acta de Recibido",
@@ -192,6 +198,7 @@
       "id_forma2": "Acta N° {{ID}}",
       "ActaNo": "Acta de Recibido N°",
       "ContratistaAsignado": "Contratista Asignado",
+      "Ver": "Ver documento",
       "Errores": {
         "Mensaje": "Corrija primero los siguientes problemas:",
         "Terceros": "Su usuario no está registrado en la Base de Datos de Terceros",

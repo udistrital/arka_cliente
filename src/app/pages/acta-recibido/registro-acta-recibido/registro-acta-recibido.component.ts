@@ -3,7 +3,7 @@ import { Formulario } from './../edicion-acta-recibido/datos_locales';
 import { Component, OnInit, ViewChild, ViewChildren, QueryList } from '@angular/core';
 import { Subscription, combineLatest, Observable } from 'rxjs';
 import { Router, ActivatedRoute } from '@angular/router';
-import { FormBuilder, FormGroup, Validators, FormControl, FormArray } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, FormControl, FormArray, ValidatorFn, ValidationErrors } from '@angular/forms';
 import { NuxeoService } from '../../../@core/utils/nuxeo.service';
 import { MatTable } from '@angular/material';
 import 'hammerjs';
@@ -223,14 +223,11 @@ export class RegistroActaRecibidoComponent implements OnInit {
     } else return [];
   }
   muestraContratista(contr: TerceroCriterioContratista): string {
-    // console.info(this.firstForm.controls.Formulario1);
-    if (contr && contr.Identificacion) {
+    if (contr && contr.Identificacion && contr.Tercero) {
       return contr.Identificacion.Numero + ' - ' + contr.Tercero.NombreCompleto;
-    } else {
-      if (contr) {
+    } else if (contr && contr.Tercero) {
         return contr.Tercero.NombreCompleto;
       }
-    }
   }
 
   private loadProveedores(): void {
@@ -251,9 +248,10 @@ export class RegistroActaRecibidoComponent implements OnInit {
     } else return [];
   }
   muestraProveedor(prov: Partial<TerceroCriterioProveedor>): string {
-    if (prov) {
-      const str = prov.Identificacion ? prov.Identificacion.Numero + ' - ' : '';
-      return str + prov.Tercero.NombreCompleto;
+    if (prov && prov.Identificacion && prov.Tercero) {
+      return prov.Identificacion.Numero + ' - ' + prov.Tercero.NombreCompleto;
+    } else if (prov && prov.Tercero) {
+        return prov.Tercero.NombreCompleto;
     }
   }
   private cambiosProveedor(control: AbstractControl): Observable<Partial<TerceroCriterioProveedor>[]> {
@@ -328,7 +326,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
     for (const Soporte of transaccion_.Formulario2) {
       const Formulario__2 = this.fb.group({
         Id: [''],
-        Proveedor: [Soporte.Proveedor],
+        Proveedor: [Soporte.Proveedor.Tercero ? Soporte.Proveedor.Tercero : '', [this.validarTercero()]],
         Consecutivo: [Soporte.Consecutivo],
         Fecha_Factura: [Soporte.Fecha_Factura ? this.dateService.parse(Soporte.Fecha_Factura, 'MM dd yyyy') : ''],
         Soporte: ['', Validators.required],
@@ -343,7 +341,8 @@ export class RegistroActaRecibidoComponent implements OnInit {
         Sede: [transaccion_.Formulario1.Sede],
         Dependencia: [transaccion_.Formulario1.Dependencia],
         Ubicacion: [transaccion_.Formulario1.Ubicacion],
-        Contratista: [transaccion_.Formulario1.Contratista, Validators.required],
+        Contratista: [transaccion_.Formulario1.Contratista.Tercero ? transaccion_.Formulario1.Contratista : '',
+          [Validators.required, this.validarTercero()]],
       }),
       Formulario2: Form2,
     });
@@ -357,12 +356,12 @@ export class RegistroActaRecibidoComponent implements OnInit {
       Sede: [''],
       Dependencia: [''],
       Ubicacion: [''],
-      Contratista: ['', Validators.required],
+      Contratista: ['', [Validators.required, this.validarTercero()]],
     });
   }
   get Formulario_2(): FormGroup {
     return this.fb.group({
-      Proveedor: [''],
+      Proveedor: ['', [this.validarTercero()]],
       Consecutivo: [''],
       Fecha_Factura: [''],
       Soporte: ['', Validators.required],
@@ -585,4 +584,16 @@ export class RegistroActaRecibidoComponent implements OnInit {
       }
     }
   }
+
+  private validarTercero(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const valor = control.value;
+      const checkStringLength = typeof(valor) === 'string' && valor.length < 4 && valor !== '' ? true : false;
+      const checkInvalidString = typeof(valor) === 'string' && valor !== '' ? true : false;
+      const checkInvalidTercero = typeof(valor) === 'object' && !valor.Tercero ? true : false;
+      return checkStringLength ? {errorLongitudMinima: true} :
+      checkInvalidString || checkInvalidTercero ? {terceroNoValido: true} : null;
+    };
+  }
+
 }
