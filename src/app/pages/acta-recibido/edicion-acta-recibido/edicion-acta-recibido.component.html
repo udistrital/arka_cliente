@@ -1,6 +1,6 @@
 <nb-card>
   <nb-card-header><h2>{{'GLOBAL.Acta_Recibido.EdicionActa.TitleId' | translate: {ID: _Acta_Id} }}</h2></nb-card-header>
-  <nb-card-body [nbSpinner]="!firstForm || guardando">
+  <nb-card-body [nbSpinner]="!firstForm || guardando || cargando_contratistas">
     <form *ngIf="firstForm" [formGroup]="firstForm" #fform="ngForm" class="step-container">
       <mat-vertical-stepper [linear]="true" #stepper>
 
@@ -11,7 +11,7 @@
                 <div class="row" (click)="usarLocalStorage()">
                   <div class="form-group col-sm">
                     <label>{{'GLOBAL.Acta_Recibido.EdicionActa.Sede' | translate}}</label>
-                    <mat-select type="text" class="form-control" formControlName="Sede" required
+                    <mat-select type="text" class="form-control" formControlName="Sede"
                       (selectionChange)="usarLocalStorage(); Traer_Relacion_Ubicaciones();">
                       <mat-option *ngFor="let sede of Sedes" [(value)]="sede.Id">{{sede.Nombre}}</mat-option>
                     </mat-select>
@@ -38,10 +38,10 @@
                     <p class="campo" *ngIf="firstForm.get('Formulario1').get('Ubicacion').invalid">
                       {{'GLOBAL.placeholder' | translate}}</p>
                   </div>
-                  <div class="form-group col-sm" [nbSpinner]="cargando_contratistas">
+                <div class="form-group col-sm">
                     <label>{{'GLOBAL.Acta_Recibido.ContratistaAsignado' | translate}}</label>
                     <input matInput type="text" class="form-control" placeholder="Nombre o Documento"
-                      formControlName="Contratista" [matAutocomplete]="autoContratista" />
+                      formControlName="Contratista" [matAutocomplete]="autoContratista">
                       <mat-autocomplete #autoContratista="matAutocomplete" [displayWith]="muestraContratista"
                       (optionSelected)="usarLocalStorage()">
                         <mat-option *ngFor="let contr of contratistasFiltrados | async" [value]="contr">
@@ -101,7 +101,7 @@
                                 <div class="input-group">
                                   <input nbInput type="text" (keyup)="usarLocalStorage()"
                                     placeholder="{{'GLOBAL.Acta_Recibido.EdicionActa.Consecutivo' | translate}}"
-                                    class="form-control" formControlName="Consecutivo" (keyup)="usarLocalStorage()" required />
+                                    class="form-control" formControlName="Consecutivo" (keyup)="usarLocalStorage()">
                                 </div>
                                 <p class="campo" *ngIf="firstForm.get('Formulario2').at(i).get('Consecutivo').invalid">
                                   {{'GLOBAL.placeholder' | translate}}</p>
@@ -112,7 +112,7 @@
                                   <input nbInput (click)="usarLocalStorage()"
                                     placeholder="{{'GLOBAL.Acta_Recibido.EdicionActa.FechaFiltro' | translate}}"
                                     class="form-control" [nbDatepicker]="formpicker" (keyup)="usarLocalStorage()"
-                                    formControlName="Fecha_Factura" required />
+                                    formControlName="Fecha_Factura">
                                   <nb-datepicker #formpicker [max]="TodaysDate" (dateChange)="usarLocalStorage()"></nb-datepicker>
                                 </div>
                                 <p class="campo" *ngIf="firstForm.get('Formulario2').at(i).get('Fecha_Factura').invalid">
@@ -229,7 +229,7 @@
                   <div class="input-group">
                     <textarea rows="5" (keyup)="usarLocalStorage()"
                       placeholder="Proporciona datos adicionales que no se pueden expresar en el formulario"
-                      class="form-control" formControlName="Datos_Adicionales" required></textarea>
+                      class="form-control" formControlName="Datos_Adicionales"></textarea>
                   </div>
                     <p class="campo" *ngIf="firstForm.get('Formulario3').get('Datos_Adicionales').invalid">
                       {{'GLOBAL.placeholder' | translate}}</p>
@@ -247,9 +247,8 @@
               </nb-card-footer>
             </nb-card>
 
-            <div class="float-right">
-              <button mat-icon-button type="button"
-              *ngIf="errores.size > 0" [nbPopover]="erroresTemplate" nbPopoverTrigger="hover">
+          <div class="botones">
+            <button mat-icon-button type="button" *ngIf="errores && (errores.size > 0)" [nbPopover]="erroresTemplate" nbPopoverTrigger="hover">
                 <span class="fas fa-exclamation-triangle fa-2x"></span>
               </button>
               <button nbButton (click)="Revisar_Totales3(1)" *ngIf="accion.envHabilitado"

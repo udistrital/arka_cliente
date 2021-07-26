@@ -53,3 +53,12 @@ table.consolidado {
   width: auto;
   margin: auto;
 }
+
+.botones {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0rem;
+  button {
+    margin-left: 1rem;
+  }
+}

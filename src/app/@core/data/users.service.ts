@@ -39,12 +39,18 @@ export class UserService {
       // this.http.get(path + 'persona/?query=Usuario:' + payload.sub, httpOptions)
       this.http.get(path + 'tercero/?query=UsuarioWSO2:' + payload.sub, httpOptions)
         .subscribe(res => {
-          // console.log({res});
-          if (res !== null) {
+          if (Object.keys(res).length) {
             this.user = res[0];
             this.user$.next(this.user);
             // window.localStorage.setItem('ente', res[0].Ente);
             this.terceroId = parseInt(res[0].Id, 10); // window.localStorage.setItem('persona_id', res[0].Id);
+          } else {
+            this.http.get(path + 'tercero/?query=UsuarioWSO2:' + payload.email, httpOptions)
+            .subscribe(res2 => {
+              this.user = res2[0];
+              this.user$.next(this.user);
+              this.terceroId = parseInt(res2[0].Id, 10);
+            });
           }
         });
     }

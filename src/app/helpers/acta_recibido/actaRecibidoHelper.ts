@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 import { RequestManager } from '../../managers/requestManager';
 import { PopUpManager } from '../../managers/popUpManager';
 import { map } from 'rxjs/operators';
-import { TransaccionActaRecibido } from '../../@core/data/models/acta_recibido/transaccion_acta_recibido';
+import { Observable } from 'rxjs/Observable';
+import { EspacioFisico } from '../../@core/data/models/ubicacion/espacio_fisico';
 
 @Injectable({
     providedIn: 'root',
@@ -490,17 +491,22 @@ export class ActaRecibidoHelper {
      */
     public getSedeDependencia(id) {
         this.rqManager.setPath('OIKOS_SERVICE');
-        return this.rqManager.get('asignacion_espacio_fisico_dependencia?query=Id:' + id).pipe(
-            map(
-                (res) => {
-                    if (res['Type'] === 'error') {
-                        this.pUpManager.showErrorAlert('No se pudieron cargar los parametros generales');
-                        return undefined;
-                    }
-                    return res;
-                },
-            ),
-        );
+        if (id > 0) {
+            return this.rqManager.get('asignacion_espacio_fisico_dependencia?query=Id:' + id).pipe(
+                map(
+                    (res) => {
+                        if (res['Type'] === 'error') {
+                            this.pUpManager.showErrorAlert('No se pudieron cargar los parametros generales');
+                            return undefined;
+                        }
+                        return res;
+                    },
+                ),
+            );
+
+        } else {
+            return Observable.of(new EspacioFisico()).map(o => JSON.stringify(o));
+        }
     }
     /**
      * Elementos get
