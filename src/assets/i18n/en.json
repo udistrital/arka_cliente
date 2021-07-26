@@ -198,6 +198,7 @@
       "id_forma2": "Certificate N° {{ID}}",
       "ActaNo": "Receipt Certificate N°",
       "ContratistaAsignado": "Assigned Contractor",
+      "Ver": "See document",
       "Errores": {
         "Mensaje": "You must first fix the following issues:",
         "Terceros": "Your user is not currently recorded in the Third-Party Database",

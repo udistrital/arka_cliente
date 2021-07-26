@@ -198,6 +198,7 @@
       "id_forma2": "Acta N° {{ID}}",
       "ActaNo": "Acta de Recibido N°",
       "ContratistaAsignado": "Contratista Asignado",
+      "Ver": "Ver documento",
       "Errores": {
         "Mensaje": "Corrija primero los siguientes problemas:",
         "Terceros": "Su usuario no está registrado en la Base de Datos de Terceros",
