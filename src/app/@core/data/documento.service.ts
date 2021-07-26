@@ -17,7 +17,7 @@ const path = environment.DOCUMENTO_SERVICE;
 
 @Injectable()
 export class DocumentoService {
-    constructor(private http: HttpClient,private translate: TranslateService,) {
+    constructor(private http: HttpClient, private translate: TranslateService ) {
     }
 
     get(endpoint) {
@@ -54,7 +54,7 @@ export class DocumentoService {
             console.error(
                 `Backend returned code ${error.status}, ` +
                 `body was: ${error.error}`);
-                (Swal as any).fire({ 
+                (Swal as any).fire({
                     type: 'error',
                     title: 'Error al obtener el soporte',
                     text: 'Soporte corrupto o no registrado.',
