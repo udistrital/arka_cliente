@@ -507,8 +507,8 @@ export class EdicionActaRecibidoComponent implements OnInit {
           ],
           Fecha_Factura: [
             {
-              value: Soporte.SoporteActa.FechaSoporte.toString() !== '0001-01-01T00:00:00Z' ?
-                this.dateService.parse(Soporte.SoporteActa.FechaSoporte.toString(), 'MM dd yyyy') : '',
+              value: new Date(Soporte.SoporteActa.FechaSoporte) > new Date('1945') ?
+              Soporte.SoporteActa.FechaSoporte.toString() : '',
               disabled: !this.getPermisoEditar(this.permisos.Acta),
             }],
           Soporte: [Soporte.SoporteActa.DocumentoId, Validators.required],
