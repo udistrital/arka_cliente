@@ -216,7 +216,7 @@
           <!-- Resumen, Validación, Envío, Guardar -->
           <mat-step label="Datos Adicionales" formGroupName="Formulario3">
 
-            <nb-card *ngIf="Totales">
+            <nb-card *ngIf="Totales && Elementos__Soporte.length > 0">
               <nb-card-header>{{'GLOBAL.Acta_Recibido.EdicionActa.Consolidado' | translate}}</nb-card-header>
               <nb-card-body>
                 <table class="consolidado">
