@@ -12,9 +12,10 @@ import { Store } from '@ngrx/store';
 import { IAppState } from '../../../@core/store/app.state';
 import { ListService } from '../../../@core/store/services/list.service';
 import {
-    NbSortDirection,
-    NbTreeGridRowComponent,
-  } from '@nebular/theme';
+  NbSortDirection,
+  NbTreeGridRowComponent,
+} from '@nebular/theme';
+import { GlobalPositionStrategy } from '@angular/cdk/overlay';
 
 /**
  * Mapeo entre:
@@ -53,12 +54,13 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
   respuesta: CuentaGrupo;
   Subgrupo: Subgrupo;
   respuesta2: any;
-
+  tipo_movimiento: string;
+  indice: number;
+  deshabilitar: boolean;
 
   @Input('subgrupo_id')
   set name(subgrupo_id: Subgrupo) {
     this.subgrupo_id = subgrupo_id;
-    // console.log(this.subgrupo_id);
     if (this.movimiento_id !== undefined) {
       this.loadCuentaGrupo();
     }
@@ -70,6 +72,16 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
   }
 
   @Input() escritura: boolean;
+
+  @Input('tipo_movimiento')
+  set name3(tipo_movimiento: string) {
+    this.tipo_movimiento = tipo_movimiento;
+  }
+
+  @Input('indice')
+  set name4(indice: number) {
+    this.indice = indice;
+  }
 
   @Output() eventChange = new EventEmitter();
   @Output() formulario = new EventEmitter();
@@ -100,8 +112,10 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
   }
 
   ngOnInit() {
+  //  console.log("entra al init 1")
     this.listService.findPlanCuentasDebito();
     this.listService.findPlanCuentasCredito();
+  //  console.log("entra al init")
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
       this.construirForm();
       this.loadLists();
@@ -140,20 +154,20 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
     this.store.select((stte) => stte).subscribe(
       (list) => {
         if (list.listPlanCuentasCredito !== undefined || list.listPlanCuentasDebito !== undefined) {
-
           this.formMovimiento.campos[this.getIndexForm('CuentaDebitoId')].opciones = list.listPlanCuentasDebito[0];
           this.formMovimiento.campos[this.getIndexForm('CuentaCreditoId')].opciones = list.listPlanCuentasCredito[0];
-          // console.log(list.listPlanCuentasCredito[0]);
+          if (this.formMovimiento.titulo === 'Salida')
+            this.formMovimiento.campos[this.getIndexForm('CuentaCreditoId')].opciones = list.listPlanCuentasDebito[0];
         }
       },
     );
   }
 
   private codigo_movimiento_i18n(mov: TipoMovimientoKronos): string {
-        if (MOVIMIENTOS_KRONOS_ARKA.some(m => mov.Nombre === m.kronos)) {
-        return 'movimientos.tipo.' + MOVIMIENTOS_KRONOS_ARKA.find(m => mov.Nombre === m.kronos).arka + '.nombre';
-        }
-        return mov.Nombre;
+    if (MOVIMIENTOS_KRONOS_ARKA.some(m => mov.Nombre === m.kronos)) {
+      return 'movimientos.tipo.' + MOVIMIENTOS_KRONOS_ARKA.find(m => mov.Nombre === m.kronos).arka + '.nombre';
+    }
+    return mov.Nombre;
   }
 
   construirForm() {
@@ -165,15 +179,21 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
       });
     }
     this.formMovimiento = form;
+    this.deshabilitar = !this.escritura;
 
     if (this.movimiento_id !== undefined) {
-
       // this.formulario.normalform = {...this.formulario.normalform, ...{ titulo: this.translate.instant('GLOBAL.' + this.movimiento_id)}} ;
       this.formMovimiento.titulo = this.translate.instant('GLOBAL.' + this.codigo_movimiento_i18n(this.movimiento_id));
       // this.formMovimiento.btn = this.translate.instant('GLOBAL.guardar');
       for (let i = 0; i < this.formMovimiento.campos.length; i++) {
         this.formMovimiento.campos[i].label = this.translate.instant('GLOBAL.' + this.formMovimiento.campos[i].label_i18n);
         this.formMovimiento.campos[i].placeholder = this.translate.instant('GLOBAL.placeholder_' + this.formMovimiento.campos[i].label_i18n);
+        this.formMovimiento.campos[i].deshabilitar = this.deshabilitar || (this.tipo_movimiento === 'GLOBAL.Entradas' && i === 0 &&
+          this.indice !== 0 || this.tipo_movimiento === 'GLOBAL.Salidas' && i === 1);
+/*        this.formMovimiento.campos[i].requerido = !(this.tipo_movimiento === 'GLOBAL.Entradas' && i === 0 &&
+          this.indice !== 0 || this.tipo_movimiento === 'GLOBAL.Salidas' && i === 1);*/
+        this.formMovimiento.campos[i].requerido = !(this.tipo_movimiento === 'GLOBAL.Entradas' && i === 0 &&
+          this.indice !== 0 || this.tipo_movimiento === 'GLOBAL.Salidas' && i === 1);
       }
     }
   }
@@ -189,12 +209,14 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
   }
   public loadCuentaGrupo(): void {
     if (this.subgrupo_id.Id !== undefined && this.subgrupo_id.Id !== 0) {
-      // console.log(this.movimiento_id);
       this.cargando = true;
+
+
       this.catalogoElementosService.getMovimiento(this.subgrupo_id.Id, this.movimiento_id.Id)
         .subscribe(res => {
-          // console.log(res);
+       //   console.log("La respuesta ",res)
           if (Object.keys(res[0]).length !== 0) {
+//            console.log("entra 1")
             const cuentasAsociadas = new CuentasFormulario();
             this.respuesta = <CuentaGrupo>res[0];
             const cuentaCredito = new Cuenta();
@@ -204,6 +226,8 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
             cuentasAsociadas.CuentaCreditoId = cuentaCredito;
             cuentasAsociadas.CuentaDebitoId = cuentaDebito;
             this.info_movimiento = cuentasAsociadas;
+            this.formulario.emit(this.respuesta);
+
           } else {
             const cuentasAsociadas = new CuentasFormulario();
             const cuentaCredito = new Cuenta();
@@ -213,15 +237,21 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
             cuentasAsociadas.CuentaCreditoId = cuentaCredito;
             cuentasAsociadas.CuentaDebitoId = cuentaDebito;
             this.info_movimiento = cuentasAsociadas;
-            // console.log(this.info_movimiento);
-            this.clean = !this.clean;
             this.respuesta = undefined;
+            this.respuesta2 = {};
+            this.respuesta2.SubgrupoId = this.subgrupo_id;
+            this.respuesta2.CuentaCreditoId = null;
+            this.respuesta2.CuentaDebitoId = null;
+            this.respuesta2.SubtipoMovimientoId = this.movimiento_id.Id;
+            this.respuesta2.Tipo_Texto = this.tipo_movimiento;
+            this.respuesta2.orden = this.indice;
+          //  console.log("entra 2", this.respuesta2)
+            this.formulario.emit(this.respuesta2);
           }
           this.cargando = false;
-          // console.log(this.respuesta)
-          // console.log(res[0]);
         });
     } else {
+         //   console.log("entra 3")
       const cuentasAsociadas = new CuentasFormulario();
       const cuentaCredito = new Cuenta();
       const cuentaDebito = new Cuenta();
@@ -230,19 +260,21 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
       cuentasAsociadas.CuentaCreditoId = cuentaCredito;
       cuentasAsociadas.CuentaDebitoId = cuentaDebito;
       this.info_movimiento = cuentasAsociadas;
-      this.clean = !this.clean;
+//      this.clean = !this.clean;
       this.cargando = false;
     }
   }
 
   validarForm(event) {
-    // console.log(event)
+//    console.log("valid")
     if (event.valid) {
       if (this.respuesta !== undefined) {
         const cuentaDebito = event.data.CuentasFormulario.CuentaDebitoId;
         const cuentaCredito = event.data.CuentasFormulario.CuentaCreditoId;
         this.respuesta.CuentaCreditoId = cuentaCredito.Codigo;
         this.respuesta.CuentaDebitoId = cuentaDebito.Codigo;
+        this.respuesta.Tipo_Texto = this.tipo_movimiento;
+        this.respuesta.orden = this.indice;
         this.formulario.emit(this.respuesta);
       } else {
         const cuentaDebito = event.data.CuentasFormulario.CuentaDebitoId;
@@ -252,6 +284,8 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
         this.respuesta2.CuentaCreditoId = cuentaCredito.Codigo;
         this.respuesta2.CuentaDebitoId = cuentaDebito.Codigo;
         this.respuesta2.SubtipoMovimientoId = this.movimiento_id.Id;
+        this.respuesta2.Tipo_Texto = this.tipo_movimiento;
+        this.respuesta2.orden = this.indice;
         this.formulario.emit(this.respuesta2);
       }
     }
