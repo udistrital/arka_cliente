@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild, ViewChildren, QueryList, Input } from '@a
 import { Subscription, Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import { Router, ActivatedRoute } from '@angular/router';
-import { FormBuilder, FormGroup, Validators, FormControl, FormArray } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, FormControl, FormArray, ValidatorFn, AbstractControl, ValidationErrors } from '@angular/forms';
 import { NuxeoService } from '../../../@core/utils/nuxeo.service';
 import { AuthInterceptor } from './../../../@core/_Interceptor/auth.Interceptor';
 import { MatTable } from '@angular/material';
@@ -93,6 +93,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
   }
 
   @Input('estado') estadoActa: string;
+  actaRegistrada: boolean;
   Estados_Acta: any;
   Tipos_Bien: any;
   Estados_Elemento: any;
@@ -130,7 +131,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
   } = {
       Acta: Permiso.Ninguno,
       Elementos: Permiso.Ninguno,
-  };
+    };
 
   accion: {
     envHabilitado: boolean,
@@ -138,11 +139,11 @@ export class EdicionActaRecibidoComponent implements OnInit {
     envContratista: string,
     envContratistaHabilitado: boolean,
   } = {
-    envHabilitado: false,
-    envTexto: '',
-    envContratista: '',
-    envContratistaHabilitado: false,
-  };
+      envHabilitado: false,
+      envTexto: '',
+      envContratista: '',
+      envContratistaHabilitado: false,
+    };
 
   constructor(
     private translate: TranslateService,
@@ -188,13 +189,14 @@ export class EdicionActaRecibidoComponent implements OnInit {
     this.listService.findUnidades();
     this.listService.findImpuestoIVA();
     this.defineSiHayQueValidarElementosParaEnviar();
+    this.loadContratistas();
     this.loadLists();
     this.loadProveedores();
     this.cargaPermisos();
     if (!this.userService.getPersonaId()) {
       this.errores.set('terceros', true);
     }
-    this.loadContratistas();
+    this.actaRegistrada = this.estadoActa === 'Registrada' ? true : false;
   }
 
   // Los permisos en cada sección dependen del estado del acta y del rol.
@@ -218,8 +220,8 @@ export class EdicionActaRecibidoComponent implements OnInit {
     ].map(seccion => this.permisosRoles_EstadoSeccion(this.estadoActa, seccion))
       .map(permisosSeccion => {
         return this.confService.getAccion(permisosSeccion.PuedenModificar) ? Permiso.Modificar : (
-            this.confService.getAccion(permisosSeccion.PuedenVer) ? Permiso.Ver : Permiso.Ninguno
-          );
+          this.confService.getAccion(permisosSeccion.PuedenVer) ? Permiso.Ver : Permiso.Ninguno
+        );
       });
 
     // Guardar permisos requeridos para cada parte del componente
@@ -273,7 +275,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
 
     this.accion.envHabilitado = envioProveedor || envioValidar;
     this.accion.envContratistaHabilitado = envioProveedor;
-
     // Texto del botón según el estado
     if (envioProveedor) {
       this.accion.envTexto = this.translate.instant('GLOBAL.Acta_Recibido.EdicionActa.EnviarProveedorButton');
@@ -362,28 +363,28 @@ export class EdicionActaRecibidoComponent implements OnInit {
         this.Dependencias = list.listDependencias[0];
         this.Sedes = list.listSedes[0];
         this.dataService3 = this.completerService.local(this.Dependencias, 'Nombre', 'Nombre');
-          this.cargaActa();
+        this.cargaActa();
       },
     );
   }
 
   private cargaActa() {
     if (!this.actaCargada &&
-    this.Estados_Acta !== undefined &&
-    this.Estados_Elemento !== undefined &&
-    this.Tipos_Bien !== undefined &&
-    this.Unidades !== undefined &&
-    this.Tarifas_Iva !== undefined &&
-    this.Dependencias !== undefined &&
-    this.Sedes !== undefined &&
-    this._Acta_Id !== undefined
+      this.Estados_Acta !== undefined &&
+      this.Estados_Elemento !== undefined &&
+      this.Tipos_Bien !== undefined &&
+      this.Unidades !== undefined &&
+      this.Tarifas_Iva !== undefined &&
+      this.Dependencias !== undefined &&
+      this.Sedes !== undefined &&
+      this._Acta_Id !== undefined &&
+      this.Contratistas !== undefined &&
+      this.Proveedores !== undefined
     ) {
-          this.Actas_Recibido.getTransaccionActa(this._Acta_Id).subscribe(Acta => {
-            // console.log(Acta);
-            this.Cargar_Formularios(Acta[0]);
-            // console.log('ok');
-            this.actaCargada = true;
-          });
+      this.Actas_Recibido.getTransaccionActa(this._Acta_Id).subscribe(Acta => {
+        this.Cargar_Formularios(Acta[0]);
+        this.actaCargada = true;
+      });
     }
   }
 
@@ -403,9 +404,13 @@ export class EdicionActaRecibidoComponent implements OnInit {
     } else return [];
   }
   muestraContratista(contr: TerceroCriterioContratista): string {
-    // console.log({contr});
-    if (contr) {
+    // console.log(contr);
+    if (contr && contr.Identificacion) {
       return contr.Identificacion.Numero + ' - ' + contr.Tercero.NombreCompleto;
+    } else {
+      if (contr) {
+        return contr.Tercero.NombreCompleto;
+      }
     }
   }
 
@@ -449,32 +454,32 @@ export class EdicionActaRecibidoComponent implements OnInit {
       idtercero = res[0].TerceroId.Id;
 
       this.Actas_Recibido.getEmailTercero(idtercero).subscribe((restercero: any) => {
-          if (restercero == null) {
-             return '';
-          }
-          const objemail = JSON.parse(restercero[0].Dato);
-          const objetomail = {
-              'to': [objemail.email],
-              'cc': [],
-              'bcc': [],
-              'subject': 'El subject pendiente por definir',
-              'TemplateName': 'invitacion_par_evaluador.html',
-              'TemplateData': {
-                  'Destinatario': 'Nombre docente',
-                  'Remitente': 'Oficina de docencia',
-                  'OtroDato': 'x_x',
-               },
-          };
-          this.Actas_Recibido.sendCorreo(objetomail).subscribe((resemail: any) => {
-              if (resemail == null) {}
-          });
+        if (restercero == null) {
+          return '';
+        }
+        const objemail = JSON.parse(restercero[0].Dato);
+        const objetomail = {
+          'to': [objemail.email],
+          'cc': [],
+          'bcc': [],
+          'subject': 'El subject pendiente por definir',
+          'TemplateName': 'invitacion_par_evaluador.html',
+          'TemplateData': {
+            'Destinatario': 'Nombre docente',
+            'Remitente': 'Oficina de docencia',
+            'OtroDato': 'x_x',
+          },
+        };
+        this.Actas_Recibido.sendCorreo(objetomail).subscribe((resemail: any) => {
+          if (resemail == null) { }
+        });
       });
 
     });
 
   }
 
-  Cargar_Formularios( transaccion_: TransaccionActaRecibido ) {
+  Cargar_Formularios(transaccion_: TransaccionActaRecibido) {
     this.Actas_Recibido.getSedeDependencia(transaccion_.ActaRecibido.UbicacionId).subscribe(res => {
       let valor = '';
       if (res[0].hasOwnProperty('EspacioFisicoId') && res[0].EspacioFisicoId.hasOwnProperty('Codigo')) {
@@ -483,7 +488,8 @@ export class EdicionActaRecibidoComponent implements OnInit {
       const Form2 = this.fb.array([]);
       const elementos = new Array<any[]>();
       transaccion_.SoportesActa.forEach((Soporte, index) => {
-        this.ActaEspecial = Soporte.SoporteActa.ProveedorId.toString() === '0' ? true : false;
+        // this.ActaEspecial = Soporte.SoporteActa.ProveedorId.toString() === '0' ? true : false;
+        this.ActaEspecial = false;
         const Formulario__2 = this.fb.group({
           Id: [Soporte.SoporteActa.Id],
           Proveedor: [
@@ -493,22 +499,23 @@ export class EdicionActaRecibidoComponent implements OnInit {
                   proveedor.Tercero.Id === Soporte.SoporteActa.ProveedorId),
               disabled: !this.getPermisoEditar(this.permisos.Acta),
             },
-            Validators.required,
+            { validators: this.actaRegistrada ? [this.validarTercero()] : [Validators.required, this.validarTercero()] },
           ],
           Consecutivo: [
             {
               value: Soporte.SoporteActa.Consecutivo,
               disabled: !this.getPermisoEditar(this.permisos.Acta),
             },
-            Validators.required,
+            { validators: this.actaRegistrada ? [] : [Validators.required] },
           ],
           Fecha_Factura: [
             {
-              value: this.dateService.parse(Soporte.SoporteActa.FechaSoporte.toString(), 'MM dd yyyy'),
+              value: new Date(Soporte.SoporteActa.FechaSoporte) > new Date('1945') ?
+              Soporte.SoporteActa.FechaSoporte.toString() : '',
               disabled: !this.getPermisoEditar(this.permisos.Acta),
             },
-            Validators.required],
-          Soporte: [Soporte.SoporteActa.DocumentoId, Validators.required],
+            { validators: this.actaRegistrada ? [] : [Validators.required] }],
+          Soporte: [Soporte.SoporteActa.DocumentoId + '.pdf', Validators.required],
         });
         this.Validador[index] = true;
         this.uidDocumento[index] = Soporte.SoporteActa.DocumentoId;
@@ -530,7 +537,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
               Subtotal: _Elemento.ValorTotal,
               Descuento: _Elemento.Descuento,
               PorcentajeIvaId: this.Tarifas_Iva.find(tarifa => tarifa.Tarifa === _Elemento.PorcentajeIvaId) ?
-                                this.Tarifas_Iva.find(tarifa => tarifa.Tarifa === _Elemento.PorcentajeIvaId).Tarifa : '',
+                this.Tarifas_Iva.find(tarifa => tarifa.Tarifa === _Elemento.PorcentajeIvaId).Tarifa : '',
               ValorIva: _Elemento.ValorIva,
               ValorTotal: _Elemento.ValorFinal,
             };
@@ -557,7 +564,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
         }
         return '';
       })();
-
       const dependencia = (() => {
         const criterio = x => res[0].hasOwnProperty('DependenciaId') && x.Id === res[0].DependenciaId.Id;
         if (this.Dependencias.some(criterio)) {
@@ -574,16 +580,16 @@ export class EdicionActaRecibidoComponent implements OnInit {
               value: sede,
               disabled: !this.getPermisoEditar(this.permisos.Acta),
             },
-            Validators.required,
+            { validators: this.actaRegistrada ? [] : [Validators.required] },
           ],
-          Dependencia: [ dependencia,
-            Validators.required],
+          Dependencia: [dependencia,
+            { validators: this.actaRegistrada ? [] : [Validators.required] }],
           Ubicacion: [
             {
-              value: transaccion_.ActaRecibido.UbicacionId,
+              value: transaccion_.ActaRecibido.UbicacionId === 0 ? '' : transaccion_.ActaRecibido.UbicacionId,
               disabled: !this.getPermisoEditar(this.permisos.Acta),
             },
-            Validators.required,
+            { validators: this.actaRegistrada ? [] : [Validators.required] },
           ],
           Contratista: [
             {
@@ -595,39 +601,25 @@ export class EdicionActaRecibidoComponent implements OnInit {
               })(),
               disabled: !this.getPermisoEditar(this.permisos.Acta),
             },
-            Validators.required,
+            [Validators.required, this.validarTercero()],
           ],
         }),
         Formulario2: Form2,
         Formulario3: this.fb.group({
-          Datos_Adicionales: [transaccion_.ActaRecibido.Observaciones, Validators.required],
+          Datos_Adicionales: [transaccion_.ActaRecibido.Observaciones,
+          { validators: this.actaRegistrada ? [] : [Validators.required] }],
         }),
-      });
-      this.Traer_Relacion_Ubicaciones(sede, dependencia);
-      this.firstForm.get('Formulario1').statusChanges.subscribe(change => this.checkValidness(1, change));
-      this.firstForm.get('Formulario2').statusChanges.subscribe(change => this.checkValidness(2, change));
-      this.firstForm.get('Formulario3').statusChanges.subscribe(change => this.checkValidness(3, change));
+      }, { validators: this.checkValidness });
+      sede && dependencia ? this.Traer_Relacion_Ubicaciones(sede, dependencia) : null;
       this.carga_agregada = true;
+
       this.contratistasFiltrados = this.firstForm.get('Formulario1').get('Contratista').valueChanges.pipe(
         startWith(''),
         map(val => typeof val === 'string' ? val : this.muestraContratista(val)),
         map(nombre => this.filtroContratistas(nombre)),
       );
+      // console.log(this.contratistasFiltrados)
     });
-  }
-
-  private checkValidness(form, change) {
-    // console.log({form, change});
-    const errorForms = !(
-      this.firstForm.get('Formulario1').valid
-      && this.firstForm.get('Formulario2').valid
-      && this.firstForm.get('Formulario3').valid
-    );
-    if (errorForms) {
-      this.errores.set('formularios', true);
-    } else {
-      this.errores.delete('formularios');
-    }
   }
 
   Cargar_Formularios2(transaccion_: any, elementos_: any) {
@@ -637,9 +629,9 @@ export class EdicionActaRecibidoComponent implements OnInit {
     for (const Soporte of transaccion_.Formulario2) {
       const Formulario__2 = this.fb.group({
         Id: [''],
-        Proveedor: [Soporte.Proveedor, Validators.required],
-        Consecutivo: [Soporte.Consecutivo, Validators.required],
-        Fecha_Factura: [Soporte.Fecha_Factura, Validators.required],
+        Proveedor: [Soporte.Proveedor],
+        Consecutivo: [Soporte.Consecutivo],
+        Fecha_Factura: [Soporte.Fecha_Factura],
         Soporte: [Soporte.Soporte, Validators.required],
       });
       Form2.push(Formulario__2);
@@ -649,14 +641,14 @@ export class EdicionActaRecibidoComponent implements OnInit {
     this.firstForm = this.fb.group({
       Formulario1: this.fb.group({
         Id: [''],
-        Sede: [transaccion_.Formulario1.Sede, Validators.required],
-        Dependencia: [transaccion_.Formulario1.Dependencia, Validators.required],
-        Ubicacion: [transaccion_.Formulario1.Ubicacion, Validators.required],
+        Sede: [transaccion_.Formulario1.Sede],
+        Dependencia: [transaccion_.Formulario1.Dependencia],
+        Ubicacion: [transaccion_.Formulario1.Ubicacion],
         Contratista: [transaccion_.Formulario1.Contratista, Validators.required],
       }),
       Formulario2: Form2,
       Formulario3: this.fb.group({
-        Datos_Adicionales: [transaccion_.Formulario3.Datos_Adicionales, Validators.required],
+        Datos_Adicionales: [transaccion_.Formulario3.Datos_Adicionales],
       }),
     });
     this.carga_agregada = true;
@@ -676,33 +668,39 @@ export class EdicionActaRecibidoComponent implements OnInit {
   }
 
   Traer_Relacion_Ubicaciones(sede, dependencia) {
+    sede = (sede) ? sede : this.firstForm.get('Formulario1').get('Sede').value;
+    dependencia = (dependencia) ? dependencia : this.firstForm.get('Formulario1').get('Dependencia').value;
+    if (this.firstForm.get('Formulario1').get('Sede').valid && this.firstForm.get('Formulario1').get('Dependencia').valid &&
+      sede !== '' && dependencia !== '' && this.Sedes && this.Dependencias) {
       this.UbicacionesFiltradas = [];
       this.carga_agregada ? this.firstForm.patchValue({ Formulario1: { Ubicacion: '' } }) : null;
       const transaccion: any = {};
       transaccion.Sede = this.Sedes.find((x) => x.Id === parseFloat(sede));
       transaccion.Dependencia = this.Dependencias.find((x) => x.Nombre === dependencia);
       this.Actas_Recibido.postRelacionSedeDependencia(transaccion).subscribe((res: any) => {
-        if (isObject(res[0].Relaciones))
+        if (isObject(res[0].Relaciones)) {
           this.UbicacionesFiltradas = res[0].Relaciones;
+        }
       });
+    }
   }
 
 
   get Formulario_1(): FormGroup {
     return this.fb.group({
       Id: [0],
-      Sede: ['', Validators.required],
-      Dependencia: ['', Validators.required],
-      Ubicacion: ['', Validators.required],
+      Sede: [''],
+      Dependencia: [''],
+      Ubicacion: [''],
       Contratista: ['', Validators.required],
     });
   }
   get Formulario_2(): FormGroup {
     return this.fb.group({
       Id: [0],
-      Proveedor: ['', Validators.required],
-      Consecutivo: ['', Validators.required],
-      Fecha_Factura: ['', Validators.required],
+      Proveedor: [''],
+      Consecutivo: [''],
+      Fecha_Factura: [''],
       Soporte: ['', Validators.required],
       Elementos: this.fb.array([this.Elementos]),
     });
@@ -727,12 +725,11 @@ export class EdicionActaRecibidoComponent implements OnInit {
   }
   get Formulario_3(): FormGroup {
     return this.fb.group({
-      Datos_Adicionales: ['', Validators.required],
+      Datos_Adicionales: [''],
     });
   }
 
   download(index) {
-
     const new_tab = window.open(this.fileDocumento[index].urlTemp, this.fileDocumento[index].urlTemp, '_blank');
     new_tab.onload = () => {
       new_tab.location = this.fileDocumento[index].urlTemp;
@@ -772,7 +769,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
     // console.log(event.target.files);
     // console.log(event.srcElement.files);
     const max_size = 1;
-
     if (event.target.files.length > 0) {
       const file = event.target.files[0];
       if (file.type === 'application/pdf') {
@@ -870,14 +866,14 @@ export class EdicionActaRecibidoComponent implements OnInit {
   private async onFirstSubmit(siguienteEtapa: boolean = false, enviara: number = 0) {
     this.guardando = true;
     if (!siguienteEtapa) {
-    const start = async () => {
-      await this.asyncForEach(this.fileDocumento, async (file) => {
-        await this.postSoporteNuxeo([file]);
-        // console.log(file);
-      });
-      // console.log('Done');
-    };
-    await start();
+      const start = async () => {
+        await this.asyncForEach(this.fileDocumento, async (file) => {
+          await this.postSoporteNuxeo([file]);
+          // console.log(file);
+        });
+        // console.log('Done');
+      };
+      await start();
     }
     this.Datos = this.firstForm.value;
     // console.log(this.Elementos__Soporte);
@@ -897,7 +893,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
     });
     Transaccion_Acta.SoportesActa = Soportes;
     // console.log({Transaccion_Acta});
-    // /*
     this.Actas_Recibido.putTransaccionActa(Transaccion_Acta, Transaccion_Acta.ActaRecibido.Id).subscribe((res: any) => {
       // console.log(res);
       if (res !== null) {
@@ -910,9 +905,9 @@ export class EdicionActaRecibidoComponent implements OnInit {
           idDescripcion = { id: res.ActaRecibido.Id };
         } else {
           titulo = 'GLOBAL.Acta_Recibido.EdicionActa.ModificadaTitle';
-          idTitulo = {ID: res.ActaRecibido.Id};
+          idTitulo = { ID: res.ActaRecibido.Id };
           descripcion = 'GLOBAL.Acta_Recibido.EdicionActa.Modificada2';
-          idDescripcion = {id: res.ActaRecibido.Id};
+          idDescripcion = { id: res.ActaRecibido.Id };
         }
         (Swal as any).fire({
           type: 'success',
@@ -920,22 +915,22 @@ export class EdicionActaRecibidoComponent implements OnInit {
           text: this.translate.instant(descripcion, idDescripcion),
         }).then((willDelete) => {
           if (willDelete.value && siguienteEtapa) {
-              const formularios  = this.firstForm.value;
-              const cedulaprov = formularios.Formulario2[0].Proveedor.Identificacion.Numero;
-              const cedularev = formularios.Formulario1.Contratista.Identificacion.Numero;
-              if (enviara === 1) {
-                 this.EnviarEmail(cedulaprov);
-                 this.EnviarEmail(cedularev);
-              }
-              if (enviara === 2) {
-                 this.EnviarEmail(cedularev);
-              }
+            const formularios = this.firstForm.value;
+            const cedulaprov = formularios.Formulario2[0].Proveedor.Identificacion.Numero;
+            const cedularev = formularios.Formulario1.Contratista.Identificacion.Numero;
+            if (enviara === 1) {
+              this.EnviarEmail(cedulaprov);
+              this.EnviarEmail(cedularev);
+            }
+            if (enviara === 2) {
+              this.EnviarEmail(cedularev);
+            }
 
-              // Se usa una redirección "dummy", intermedia. Ver
-              // https://stackoverflow.com/a/49509706/3180052
-              this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
-                this.router.navigateByUrl('/pages/acta_recibido/consulta_acta_recibido');
-              });
+            // Se usa una redirección "dummy", intermedia. Ver
+            // https://stackoverflow.com/a/49509706/3180052
+            this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+              this.router.navigateByUrl('/pages/acta_recibido/consulta_acta_recibido');
+            });
           }
         });
       } else {
@@ -955,7 +950,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
       }
       this.guardando = false;
     });
-    // */
   }
 
   Registrar_Acta(Datos: any, Datos2: any): ActaRecibido {
@@ -987,7 +981,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
     return Historico_;
   }
   Registrar_Soporte(Datos: any, Elementos_: any, __: ActaRecibido): TransaccionSoporteActa {
-    // console.log({Datos});
     const Soporte_Acta = new SoporteActa();
     const Transaccion = new TransaccionSoporteActa();
     Soporte_Acta.Id = parseFloat(Datos.Id);
@@ -996,8 +989,8 @@ export class EdicionActaRecibidoComponent implements OnInit {
     Soporte_Acta.Consecutivo = Datos.Consecutivo;
     Soporte_Acta.FechaCreacion = new Date();
     Soporte_Acta.FechaModificacion = new Date();
-    Soporte_Acta.FechaSoporte = Datos.Fecha_Factura;
-    Soporte_Acta.ProveedorId = this.ActaEspecial ? 0 : Datos.Proveedor.Tercero.Id;
+    Soporte_Acta.FechaSoporte = Datos.Fecha_Factura ? Datos.Fecha_Factura : null;
+    Soporte_Acta.ProveedorId = this.ActaEspecial ? 0 : Datos.Proveedor ? Datos.Proveedor.Tercero.Id : 0;
     Transaccion.SoporteActa = Soporte_Acta;
     Transaccion.Elementos = this.Registrar_Elementos(Elementos_, Soporte_Acta);
 
@@ -1176,9 +1169,9 @@ export class EdicionActaRecibidoComponent implements OnInit {
     const codigoL10n_titulo = L10n_base + 'DatosVeridicosTitle';
     let codigoL10n_desc = '';
     if (this.estadoActa !== 'Registrada') {
-       codigoL10n_desc = L10n_base + 'DatosVeridicos2';
+      codigoL10n_desc = L10n_base + 'DatosVeridicos2';
     } else {
-       codigoL10n_desc = L10n_base + ((enviara === 1) ? 'DatosVeridicos3' : 'DatosVeridicos4');
+      codigoL10n_desc = L10n_base + ((enviara === 1) ? 'DatosVeridicos3' : 'DatosVeridicos4');
     }
     (Swal as any).fire({
       title: this.translate.instant(codigoL10n_titulo),
@@ -1197,7 +1190,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
   }
 
   getGranSubtotal() {
-    if (this.Totales !== []) {
+    if (this.Totales !== [] && this.Totales !== undefined) {
       return this.Totales.map(t => t.Subtotal).reduce((acc, value) => parseFloat(acc) + parseFloat(value));
     } else {
       return '0';
@@ -1205,7 +1198,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
   }
   getGranDescuentos() {
 
-    if (this.Totales !== []) {
+    if (this.Totales !== [] && this.Totales !== undefined) {
       return this.Totales.map(t => t.Descuento).reduce((acc, value) => parseFloat(acc) + parseFloat(value));
     } else {
       return '0';
@@ -1213,7 +1206,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
   }
   getGranValorIva() {
 
-    if (this.Totales !== []) {
+    if (this.Totales !== [] && this.Totales !== undefined) {
       return this.Totales.map(t => t.ValorIva).reduce((acc, value) => parseFloat(acc) + parseFloat(value));
     } else {
       return '0';
@@ -1221,7 +1214,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
   }
   getGranTotal() {
 
-    if (this.Totales !== []) {
+    if (this.Totales !== [] && this.Totales !== undefined) {
       return this.Totales.map(t => t.ValorTotal).reduce((acc, value) => parseFloat(acc) + parseFloat(value));
     } else {
       return '0';
@@ -1235,5 +1228,25 @@ export class EdicionActaRecibidoComponent implements OnInit {
       sessionStorage.setItem('Formulario_Edicion', JSON.stringify(this.firstForm.value));
       sessionStorage.setItem('Elementos_Formulario_Edicion', JSON.stringify(this.Elementos__Soporte));
     }
+  }
+
+  private validarTercero(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const valor = control.value;
+      const checkStringLength = valor && typeof (valor) === 'string' && valor.length < 4 && valor !== '' ? true : false;
+      const checkInvalidString = valor && typeof (valor) === 'string' && valor !== '' ? true : false;
+      const checkInvalidTercero = valor && typeof (valor) === 'object' && !valor.Tercero ? true : false;
+      return checkStringLength ? { errorLongitudMinima: true } :
+        checkInvalidString || checkInvalidTercero ? { terceroNoValido: true } : null;
+    };
+  }
+
+  private checkValidness: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
+    const errors = !(
+      control.get('Formulario1').valid &&
+      control.get('Formulario2').valid &&
+      control.get('Formulario3').valid);
+    errors ? this.errores.set('formularios', true) : this.errores.delete('formularios');
+    return errors ? { formularios: true } : null;
   }
 }

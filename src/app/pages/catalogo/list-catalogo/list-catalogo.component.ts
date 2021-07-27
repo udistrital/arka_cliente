@@ -117,8 +117,8 @@ export class ListCatalogoComponent implements OnInit {
 
   onDelete(event): void {
     const opt: any = {
-      title: 'Desactivar?',
-      text: 'Catalogo desactivado!',
+      title: this.translate.instant('GLOBAL.catalogo.desactivar'),
+      text:  this.translate.instant('GLOBAL.catalogo.validacion_desactivar'),
       icon: 'warning',
       buttons: true,
       dangerMode: true,

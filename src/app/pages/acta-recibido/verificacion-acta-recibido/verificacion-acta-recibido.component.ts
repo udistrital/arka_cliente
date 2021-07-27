@@ -360,6 +360,7 @@ export class VerificacionActaRecibidoComponent implements OnInit {
 
   private onFirstSubmit(aceptar: boolean = false) {
     this.Datos = this.firstForm.value;
+    this.Datos.Formulario3 = this.firstForm.get('Formulario3').get('Datos_Adicionales').value;
     const Transaccion_Acta = new TransaccionActaRecibido();
     Transaccion_Acta.ActaRecibido = this.Registrar_Acta(this.Datos.Formulario1, this.Datos.Formulario3);
     const nuevoEstado = aceptar ? EstadoActa_t.Aceptada : EstadoActa_t.EnModificacion;
@@ -372,7 +373,6 @@ export class VerificacionActaRecibidoComponent implements OnInit {
     Transaccion_Acta.SoportesActa = Soportes;
 
     // console.log({Transaccion_Acta});
-    // /*
     this.Actas_Recibido.putTransaccionActa(Transaccion_Acta, Transaccion_Acta.ActaRecibido.Id).subscribe((res: any) => {
       const base_i18n = 'GLOBAL.Acta_Recibido.VerificacionActa.';
       let title: string;
@@ -397,7 +397,6 @@ export class VerificacionActaRecibidoComponent implements OnInit {
         (Swal as any).fire({type: 'error', title, text});
       }
     });
-    // */
   }
 
   Registrar_Acta(Datos: any, Datos2: any): ActaRecibido {
@@ -574,19 +573,19 @@ export class VerificacionActaRecibidoComponent implements OnInit {
       if (result.value) {
         (Swal as any).mixin({
           input: 'text',
-          confirmButtonText: 'Rechazar',
+          confirmButtonText: this.translate.instant('GLOBAL.Acta_Recibido.VerificacionActa.Rechazar'),
           showCancelButton: true,
           progressSteps: ['1'],
         }).queue([
           {
-            title: 'Observaciones',
-            text: 'Inserte la razon de rechazo',
+            title: this.translate.instant('GLOBAL.Acta_Recibido.VerificacionActa.Observaciones'),
+            text: this.translate.instant('GLOBAL.Acta_Recibido.VerificacionActa.RechazadaRazon'),
           },
         ]).then((result2) => {
           if (result2.value) {
-            const obs = this.firstForm.value;
+            const obs = this.firstForm.get('Formulario3').get('Datos_Adicionales').value;
             this.firstForm.get('Formulario3').get('Datos_Adicionales').setValue(
-              obs.Formulario3.Datos_Adicionales + ' // Razon de rechazo: ' + result2.value,
+              obs + ' // Razón de rechazo: ' + result2.value,
               );
             this.onFirstSubmit(false);
           }

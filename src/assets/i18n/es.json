@@ -181,6 +181,12 @@
     }
   },
   "GLOBAL": {
+    "Errores": {
+      "ErrorTercero": "Ingrese un tercero válido",
+      "ErrorMinLength": "Escriba {{NUM}} o más caracteres",
+      "ErrorFecha": "Ingrese una fecha válida",
+      "ErrorRequerido": "Este campo es obligatorio"
+    },
     "Acta_Recibido":{
       "ErrorAnularMsg": "No se puede anular el Acta {{ACTA}} por tener estado \"{{ESTADO}}\"",
       "Anular": "Anular Acta de Recibido",
@@ -192,6 +198,7 @@
       "id_forma2": "Acta N° {{ID}}",
       "ActaNo": "Acta de Recibido N°",
       "ContratistaAsignado": "Contratista Asignado",
+      "Ver": "Ver documento",
       "Errores": {
         "Mensaje": "Corrija primero los siguientes problemas:",
         "Terceros": "Su usuario no está registrado en la Base de Datos de Terceros",
@@ -423,6 +430,7 @@
         "DatosVeridicosTitle":"Está Seguro?",
         "VerificadaPre":"Está seguro de que desea verificar el acta?",
         "RechazadaPre":"Está seguro de que desea rechazar el acta?",
+        "RechazadaRazon": "Inserte la razón de rechazo",
         "VerificadaTitle":"Acta N° {{ID}} Verificada",
         "Verificada":"El Acta N° {{ID}} ha sido verificada de forma exitosa",
         "VerificadaTitleNO":"Acta No Verificada",
@@ -433,6 +441,8 @@
         "RechazadaNO":"El Acta no ha podido ser Devuelta de forma exitosa, intente más tarde"
       }
     },
+    "error_soporte_title":"Error al obtener el soporte",
+    "error_soporte_text":"Soporte corrupto o no registrado.",
     "fecha_inicio":"Fecha de inicio",
     "fecha_fin":"Fecha de finalizacion",
     "fechainicio":"Fecha de inicio",
@@ -562,6 +572,7 @@
       "claseInfo": "Seleccione una fila correspondiente a una Clase",
       "elementosInfo": "Para agregar elementos a una clase, seleccione una fila correspondiente a una Clase",
       "desactivar": "Desactivar Catálogo",
+      "validacion_desactivar" :"¿Está seguro que desea desactivar el catálogo?",
       "lista": "Lista de Catálogos"
     },
 
@@ -699,6 +710,7 @@
     "regresar": "regresar",
     "operacion_exitosa": "Operación Exitosa",
     "consultar_entrada": "Consultar Entradas",
+    "consultar_salida" : "Consultar Salidas",
     "mensaje_consulta_entrada": "Lista de entradas realizadas. Para ver el detalle de la entrada presione el ícono de acciones ubicado al costado derecho de la tabla.",
     "consecutivo": "Consecutivo",
     "fecha_entrada": "Fecha de Entrada",
@@ -783,6 +795,10 @@
         "EID": {
           "nombre": "Intangibles desarrollados",
           "descripcion": "Entrada por Intangibles desarrollados al Interior de los Entes y Entidades"
+        },
+        "EAMA": {
+          "nombre": "Entrada Anulada",
+          "descripcion": "Entrada anulada por medio del módulo de ajustes"
         },
         "EBEMP": {
           "nombre": "Entregados de manera Provisional",

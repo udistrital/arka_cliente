@@ -33,6 +33,7 @@ const MOVIMIENTOS_KRONOS_ARKA = [
   { arka: 'EIA', kronos: 'Intangibles' },
   { arka: 'EID', kronos: 'Desarrollo interior' },
   { arka: 'EPPA', kronos: 'Aprovechamientos' },
+  { arka: 'EAMA', kronos: 'Entrada Anulada' },
   { arka: 'EPR', kronos: 'Reposición' },
   { arka: 'ESI', kronos: 'Sobrante' },
   { arka: 'ET', kronos: 'Terceros' },
