@@ -457,22 +457,24 @@ export class EdicionActaRecibidoComponent implements OnInit {
         if (restercero == null) {
           return '';
         }
-        const objemail = JSON.parse(restercero[0].Dato);
-        const objetomail = {
-          'to': [objemail.email],
-          'cc': [],
-          'bcc': [],
-          'subject': 'El subject pendiente por definir',
-          'TemplateName': 'invitacion_par_evaluador.html',
-          'TemplateData': {
-            'Destinatario': 'Nombre docente',
-            'Remitente': 'Oficina de docencia',
-            'OtroDato': 'x_x',
-          },
-        };
-        this.Actas_Recibido.sendCorreo(objetomail).subscribe((resemail: any) => {
-          if (resemail == null) { }
-        });
+        if (restercero[0].Dato) {
+          const objemail = JSON.parse(restercero[0].Dato);
+          const objetomail = {
+            'to': [objemail.Data],
+            'cc': [],
+            'bcc': [],
+            'subject': 'El subject pendiente por definir',
+            'TemplateName': 'invitacion_par_evaluador.html',
+            'TemplateData': {
+              'Destinatario': 'Nombre docente',
+              'Remitente': 'Oficina de docencia',
+              'OtroDato': 'x_x',
+            },
+          };
+          this.Actas_Recibido.sendCorreo(objetomail).subscribe((resemail: any) => {
+            if (resemail == null) { }
+          });
+        }
       });
 
     });
