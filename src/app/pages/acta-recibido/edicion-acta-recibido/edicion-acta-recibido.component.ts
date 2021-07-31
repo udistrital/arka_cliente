@@ -386,8 +386,8 @@ export class EdicionActaRecibidoComponent implements OnInit {
     return new Promise<void>(async (resolve, reject) => {
       this.tercerosHelper.getTercerosByCriterio('contratista').subscribe(res => {
         this.Contratistas = res;
-        this.tercerosHelper.getTercerosByCriterio('proveedor').subscribe(res => {
-          this.Proveedores = res;
+        this.tercerosHelper.getTercerosByCriterio('proveedor').subscribe(resP => {
+          this.Proveedores = resP;
           this.cargandoTerceros = false;
           resolve();
         });
@@ -507,7 +507,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
               disabled: !this.getPermisoEditar(this.permisos.Acta),
             },
             { validators: this.actaRegistrada ? [] : [Validators.required] }],
-          Soporte: [Soporte.SoporteActa.DocumentoId + '.pdf', Validators.required],
+          Soporte: [Soporte.SoporteActa.DocumentoId, Validators.required],
         });
         this.Validador[index] = true;
         this.uidDocumento[index] = Soporte.SoporteActa.DocumentoId;
