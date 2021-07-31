@@ -135,11 +135,11 @@ export class RegistroActaRecibidoComponent implements OnInit {
     this.listService.findSedes();
     this.listService.findProveedores();
     this.listService.findEstadosActa();
-    this.loadLists();
-    this.loadProveedores();
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
     });
+    this.initForms();
     this.searchStr2 = new Array<string>();
+  }
     if (sessionStorage.Formulario_Registro == null) {
       this.Cargar_Formularios();
     } else {
