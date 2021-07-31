@@ -309,7 +309,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
     for (const Soporte of transaccion_.Formulario2) {
       const Formulario__2 = this.fb.group({
         Id: [''],
-        Proveedor: [Soporte.Proveedor.Tercero ? Soporte.Proveedor.Tercero : '', [this.validarTercero()]],
+        Proveedor: [Soporte.Proveedor.Tercero ? Soporte.Proveedor : '', [this.validarTercero()]],
         Consecutivo: [Soporte.Consecutivo],
         Fecha_Factura: [Soporte.Fecha_Factura ? this.dateService.parse(Soporte.Fecha_Factura, 'MM dd yyyy') : ''],
         Soporte: ['', Validators.required],
@@ -330,8 +330,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
       Formulario2: Form2,
     });
     this.Traer_Relacion_Ubicaciones(transaccion_.Formulario1.Ubicacion);
-    this.loadContratistas();
-    // this.loadProveedores();
+    this.contratistasFiltrados = this.cambiosContratista(this.firstForm.get('Formulario1').get('Contratista'));
   }
 
   get Formulario_1(): FormGroup {
