@@ -298,13 +298,10 @@ export class RegistroActaRecibidoComponent implements OnInit {
   }
 
   Cargar_Formularios() {
-    this.proveedoresFiltrados = this.cambiosProveedor(this.Formulario_2.get('Proveedor'));
     this.firstForm = this.fb.group({
       Formulario1: this.Formulario_1,
-      Formulario2: this.fb.array([this.Formulario_2]),
+      Formulario2: this.fb.array([this.Formulario_2])
     });
-    this.loadContratistas();
-    // this.loadProveedores();
   }
 
   Cargar_Formularios2(transaccion_: any) {
@@ -338,20 +335,24 @@ export class RegistroActaRecibidoComponent implements OnInit {
   }
 
   get Formulario_1(): FormGroup {
-    return this.fb.group({
+    const form1 =this.fb.group({
       Sede: [''],
       Dependencia: [''],
       Ubicacion: [''],
       Contratista: ['', [Validators.required, this.validarTercero()]],
     });
+    this.contratistasFiltrados = this.cambiosContratista(form1.get('Contratista'));
+    return form1;
   }
   get Formulario_2(): FormGroup {
-    return this.fb.group({
+    const form2 = this.fb.group({
       Proveedor: ['', [this.validarTercero()]],
       Consecutivo: [''],
       Fecha_Factura: [''],
       Soporte: ['', Validators.required],
     });
+    this.proveedoresFiltrados = this.cambiosProveedor(form2.get('Proveedor'));
+    return form2;
   }
 
   addSoportes() {
