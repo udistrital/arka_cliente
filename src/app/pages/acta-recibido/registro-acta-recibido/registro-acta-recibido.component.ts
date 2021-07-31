@@ -177,37 +177,26 @@ export class RegistroActaRecibidoComponent implements OnInit {
       });
     }
   }
-
-  public loadLists() {
-    this.store.select((state) => state).subscribe(
-      (list) => {
-        this.Ubicaciones = list.listUbicaciones[0];
-        this.Sedes = list.listSedes[0];
-        this.Dependencias = list.listDependencias[0];
-        this.Estados_Acta = list.listEstadosActa[0];
-        // this.Proveedores = list.listProveedores[0];
-        // this.dataService2 = this.completerService.local(this.Proveedores, 'compuesto', 'compuesto');
-        this.dataService3 = this.completerService.local(this.Dependencias, 'Nombre', 'Nombre');
-        // this.dataService = this.completerService.local(this.Ubicaciones, 'Nombre', 'Nombre');
-      },
-    );
+  public loadLists(): Promise<void> {
+    return new Promise<void>(async (resolve) => {
+      this.store.select((state) => state).subscribe(list => {
+        list.listSedes[0] && list.listDependencias[0] && list.listEstadosActa[0] ? (
+          this.Sedes = list.listSedes[0],
+          this.Dependencias = list.listDependencias[0],
+          this.Estados_Acta = list.listEstadosActa[0],
+          this.dataService3 = this.completerService.local(this.Dependencias, 'Nombre', 'Nombre'),
+          resolve()) : null;
+      });
+    });
   }
 
-  private loadContratistas(): void {
-    if (this.cargando_contratistas) {
+  private loadContratistas() {
+    return new Promise<void>(async (resolve) => {
       this.tercerosHelper.getTercerosByCriterio('contratista').subscribe(res => {
         this.Contratistas = res;
-        // console.log({Contratistas: this.Contratistas});
-        this.contratistasFiltrados = this
-          .firstForm.get('Formulario1').get('Contratista').valueChanges
-          .pipe(
-            startWith(''),
-            map(val => typeof val === 'string' ? val : this.muestraContratista(val)),
-            map(nombre => this.filtroContratistas(nombre)),
-          );
-        this.cargando_contratistas = false;
+        resolve();
       });
-    }
+    });
   }
   private filtroContratistas(nombre: string): TerceroCriterioContratista[] {
     if (nombre.length >= 4 && Array.isArray(this.Contratistas)) {
@@ -223,18 +212,15 @@ export class RegistroActaRecibidoComponent implements OnInit {
       }
   }
 
-  private loadProveedores(): void {
-    if (this.listo.get('proveedores') === undefined) {
-      this.listo.set('proveedores', false);
+  private loadProveedores(): Promise<any> {
+    return new Promise<void>(async (resolve) => {
       this.tercerosHelper.getTercerosByCriterio('proveedor').subscribe(res => {
         this.Proveedores = res;
-        // console.log({Proveedores: this.Proveedores});
-        this.listo.set('proveedores', true);
+        resolve();
       });
-    }
+    });
   }
   private filtroProveedores(nombre: string): Partial<TerceroCriterioProveedor>[] {
-    // console.log('filtroProveedores');
     if (nombre.length >= 4 && Array.isArray(this.Proveedores)) {
       const valorFiltrado = nombre.toLowerCase();
       return this.Proveedores.filter(prov => this.muestraProveedor(prov).toLowerCase().includes(valorFiltrado));
