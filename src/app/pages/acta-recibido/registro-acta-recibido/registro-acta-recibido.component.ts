@@ -36,7 +36,6 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { DocumentoService } from '../../../@core/data/documento.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { UserService } from '../../../@core/data/users.service';
-import { Console } from 'console';
 import { AbstractControl } from '@angular/forms/src/model';
 import { NbDateService } from '@nebular/theme';
 import { map, startWith } from 'rxjs/operators';
@@ -56,9 +55,8 @@ export class RegistroActaRecibidoComponent implements OnInit {
   protected dataService: CompleterData;
   protected dataService2: CompleterData;
   protected dataService3: CompleterData;
-  cargando_contratistas: boolean = true;
   private Contratistas: TerceroCriterioContratista[];
-  contratistasFiltrados: Observable<TerceroCriterioContratista[]>;
+  contratistasFiltrados: Observable<Partial<TerceroCriterioContratista>[]>;
   private Proveedores: Partial<TerceroCriterioProveedor>[];
   proveedoresFiltrados: Observable<Partial<TerceroCriterioProveedor>[]>;
   listo: Map<string, boolean>;
@@ -245,7 +243,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
     if (prov && prov.Identificacion && prov.Tercero) {
       return prov.Identificacion.Numero + ' - ' + prov.Tercero.NombreCompleto;
     } else if (prov && prov.Tercero) {
-        return prov.Tercero.NombreCompleto;
+      return prov.Tercero.NombreCompleto;
     }
   }
   private cambiosProveedor(control: AbstractControl): Observable<Partial<TerceroCriterioProveedor>[]> {
@@ -308,7 +306,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
   Cargar_Formularios() {
     this.firstForm = this.fb.group({
       Formulario1: this.Formulario_1,
-      Formulario2: this.fb.array([this.Formulario_2])
+      Formulario2: this.fb.array([this.Formulario_2]),
     });
   }
 
@@ -342,7 +340,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
   }
 
   get Formulario_1(): FormGroup {
-    const form1 =this.fb.group({
+    const form1 = this.fb.group({
       Sede: [''],
       Dependencia: [''],
       Ubicacion: [''],
