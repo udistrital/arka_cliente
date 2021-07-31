@@ -51,7 +51,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
   searchStr: string;
   searchStr2: string[];
   searchStr3: string;
-  cargando_contratistas: boolean = true;
+  cargandoTerceros: boolean = true;
   private Contratistas: TerceroCriterioContratista[];
   contratistasFiltrados: Observable<TerceroCriterioContratista[]>;
   private Proveedores: Partial<TerceroCriterioProveedor>[];
@@ -189,9 +189,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
     this.listService.findUnidades();
     this.listService.findImpuestoIVA();
     this.defineSiHayQueValidarElementosParaEnviar();
-    this.loadContratistas();
     this.loadLists();
-    this.loadProveedores();
     this.cargaPermisos();
     if (!this.userService.getPersonaId()) {
       this.errores.set('terceros', true);
@@ -388,15 +386,21 @@ export class EdicionActaRecibidoComponent implements OnInit {
     }
   }
 
-  private loadContratistas(): void {
-    if (this.cargando_contratistas) {
+  private loadTerceros() {
+    return new Promise<void>(async (resolve, reject) => {
       this.tercerosHelper.getTercerosByCriterio('contratista').subscribe(res => {
         this.Contratistas = res;
-        // console.log({Contratistas: this.Contratistas});
-        this.cargando_contratistas = false;
+        this.tercerosHelper.getTercerosByCriterio('proveedor').subscribe(res => {
+          this.Proveedores = res;
+          this.cargandoTerceros = false;
+          resolve();
+        });
+      }, error => {
+        reject(error);
       });
-    }
+    });
   }
+
   private filtroContratistas(nombre: string): TerceroCriterioContratista[] {
     if (nombre.length >= 4 && Array.isArray(this.Contratistas)) {
       const valorFiltrado = nombre.toLowerCase();
@@ -414,16 +418,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
     }
   }
 
-  private loadProveedores(): void {
-    if (this.listo.get('proveedores') === undefined) {
-      this.listo.set('proveedores', false);
-      this.tercerosHelper.getTercerosByCriterio('proveedor').subscribe(res => {
-        this.Proveedores = res;
-        // console.log({Proveedores: this.Proveedores});
-        this.listo.set('proveedores', true);
-      });
-    }
-  }
   private filtroProveedores(nombre: string): Partial<TerceroCriterioProveedor>[] {
     // console.log('filtroProveedores');
     if (nombre.length >= 4 && Array.isArray(this.Proveedores)) {
