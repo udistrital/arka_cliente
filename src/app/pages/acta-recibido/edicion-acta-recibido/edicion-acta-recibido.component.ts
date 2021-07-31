@@ -56,7 +56,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
   contratistasFiltrados: Observable<TerceroCriterioContratista[]>;
   private Proveedores: Partial<TerceroCriterioProveedor>[];
   proveedoresFiltrados: Observable<Partial<TerceroCriterioProveedor>[]>;
-  listo: Map<string, boolean>;
 
   // Mensajes de error
   errMess: any;
@@ -175,7 +174,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
     this.DatosElementos = new Array<any>();
     this.Elementos__Soporte = new Array<any>();
     this.TodaysDate = new Date();
-    this.listo = new Map<string, boolean>();
   }
 
   ngOnInit() {
@@ -352,7 +350,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
   public loadLists() {
     this.store.select((state) => state).subscribe(
       (list) => {
-
         this.Estados_Acta = list.listEstadosActa[0];
         this.Estados_Elemento = list.listEstadosElemento[0];
         this.Tipos_Bien = list.listTipoBien[0];

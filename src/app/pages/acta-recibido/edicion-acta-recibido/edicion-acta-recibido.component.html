@@ -1,6 +1,6 @@
 <nb-card>
   <nb-card-header><h2>{{'GLOBAL.Acta_Recibido.EdicionActa.TitleId' | translate: {ID: _Acta_Id} }}</h2></nb-card-header>
-  <nb-card-body [nbSpinner]="!firstForm || guardando || cargando_contratistas">
+  <nb-card-body [nbSpinner]="!firstForm || guardando || cargandoTerceros">
     <form *ngIf="firstForm" [formGroup]="firstForm" #fform="ngForm" class="step-container">
       <mat-vertical-stepper [linear]="true" #stepper>
 
@@ -90,7 +90,7 @@
                           <div class="row">
 
                             <div class="col" *ngIf="!ActaEspecial">
-                              <div class="form-group col-sm" [nbSpinner]="!listo.get('proveedores')">
+                              <div class="form-group col-sm">
                                 <label>{{'GLOBAL.Acta_Recibido.EdicionActa.Proveedor' | translate}}</label>
                                 <input matInput type="text" class="form-control"
                                 placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : '4'} }}"
