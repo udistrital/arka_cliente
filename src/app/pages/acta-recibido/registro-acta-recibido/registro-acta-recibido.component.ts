@@ -155,7 +155,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
         cancelButtonText: 'Nuevo Registro, se eliminara el registro anterior',
       }).then((result) => {
         if (result.value) {
-          this.cargar(formulario);
+          this.Cargar_Formularios2(formulario);
         } else {
           (Swal as any).fire({
             type: 'warning',
@@ -170,7 +170,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
               sessionStorage.removeItem('Formulario_Registro');
               this.Cargar_Formularios();
             } else {
-              this.cargar(formulario);
+              this.Cargar_Formularios2(formulario);
             }
           });
         }
@@ -548,14 +548,6 @@ export class RegistroActaRecibidoComponent implements OnInit {
 
   usarLocalStorage() {
     sessionStorage.setItem('Formulario_Registro', JSON.stringify(this.firstForm.value));
-  }
-
-  cargar(formulario) {
-    if (this.Sedes && this.Dependencias) {
-      this.Cargar_Formularios2(formulario);
-    } else {
-      setTimeout(() => { this.cargar(formulario); }, 100);
-    }
   }
 
   Traer_Relacion_Ubicaciones(loadInicial: string) {
