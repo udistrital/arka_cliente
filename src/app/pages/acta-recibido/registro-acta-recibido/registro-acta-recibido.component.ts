@@ -218,6 +218,14 @@ export class RegistroActaRecibidoComponent implements OnInit {
         return contr.Tercero.NombreCompleto;
       }
   }
+  private cambiosContratista(control: AbstractControl): Observable<Partial<TerceroCriterioContratista>[]> {
+    return control.valueChanges
+    .pipe(
+      startWith(''),
+      map(val => typeof val === 'string' ? val : this.muestraContratista(val)),
+      map(nombre => this.filtroContratistas(nombre)),
+    );
+  }
 
   private loadProveedores(): Promise<any> {
     return new Promise<void>(async (resolve) => {
