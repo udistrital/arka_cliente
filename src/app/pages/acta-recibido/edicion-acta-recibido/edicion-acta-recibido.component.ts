@@ -375,11 +375,10 @@ export class EdicionActaRecibidoComponent implements OnInit {
       this.Tarifas_Iva !== undefined &&
       this.Dependencias !== undefined &&
       this.Sedes !== undefined &&
-      this._Acta_Id !== undefined &&
-      this.Contratistas !== undefined &&
-      this.Proveedores !== undefined
+      this._Acta_Id !== undefined
     ) {
-      this.Actas_Recibido.getTransaccionActa(this._Acta_Id).subscribe(Acta => {
+      this.Actas_Recibido.getTransaccionActa(this._Acta_Id).subscribe(async Acta => {
+        await this.loadTerceros();
         this.Cargar_Formularios(Acta[0]);
         this.actaCargada = true;
       });
