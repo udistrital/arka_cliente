@@ -140,7 +140,11 @@ export class RegistroActaRecibidoComponent implements OnInit {
     this.initForms();
     this.searchStr2 = new Array<string>();
   }
+
+  private async initForms() {
+    const data = [this.loadLists(), this.loadProveedores(), this.loadContratistas()];
     if (sessionStorage.Formulario_Registro == null) {
+      await Promise.all(data);
       this.Cargar_Formularios();
     } else {
       const formulario = JSON.parse(sessionStorage.Formulario_Registro);
@@ -153,8 +157,9 @@ export class RegistroActaRecibidoComponent implements OnInit {
         cancelButtonColor: '#3085d6',
         confirmButtonText: 'Seguir con anterior',
         cancelButtonText: 'Nuevo Registro, se eliminara el registro anterior',
-      }).then((result) => {
+      }).then(async (result) => {
         if (result.value) {
+          await Promise.all(data);
           this.Cargar_Formularios2(formulario);
         } else {
           (Swal as any).fire({
@@ -165,11 +170,13 @@ export class RegistroActaRecibidoComponent implements OnInit {
             cancelButtonColor: '#3085d6',
             confirmButtonText: 'Si, Nuevo Registro',
             cancelButtonText: 'No, Usar Anterior',
-          }).then((result2) => {
+          }).then(async (result2) => {
             if (result2.value) {
               sessionStorage.removeItem('Formulario_Registro');
+              await Promise.all(data);
               this.Cargar_Formularios();
             } else {
+              await Promise.all(data);
               this.Cargar_Formularios2(formulario);
             }
           });
