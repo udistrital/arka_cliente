@@ -51,12 +51,11 @@ export class EdicionActaRecibidoComponent implements OnInit {
   searchStr: string;
   searchStr2: string[];
   searchStr3: string;
-  cargando_contratistas: boolean = true;
+  cargandoTerceros: boolean = true;
   private Contratistas: TerceroCriterioContratista[];
   contratistasFiltrados: Observable<TerceroCriterioContratista[]>;
   private Proveedores: Partial<TerceroCriterioProveedor>[];
   proveedoresFiltrados: Observable<Partial<TerceroCriterioProveedor>[]>;
-  listo: Map<string, boolean>;
 
   // Mensajes de error
   errMess: any;
@@ -175,7 +174,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
     this.DatosElementos = new Array<any>();
     this.Elementos__Soporte = new Array<any>();
     this.TodaysDate = new Date();
-    this.listo = new Map<string, boolean>();
   }
 
   ngOnInit() {
@@ -189,9 +187,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
     this.listService.findUnidades();
     this.listService.findImpuestoIVA();
     this.defineSiHayQueValidarElementosParaEnviar();
-    this.loadContratistas();
     this.loadLists();
-    this.loadProveedores();
     this.cargaPermisos();
     if (!this.userService.getPersonaId()) {
       this.errores.set('terceros', true);
@@ -354,7 +350,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
   public loadLists() {
     this.store.select((state) => state).subscribe(
       (list) => {
-
         this.Estados_Acta = list.listEstadosActa[0];
         this.Estados_Elemento = list.listEstadosElemento[0];
         this.Tipos_Bien = list.listTipoBien[0];
@@ -377,26 +372,31 @@ export class EdicionActaRecibidoComponent implements OnInit {
       this.Tarifas_Iva !== undefined &&
       this.Dependencias !== undefined &&
       this.Sedes !== undefined &&
-      this._Acta_Id !== undefined &&
-      this.Contratistas !== undefined &&
-      this.Proveedores !== undefined
+      this._Acta_Id !== undefined
     ) {
-      this.Actas_Recibido.getTransaccionActa(this._Acta_Id).subscribe(Acta => {
+      this.Actas_Recibido.getTransaccionActa(this._Acta_Id).subscribe(async Acta => {
+        await this.loadTerceros();
         this.Cargar_Formularios(Acta[0]);
         this.actaCargada = true;
       });
     }
   }
 
-  private loadContratistas(): void {
-    if (this.cargando_contratistas) {
+  private loadTerceros() {
+    return new Promise<void>(async (resolve, reject) => {
       this.tercerosHelper.getTercerosByCriterio('contratista').subscribe(res => {
         this.Contratistas = res;
-        // console.log({Contratistas: this.Contratistas});
-        this.cargando_contratistas = false;
+        this.tercerosHelper.getTercerosByCriterio('proveedor').subscribe(resP => {
+          this.Proveedores = resP;
+          this.cargandoTerceros = false;
+          resolve();
+        });
+      }, error => {
+        reject(error);
       });
-    }
+    });
   }
+
   private filtroContratistas(nombre: string): TerceroCriterioContratista[] {
     if (nombre.length >= 4 && Array.isArray(this.Contratistas)) {
       const valorFiltrado = nombre.toLowerCase();
@@ -414,16 +414,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
     }
   }
 
-  private loadProveedores(): void {
-    if (this.listo.get('proveedores') === undefined) {
-      this.listo.set('proveedores', false);
-      this.tercerosHelper.getTercerosByCriterio('proveedor').subscribe(res => {
-        this.Proveedores = res;
-        // console.log({Proveedores: this.Proveedores});
-        this.listo.set('proveedores', true);
-      });
-    }
-  }
   private filtroProveedores(nombre: string): Partial<TerceroCriterioProveedor>[] {
     // console.log('filtroProveedores');
     if (nombre.length >= 4 && Array.isArray(this.Proveedores)) {
@@ -517,7 +507,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
               disabled: !this.getPermisoEditar(this.permisos.Acta),
             },
             { validators: this.actaRegistrada ? [] : [Validators.required] }],
-          Soporte: [Soporte.SoporteActa.DocumentoId + '.pdf', Validators.required],
+          Soporte: [Soporte.SoporteActa.DocumentoId, Validators.required],
         });
         this.Validador[index] = true;
         this.uidDocumento[index] = Soporte.SoporteActa.DocumentoId;

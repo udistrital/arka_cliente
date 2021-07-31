@@ -36,7 +36,6 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { DocumentoService } from '../../../@core/data/documento.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { UserService } from '../../../@core/data/users.service';
-import { Console } from 'console';
 import { AbstractControl } from '@angular/forms/src/model';
 import { NbDateService } from '@nebular/theme';
 import { map, startWith } from 'rxjs/operators';
@@ -56,9 +55,8 @@ export class RegistroActaRecibidoComponent implements OnInit {
   protected dataService: CompleterData;
   protected dataService2: CompleterData;
   protected dataService3: CompleterData;
-  cargando_contratistas: boolean = true;
   private Contratistas: TerceroCriterioContratista[];
-  contratistasFiltrados: Observable<TerceroCriterioContratista[]>;
+  contratistasFiltrados: Observable<Partial<TerceroCriterioContratista>[]>;
   private Proveedores: Partial<TerceroCriterioProveedor>[];
   proveedoresFiltrados: Observable<Partial<TerceroCriterioProveedor>[]>;
   listo: Map<string, boolean>;
@@ -135,19 +133,19 @@ export class RegistroActaRecibidoComponent implements OnInit {
     this.listService.findSedes();
     this.listService.findProveedores();
     this.listService.findEstadosActa();
-    this.loadLists();
-    this.loadProveedores();
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
     });
+    this.initForms();
     this.searchStr2 = new Array<string>();
+  }
+
+  private async initForms() {
+    const data = [this.loadLists(), this.loadProveedores(), this.loadContratistas()];
     if (sessionStorage.Formulario_Registro == null) {
+      await Promise.all(data);
       this.Cargar_Formularios();
-      sessionStorage.setItem('Formulario_Registro', JSON.stringify(this.firstForm.value));
-      const formulario2 = JSON.parse(sessionStorage.Formulario_Registro);
-      this.Cargar_Formularios2(formulario2);
     } else {
       const formulario = JSON.parse(sessionStorage.Formulario_Registro);
-
       (Swal as any).fire({
         type: 'warning',
         title: 'Registro sin completar',
@@ -157,9 +155,10 @@ export class RegistroActaRecibidoComponent implements OnInit {
         cancelButtonColor: '#3085d6',
         confirmButtonText: 'Seguir con anterior',
         cancelButtonText: 'Nuevo Registro, se eliminara el registro anterior',
-      }).then((result) => {
+      }).then(async (result) => {
         if (result.value) {
-          this.cargar(formulario);
+          await Promise.all(data);
+          this.Cargar_Formularios2(formulario);
         } else {
           (Swal as any).fire({
             type: 'warning',
@@ -169,52 +168,40 @@ export class RegistroActaRecibidoComponent implements OnInit {
             cancelButtonColor: '#3085d6',
             confirmButtonText: 'Si, Nuevo Registro',
             cancelButtonText: 'No, Usar Anterior',
-          }).then((result2) => {
+          }).then(async (result2) => {
             if (result2.value) {
               sessionStorage.removeItem('Formulario_Registro');
+              await Promise.all(data);
               this.Cargar_Formularios();
-              sessionStorage.setItem('Formulario_Registro', JSON.stringify(this.firstForm.value));
-              const formulario3 = JSON.parse(sessionStorage.Formulario_Registro);
-              this.cargar(formulario3);
             } else {
-              this.cargar(formulario);
+              await Promise.all(data);
+              this.Cargar_Formularios2(formulario);
             }
           });
         }
       });
     }
   }
-
-  public loadLists() {
-    this.store.select((state) => state).subscribe(
-      (list) => {
-        this.Ubicaciones = list.listUbicaciones[0];
-        this.Sedes = list.listSedes[0];
-        this.Dependencias = list.listDependencias[0];
-        this.Estados_Acta = list.listEstadosActa[0];
-        // this.Proveedores = list.listProveedores[0];
-        // this.dataService2 = this.completerService.local(this.Proveedores, 'compuesto', 'compuesto');
-        this.dataService3 = this.completerService.local(this.Dependencias, 'Nombre', 'Nombre');
-        // this.dataService = this.completerService.local(this.Ubicaciones, 'Nombre', 'Nombre');
-      },
-    );
+  public loadLists(): Promise<void> {
+    return new Promise<void>(async (resolve) => {
+      this.store.select((state) => state).subscribe(list => {
+        list.listSedes[0] && list.listDependencias[0] && list.listEstadosActa[0] ? (
+          this.Sedes = list.listSedes[0],
+          this.Dependencias = list.listDependencias[0],
+          this.Estados_Acta = list.listEstadosActa[0],
+          this.dataService3 = this.completerService.local(this.Dependencias, 'Nombre', 'Nombre'),
+          resolve()) : null;
+      });
+    });
   }
 
-  private loadContratistas(): void {
-    if (this.cargando_contratistas) {
+  private loadContratistas() {
+    return new Promise<void>(async (resolve) => {
       this.tercerosHelper.getTercerosByCriterio('contratista').subscribe(res => {
         this.Contratistas = res;
-        // console.log({Contratistas: this.Contratistas});
-        this.contratistasFiltrados = this
-          .firstForm.get('Formulario1').get('Contratista').valueChanges
-          .pipe(
-            startWith(''),
-            map(val => typeof val === 'string' ? val : this.muestraContratista(val)),
-            map(nombre => this.filtroContratistas(nombre)),
-          );
-        this.cargando_contratistas = false;
+        resolve();
       });
-    }
+    });
   }
   private filtroContratistas(nombre: string): TerceroCriterioContratista[] {
     if (nombre.length >= 4 && Array.isArray(this.Contratistas)) {
@@ -229,19 +216,24 @@ export class RegistroActaRecibidoComponent implements OnInit {
         return contr.Tercero.NombreCompleto;
       }
   }
+  private cambiosContratista(control: AbstractControl): Observable<Partial<TerceroCriterioContratista>[]> {
+    return control.valueChanges
+    .pipe(
+      startWith(''),
+      map(val => typeof val === 'string' ? val : this.muestraContratista(val)),
+      map(nombre => this.filtroContratistas(nombre)),
+    );
+  }
 
-  private loadProveedores(): void {
-    if (this.listo.get('proveedores') === undefined) {
-      this.listo.set('proveedores', false);
+  private loadProveedores(): Promise<any> {
+    return new Promise<void>(async (resolve) => {
       this.tercerosHelper.getTercerosByCriterio('proveedor').subscribe(res => {
         this.Proveedores = res;
-        // console.log({Proveedores: this.Proveedores});
-        this.listo.set('proveedores', true);
+        resolve();
       });
-    }
+    });
   }
   private filtroProveedores(nombre: string): Partial<TerceroCriterioProveedor>[] {
-    // console.log('filtroProveedores');
     if (nombre.length >= 4 && Array.isArray(this.Proveedores)) {
       const valorFiltrado = nombre.toLowerCase();
       return this.Proveedores.filter(prov => this.muestraProveedor(prov).toLowerCase().includes(valorFiltrado));
@@ -251,7 +243,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
     if (prov && prov.Identificacion && prov.Tercero) {
       return prov.Identificacion.Numero + ' - ' + prov.Tercero.NombreCompleto;
     } else if (prov && prov.Tercero) {
-        return prov.Tercero.NombreCompleto;
+      return prov.Tercero.NombreCompleto;
     }
   }
   private cambiosProveedor(control: AbstractControl): Observable<Partial<TerceroCriterioProveedor>[]> {
@@ -312,13 +304,10 @@ export class RegistroActaRecibidoComponent implements OnInit {
   }
 
   Cargar_Formularios() {
-    this.proveedoresFiltrados = this.cambiosProveedor(this.Formulario_2.get('Proveedor'));
     this.firstForm = this.fb.group({
       Formulario1: this.Formulario_1,
       Formulario2: this.fb.array([this.Formulario_2]),
     });
-    this.loadContratistas();
-    // this.loadProveedores();
   }
 
   Cargar_Formularios2(transaccion_: any) {
@@ -326,7 +315,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
     for (const Soporte of transaccion_.Formulario2) {
       const Formulario__2 = this.fb.group({
         Id: [''],
-        Proveedor: [Soporte.Proveedor.Tercero ? Soporte.Proveedor.Tercero : '', [this.validarTercero()]],
+        Proveedor: [Soporte.Proveedor.Tercero ? Soporte.Proveedor : '', [this.validarTercero()]],
         Consecutivo: [Soporte.Consecutivo],
         Fecha_Factura: [Soporte.Fecha_Factura ? this.dateService.parse(Soporte.Fecha_Factura, 'MM dd yyyy') : ''],
         Soporte: ['', Validators.required],
@@ -347,25 +336,28 @@ export class RegistroActaRecibidoComponent implements OnInit {
       Formulario2: Form2,
     });
     this.Traer_Relacion_Ubicaciones(transaccion_.Formulario1.Ubicacion);
-    this.loadContratistas();
-    // this.loadProveedores();
+    this.contratistasFiltrados = this.cambiosContratista(this.firstForm.get('Formulario1').get('Contratista'));
   }
 
   get Formulario_1(): FormGroup {
-    return this.fb.group({
+    const form1 = this.fb.group({
       Sede: [''],
       Dependencia: [''],
       Ubicacion: [''],
       Contratista: ['', [Validators.required, this.validarTercero()]],
     });
+    this.contratistasFiltrados = this.cambiosContratista(form1.get('Contratista'));
+    return form1;
   }
   get Formulario_2(): FormGroup {
-    return this.fb.group({
+    const form2 = this.fb.group({
       Proveedor: ['', [this.validarTercero()]],
       Consecutivo: [''],
       Fecha_Factura: [''],
       Soporte: ['', Validators.required],
     });
+    this.proveedoresFiltrados = this.cambiosProveedor(form2.get('Proveedor'));
+    return form2;
   }
 
   addSoportes() {
@@ -555,14 +547,6 @@ export class RegistroActaRecibidoComponent implements OnInit {
 
   usarLocalStorage() {
     sessionStorage.setItem('Formulario_Registro', JSON.stringify(this.firstForm.value));
-  }
-
-  cargar(formulario) {
-    if (this.Sedes && this.Dependencias) {
-      this.Cargar_Formularios2(formulario);
-    } else {
-      setTimeout(() => { this.cargar(formulario); }, 100);
-    }
   }
 
   Traer_Relacion_Ubicaciones(loadInicial: string) {
