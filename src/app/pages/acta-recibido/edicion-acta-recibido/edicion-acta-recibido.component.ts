@@ -1222,6 +1222,11 @@ export class EdicionActaRecibidoComponent implements OnInit {
     }
   }
 
+  clear() {
+    this.firstForm.get('Formulario2')['controls'][0].get('Fecha_Factura').patchValue('');
+    this.firstForm.get('Formulario2')['controls'][0].get('Fecha_Factura').setErrors(null);
+  }
+  
   private validarTercero(): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
       const valor = control.value;

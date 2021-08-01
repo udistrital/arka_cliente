@@ -127,7 +127,7 @@
                                   <input nbInput (click)="usarLocalStorage()"
                                     placeholder="{{'GLOBAL.Acta_Recibido.EdicionActa.FechaFiltro' | translate}}"
                                     class="form-control" [nbDatepicker]="formpicker" (keyup)="usarLocalStorage()"
-                                    formControlName="Fecha_Factura">
+                                    formControlName="Fecha_Factura" (keyup.Backspace)="clear()">
                                   <nb-datepicker #formpicker [max]="TodaysDate" (dateChange)="usarLocalStorage()"></nb-datepicker>
                                 </div>
                                 <p class="campo" *ngIf="soporte.get('Fecha_Factura').invalid">

@@ -115,7 +115,7 @@
                               <div class="input-group">
                                 <input nbInput
                                   placeholder="{{'GLOBAL.Acta_Recibido.RegistroActa.FechaFiltro' | translate}}"
-                                  class="form-control" [nbDatepicker]="formpicker" formControlName="Fecha_Factura">
+                                  class="form-control" [nbDatepicker]="formpicker" formControlName="Fecha_Factura" (keyup.Backspace)="clear()">
                                 <nb-datepicker #formpicker [max]="TodaysDate" (dateChange)="usarLocalStorage()">
                                 </nb-datepicker>
                               </div>
