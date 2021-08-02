@@ -48,13 +48,13 @@
                     </mat-option>
                   </mat-autocomplete>
                   <p class="campo"
-                    *ngIf="firstForm.get('Formulario1.Contratista').errors && firstForm.get('Formulario1.Contratista').errors.required ? true : false">
+                    *ngIf="firstForm.get('Formulario1.Contratista').errors && firstForm.get('Formulario1.Contratista').errors.required">
                     {{'GLOBAL.placeholder' | translate}}</p>
                   <p class="campo"
-                    *ngIf="firstForm.get('Formulario1.Contratista').errors && firstForm.get('Formulario1.Contratista').errors.errorLongitudMinima ? true : false">
+                    *ngIf="firstForm.get('Formulario1.Contratista').errors && firstForm.get('Formulario1.Contratista').errors.errorLongitudMinima">
                     {{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : '4'} }}</p>
                   <p class="campo"
-                    *ngIf="firstForm.get('Formulario1.Contratista').errors && firstForm.get('Formulario1.Contratista').errors.terceroNoValido ? true : false">
+                    *ngIf="firstForm.get('Formulario1.Contratista').errors && firstForm.get('Formulario1.Contratista').errors.terceroNoValido">
                     {{'GLOBAL.Errores.ErrorTercero' | translate}}</p>
                 </div>
               </div>
@@ -96,10 +96,10 @@
                                 </mat-option>
                               </mat-autocomplete>
                               <p class="campo"
-                                *ngIf="soporte.get('Proveedor').errors && soporte.get('Proveedor').errors.errorLongitudMinima ? true : false">
+                                *ngIf="soporte.get('Proveedor').errors && soporte.get('Proveedor').errors.errorLongitudMinima">
                                 {{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : '4'} }}</p>
                               <p class="campo"
-                                *ngIf="soporte.get('Proveedor').errors && soporte.get('Proveedor').errors.terceroNoValido ? true : false">
+                                *ngIf="soporte.get('Proveedor').errors && soporte.get('Proveedor').errors.terceroNoValido">
                                 {{'GLOBAL.Errores.ErrorTercero' | translate}}</p>
                             </div>
                             <div class="form-group col-sm">
@@ -115,7 +115,7 @@
                               <div class="input-group">
                                 <input nbInput
                                   placeholder="{{'GLOBAL.Acta_Recibido.RegistroActa.FechaFiltro' | translate}}"
-                                  class="form-control" [nbDatepicker]="formpicker" formControlName="Fecha_Factura">
+                                  class="form-control" [nbDatepicker]="formpicker" formControlName="Fecha_Factura" (keyup.Backspace)="clear()">
                                 <nb-datepicker #formpicker [max]="TodaysDate" (dateChange)="usarLocalStorage()">
                                 </nb-datepicker>
                               </div>
