@@ -503,10 +503,10 @@ export class EdicionActaRecibidoComponent implements OnInit {
           Fecha_Factura: [
             {
               value: new Date(Soporte.SoporteActa.FechaSoporte) > new Date('1945') ?
-              Soporte.SoporteActa.FechaSoporte.toString() : '',
+                this.dateService.parse(Soporte.SoporteActa.FechaSoporte.toString(), 'MM dd yyyy') : '',
               disabled: !this.getPermisoEditar(this.permisos.Acta),
             },
-            { validators: this.actaRegistrada ? [] : [Validators.required] }],
+            { validators: this.checkDate() }],
           Soporte: [Soporte.SoporteActa.DocumentoId, Validators.required],
         });
         this.Validador[index] = true;
@@ -1224,7 +1224,8 @@ export class EdicionActaRecibidoComponent implements OnInit {
 
   clear() {
     this.firstForm.get('Formulario2')['controls'][0].get('Fecha_Factura').patchValue('');
-    this.firstForm.get('Formulario2')['controls'][0].get('Fecha_Factura').setErrors(null);
+    this.firstForm.get('Formulario2')['controls'][0].get('Fecha_Factura').setValidators(this.checkDate());
+    this.firstForm.get('Formulario2')['controls'][0].get('Fecha_Factura').updateValueAndValidity();
   }
 
   private validarTercero(): ValidatorFn {
@@ -1245,5 +1246,13 @@ export class EdicionActaRecibidoComponent implements OnInit {
       control.get('Formulario3').valid);
     errors ? this.errores.set('formularios', true) : this.errores.delete('formularios');
     return errors ? { formularios: true } : null;
+  }
+
+  private checkDate(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const invalid = control.value === null;
+      const empty = control.value === '';
+      return invalid ? { fecha : true } : !this.actaRegistrada && empty ? { required : true} : null;
+    };
   }
 }

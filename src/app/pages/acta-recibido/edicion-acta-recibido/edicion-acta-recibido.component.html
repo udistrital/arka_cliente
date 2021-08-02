@@ -130,7 +130,11 @@
                                     formControlName="Fecha_Factura" (keyup.Backspace)="clear()">
                                   <nb-datepicker #formpicker [max]="TodaysDate" (dateChange)="usarLocalStorage()"></nb-datepicker>
                                 </div>
-                                <p class="campo" *ngIf="soporte.get('Fecha_Factura').invalid">
+                                <p class="campo"
+                                  *ngIf="soporte.get('Fecha_Factura').errors && soporte.get('Fecha_Factura').errors.required ? true : false">
+                                  {{'GLOBAL.Errores.ErrorRequerido' | translate}}</p>
+                                <p class="campo"
+                                  *ngIf="soporte.get('Fecha_Factura').errors && soporte.get('Fecha_Factura').errors.fecha ? true : false">
                                   {{'GLOBAL.Errores.ErrorFecha' | translate}}</p>
                               </div>
                             </div>
