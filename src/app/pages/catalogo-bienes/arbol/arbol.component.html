@@ -46,7 +46,7 @@
                     {{ row.data[column].Nombre || '-' }}</span>
 
                 <!-- Acciones -->
-                <span *ngIf="column === 'Acciones'" class="fas fa-info-circle fa-2x"
+                <span *ngIf="column === 'Acciones' && row.data.TipoNivelId" class="fas fa-info-circle fa-2x"
                 [nbPopover]="'GLOBAL.info_adicional' | translate" nbPopoverTrigger="hover"
                 (click)="getDetalle(row.data, dialogoDetalle)"></span>
             </td>
