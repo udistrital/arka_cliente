@@ -71,20 +71,24 @@ export class RegistroElementosComponent implements OnInit {
     this.catalogoId = catalogo;
   }
 
-  receiveMessage(event) {
+  treeEvent(event) {
     if (event.hasOwnProperty('TipoNivelId')
-    && event.TipoNivelId.hasOwnProperty('Id')
-    && event.TipoNivelId.Id === Nivel_t.Clase ) {
-      this.catalogoElementosService.getSubgrupoById(event.Id).subscribe(res => {
-        // console.log(res[0]);
-        if (Object.keys(res[0]).length !== 0) {
-          this.subgrupo = event;
-          this.ver_formulario = true;
-        } else {
-          this.ver_formulario = false;
-        }
-      });
-    } else this.ver_formulario = false;
+      && event.TipoNivelId.hasOwnProperty('Id')
+      && event.TipoNivelId.Id === Nivel_t.Clase) {
+      this.cleanForm();
+      this.info_elemento = undefined;
+      this.subgrupo = event;
+      this.ver_formulario = true;
+    } else if (event.hasOwnProperty('SubgrupoId') && event.hasOwnProperty('Id')) {
+      this.info_elemento = event;
+      this.subgrupo = event.SubgrupoId;
+      this.ver_formulario = true;
+    } else {
+      this.cleanForm();
+      this.info_elemento = undefined;
+      this.ver_formulario = false;
+      this.subgrupo = undefined;
+    }
   }
 
   validarForm(event) {
