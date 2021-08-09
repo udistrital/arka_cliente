@@ -563,6 +563,16 @@
     },
 
     "catalogo": {
+      "forms": {
+        "titPostElemento": "Create Element",
+        "textPostElemento": "Create element {{NOM}}?",
+        "titPutElemento": "Update Element",
+        "textPutElemento": "Update element {{NOM}}?",
+        "textPostElementoOk": "El elemento {{NOM}} ha sido registrado correctamente",
+        "textPutElementoOk": "The element {{NOM}} was successfully updated",
+        "textPostElementoErr": "It was not possible to update the element",
+        "textPutElementoErr": "It was not possible to create the element"
+      },
       "uno": "Catalogue",
       "crear": "Create Catalogue",
       "editar": "Edit Catalogue",
