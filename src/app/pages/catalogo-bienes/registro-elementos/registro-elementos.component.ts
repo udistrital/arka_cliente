@@ -8,6 +8,7 @@ import { FORM_ELEMENTO } from './form-elemento';
 import { Elemento } from '../../../@core/data/models/catalogo/elemento';
 import { Subgrupo } from '../../../@core/data/models/catalogo/jerarquia';
 import { Nivel_t } from '../../../@core/data/models/catalogo/tipo_nivel';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'ngx-registro-elementos',
@@ -94,6 +95,19 @@ export class RegistroElementosComponent implements OnInit {
 
   submitElemento(event) {
     const post = this.info_elemento === undefined ? true : false;
+    (Swal as any).fire({
+      title: this.translate.instant(post ? 'GLOBAL.catalogo.forms.titPostElemento' :
+        'GLOBAL.catalogo.forms.titPutElemento'),
+      text: this.translate.instant(post ? 'GLOBAL.catalogo.forms.textPostElemento' :
+        'GLOBAL.catalogo.forms.textPutElemento', { NOM: event.data.Grupo.Nombre }),
+      type: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085D6',
+      cancelButtonColor: '#D33',
+      confirmButtonText: 'Si',
+      cancelButtonText: 'No',
+    }).then((result) => {
+      if (result.value) {
         if (post) {
           const elemento = new Elemento;
           elemento.Nombre = event.data.Grupo.Nombre;
@@ -122,6 +136,13 @@ export class RegistroElementosComponent implements OnInit {
         } else {
           this.catalogoElementosService.putElemento(event.data.Grupo).toPromise().then(res => {
             if (res !== null) {
+              (Swal as any).fire({
+                type: 'success',
+                title: this.translate.instant('GLOBAL.catalogo.forms.titPutElemento'),
+                text: this.translate.instant('GLOBAL.catalogo.forms.textPutElementoOk', { NOM: event.data.Grupo.Nombre }),
+                showConfirmButton: false,
+                timer: 2500,
+              });
               this.cleanForm();
               this.subgrupo = undefined;
               this.ver_formulario = false;
@@ -135,6 +156,14 @@ export class RegistroElementosComponent implements OnInit {
     });
   }
 
+  private errorSubmit(post: boolean) {
+    (Swal as any).fire({
+      type: 'error',
+      title: this.translate.instant(post ? 'GLOBAL.catalogo.forms.titPostElemento' : 'GLOBAL.catalogo.forms.titPutElemento'),
+      text: this.translate.instant(post ? 'GLOBAL.catalogo.forms.textPostElementoErr' : 'GLOBAL.catalogo.forms.textPostElementoErr'),
+      showConfirmButton: false,
+      timer: 2500,
+    });
   }
 
   cleanForm() {
