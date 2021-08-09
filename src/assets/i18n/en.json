@@ -30,7 +30,7 @@
             "name": "Catalog Building"
           },
           "elementos": {
-            "name": "Register Elements"
+            "name": "Manage Elements"
           },
           "inactivar": {
             "name": "Disable Levels"
@@ -580,7 +580,8 @@
       "editar_nombre": "Edit Catalogue \"{{NOMBRE}}\"",
       "constrInfo": "To modify or add \"descendants\" to a row, please choose a row",
       "claseInfo": "Pick a row corresponding to a Class",
-      "elementosInfo": "To add elements to a Class, please choose a Class row",
+      "elementosInfo1": "Add element: Select the Class row which the Element will be added.",
+      "elementosInfo2": "Edit element: Select an Element row",
       "desactivar": "Disable Catalogue",
       "validacion_desactivar": "¿Are you sure you want to disable the catalog? ",
       "lista": "Catalogue List"

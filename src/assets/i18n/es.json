@@ -30,7 +30,7 @@
             "name": "Construcción de Catálogo"
           },
           "elementos": {
-            "name": "Registro Elementos"
+            "name": "Gestionar Elementos"
           },
           "inactivar": {
             "name": "Inactivar Niveles"
@@ -580,7 +580,8 @@
       "editar_nombre": "Editar Catálogo \"{{NOMBRE}}\"",
       "constrInfo": "Para modificar la información o agregar \"descencientes\" de una fila, seleccione la fila.",
       "claseInfo": "Seleccione una fila correspondiente a una Clase",
-      "elementosInfo": "Para agregar elementos a una clase, seleccione una fila correspondiente a una Clase",
+      "elementosInfo1": "Agregar elemento: Seleccione la clase a la que desea añadir el elemento.",
+      "elementosInfo2": "Editar elemento: Seleccione un elemento",
       "desactivar": "Desactivar Catálogo",
       "validacion_desactivar" :"¿Está seguro que desea desactivar el catálogo?",
       "lista": "Lista de Catálogos"

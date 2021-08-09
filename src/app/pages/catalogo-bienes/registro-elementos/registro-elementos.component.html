@@ -13,7 +13,11 @@
         <ngx-arbol *ngIf="catalogoId !== 0" [catalogoId]="catalogoId" (fila)="treeEvent($event)" elementos=true acciones=true [updateSignal]="updateTree">
           <p>
             <span class="fas fa-info-circle"></span>&nbsp;
-            <em>{{'GLOBAL.catalogo.elementosInfo' | translate}}</em>
+            <em>{{'GLOBAL.catalogo.elementosInfo1' | translate}}</em>
+          </p>
+          <p>
+            <span class="fas fa-info-circle"></span>&nbsp;
+            <em>{{'GLOBAL.catalogo.elementosInfo2' | translate}}</em>
           </p>
         </ngx-arbol>
   </nb-card-body>
