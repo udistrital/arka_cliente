@@ -103,15 +103,14 @@ export class ArbolComponent implements OnInit, OnChanges {
     if (this.acciones) {
       this.defaultColumns.push('Acciones');
     }
-    this.allColumns = [this.customColumn, ...this.defaultColumns];
-
+    this.allColumns = [this.customColumn].concat(this.defaultColumns);
     this.customColumn2 = this.translate.instant('GLOBAL.codigo');
     this.defaultColumns2 = [
       this.translate.instant('GLOBAL.Nombre'),
       this.translate.instant('GLOBAL.Descripcion'),
       this.translate.instant('GLOBAL.info'),
     ];
-    this.allColumns2 = [this.customColumn, ...this.defaultColumns];
+    this.allColumns2 = [this.customColumn2].concat(this.defaultColumns2);
   }
 
   ngOnChanges(changes) {
