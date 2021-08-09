@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter, OnChanges, ViewChild } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, OnChanges, ViewChild, OnDestroy } from '@angular/core';
 import { MatDatepicker } from '@angular/material/datepicker';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { CompleterService, CompleterData } from 'ng2-completer';
@@ -9,7 +9,7 @@ import { CompleterService, CompleterData } from 'ng2-completer';
   styleUrls: ['./dinamicform.component.scss'],
 })
 
-export class DinamicformComponent implements OnInit, OnChanges {
+export class DinamicformComponent implements OnInit, OnChanges, OnDestroy {
 
   @Input('normalform') normalform: any;
   @Input('modeloData') modeloData: any;
@@ -443,5 +443,9 @@ export class DinamicformComponent implements OnInit, OnChanges {
 
   isEqual(obj1, obj2) {
     return JSON.stringify(obj1) === JSON.stringify(obj2);
+  }
+
+  ngOnDestroy() {
+    this.clearForm();
   }
 }
