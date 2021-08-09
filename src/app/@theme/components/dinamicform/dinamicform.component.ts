@@ -21,6 +21,7 @@ export class DinamicformComponent implements OnInit, OnChanges {
   @Output() percentage: EventEmitter<any> = new EventEmitter();
   protected dataService: CompleterData[];
   data: any;
+  init: boolean;
   @ViewChild(MatDatepicker) datepicker: MatDatepicker<Date>;
 
   constructor(private sanitization: DomSanitizer,
@@ -36,6 +37,7 @@ export class DinamicformComponent implements OnInit, OnChanges {
   }
 
   ngOnInit() {
+    this.init = true;
     if (!this.normalform.tipo_formulario) {
       this.normalform.tipo_formulario = 'grid';
     }
@@ -124,7 +126,7 @@ export class DinamicformComponent implements OnInit, OnChanges {
         }
       }
     }
-    if (changes.clean !== undefined) {
+    if (changes.clean !== undefined && this.init) {
       this.clearForm();
       this.clean = false;
     }
