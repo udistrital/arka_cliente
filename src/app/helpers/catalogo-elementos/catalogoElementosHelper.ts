@@ -523,9 +523,10 @@ export class CatalogoElementosHelper {
      * If the response is successs, it returns the object's data.
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
      */
-    public getArbolCatalogo(catalogo) {
+    public getArbolCatalogo(catalogo, elementos) {
+        const query = elementos ? '?elementos=true' : '';
         this.rqManager.setPath('CATALOGO_ELEMENTOS_SERVICE');
-        return this.rqManager.get('tr_catalogo/' + catalogo).pipe(
+        return this.rqManager.get('tr_catalogo/' + catalogo + query).pipe(
             map(
                 (res) => {
                     if (res === 'error') {
