@@ -47,7 +47,11 @@ export class DinamicformComponent implements OnInit, OnChanges {
         d.relacion = true;
       }
       if (!d.valor) {
-        d.valor = '';
+        if (d.tipo === 'boolean') {
+          d.valor = false;
+        } else {
+          d.valor = '';
+        }
       }
       if (!d.deshabilitar) {
         d.deshabilitar = false;
