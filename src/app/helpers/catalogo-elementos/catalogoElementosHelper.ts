@@ -370,6 +370,21 @@ export class CatalogoElementosHelper {
             ),
         );
     }
+
+    public putElemento(Transaccion) {
+        this.rqManager.setPath('CATALOGO_ELEMENTOS_SERVICE');
+        return this.rqManager.put2('elemento', Transaccion, Transaccion.Id).pipe(
+            map(
+                (res) => {
+                    if (res['Type'] === 'error') {
+                        this.pUpManager.showErrorAlert('No se pudo regitrar el elemento');
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
     /**
      * Retorna los Tipo de Bien Activos Get
      * If the response has errors in the OAS API it should show a popup message with an error.

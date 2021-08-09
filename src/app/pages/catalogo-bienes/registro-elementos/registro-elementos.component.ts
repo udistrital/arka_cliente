@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/catalogoElementosHelper';
 import { ToasterService } from 'angular2-toaster';
@@ -16,6 +16,7 @@ import { Nivel_t } from '../../../@core/data/models/catalogo/tipo_nivel';
 })
 export class RegistroElementosComponent implements OnInit {
 
+  @Output() updateTree = new EventEmitter();
   formElemento: any;
   info_elemento: Elemento;
   clean: boolean;
@@ -91,30 +92,49 @@ export class RegistroElementosComponent implements OnInit {
     }
   }
 
-  validarForm(event) {
-    if (event.valid) {
-      if (this.info_elemento === undefined && this.subgrupo !== undefined) {
-        const elemento = new Elemento;
-        elemento.Nombre = event.data.Grupo.Nombre;
-        elemento.Descripcion = event.data.Grupo.Descripcion;
-        elemento.FechaInicio = new Date(event.data.Grupo.FechaInicio);
-        elemento.FechaFin = new Date(event.data.Grupo.FechaFin);
-        elemento.Activo = true;
-        elemento.SubgrupoId = this.subgrupo;
-        this.catalogoElementosService.postElemento(elemento).subscribe(res => {
-          if (res !== null) {
-            this.pUpManager.showSuccesToast('Registro Exitoso');
-            this.pUpManager.showSuccessAlert('Elemento registrado satisfactoriamente!');
-            this.cleanForm();
-          } else {
-            this.pUpManager.showErrorAlert('No es posible hacer el registro.');
-          }
-        });
-      } else {
-        this.pUpManager.showErrorAlert('Debe seleccionar un subgrupo del catálogo de elementos');
-        // this.updateSubgrupo1(event.data.Subgrupo1);
+  submitElemento(event) {
+    const post = this.info_elemento === undefined ? true : false;
+        if (post) {
+          const elemento = new Elemento;
+          elemento.Nombre = event.data.Grupo.Nombre;
+          elemento.Descripcion = event.data.Grupo.Descripcion;
+          elemento.FechaInicio = new Date(event.data.Grupo.FechaInicio);
+          elemento.FechaFin = new Date(event.data.Grupo.FechaFin);
+          elemento.Activo = event.data.Grupo.Activo;
+          elemento.SubgrupoId = this.subgrupo;
+          this.catalogoElementosService.postElemento(elemento).toPromise().then(res => {
+            if (res !== null) {
+              (Swal as any).fire({
+                type: 'success',
+                title: this.translate.instant('GLOBAL.catalogo.forms.titPostElemento'),
+                text: this.translate.instant('GLOBAL.catalogo.forms.textPostElementoOk', { NOM: event.data.Grupo.Nombre }),
+                showConfirmButton: false,
+                timer: 2500,
+              });
+              this.cleanForm();
+              this.subgrupo = undefined;
+              this.ver_formulario = false;
+              this.updateTree.emit(true);
+            } else {
+              this.errorSubmit(post);
+            }
+          });
+        } else {
+          this.catalogoElementosService.putElemento(event.data.Grupo).toPromise().then(res => {
+            if (res !== null) {
+              this.cleanForm();
+              this.subgrupo = undefined;
+              this.ver_formulario = false;
+              this.updateTree.emit(true);
+            } else {
+              this.errorSubmit(post);
+            }
+          });
+        }
       }
-    }
+    });
+  }
+
   }
 
   cleanForm() {
