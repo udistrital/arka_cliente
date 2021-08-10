@@ -301,7 +301,6 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
 
     const movimiento = this.Movimientos.filter(elemento => elemento.orden === 0 && elemento.Tipo_Texto === 'GLOBAL.Entradas');
     if (movimiento.length === 1) {
-
       const cuentadebito = movimiento[0].CuentaDebitoId;
       this.Movimientos.forEach(elemento => {
         if (elemento.Tipo_Texto === 'GLOBAL.Entradas')
@@ -310,7 +309,6 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
           elemento.CuentaCreditoId = cuentadebito;
         }
       });
-
     }
     this.updateMovimientos(this.Movimientos);
   }

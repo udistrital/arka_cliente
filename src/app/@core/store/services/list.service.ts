@@ -71,7 +71,6 @@ export class ListService {
           this.CatalogoElementos.getPlanCuentas('debito') // tema de base financiera desplegada debito
             .subscribe(
               (res: any[]) => {
-
                 this.addList(REDUCER_LIST.PlanCuentasDebito, res);
               },
               error => {

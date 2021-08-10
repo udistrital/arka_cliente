@@ -154,10 +154,34 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
     this.store.select((stte) => stte).subscribe(
       (list) => {
         if (list.listPlanCuentasCredito !== undefined || list.listPlanCuentasDebito !== undefined) {
-          this.formMovimiento.campos[this.getIndexForm('CuentaDebitoId')].opciones = list.listPlanCuentasDebito[0];
-          this.formMovimiento.campos[this.getIndexForm('CuentaCreditoId')].opciones = list.listPlanCuentasCredito[0];
+        let arreglo;
+        const arreglo2 = new Array();
+        const arreglo3 = new Array();
+        arreglo = list.listPlanCuentasCredito[0];
+        arreglo.forEach((elemento) => {
+           const found = arreglo.find(element => elemento.Codigo !== element.Codigo && element.Codigo.indexOf(elemento.Codigo) === 0);
+           if (!found) {
+              arreglo2.push(elemento);
+           }
+        });
+      //  console.log("El resultado final", arreglo2)
+        const a = arreglo2.map(x => ({Codigo: x.Codigo + ' ' + x.Nombre,
+        Nombre: x.Nombre, DetalleCuentaID: x.DetalleCuentaID, Naturaleza: x.Naturaleza}));
+        let arreglo1;
+        arreglo1 = list.listPlanCuentasDebito[0];
+        arreglo1.forEach((elemento) => {
+           const found = arreglo1.find(element => elemento.Codigo !== element.Codigo &&
+            element.Codigo.indexOf(elemento.Codigo) === 0);
+           if (!found) {
+              arreglo3.push(elemento);
+           }
+        });
+        const b = arreglo3.map(x => ({Codigo: x.Codigo + ' ' + x.Nombre,
+        Nombre: x.Nombre, DetalleCuentaID: x.DetalleCuentaID, Naturaleza: x.Naturaleza}));
+          this.formMovimiento.campos[this.getIndexForm('CuentaDebitoId')].opciones = b;
+          this.formMovimiento.campos[this.getIndexForm('CuentaCreditoId')].opciones = a;
           if (this.formMovimiento.titulo === 'Salida')
-            this.formMovimiento.campos[this.getIndexForm('CuentaCreditoId')].opciones = list.listPlanCuentasDebito[0];
+            this.formMovimiento.campos[this.getIndexForm('CuentaCreditoId')].opciones = b;
         }
       },
     );
@@ -266,23 +290,28 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
   }
 
   validarForm(event) {
-//    console.log("valid")
+    let vdebito = event.data.CuentasFormulario.CuentaDebitoId;
+    let vcredito = event.data.CuentasFormulario.CuentaCreditoId;
+    if (vdebito !== undefined && vdebito !== '') {
+       vdebito = vdebito.substring(0, vdebito.indexOf(' '));
+    }
+    if (vcredito !== undefined && vcredito !== '') {
+       vcredito = vcredito.substring(0, vcredito.indexOf(' '));
+    }
     if (event.valid) {
       if (this.respuesta !== undefined) {
-        const cuentaDebito = event.data.CuentasFormulario.CuentaDebitoId;
-        const cuentaCredito = event.data.CuentasFormulario.CuentaCreditoId;
-        this.respuesta.CuentaCreditoId = cuentaCredito.Codigo;
-        this.respuesta.CuentaDebitoId = cuentaDebito.Codigo;
+        this.respuesta.CuentaCreditoId = vcredito;
+        this.respuesta.CuentaDebitoId = vdebito;
         this.respuesta.Tipo_Texto = this.tipo_movimiento;
         this.respuesta.orden = this.indice;
         this.formulario.emit(this.respuesta);
       } else {
-        const cuentaDebito = event.data.CuentasFormulario.CuentaDebitoId;
-        const cuentaCredito = event.data.CuentasFormulario.CuentaCreditoId;
+        vdebito.Codigo = vdebito;
+        vcredito.Codigo = vcredito;
         this.respuesta2 = {};
         this.respuesta2.SubgrupoId = this.subgrupo_id;
-        this.respuesta2.CuentaCreditoId = cuentaCredito.Codigo;
-        this.respuesta2.CuentaDebitoId = cuentaDebito.Codigo;
+        this.respuesta2.CuentaCreditoId = vcredito;
+        this.respuesta2.CuentaDebitoId = vdebito;
         this.respuesta2.SubtipoMovimientoId = this.movimiento_id.Id;
         this.respuesta2.Tipo_Texto = this.tipo_movimiento;
         this.respuesta2.orden = this.indice;
