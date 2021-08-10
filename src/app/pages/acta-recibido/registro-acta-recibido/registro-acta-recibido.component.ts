@@ -195,9 +195,9 @@ export class RegistroActaRecibidoComponent implements OnInit {
     });
   }
 
-  private loadContratistas() {
-    return new Promise<void>(async (resolve) => {
-      this.tercerosHelper.getTercerosByCriterio('contratista').subscribe(res => {
+  private loadContratistas(): Promise<void> {
+    return new Promise<void>(resolve => {
+      this.tercerosHelper.getTercerosByCriterio('contratista').toPromise().then( res => {
         this.Contratistas = res;
         resolve();
       });
@@ -224,10 +224,9 @@ export class RegistroActaRecibidoComponent implements OnInit {
       map(nombre => this.filtroContratistas(nombre)),
     );
   }
-
-  private loadProveedores(): Promise<any> {
-    return new Promise<void>(async (resolve) => {
-      this.tercerosHelper.getTercerosByCriterio('proveedor').subscribe(res => {
+  private loadProveedores(): Promise<void> {
+    return new Promise<void>(resolve => {
+      this.tercerosHelper.getTercerosByCriterio('proveedor').toPromise().then( res => {
         this.Proveedores = res;
         resolve();
       });
