@@ -370,6 +370,21 @@ export class CatalogoElementosHelper {
             ),
         );
     }
+
+    public putElemento(Transaccion) {
+        this.rqManager.setPath('CATALOGO_ELEMENTOS_SERVICE');
+        return this.rqManager.put2('elemento', Transaccion, Transaccion.Id).pipe(
+            map(
+                (res) => {
+                    if (res['Type'] === 'error') {
+                        this.pUpManager.showErrorAlert('No se pudo regitrar el elemento');
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
     /**
      * Retorna los Tipo de Bien Activos Get
      * If the response has errors in the OAS API it should show a popup message with an error.
@@ -523,9 +538,10 @@ export class CatalogoElementosHelper {
      * If the response is successs, it returns the object's data.
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
      */
-    public getArbolCatalogo(catalogo) {
+    public getArbolCatalogo(catalogo, elementos) {
+        const query = elementos ? '?elementos=true' : '';
         this.rqManager.setPath('CATALOGO_ELEMENTOS_SERVICE');
-        return this.rqManager.get('tr_catalogo/' + catalogo).pipe(
+        return this.rqManager.get('tr_catalogo/' + catalogo + query).pipe(
             map(
                 (res) => {
                     if (res === 'error') {

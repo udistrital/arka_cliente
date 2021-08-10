@@ -24,6 +24,15 @@ export let FORM_ELEMENTO = {
             tipo: 'text',
         },
         {
+            etiqueta: 'checkbox',
+            claseGrid: 'col-lg-12 col-md-12 col-sm-12 col-xs-12',
+            nombre: 'Activo',
+            label_i18n: 'activo',
+            placeholder_i18n: 'activo',
+            requerido: false,
+            tipo: 'boolean',
+        },
+        {
             etiqueta: 'mat-date',
             claseGrid: 'col-lg-12 col-md-12 col-sm-12 col-xs-12',
             nombre: 'FechaInicio',

@@ -57,6 +57,7 @@ export class ArbolComponent implements OnInit, OnChanges {
   @Input() catalogoId: number;
   @Input() updateSignal: Observable<string[]>;
   @Input() acciones: boolean = false;
+  @Input() elementos: boolean = false;
   @Output() fila = new EventEmitter<CatalogoArbol>();
   tipos_de_bien: TipoBien;
   elementosSubgrupo: TipoBien;
@@ -102,15 +103,14 @@ export class ArbolComponent implements OnInit, OnChanges {
     if (this.acciones) {
       this.defaultColumns.push('Acciones');
     }
-    this.allColumns = [this.customColumn, ...this.defaultColumns];
-
+    this.allColumns = [this.customColumn].concat(this.defaultColumns);
     this.customColumn2 = this.translate.instant('GLOBAL.codigo');
     this.defaultColumns2 = [
       this.translate.instant('GLOBAL.Nombre'),
       this.translate.instant('GLOBAL.Descripcion'),
       this.translate.instant('GLOBAL.info'),
     ];
-    this.allColumns2 = [this.customColumn, ...this.defaultColumns];
+    this.allColumns2 = [this.customColumn2].concat(this.defaultColumns2);
   }
 
   ngOnChanges(changes) {
@@ -169,7 +169,7 @@ export class ArbolComponent implements OnInit, OnChanges {
       this.loadTreeCatalogo();
     }
     if (this.stringBusqueda.length < this.aux) {
-      this.catalogoHelper.getArbolCatalogo(this.catalogoId).subscribe((res) => {
+      this.catalogoHelper.getArbolCatalogo(this.catalogoId, this.elementos).subscribe((res) => {
         this.mostrar = true;
         if (res !== null) {
           if (res[0].hasOwnProperty('data')) {
@@ -240,7 +240,7 @@ export class ArbolComponent implements OnInit, OnChanges {
 
   loadTreeCatalogo() {
     this.mostrar = false;
-    this.catalogoHelper.getArbolCatalogo(this.catalogoId).subscribe((res) => {
+    this.catalogoHelper.getArbolCatalogo(this.catalogoId, this.elementos).subscribe((res) => {
       this.mostrar = true;
       if (res !== null) {
         if (res[0].hasOwnProperty('data')) {

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/catalogoElementosHelper';
 import { ToasterService } from 'angular2-toaster';
@@ -8,6 +8,7 @@ import { FORM_ELEMENTO } from './form-elemento';
 import { Elemento } from '../../../@core/data/models/catalogo/elemento';
 import { Subgrupo } from '../../../@core/data/models/catalogo/jerarquia';
 import { Nivel_t } from '../../../@core/data/models/catalogo/tipo_nivel';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'ngx-registro-elementos',
@@ -16,6 +17,7 @@ import { Nivel_t } from '../../../@core/data/models/catalogo/tipo_nivel';
 })
 export class RegistroElementosComponent implements OnInit {
 
+  @Output() updateTree = new EventEmitter();
   formElemento: any;
   info_elemento: Elemento;
   clean: boolean;
@@ -71,46 +73,97 @@ export class RegistroElementosComponent implements OnInit {
     this.catalogoId = catalogo;
   }
 
-  receiveMessage(event) {
+  treeEvent(event) {
     if (event.hasOwnProperty('TipoNivelId')
-    && event.TipoNivelId.hasOwnProperty('Id')
-    && event.TipoNivelId.Id === Nivel_t.Clase ) {
-      this.catalogoElementosService.getSubgrupoById(event.Id).subscribe(res => {
-        // console.log(res[0]);
-        if (Object.keys(res[0]).length !== 0) {
-          this.subgrupo = event;
-          this.ver_formulario = true;
-        } else {
-          this.ver_formulario = false;
-        }
-      });
-    } else this.ver_formulario = false;
+      && event.TipoNivelId.hasOwnProperty('Id')
+      && event.TipoNivelId.Id === Nivel_t.Clase) {
+      this.cleanForm();
+      this.info_elemento = undefined;
+      this.subgrupo = event;
+      this.ver_formulario = true;
+    } else if (event.hasOwnProperty('SubgrupoId') && event.hasOwnProperty('Id')) {
+      this.info_elemento = event;
+      this.subgrupo = event.SubgrupoId;
+      this.ver_formulario = true;
+    } else {
+      this.cleanForm();
+      this.info_elemento = undefined;
+      this.ver_formulario = false;
+      this.subgrupo = undefined;
+    }
   }
 
-  validarForm(event) {
-    if (event.valid) {
-      if (this.info_elemento === undefined && this.subgrupo !== undefined) {
-        const elemento = new Elemento;
-        elemento.Nombre = event.data.Grupo.Nombre;
-        elemento.Descripcion = event.data.Grupo.Descripcion;
-        elemento.FechaInicio = new Date(event.data.Grupo.FechaInicio);
-        elemento.FechaFin = new Date(event.data.Grupo.FechaFin);
-        elemento.Activo = true;
-        elemento.SubgrupoId = this.subgrupo;
-        this.catalogoElementosService.postElemento(elemento).subscribe(res => {
-          if (res !== null) {
-            this.pUpManager.showSuccesToast('Registro Exitoso');
-            this.pUpManager.showSuccessAlert('Elemento registrado satisfactoriamente!');
-            this.cleanForm();
-          } else {
-            this.pUpManager.showErrorAlert('No es posible hacer el registro.');
-          }
-        });
-      } else {
-        this.pUpManager.showErrorAlert('Debe seleccionar un subgrupo del catálogo de elementos');
-        // this.updateSubgrupo1(event.data.Subgrupo1);
+  submitElemento(event) {
+    const post = this.info_elemento === undefined ? true : false;
+    (Swal as any).fire({
+      title: this.translate.instant(post ? 'GLOBAL.catalogo.forms.titPostElemento' :
+        'GLOBAL.catalogo.forms.titPutElemento'),
+      text: this.translate.instant(post ? 'GLOBAL.catalogo.forms.textPostElemento' :
+        'GLOBAL.catalogo.forms.textPutElemento', { NOM: event.data.Grupo.Nombre }),
+      type: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085D6',
+      cancelButtonColor: '#D33',
+      confirmButtonText: 'Si',
+      cancelButtonText: 'No',
+    }).then((result) => {
+      if (result.value) {
+        if (post) {
+          const elemento = new Elemento;
+          elemento.Nombre = event.data.Grupo.Nombre;
+          elemento.Descripcion = event.data.Grupo.Descripcion;
+          elemento.FechaInicio = new Date(event.data.Grupo.FechaInicio);
+          elemento.FechaFin = new Date(event.data.Grupo.FechaFin);
+          elemento.Activo = event.data.Grupo.Activo;
+          elemento.SubgrupoId = this.subgrupo;
+          this.catalogoElementosService.postElemento(elemento).toPromise().then(res => {
+            if (res !== null) {
+              (Swal as any).fire({
+                type: 'success',
+                title: this.translate.instant('GLOBAL.catalogo.forms.titPostElemento'),
+                text: this.translate.instant('GLOBAL.catalogo.forms.textPostElementoOk', { NOM: event.data.Grupo.Nombre }),
+                showConfirmButton: false,
+                timer: 2500,
+              });
+              this.cleanForm();
+              this.subgrupo = undefined;
+              this.ver_formulario = false;
+              this.updateTree.emit(true);
+            } else {
+              this.errorSubmit(post);
+            }
+          });
+        } else {
+          this.catalogoElementosService.putElemento(event.data.Grupo).toPromise().then(res => {
+            if (res !== null) {
+              (Swal as any).fire({
+                type: 'success',
+                title: this.translate.instant('GLOBAL.catalogo.forms.titPutElemento'),
+                text: this.translate.instant('GLOBAL.catalogo.forms.textPutElementoOk', { NOM: event.data.Grupo.Nombre }),
+                showConfirmButton: false,
+                timer: 2500,
+              });
+              this.cleanForm();
+              this.subgrupo = undefined;
+              this.ver_formulario = false;
+              this.updateTree.emit(true);
+            } else {
+              this.errorSubmit(post);
+            }
+          });
+        }
       }
-    }
+    });
+  }
+
+  private errorSubmit(post: boolean) {
+    (Swal as any).fire({
+      type: 'error',
+      title: this.translate.instant(post ? 'GLOBAL.catalogo.forms.titPostElemento' : 'GLOBAL.catalogo.forms.titPutElemento'),
+      text: this.translate.instant(post ? 'GLOBAL.catalogo.forms.textPostElementoErr' : 'GLOBAL.catalogo.forms.textPostElementoErr'),
+      showConfirmButton: false,
+      timer: 2500,
+    });
   }
 
   cleanForm() {

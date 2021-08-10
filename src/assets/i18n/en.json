@@ -30,7 +30,7 @@
             "name": "Catalog Building"
           },
           "elementos": {
-            "name": "Register Elements"
+            "name": "Manage Elements"
           },
           "inactivar": {
             "name": "Disable Levels"
@@ -563,6 +563,16 @@
     },
 
     "catalogo": {
+      "forms": {
+        "titPostElemento": "Create Element",
+        "textPostElemento": "Create element {{NOM}}?",
+        "titPutElemento": "Update Element",
+        "textPutElemento": "Update element {{NOM}}?",
+        "textPostElementoOk": "El elemento {{NOM}} ha sido registrado correctamente",
+        "textPutElementoOk": "The element {{NOM}} was successfully updated",
+        "textPostElementoErr": "It was not possible to update the element",
+        "textPutElementoErr": "It was not possible to create the element"
+      },
       "uno": "Catalogue",
       "crear": "Create Catalogue",
       "editar": "Edit Catalogue",
@@ -570,7 +580,8 @@
       "editar_nombre": "Edit Catalogue \"{{NOMBRE}}\"",
       "constrInfo": "To modify or add \"descendants\" to a row, please choose a row",
       "claseInfo": "Pick a row corresponding to a Class",
-      "elementosInfo": "To add elements to a Class, please choose a Class row",
+      "elementosInfo1": "Add element: Select the Class row which the Element will be added.",
+      "elementosInfo2": "Edit element: Select an Element row",
       "desactivar": "Disable Catalogue",
       "validacion_desactivar": "¿Are you sure you want to disable the catalog? ",
       "lista": "Catalogue List"

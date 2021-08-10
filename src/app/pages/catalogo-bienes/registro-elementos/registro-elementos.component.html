@@ -10,10 +10,14 @@
           <option *ngFor="let item of catalogos" value="{{ item.Id }}">{{ item.Nombre }}</option>
         </select>
 
-        <ngx-arbol *ngIf="catalogoId !== 0" [catalogoId]="catalogoId" (fila)="receiveMessage($event)" acciones=true>
+        <ngx-arbol *ngIf="catalogoId !== 0" [catalogoId]="catalogoId" (fila)="treeEvent($event)" elementos=true acciones=true [updateSignal]="updateTree">
           <p>
             <span class="fas fa-info-circle"></span>&nbsp;
-            <em>{{'GLOBAL.catalogo.elementosInfo' | translate}}</em>
+            <em>{{'GLOBAL.catalogo.elementosInfo1' | translate}}</em>
+          </p>
+          <p>
+            <span class="fas fa-info-circle"></span>&nbsp;
+            <em>{{'GLOBAL.catalogo.elementosInfo2' | translate}}</em>
           </p>
         </ngx-arbol>
   </nb-card-body>
@@ -21,13 +25,13 @@
 <div class="col" *ngIf="ver_formulario">
   <nb-card>
     <nb-card-body>
-              <h2>{{ 'GLOBAL.detalle' | translate }}</h2>
-              <p class="font-weight-bold text-uppercase pt-4 pb-4">{{ 'GLOBAL.subgrupo.clase.nombre' | translate }}:
-                  <span class="font-weight-normal">{{ subgrupo.Consecutivo }}: {{ subgrupo.Nombre }}</span></p>
-        <toaster-container [toasterconfig]="config"></toaster-container>
-        <ngx-dinamicform [normalform]="formElemento" [modeloData]="info_elemento" (result)="validarForm($event)"
-          [clean]="clean">
-        </ngx-dinamicform>
+      <h2>{{ 'GLOBAL.detalle' | translate }}</h2>
+      <p class="font-weight-bold text-uppercase pt-4 pb-4">{{ 'GLOBAL.subgrupo.clase.nombre' | translate }}:
+        <span class="font-weight-normal">{{ subgrupo.Codigo }}: {{ subgrupo.Nombre }}</span>
+      </p>
+      <ngx-dinamicform [normalform]="formElemento" [modeloData]="info_elemento" (result)="submitElemento($event)"
+        [clean]="clean">
+      </ngx-dinamicform>
 
     </nb-card-body>
   </nb-card>

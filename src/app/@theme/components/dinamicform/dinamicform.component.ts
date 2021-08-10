@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter, OnChanges, ViewChild } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, OnChanges, ViewChild, OnDestroy } from '@angular/core';
 import { MatDatepicker } from '@angular/material/datepicker';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { CompleterService, CompleterData } from 'ng2-completer';
@@ -9,7 +9,7 @@ import { CompleterService, CompleterData } from 'ng2-completer';
   styleUrls: ['./dinamicform.component.scss'],
 })
 
-export class DinamicformComponent implements OnInit, OnChanges {
+export class DinamicformComponent implements OnInit, OnChanges, OnDestroy {
 
   @Input('normalform') normalform: any;
   @Input('modeloData') modeloData: any;
@@ -21,6 +21,7 @@ export class DinamicformComponent implements OnInit, OnChanges {
   @Output() percentage: EventEmitter<any> = new EventEmitter();
   protected dataService: CompleterData[];
   data: any;
+  init: boolean;
   @ViewChild(MatDatepicker) datepicker: MatDatepicker<Date>;
 
   constructor(private sanitization: DomSanitizer,
@@ -36,6 +37,7 @@ export class DinamicformComponent implements OnInit, OnChanges {
   }
 
   ngOnInit() {
+    this.init = true;
     if (!this.normalform.tipo_formulario) {
       this.normalform.tipo_formulario = 'grid';
     }
@@ -45,7 +47,11 @@ export class DinamicformComponent implements OnInit, OnChanges {
         d.relacion = true;
       }
       if (!d.valor) {
-        d.valor = '';
+        if (d.tipo === 'boolean') {
+          d.valor = false;
+        } else {
+          d.valor = '';
+        }
       }
       if (!d.deshabilitar) {
         d.deshabilitar = false;
@@ -124,7 +130,7 @@ export class DinamicformComponent implements OnInit, OnChanges {
         }
       }
     }
-    if (changes.clean !== undefined) {
+    if (changes.clean !== undefined && this.init) {
       this.clearForm();
       this.clean = false;
     }
@@ -437,5 +443,9 @@ export class DinamicformComponent implements OnInit, OnChanges {
 
   isEqual(obj1, obj2) {
     return JSON.stringify(obj1) === JSON.stringify(obj2);
+  }
+
+  ngOnDestroy() {
+    this.clearForm();
   }
 }
