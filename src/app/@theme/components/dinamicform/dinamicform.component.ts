@@ -94,6 +94,25 @@ export class DinamicformComponent implements OnInit, OnChanges {
                         });
                       }
                       break;
+                    case 'autocompletedouble':
+                      if (element.hasOwnProperty('opciones')) {
+
+              //          var a = element.opciones.map(x=> {return {Codigo: x.Codigo + " " + x.Nombre}})
+              //          var b = element.valor
+                        this.dataService[element.id] = this.completerService.local(element.opciones, element.key, element.key);
+                        element.opciones.forEach((e1) => {
+                          if (this.modeloData[i].Id !== null) {
+                            if (e1.Id === this.modeloData[i].Id) {
+                              element.valor = e1[element.key];
+                            }
+                            if (e1.Codigo !== undefined && e1.Codigo !== null &&
+                              e1.Codigo.substring(0, e1.Codigo.indexOf(' ')) === this.modeloData[i].Id) {
+                              element.valor = e1[element.key];
+                            }
+                          }
+                        });
+                      }
+                      break;
                     case 'select':
                       if (element.hasOwnProperty('opciones')) {
                         element.opciones.forEach((e1) => {
@@ -140,12 +159,12 @@ export class DinamicformComponent implements OnInit, OnChanges {
   }
 
   onChange(event, c) {
-
+  //  console.log("On change")
     if (c.valor !== undefined) {
       c.urlTemp = URL.createObjectURL(event.srcElement.files[0]);
       c.url = this.cleanURL(c.urlTemp);
       c.valor = event.srcElement.files[0];
-      console.info(c);
+    //  console.info(c);
       this.validCampo(c);
       c.File = event.srcElement.files[0];
     }

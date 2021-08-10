@@ -6,7 +6,7 @@ export let FORM_MOVIMIENTO = {
     modelo: 'CuentasFormulario',
     campos: [
         {   minSearchLength: 0,
-            etiqueta: 'autocomplete',
+            etiqueta: 'autocompletedouble',
             claseGrid: 'col-6',
             nombre: 'CuentaDebitoId',
             label_i18n: 'cuenta_debito',
@@ -19,7 +19,7 @@ export let FORM_MOVIMIENTO = {
             opciones: [],
         },
         {   minSearchLength: 0,
-            etiqueta: 'autocomplete',
+            etiqueta: 'autocompletedouble',
             claseGrid: 'col-6',
             nombre: 'CuentaCreditoId',
             label_i18n: 'cuenta_credito',
