@@ -33,8 +33,6 @@ import { CompleterData, CompleterService } from 'ng2-completer';
 import { HttpErrorResponse } from '@angular/common/http';
 import { UserService } from '../../../@core/data/users.service';
 
-
-
 @Component({
   selector: 'ngx-verificacion-acta-recibido',
   templateUrl: './verificacion-acta-recibido.component.html',
@@ -203,7 +201,6 @@ export class VerificacionActaRecibidoComponent implements OnInit {
 
   }
   Cargar_Formularios(transaccion_: TransaccionActaRecibido) {
-    // console.log(transaccion_)
     this.Actas_Recibido.getSedeDependencia(transaccion_.ActaRecibido.UbicacionId).subscribe(res => {
       const valor = res[0].EspacioFisicoId.Codigo.substring(0, 4);
       this.Acta = transaccion_;
@@ -219,7 +216,7 @@ export class VerificacionActaRecibidoComponent implements OnInit {
           Proveedor: [this.muestraProveedor(this.Proveedores.find(proveedor => proveedor.Tercero.Id === Soporte.SoporteActa.ProveedorId))],
           Consecutivo: [Soporte.SoporteActa.Consecutivo],
           Fecha_Factura: [{
-            value: Soporte.SoporteActa.FechaSoporte,
+            value: new Date(Soporte.SoporteActa.FechaSoporte.toString().split('Z')[0]),
             disabled: true,
           }],
           Soporte: [Soporte.SoporteActa.DocumentoId],
