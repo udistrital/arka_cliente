@@ -78,10 +78,13 @@ export class RegistroElementosComponent implements OnInit {
       && event.TipoNivelId.hasOwnProperty('Id')
       && event.TipoNivelId.Id === Nivel_t.Clase) {
       this.cleanForm();
+      this.formElemento.campos[0].prefix.value = event.Codigo;
       this.info_elemento = undefined;
       this.subgrupo = event;
       this.ver_formulario = true;
     } else if (event.hasOwnProperty('SubgrupoId') && event.hasOwnProperty('Id')) {
+      this.formElemento.campos[0].prefix.value = event.SubgrupoId.Codigo;
+      event.Codigo = event.Codigo.substring(6, 8);
       this.info_elemento = event;
       this.subgrupo = event.SubgrupoId;
       this.ver_formulario = true;
@@ -108,12 +111,12 @@ export class RegistroElementosComponent implements OnInit {
       cancelButtonText: 'No',
     }).then((result) => {
       if (result.value) {
+        event.data.Grupo.Codigo = this.subgrupo.Codigo + event.data.Grupo.Codigo;
         if (post) {
           const elemento = new Elemento;
           elemento.Nombre = event.data.Grupo.Nombre;
           elemento.Descripcion = event.data.Grupo.Descripcion;
-          elemento.FechaInicio = new Date(event.data.Grupo.FechaInicio);
-          elemento.FechaFin = new Date(event.data.Grupo.FechaFin);
+          elemento.Codigo = event.data.Grupo.Codigo;
           elemento.Activo = event.data.Grupo.Activo;
           elemento.SubgrupoId = this.subgrupo;
           this.catalogoElementosService.postElemento(elemento).toPromise().then(res => {
