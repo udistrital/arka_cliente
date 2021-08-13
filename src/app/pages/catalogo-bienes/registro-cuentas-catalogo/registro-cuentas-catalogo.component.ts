@@ -169,6 +169,15 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
         this.confService.setParametro(this.estadoAsignacionContable).subscribe(res2 => {
           this.refrescaEstadoSesionContable(<Parametro><any>res2);
           this.estado_cargado = true;
+     (Swal as any).fire({
+          title: 'Edición de cuentas',
+          html: this.estadoAsignacionContable.Valor === 'true' ? 'Desbloqueada la edición de cuentas' : 'Bloqueada la edición de cuentas',
+          timer: 2000,
+          timerProgressBar: true,
+        }).then((result) => {
+          if (result.dismiss === Swal.DismissReason.timer) {
+          }
+        });
         });
       }
     });
