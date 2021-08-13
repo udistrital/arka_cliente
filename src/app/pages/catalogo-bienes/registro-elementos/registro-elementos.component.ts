@@ -83,9 +83,16 @@ export class RegistroElementosComponent implements OnInit {
       this.subgrupo = event;
       this.ver_formulario = true;
     } else if (event.hasOwnProperty('SubgrupoId') && event.hasOwnProperty('Id')) {
+      this.info_elemento = new Elemento;
       this.formElemento.campos[0].prefix.value = event.SubgrupoId.Codigo;
-      event.Codigo = event.Codigo.substring(6, 8);
-      this.info_elemento = event;
+      this.info_elemento.Id = event.Id;
+      this.info_elemento.Nombre = event.Nombre;
+      this.info_elemento.Codigo = event.Codigo.substring(6, 8);
+      this.info_elemento.Descripcion = event.Descripcion;
+      this.info_elemento.SubgrupoId = event.SubgrupoId;
+      this.info_elemento.Activo = event.Activo;
+      this.info_elemento.FechaCreacion = event.FechaCreacion;
+      this.info_elemento.FechaModificacion = event.FechaModificacion;
       this.subgrupo = event.SubgrupoId;
       this.ver_formulario = true;
     } else {
