@@ -45,16 +45,6 @@
       </nb-card-footer>
     </nb-card>
 
-    <nb-card *ngIf="uid_3">
-      <nb-card-header>
-        {{'GLOBAL.subgrupo.grupo.agregar' | translate}}
-      </nb-card-header>
-      <ngx-crud-grupo [catalogo_id]="catalogoId" (eventChange)="recargarCatalogo($event)"></ngx-crud-grupo>
-      <nb-card-footer>
-              <button nbButton (click)="QuitarVista()">{{'GLOBAL.Deshacer' | translate}}</button>
-        </nb-card-footer>
-    </nb-card>
-
     <nb-card *ngIf="uid_4">
       <nb-card-header>
         {{'GLOBAL.subgrupo.'+nivel_hijo+'.agregar' | translate}}
