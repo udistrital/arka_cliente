@@ -26,12 +26,12 @@ export class RegistroCatalogoComponent implements OnInit {
   catalogoId: number;
   subgrupoPadre: Subgrupo;
   subgrupoHijo: Subgrupo;
-  uid_1: number;
-  ModificarGrupo: boolean;
+  modificarGrupo: boolean;
   uid_2: number;
-  uid_3: number;
   uid_4: number;
   ver_formulario: boolean;
+  grupoSeleccionado: Subgrupo;
+  catalogoSeleccionado: number;
 
   nivel_actual: string;
   nivel_hijo: string;
@@ -89,9 +89,10 @@ export class RegistroCatalogoComponent implements OnInit {
     this.QuitarVista();
   }
 
-  AgregarGrupo(id: number) {
-    this.QuitarVista();
-    this.uid_3 = id;
+  AgregarGrupo() {
+    this.catalogoSeleccionado = this.catalogoId;
+    this.grupoSeleccionado = undefined;
+    this.modificarGrupo = true;
     this.ver_formulario = true;
   }
 
@@ -101,9 +102,8 @@ export class RegistroCatalogoComponent implements OnInit {
     this.ver_formulario = true;
   }
   QuitarVista() {
-    this.uid_1 = undefined;
+    this.modificarGrupo = false;
     this.uid_2 = undefined;
-    this.uid_3 = undefined;
     this.uid_4 = undefined;
     this.ver_formulario = false;
   }
