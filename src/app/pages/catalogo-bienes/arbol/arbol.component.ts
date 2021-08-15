@@ -58,6 +58,7 @@ export class ArbolComponent implements OnInit, OnChanges {
   @Input() updateSignal: Observable<string[]>;
   @Input() acciones: boolean = false;
   @Input() elementos: boolean = false;
+  @Input() subgruposInactivos: boolean = false;
   @Output() fila = new EventEmitter<CatalogoArbol>();
   tipos_de_bien: TipoBien;
   elementosSubgrupo: TipoBien;
@@ -169,7 +170,7 @@ export class ArbolComponent implements OnInit, OnChanges {
       this.loadTreeCatalogo();
     }
     if (this.stringBusqueda.length < this.aux) {
-      this.catalogoHelper.getArbolCatalogo(this.catalogoId, this.elementos).subscribe((res) => {
+      this.catalogoHelper.getArbolCatalogo(this.catalogoId, this.elementos, this.subgruposInactivos).subscribe((res) => {
         this.mostrar = true;
         if (res !== null) {
           if (res[0].hasOwnProperty('data')) {
@@ -240,7 +241,7 @@ export class ArbolComponent implements OnInit, OnChanges {
 
   loadTreeCatalogo() {
     this.mostrar = false;
-    this.catalogoHelper.getArbolCatalogo(this.catalogoId, this.elementos).subscribe((res) => {
+    this.catalogoHelper.getArbolCatalogo(this.catalogoId, this.elementos, this.subgruposInactivos).subscribe((res) => {
       this.mostrar = true;
       if (res !== null) {
         if (res[0].hasOwnProperty('data')) {
