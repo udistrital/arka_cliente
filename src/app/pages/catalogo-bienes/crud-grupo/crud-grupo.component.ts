@@ -56,7 +56,7 @@ export class CrudGrupoComponent implements OnInit, OnChanges {
     }
   }
 
-  public loadGrupo(): void {    
+  public loadGrupo(): void {
     if (this.grupo !== undefined) {
       this.infoGrupo = this.grupo;
     } else {
@@ -74,6 +74,8 @@ export class CrudGrupoComponent implements OnInit, OnChanges {
       showCancelButton: true,
       confirmButtonColor: '#3085D6',
       cancelButtonColor: '#D33',
+      confirmButtonText: 'Si',
+      cancelButtonText: 'No',
     };
     (Swal as any).fire(opt).then((willDelete) => {
       if (willDelete.value) {
