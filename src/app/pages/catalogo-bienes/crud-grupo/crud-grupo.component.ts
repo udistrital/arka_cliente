@@ -2,7 +2,7 @@ import { Catalogo } from '../../../@core/data/models/catalogo/catalogo';
 import { TipoNivelID, Nivel_t } from '../../../@core/data/models/catalogo/tipo_nivel';
 import { Grupo, Grupo2, SubgrupoComun } from '../../../@core/data/models/catalogo/jerarquia';
 import { GrupoTransaccion } from '../../../@core/data/models/catalogo/transacciones';
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, OnChanges } from '@angular/core';
 import { FORM_GRUPO } from './form-grupo';
 import { ToasterService, ToasterConfig, Toast, BodyOutputType } from 'angular2-toaster';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
@@ -15,10 +15,7 @@ import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/cat
   templateUrl: './crud-grupo.component.html',
   styleUrls: ['./crud-grupo.component.scss'],
 })
-export class CrudGrupoComponent implements OnInit {
-  config: ToasterConfig;
-  grupo_id: number;
-  catalogoid: any;
+export class CrudGrupoComponent implements OnInit, OnChanges {
 
   @Input('grupo_id')
   set name(grupo_id: number) {
@@ -52,6 +49,10 @@ export class CrudGrupoComponent implements OnInit {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
       this.construirForm();
     });
+    this.loadGrupo();
+  }
+
+  ngOnChanges() {
     this.loadGrupo();
   }
 
