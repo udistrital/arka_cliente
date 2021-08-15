@@ -1,6 +1,6 @@
 import { Catalogo } from '../../../@core/data/models/catalogo/catalogo';
 import { TipoNivelID, Nivel_t } from '../../../@core/data/models/catalogo/tipo_nivel';
-import { Grupo, Grupo2, SubgrupoComun } from '../../../@core/data/models/catalogo/jerarquia';
+import { Subgrupo } from '../../../@core/data/models/catalogo/jerarquia';
 import { GrupoTransaccion } from '../../../@core/data/models/catalogo/transacciones';
 import { Component, OnInit, Input, Output, EventEmitter, OnChanges } from '@angular/core';
 import { FORM_GRUPO } from './form-grupo';
@@ -23,7 +23,7 @@ export class CrudGrupoComponent implements OnInit, OnChanges {
   @Output() eventChange = new EventEmitter();
   @Output() mostrar = new EventEmitter();
 
-  info_grupo: Grupo;
+  infoGrupo: Subgrupo;
   formGrupo: any;
   regGrupo: any;
   clean: boolean;
@@ -149,7 +149,7 @@ export class CrudGrupoComponent implements OnInit, OnChanges {
 
   validarForm(event) {
     if (event.valid) {
-        if (this.info_grupo === undefined) {
+        if (this.infoGrupo === undefined) {
           this.createGrupo(event.data.Grupo);
         } else {
           this.updateGrupo(event.data.Grupo);
