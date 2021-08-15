@@ -110,16 +110,13 @@ export class RegistroCatalogoComponent implements OnInit {
 
   // Ver formularios de modificacion
   receiveMessage(event) {
-    // console.log({'receiveMessage(event)': event});
     this.QuitarVista();
     this.subgrupoPadre = event;
-    this.info_grupo = <Grupo>event;
-    this.catalogoElementosService.getGrupoById(event.Id).subscribe(
-      res => {
-        if (Object.keys(res[0]).length !== 0) {
+        if (event.TipoNivelId && event.TipoNivelId.Id === Nivel_t.Grupo) {
           // Si es grupo (no tiene subgrupo padre, tiene catalogo)
-          // console.log({'receiveMessage - res': res});
-          this.uid_1 = event.Id;
+          this.grupoSeleccionado = event;
+          this.catalogoSeleccionado = undefined;
+          this.modificarGrupo = true;
           this.nivel_hijo = nh.Texto(nh.Hijo(Nivel_t.Grupo));
         } else {
           // Si NO es grupo (es segmento/familia/clase, tiene subgrupo padre)
