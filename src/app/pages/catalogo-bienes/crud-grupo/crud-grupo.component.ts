@@ -17,16 +17,8 @@ import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/cat
 })
 export class CrudGrupoComponent implements OnInit, OnChanges {
 
-  @Input('grupo_id')
-  set name(grupo_id: number) {
-    this.grupo_id = grupo_id;
-    this.loadGrupo();
-  }
-
-  @Input('catalogo_id')
-  set name2(grupo_id: number) {
-    this.catalogoid = grupo_id;
-  }
+  @Input('grupo') grupo: Subgrupo;
+  @Input('catalogoId') catalogoId: number;
 
   @Output() eventChange = new EventEmitter();
   @Output() mostrar = new EventEmitter();
@@ -76,25 +68,14 @@ export class CrudGrupoComponent implements OnInit, OnChanges {
     return 0;
   }
 
-  public loadGrupo(): void {
-    if (this.grupo_id !== undefined && this.grupo_id !== 0) {
-      this.catalogoElementosService.getGrupoTransaccionById(this.grupo_id)
-        .subscribe(res => {
-          // console.log({'loadGrupo() - res': res});
-          if (Object.keys(res[0]).length !== 0) {
-            this.info_grupo = <Grupo>res[0].Subgrupo;
-            this.mostrar.emit(true);
-            this.cargando = false;
-          } else {
-            this.info_grupo = undefined;
-            this.clean = !this.clean;
-            this.mostrar.emit(false);
-          }
-        });
+  public loadGrupo(): void {    
+    if (this.grupo !== undefined) {
+      this.infoGrupo = this.grupo;
     } else {
+      this.infoGrupo = undefined;
       this.clean = !this.clean;
-      this.cargando = false;
     }
+    this.cargando = false;
   }
 
   updateGrupo(form_data: any): void {
