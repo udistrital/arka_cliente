@@ -78,73 +78,70 @@ export class CrudGrupoComponent implements OnInit, OnChanges {
     this.cargando = false;
   }
 
-  updateGrupo(form_data: any): void {
-
+  updateGrupo(subgrupo: Subgrupo): void {
     const opt: any = {
       title: this.translate.instant('GLOBAL.Actualizar'),
       text: this.translate.instant('GLOBAL.subgrupo.grupo.pregunta_actualizar'),
       type: 'warning',
       showCancelButton: true,
+      confirmButtonColor: '#3085D6',
+      cancelButtonColor: '#D33',
     };
-    (Swal as any).fire(opt)
-      .then((willDelete) => {
-        if (willDelete.value) {
-          this.info_grupo = <Grupo2>form_data;
+    (Swal as any).fire(opt).then((willDelete) => {
+      if (willDelete.value) {
 
-          const grupoActual = <SubgrupoComun>form_data;
-          // console.log({'updateGrupo(grupoActual)': grupoActual});
-
-          grupoActual.Activo = true;
-          grupoActual.Id = this.grupo_id;
-          grupoActual.TipoNivelId = <TipoNivelID>{'Id': Nivel_t.Grupo};
-
-          this.catalogoElementosService.putGrupo(grupoActual, form_data.Id)
-            .subscribe(res => {
-              // console.log(res);
-              this.info_grupo = <Grupo2><unknown>res; // esto es realmente necesario?
-              this.showToast('info',
-                this.translate.instant('GLOBAL.Actualizado'),
-                this.translate.instant('GLOBAL.subgrupo.grupo.respuesta_actualizar_ok'));
-              // this.loadGrupo();
+        this.catalogoElementosService.putGrupo(subgrupo, subgrupo.Id).toPromise()
+          .then(res => {
+            if (res !== null) {
+              (Swal as any).fire({
+                title: this.translate.instant('GLOBAL.Actualizado'),
+                text: this.translate.instant('GLOBAL.subgrupo.grupo.respuesta_actualizar_ok'),
+                type: 'success',
+                showConfirmButton: false,
+                timer: 2500,
+              });
               this.eventChange.emit(true);
-            });
-        }
-      });
+            }
+          });
+      }
+    });
   }
 
-  createGrupo(form_data: any): void {
+  createGrupo(subgrupo: Subgrupo): void {
     const opt: any = {
       title: this.translate.instant('GLOBAL.Crear'),
       text: this.translate.instant('GLOBAL.subgrupo.grupo.pregunta_crear'),
       type: 'warning',
       showCancelButton: true,
+      confirmButtonColor: '#3085D6',
+      cancelButtonColor: '#D33',
     };
-    (Swal as any).fire(opt)
-      .then((willDelete) => {
-        if (willDelete.value) {
+    (Swal as any).fire(opt).then((willDelete) => {
+      if (willDelete.value) {
 
-          const grupoPost = new GrupoTransaccion;
-          const catalogo = new Catalogo;
+        const trGrupo = new GrupoTransaccion;
+        const catalogo = new Catalogo;
+        catalogo.Id = parseFloat(this.catalogoId.toString());
+        trGrupo.Catalogo = catalogo;
+        trGrupo.Subgrupo = subgrupo;
+        trGrupo.Subgrupo.TipoNivelId = <TipoNivelID>{ 'Id': Nivel_t.Grupo };
 
-          catalogo.Id = parseFloat(this.catalogoid);
-          // grupo.TipoNivelId = { Id: 1 };
-          form_data.Activo = true;
-
-          grupoPost.Catalogo = catalogo;
-          grupoPost.Subgrupo = form_data;
-          grupoPost.Subgrupo.TipoNivelId = <TipoNivelID>{'Id': Nivel_t.Grupo};
-          // console.log(grupoPost)
-          this.catalogoElementosService.postGrupo(grupoPost)
-            .subscribe(res => {
-              // console.log(res);
-              this.info_grupo = <Grupo2><unknown>res;
+        this.catalogoElementosService.postGrupo(trGrupo).toPromise()
+          .then(res => {
+            if (res !== null) {
+              (Swal as any).fire({
+                title: this.translate.instant('GLOBAL.Creado'),
+                text: this.translate.instant('GLOBAL.subgrupo.grupo.respuesta_crear_ok'),
+                type: 'success',
+                showConfirmButton: false,
+                timer: 2500,
+              });
               this.eventChange.emit(true);
-              this.showToast('info',
-                this.translate.instant('GLOBAL.Creado'),
-                this.translate.instant('GLOBAL.subgrupo.grupo.respuesta_crear_ok'));
-            });
-        }
-      });
+            }
+          });
+
+      }
+    });
   }
 
   validarForm(event) {
