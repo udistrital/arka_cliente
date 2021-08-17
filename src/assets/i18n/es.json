@@ -845,9 +845,11 @@
       "iniciar_edicion_boton": "Iniciar Edición de Cuentas",
       "iniciar_edicion_titulo": "¿Iniciar Edición de Cuentas?",
       "iniciar_edicion_texto": "Se bloqueará cualquier tipo de movimiento. ¿Desea continuar?",
+      "iniciar_edicion_aviso": "Se bloqueará cualquier tipo de movimiento",
       "terminar_edicion_boton": "Terminar Edición de Cuentas",
       "terminar_edicion_titulo": "¿Finalizar Edicion de Cuentas?",
-      "terminar_edicion_texto": "Se permitirá realizar movimientos. ¿Desea continuar?"
+      "terminar_edicion_texto": "Se permitirá realizar movimientos. ¿Desea continuar?",
+      "terminar_edicion_aviso": "Se permitirá realizar movimientos"
     },
 
     "salidas": {

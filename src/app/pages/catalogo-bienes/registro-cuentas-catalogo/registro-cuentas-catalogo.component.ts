@@ -169,6 +169,17 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
         this.confService.setParametro(this.estadoAsignacionContable).subscribe(res2 => {
           this.refrescaEstadoSesionContable(<Parametro><any>res2);
           this.estado_cargado = true;
+     (Swal as any).fire({
+          title: this.translate.instant('GLOBAL.actualizado'),
+          html: this.estadoAsignacionContable.Valor === 'true' ?
+                this.translate.instant('GLOBAL.cuentas.iniciar_edicion_aviso') :
+                this.translate.instant('GLOBAL.cuentas.terminar_edicion_aviso'),
+          timer: 2000,
+          timerProgressBar: true,
+        }).then((result) => {
+          if (result.dismiss === Swal.DismissReason.timer) {
+          }
+        });
         });
       }
     });

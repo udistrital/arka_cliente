@@ -845,9 +845,11 @@
       "iniciar_edicion_boton": "Begin Account Edition",
       "iniciar_edicion_titulo": "Begin Account Edition?",
       "iniciar_edicion_texto": "Any kind of transaction will be Disabled. Continue?",
+      "iniciar_edicion_aviso": "Any kind of transaction will be Disabled",
       "terminar_edicion_boton": "Finish Account Edition",
       "terminar_edicion_titulo": "Finish Account Edition?",
-      "terminar_edicion_texto": "Any kind of transaction will be Enabled. Continue?"
+      "terminar_edicion_texto": "Any kind of transaction will be Enabled. Continue?",
+      "terminar_edicion_aviso": "Any kind of transaction will be Enabled"
     },
 
     "salidas": {
