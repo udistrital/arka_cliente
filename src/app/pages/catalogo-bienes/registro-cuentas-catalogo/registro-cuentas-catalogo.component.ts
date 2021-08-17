@@ -171,7 +171,9 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
           this.estado_cargado = true;
      (Swal as any).fire({
           title: this.translate.instant('GLOBAL.actualizado'),
-          html: this.estadoAsignacionContable.Valor === 'true' ? this.translate.instant('GLOBAL.cuentas.iniciar_edicion_aviso') :this.translate.instant('GLOBAL.cuentas.terminar_edicion_aviso'), 
+          html: this.estadoAsignacionContable.Valor === 'true' ?
+                this.translate.instant('GLOBAL.cuentas.iniciar_edicion_aviso') :
+                this.translate.instant('GLOBAL.cuentas.terminar_edicion_aviso'),
           timer: 2000,
           timerProgressBar: true,
         }).then((result) => {
