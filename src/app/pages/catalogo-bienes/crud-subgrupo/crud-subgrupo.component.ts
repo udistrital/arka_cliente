@@ -1,12 +1,11 @@
-import { Grupo2, Clase, Subgrupo, SubgrupoID } from '../../../@core/data/models/catalogo/jerarquia';
+import { Grupo2, Subgrupo, SubgrupoID } from '../../../@core/data/models/catalogo/jerarquia';
 import { Detalle } from '../../../@core/data/models/catalogo/detalle';
 import { TipoNivelID, Nivel_t } from '../../../@core/data/models/catalogo/tipo_nivel';
 import { NivelHelper as nh } from '../../../@core/utils/niveles.helper';
-import { TipoBien, TipoBienID, Bien_t } from '../../../@core/data/models/acta_recibido/tipo_bien';
-import { SubgrupoTransaccion, SubgrupoTransaccionDetalle } from '../../../@core/data/models/catalogo/transacciones';
-import { Component, OnInit, AfterViewInit, Input, Output, EventEmitter } from '@angular/core';
-import { FORM_SUBGRUPO } from './form-subgrupo';
-import { ToasterService, ToasterConfig, Toast, BodyOutputType } from 'angular2-toaster';
+import { TipoBien, TipoBienID } from '../../../@core/data/models/acta_recibido/tipo_bien';
+import { SubgrupoTransaccionDetalle } from '../../../@core/data/models/catalogo/transacciones';
+import { Component, OnInit, Input, Output, EventEmitter, OnChanges } from '@angular/core';
+import { FORM_SUBGRUPO, FORM_SUBGRUPO_DETALLE } from './form-subgrupo';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/catalogoElementosHelper';
 import Swal from 'sweetalert2';
@@ -17,13 +16,16 @@ import Swal from 'sweetalert2';
   styleUrls: ['./crud-subgrupo.component.scss'],
 })
 export class CrudSubgrupoComponent implements OnInit, OnChanges {
+  infoSubgrupo: any;
+  init: boolean;
+  tiposBien: Array<TipoBien>;
   formSubgrupo: any;
-  regSubgrupo: any;
   clean: boolean;
   cargando: boolean = true;
 
   @Input('subgrupo') subgrupo: Subgrupo;
   @Input('create') create: boolean;
+  @Output() eventChange = new EventEmitter();
 
   constructor(
     private translate: TranslateService,
