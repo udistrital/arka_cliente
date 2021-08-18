@@ -26,10 +26,6 @@ const routes: Routes = [{
       component: RegistroElementosComponent,
     },
     {
-      path: 'inactiva_grupos',
-      component: InactivarGrupoComponent,
-    },
-    {
       path: 'registro_cuentas_catalogo',
       component: RegistroCuentasCatalogoComponent,
     },
