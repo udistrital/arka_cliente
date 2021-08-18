@@ -26,7 +26,7 @@ import { CatalogoService } from '../../../@core/data/catalogo.service';
         <ng-content select="nb-menu"></ng-content>
     </nb-sidebar>
 
-    <nb-layout-column class="main-content">
+    <nb-layout-column (click)="clickOutside()" class="main-content">
         <ng-content select="router-outlet"></ng-content>
     </nb-layout-column>
 
@@ -80,6 +80,19 @@ export class SampleLayoutComponent implements OnDestroy {
       .subscribe(theme => {
         this.currentTheme = theme.name;
       });
+  }
+  clickOutside() {
+    const xLBp = this.bpService.getByName('xl');
+    const windowsize = window.innerWidth
+    // Funcion para check de tamaños.
+    // const Overflow = this.bpService.getByWidth(1200)
+    // console.log(Overflow)
+    // console.log(windowsize)
+    // console.log(xLBp)
+    if (windowsize <= xLBp.width) {
+      this.sidebarService.toggle(true, 'menu-sidebar');
+    }
+
   }
 
   ngOnDestroy() {
