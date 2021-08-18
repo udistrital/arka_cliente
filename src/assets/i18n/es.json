@@ -496,7 +496,8 @@
         "respuesta_crear_ok": "Grupo creado exitosamente",
         "pregunta_inactivar": "¿Inactivar grupo \"{{CODE}}\"?",
         "respuesta_inactivar_ok": "Grupo \"{{CODE}}\" inactivado exitosamente",
-        "respuesta_inactivar_err": "¡No se pudo inactivar el grupo \"{{CODE}}\"!"
+        "respuesta_inactivar_err": "¡No se pudo inactivar el grupo \"{{CODE}}\"!",
+        "padre": "Grupo Padre: {{CODIGO}} {{NOMBRE}}"
       },
       "segmento": {
         "nombre": "Segmento",
@@ -509,7 +510,8 @@
         "respuesta_crear_ok": "Segmento creado exitosamente",
         "pregunta_inactivar": "¿Inactivar segmento \"{{CODE}}\"?",
         "respuesta_inactivar_ok": "Segmento \"{{CODE}}\" inactivado exitosamente",
-        "respuesta_inactivar_err": "¡No se pudo inactivar el segmento \"{{CODE}}\"!"
+        "respuesta_inactivar_err": "¡No se pudo inactivar el segmento \"{{CODE}}\"!",
+        "padre": "Segmento Padre: {{CODIGO}} {{NOMBRE}}"
       },
       "familia": {
         "nombre": "Familia",
@@ -522,7 +524,8 @@
         "respuesta_crear_ok": "Familia creada exitosamente",
         "pregunta_inactivar": "¿Inactivar familia \"{{CODE}}\"?",
         "respuesta_inactivar_ok": "Familia \"{{CODE}}\" inactivada exitosamente",
-        "respuesta_inactivar_err": "¡No se pudo inactivar la Familia \"{{CODE}}\"!"
+        "respuesta_inactivar_err": "¡No se pudo inactivar la Familia \"{{CODE}}\"!",
+        "padre": "Familia Padre: {{CODIGO}} {{NOMBRE}}"
       },
       "clase": {
         "nombre": "Clase",
@@ -539,9 +542,9 @@
       }
     },
 
-    "Actualizar":"Actualizar?",
+    "Actualizar":"¿Actualizar?",
     "Actualizado":"Actualizado",
-    "Crear":"Crear?",
+    "Crear":"¿Crear?",
     "Creado":"Creado",
 
     "Actualizar_Catalogo_placeholder":"Está seguro de actualizar el catálogo?",
@@ -578,7 +581,7 @@
       "editar": "Editar Catálogo",
       "cuentas": "Asignación de Cuentas",
       "editar_nombre": "Editar Catálogo \"{{NOMBRE}}\"",
-      "constrInfo": "Para modificar la información o agregar \"descencientes\" de una fila, seleccione la fila.",
+      "constrInfo": "Seleccione un subgrupo para editar o agregar subgrupos",
       "claseInfo": "Seleccione una fila correspondiente a una Clase",
       "elementosInfo1": "Agregar elemento: Seleccione la clase a la que desea añadir el elemento.",
       "elementosInfo2": "Editar elemento: Seleccione un elemento",

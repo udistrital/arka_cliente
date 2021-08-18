@@ -496,7 +496,8 @@
         "respuesta_crear_ok": "Group Created Successfully",
         "pregunta_inactivar": "Deactivate Group \"{{CODE}}\"?",
         "respuesta_inactivar_ok": "Group \"{{CODE}}\" Deactivated Successfully",
-        "respuesta_inactivar_err": "Group \"{{CODE}}\" could not be deactivated!"
+        "respuesta_inactivar_err": "Group \"{{CODE}}\" could not be deactivated!",
+        "padre": "Parent Group: {{CODIGO}} {{NOMBRE}}"
       },
       "segmento": {
         "nombre": "Segment",
@@ -509,7 +510,8 @@
         "respuesta_crear_ok": "Segment Created Successfully",
         "pregunta_inactivar": "Deactivate Segment \"{{CODE}}\"?",
         "respuesta_inactivar_ok": "Segment \"{{CODE}}\" was successfully Deactivated",
-        "respuesta_inactivar_err": "Segment \"{{CODE}}\" could not be deactivated!"
+        "respuesta_inactivar_err": "Segment \"{{CODE}}\" could not be deactivated!",
+        "padre": "Parent Segment: {{CODIGO}} {{NOMBRE}}"
       },
       "familia": {
         "nombre": "Family",
@@ -522,7 +524,8 @@
         "respuesta_crear_ok": "Family Created Successfully",
         "pregunta_inactivar": "Deactivate Family \"{{CODE}}\"?",
         "respuesta_inactivar_ok": "Family \"{{CODE}}\" was successfully Deactivated",
-        "respuesta_inactivar_err": "Family \"{{CODE}}\" could not be deactivated!"
+        "respuesta_inactivar_err": "Family \"{{CODE}}\" could not be deactivated!",
+        "padre": "Parent Family: {{CODIGO}} {{NOMBRE}}"
       },
       "clase": {
         "nombre": "Class",
