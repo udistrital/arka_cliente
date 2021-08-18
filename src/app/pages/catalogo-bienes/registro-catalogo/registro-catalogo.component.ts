@@ -14,23 +14,16 @@ import { Catalogo } from '../../../@core/data/models/catalogo/catalogo';
 })
 export class RegistroCatalogoComponent implements OnInit {
 
-  grupo_id: number;
-
   @Output() eventChange = new EventEmitter();
 
-  info_grupo: Grupo;
-  formGrupo: any;
-  regGrupo1: any;
-  clean: boolean;
   catalogos: Array<Catalogo>;
   catalogoId: number;
   subgrupoPadre: Subgrupo;
-  subgrupoHijo: Subgrupo;
+  subgrupo: Subgrupo;
   modificarGrupo: boolean;
-  uid_2: number;
-  uid_4: number;
+  modificarSubgrupo: boolean;
+  crearSubgrupo: boolean;
   ver_formulario: boolean;
-  grupoSeleccionado: Subgrupo;
   catalogoSeleccionado: number;
 
   nivel_actual: string;
@@ -38,6 +31,7 @@ export class RegistroCatalogoComponent implements OnInit {
 
   permitir_crear_subgrupo: boolean;
   cargando_catalogos: boolean = true;
+  stringHeader: string;
 
   constructor(
     private translate: TranslateService,
@@ -45,15 +39,11 @@ export class RegistroCatalogoComponent implements OnInit {
   ) {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
     });
-    this.catalogos = new Array<Catalogo>();
-    this.catalogoId = 0;
-    this.loadCatalogos();
   }
 
   ngOnInit() {
-    this.nivel_actual = undefined;
-    this.nivel_hijo = undefined;
-    this.permitir_crear_subgrupo = false;
+    this.catalogos = new Array<Catalogo>();
+    this.loadCatalogos();
   }
 
   useLanguage(language: string) {
@@ -74,14 +64,11 @@ export class RegistroCatalogoComponent implements OnInit {
     });
   }
 
-  recargarCatalogo(event) {
-    //  console.log('recarga');
+  recargarCatalogo() {
     this.eventChange.emit(true);
     setTimeout(() => {
       this.QuitarVista();
     }, 2000);
-
-    // this.ver_formulario = false;
   }
 
   onChange(catalogo) {

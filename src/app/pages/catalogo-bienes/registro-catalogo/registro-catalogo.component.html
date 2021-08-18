@@ -8,14 +8,14 @@
           <option disabled selected>{{'GLOBAL.seleccionar' | translate}}...</option>
           <option *ngFor="let item of catalogos" value="{{ item.Id }}">{{ item.Nombre }}</option>
         </select>
-        <ngx-arbol *ngIf="catalogoId !== 0" [catalogoId]="catalogoId" [subgruposInactivos]=true (fila)="receiveMessage($event)" [updateSignal]="eventChange">
+        <ngx-arbol *ngIf="catalogoId !== undefined" [catalogoId]="catalogoId" [subgruposInactivos]=true (fila)="receiveMessage($event)" [updateSignal]="eventChange">
           <p>
             <span class="fas fa-info-circle"></span>&nbsp;
             <em>{{'GLOBAL.catalogo.constrInfo' | translate}}</em>
           </p>
         </ngx-arbol>
     </nb-card-body>
-    <nb-card-footer *ngIf="catalogoId !== 0">
+    <nb-card-footer *ngIf="catalogoId !== undefined">
         <button nbButton class="float-right" (click)="AgregarGrupo()">{{'GLOBAL.subgrupo.grupo.agregar' | translate}}</button>
     </nb-card-footer>
   </nb-card>
@@ -23,9 +23,9 @@
   <div class="col" *ngIf="ver_formulario">
     <nb-card *ngIf="modificarGrupo">
       <nb-card-header>
-        {{'GLOBAL.subgrupo.grupo.modificar' | translate}}
+        {{'GLOBAL.subgrupo.grupo'+ stringHeader | translate}}
       </nb-card-header>
-      <ngx-crud-grupo [catalogoId]="catalogoSeleccionado" [grupo]="grupoSeleccionado"
+      <ngx-crud-grupo [catalogoId]="catalogoSeleccionado" [grupo]="subgrupo"
         (eventChange)="recargarCatalogo($event)"></ngx-crud-grupo>
       <nb-card-footer>
         <button nbButton (click)="QuitarVista()">{{'GLOBAL.volver' | translate}}</button>
