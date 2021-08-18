@@ -83,7 +83,7 @@ export class SampleLayoutComponent implements OnDestroy {
   }
   clickOutside() {
     const xLBp = this.bpService.getByName('xl');
-    const windowsize = window.innerWidth
+    const windowsize = window.innerWidth;
     // Funcion para check de tamaños.
     // const Overflow = this.bpService.getByWidth(1200)
     // console.log(Overflow)
