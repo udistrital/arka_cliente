@@ -17,29 +17,7 @@ import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/cat
   templateUrl: './crud-subgrupo.component.html',
   styleUrls: ['./crud-subgrupo.component.scss'],
 })
-export class CrudSubgrupoComponent implements OnInit, AfterViewInit {
-  config: ToasterConfig;
-  subgrupo: Subgrupo;
-  subgrupo_id: number;
-  subgrupoPadre: any;
-  detalle: Detalle;
-  detalle_id: number;
-
-  @Input('subgrupo_id')
-  set name(subgrupo_id: number) {
-    this.subgrupo_id = subgrupo_id;
-    this.loadSubgrupo();
-  }
-
-  @Input('subgrupo_Padre')
-  set name2(subgrupo: any) {
-    this.subgrupoPadre = subgrupo;
-  }
-
-  @Output() eventChange = new EventEmitter();
-  @Output() mostrar = new EventEmitter();
-
-  info_subgrupo: Grupo2;
+export class CrudSubgrupoComponent implements OnInit, OnChanges {
   formSubgrupo: any;
   regSubgrupo: any;
   clean: boolean;
@@ -51,19 +29,10 @@ export class CrudSubgrupoComponent implements OnInit, AfterViewInit {
   constructor(
     private translate: TranslateService,
     private catalogoElementosService: CatalogoElementosHelper,
-    private toasterService: ToasterService,
   ) {
-    // ver comentarios en muestraDetalles()
-    // this.campos_detalle_requeridos = FORM_SUBGRUPO.campos.map(campo => {
-    //   return campo.claseGrid.includes('det-subg-catalogo') && campo.requerido;
-    // });
-    // console.log({'campos requeridos':this.campos_detalle_requeridos});
-
-    this.construirForm();
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
       this.construirForm();
     });
-    this.loadOptionsCatalogo();
   }
 
   construirForm() {
@@ -287,36 +256,14 @@ export class CrudSubgrupoComponent implements OnInit, AfterViewInit {
     });
   }
 
-  ngAfterViewInit() {
-    if (this.subgrupoPadre !== undefined) {
-      const nivel = nh.Hijo(this.subgrupoPadre.TipoNivelId.Id);
-      this.formSubgrupo.titulo = this.translate.instant('GLOBAL.subgrupo.' + nh.Texto(nivel) + '.nombre');
-      this.muestraDetalles(nivel === Nivel_t.Clase);
-    }
-  }
-
   ngOnInit() {
-    this.loadSubgrupo();
-    this.loadPrefixSuffixCreate();
+    this.init = true;
   }
 
-  loadPrefixSuffixCreate () {
-    if (this.subgrupoPadre !== undefined) {
-      if (this.subgrupoPadre.TipoNivelId.Id === Nivel_t.Grupo) {
-        this.formSubgrupo.campos[this.getIndexForm('Codigo')].prefix.value = '';
-        this.formSubgrupo.campos[this.getIndexForm('Codigo')].suffix.value = '0000';
-      } else  if (this.subgrupoPadre.TipoNivelId.Id === Nivel_t.Segmento) {
-        this.formSubgrupo.campos[this.getIndexForm('Codigo')].prefix.value = this.subgrupoPadre.Codigo.substring(0, 2);
-        this.formSubgrupo.campos[this.getIndexForm('Codigo')].suffix.value = '00';
-      } else if (this.subgrupoPadre.TipoNivelId.Id === Nivel_t.Familia) {
-        this.formSubgrupo.campos[this.getIndexForm('Codigo')].prefix.value = this.subgrupoPadre.Codigo.substring(0, 4);
-        this.formSubgrupo.campos[this.getIndexForm('Codigo')].suffix.value = '';
-      } else {
-        this.formSubgrupo.campos[this.getIndexForm('Codigo')].prefix.value = '';
-        this.formSubgrupo.campos[this.getIndexForm('Codigo')].suffix.value = '';
-      }
-      this.construirForm();
-    }
+  ngOnChanges() {
+    this.cargando = true;
+    !this.init ? this.loadOptionsCatalogo() : this.construirForm();
+    this.cargarForm();
   }
 
 validarForm(event) {
