@@ -36,7 +36,17 @@ export class CrudSubgrupoComponent implements OnInit, OnChanges {
   }
 
   construirForm() {
-    this.formSubgrupo = FORM_SUBGRUPO;
+    const nivel = this.create ? nh.Hijo(this.subgrupo.TipoNivelId.Id) : this.subgrupo.TipoNivelId.Id;
+    const titulo = 'GLOBAL.subgrupo.' + nh.Texto(!this.create ? nivel : nivel - 1);
+
+    this.formSubgrupo = nivel === Nivel_t.Clase ? FORM_SUBGRUPO_DETALLE : FORM_SUBGRUPO;
+    nivel === Nivel_t.Clase ? this.formSubgrupo.campos[this.getIndexForm('TipoBienId')].opciones = this.tiposBien : null;
+
+    this.formSubgrupo.titulo = this.translate.instant(!this.create ? titulo + '.nombre' : titulo + '.padre',
+      this.create ? { CODIGO: this.subgrupo.Codigo, NOMBRE: this.subgrupo.Nombre } : null);
+
+    this.formSubgrupo.campos[0].suffix.value = '0000'.substring(2 * nivel - 4, 4);
+    this.formSubgrupo.campos[0].prefix.value = this.subgrupo.Codigo.substring(0, 2 * nivel - 4);
     this.formSubgrupo.btn = this.translate.instant('GLOBAL.guardar');
     for (let i = 0; i < this.formSubgrupo.campos.length; i++) {
       this.formSubgrupo.campos[i].label = this.translate.instant('GLOBAL.' + this.formSubgrupo.campos[i].label_i18n);
@@ -44,19 +54,13 @@ export class CrudSubgrupoComponent implements OnInit, OnChanges {
     }
   }
 
-  useLanguage(language: string) {
-    this.translate.use(language);
-  }
-
   loadOptionsCatalogo(): void {
-    let Tipo_Bien: Array<any> = [];
-    this.catalogoElementosService.getTipoBien()
-      .subscribe(res => {
-        if (res !== null) {
-          Tipo_Bien = <Array<TipoBien>>res;
-        }
-        this.formSubgrupo.campos[this.getIndexForm('TipoBienId')].opciones = Tipo_Bien;
-      });
+    this.catalogoElementosService.getTipoBien().toPromise().then(res => {
+      if (res !== null) {
+        this.tiposBien = res;
+        this.construirForm();
+      }
+    });
   }
 
   getIndexForm(nombre: String): number {
