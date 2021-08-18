@@ -118,146 +118,71 @@ export class CrudSubgrupoComponent implements OnInit, OnChanges {
     }
   }
 
-  updateSubgrupo(form_data: any): void {
+  updateSubgrupo(formData: any): void {
 
-    // console.log({'updateSubgrupo(form_data)': form_data});
     const nivel = this.subgrupo.TipoNivelId.Id;
 
-    const opt: any = {
-      title: this.translate.instant('GLOBAL.Actualizar'),
-      text: this.translate.instant('GLOBAL.subgrupo.' + nh.Texto(nivel) + '.pregunta_actualizar'),
-      type: 'warning',
-      showCancelButton: true,
-    };
-    (Swal as any).fire(opt)
-      .then((willDelete) => {
-        if (willDelete.value) {
-          // console.log({'this.info_subgrupo': this.info_subgrupo});
-          // console.log({'this.subgrupo': this.subgrupo});
+    const subgrupo = new Subgrupo;
+    const trSubrupo = new SubgrupoTransaccionDetalle;
 
-          let subGrupoPut;
-          // this.subgrupo.Codigo = form_data.Codigo;
-          this.subgrupo.Nombre = form_data.Nombre;
+    if (nivel === Nivel_t.Clase) {
+      const tipoBien = formData.TipoBienId && formData.TipoBienId.Id ? formData.TipoBienId.Id : formData.TipoBienId;
+      const detalle = new Detalle;
+      detalle.Id = formData.DetalleId;
+      detalle.Depreciacion = formData.Depreciacion;
+      detalle.Valorizacion = formData.Valorizacion;
+      detalle.TipoBienId = <TipoBienID>{ Id: tipoBien };
+      detalle.FechaModificacion = new Date;
+      trSubrupo.DetalleSubgrupo = detalle;
+    }
 
-          if (nivel === Nivel_t.Segmento) {
-            this.subgrupo.Codigo = form_data.Codigo + '0000';
-          } else if (nivel === Nivel_t.Familia) {
-              this.subgrupo.Codigo = this.subgrupo.Codigo.substring(0, 2) + form_data.Codigo + '00';
-            } else if (nivel === Nivel_t.Clase) {
-                this.subgrupo.Codigo = this.subgrupo.Codigo.substring(0, 4) + form_data.Codigo;
-          }
-
-          // console.log(this.subgrupo.Codigo);
-          this.subgrupo.Descripcion = form_data.Descripcion;
-
-          if (nivel === Nivel_t.Clase) {
-            subGrupoPut = new SubgrupoTransaccionDetalle;
-            const detalle = new Detalle;
-            detalle.Id = this.detalle_id;
-            detalle.Activo = true;
-            detalle.Depreciacion = <boolean>form_data.Depreciacion;
-            detalle.Valorizacion = <boolean>form_data.Valorizacion;
-            detalle.TipoBienId = {Id: form_data.TipoBienId.Id};
-            detalle.SubgrupoId = {Id: form_data.Id};
-            subGrupoPut.SubgrupoHijo = this.subgrupo;
-            subGrupoPut.DetalleSubgrupo = detalle;
-          } else {
-            subGrupoPut = new SubgrupoTransaccion;
-            subGrupoPut.SubgrupoHijo = {...this.subgrupo};
-          }
-
-          // console.log(subGrupoPut);
-          this.catalogoElementosService.putSubgrupo(subGrupoPut, this.info_subgrupo.Id)
-            .subscribe(res => {
-              this.loadSubgrupo();
-              this.eventChange.emit(true);
-              this.showToast(
-                'info',
-                this.translate.instant('GLOBAL.Actualizado'),
-                this.translate.instant('GLOBAL.subgrupo.' + nh.Texto(nivel) + '.respuesta_actualizar_ok'),
-              );
-            });
+    subgrupo.Id = formData.Id;
+    subgrupo.Activo = formData.Activo;
+    subgrupo.Nombre = formData.Nombre;
+    subgrupo.Codigo = formData.Codigo;
+    subgrupo.Descripcion = formData.Descripcion;
+    subgrupo.FechaModificacion = new Date;
+    trSubrupo.SubgrupoHijo = subgrupo;
+    this.catalogoElementosService.putSubgrupo(trSubrupo, subgrupo.Id).toPromise()
+      .then(res => {
+        if (res !== null) {
+          this.showAlert();
         }
       });
   }
 
-  createSubgrupo(form_data: any): void {
+  createSubgrupo(formData: any): void {
 
-    const nivel = nh.Hijo(this.subgrupoPadre.TipoNivelId.Id);
+    const nivel = nh.Hijo(this.subgrupo.TipoNivelId.Id);
+    const subgrupoHijo = new Subgrupo;
+    const trSubrupo = new SubgrupoTransaccionDetalle;
 
-    const opt: any = {
-      title: this.translate.instant('GLOBAL.Crear'),
-      text: this.translate.instant('GLOBAL.subgrupo.' + nh.Texto(nivel) + '.pregunta_crear'),
-      type: 'warning',
-      showCancelButton: true,
-    };
-    (Swal as any).fire(opt)
-      .then((willDelete) => {
-        if (willDelete.value) {
-          // console.log({'formulario subgrupo': form_data});
-          // console.log({'this.subgrupoPadre': this.subgrupoPadre});
-          // Subgrupo
-          form_data.Activo = true;
-          form_data.TipoNivelId = <TipoNivelID>{'Id': nivel};
-          // subgrupo.TipoNivelId = { Id: nh.Hijo(this.subgrupoPadre.TipoNivelId.Id) };
+    if (nivel === Nivel_t.Clase) {
+      const detalle = new Detalle;
+      const tipoBien = formData.TipoBienId && formData.TipoBienId.Id ? formData.TipoBienId.Id : formData.TipoBienId;
+      detalle.Id = formData.DetalleId;
+      detalle.Depreciacion = formData.Depreciacion;
+      detalle.Valorizacion = formData.Valorizacion;
+      detalle.TipoBienId = <TipoBienID>{ Id: tipoBien };
+      trSubrupo.DetalleSubgrupo = detalle;
+    }
 
-          // Detalle
-          let detalle;
-          if (nivel === Nivel_t.Clase) {
-            // Usar datos del detalle
-            detalle = new Detalle;
-            detalle.Activo = true;
-            detalle.Depreciacion = (form_data.Depreciacion === '') ? false : form_data.Depreciacion;
-            detalle.Valorizacion = (form_data.Valorizacion === '') ? false : form_data.Valorizacion;
-            detalle.TipoBienId = <TipoBienID>{'Id': form_data.TipoBienId.Id};
-          }
+    subgrupoHijo.Id = formData.Id;
+    subgrupoHijo.Activo = formData.Activo;
+    subgrupoHijo.Nombre = formData.Nombre;
+    subgrupoHijo.Codigo = formData.Codigo;
+    subgrupoHijo.Descripcion = formData.Descripcion;
+    subgrupoHijo.TipoNivelId = <TipoNivelID>{ Id: nivel };
+    trSubrupo.SubgrupoHijo = subgrupoHijo;
 
-          // Limpieza antes de enviar el POST...
-          delete form_data.Depreciacion;
-          delete form_data.Valorizacion;
-          delete form_data.TipoBienId;
+    trSubrupo.SubgrupoPadre = <SubgrupoID>{ 'Id': this.subgrupo.Id };
 
-          // POST
-          let subgrupoPost;
-          if (detalle !== undefined) {
-            subgrupoPost = new SubgrupoTransaccionDetalle;
-            subgrupoPost.DetalleSubgrupo = detalle;
-          } else {
-            subgrupoPost = new SubgrupoTransaccion;
-          }
-          subgrupoPost.SubgrupoPadre = <SubgrupoID>{'Id': this.subgrupoPadre.Id};
-          subgrupoPost.SubgrupoHijo = form_data;
-          // console.log({'POST': subgrupoPost});
-
-          this.catalogoElementosService.postSubgrupo(subgrupoPost)
-            .subscribe(res => {
-              const subg = <Clase><unknown>res;
-              this.detalle = <Detalle>subg.Detalle;
-              this.eventChange.emit(true);
-              this.showToast('info', this.translate.instant('GLOBAL.Creado'),
-                this.translate.instant('GLOBAL.subgrupo.' + nh.Texto(nivel) + '.respuesta_crear_ok') );
-            });
+    this.catalogoElementosService.postSubgrupo(trSubrupo).toPromise()
+      .then(res => {
+        if (res !== null) {
+          this.showAlert();
         }
       });
-  }
-
-  muestraDetalles (mostrar: boolean): void {
-
-    // PARTE 1: Hacer que los campos que eran requeridos, ahora no lo sean
-    // // Forma 1: Funciona PERO, cuando se guarda el formulario, no llegan los datos...
-    // this.campos_detalle_requeridos.map((campoNum,idx) => [idx, campoNum]).filter(campoReq => campoReq[1]).forEach(campo => {
-    //   // console.log({'campo':campo,'mostrar':mostrar});
-    //   this.formSubgrupo.campos[<number>campo[0]].requerido = mostrar;
-    // });
-    // Forma 2 (EN USO):  Cargar valores dummy en campos requeridos que se van a ocultar (e ignorar)
-    // (Ver loadSubgrupo())
-
-    // PARTE 2: Actualizar el estilo
-    // Funciona, pero si quedaron campos simplemente quedaron ocultos
-    document.querySelectorAll<HTMLElement>('.det-subg-catalogo').forEach(campo => {
-      // campo.style.display = 'none' ;
-      campo.style.display = mostrar ? 'block' : 'none' ;
-    });
   }
 
   ngOnInit() {
@@ -270,23 +195,32 @@ export class CrudSubgrupoComponent implements OnInit, OnChanges {
     this.cargarForm();
   }
 
-validarForm(event) {
+  validarForm(event) {
     if (event.valid) {
-        if (this.info_subgrupo === undefined) {
-          if (this.subgrupoPadre.TipoNivelId.Id === Nivel_t.Grupo) {
-            event.data.Subgrupo.Codigo = event.data.Subgrupo.Codigo + '0000';
-          } else if (this.subgrupoPadre.TipoNivelId.Id === Nivel_t.Segmento) {
-            event.data.Subgrupo.Codigo = this.subgrupoPadre.Codigo.substring(0, 2) + event.data.Subgrupo.Codigo + '00';
-            this.formSubgrupo.campos[this.getIndexForm('Codigo')].prefix.value = this.subgrupoPadre.Codigo.substring(0, 2);
-            } else if (this.subgrupoPadre.TipoNivelId.Id === Nivel_t.Familia) {
-              event.data.Subgrupo.Codigo = this.subgrupoPadre.Codigo.substring(0, 4) + event.data.Subgrupo.Codigo;
-              this.formSubgrupo.campos[this.getIndexForm('Codigo')].prefix.value = this.subgrupoPadre.Codigo.substring(0, 4);
+
+      const nivel = this.create ? nh.Hijo(this.subgrupo.TipoNivelId.Id) : this.subgrupo.TipoNivelId.Id;
+      const text = this.create ? '.pregunta_crear' : '.pregunta_actualizar';
+      (Swal as any).fire({
+        title: this.translate.instant(this.create ? 'GLOBAL.Crear' : 'GLOBAL.Actualizar'),
+        text: this.translate.instant('GLOBAL.subgrupo.' + nh.Texto(nivel) + text),
+        type: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085D6',
+        cancelButtonColor: '#D33',
+        confirmButtonText: 'Si',
+        cancelButtonText: 'No',
+      }).then((willDelete) => {
+        if (willDelete.value) {
+
+          event.data.Subgrupo.Codigo =
+            this.formSubgrupo.campos[0].prefix.value + event.data.Subgrupo.Codigo + this.formSubgrupo.campos[0].suffix.value;
+          if (this.create) {
+            this.createSubgrupo(event.data.Subgrupo);
+          } else {
+            this.updateSubgrupo(event.data.Subgrupo);
           }
-          this.construirForm();
-          this.createSubgrupo(event.data.Subgrupo);
-        } else {
-          this.updateSubgrupo(event.data.Subgrupo);
         }
+      });
     }
   }
 
