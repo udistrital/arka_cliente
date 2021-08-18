@@ -8,9 +8,8 @@ import { Component, OnInit, AfterViewInit, Input, Output, EventEmitter } from '@
 import { FORM_SUBGRUPO } from './form-subgrupo';
 import { ToasterService, ToasterConfig, Toast, BodyOutputType } from 'angular2-toaster';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
-import Swal from 'sweetalert2';
-import 'style-loader!angular2-toaster/toaster.css';
 import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/catalogoElementosHelper';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'ngx-crud-subgrupo',
@@ -224,25 +223,17 @@ export class CrudSubgrupoComponent implements OnInit, OnChanges {
     }
   }
 
-private showToast(type: string, title: string, body: string) {
-    this.config = new ToasterConfig({
-    // 'toast-top-full-width', 'toast-bottom-full-width', 'toast-top-left', 'toast-top-center'
-      positionClass: 'toast-top-center',
-      timeout: 5000,  // ms
-      newestOnTop: true,
-      tapToDismiss: false, // hide on click
-      preventDuplicates: true,
-      animation: 'slideDown', // 'fade', 'flyLeft', 'flyRight', 'slideDown', 'slideUp'
-      limit: 5,
+  private showAlert() {
+    const nivel = this.create ? nh.Hijo(this.subgrupo.TipoNivelId.Id) : this.subgrupo.TipoNivelId.Id;
+    const text = this.create ? '.respuesta_crear_ok' : '.respuesta_actualizar_ok';
+    (Swal as any).fire({
+      title: this.translate.instant(this.create ? 'GLOBAL.Creado' : 'GLOBAL.Actualizado'),
+      text: this.translate.instant('GLOBAL.subgrupo.' + nh.Texto(nivel) + text),
+      type: 'success',
+      showConfirmButton: false,
+      timer: 2500,
     });
-    const toast: Toast = {
-      type: type, // 'default', 'info', 'success', 'warning', 'error'
-      title: title,
-      body: body,
-      showCloseButton: true,
-      bodyOutputType: BodyOutputType.TrustedHtml,
-    };
-    this.toasterService.popAsync(toast);
+    this.eventChange.emit(true);
   }
 
 }
