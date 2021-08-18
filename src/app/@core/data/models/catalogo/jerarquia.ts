@@ -32,6 +32,7 @@ export class Clase extends Subgrupo {
 
 // A eliminar ?
 export class Grupo2 extends Grupo {
+  DetalleId: number;
   Depreciacion: boolean;
   Valorizacion: boolean;
   Deterioro: boolean;
