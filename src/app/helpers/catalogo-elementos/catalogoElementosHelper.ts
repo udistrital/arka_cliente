@@ -538,8 +538,10 @@ export class CatalogoElementosHelper {
      * If the response is successs, it returns the object's data.
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
      */
-    public getArbolCatalogo(catalogo, elementos) {
-        const query = elementos ? '?elementos=true' : '';
+    public getArbolCatalogo(catalogo, elementos, subgruposInactivos) {
+        const query1 = elementos ? 'elementos=true' : '';
+        const query2 = subgruposInactivos ? 'subgruposInactivos=true' : '';
+        const query = elementos && subgruposInactivos ? '?' + query1 + '&' + query2 : '?' + query1 + query2;
         this.rqManager.setPath('CATALOGO_ELEMENTOS_SERVICE');
         return this.rqManager.get('tr_catalogo/' + catalogo + query).pipe(
             map(

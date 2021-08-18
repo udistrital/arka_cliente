@@ -38,8 +38,11 @@
                 <!-- <pre>{{imprime({"row":row,"column":column})}}</pre> -->
 
                 <!-- Campo "único" -->
-                <span *ngIf="row.data[column] !== undefined && row.data[column].Id === undefined">
+                <span *ngIf="row.data[column] !== undefined && row.data[column].Id === undefined && column !== 'Activo'">
                     {{ row.data[column] || '-' }}</span>
+
+                <span *ngIf="column === 'Activo'">
+                    {{ (row.data[column] ? 'GLOBAL.activo' : 'GLOBAL.inactivo') | translate}}</span>
 
                 <!-- Campo normalizado, asociado a una "tabla paramétrica" -->
                 <span *ngIf="row.data[column] !== undefined && row.data[column].Id !== undefined">

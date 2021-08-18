@@ -58,6 +58,7 @@ export class ArbolComponent implements OnInit, OnChanges {
   @Input() updateSignal: Observable<string[]>;
   @Input() acciones: boolean = false;
   @Input() elementos: boolean = false;
+  @Input() subgruposInactivos: boolean = false;
   @Output() fila = new EventEmitter<CatalogoArbol>();
   tipos_de_bien: TipoBien;
   elementosSubgrupo: TipoBien;
@@ -100,16 +101,21 @@ export class ArbolComponent implements OnInit, OnChanges {
 
   construirForm() {
     this.defaultColumns = ['Nombre', 'Descripcion'];
-    if (this.acciones) {
-      this.defaultColumns.push('Acciones');
-    }
+    this.subgruposInactivos ? this.defaultColumns.push('Activo') : null;
+    this.acciones ? this.defaultColumns.push('Acciones') : null;
+
     this.allColumns = [this.customColumn].concat(this.defaultColumns);
     this.customColumn2 = this.translate.instant('GLOBAL.codigo');
     this.defaultColumns2 = [
       this.translate.instant('GLOBAL.Nombre'),
       this.translate.instant('GLOBAL.Descripcion'),
-      this.translate.instant('GLOBAL.info'),
     ];
+
+    this.subgruposInactivos ?
+      this.defaultColumns2.push(this.translate.instant('GLOBAL.estado')) : null;
+    this.acciones ?
+      this.defaultColumns2.push(this.translate.instant('GLOBAL.info')) : null;
+
     this.allColumns2 = [this.customColumn2].concat(this.defaultColumns2);
   }
 
@@ -169,7 +175,7 @@ export class ArbolComponent implements OnInit, OnChanges {
       this.loadTreeCatalogo();
     }
     if (this.stringBusqueda.length < this.aux) {
-      this.catalogoHelper.getArbolCatalogo(this.catalogoId, this.elementos).subscribe((res) => {
+      this.catalogoHelper.getArbolCatalogo(this.catalogoId, this.elementos, this.subgruposInactivos).subscribe((res) => {
         this.mostrar = true;
         if (res !== null) {
           if (res[0].hasOwnProperty('data')) {
@@ -240,7 +246,7 @@ export class ArbolComponent implements OnInit, OnChanges {
 
   loadTreeCatalogo() {
     this.mostrar = false;
-    this.catalogoHelper.getArbolCatalogo(this.catalogoId, this.elementos).subscribe((res) => {
+    this.catalogoHelper.getArbolCatalogo(this.catalogoId, this.elementos, this.subgruposInactivos).subscribe((res) => {
       this.mostrar = true;
       if (res !== null) {
         if (res[0].hasOwnProperty('data')) {
