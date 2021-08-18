@@ -96,49 +96,44 @@ export class RegistroCatalogoComponent implements OnInit {
     this.ver_formulario = true;
   }
 
-  AgregarSubgrupo(id: number) {
-    this.QuitarVista();
-    this.uid_4 = id;
-    this.ver_formulario = true;
+  AgregarSubgrupo() {
+    this.stringHeader = '.agregar';
+    this.nivel_actual = this.nivel_hijo;
+    this.crearSubgrupo = true;
+    this.modificarSubgrupo = true;
+    this.modificarGrupo = false;
+    this.subgrupo = this.subgrupoPadre;
+    this.permitir_crear_subgrupo = false;
   }
+
   QuitarVista() {
     this.modificarGrupo = false;
-    this.uid_2 = undefined;
-    this.uid_4 = undefined;
+    this.modificarSubgrupo = false;
+    this.crearSubgrupo = false;
+    this.subgrupo = undefined;
+    this.subgrupoPadre = undefined;
+    this.catalogoSeleccionado = undefined;
     this.ver_formulario = false;
   }
 
   // Ver formularios de modificacion
   receiveMessage(event) {
+    const nivel = <Nivel_t>(event.TipoNivelId.Id);
     this.QuitarVista();
+    this.stringHeader = '.modificar';
+    this.subgrupo = event;
     this.subgrupoPadre = event;
-        if (event.TipoNivelId && event.TipoNivelId.Id === Nivel_t.Grupo) {
-          // Si es grupo (no tiene subgrupo padre, tiene catalogo)
-          this.grupoSeleccionado = event;
-          this.catalogoSeleccionado = undefined;
-          this.modificarGrupo = true;
-          this.nivel_hijo = nh.Texto(nh.Hijo(Nivel_t.Grupo));
-        } else {
-          // Si NO es grupo (es segmento/familia/clase, tiene subgrupo padre)
-          this.permitir_crear_subgrupo = false; // Reinicia "permiso"
-          this.nivel_actual = undefined; // Reinicia traducción
-          this.nivel_hijo = undefined; // Reinicia traducción
-          this.catalogoElementosService.getSubgrupoById(event.Id).subscribe( res_sub => {
-            // console.log({'receiveMessage - res_sub': res_sub});
-            if (Object.keys(res_sub[0]).length !== 0) {
-              const nivel = <Nivel_t>(res_sub[0].Subgrupo.TipoNivelId.Id);
-              this.permitir_crear_subgrupo = (nivel !== Nivel_t.Clase);
-              this.nivel_actual = nh.Texto(nivel);
-              this.nivel_hijo = nh.Texto(nh.Hijo(nivel));
-            } else {
-              // Posible error...
-            }
-          });
-          this.uid_2 = event.Id;
-        }
-        this.ver_formulario = true;
-        // console.log({'permitir_crear_subgrupo': this.permitir_crear_subgrupo});
-        // console.log({'modificando_tipo': this.modificando_tipo});
-      });
+    this.nivel_hijo = nh.Texto(nh.Hijo(nivel));
+    if (nivel === Nivel_t.Grupo) {
+      // Si es grupo (no tiene subgrupo padre, tiene catalogo)
+      this.modificarGrupo = true;
+      this.ver_formulario = true;
+    } else {
+      // Si NO es grupo (es segmento/familia/clase, tiene subgrupo padre)
+      this.permitir_crear_subgrupo = (nivel !== Nivel_t.Clase);
+      this.nivel_actual = nh.Texto(nivel);
+      this.modificarSubgrupo = true;
+      this.ver_formulario = true;
+    }
   }
 }
