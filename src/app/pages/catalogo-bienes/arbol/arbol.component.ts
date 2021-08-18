@@ -111,9 +111,9 @@ export class ArbolComponent implements OnInit, OnChanges {
       this.translate.instant('GLOBAL.Descripcion'),
     ];
 
-    this.subgruposInactivos ? 
+    this.subgruposInactivos ?
       this.defaultColumns2.push(this.translate.instant('GLOBAL.estado')) : null;
-    this.acciones ? 
+    this.acciones ?
       this.defaultColumns2.push(this.translate.instant('GLOBAL.info')) : null;
 
     this.allColumns2 = [this.customColumn2].concat(this.defaultColumns2);

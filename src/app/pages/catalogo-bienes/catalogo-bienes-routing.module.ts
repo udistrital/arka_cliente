@@ -4,7 +4,6 @@ import { ConsultaCatalogoComponent } from './consulta-catalogo/consulta-catalogo
 import { Routes, RouterModule } from '@angular/router';
 import { RegistroCatalogoComponent } from './registro-catalogo/registro-catalogo.component';
 import { RegistroElementosComponent } from './registro-elementos/registro-elementos.component';
-import { InactivarGrupoComponent } from './inactivar-grupo/inactivar-grupo.component';
 import { RegistroCuentasCatalogoComponent } from './registro-cuentas-catalogo/registro-cuentas-catalogo.component';
 import { CrudMovimientoComponent } from './crud-movimientos/crud-movimiento.component';
 
