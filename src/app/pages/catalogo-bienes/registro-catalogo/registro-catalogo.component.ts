@@ -90,9 +90,11 @@ export class RegistroCatalogoComponent implements OnInit {
   }
 
   AgregarGrupo() {
+    this.stringHeader = '.agregar';
     this.catalogoSeleccionado = this.catalogoId;
-    this.grupoSeleccionado = undefined;
+    this.subgrupo = undefined;
     this.modificarGrupo = true;
+    this.modificarSubgrupo = false;
     this.ver_formulario = true;
   }
 
