@@ -45,8 +45,8 @@ export class CrudSubgrupoComponent implements OnInit, AfterViewInit {
   clean: boolean;
   cargando: boolean = true;
 
-  // ver comentarios en muestraDetalles()
-  // campos_detalle_requeridos: Array<boolean>;
+  @Input('subgrupo') subgrupo: Subgrupo;
+  @Input('create') create: boolean;
 
   constructor(
     private translate: TranslateService,
@@ -100,80 +100,48 @@ export class CrudSubgrupoComponent implements OnInit, AfterViewInit {
     return 0;
   }
 
+  public cargarForm(): void {
+    if (this.create) {
 
-  public loadSubgrupo(): void {
-    if (this.subgrupo_id !== undefined && this.subgrupo_id !== 0) {
-      this.formSubgrupo.campos[this.getIndexForm('Codigo')].prefix.value = '';
-      this.formSubgrupo.campos[this.getIndexForm('Codigo')].suffix.value = '';
-
-      this.catalogoElementosService.getSubgrupoById(this.subgrupo_id)
-        .subscribe(res => {
-          // console.log({'loadSubgrupo() - res': res});
-          if (Object.keys(res[0]).length !== 0) {
-            // this.info_subgrupo = <Subgrupo>res[0].SubgrupoHijoId;
-            const subgrupo = new Subgrupo;
-            Object.assign(subgrupo, res[0].Subgrupo);
-            const nivel: TipoNivelID = { Id: subgrupo.TipoNivelId.Id };
-            this.formSubgrupo.titulo = this.translate.instant('GLOBAL.subgrupo.' + nh.Texto(nivel.Id) + '.nombre');
-            subgrupo.TipoNivelId = nivel;
-            // console.log({'subgrupo': subgrupo});
-
-            const info__grupo = new Grupo2;
-            info__grupo.Descripcion = subgrupo.Descripcion;
-            info__grupo.Nombre = subgrupo.Nombre;
-            info__grupo.Id = subgrupo.Id;
-
-            if (this.subgrupo !== undefined) {
-              if (subgrupo.TipoNivelId.Id === Nivel_t.Segmento) {
-                this.formSubgrupo.campos[this.getIndexForm('Codigo')].prefix.value = '';
-                info__grupo.Codigo = this.subgrupo.Codigo.substring(0, 2);
-                this.formSubgrupo.campos[this.getIndexForm('Codigo')].suffix.value = '0000';
-              } else  if (subgrupo.TipoNivelId.Id === Nivel_t.Familia) {
-                this.formSubgrupo.campos[this.getIndexForm('Codigo')].prefix.value = this.subgrupo.Codigo.substring(0, 2);
-                info__grupo.Codigo = this.subgrupo.Codigo.substring(2, 4);
-                this.formSubgrupo.campos[this.getIndexForm('Codigo')].suffix.value = '00';
-              } else if (subgrupo.TipoNivelId.Id === Nivel_t.Clase) {
-                this.formSubgrupo.campos[this.getIndexForm('Codigo')].prefix.value = this.subgrupo.Codigo.substring(0, 4);
-                info__grupo.Codigo = this.subgrupo.Codigo.substring(4, 6);
-                this.formSubgrupo.campos[this.getIndexForm('Codigo')].suffix.value = '';
-              } else {
-                this.formSubgrupo.campos[this.getIndexForm('Codigo')].prefix.value = '';
-                this.formSubgrupo.campos[this.getIndexForm('Codigo')].suffix.value = '';
-              }
-            }
-
-            // console.log(info__grupo.Codigo);
-
-            if (nivel.Id === Nivel_t.Clase) {
-              const detalle = new Detalle;
-              Object.assign(detalle, res[0].Detalle);
-              // console.log({'detalle': detalle});
-              this.detalle_id = detalle.Id;
-              info__grupo.TipoBienId = detalle.TipoBienId;
-              info__grupo.Depreciacion = detalle.Depreciacion;
-              info__grupo.Valorizacion = detalle.Valorizacion;
-              this.detalle = detalle;
-            } else {
-              // Valores "dummy" para campos requeridos
-              info__grupo.TipoBienId = <TipoBienID>{Id: Bien_t.devolutivo};
-            }
-            this.muestraDetalles(nivel.Id === Nivel_t.Clase);
-
-            this.subgrupo = subgrupo;
-            this.info_subgrupo = info__grupo;
-            this.mostrar.emit(true);
-            this.cargando = false;
-          } else {
-            this.info_subgrupo = undefined;
-            this.clean = !this.clean;
-            this.mostrar.emit(false);
-          }
-        });
-    } else {
-      // this.subgrupo = undefined;
-      this.info_subgrupo = undefined;
+      this.infoSubgrupo = undefined;
       this.clean = !this.clean;
       this.cargando = false;
+
+    } else if (this.subgrupo.TipoNivelId.Id < Nivel_t.Clase) {
+
+      const subgrupo = new Subgrupo;
+      subgrupo.Id = this.subgrupo.Id;
+      subgrupo.Activo = this.subgrupo.Activo;
+      subgrupo.Codigo = this.subgrupo.Codigo.substring(this.subgrupo.TipoNivelId.Id * 2 - 4, this.subgrupo.TipoNivelId.Id * 2 - 2);
+      subgrupo.Nombre = this.subgrupo.Nombre;
+      subgrupo.Descripcion = this.subgrupo.Descripcion;
+      subgrupo.FechaCreacion = this.subgrupo.FechaCreacion;
+      subgrupo.FechaModificacion = this.subgrupo.FechaModificacion;
+      subgrupo.TipoNivelId = this.subgrupo.TipoNivelId;
+      this.infoSubgrupo = subgrupo;
+      this.cargando = false;
+
+    } else if (this.subgrupo.TipoNivelId.Id === Nivel_t.Clase) {
+
+      this.catalogoElementosService.getDetalleSubgrupo(this.subgrupo.Id).toPromise().then(res => {
+        if (res !== null) {
+          const detalleSubgrupo = res[0];
+          const clase = new Grupo2;
+
+          clase.Id = detalleSubgrupo.SubgrupoId.Id;
+          clase.Activo = detalleSubgrupo.SubgrupoId.Activo;
+          clase.Codigo = detalleSubgrupo.SubgrupoId.Codigo.substring(4, 6);
+          clase.Nombre = detalleSubgrupo.SubgrupoId.Nombre;
+          clase.Descripcion = detalleSubgrupo.SubgrupoId.Descripcion;
+          clase.DetalleId = detalleSubgrupo.Id;
+          clase.TipoBienId = detalleSubgrupo.TipoBienId;
+          clase.Depreciacion = detalleSubgrupo.Depreciacion;
+          clase.Valorizacion = detalleSubgrupo.Valorizacion;
+
+          this.infoSubgrupo = clase;
+          this.cargando = false;
+        }
+      });
     }
   }
 

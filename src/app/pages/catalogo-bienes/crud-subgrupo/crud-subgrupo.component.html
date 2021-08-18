@@ -1,5 +1,4 @@
-<toaster-container [toasterconfig]="config"></toaster-container>
 <div [nbSpinner]="cargando">
-<ngx-dinamicform [normalform]="formSubgrupo" [modeloData]="info_subgrupo" (result)="validarForm($event)" [clean]="clean">
-</ngx-dinamicform>
+    <ngx-dinamicform *ngIf="formSubgrupo" [normalform]="formSubgrupo" [modeloData]="infoSubgrupo" (result)="validarForm($event)" [clean]="clean">
+    </ngx-dinamicform>
 </div>
