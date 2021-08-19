@@ -90,7 +90,7 @@ export class SampleLayoutComponent implements OnDestroy {
     // console.log(windowsize)
     // console.log(xLBp)
     if (windowsize <= xLBp.width) {
-      this.sidebarService.toggle(true, 'menu-sidebar');
+      this.sidebarService.collapse('menu-sidebar');
     }
 
   }
