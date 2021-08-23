@@ -197,7 +197,7 @@
       "id_forma1": "Receipt Certificate #{{ID}}",
       "id_forma2": "Certificate N° {{ID}}",
       "ActaNo": "Receipt Certificate N°",
-      "ContratistaAsignado": "Assigned Contractor",
+      "ContratistaAsignado": "Assigned Assistant I",
       "Ver": "See document",
       "Errores": {
         "Mensaje": "You must first fix the following issues:",
@@ -275,7 +275,7 @@
         "FechaFiltro": "Select Date",
         "Consecutivo": "Consecutive",
         "Soporte": "Related Support",
-        "Revisor": "Reviewer",
+        "Revisor": "Assistant II",
         "DatosAdicionales": "Aditional Data",
         "Observaciones": "Observations",
         "GuardarCambiosButton": "Save Changes",
@@ -296,7 +296,7 @@
         "Registrada": "Receipt Certificate N° {{ID}} has been succesfully registered",
         "RegistradaTitleNO": "Unregistered Certificate",
         "RegistradaNO": "The Certificate hasn't been succesfully registered, try again later",
-        "ErrorRevisorMsg": "The assigned reviewer is not registered in the Third-Party Database. Please grab a registered reviewer and Try Again"
+        "ErrorRevisorMsg": "The assigned Assistant II is not registered in the Third-Party Database. Please grab a registered Assistant II and Try Again"
       },
       "EdicionActa": {
         "Title": "Edit Receipt Certificate",
@@ -326,8 +326,8 @@
         "Observaciones2": "Proporciona datos adicionales que no se pueden expresar en el formulario (Obligatorio)",
         "DatosVeridicos": "Are you sure do you want to save the data?",
         "DatosVeridicos2": "Are you sure do you want to send the data to Verification?",
-        "DatosVeridicos3":"Are you sure to Send the data to Supplier and Contractor?",
-        "DatosVeridicos4":"Are you sure to Send the data to Contractor?",
+        "DatosVeridicos3":"Are you sure to Send the data to Supplier and Assistant I?",
+        "DatosVeridicos4":"Are you sure to Send the data to Assistant I?",
         "DatosVeridicosTitle": "Are You Sure?",
         "CargaElementosTitle": "Elements Load",
         "CargaElementos": "Please verify the load of elements, values ​​and totals associated with the support before generating the record",
@@ -343,7 +343,7 @@
         "ProveedorNO":"The Act has NOT been sent to supplier. Try again later",
         "VerificacionButton": "Send to Verification",
         "EnviarProveedorButton": "Send to Supplier",
-        "EnviarContratistaButton": "Send to Contractor"
+        "EnviarContratistaButton": "Send to Assistant I"
       },
       "DetalleActa": {
         "Title": "Receipt Certificate Detail",
@@ -756,7 +756,7 @@
     "valor_total": "Total Value",
     "iva": "VAT",
     "fecha_visto_bueno": "Approval Date",
-    "revisor": "Reviewer",
+    "revisor": "Assistant II",
     "ubicacion": "Location",
     "observaciones": "Comments",
 
