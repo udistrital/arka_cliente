@@ -197,7 +197,7 @@
       "id_forma1": "Acta de Recibido #{{ID}}",
       "id_forma2": "Acta N° {{ID}}",
       "ActaNo": "Acta de Recibido N°",
-      "ContratistaAsignado": "Contratista Asignado",
+      "ContratistaAsignado": "Auxiliar I Asignado",
       "Ver": "Ver documento",
       "Errores": {
         "Mensaje": "Corrija primero los siguientes problemas:",
@@ -275,7 +275,7 @@
         "FechaFiltro":"Seleccione Fecha",
         "Consecutivo":"Consecutivo",
         "Soporte":"Soporte a Relacionar",
-        "Revisor":"Revisor",
+        "Revisor":"Auxiliar II",
         "DatosAdicionales":"Datos Adicionales",
         "Observaciones":"Observaciones",
         "GuardarCambiosButton":"Guardar Cambios",
@@ -296,7 +296,7 @@
         "Registrada":"Acta N° {{ID}} ha sido registrada de forma exitosa",
         "RegistradaTitleNO":"Acta No Registrada",
         "RegistradaNO":"El Acta no ha podido ser registrada de forma exitosa, intenta más tarde",
-        "ErrorRevisorMsg": "El Revisor Asignado no está registrado en la Base de Datos de Terceros. Por favor escoja un revisor registrado e Intente Nuevamente"
+        "ErrorRevisorMsg": "El Auxiliar II Asignado no está registrado en la Base de Datos de Terceros. Por favor escoja un Auxiliar II registrado e Intente Nuevamente"
       },
       "EdicionActa":{
         "Title": "Editar Acta de Recibido",
@@ -326,8 +326,8 @@
         "Observaciones2":"Proporciona datos adicionales que no se pueden expresar en el formulario (Obligatorio)",
         "DatosVeridicos":"Está seguro que desea guardar los cambios?",
         "DatosVeridicos2":"¿Está seguro que desea enviar el acta a Verificación?",
-        "DatosVeridicos3":"¿Está seguro que desea enviar el acta al Proveedor y al Contratista?",
-        "DatosVeridicos4":"¿Está seguro que desea enviar el acta al Contratista?",
+        "DatosVeridicos3":"¿Está seguro que desea enviar el acta al Proveedor y al Auxiliar I?",
+        "DatosVeridicos4":"¿Está seguro que desea enviar el acta al Auxiliar I?",
         "DatosVeridicosTitle":"¿Está seguro?",
         "CargaElementosTitle":"Carga de Elementos",
         "CargaElementos":"Por favor verificar la carga de elementos, valores y totales asociados al soporte antes de generar el registro",
@@ -343,7 +343,7 @@
         "ProveedorNO":"El Acta no ha podido ser enviada al proveedor de forma exitosa, intenta más tarde",
         "VerificacionButton":"Enviar a Verificación",
         "EnviarProveedorButton": "Enviar a Proveedor",
-        "EnviarContratistaButton": "Enviar a Contratista"
+        "EnviarContratistaButton": "Enviar a Auxiliar I"
       },
       "DetalleActa":{
         "Title": "Detalle Acta de Recibido",
@@ -756,7 +756,7 @@
     "valor_total": "Valor Total",
     "iva": "IVA",
     "fecha_visto_bueno": "Fecha de Visto Bueno",
-    "revisor": "Revisor",
+    "revisor": "Auxiliar II",
     "ubicacion": "Ubicación",
     "observaciones": "Observaciones",
 
