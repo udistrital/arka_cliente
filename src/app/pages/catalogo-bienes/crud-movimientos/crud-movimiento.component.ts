@@ -57,6 +57,7 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
   tipo_movimiento: string;
   indice: number;
   deshabilitar: boolean;
+  cuentaGlobal: any;
 
   @Input('subgrupo_id')
   set name(subgrupo_id: Subgrupo) {
@@ -82,9 +83,14 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
   set name4(indice: number) {
     this.indice = indice;
   }
+  @Input('cuentaEntradas')
+  set name5(cuenta: any) {
+    this.cuentaGlobal = cuenta;
+  }
 
   @Output() eventChange = new EventEmitter();
   @Output() formulario = new EventEmitter();
+  @Output() setCuentasEntradas = new EventEmitter();
 
   @Output() columns: any;
 
@@ -95,6 +101,7 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
   regMovimiento: any;
   clean: boolean;
   cargando: boolean = true;
+  init: boolean;
 
   stateHighlight: string = 'initial';
   animationCuenta: string;
@@ -112,6 +119,7 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
   }
 
   ngOnInit() {
+    this.init = true;
   //  console.log("entra al init 1")
     this.listService.findPlanCuentasDebito();
     this.listService.findPlanCuentasCredito();
@@ -123,9 +131,22 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges() {
-    this.construirForm();
-    this.loadLists();
-    this.loadCuentaGrupo();
+    if (!this.init) {
+      this.construirForm();
+      this.loadLists();
+      this.loadCuentaGrupo();
+    } else if (this.cuentaGlobal) {
+      const cuentaAsociada = new CuentasFormulario();
+      const cuenta = new Cuenta;
+      cuenta.Id = this.cuentaGlobal.substring(0, this.cuentaGlobal.indexOf(' '));
+      if (this.movimiento_id.Acronimo === 'e_arka') {
+       cuentaAsociada.CuentaDebitoId = cuenta;
+       this.info_movimiento = cuentaAsociada;
+      } else if (this.movimiento_id.Acronimo === 's_arka') {
+        cuentaAsociada.CuentaCreditoId = cuenta;
+        this.info_movimiento = cuentaAsociada;
+      }
+    }
   }
 
   clone(Obj) {
@@ -212,8 +233,7 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
       for (let i = 0; i < this.formMovimiento.campos.length; i++) {
         this.formMovimiento.campos[i].label = this.translate.instant('GLOBAL.' + this.formMovimiento.campos[i].label_i18n);
         this.formMovimiento.campos[i].placeholder = this.translate.instant('GLOBAL.placeholder_' + this.formMovimiento.campos[i].label_i18n);
-        this.formMovimiento.campos[i].deshabilitar = this.deshabilitar || (this.tipo_movimiento === 'GLOBAL.Entradas' && i === 0 &&
-          this.indice !== 0 || this.tipo_movimiento === 'GLOBAL.Salidas' && i === 1);
+        this.formMovimiento.campos[i].deshabilitar = this.deshabilitar || ( this.tipo_movimiento === 'GLOBAL.Salidas' && i === 1);
 /*        this.formMovimiento.campos[i].requerido = !(this.tipo_movimiento === 'GLOBAL.Entradas' && i === 0 &&
           this.indice !== 0 || this.tipo_movimiento === 'GLOBAL.Salidas' && i === 1);*/
         this.formMovimiento.campos[i].requerido = !(this.tipo_movimiento === 'GLOBAL.Entradas' && i === 0 &&
