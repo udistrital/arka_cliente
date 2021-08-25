@@ -69,9 +69,13 @@ npm run test:ui
 
 ## Estado CI
 
-| Develop | Release 0.3.1 | Master |
+| Develop | Release 0.4.0 | Master |
 | -- | -- | -- |
-| [![Build Status](https://hubci.portaloas.udistrital.edu.co/api/badges/udistrital/arka_cliente/status.svg?ref=refs/heads/develop)](https://hubci.portaloas.udistrital.edu.co/udistrital/arka_cliente) | [![Build Status](https://hubci.portaloas.udistrital.edu.co/api/badges/udistrital/arka_cliente/status.svg?ref=refs/heads/release/0.3.1)](https://hubci.portaloas.udistrital.edu.co/udistrital/arka_cliente) | [![Build Status](https://hubci.portaloas.udistrital.edu.co/api/badges/udistrital/arka_cliente/status.svg?ref=refs/heads/master)](https://hubci.portaloas.udistrital.edu.co/udistrital/arka_cliente) |
+| [![Build Status](https://hubci.portaloas.udistrital.edu.co/api/badges/udistrital/arka_cliente/status.svg?ref=refs/heads/develop)](https://hubci.portaloas.udistrital.edu.co/udistrital/arka_cliente) | [![Build Status](https://hubci.portaloas.udistrital.edu.co/api/badges/udistrital/arka_cliente/status.svg?ref=refs/heads/release/0.4.0)](https://hubci.portaloas.udistrital.edu.co/udistrital/arka_cliente) | [![Build Status](https://hubci.portaloas.udistrital.edu.co/api/badges/udistrital/arka_cliente/status.svg?ref=refs/heads/master)](https://hubci.portaloas.udistrital.edu.co/udistrital/arka_cliente) |
+
+## Calidad de código
+
+[![Coverage](https://sonarqube.portaloas.udistrital.edu.co/api/project_badges/measure?project=udistrital%3Aarka_cliente&metric=coverage)](https://sonarqube.portaloas.udistrital.edu.co/dashboard?id=udistrital%3Aarka_cliente)
 
 ## Licencia
 
