@@ -327,7 +327,7 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
   updateMovimientos(subgrupo: any): void {
 
     const opt: any = {
-      title: this.translate.instant('GLOBAL.Actualizar'),
+      title: this.translate.instant('GLOBAL.Actualizado'),
       text: this.translate.instant('GLOBAL.Actualizar_Movimientos_placeholder'),
       type: 'warning',
       showCancelButton: true,
