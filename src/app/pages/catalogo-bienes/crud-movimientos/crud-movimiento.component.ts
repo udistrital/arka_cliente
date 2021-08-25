@@ -290,32 +290,36 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
   }
 
   validarForm(event) {
-    let vdebito = event.data.CuentasFormulario.CuentaDebitoId;
-    let vcredito = event.data.CuentasFormulario.CuentaCreditoId;
-    if (vdebito !== undefined && vdebito !== '') {
-       vdebito = vdebito.substring(0, vdebito.indexOf(' '));
-    }
-    if (vcredito !== undefined && vcredito !== '') {
-       vcredito = vcredito.substring(0, vcredito.indexOf(' '));
-    }
-    if (event.valid) {
-      if (this.respuesta !== undefined) {
-        this.respuesta.CuentaCreditoId = vcredito;
-        this.respuesta.CuentaDebitoId = vdebito;
-        this.respuesta.Tipo_Texto = this.tipo_movimiento;
-        this.respuesta.orden = this.indice;
-        this.formulario.emit(this.respuesta);
-      } else {
-        vdebito.Codigo = vdebito;
-        vcredito.Codigo = vcredito;
-        this.respuesta2 = {};
-        this.respuesta2.SubgrupoId = this.subgrupo_id;
-        this.respuesta2.CuentaCreditoId = vcredito;
-        this.respuesta2.CuentaDebitoId = vdebito;
-        this.respuesta2.SubtipoMovimientoId = this.movimiento_id.Id;
-        this.respuesta2.Tipo_Texto = this.tipo_movimiento;
-        this.respuesta2.orden = this.indice;
-        this.formulario.emit(this.respuesta2);
+    if (event.CuentaDebitoId) {
+      this.movimiento_id.Acronimo === 'e_arka' ? this.setCuentasEntradas.emit(event) : null;
+    } else {
+      let vdebito = event.data.CuentasFormulario.CuentaDebitoId;
+      let vcredito = event.data.CuentasFormulario.CuentaCreditoId;
+      if (vdebito !== undefined && vdebito !== '') {
+         vdebito = vdebito.substring(0, vdebito.indexOf(' '));
+      }
+      if (vcredito !== undefined && vcredito !== '') {
+         vcredito = vcredito.substring(0, vcredito.indexOf(' '));
+      }
+      if (event.valid && vcredito && vdebito) {
+        if (this.respuesta !== undefined) {
+          this.respuesta.CuentaCreditoId = vcredito;
+          this.respuesta.CuentaDebitoId = vdebito;
+          this.respuesta.Tipo_Texto = this.tipo_movimiento;
+          this.respuesta.orden = this.indice;
+          this.formulario.emit(this.respuesta);
+        } else {
+          vdebito.Codigo = vdebito;
+          vcredito.Codigo = vcredito;
+          this.respuesta2 = {};
+          this.respuesta2.SubgrupoId = this.subgrupo_id;
+          this.respuesta2.CuentaCreditoId = vcredito;
+          this.respuesta2.CuentaDebitoId = vdebito;
+          this.respuesta2.SubtipoMovimientoId = this.movimiento_id.Id;
+          this.respuesta2.Tipo_Texto = this.tipo_movimiento;
+          this.respuesta2.orden = this.indice;
+          this.formulario.emit(this.respuesta2);
+        }
       }
     }
 
