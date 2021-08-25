@@ -68,6 +68,7 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
   texto_sesion_contable: string;
   texto_estado: string;
   modificando_cuentas: boolean;
+  cuentaGlobalEntradas: any;
 
   private estadoAsignacionContable: Parametro;
 
@@ -185,6 +186,9 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
     });
   }
 
+  actualizarCuentaEntradas(event) {
+    this.cuentaGlobalEntradas = event.CuentaDebitoId.valor;
+  }
   // Se ve si ya tiene cuentas asignadas para mostrarlas en el formulario
   ver3(event) {
   //  console.log("llega", this.Movimientos)
@@ -306,21 +310,6 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
   }
 
   onSubmit() {
-
-//  console.log("Submit");
-
-
-    const movimiento = this.Movimientos.filter(elemento => elemento.orden === 0 && elemento.Tipo_Texto === 'GLOBAL.Entradas');
-    if (movimiento.length === 1) {
-      const cuentadebito = movimiento[0].CuentaDebitoId;
-      this.Movimientos.forEach(elemento => {
-        if (elemento.Tipo_Texto === 'GLOBAL.Entradas')
-          elemento.CuentaDebitoId = cuentadebito;
-        if (elemento.Tipo_Texto === 'GLOBAL.Salidas') {
-          elemento.CuentaCreditoId = cuentadebito;
-        }
-      });
-    }
     this.updateMovimientos(this.Movimientos);
   }
 
