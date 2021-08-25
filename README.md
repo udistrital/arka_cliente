@@ -73,6 +73,10 @@ npm run test:ui
 | -- | -- | -- |
 | [![Build Status](https://hubci.portaloas.udistrital.edu.co/api/badges/udistrital/arka_cliente/status.svg?ref=refs/heads/develop)](https://hubci.portaloas.udistrital.edu.co/udistrital/arka_cliente) | [![Build Status](https://hubci.portaloas.udistrital.edu.co/api/badges/udistrital/arka_cliente/status.svg?ref=refs/heads/release/0.4.0)](https://hubci.portaloas.udistrital.edu.co/udistrital/arka_cliente) | [![Build Status](https://hubci.portaloas.udistrital.edu.co/api/badges/udistrital/arka_cliente/status.svg?ref=refs/heads/master)](https://hubci.portaloas.udistrital.edu.co/udistrital/arka_cliente) |
 
+## Calidad de código
+
+[![Coverage](https://sonarqube.portaloas.udistrital.edu.co/api/project_badges/measure?project=udistrital%3Aarka_cliente&metric=coverage)](https://sonarqube.portaloas.udistrital.edu.co/dashboard?id=udistrital%3Aarka_cliente)
+
 ## Licencia
 
 [This file is part of arka_cliente.](LICENSE)
