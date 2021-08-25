@@ -68,6 +68,7 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
   texto_sesion_contable: string;
   texto_estado: string;
   modificando_cuentas: boolean;
+  cuentaGlobalEntradas: any;
 
   private estadoAsignacionContable: Parametro;
 
@@ -185,6 +186,9 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
     });
   }
 
+  actualizarCuentaEntradas(event) {
+    this.cuentaGlobalEntradas = event.CuentaDebitoId.valor;
+  }
   // Se ve si ya tiene cuentas asignadas para mostrarlas en el formulario
   ver3(event) {
   //  console.log("llega", this.Movimientos)

@@ -42,7 +42,7 @@
             <ng-template matStepLabel>{{lbl | translate}}</ng-template>
             <ngx-crud-movimiento *ngFor="let tab of movs; let i = index" [escritura]="modificando_cuentas && puede_editar"
             [subgrupo_id]="uid_1" [movimiento_id]="tab" [tipo_movimiento]="lbl"  [indice] = "i" (formulario)="ver3($event)"
-            (eventChange)="recargarCatalogo()"></ngx-crud-movimiento>
+            (eventChange)="recargarCatalogo()" (setCuentasEntradas)="actualizarCuentaEntradas($event)" [cuentaEntradas]="cuentaGlobalEntradas" ></ngx-crud-movimiento>
             <div class="justify-content-center">
               <button nbButton
                 matStepperPrevious>{{'GLOBAL.Acta_Recibido.RegistroActa.AnteriorButton' | translate}}</button>
