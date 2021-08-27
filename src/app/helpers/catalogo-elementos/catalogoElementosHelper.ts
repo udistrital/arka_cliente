@@ -470,6 +470,22 @@ export class CatalogoElementosHelper {
             );
     }
 
+    public getMovimientosSubgrupo(subgrupoId) {
+        this.rqManager.setPath('CATALOGO_ELEMENTOS_SERVICE');
+        return this.rqManager.get('cuentas_subgrupo?query=Activo:true,SubgrupoId__Id:'
+            + subgrupoId).pipe(
+                map(
+                    (res) => {
+                        if (res === 'error') {
+                            this.pUpManager.showErrorAlert('No se pudo consultar los tipos de bien');
+                            return undefined;
+                        }
+                        return res;
+                    },
+                ),
+            );
+    }
+
     /**
      * Tipo de Bien Acta Get
      * If the response has errors in the OAS API it should show a popup message with an error.
