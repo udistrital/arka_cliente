@@ -324,23 +324,6 @@ export class VerDetalleComponent implements OnInit {
         });
   }
 
-
-  displayedColumns = [
-    'TipoBienId',
-    'SubgrupoCatalogoId',
-    'Nombre',
-    'Cantidad',
-    'Marca',
-    'Serie',
-    'UnidadMedida',
-    'ValorUnitario',
-    'Subtotal',
-    'Descuento',
-    'PorcentajeIvaId',
-    'ValorIva',
-    'ValorTotal',
-  ];
-
   loadSoporte() {
     this.Actas_Recibido.getSoporte(this._ActaId).subscribe(res => {
       if (res !== null) {
@@ -375,25 +358,16 @@ export class VerDetalleComponent implements OnInit {
     });
   }
 
-  Pipe2Number(any: String) {
-    if (any !== null) {
-      return any.replace(/[$,]/g, '');
-    } else {
-      return '0';
-    }
-  }
-
   private hayElementos(): boolean {
     return (this.Acta
-    && this.Acta.hasOwnProperty('SoportesActa')
-    && Array.isArray(this.Acta.SoportesActa)
-    && this.Acta.SoportesActa.some(sop => Array.isArray(sop.Elementos))
-    );
+    && this.Acta.hasOwnProperty('Elementos')
+    && Array.isArray(this.Acta.Elementos)
+    && this.Acta.Elementos.length > 0);
   }
 
   getGranSubtotal() {
     if (this.hayElementos()) {
-      return this.Acta.SoportesActa.map(t => t.Elementos.map(w => w.ValorTotal).reduce((acc, value) => acc + value)).toString();
+      return this.Acta.Elementos.map(w => w.ValorTotal).reduce((acc, value) => acc + value).toString();
     } else {
       return '0';
     }
@@ -401,7 +375,7 @@ export class VerDetalleComponent implements OnInit {
 
   getGranDescuentos() {
     if (this.hayElementos()) {
-      return this.Acta.SoportesActa.map(t => t.Elementos.map(w => w.Descuento).reduce((acc, value) => acc + value)).toString();
+      return this.Acta.Elementos.map(w => w.Descuento).reduce((acc, value) => acc + value).toString();
     } else {
       return '0';
     }
@@ -409,7 +383,7 @@ export class VerDetalleComponent implements OnInit {
 
   getGranValorIva() {
     if (this.hayElementos()) {
-      return this.Acta.SoportesActa.map(t => t.Elementos.map(w => w.ValorIva).reduce((acc, value) => acc + value)).toString();
+      return this.Acta.Elementos.map(w => w.ValorIva).reduce((acc, value) => acc + value).toString();
     } else {
       return '0';
     }
@@ -417,7 +391,7 @@ export class VerDetalleComponent implements OnInit {
 
   getGranTotal() {
     if (this.hayElementos()) {
-      return this.Acta.SoportesActa.map(t => t.Elementos.map(w => w.ValorFinal).reduce((acc, value) => acc + value)).toString();
+      return this.Acta.Elementos.map(w => w.ValorFinal).reduce((acc, value) => acc + value).toString();
     } else {
       return '0';
     }

@@ -220,12 +220,14 @@ export class CapturarElementosComponent implements OnInit {
   }
 
   ver() {
-    this.refrescaCheckTotal();
-    // console.log(this.DatosEnviados)
-    this.DatosEnviados.emit(this.dataSource.data);
-    this.DatosTotales.emit(this.Totales);
-    this.ElementosValidos.emit(this.validarElementos());
-    // console.log(this.dataSource.data)
+    if (this.dataSource && this.dataSource.data) {
+      this.refrescaCheckTotal();
+      this.DatosTotales.emit(this.Totales);
+      this.ElementosValidos.emit(this.validarElementos());
+      this.DatosEnviados.emit(this.dataSource.data);
+    } else {
+      this.ElementosValidos.emit(false);
+    }
   }
 
   TraerPlantilla() {
@@ -498,19 +500,19 @@ export class CapturarElementosComponent implements OnInit {
   }
 
   addElemento() {
+    const subgrupo = new Detalle;
+    subgrupo.SubgrupoId = new Subgrupo;
+    subgrupo.TipoBienId = new TipoBien;
     const data = this.dataSource.data;
     data.unshift({
-      Cantidad: '1',
+      Cantidad: '0',
       Nombre: '',
       Descuento: '0',
       Marca: '',
-      NivelInventariosId: '1',
       PorcentajeIvaId: '0',
       Serie: '',
-      SubgrupoCatalogoId: '',
-      CodigoSubgrupo: '',
+      SubgrupoCatalogoId: subgrupo,
       Subtotal: '0',
-      TipoBienId: '',
       UnidadMedida: '2',
       ValorIva: '0',
       ValorTotal: '0',
@@ -621,7 +623,7 @@ export class CapturarElementosComponent implements OnInit {
   refrescaCheckTotal() {
     let checkTodos = false;
     let checkParcial = false;
-    if (isArray(this.dataSource.data) && this.dataSource.data.length) {
+    if (this.dataSource && isArray(this.dataSource.data) && this.dataSource.data.length) {
       if (this.dataSource.data.every(elem => elem.seleccionado)) {
         // console.log('todos');
         checkTodos = true;

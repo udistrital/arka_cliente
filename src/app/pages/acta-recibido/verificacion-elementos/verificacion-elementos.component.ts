@@ -181,8 +181,9 @@ export class VerificacionElementosComponent implements OnInit {
     this.Datos = new Array<any>();
     for (const index in datos) {
       if (true) {
-        // console.log(datos[index])
         const elemento: any = {};
+        const subgrupo = datos[index].SubgrupoCatalogoId.SubgrupoId.Id;
+
         elemento.ValorUnitario = datos[index].ValorUnitario;
         elemento.ValorTotal = datos[index].ValorTotal;
         elemento.Id = datos[index].Id;
@@ -190,24 +191,17 @@ export class VerificacionElementosComponent implements OnInit {
         elemento.Cantidad = datos[index].Cantidad;
         elemento.Marca = datos[index].Marca;
         elemento.Serie = datos[index].Serie;
-        elemento.TipoBienId = datos[index].TipoBienId;
         elemento.Subtotal = datos[index].Subtotal;
         elemento.Descuento = datos[index].Descuento;
         elemento.UnidadMedida = datos[index].UnidadMedida;
         elemento.ValorIva = datos[index].ValorIva;
         elemento.PorcentajeIvaId = datos[index].PorcentajeIvaId;
-        // console.log(datos[index])
+        elemento.TipoBienId = datos[index].SubgrupoCatalogoId.TipoBienId.Nombre;
+        elemento.SubgrupoCatalogoId = subgrupo > 0 ?
+          this.Clases.find(x => x.SubgrupoId.Id === datos[index].SubgrupoCatalogoId.SubgrupoId.Id).SubgrupoId : '';
 
-        if (datos[index].TipoBienId === 'Consumo' && Object.keys(this.Consumo[0]).length !== 0) {
-          elemento.SubgrupoCatalogoId = this.Consumo.find(x => x.SubgrupoId.Id === datos[index].SubgrupoCatalogoId).SubgrupoId;
-        }
-        if (datos[index].TipoBienId === 'Consumo Controlado' && Object.keys(this.ConsumoControlado[0]).length !== 0) {
-          elemento.SubgrupoCatalogoId = this.ConsumoControlado.find(x => x.SubgrupoId.Id === datos[index].SubgrupoCatalogoId).SubgrupoId;
-        }
-        if (datos[index].TipoBienId === 'Devolutivo' && Object.keys(this.Devolutivo[0]).length !== 0) {
-          elemento.SubgrupoCatalogoId = this.Devolutivo.find(x => x.SubgrupoId.Id === datos[index].SubgrupoCatalogoId).SubgrupoId;
-        }
         this.Datos.push(elemento);
+
       }
     }
     if (this.Datos !== undefined) {

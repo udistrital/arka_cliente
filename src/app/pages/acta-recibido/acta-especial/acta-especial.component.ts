@@ -400,59 +400,33 @@ export class ActaEspecialComponent implements OnInit {
     });
   }
   getGranSubtotal() {
-    if (this.Totales !== []) {
-      return this.Totales.map(t => t.Subtotal).reduce((acc, value) => parseFloat(acc) + parseFloat(value));
-    } else {
-      return '0';
-    }
+      return this.DatosTotales.Descuento;
   }
   getGranDescuentos() {
-
-    if (this.Totales !== []) {
-      return this.Totales.map(t => t.Descuento).reduce((acc, value) => parseFloat(acc) + parseFloat(value));
-    } else {
-      return '0';
-    }
+      return this.DatosTotales.Descuento;
   }
   getGranValorIva() {
-
-    if (this.Totales !== []) {
-      return this.Totales.map(t => t.ValorIva).reduce((acc, value) => parseFloat(acc) + parseFloat(value));
-    } else {
-      return '0';
-    }
+      return this.DatosTotales.ValorIva;
   }
   getGranTotal() {
-
-    if (this.Totales !== []) {
-      return this.Totales.map(t => t.ValorTotal).reduce((acc, value) => parseFloat(acc) + parseFloat(value));
-    } else {
-      return '0';
-    }
+      return this.DatosTotales.ValorTotal;
   }
 
-  setElementosValidos(soporte: number, valido: boolean): void {
-    this.SoporteElementosValidos[soporte] = valido;
-    this.validaSoportes();
+  setElementosValidos(event: any): void {
+    this.validarElementos = event;
+    !this.validarElementos ? this.errores.set('clases', true) : this.errores.delete('clases');
+  }
+
+  private checkValidness: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
+    const errors = !(
+      control.get('Formulario1').valid &&
+      control.get('Formulario2').valid &&
+      control.get('Formulario3').valid);
+    errors ? this.errores.set('formularios', true) : this.errores.delete('formularios');
+    return errors ? { formularios: true } : null;
   }
 
   // TODO: De ser necesario, agregar más validaciones asociadas a cada soporte
-  private validaSoportes(): void {
-    this.elementosValidos = (
-      Array.isArray(this.Elementos__Soporte)
-      && this.Elementos__Soporte.length // Al menos un soporte
-      && this.Elementos__Soporte.every((sop, idx) => (
-        Array.isArray(sop)
-        && sop.length // Al menos un elemento
-        && this.SoporteElementosValidos[idx]
-      ))
-    );
-    if (this.elementosValidos) {
-      this.errores.delete('clases');
-    } else {
-      this.errores.set('clases', true);
-    }
-  }
 
   Revisar_Totales2() {
     if (!this.revisorValido()) {
@@ -476,15 +450,6 @@ export class ActaEspecialComponent implements OnInit {
 
   usarLocalStorage() {
     sessionStorage.setItem('Formulario_Acta_Especial', JSON.stringify(this.firstForm.value));
-    sessionStorage.setItem('Elementos_Acta_Especial', JSON.stringify(this.Elementos__Soporte));
-  }
-
-  cargar(formulario, elementos) {
-    if (this.Sedes && this.Dependencias) {
-      this.Cargar_Formularios2(formulario, elementos);
-    } else {
-      setTimeout(() => { this.cargar(formulario, elementos); }, 100);
-    }
   }
 
   Traer_Relacion_Ubicaciones(loadInicial: string) {
@@ -509,16 +474,13 @@ export class ActaEspecialComponent implements OnInit {
     return true;
   }
 
-  ver2(event: any) {
+  eventoTotales(event: any) {
     this.DatosTotales = event;
-    this.Totales = new Array<any>(this.DatosTotales);
-    this.usarLocalStorage();
   }
 
-  ver(event: any) {
+  eventoListaElementos(event: any) {
     this.DatosElementos = event;
-    this.Elementos__Soporte[0] = this.DatosElementos;
-    this.usarLocalStorage();
+    sessionStorage.setItem('Elementos_Acta_Especial', JSON.stringify(this.DatosElementos));
   }
 
   onInputFileDocumento(event, index) {

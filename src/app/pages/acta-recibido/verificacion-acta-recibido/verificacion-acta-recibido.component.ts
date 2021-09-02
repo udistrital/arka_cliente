@@ -189,16 +189,10 @@ export class VerificacionActaRecibidoComponent implements OnInit {
     return this.cp.transform(valor);
   }
 
-
   Verificar_Tabla(event, index) {
-    // console.log(event)
-    // console.log(index)
     this.Verificar_tabla[index] = event;
-    // console.log(this.Verificar_tabla)
     this.bandera = false;
-    // console.log(this.source);
     for (const datos of this.Verificar_tabla) {
-      // console.log(datos)
       if (datos !== true) {
         this.bandera = true;
         break;
@@ -569,15 +563,14 @@ export class VerificacionActaRecibidoComponent implements OnInit {
 
   private hayElementos(): boolean {
     return (this.Acta
-      && this.Acta.hasOwnProperty('SoportesActa')
-      && Array.isArray(this.Acta.SoportesActa)
-      && this.Acta.SoportesActa.some(sop => Array.isArray(sop.Elementos))
-    );
+      && this.Acta.hasOwnProperty('Elementos')
+      && Array.isArray(this.Acta.Elementos)
+      && this.Acta.Elementos.length > 0);
   }
 
   getGranSubtotal() {
     if (this.hayElementos()) {
-      return this.Acta.SoportesActa.map(t => t.Elementos.map(w => w.ValorTotal).reduce((acc, value) => acc + value)).toString();
+      return this.Acta.Elementos.map(w => w.ValorTotal).reduce((acc, value) => acc + value).toString();
     } else {
       return '0';
     }
@@ -585,7 +578,7 @@ export class VerificacionActaRecibidoComponent implements OnInit {
 
   getGranDescuentos() {
     if (this.hayElementos()) {
-      return this.Acta.SoportesActa.map(t => t.Elementos.map(w => w.Descuento).reduce((acc, value) => acc + value)).toString();
+      return this.Acta.Elementos.map(w => w.Descuento).reduce((acc, value) => acc + value).toString();
     } else {
       return '0';
     }
@@ -593,7 +586,7 @@ export class VerificacionActaRecibidoComponent implements OnInit {
 
   getGranValorIva() {
     if (this.hayElementos()) {
-      return this.Acta.SoportesActa.map(t => t.Elementos.map(w => w.ValorIva).reduce((acc, value) => acc + value)).toString();
+      return this.Acta.Elementos.map(w => w.ValorIva).reduce((acc, value) => acc + value).toString();
     } else {
       return '0';
     }
@@ -601,7 +594,7 @@ export class VerificacionActaRecibidoComponent implements OnInit {
 
   getGranTotal() {
     if (this.hayElementos()) {
-      return this.Acta.SoportesActa.map(t => t.Elementos.map(w => w.ValorFinal).reduce((acc, value) => acc + value)).toString();
+      return this.Acta.Elementos.map(w => w.ValorFinal).reduce((acc, value) => acc + value).toString();
     } else {
       return '0';
     }

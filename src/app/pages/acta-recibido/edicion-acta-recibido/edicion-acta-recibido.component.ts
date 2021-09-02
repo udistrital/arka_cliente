@@ -526,7 +526,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
     sede = (sede) ? sede : this.firstForm.get('Formulario1').get('Sede').value;
     dependencia = (dependencia) ? dependencia : this.firstForm.get('Formulario1').get('Dependencia').value;
     if (this.firstForm.get('Formulario1').get('Sede').valid && this.firstForm.get('Formulario1').get('Dependencia').valid &&
-      sede !== '' && dependencia !== '' && this.Sedes && this.Dependencias) {
+      sede !== undefined && dependencia !== undefined && this.Sedes && this.Dependencias) {
       this.UbicacionesFiltradas = [];
       this.carga_agregada ? this.firstForm.patchValue({ Formulario1: { Ubicacion: '' } }) : null;
       const transaccion: any = {};
@@ -540,16 +540,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
     }
   }
 
-
-  get Formulario_1(): FormGroup {
-    return this.fb.group({
-      Id: [0],
-      Sede: [''],
-      Dependencia: [''],
-      Ubicacion: [''],
-      Contratista: ['', Validators.required],
-    });
-  }
   get Formulario_2(): FormGroup {
     return this.fb.group({
       Id: [0],
@@ -557,30 +547,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
       Consecutivo: [''],
       Fecha_Factura: [''],
       Soporte: ['', Validators.required],
-      Elementos: this.fb.array([this.Elementos]),
-    });
-  }
-  get Elementos(): FormGroup {
-    return this.fb.group({
-      Id: [0],
-      TipoBienId: [''],
-      SubgrupoCatalogoId: [''],
-      Nombre: [''],
-      Cantidad: ['0'],
-      Marca: [''],
-      Serie: [''],
-      UnidadMedida: [''],
-      ValorUnitario: ['0'],
-      Subtotal: ['0'],
-      Descuento: ['0'],
-      PorcentajeIvaId: [''],
-      ValorIva: ['0'],
-      ValorTotal: ['0'],
-    });
-  }
-  get Formulario_3(): FormGroup {
-    return this.fb.group({
-      Datos_Adicionales: [''],
     });
   }
 
@@ -887,17 +853,8 @@ export class EdicionActaRecibidoComponent implements OnInit {
   }
 
   // Totales
-  ver2(event: any, index: number) {
+  eventoTotales(event: any, index: number) {
     this.DatosTotales = event;
-    if (this.Totales === undefined) {
-      this.Totales = new Array<any>(this.DatosTotales);
-    } else {
-      if (index < (this.Totales.length)) {
-        this.Totales[index] = this.DatosTotales;
-      } else {
-        this.Totales.push(this.DatosTotales);
-      }
-    }
   }
   Revisar_Totales() {
     (Swal as any).fire({
@@ -944,29 +901,9 @@ export class EdicionActaRecibidoComponent implements OnInit {
     });
   }
 
-  setElementosValidos(soporte: number, valido: boolean): void {
-    if (this.validarElementos) {
-      this.SoporteElementosValidos[soporte] = valido;
-      this.validaSoportes();
-    }
-  }
-
-  // TODO: Colocar más validaciones necesarias previo al envío a revisor, acá
-  private validaSoportes(): void {
-    this.elementosValidos = (
-      Array.isArray(this.Elementos__Soporte)
-      && this.Elementos__Soporte.length // Al menos un soporte
-      && this.Elementos__Soporte.every((sop, idx) => (
-        Array.isArray(sop)
-        && sop.length // Al menos un elemento
-        && this.SoporteElementosValidos[idx]
-      ))
-    );
-    if (this.elementosValidos) {
-      this.errores.delete('clases');
-    } else {
-      this.errores.set('clases', true);
-    }
+  setElementosValidos(event: any): void {
+    this.validarElementos = event;
+    !this.validarElementos && !this.actaRegistrada ? this.errores.set('clases', true) : this.errores.delete('clases');
   }
 
   // Enviar a revisor/proveedor?
@@ -996,46 +933,17 @@ export class EdicionActaRecibidoComponent implements OnInit {
   }
 
   getGranSubtotal() {
-    if (this.Totales !== [] && this.Totales !== undefined) {
-      return this.Totales.map(t => t.Subtotal).reduce((acc, value) => parseFloat(acc) + parseFloat(value));
-    } else {
-      return '0';
-    }
+    return this.DatosTotales.Descuento;
   }
   getGranDescuentos() {
-
-    if (this.Totales !== [] && this.Totales !== undefined) {
-      return this.Totales.map(t => t.Descuento).reduce((acc, value) => parseFloat(acc) + parseFloat(value));
-    } else {
-      return '0';
-    }
+      return this.DatosTotales.Descuento;
   }
   getGranValorIva() {
-
-    if (this.Totales !== [] && this.Totales !== undefined) {
-      return this.Totales.map(t => t.ValorIva).reduce((acc, value) => parseFloat(acc) + parseFloat(value));
-    } else {
-      return '0';
-    }
+      return this.DatosTotales.ValorIva;
   }
   getGranTotal() {
-
-    if (this.Totales !== [] && this.Totales !== undefined) {
-      return this.Totales.map(t => t.ValorTotal).reduce((acc, value) => parseFloat(acc) + parseFloat(value));
-    } else {
-      return '0';
-    }
+      return this.DatosTotales.ValorTotal;
   }
-  usarLocalStorage() {
-    if (sessionStorage.Formulario_Edicion == null) {
-      sessionStorage.setItem('Formulario_Edicion', JSON.stringify(this.firstForm.value));
-      sessionStorage.setItem('Elementos_Formulario_Edicion', JSON.stringify(this.Elementos__Soporte));
-    } else {
-      sessionStorage.setItem('Formulario_Edicion', JSON.stringify(this.firstForm.value));
-      sessionStorage.setItem('Elementos_Formulario_Edicion', JSON.stringify(this.Elementos__Soporte));
-    }
-  }
-
   clear() {
     this.firstForm.get('Formulario2')['controls'][0].get('Fecha_Factura').patchValue('');
     this.firstForm.get('Formulario2')['controls'][0].get('Fecha_Factura').setValidators(this.checkDate());
