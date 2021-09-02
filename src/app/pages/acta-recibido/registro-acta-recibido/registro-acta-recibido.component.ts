@@ -1,7 +1,5 @@
-import { AuthInterceptor } from './../../../@core/_Interceptor/auth.Interceptor';
-import { Formulario } from './../edicion-acta-recibido/datos_locales';
 import { Component, OnInit, ViewChild, ViewChildren, QueryList } from '@angular/core';
-import { Subscription, combineLatest, Observable } from 'rxjs';
+import { Subscription, Observable } from 'rxjs';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, FormControl, FormArray, ValidatorFn, ValidationErrors } from '@angular/forms';
 import { NuxeoService } from '../../../@core/utils/nuxeo.service';
@@ -10,36 +8,27 @@ import 'hammerjs';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
 import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
 import { ActaRecibido } from '../../../@core/data/models/acta_recibido/acta_recibido';
-import { Elemento, Impuesto } from '../../../@core/data/models/acta_recibido/elemento';
-import { TipoBien } from '../../../@core/data/models/acta_recibido/tipo_bien';
-import { SoporteActa, Ubicacion } from '../../../@core/data/models/acta_recibido/soporte_acta';
-import { ActaRecibidoUbicacion } from '../../../@core/data/models/acta_recibido/acta_recibido';
-
-import { Proveedor } from '../../../@core/data/models/acta_recibido/Proveedor';
+import { Elemento } from '../../../@core/data/models/acta_recibido/elemento';
+import { SoporteActa } from '../../../@core/data/models/acta_recibido/soporte_acta';
 import { EstadoActa_t } from '../../../@core/data/models/acta_recibido/estado_acta';
-import { EstadoElemento } from '../../../@core/data/models/acta_recibido/estado_elemento';
 import { TerceroCriterioContratista, TerceroCriterioProveedor } from '../../../@core/data/models/terceros_criterio';
 import { HistoricoActa } from '../../../@core/data/models/acta_recibido/historico_acta';
-import { TransaccionSoporteActa, TransaccionActaRecibido } from '../../../@core/data/models/acta_recibido/transaccion_acta_recibido';
+import { TransaccionActaRecibido } from '../../../@core/data/models/acta_recibido/transaccion_acta_recibido';
 import Swal from 'sweetalert2';
-import { ToasterService, ToasterConfig, Toast, BodyOutputType } from 'angular2-toaster';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
-import { Unidad } from '../../../@core/data/models/acta_recibido/unidades';
 import { CompleterService, CompleterData } from 'ng2-completer';
-import { HttpLoaderFactory } from '../../../app.module';
-import { analyzeAndValidateNgModules } from '@angular/compiler';
 import { Store } from '@ngrx/store';
 import { IAppState } from '../../../@core/store/app.state';
 import { ListService } from '../../../@core/store/services/list.service';
 import { PopUpManager } from '../../../managers/popUpManager';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { DocumentoService } from '../../../@core/data/documento.service';
-import { HttpErrorResponse } from '@angular/common/http';
 import { UserService } from '../../../@core/data/users.service';
 import { AbstractControl } from '@angular/forms/src/model';
 import { NbDateService } from '@nebular/theme';
 import { map, startWith } from 'rxjs/operators';
 import { isObject } from 'rxjs/internal-compatibility';
+import { TipoActa } from '../../../@core/data/models/acta_recibido/tipo_acta';
 
 @Component({
   selector: 'ngx-registro-acta-recibido',
@@ -48,18 +37,12 @@ import { isObject } from 'rxjs/internal-compatibility';
 })
 export class RegistroActaRecibidoComponent implements OnInit {
 
-  config: ToasterConfig;
-  searchStr: string;
   searchStr2: Array<string>;
-  searchStr3: string;
-  protected dataService: CompleterData;
-  protected dataService2: CompleterData;
   protected dataService3: CompleterData;
   private Contratistas: TerceroCriterioContratista[];
   contratistasFiltrados: Observable<Partial<TerceroCriterioContratista>[]>;
   private Proveedores: Partial<TerceroCriterioProveedor>[];
   proveedoresFiltrados: Observable<Partial<TerceroCriterioProveedor>[]>;
-  listo: Map<string, boolean>;
 
   // Mensajes de error
   errMess: any;
@@ -105,11 +88,9 @@ export class RegistroActaRecibidoComponent implements OnInit {
   constructor(
     private translate: TranslateService,
     private router: Router,
-    private route: ActivatedRoute,
     private fb: FormBuilder,
     private Actas_Recibido: ActaRecibidoHelper,
     private tercerosHelper: TercerosHelper,
-    private toasterService: ToasterService,
     private completerService: CompleterService,
     private store: Store<IAppState>,
     private listService: ListService,
@@ -406,25 +387,25 @@ export class RegistroActaRecibidoComponent implements OnInit {
 
   async onFirstSubmit() {
     this.Registrando = true;
-    const start = async () => {
-      await this.asyncForEach(this.fileDocumento, async (file) => {
-        await this.postSoporteNuxeo([file]);
-      });
-    };
-    await start();
-    this.Datos = this.firstForm.value;
-    const Transaccion_Acta = new TransaccionActaRecibido();
-    Transaccion_Acta.ActaRecibido = this.Registrar_Acta(this.Datos.Formulario1);
-    Transaccion_Acta.UltimoEstado = this.Registrar_Estado_Acta(Transaccion_Acta.ActaRecibido, EstadoActa_t.Registrada);
-    const Soportes = new Array<TransaccionSoporteActa>();
-    this.Datos.Formulario2.forEach((soporte, index) => {
-      Soportes.push(this.Registrar_Soporte(soporte, Transaccion_Acta.ActaRecibido, index));
-    });
+    // const start = async () => {
+    //   await this.asyncForEach(this.fileDocumento, async (file) => {
+    //     await this.postSoporteNuxeo([file]);
+    //   });
+    // };
+    // await start();
+    const transaccionActa = new TransaccionActaRecibido();
+    const Soportes = new Array<SoporteActa>();
 
-    Transaccion_Acta.SoportesActa = Soportes;
-    // console.log({Transaccion_Acta, validador: this.validador});
+    this.Datos = this.firstForm.value;
+    transaccionActa.ActaRecibido = this.generarActa();
+    transaccionActa.UltimoEstado = this.generarEstadoActa(this.Datos, EstadoActa_t.Registrada);
+    transaccionActa.Elementos = <Elemento[]>[];
+
+    this.Datos.Formulario2.forEach((soporte, index) => { Soportes.push(this.generarSoporte(soporte, index)); });
+    transaccionActa.SoportesActa = Soportes;
+
     if (this.validador === false) {
-      this.Actas_Recibido.postTransaccionActa(Transaccion_Acta).subscribe((res: any) => {
+      this.Actas_Recibido.postTransaccionActa(transaccionActa).subscribe((res: any) => {
         if (res !== null) {
           (Swal as any).fire({
             type: 'success',
@@ -451,55 +432,53 @@ export class RegistroActaRecibidoComponent implements OnInit {
     }
   }
 
-  Registrar_Acta(Datos: any): ActaRecibido {
-    // console.log({Datos});
-    const Acta_de_Recibido = new ActaRecibido();
-    Acta_de_Recibido.Id = null;
-    Acta_de_Recibido.Activo = true;
-    Acta_de_Recibido.FechaCreacion = new Date();
-    Acta_de_Recibido.FechaModificacion = new Date();
-    Acta_de_Recibido.RevisorId = this.userService.getPersonaId();
-    Acta_de_Recibido.UbicacionId = Datos.Ubicacion ? Datos.Ubicacion : null;
-    Acta_de_Recibido.Observaciones = null;
-    Acta_de_Recibido.PersonaAsignada = Datos.Contratista.Tercero.Id;
-    return Acta_de_Recibido;
+  private generarActa(): ActaRecibido {
+
+    const actaRecibido = new ActaRecibido;
+    actaRecibido.Id = null;
+    actaRecibido.Activo = true;
+    actaRecibido.TipoActaId = <TipoActa>{ Id: 1 };
+    actaRecibido.FechaCreacion = new Date();
+    actaRecibido.FechaModificacion = new Date();
+
+    return actaRecibido;
   }
 
-  Registrar_Estado_Acta(Acta: ActaRecibido, Estado: number): HistoricoActa {
+  private generarEstadoActa(Datos: any, Estado: number): HistoricoActa {
 
-    const Historico_ = new HistoricoActa();
+    const historico = new HistoricoActa;
 
-    Historico_.Id = null;
-    Historico_.ActaRecibidoId = Acta;
-    Historico_.Activo = true;
-    Historico_.EstadoActaId = this.Estados_Acta.find(estado => estado.Id === Estado);
-    Historico_.FechaCreacion = new Date();
-    Historico_.FechaModificacion = new Date();
+    historico.Id = null;
+    historico.ProveedorId = Datos.Formulario1.Proveedor ? Datos.Formulario1.Proveedor.Tercero.Id : null;
+    historico.UbicacionId = Datos.Formulario1.Ubicacion ? Datos.Formulario1.Ubicacion : null;
+    historico.RevisorId = this.userService.getPersonaId();
+    historico.PersonaAsignadaId = Datos.Formulario1.Contratista.Tercero.Id;
+    historico.Observaciones = null;
+    historico.FechaVistoBueno = null;
+    historico.ActaRecibidoId = new ActaRecibido;
+    historico.EstadoActaId = this.Estados_Acta.find(estado => estado.Id === Estado);
+    historico.Activo = true;
+    historico.FechaCreacion = new Date();
+    historico.FechaModificacion = new Date();
 
-    return Historico_;
+    return historico;
   }
 
-  Registrar_Soporte(Datos: any, Acta: ActaRecibido, index: number): TransaccionSoporteActa {
-    // console.log({Datos});
+  private generarSoporte(Datos: any, index: number): SoporteActa {
 
-    const Soporte_Acta = new SoporteActa();
-    const Transaccion = new TransaccionSoporteActa();
+    const soporteActa = new SoporteActa;
 
-    Soporte_Acta.Id = null;
-    Soporte_Acta.ActaRecibidoId = Acta;
-    Soporte_Acta.Activo = true;
-    Soporte_Acta.Consecutivo = Datos.Consecutivo;
-    Soporte_Acta.FechaCreacion = new Date();
-    Soporte_Acta.FechaModificacion = new Date();
-    Soporte_Acta.FechaSoporte = Datos.Fecha_Factura ? Datos.Fecha_Factura : null;
-    Soporte_Acta.ProveedorId = Datos.Proveedor ? Datos.Proveedor.Tercero.Id : null;
-    Soporte_Acta.DocumentoId = this.idDocumento[index];
+    soporteActa.Id = null;
+    soporteActa.Consecutivo = Datos.Consecutivo;
+    soporteActa.DocumentoId = 2400; // this.idDocumento[index];
+    soporteActa.FechaSoporte = Datos.FechaSoporte ? Datos.FechaSoporte : null;
+    soporteActa.ActaRecibidoId = new ActaRecibido;
+    soporteActa.Activo = true;
+    soporteActa.FechaCreacion = new Date();
+    soporteActa.FechaModificacion = new Date();
 
-    Transaccion.SoporteActa = Soporte_Acta;
-    // Transaccion.Elementos = this.Registrar_Elementos(Soporte_Acta);
-    Transaccion.Elementos = <Elemento[]>[];
     this.validador = false;
-    return Transaccion;
+    return soporteActa;
   }
 
   // Posible TODO: Esta función también se repite en los componentes
@@ -541,7 +520,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
     });
   }
 
-  usarLocalStorage() {
+  usarLocalStorage(event$) {
     sessionStorage.setItem('Formulario_Registro', JSON.stringify(this.firstForm.value));
   }
 
@@ -566,17 +545,17 @@ export class RegistroActaRecibidoComponent implements OnInit {
   }
 
   clear() {
-    this.firstForm.get('Formulario2')['controls'][0].get('Fecha_Factura').patchValue('');
-    this.firstForm.get('Formulario2')['controls'][0].get('Fecha_Factura').setErrors(null);
+    this.firstForm.get('Formulario2')['controls'][0].get('FechaSoporte').patchValue('');
+    this.firstForm.get('Formulario2')['controls'][0].get('FechaSoporte').setErrors(null);
   }
   private validarTercero(): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
       const valor = control.value;
-      const checkStringLength = typeof(valor) === 'string' && valor.length < 4 && valor !== '' ? true : false;
-      const checkInvalidString = typeof(valor) === 'string' && valor !== '' ? true : false;
-      const checkInvalidTercero = typeof(valor) === 'object' && !valor.Tercero ? true : false;
-      return checkStringLength ? {errorLongitudMinima: true} :
-      checkInvalidString || checkInvalidTercero ? {terceroNoValido: true} : null;
+      const checkStringLength = typeof (valor) === 'string' && valor.length < 4 && valor !== '' ? true : false;
+      const checkInvalidString = typeof (valor) === 'string' && valor !== '' ? true : false;
+      const checkInvalidTercero = typeof (valor) === 'object' && !valor.Tercero ? true : false;
+      return checkStringLength ? { errorLongitudMinima: true } :
+        checkInvalidString || checkInvalidTercero ? { terceroNoValido: true } : null;
     };
   }
 

@@ -8,6 +8,23 @@
           <nb-card-body>
             <div class="row">
               <div class="form-group col-sm">
+                <label>{{'GLOBAL.Acta_Recibido.ContratistaAsignado' | translate}}</label>
+                <div class="input-group">
+                  <input type="text" placeholder="NIT o Razón social" class="form-control" 
+                    formControlName="Contratista" readonly>
+                </div>
+              </div>
+              <div class="form-group col-sm">
+                <label>{{'GLOBAL.Acta_Recibido.DetalleActa.Proveedor' | translate}}</label>
+                <div class="input-group">
+                  <input type="text" placeholder="NIT o Razón social" class="form-control" 
+                    formControlName="Proveedor" readonly>
+                </div>
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="form-group col-sm">
                 <label>{{'GLOBAL.Acta_Recibido.VerificacionActa.Sede' | translate}}</label>
                 <input class="form-control" formControlName="Sede" readonly>
               </div>
@@ -27,7 +44,7 @@
           <nb-card-header>{{'GLOBAL.Acta_Recibido.VerificacionActa.SoporteTitle' | translate}}</nb-card-header>
           <nb-card-body>
             <mat-tab-group [selectedIndex]="selected.value" (selectedIndexChange)="selected.setValue($event)">
-              <mat-tab *ngFor="let soporte of firstForm.get('Formulario2').controls; let i = index" [formGroupName]="i">
+              <mat-tab *ngFor="let soporte of firstForm.get('Formulario2')['controls']; let i = index" [formGroupName]="i">
                 <ng-template mat-tab-label>
                   {{'GLOBAL.Acta_Recibido.VerificacionActa.SoporteSubTitle' | translate}} &nbsp; {{i + 1}}
                 </ng-template>
@@ -35,41 +52,38 @@
                   <nb-card>
                     <nb-card-body>
                       <div class="row">
-                        <div class="form-group col-sm">
-                          <label>{{'GLOBAL.Acta_Recibido.VerificacionActa.Proveedor' | translate}}</label>
-                          <div class="input-group">
-                            <input type="text" placeholder="NIT o Razón social" class="form-control"
-                              formControlName="Proveedor" readonly>
+                        <div class="col" *ngIf="Acta.ActaRecibido.TipoActaId.Id === 1">
+                          <div class="form-group col-sm">
+                            <label>{{'GLOBAL.Acta_Recibido.DetalleActa.Consecutivo' | translate}}</label>
+                            <div class="input-group">
+                              <input nbInput type="text" placeholder="Consecutivo" class="form-control" formControlName="Consecutivo"
+                                readonly>
+                            </div>
+                          </div>
+
+                          <div class="form-group col-sm">
+                            <label>{{'GLOBAL.Acta_Recibido.DetalleActa.FechaSoporte' | translate}}</label>
+                            <div class="input-group">
+                              <input nbInput class="form-control" [nbDatepicker]="formpicker"
+                                formControlName="Fecha_Factura" disabled readonly>
+                              <nb-datepicker #formpicker readonly></nb-datepicker>
+                            </div>
                           </div>
                         </div>
-                        <div class="form-group col-sm">
-                          <label>{{'GLOBAL.Acta_Recibido.VerificacionActa.Consecutivo' | translate}}</label>
-                          <div class="input-group">
-                            <input nbInput type="text" placeholder="Consecutivo" class="form-control"
-                              formControlName="Consecutivo" readonly>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="row">
-                        <div class="form-group col-sm">
-                          <label>{{'GLOBAL.Acta_Recibido.VerificacionActa.FechaSoporte' | translate}}</label>
-                          <div class="input-group">
-                            <input nbInput placeholder="Selecciona la Fecha" class="form-control"
-                              [nbDatepicker]="formpicker" formControlName="Fecha_Factura" readonly>
-                            <nb-datepicker #formpicker readonly disabled></nb-datepicker>
-                          </div>
-                        </div>
-                        <div class="form-group col-sm">
-                          <label>{{'GLOBAL.Acta_Recibido.VerificacionActa.Soporte' | translate}}</label>
-                          <nb-card>
-                            <nb-card-body>
-                              <div class="col-sm soporte">
+
+                        <div class="col">
+                          <div class="form-group col-sm">
+                            <label>{{'GLOBAL.Acta_Recibido.DetalleActa.Soporte' | translate}}</label>
+                            <nb-card>
+                              <nb-card-body>
+                                <div class="col-sm soporte">
                                   <button nbButton type="button" (click)="downloadFile(i)">
                                     <i class="fas fa-eye fa-2x"></i>
                                   </button>
-                              </div>
-                            </nb-card-body>
-                          </nb-card>
+                                </div>
+                              </nb-card-body>
+                            </nb-card>
+                          </div>
                         </div>
                       </div>
                     </nb-card-body>
@@ -79,7 +93,7 @@
                     </nb-card-header>
                     <nb-card-body>
                       <div class="pre-scrollable">
-                        <ngx-verificacion-elementos [DatosRecibidos]='soporte.get("Elementos").value' [mode]='"multi"' (DatosEnviados)="Verificar_Tabla($event, i)"></ngx-verificacion-elementos>
+                        <ngx-verificacion-elementos [DatosRecibidos]='elementos.value' [mode]='"multi"' (DatosEnviados)="Verificar_Tabla($event, i)"></ngx-verificacion-elementos>
                       </div>
 
                     </nb-card-body>
@@ -91,7 +105,7 @@
           </nb-card-body>
         </nb-card>
 
-        <nb-card>
+        <nb-card *ngIf="Acta.Elementos && Acta.Elementos.length > 0">
           <nb-card-header>{{'GLOBAL.Acta_Recibido.VerificacionActa.Consolidado' | translate}}</nb-card-header>
           <nb-card-body>
             <table class="consolidado">

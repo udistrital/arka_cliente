@@ -10,37 +10,12 @@
         <mat-step label="{{'GLOBAL.Acta_Recibido.RegistroActa.DatosTitle' | translate}}" formGroupName="Formulario1">
           <nb-card>
             <nb-card-body class="bla">
-              <div class="row" (click)="usarLocalStorage()">
-                <div class="form-group col-sm">
-                  <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Sede' | translate}}</label>
-                  <mat-select type="text" class="form-control" formControlName="Sede"
-                    (selectionChange)="usarLocalStorage(); Traer_Relacion_Ubicaciones()">
-                    <mat-option *ngFor="let sede of Sedes" [(value)]="sede.Id">{{sede.Nombre}}</mat-option>
-                  </mat-select>
-                </div>
-                <div class="form-group col-sm">
-                  <label id="lbl-dependencia">{{'GLOBAL.Acta_Recibido.RegistroActa.Dependencia' | translate}}</label>
-                  <ng2-completer style="border: 0rem" inputClass="form-control" nbInput
-                    (keyup)="usarLocalStorage(); Traer_Relacion_Ubicaciones();" [datasource]="dataService3"
-                    formControlName="Dependencia" [minSearchLength]="2"
-                    (change)="usarLocalStorage(); Traer_Relacion_Ubicaciones();"
-                    placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : '4'} }}">
-                  </ng2-completer>
-                </div>
-                <div class="form-group col-sm">
-                  <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Ubicacion' | translate}}</label>
-                  <mat-select type="text" class="form-control" formControlName="Ubicacion"
-                    (selectionChange)="usarLocalStorage()">
-                    <mat-option *ngFor="let ubicacion of UbicacionesFiltradas" [(value)]="ubicacion.Id">
-                      {{ubicacion.Nombre}}
-                    </mat-option>
-                  </mat-select>
-                </div>
+              <div class="row">
                 <div class="form-group col-sm">
                   <label>{{'GLOBAL.Acta_Recibido.ContratistaAsignado' | translate}}</label>
                   <input matInput type="text" class="form-control"
-                    placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : '4'} }}"
-                    formControlName="Contratista" [matAutocomplete]="autoContratista" />
+                    placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : '4'} }}" formControlName="Contratista"
+                    [matAutocomplete]="autoContratista" />
                   <mat-autocomplete #autoContratista="matAutocomplete" [displayWith]="muestraContratista"
                     (optionSelected)="usarLocalStorage()">
                     <mat-option *ngFor="let contr of contratistasFiltrados | async" [value]="contr">
@@ -57,10 +32,55 @@
                     *ngIf="firstForm.get('Formulario1.Contratista').errors && firstForm.get('Formulario1.Contratista').errors.terceroNoValido">
                     {{'GLOBAL.Errores.ErrorTercero' | translate}}</p>
                 </div>
+                <div class="form-group col-sm">
+                  <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Proveedor' | translate}}</label>
+                  <input matInput type="text" class="form-control"
+                    placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : '4'} }}" formControlName="Proveedor"
+                    [matAutocomplete]="autoProveedor" />
+                  <mat-autocomplete #autoProveedor="matAutocomplete" [displayWith]="muestraProveedor"
+                    (optionSelected)="usarLocalStorage()">
+                    <mat-option *ngFor="let prov of proveedoresFiltrados | async" [value]="prov">
+                      {{muestraProveedor(prov)}}
+                    </mat-option>
+                  </mat-autocomplete>
+                  <p class="campo"
+                    *ngIf="firstForm.get('Formulario1.Proveedor').errors && firstForm.get('Formulario1.Proveedor').errors.errorLongitudMinima">
+                    {{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : '4'} }}</p>
+                  <p class="campo"
+                    *ngIf="firstForm.get('Formulario1.Proveedor').errors && firstForm.get('Formulario1.Proveedor').errors.terceroNoValido">
+                    {{'GLOBAL.Errores.ErrorTercero' | translate}}</p>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="form-group col-sm">
+                  <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Sede' | translate}}</label>
+                  <mat-select type="text" class="form-control" formControlName="Sede"
+                    (selectionChange)="usarLocalStorage(); Traer_Relacion_Ubicaciones()">
+                    <mat-option *ngFor="let sede of Sedes" [(value)]="sede.Id">{{sede.Nombre}}</mat-option>
+                  </mat-select>
+                </div>
+                <div class="form-group col-sm">
+                  <label id="lbl-dependencia">{{'GLOBAL.Acta_Recibido.RegistroActa.Dependencia' | translate}}</label>
+                  <ng2-completer style="border: 0rem" inputClass="form-control" nbInput
+                    (keyup)="Traer_Relacion_Ubicaciones()" [datasource]="dataService3"
+                    formControlName="Dependencia" [minSearchLength]="2"
+                    (change)="usarLocalStorage(); Traer_Relacion_Ubicaciones();"
+                    placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : '4'} }}">
+                  </ng2-completer>
+                </div>
+                <div class="form-group col-sm">
+                  <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Ubicacion' | translate}}</label>
+                  <mat-select type="text" class="form-control" formControlName="Ubicacion" (selectionChange)="usarLocalStorage()">
+                    <mat-option *ngFor="let ubicacion of UbicacionesFiltradas" [(value)]="ubicacion.Id">
+                      {{ubicacion.Nombre}}
+                    </mat-option>
+                  </mat-select>
+                </div>
               </div>
             </nb-card-body>
             <nb-card-footer>
-              <button nbButton matStepperNext (click)="usarLocalStorage()" class="float-right">
+              <button nbButton matStepperNext class="float-right">
                 {{'GLOBAL.Acta_Recibido.RegistroActa.SiguienteButton' | translate}}</button>
             </nb-card-footer>
           </nb-card>
@@ -85,24 +105,6 @@
                         <div class="row">
                           <div class="col">
                             <div class="form-group col-sm">
-                              <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Proveedor' | translate}}</label>
-                              <input matInput type="text" class="form-control"
-                                placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : '4'} }}"
-                                formControlName="Proveedor" [matAutocomplete]="autoProveedor" />
-                              <mat-autocomplete #autoProveedor="matAutocomplete" [displayWith]="muestraProveedor"
-                                (optionSelected)="usarLocalStorage()">
-                                <mat-option *ngFor="let prov of proveedoresFiltrados | async" [value]="prov">
-                                  {{muestraProveedor(prov)}}
-                                </mat-option>
-                              </mat-autocomplete>
-                              <p class="campo"
-                                *ngIf="soporte.get('Proveedor').errors && soporte.get('Proveedor').errors.errorLongitudMinima">
-                                {{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : '4'} }}</p>
-                              <p class="campo"
-                                *ngIf="soporte.get('Proveedor').errors && soporte.get('Proveedor').errors.terceroNoValido">
-                                {{'GLOBAL.Errores.ErrorTercero' | translate}}</p>
-                            </div>
-                            <div class="form-group col-sm">
                               <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Consecutivo' | translate}}</label>
                               <div class="input-group">
                                 <input nbInput type="text"
@@ -115,11 +117,11 @@
                               <div class="input-group">
                                 <input nbInput
                                   placeholder="{{'GLOBAL.Acta_Recibido.RegistroActa.FechaFiltro' | translate}}"
-                                  class="form-control" [nbDatepicker]="formpicker" formControlName="Fecha_Factura" (keyup.Backspace)="clear()">
-                                <nb-datepicker #formpicker [max]="TodaysDate" (dateChange)="usarLocalStorage()">
+                                  class="form-control" [nbDatepicker]="formpicker" formControlName="FechaSoporte" (keyup.Backspace)="clear()">
+                                <nb-datepicker #formpicker [max]="TodaysDate" (dateChange)="usarLocalStorage($event)">
                                 </nb-datepicker>
                               </div>
-                              <p class="campo" *ngIf="soporte.get('Fecha_Factura').invalid">
+                              <p class="campo" *ngIf="soporte.get('FechaSoporte').invalid">
                                 {{'GLOBAL.Errores.ErrorFecha' | translate}}</p>
                             </div>
 
