@@ -4,9 +4,8 @@ import { Proveedor } from './Proveedor';
 export class SoporteActa {
     Id: number;
     Consecutivo: string;
-    ProveedorId: number; // CAMBIAR POR MODELO CUANDO SE PUEDA CONSULTAR
-    FechaSoporte: Date;
     DocumentoId: number;
+    FechaSoporte: Date;
     ActaRecibidoId: ActaRecibido;
     Activo: boolean;
     FechaCreacion: Date;
