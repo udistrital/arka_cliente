@@ -6,7 +6,6 @@ import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import 'style-loader!angular2-toaster/toaster.css';
 import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/catalogoElementosHelper';
 import { CuentaGrupo, CuentasFormulario } from '../../../@core/data/models/catalogo/cuentas_grupo';
-import { CuentasGrupoTransaccion } from '../../../@core/data/models/catalogo/cuentas_subgrupo';
 import { Cuenta } from '../../../@core/data/models/catalogo/cuenta_contable';
 import { TipoMovimientoKronos } from '../../../@core/data/models/movimientos';
 import { Store } from '@ngrx/store';
@@ -16,6 +15,7 @@ import {
   NbSortDirection,
   NbTreeGridRowComponent,
 } from '@nebular/theme';
+import { GlobalPositionStrategy } from '@angular/cdk/overlay';
 
 /**
  * Mapeo entre:
@@ -59,8 +59,6 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
   deshabilitar: boolean;
   cuentaGlobal: any;
 
-
-  @Input('trSubgrupoCuentas') transaccion: CuentasGrupoTransaccion;
   @Input('subgrupo_id')
   set name(subgrupo_id: Subgrupo) {
     this.subgrupo_id = subgrupo_id;
