@@ -1,37 +1,31 @@
 import { Component, OnInit, ViewChild, ViewChildren, QueryList, Input } from '@angular/core';
-import { Subscription, combineLatest } from 'rxjs';
-import { Router, ActivatedRoute } from '@angular/router';
-import { FormBuilder, FormGroup, Validators, FormControl, FormArray } from '@angular/forms';
+import { Subscription } from 'rxjs';
+import { Router } from '@angular/router';
+import { FormBuilder, FormGroup, FormControl, FormArray } from '@angular/forms';
 import { NuxeoService } from '../../../@core/utils/nuxeo.service';
-
 import { MatTable } from '@angular/material';
 import 'hammerjs';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
 import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
 import { ActaRecibido } from '../../../@core/data/models/acta_recibido/acta_recibido';
-import { TerceroCriterioProveedor } from '../../../@core/data/models/terceros_criterio';
-import { Elemento, Impuesto } from '../../../@core/data/models/acta_recibido/elemento';
+import { TerceroCriterioContratista, TerceroCriterioProveedor } from '../../../@core/data/models/terceros_criterio';
+import { Elemento } from '../../../@core/data/models/acta_recibido/elemento';
 import { TipoBien } from '../../../@core/data/models/acta_recibido/tipo_bien';
-import { SoporteActa, Ubicacion } from '../../../@core/data/models/acta_recibido/soporte_acta';
-import { Proveedor } from '../../../@core/data/models/acta_recibido/Proveedor';
+import { SoporteActa } from '../../../@core/data/models/acta_recibido/soporte_acta';
 import { EstadoActa_t } from '../../../@core/data/models/acta_recibido/estado_acta';
 import { EstadoElemento } from '../../../@core/data/models/acta_recibido/estado_elemento';
 import { HistoricoActa } from '../../../@core/data/models/acta_recibido/historico_acta';
-import { TransaccionSoporteActa, TransaccionActaRecibido } from '../../../@core/data/models/acta_recibido/transaccion_acta_recibido';
+import { TransaccionActaRecibido } from '../../../@core/data/models/acta_recibido/transaccion_acta_recibido';
 import Swal from 'sweetalert2';
-import { ToasterService, ToasterConfig, Toast, BodyOutputType } from 'angular2-toaster';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { CurrencyPipe } from '@angular/common';
-import { Unidad } from '../../../@core/data/models/acta_recibido/unidades';
 import { DocumentoService } from '../../../@core/data/documento.service';
 import { Store } from '@ngrx/store';
 import { IAppState } from '../../../@core/store/app.state';
 import { ListService } from '../../../@core/store/services/list.service';
-import { PopUpManager } from '../../../managers/popUpManager';
-import { DomSanitizer } from '@angular/platform-browser';
-import { CompleterData, CompleterService } from 'ng2-completer';
 import { HttpErrorResponse } from '@angular/common/http';
 import { UserService } from '../../../@core/data/users.service';
+import { TipoActa } from '../../../@core/data/models/acta_recibido/tipo_acta';
 
 @Component({
   selector: 'ngx-verificacion-acta-recibido',
@@ -40,13 +34,9 @@ import { UserService } from '../../../@core/data/users.service';
 })
 export class VerificacionActaRecibidoComponent implements OnInit {
 
-
-  config: ToasterConfig;
   Verificar_tabla: boolean[];
-  Verificar_tabla2: boolean;
   // Mensajes de error
   errMess: any;
-  private sub: Subscription;
 
   // Decorador para renderizar los cambios en las tablas de elementos
   @ViewChildren(MatTable) _matTable: QueryList<MatTable<any>>;
@@ -68,37 +58,30 @@ export class VerificacionActaRecibidoComponent implements OnInit {
 
   // Modelos
 
-  Acta__: ActaRecibido;
-  Elementos__Soporte: Array<Elemento>;
-  Soportes_Acta: Array<SoporteActa>;
-  Historico_Acta: HistoricoActa;
-  Transaccion__: TransaccionActaRecibido;
   Unidades: any;
   Acta: TransaccionActaRecibido;
-  Proveedores: Partial<TerceroCriterioProveedor>[];
   Ubicaciones: any;
   Tarifas_Iva: any;
   Dependencias: any;
   Sedes: any;
   bandera: boolean;
   bandera2: boolean;
-  respuesta: any;
+  private Proveedores: Partial<TerceroCriterioProveedor>[];
+  private Contratistas: TerceroCriterioContratista[];
+  sedeDependencia: any;
+  elementos: any;
 
   constructor(
     private translate: TranslateService,
     private router: Router,
-    private route: ActivatedRoute,
     private fb: FormBuilder,
     private Actas_Recibido: ActaRecibidoHelper,
     private tercerosHelper: TercerosHelper,
-    private toasterService: ToasterService,
     private cp: CurrencyPipe,
     private nuxeoService: NuxeoService,
     private documentoService: DocumentoService,
     private store: Store<IAppState>,
     private listService: ListService,
-    private pUpManager: PopUpManager,
-    private sanitization: DomSanitizer,
     private userService: UserService,
 
   ) {

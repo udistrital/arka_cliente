@@ -1,24 +1,10 @@
-import { Component, OnInit, ViewChild, ElementRef, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
-import * as XLSX from 'xlsx';
+import { Component, OnInit, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
-import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
-import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
-import Swal from 'sweetalert2';
-import { MatPaginator } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
-import { MatTableDataSource, MatTable } from '@angular/material/table';
-import { TipoBien } from '../../../@core/data/models/acta_recibido/tipo_bien';
-import { Unidad } from '../../../@core/data/models/acta_recibido/unidades';
-import { Impuesto, ElementoActa, Elemento } from '../../../@core/data/models/acta_recibido/elemento';
-import { SoporteActa } from '../../../@core/data/models/acta_recibido/soporte_acta';
+import { Elemento } from '../../../@core/data/models/acta_recibido/elemento';
 import { Store } from '@ngrx/store';
 import { ListService } from '../../../@core/store/services/list.service';
-import { PopUpManager } from '../../../managers/popUpManager';
 import { IAppState } from '../../../@core/store/app.state';
-import { Router, NavigationEnd } from '@angular/router';
 import { LocalDataSource } from 'ngx-smart-table';
-import { ElementoSalida } from '../../../@core/data/models/salidas/salida_elementos';
-import { SalidaHelper } from '../../../helpers/salidas/salidasHelper';
 
 @Component({
   selector: 'ngx-verificacion-elementos',
@@ -53,9 +39,7 @@ export class VerificacionElementosComponent implements OnInit {
 
   source: LocalDataSource;
   elementos: Elemento[];
-  Consumo: any;
-  ConsumoControlado: any;
-  Devolutivo: any;
+  Clases: any;
   settings: any;
   Datos: Elemento[];
 

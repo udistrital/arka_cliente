@@ -1,35 +1,22 @@
 import { Component, OnInit, ViewChild, ViewChildren, QueryList, Input, Output, EventEmitter } from '@angular/core';
-import { Subscription, combineLatest } from 'rxjs';
-import { Router, ActivatedRoute } from '@angular/router';
-import { FormBuilder, FormGroup, Validators, FormControl, FormArray } from '@angular/forms';
+import { Subscription } from 'rxjs';
+import { FormBuilder, FormGroup, FormControl, FormArray } from '@angular/forms';
 import { NuxeoService } from '../../../@core/utils/nuxeo.service';
-
 import { MatTable } from '@angular/material';
 import 'hammerjs';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
 import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
-import { ActaRecibido } from '../../../@core/data/models/acta_recibido/acta_recibido';
-import { Elemento, Impuesto } from '../../../@core/data/models/acta_recibido/elemento';
-import { TipoBien } from '../../../@core/data/models/acta_recibido/tipo_bien';
-import { SoporteActa, Ubicacion } from '../../../@core/data/models/acta_recibido/soporte_acta';
-import { Proveedor } from '../../../@core/data/models/acta_recibido/Proveedor';
-import { TerceroCriterioProveedor } from '../../../@core/data/models/terceros_criterio';
-import { EstadoActa } from '../../../@core/data/models/acta_recibido/estado_acta';
-import { EstadoElemento } from '../../../@core/data/models/acta_recibido/estado_elemento';
-import { HistoricoActa } from '../../../@core/data/models/acta_recibido/historico_acta';
-import { TransaccionSoporteActa, TransaccionActaRecibido } from '../../../@core/data/models/acta_recibido/transaccion_acta_recibido';
+import { Elemento } from '../../../@core/data/models/acta_recibido/elemento';
+import { SoporteActa } from '../../../@core/data/models/acta_recibido/soporte_acta';
+import { TerceroCriterioContratista, TerceroCriterioProveedor } from '../../../@core/data/models/terceros_criterio';
+import { TransaccionActaRecibido } from '../../../@core/data/models/acta_recibido/transaccion_acta_recibido';
 import Swal from 'sweetalert2';
-import { ToasterService, ToasterConfig, Toast, BodyOutputType } from 'angular2-toaster';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { CurrencyPipe } from '@angular/common';
-import { Unidad } from '../../../@core/data/models/acta_recibido/unidades';
 import { DocumentoService } from '../../../@core/data/documento.service';
 import { Store } from '@ngrx/store';
 import { IAppState } from '../../../@core/store/app.state';
 import { ListService } from '../../../@core/store/services/list.service';
-import { PopUpManager } from '../../../managers/popUpManager';
-import { DomSanitizer } from '@angular/platform-browser';
-import { CompleterData, CompleterService } from 'ng2-completer';
 import { HttpErrorResponse } from '@angular/common/http';
 
 
@@ -40,8 +27,6 @@ import { HttpErrorResponse } from '@angular/common/http';
 })
 export class VerDetalleComponent implements OnInit {
   @Output() mostrarData = new EventEmitter<boolean>();
-
-  config: ToasterConfig;
 
   // Mensajes de error
   errMess: any;
@@ -60,7 +45,6 @@ export class VerDetalleComponent implements OnInit {
 
   // Tablas parametricas
 
-
   _ActaId: number;
   Estados_Acta: any;
   Tipos_Bien: any;
@@ -68,42 +52,35 @@ export class VerDetalleComponent implements OnInit {
   @Input('Id_Acta')
   set name(id: any) {
     this._ActaId = id;
-    this.loadLists();
   }
 
   // Modelos
 
-  Acta__: ActaRecibido;
   Elementos__Soporte: Array<Elemento>;
   Soportes_Acta: Array<SoporteActa>;
-  Historico_Acta: HistoricoActa;
-  Transaccion__: TransaccionActaRecibido;
   Unidades: any;
   Tarifas_Iva: any;
   Ubicaciones: any;
-  Proveedores: Partial<TerceroCriterioProveedor>[];
+  private Proveedores: Partial<TerceroCriterioProveedor>[];
+  private Contratistas: TerceroCriterioContratista[];
   Totales: any;
   Acta: TransaccionActaRecibido;
   fileDocumento: any;
   Dependencias: any;
   Sedes: any;
-  ActaEspecial: boolean;
+  sedeDependencia: any;
+  elementos: any;
 
   constructor(
     private translate: TranslateService,
-    private router: Router,
-    private route: ActivatedRoute,
     private fb: FormBuilder,
     private Actas_Recibido: ActaRecibidoHelper,
     private tercerosHelper: TercerosHelper,
     private cp: CurrencyPipe,
     private nuxeoService: NuxeoService,
-    private completerService: CompleterService,
     private documentoService: DocumentoService,
     private store: Store<IAppState>,
     private listService: ListService,
-    private pUpManager: PopUpManager,
-    private sanitization: DomSanitizer,
   ) {
   }
 

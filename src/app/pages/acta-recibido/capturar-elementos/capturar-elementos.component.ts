@@ -1,33 +1,26 @@
-import { Component, OnInit, ViewChild, ElementRef, Input, Output, EventEmitter, OnChanges, SimpleChanges, HostListener } from '@angular/core';
-import * as XLSX from 'xlsx';
+import { Component, OnInit, ViewChild, ElementRef, Input, Output, EventEmitter } from '@angular/core';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
-import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
 import Swal from 'sweetalert2';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource, MatTable } from '@angular/material/table';
 import { TipoBien } from '../../../@core/data/models/acta_recibido/tipo_bien';
-import { DatosLocales, DatosLocales2 } from './datos_locales';
-import { Unidad } from '../../../@core/data/models/acta_recibido/unidades';
-import { Impuesto } from '../../../@core/data/models/acta_recibido/elemento';
-import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/catalogoElementosHelper';
+import { DatosLocales } from './datos_locales';
+import { ElementoActa } from '../../../@core/data/models/acta_recibido/elemento';
 import { Store } from '@ngrx/store';
 import { IAppState } from '../../../@core/store/app.state';
 import { ConfiguracionService } from '../../../@core/data/configuracion.service';
 import { ListService } from '../../../@core/store/services/list.service';
-import { HttpErrorResponse } from '@angular/common/http';
 import { NuxeoService } from '../../../@core/utils/nuxeo.service';
-import { DocumentoService } from '../../../@core/data/documento.service';
 import { isNumeric } from 'rxjs/internal-compatibility';
 import { isArray } from 'util';
 import { MatCheckbox } from '@angular/material';
 import { CompleterData, CompleterService, CompleterItem } from 'ng2-completer';
-import { Observable } from 'rxjs';
-import { Row } from 'ngx-smart-table/lib/data-set/row';
-import { DatePipe } from '@angular/common';
 import { RolUsuario_t as Rol, PermisoUsuario_t as Permiso } from '../../../@core/data/models/roles/rol_usuario';
-import { UserService } from '../../../@core/data/users.service';
+import { Subgrupo } from '../../../@core/data/models/catalogo/jerarquia';
+import { Detalle } from '../../../@core/data/models/catalogo/detalle';
 
 @Component({
   selector: 'ngx-capturar-elementos',
@@ -35,12 +28,7 @@ import { UserService } from '../../../@core/data/users.service';
   styleUrls: ['./capturar-elementos.component.scss'],
 })
 export class CapturarElementosComponent implements OnInit {
-  ControlClases = new FormControl();
-  filteredOptions: Observable<string[]>;
-  fileString: string | ArrayBuffer;
-  arrayBuffer: Iterable<number>;
   form: FormGroup;
-  buffer: Uint8Array;
   Validador: boolean = false;
   Totales: DatosLocales;
   loading: boolean = false;
@@ -54,28 +42,24 @@ export class CapturarElementosComponent implements OnInit {
   dataSource: MatTableDataSource<any>;
   dataSource2: MatTableDataSource<any>;
 
-  @Input() DatosRecibidos: any;
+  @Input() ActaRecibidoId: number;
+  @Input() Modo: string = 'agregar';
   @Output() DatosEnviados = new EventEmitter();
   @Output() DatosTotales = new EventEmitter();
   @Output() ElementosValidos = new EventEmitter<boolean>();
 
-  private lists: IAppState;
   respuesta: any;
-  Tipos_Bien: any;
   Unidades: any;
   Tarifas_Iva: any;
   nombreArchivo: any;
-  Consumo: any;
-  ConsumoControlado: any;
-  Devolutivo: any;
   Clases: any;
-  Codigo: any;
   displayedColumns: any[];
   checkTodos: boolean = false;
   checkParcial: boolean = false;
   ocultarAsignacionCatalogo: boolean;
   ErroresCarga: string = '';
   cargando: boolean = true;
+  elementos: Array<ElementoActa>;
 
   constructor(
     private fb: FormBuilder,
@@ -83,11 +67,7 @@ export class CapturarElementosComponent implements OnInit {
     private actaRecibidoHelper: ActaRecibidoHelper,
     private store: Store<IAppState>,
     private listService: ListService,
-    private nuxeoService: NuxeoService,
     private confService: ConfiguracionService,
-    private documentoService: DocumentoService,
-    private catalogoHelper: CatalogoElementosHelper,
-    private userService: UserService,
     private completerService: CompleterService,
   ) {
     this.Totales = new DatosLocales();

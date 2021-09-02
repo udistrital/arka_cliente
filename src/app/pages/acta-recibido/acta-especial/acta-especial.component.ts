@@ -1,31 +1,21 @@
-import { AuthInterceptor } from './../../../@core/_Interceptor/auth.Interceptor';
-import { Formulario } from './../edicion-acta-recibido/datos_locales';
 import { Component, OnInit, ViewChild, ViewChildren, QueryList } from '@angular/core';
-import { Subscription, combineLatest, Observable } from 'rxjs';
-import { Router, ActivatedRoute } from '@angular/router';
-import { FormBuilder, FormGroup, Validators, FormControl, FormArray } from '@angular/forms';
+import { Subscription } from 'rxjs';
+import { Router} from '@angular/router';
+import { FormBuilder, FormGroup, Validators, FormControl, FormArray, ValidatorFn, ValidationErrors } from '@angular/forms';
 import { NuxeoService } from '../../../@core/utils/nuxeo.service';
 import { MatTable } from '@angular/material';
 import 'hammerjs';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
 import { ActaRecibido } from '../../../@core/data/models/acta_recibido/acta_recibido';
-import { Elemento, Impuesto } from '../../../@core/data/models/acta_recibido/elemento';
+import { Elemento } from '../../../@core/data/models/acta_recibido/elemento';
 import { TipoBien } from '../../../@core/data/models/acta_recibido/tipo_bien';
-import { SoporteActa, Ubicacion } from '../../../@core/data/models/acta_recibido/soporte_acta';
-import { ActaRecibidoUbicacion } from '../../../@core/data/models/acta_recibido/acta_recibido';
-
-import { Proveedor } from '../../../@core/data/models/acta_recibido/Proveedor';
+import { SoporteActa } from '../../../@core/data/models/acta_recibido/soporte_acta';
 import { EstadoActa_t } from '../../../@core/data/models/acta_recibido/estado_acta';
-import { EstadoElemento } from '../../../@core/data/models/acta_recibido/estado_elemento';
 import { HistoricoActa } from '../../../@core/data/models/acta_recibido/historico_acta';
-import { TransaccionSoporteActa, TransaccionActaRecibido } from '../../../@core/data/models/acta_recibido/transaccion_acta_recibido';
+import { TransaccionActaRecibido } from '../../../@core/data/models/acta_recibido/transaccion_acta_recibido';
 import Swal from 'sweetalert2';
-import { ToasterService, ToasterConfig, Toast, BodyOutputType } from 'angular2-toaster';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
-import { Unidad } from '../../../@core/data/models/acta_recibido/unidades';
 import { CompleterService, CompleterData } from 'ng2-completer';
-import { HttpLoaderFactory } from '../../../app.module';
-import { analyzeAndValidateNgModules } from '@angular/compiler';
 import { Store } from '@ngrx/store';
 import { IAppState } from '../../../@core/store/app.state';
 import { ListService } from '../../../@core/store/services/list.service';
@@ -34,11 +24,10 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { DocumentoService } from '../../../@core/data/documento.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { UserService } from '../../../@core/data/users.service';
-import { Console } from 'console';
-import { INVALID } from '@angular/forms/src/model';
-import { NbDateService } from '@nebular/theme';
+import { AbstractControl } from '@angular/forms/src/model';
 import { RolUsuario_t as Rol, PermisoUsuario_t as Permiso } from '../../../@core/data/models/roles/rol_usuario';
 import { isObject } from 'rxjs/internal-compatibility';
+import { TipoActa } from '../../../@core/data/models/acta_recibido/tipo_acta';
 
 @Component({
   selector: 'ngx-acta-especial',
@@ -48,12 +37,6 @@ import { isObject } from 'rxjs/internal-compatibility';
 
 export class ActaEspecialComponent implements OnInit {
 
-  config: ToasterConfig;
-  searchStr: string;
-  searchStr2: Array<string>;
-  searchStr3: string;
-  protected dataService: CompleterData;
-  protected dataService2: CompleterData;
   protected dataService3: CompleterData;
 
   // Mensajes de error
@@ -73,35 +56,22 @@ export class ActaEspecialComponent implements OnInit {
   // Tablas parametricas
 
   Estados_Acta: any;
-  Tipos_Bien: any;
   Estados_Elemento: any;
 
   // Modelos
-  Acta: ActaRecibido;
-  Elementos__Soporte: Array<any>;
-  Soportes_Acta: Array<SoporteActa>;
-  Historico_Acta: HistoricoActa;
-  Proveedores: any;
-  Ubicaciones: any;
   UbicacionesFiltradas: any;
   Sedes: any;
   Dependencias: any;
   DatosTotales: any;
-  Totales: Array<any>;
   fileDocumento: any[];
   uidDocumento: any;
   idDocumento: number[];
-  validador: boolean;
-  validador_soporte: number;
   Nombre: any;
   Validador: any;
   TodaysDate: any;
   DatosElementos: Array<any>;
   Registrando: Boolean;
-  Unidades: any;
-
-  private SoporteElementosValidos: Array<boolean>;
-  private elementosValidos: boolean = false;
+  private validarElementos: boolean;
 
   permisos: {
     Acta: Permiso,
@@ -114,10 +84,8 @@ export class ActaEspecialComponent implements OnInit {
   constructor(
     private translate: TranslateService,
     private router: Router,
-    private route: ActivatedRoute,
     private fb: FormBuilder,
     private Actas_Recibido: ActaRecibidoHelper,
-    private toasterService: ToasterService,
     private completerService: CompleterService,
     private store: Store<IAppState>,
     private listService: ListService,
@@ -126,13 +94,11 @@ export class ActaEspecialComponent implements OnInit {
     private nuxeoService: NuxeoService,
     private documentoService: DocumentoService,
     private userService: UserService,
-    private dateService: NbDateService<Date>,
   ) {
     this.fileDocumento = [];
     this.Validador = [];
     this.uidDocumento = [];
     this.idDocumento = [];
-    this.Elementos__Soporte = new Array<any>();
     this.errores = new Map<string, boolean>();
   }
 

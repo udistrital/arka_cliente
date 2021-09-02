@@ -4,41 +4,34 @@ import { map, startWith } from 'rxjs/operators';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, FormControl, FormArray, ValidatorFn, AbstractControl, ValidationErrors } from '@angular/forms';
 import { NuxeoService } from '../../../@core/utils/nuxeo.service';
-import { AuthInterceptor } from './../../../@core/_Interceptor/auth.Interceptor';
 import { MatTable } from '@angular/material';
 import 'hammerjs';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
 import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
 import { ActaRecibido } from '../../../@core/data/models/acta_recibido/acta_recibido';
-import { Elemento, Impuesto } from '../../../@core/data/models/acta_recibido/elemento';
-import { TipoBien } from '../../../@core/data/models/acta_recibido/tipo_bien';
-import { SoporteActa, Ubicacion } from '../../../@core/data/models/acta_recibido/soporte_acta';
-import { Proveedor } from '../../../@core/data/models/acta_recibido/Proveedor';
+import { Elemento } from '../../../@core/data/models/acta_recibido/elemento';
+import { SoporteActa } from '../../../@core/data/models/acta_recibido/soporte_acta';
 import { EstadoActa_t } from '../../../@core/data/models/acta_recibido/estado_acta';
-import { EstadoElemento } from '../../../@core/data/models/acta_recibido/estado_elemento';
 import { HistoricoActa } from '../../../@core/data/models/acta_recibido/historico_acta';
-import { TransaccionSoporteActa, TransaccionActaRecibido } from '../../../@core/data/models/acta_recibido/transaccion_acta_recibido';
+import { TransaccionActaRecibido } from '../../../@core/data/models/acta_recibido/transaccion_acta_recibido';
 import { TerceroCriterioContratista, TerceroCriterioProveedor } from '../../../@core/data/models/terceros_criterio';
 import Swal from 'sweetalert2';
-import { ToasterService, ToasterConfig, Toast, BodyOutputType } from 'angular2-toaster';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
-import { Unidad } from '../../../@core/data/models/acta_recibido/unidades';
 import { CompleterData, CompleterService } from 'ng2-completer';
 import { Store } from '@ngrx/store';
 import { IAppState } from '../../../@core/store/app.state';
 import { ListService } from '../../../@core/store/services/list.service';
-import { combineAll } from 'rxjs-compat/operator/combineAll';
 import { SafeResourceUrl, DomSanitizer } from '@angular/platform-browser';
 import { PopUpManager } from '../../../managers/popUpManager';
 import { ConfiguracionService } from '../../../@core/data/configuracion.service';
 import { DocumentoService } from '../../../@core/data/documento.service';
-import { analyzeAndValidateNgModules } from '@angular/compiler';
 import { HttpErrorResponse } from '@angular/common/http';
 import { UserService } from '../../../@core/data/users.service';
 import { RolUsuario_t as Rol, PermisoUsuario_t as Permiso } from '../../../@core/data/models/roles/rol_usuario';
 import { permisosSeccionesActas } from './reglas';
-import { NbDateService } from '@nebular/theme';
 import { isObject } from 'rxjs/internal-compatibility';
+import { TipoActa } from '../../../@core/data/models/acta_recibido/tipo_acta';
+import { EstadoElemento } from '../../../@core/data/models/acta_recibido/estado_elemento';
 
 @Component({
   selector: 'ngx-edicion-acta-recibido',
@@ -47,11 +40,9 @@ import { isObject } from 'rxjs/internal-compatibility';
 })
 export class EdicionActaRecibidoComponent implements OnInit {
 
-  config: ToasterConfig;
   searchStr: string;
   searchStr2: string[];
   searchStr3: string;
-  cargandoTerceros: boolean = true;
   private Contratistas: TerceroCriterioContratista[];
   contratistasFiltrados: Observable<TerceroCriterioContratista[]>;
   private Proveedores: Partial<TerceroCriterioProveedor>[];
@@ -77,7 +68,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
   Validador: any[] = [];
   uidDocumento: any[] = [];
   idDocumento: any[] = [];
-  ActaEspecial: boolean;
 
   // Tablas parametricas
 
@@ -91,38 +81,28 @@ export class EdicionActaRecibidoComponent implements OnInit {
 
   }
 
+
   @Input('estado') estadoActa: string;
   actaRegistrada: boolean;
   Estados_Acta: any;
-  Tipos_Bien: any;
   Estados_Elemento: any;
 
   // Modelos
 
-  Acta__: ActaRecibido;
-  Elementos__Soporte: Array<any[]>;
-  Soportes_Acta: Array<SoporteActa>;
-  Historico_Acta: HistoricoActa;
-  Transaccion__: TransaccionActaRecibido;
-  Unidades: any;
   DatosElementos: Array<any>;
-  Acta: ActaRecibido;
   TodaysDate: any;
-  observable: any;
-
-  Ubicaciones: any;
   UbicacionesFiltradas: any;
   Sedes: any;
   Dependencias: any;
   DatosTotales: any;
-  Totales: Array<any>;
   dataService3: CompleterData;
-  Tarifas_Iva: any;
   guardando: boolean = false;
+  sedeDependencia: any;
   private actaCargada: boolean = false;
   private SoporteElementosValidos: Array<boolean>;
   private elementosValidos: boolean = false;
   private validarElementos: boolean;
+  Acta: TransaccionActaRecibido;
 
   permisos: {
     Acta: Permiso,
@@ -151,7 +131,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
     private fb: FormBuilder,
     private Actas_Recibido: ActaRecibidoHelper,
     private tercerosHelper: TercerosHelper,
-    private toasterService: ToasterService,
     private completerService: CompleterService,
     private store: Store<IAppState>,
     private confService: ConfiguracionService,
@@ -161,7 +140,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
     private nuxeoService: NuxeoService,
     private documentoService: DocumentoService,
     private userService: UserService,
-    private dateService: NbDateService<Date>,
   ) {
     this.Contratistas = [];
     this.Proveedores = [];
@@ -172,7 +150,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
     this.idDocumento = [];
     this.searchStr2 = new Array<string>();
     this.DatosElementos = new Array<any>();
-    this.Elementos__Soporte = new Array<any>();
     this.TodaysDate = new Date();
   }
 
