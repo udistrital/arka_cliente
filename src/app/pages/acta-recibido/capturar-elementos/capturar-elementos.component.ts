@@ -197,26 +197,32 @@ export class CapturarElementosComponent implements OnInit {
   }
 
   onSelectedClase(selected: CompleterItem, fila: number) {
-    if (selected) {
-    this.dataSource.data[fila].CodigoSubgrupo = selected.originalObject.SubgrupoId.Codigo;
-    this.dataSource.data[fila].TipoBienId = selected.originalObject.TipoBienId.Id;
-    this.dataSource.data[fila].SubgrupoCatalogoId = selected.originalObject.SubgrupoId.Id;
-    this.dataSource.data[fila].TipoBienNombre = selected.originalObject.TipoBienId.Nombre;
-    } else {
-      this.dataSource.data[fila].CodigoSubgrupo = '';
-      this.dataSource.data[fila].TipoBienId = '';
-      this.dataSource.data[fila].SubgrupoCatalogoId = '';
-      this.dataSource.data[fila].TipoBienNombre = '';
+    if (selected && selected.originalObject) {
+      this.updateClase(selected, fila);
     }
   }
 
-  onBlurClase(idx: number) {
-    if (!this.dataSource.data[idx].NombreClase) {
-      this.dataSource.data[idx].CodigoSubgrupo = '';
-      this.dataSource.data[idx].TipoBienId = '';
-      this.dataSource.data[idx].SubgrupoCatalogoId = '';
-      this.dataSource.data[idx].TipoBienNombre = '';
+  updateClase(selected: CompleterItem, fila: number) {
+    if (selected && selected.originalObject) {
+      const subgrupo = new Detalle;
+      subgrupo.SubgrupoId = new Subgrupo;
+      subgrupo.SubgrupoId = selected.originalObject.SubgrupoId;
+      subgrupo.TipoBienId = selected.originalObject.TipoBienId;
+
+      this.dataSource.data[fila].SubgrupoCatalogoId = subgrupo;
     }
+    this.ver();
+  }
+
+  onBlurClase(idx: number) {
+    if (!this.dataSource.data[idx].SubgrupoCatalogoId.SubgrupoId.Nombre) {
+      const subgrupo = new Detalle;
+      subgrupo.SubgrupoId = new Subgrupo;
+      subgrupo.TipoBienId = new TipoBien;
+
+      this.dataSource.data[idx].SubgrupoCatalogoId = subgrupo;
+    }
+    this.ver();
   }
 
   // TODO: De ser necesario, agregar otras validaciones asociadas
@@ -497,34 +503,6 @@ export class CapturarElementosComponent implements OnInit {
     }
   }
 
-  getClasesElementos() {
-    if (this.Clases && this.Clases.length) {
-      this.dataSource.data.map((elemento) => {
-        elemento.TipoBienNombre = elemento.TipoBienId !== 0 ? (() => {
-          const criterio = x => x && x.Id === elemento.TipoBienId;
-          if (this.Tipos_Bien.some(criterio)) {
-            return this.Tipos_Bien.find(criterio).Nombre;
-          }
-          return '';
-        })() : '';
-        elemento.CodigoSubgrupo = elemento.TipoBienId !== 0 ? (() => {
-          const criterio = x => x && x.SubgrupoId.Id === elemento.SubgrupoCatalogoId;
-          if (this.Clases.some(criterio)) {
-            return this.Clases.find(criterio).SubgrupoId.Codigo;
-          }
-          return '';
-        })() : '';
-        elemento.NombreClase = elemento.TipoBienId !== 0 ? (() => {
-          const criterio = x => x.SubgrupoId.Id === elemento.SubgrupoCatalogoId;
-          if (this.Clases.some(criterio)) {
-            return this.Clases.find((x) => x.SubgrupoId.Id === elemento.SubgrupoCatalogoId).SubgrupoId.Nombre;
-          }
-          return '';
-        })() : '';
-      });
-    }
-  }
-
   getTotales() {
     if (this.dataSource.data.length !== 0) {
       this.Totales.ValorTotal = this.dataSource.data.map(t => t.ValorTotal).reduce((acc, value) => parseFloat(acc) + parseFloat(value));
@@ -647,16 +625,16 @@ export class CapturarElementosComponent implements OnInit {
     }
   }
 
-  onClase(selected: CompleterItem) {
-    const seleccionados = this.getSeleccionados();
-    seleccionados.forEach((index) => {
-      this.dataSource.data[index].CodigoSubgrupo = selected.originalObject.SubgrupoId.Codigo;
-      this.dataSource.data[index].TipoBienId = selected.originalObject.TipoBienId.Id;
-      this.dataSource.data[index].SubgrupoCatalogoId = selected.originalObject.SubgrupoId.Id;
-      this.dataSource.data[index].TipoBienNombre = selected.originalObject.TipoBienId.Nombre;
-      this.dataSource.data[index].NombreClase = selected.originalObject.SubgrupoId.Nombre;
-      this.dataSource.data[index].seleccionado = false;
-    });
+  onClaseMultiple(selected: CompleterItem) {
+    if (selected && selected.originalObject) {
+      const subgrupo = new Detalle;
+      const seleccionados = this.getSeleccionados();
+
+      this.cambioCheckTodos(false);
+      subgrupo.SubgrupoId = selected.originalObject.SubgrupoId;
+      subgrupo.TipoBienId = selected.originalObject.TipoBienId;
+      seleccionados.forEach((index) => { this.updateClase(selected, index); });
+    }
     this.ver();
   }
 
