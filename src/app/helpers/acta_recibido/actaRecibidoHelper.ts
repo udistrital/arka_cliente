@@ -156,6 +156,22 @@ export class ActaRecibidoHelper {
         );
     }
 
+    public getAllActasRecibidoByEstado(estados: [string]) {
+        const querySt = estados.join();
+        this.rqManager.setPath('ARKA_SERVICE');
+        return this.rqManager.get('acta_recibido/get_all_actas?states=' + querySt).pipe(
+            map(
+                (res) => {
+                    if (res === 'error') {
+                        this.pUpManager.showErrorAlert('No se pudo consultar las actas de recibido');
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
+
     /**
      * Elementos Acta Get
      * If the response has errors in the OAS API it should show a popup message with an error.
@@ -185,8 +201,8 @@ export class ActaRecibidoHelper {
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
      */
     public getSoporte(actaId) {
-        this.rqManager.setPath('ARKA_SERVICE');
-        return this.rqManager.get('acta_recibido/get_soportes_acta/' + actaId).pipe(
+        this.rqManager.setPath('ACTA_RECIBIDO_SERVICE');
+        return this.rqManager.get('acta_recibido/soporte_acta?query=Activo:True,ActaRecibidoId__Id:' + actaId).pipe(
             map(
                 (res) => {
                     if (res === 'error') {
@@ -281,9 +297,10 @@ export class ActaRecibidoHelper {
      * If the response is successs, it returns the object's data.
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
      */
-    public getTransaccionActa(actaId) {
+    public getTransaccionActa(actaId, elementos) {
+        const query = !elementos ? '?elementos=false' : '';
         this.rqManager.setPath('ACTA_RECIBIDO_SERVICE');
-        return this.rqManager.get('transaccion_acta_recibido/' + actaId + '').pipe(
+        return this.rqManager.get('transaccion_acta_recibido/' + actaId + query).pipe(
             map(
                 (res) => {
                     if (res === 'error') {
