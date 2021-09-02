@@ -290,23 +290,16 @@ export class ActaEspecialComponent implements OnInit {
   }
 
   async onFirstSubmit() {
-    this.Registrando = true;
-    const start = async () => {
-      await this.asyncForEach(this.fileDocumento, async (file) => {
-        await this.postSoporteNuxeo([file]);
-      });
-    };
-    await start();
-    this.Datos = this.firstForm.value;
+    const Soportes = new Array<SoporteActa>();
     const Transaccion_Acta = new TransaccionActaRecibido();
-    Transaccion_Acta.ActaRecibido = this.Registrar_Acta(this.Datos);
-    Transaccion_Acta.UltimoEstado = this.Registrar_Estado_Acta(Transaccion_Acta.ActaRecibido, EstadoActa_t.Aceptada);
-    const Soportes = new Array<TransaccionSoporteActa>();
-    this.Datos.Formulario2.forEach((soporte, index) => {
-      Soportes.push(this.Registrar_Soporte(soporte, this.Elementos__Soporte[index], Transaccion_Acta.ActaRecibido));
 
-    });
+    this.Datos = this.firstForm.value;
+    Transaccion_Acta.ActaRecibido = this.generarActa();
+    Transaccion_Acta.UltimoEstado = this.generarEstadoActa(this.Datos.Formulario1, this.Datos.Formulario3, EstadoActa_t.Aceptada);
+    this.Datos.Formulario2.forEach((soporte, index) => { Soportes.push(this.generarSoporte(soporte, index)); });
+    Transaccion_Acta.Elementos = this.generarElementos();
     Transaccion_Acta.SoportesActa = Soportes;
+
     this.Actas_Recibido.postTransaccionActa(Transaccion_Acta).subscribe((res: any) => {
       if (res !== null) {
         (Swal as any).fire({
@@ -327,86 +320,79 @@ export class ActaEspecialComponent implements OnInit {
     });
   }
 
-  Registrar_Acta(Datos: any): ActaRecibido {
-    const Acta_de_Recibido = new ActaRecibido();
-    Acta_de_Recibido.Id = null;
-    Acta_de_Recibido.Activo = true;
-    Acta_de_Recibido.FechaCreacion = new Date();
-    Acta_de_Recibido.FechaModificacion = new Date();
-    Acta_de_Recibido.FechaVistoBueno =  new Date();
-    Acta_de_Recibido.RevisorId = this.userService.getPersonaId();
-    Acta_de_Recibido.UbicacionId = parseFloat(Datos.Formulario1.Ubicacion);
-    Acta_de_Recibido.Observaciones = Datos.Formulario3.Datos_Adicionales;
+  private generarActa(): ActaRecibido {
 
-    return Acta_de_Recibido;
+    const actaRecibido = new ActaRecibido;
+    actaRecibido.Id = null;
+    actaRecibido.Activo = true;
+    actaRecibido.TipoActaId = <TipoActa>{ Id: 2 };
+
+    return actaRecibido;
   }
 
-  Registrar_Estado_Acta(Acta: ActaRecibido, Estado: number): HistoricoActa {
+  private generarEstadoActa(form1: any, form3: any, Estado: number): HistoricoActa {
 
-    const Historico_ = new HistoricoActa();
+    const historico = new HistoricoActa;
 
-    Historico_.Id = null;
-    Historico_.ActaRecibidoId = Acta;
-    Historico_.Activo = true;
-    Historico_.EstadoActaId = this.Estados_Acta.find(estado => estado.Id === Estado);
-    Historico_.FechaCreacion = new Date();
-    Historico_.FechaModificacion = new Date();
+    historico.Id = null;
+    historico.ProveedorId = null;
+    historico.UbicacionId = form1.Ubicacion;
+    historico.RevisorId = this.userService.getPersonaId();
+    historico.PersonaAsignadaId =  this.userService.getPersonaId();
+    historico.Observaciones = null;
+    historico.FechaVistoBueno = new Date();
+    historico.ActaRecibidoId = new ActaRecibido;
+    historico.EstadoActaId = this.Estados_Acta.find(estado => estado.Id === Estado);
+    historico.Activo = true;
 
-    return Historico_;
+    return historico;
   }
 
-  Registrar_Soporte(Datos: any, Elementos_: any, __: ActaRecibido): TransaccionSoporteActa {
-    const Soporte_Acta = new SoporteActa();
-    const Transaccion = new TransaccionSoporteActa();
-    Soporte_Acta.Id = null;
-    Soporte_Acta.ActaRecibidoId = __;
-    Soporte_Acta.Activo = true;
-    Soporte_Acta.Consecutivo = '';
-    Soporte_Acta.FechaCreacion = new Date();
-    Soporte_Acta.FechaModificacion = new Date();
-    Soporte_Acta.FechaSoporte = null;
-    Soporte_Acta.ProveedorId = 0;
-    Soporte_Acta.DocumentoId = this.idDocumento[0];
-    Transaccion.SoporteActa = Soporte_Acta;
-    Transaccion.Elementos = this.Registrar_Elementos(Elementos_, Soporte_Acta);
-    return Transaccion;
+  private generarSoporte(form2: any, index: number): SoporteActa {
+
+    const soporteActa = new SoporteActa;
+
+    soporteActa.Id = null;
+    soporteActa.Consecutivo = form2.Consecutivo;
+    soporteActa.DocumentoId = 2400; // this.idDocumento[index];
+    soporteActa.FechaSoporte = null;
+    soporteActa.ActaRecibidoId = new ActaRecibido;
+    soporteActa.Activo = true;
+
+    return soporteActa;
   }
 
-  Registrar_Elementos(Datos: any, Soporte: SoporteActa): Array<Elemento> {
-    const Elementos_Soporte = new Array<Elemento>();
-    for (const datos of Datos) {
+  private generarElementos(): Array<Elemento> {
+    const elementosActa = new Array<Elemento>();
 
-      const Elemento__ = new Elemento;
-      const valorTotal = (parseFloat(this.Pipe2Number(datos.Subtotal)) - parseFloat(this.Pipe2Number(datos.Descuento)));
+    if (this.DatosElementos && this.DatosElementos.length > 0) {
 
-      Elemento__.Id = parseFloat(Datos.Id);
-      Elemento__.Nombre = datos.Nombre;
-      Elemento__.Cantidad = parseFloat(this.Pipe2Number(datos.Cantidad));
-      Elemento__.Marca = datos.Marca;
-      Elemento__.Serie = datos.Serie;
-      Elemento__.UnidadMedida = this.Unidades.find(unidad => unidad.Id === parseFloat(datos.UnidadMedida)).Id;
-      Elemento__.ValorUnitario = parseFloat(this.Pipe2Number(datos.ValorUnitario));
-      Elemento__.Subtotal = parseFloat(this.Pipe2Number(datos.Subtotal));
-      Elemento__.Descuento = parseFloat(this.Pipe2Number(datos.Descuento));
-      Elemento__.ValorTotal = valorTotal;
-      Elemento__.PorcentajeIvaId = parseFloat(datos.PorcentajeIvaId);
-      Elemento__.ValorIva = parseFloat(this.Pipe2Number(datos.ValorIva));
-      Elemento__.ValorFinal = parseFloat(this.Pipe2Number(datos.ValorTotal));
-      Elemento__.SubgrupoCatalogoId = parseFloat(datos.SubgrupoCatalogoId);
-      Elemento__.Verificado = false;
-      Elemento__.TipoBienId = this.Tipos_Bien.find(bien => bien.Id === parseFloat(datos.TipoBienId));
-      Elemento__.EstadoElementoId = this.Estados_Acta.find(estado => estado.Id === 1);
-      Elemento__.SoporteActaId = Soporte;
-      Elemento__.Activo = true;
-      Elemento__.FechaCreacion = new Date();
-      Elemento__.FechaModificacion = new Date();
-      Elementos_Soporte.push(Elemento__);
+      for (const datos of this.DatosElementos) {
+
+        const elemento = new Elemento;
+        const valorTotal = parseFloat(datos.Subtotal) - parseFloat(datos.Descuento);
+
+        elemento.Id = null;
+        elemento.Nombre = datos.Nombre;
+        elemento.Cantidad = parseInt(datos.Cantidad, 10);
+        elemento.Marca = datos.Marca;
+        elemento.Serie = datos.Serie;
+        elemento.UnidadMedida = parseInt(datos.UnidadMedida, 10);
+        elemento.ValorUnitario = parseFloat(datos.ValorUnitario);
+        elemento.Subtotal = parseFloat(datos.Subtotal);
+        elemento.Descuento = parseFloat(datos.Descuento);
+        elemento.ValorTotal = valorTotal;
+        elemento.PorcentajeIvaId = parseInt(datos.PorcentajeIvaId, 10);
+        elemento.ValorIva = parseFloat(datos.ValorIva);
+        elemento.ValorFinal = parseFloat(datos.ValorTotal);
+        elemento.SubgrupoCatalogoId = datos.SubgrupoCatalogoId.SubgrupoId.Id;
+        elemento.EstadoElementoId = this.Estados_Acta.find(estado => estado.Id === 2);
+        elemento.ActaRecibidoId = new ActaRecibido;
+        elemento.Activo = true;
+        elementosActa.push(elemento);
+      }
     }
-    return Elementos_Soporte;
-  }
-
-  Pipe2Number(any: string) {
-    return any;
+    return elementosActa;
   }
 
   // Posible TODO: Esta función también se repite en los componentes

@@ -368,21 +368,23 @@ export class VerificacionActaRecibidoComponent implements OnInit {
   }
 
   private onFirstSubmit(aceptar: boolean = false) {
+
     this.Datos = this.firstForm.value;
     this.Datos.Formulario3 = this.firstForm.get('Formulario3').get('Datos_Adicionales').value;
-    const Transaccion_Acta = new TransaccionActaRecibido();
-    Transaccion_Acta.ActaRecibido = this.Registrar_Acta(this.Datos.Formulario1, this.Datos.Formulario3);
+    const transaccionActa = new TransaccionActaRecibido();
+    transaccionActa.ActaRecibido = this.generarActa();
     const nuevoEstado = aceptar ? EstadoActa_t.Aceptada : EstadoActa_t.EnModificacion;
-    Transaccion_Acta.UltimoEstado = this.Registrar_Estado_Acta(Transaccion_Acta.ActaRecibido, nuevoEstado);
+    transaccionActa.UltimoEstado = this.generarEstadoActa(this.Datos.Formulario1, this.Datos.Formulario3, nuevoEstado, aceptar);
 
-    const Soportes = new Array<TransaccionSoporteActa>();
-    for (const soporte of this.Datos.Formulario2) {
-      Soportes.push(this.Registrar_Soporte(soporte, soporte.Elementos, Transaccion_Acta.ActaRecibido));
-    }
-    Transaccion_Acta.SoportesActa = Soportes;
+    const Soportes = new Array<SoporteActa>();
+    this.Datos.Formulario2.forEach((soporte, index) => { Soportes.push(this.generarSoporte(soporte, index)); });
 
-    // console.log({Transaccion_Acta});
-    this.Actas_Recibido.putTransaccionActa(Transaccion_Acta, Transaccion_Acta.ActaRecibido.Id).subscribe((res: any) => {
+    transaccionActa.SoportesActa = Soportes;
+    transaccionActa.Elementos = <Elemento[]>[];
+
+    transaccionActa.Elementos = this.generarElementos(aceptar);
+
+    this.Actas_Recibido.putTransaccionActa(transaccionActa, transaccionActa.ActaRecibido.Id).subscribe((res: any) => {
       const base_i18n = 'GLOBAL.Acta_Recibido.VerificacionActa.';
       let title: string;
       let text: string;
@@ -408,107 +410,85 @@ export class VerificacionActaRecibidoComponent implements OnInit {
     });
   }
 
-  Registrar_Acta(Datos: any, Datos2: any): ActaRecibido {
-    // console.log({Datos, Datos2});
+  private generarActa(): ActaRecibido {
 
-    const Acta_de_Recibido = new ActaRecibido();
+    const actaRecibido = new ActaRecibido;
 
-    Acta_de_Recibido.Id = parseFloat(Datos.Id);
-    Acta_de_Recibido.Activo = true;
-    Acta_de_Recibido.FechaCreacion = new Date();
-    Acta_de_Recibido.FechaModificacion = new Date();
-    Acta_de_Recibido.FechaVistoBueno = new Date();
-    Acta_de_Recibido.RevisorId = this.userService.getPersonaId();
-    Acta_de_Recibido.UbicacionId = this.Ubicaciones.find(ubicacion => ubicacion.Nombre === Datos.Ubicacion).Id;
-    Acta_de_Recibido.Observaciones = Datos2.Datos_Adicionales;
-    Acta_de_Recibido.PersonaAsignada = Datos.Contratista;
+    actaRecibido.Id = +this._ActaId;
+    actaRecibido.Activo = true;
+    actaRecibido.TipoActaId = <TipoActa>{ Id: this.Acta.ActaRecibido.TipoActaId.Id };
 
-    return Acta_de_Recibido;
+    return actaRecibido;
   }
-  Registrar_Estado_Acta(__: ActaRecibido, Estado: number): HistoricoActa {
 
-    const Historico_ = new HistoricoActa();
-    Historico_.Id = null;
-    Historico_.ActaRecibidoId = __;
-    Historico_.Activo = true;
-    Historico_.EstadoActaId = this.Estados_Acta.find(estado => estado.Id === Estado);
-    Historico_.FechaCreacion = new Date();
-    Historico_.FechaModificacion = new Date();
 
-    return Historico_;
+  private generarEstadoActa(form1: any, form3: any, Estado: number, aceptar: boolean): HistoricoActa {
+
+    const historico = new HistoricoActa();
+    historico.Id = null;
+    historico.ProveedorId = form1.Proveedor ? this.Proveedores.find(prov => this.muestraProveedor(prov) === form1.Proveedor).Tercero.Id : null;
+    historico.UbicacionId = form1.Ubicacion ? this.Ubicaciones.find(ubc => ubc.EspacioFisicoId.Nombre === form1.Ubicacion).Id : 0;
+    historico.PersonaAsignadaId = form1.Contratista ?
+      this.Contratistas.find(contr => this.muestraContratista(contr) === form1.Contratista).Tercero.Id : 0;
+    historico.RevisorId = this.userService.getPersonaId();
+    historico.Observaciones = form3;
+    historico.FechaVistoBueno = aceptar ? new Date() : null;
+    historico.ActaRecibidoId = <ActaRecibido>{ Id: +this._ActaId };
+    historico.EstadoActaId = this.Estados_Acta.find(estado => estado.Id === Estado);
+    historico.Activo = true;
+
+    return historico;
   }
-  Registrar_Soporte(Datos: any, Elementos_: any, __: ActaRecibido): TransaccionSoporteActa {
-    // console.log({Datos, Elementos_, __});
 
-    const Soporte_Acta = new SoporteActa();
-    const Transaccion = new TransaccionSoporteActa();
-    Soporte_Acta.Id = parseFloat(Datos.Id);
-    Soporte_Acta.ActaRecibidoId = __;
-    Soporte_Acta.Activo = true;
-    Soporte_Acta.Consecutivo = Datos.Consecutivo;
-    Soporte_Acta.FechaCreacion = new Date();
-    Soporte_Acta.FechaModificacion = new Date();
-    Soporte_Acta.FechaSoporte = Datos.Fecha_Factura;
-    Soporte_Acta.ProveedorId = Datos.Proveedor ? this.Proveedores.find(prov => this.muestraProveedor(prov) === Datos.Proveedor).Tercero.Id : 0;
-    Transaccion.SoporteActa = Soporte_Acta;
-    Transaccion.Elementos = this.Registrar_Elementos(Elementos_, Soporte_Acta);
+  private generarSoporte(form2: any, index: any): SoporteActa {
 
-    return Transaccion;
+    const soporteActa = new SoporteActa();
+
+    soporteActa.Id = form2.Id;
+    soporteActa.Consecutivo = form2.Consecutivo;
+    soporteActa.DocumentoId = 2400; // this.idDocumento[index];
+    soporteActa.FechaSoporte = form2.Fecha_Factura ? form2.Fecha_Factura : null;
+    soporteActa.ActaRecibidoId = <ActaRecibido>{ Id: +this._ActaId };
+    soporteActa.Activo = true;
+
+    return soporteActa;
   }
-  Registrar_Elementos(Datos: any, Soporte: SoporteActa): Array<Elemento> {
-    const _ = new Array<Elemento>();
 
-    for (const datos of Datos) {
+  private generarElementos(aceptar: boolean): Array<Elemento> {
 
-      const Elemento__ = new Elemento;
-      const valorTotal = (parseFloat(this.Pipe2Number(datos.Subtotal)) - parseFloat(this.Pipe2Number(datos.Descuento)));
-      const aux = this.Tarifas_Iva.find(tarifa => tarifa.Nombre === datos.PorcentajeIvaId);
+    const elementosActa = new Array<Elemento>();
+    const estadoId = aceptar ? 2 : 1;
 
-      Elemento__.Id = parseFloat(Datos.Id);
-      Elemento__.Nombre = datos.Nombre;
-      Elemento__.Cantidad = datos.Cantidad;
-      Elemento__.Marca = datos.Marca;
-      Elemento__.Serie = datos.Serie;
-      Elemento__.UnidadMedida = this.Unidades.find(unidad => unidad.Unidad.toString() === datos.UnidadMedida.toString()).Id;
-      Elemento__.ValorUnitario = parseFloat(this.Pipe2Number(datos.ValorUnitario));
-      Elemento__.Subtotal = parseFloat(this.Pipe2Number(datos.Subtotal));
-      Elemento__.Descuento = parseFloat(this.Pipe2Number(datos.Descuento));
-      Elemento__.ValorTotal = valorTotal;
-      Elemento__.PorcentajeIvaId = aux ? aux.Tarifa : 0;
-      Elemento__.ValorIva = parseFloat(this.Pipe2Number(datos.ValorIva));
-      Elemento__.ValorFinal = parseFloat(this.Pipe2Number(datos.ValorTotal));
-      Elemento__.SubgrupoCatalogoId = parseFloat(datos.SubgrupoCatalogoId);
-      Elemento__.Verificado = datos.Verificado;
-      Elemento__.TipoBienId = datos.TipoBienId ? this.Tipos_Bien.find(bien => bien.Nombre.toString() === datos.TipoBienId.toString()) : undefined;
-      Elemento__.EstadoElementoId = this.Estados_Acta.find(estado => estado.Id === 2);
-      Elemento__.SoporteActaId = Soporte;
-      Elemento__.Activo = true;
-      Elemento__.FechaCreacion = new Date();
-      Elemento__.FechaModificacion = new Date();
+    for (const datos of this.elementos.value) {
 
-      _.push(Elemento__);
+      const elemento = new Elemento;
+      const valorTotal = parseFloat(this.currency2Number(datos.Subtotal)) - parseFloat(this.currency2Number(datos.Descuento));
+
+      elemento.Id = datos.Id;
+      elemento.Nombre = datos.Nombre;
+      elemento.Cantidad = parseInt(datos.Cantidad, 10);
+      elemento.Marca = datos.Marca;
+      elemento.Serie = datos.Serie;
+      elemento.UnidadMedida = this.Unidades.find(unidad => unidad.Unidad === datos.UnidadMedida).Id,
+      elemento.ValorUnitario = parseFloat(this.currency2Number(datos.ValorUnitario));
+      elemento.Subtotal = parseFloat(this.currency2Number(datos.Subtotal));
+      elemento.Descuento = parseFloat(this.currency2Number(datos.Descuento));
+      elemento.ValorTotal = valorTotal;
+      elemento.PorcentajeIvaId = this.Tarifas_Iva.find(iva => iva.Nombre === datos.PorcentajeIvaId).Tarifa;
+      elemento.ValorIva = parseFloat(this.currency2Number(datos.ValorIva));
+      elemento.ValorFinal = parseFloat(this.currency2Number(datos.ValorTotal));
+      elemento.SubgrupoCatalogoId = +datos.SubgrupoCatalogoId.SubgrupoId.Id;
+      elemento.EstadoElementoId = <EstadoElemento>{Id: estadoId};
+      elemento.ActaRecibidoId = <ActaRecibido>{ Id: +this._ActaId };
+      elemento.Activo = true;
+
+      elementosActa.push(elemento);
 
     }
-    return _;
+    return elementosActa;
   }
 
-  displayedColumns = [
-    'TipoBienId',
-    'SubgrupoCatalogoId',
-    'Nombre',
-    'Cantidad',
-    'Marca',
-    'Serie',
-    'UnidadMedida',
-    'ValorUnitario',
-    'Subtotal',
-    'Descuento',
-    'PorcentajeIvaId',
-    'ValorIva',
-    'ValorTotal',
-    'Acciones',
-  ];
-  Pipe2Number(any: String) {
+  currency2Number(any: String) {
     if (any !== null) {
       return any.replace(/[$,]/g, '');
     } else {
