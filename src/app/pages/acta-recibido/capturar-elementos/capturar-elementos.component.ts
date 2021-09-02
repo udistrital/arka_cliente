@@ -94,83 +94,66 @@ export class CapturarElementosComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.loadLists();
+    this.listService.findUnidades();
+    this.listService.findImpuestoIVA();
+    this.listService.findClases();
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
     });
     this.createForm();
     this.ReglasColumnas();
+    this.initForms();
   }
 
-  public loadLists() {
-    this.listService.findSubgruposConsumo();
-    this.listService.findSubgruposConsumoControlado();
-    this.listService.findSubgruposDevolutivo();
-    this.listService.findEstadosElemento();
-    this.listService.findTipoBien();
-    this.listService.findUnidades();
-    this.listService.findImpuestoIVA();
-    this.listService.findClases();
 
-    this.store.select((state) => state).subscribe(
-      (list) => {
-        this.lists = list;
-        this.muestraData();
-      },
-    );
+  private async initForms() {
+    await this.loadLists();
+    this.cargarForms(await this.loadElementos());
   }
 
-  private muestraData() {
-    let clases;
-    const todoCargado = (
-      this.cargando && this.lists
-      && Array.isArray(this.lists.listConsumo) && this.lists.listConsumo[0]
-      && Array.isArray(this.lists.listConsumoControlado) && this.lists.listConsumoControlado[0]
-      && Array.isArray(this.lists.listDevolutivo) && this.lists.listDevolutivo[0]
-      && Array.isArray(this.lists.listTipoBien) && this.lists.listTipoBien[0]
-      && Array.isArray(this.lists.listUnidades) && this.lists.listUnidades[0]
-      && Array.isArray(this.lists.listIVA) && this.lists.listIVA[0]
-      && Array.isArray(this.lists.listClases) && this.lists.listClases[0]
-      && (() => {
-        clases = this.lists.listClases[0];
-        return Array.isArray(clases) && clases.length;
-      })()
-    );
-    if (todoCargado) {
-      this.Consumo = this.lists.listConsumo[0];
-      this.ConsumoControlado = this.lists.listConsumoControlado[0];
-      this.Devolutivo = this.lists.listDevolutivo[0];
-      this.Tipos_Bien = this.lists.listTipoBien[0];
-      this.Unidades = this.lists.listUnidades[0];
-      this.Tarifas_Iva = this.lists.listIVA[0];
+  private loadLists(): Promise<void> {
+    return new Promise<void>(async (resolve) => {
+      this.store.select((state) => state).subscribe(list => {
+        this.Unidades = list.listUnidades[0],
+          this.Tarifas_Iva = list.listIVA[0],
+          this.Clases = list.listClases[0],
+          this.dataService = this.completerService.local(this.Clases, 'SubgrupoId.Nombre', 'SubgrupoId.Nombre'),
 
-      this.Clases = clases.map(v => {
-        v.mostrar = v.SubgrupoId.Codigo + ' - ' + v.SubgrupoId.Nombre;
-        return v;
+
+          (this.Unidades && this.Unidades.length > 0 &&
+            this.Tarifas_Iva && this.Tarifas_Iva.length > 0 &&
+            this.Clases && this.Clases.length > 0) ? resolve() : null;
       });
-      this.dataService = this.completerService.local(this.Clases, 'mostrar', 'mostrar');
+    });
+  }
 
-      if (this.DatosRecibidos !== undefined) {
-        this.dataSource = new MatTableDataSource(this.DatosRecibidos);
-        this.respuesta = this.DatosRecibidos;
-        this.getDescuentos();
-        this.getSubtotales();
-        this.getIVA();
-        this.getTotales();
-        this.getClasesElementos();
-      } else {
-        this.dataSource = new MatTableDataSource();
-      }
+  private loadElementos(): Promise<boolean> {
+    return new Promise<boolean>(resolve => {
+      this.ActaRecibidoId ? this.actaRecibidoHelper.getElementosActa(this.ActaRecibidoId).toPromise().then(res => {
+        if (res && res.length > 0) {
+          this.elementos = res;
+          resolve(true);
+        } else {
+          resolve(false);
+        }
+      }) : resolve(false);
+    });
+  }
+
+  private cargarForms(cargarElementos: boolean) {
+    if (cargarElementos) {
+      this.dataSource = new MatTableDataSource<ElementoActa>(this.elementos);
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
-      for (let i = 0; i < this.dataSource.data.length; i++) {
-        if (this.dataSource.data[i].CodigoSubgrupo === undefined) {
-          this.dataSource.data[i].CodigoSubgrupo = '';
-        }
-      }
-
-      this.ver();
-      this.cargando = false;
+      this.respuesta = this.elementos;
+      this.getDescuentos();
+      this.getSubtotales();
+      this.getIVA();
+      this.getTotales();
+    } else {
+      this.dataSource = new MatTableDataSource<ElementoActa>();
     }
+    this.ver();
+    this.cargando = false;
   }
 
   ReglasColumnas() {

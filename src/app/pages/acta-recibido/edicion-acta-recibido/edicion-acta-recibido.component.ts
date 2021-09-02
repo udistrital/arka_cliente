@@ -183,18 +183,20 @@ export class EdicionActaRecibidoComponent implements OnInit {
     this.listService.findSedes();
     this.listService.findEstadosActa();
     this.listService.findEstadosElemento();
-    this.listService.findTipoBien();
-    this.listService.findUnidades();
-    this.listService.findImpuestoIVA();
     this.defineSiHayQueValidarElementosParaEnviar();
-    this.loadLists();
     this.cargaPermisos();
-    if (!this.userService.getPersonaId()) {
-      this.errores.set('terceros', true);
-    }
+    this.errores = new Map<string, boolean>();
+    this.Acta = new TransaccionActaRecibido;
+    this.initForms();
     this.actaRegistrada = this.estadoActa === 'Registrada' ? true : false;
   }
 
+  private async initForms() {
+    const data = [this.loadLists(), this.loadProveedores(), this.loadContratistas(), this.cargaActa()];
+    await Promise.all(data);
+    this.Cargar_Formularios(this.Acta);
+    this.actaCargada = true;
+  }
   // Los permisos en cada sección dependen del estado del acta y del rol.
   cargaPermisos() {
     // console.log({'this.estadoActualActa': this.estadoActa});
@@ -298,101 +300,47 @@ export class EdicionActaRecibidoComponent implements OnInit {
     // console.log({elemValiudos: this.elementosValidos});
   }
 
-  Cargar_localStorage(Acta: any) {
-    if (sessionStorage.Formulario_Edicion == null) {
-      this.Cargar_Formularios(Acta);
-    } else {
-      const formulario = JSON.parse(sessionStorage.Formulario_Edicion);
-      // console.log(sessionStorage.Formulario_Edicion);
-      // console.log(sessionStorage.Elementos_Formulario_Edicion);
-      let elementos;
-      if (sessionStorage.Elementos_Formulario_Edicion === []) {
-        elementos = [];
-      } else {
-        elementos = JSON.parse(sessionStorage.getItem('Elementos_Formulario_Edicion'));
-        // console.log(elementos);
-      }
-      (Swal as any).fire({
-        type: 'warning',
-        title: 'Edicion sin completar del acta ' + `${formulario.Formulario1.Id}`,
-        text: 'Existe un Edicion nuevo sin terminar, que desea hacer?',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#3085d6',
-        confirmButtonText: 'Seguir con anterior',
-        cancelButtonText: 'Nuevo Edicion, se eliminara el Edicion anterior',
-      }).then((result) => {
-        if (result.value) {
-          this.Cargar_Formularios2(formulario, elementos);
-        } else {
-          (Swal as any).fire({
-            type: 'warning',
-            title: 'Ultima Palabra?',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#3085d6',
-            confirmButtonText: 'Si, Nuevo Edicion',
-            cancelButtonText: 'No, Usar Anterior',
-          }).then((result2) => {
-            if (result2.value) {
-              sessionStorage.removeItem('Formulario_Edicion');
-              sessionStorage.removeItem('Elementos_Formulario_Edicion');
-              this.Cargar_Formularios(Acta);
-            } else {
-              this.Cargar_Formularios2(formulario, elementos);
-            }
-          });
-        }
+  private cargaActa(): Promise<void> {
+    return new Promise<void>(resolve => {
+      this.Actas_Recibido.getTransaccionActa(this._Acta_Id, false).subscribe(async Acta => {
+        this.Acta = Acta;
+        resolve();
       });
-    }
+    });
   }
 
-  public loadLists() {
-    this.store.select((state) => state).subscribe(
-      (list) => {
-        this.Estados_Acta = list.listEstadosActa[0];
-        this.Estados_Elemento = list.listEstadosElemento[0];
-        this.Tipos_Bien = list.listTipoBien[0];
-        this.Unidades = list.listUnidades[0];
-        this.Tarifas_Iva = list.listIVA[0];
-        this.Dependencias = list.listDependencias[0];
-        this.Sedes = list.listSedes[0];
-        this.dataService3 = this.completerService.local(this.Dependencias, 'Nombre', 'Nombre');
-        this.cargaActa();
-      },
-    );
-  }
-
-  private cargaActa() {
-    if (!this.actaCargada &&
-      this.Estados_Acta !== undefined &&
-      this.Estados_Elemento !== undefined &&
-      this.Tipos_Bien !== undefined &&
-      this.Unidades !== undefined &&
-      this.Tarifas_Iva !== undefined &&
-      this.Dependencias !== undefined &&
-      this.Sedes !== undefined &&
-      this._Acta_Id !== undefined
-    ) {
-      this.Actas_Recibido.getTransaccionActa(this._Acta_Id).subscribe(async Acta => {
-        await this.loadTerceros();
-        this.Cargar_Formularios(Acta[0]);
-        this.actaCargada = true;
-      });
-    }
-  }
-
-  private loadTerceros() {
-    return new Promise<void>(async (resolve, reject) => {
-      this.tercerosHelper.getTercerosByCriterio('contratista').subscribe(res => {
+  private loadContratistas(): Promise<void> {
+    return new Promise<void>(resolve => {
+      this.tercerosHelper.getTercerosByCriterio('contratista').toPromise().then(res => {
         this.Contratistas = res;
-        this.tercerosHelper.getTercerosByCriterio('proveedor').subscribe(resP => {
-          this.Proveedores = resP;
-          this.cargandoTerceros = false;
-          resolve();
-        });
-      }, error => {
-        reject(error);
+        resolve();
+      });
+    });
+  }
+
+  private loadProveedores(): Promise<void> {
+    return new Promise<void>(resolve => {
+      this.tercerosHelper.getTercerosByCriterio('proveedor').toPromise().then(res => {
+        this.Proveedores = res;
+        resolve();
+      });
+    });
+  }
+
+  private loadLists(): Promise<void> {
+    return new Promise<void>(async (resolve) => {
+      this.store.select((state) => state).subscribe(list => {
+        this.Sedes = list.listSedes[0],
+          this.Dependencias = list.listDependencias[0],
+          this.Estados_Acta = list.listEstadosActa[0],
+          this.Estados_Elemento = list.listEstadosElemento[0],
+          this.dataService3 = this.completerService.local(this.Dependencias, 'Nombre', 'Nombre'),
+          !this.userService.getPersonaId() ? this.errores.set('terceros', true) : null,
+
+          (this.Sedes && this.Sedes.length > 0 && this.Dependencias && this.Dependencias.length > 0 &&
+            this.Estados_Elemento && this.Estados_Elemento.length > 0 &&
+            this.Estados_Acta && this.Estados_Acta.length > 0 &&
+            this.Estados_Elemento && this.Estados_Elemento.length > 0) ? resolve() : null;
       });
     });
   }
@@ -471,191 +419,129 @@ export class EdicionActaRecibidoComponent implements OnInit {
 
   }
 
-  Cargar_Formularios(transaccion_: TransaccionActaRecibido) {
-    this.Actas_Recibido.getSedeDependencia(transaccion_.ActaRecibido.UbicacionId).subscribe(res => {
-      let valor = '';
-      if (res[0].hasOwnProperty('EspacioFisicoId') && res[0].EspacioFisicoId.hasOwnProperty('Codigo')) {
-        valor = res[0].EspacioFisicoId.Codigo.substring(0, 4);
-      }
-      const Form2 = this.fb.array([]);
-      const elementos = new Array<any[]>();
-      transaccion_.SoportesActa.forEach((Soporte, index) => {
-        // this.ActaEspecial = Soporte.SoporteActa.ProveedorId.toString() === '0' ? true : false;
-        this.ActaEspecial = false;
-        const Formulario__2 = this.fb.group({
-          Id: [Soporte.SoporteActa.Id],
-          Proveedor: [
-            {
-              value: Soporte.SoporteActa.ProveedorId === 0 ? null :
-                this.Proveedores.find((proveedor) =>
-                  proveedor.Tercero.Id === Soporte.SoporteActa.ProveedorId),
-              disabled: !this.getPermisoEditar(this.permisos.Acta),
-            },
-            { validators: this.actaRegistrada ? [this.validarTercero()] : [Validators.required, this.validarTercero()] },
-          ],
-          Consecutivo: [
-            {
-              value: Soporte.SoporteActa.Consecutivo,
-              disabled: !this.getPermisoEditar(this.permisos.Acta),
-            },
-            { validators: this.actaRegistrada ? [] : [Validators.required] },
-          ],
-          Fecha_Factura: [
-            {
-              value: new Date(Soporte.SoporteActa.FechaSoporte) > new Date('1945') ?
-               new Date(Soporte.SoporteActa.FechaSoporte.toString().split('Z')[0]) : '',
-              disabled: !this.getPermisoEditar(this.permisos.Acta),
-            },
-            { validators: this.checkDate() }],
-          Soporte: [Soporte.SoporteActa.DocumentoId, Validators.required],
-        });
-        this.Validador[index] = true;
-        this.uidDocumento[index] = Soporte.SoporteActa.DocumentoId;
-        const elementoSoporte = [];
-        if (Soporte.Elementos && Soporte.Elementos.length)
-          for (const _Elemento of Soporte.Elementos) { // Para alguna actas lanza error "Cannot read 'length' of null"
-
-            const Elemento___ = {
-              Id: _Elemento.Id,
-              TipoBienId: _Elemento.TipoBienId !== null ?
-                this.Tipos_Bien.find(tipo => tipo.Id.toString() === _Elemento.TipoBienId.Id.toString()).Id : 0,
-              SubgrupoCatalogoId: _Elemento.SubgrupoCatalogoId,
-              Nombre: _Elemento.Nombre,
-              Cantidad: _Elemento.Cantidad,
-              Marca: _Elemento.Marca,
-              Serie: _Elemento.Serie,
-              UnidadMedida: this.Unidades.find(unidad => unidad.Id.toString() === _Elemento.UnidadMedida.toString()).Id,
-              ValorUnitario: _Elemento.ValorUnitario,
-              Subtotal: _Elemento.ValorTotal,
-              Descuento: _Elemento.Descuento,
-              PorcentajeIvaId: this.Tarifas_Iva.find(tarifa => tarifa.Tarifa === _Elemento.PorcentajeIvaId) ?
-                this.Tarifas_Iva.find(tarifa => tarifa.Tarifa === _Elemento.PorcentajeIvaId).Tarifa : '',
-              ValorIva: _Elemento.ValorIva,
-              ValorTotal: _Elemento.ValorFinal,
-            };
-            elementoSoporte.push(Elemento___);
-          }
-        elementos.push(elementoSoporte);
-        // Nota: si se va a usar más de un soporte y el proveedor sigue haciendo parte del soporte,
-        // habrá que hacer de proveedoresFiltrados un arreglo.
-        this.proveedoresFiltrados = Formulario__2.get('Proveedor').valueChanges.pipe(
-          startWith(''),
-          map(val => typeof val === 'string' ? val : this.muestraProveedor(val)),
-          map(nombre => this.filtroProveedores(nombre)),
-        );
-        Form2.push(Formulario__2);
-      });
-
-      this.Elementos__Soporte = elementos;
-      this.SoporteElementosValidos = new Array<boolean>(this.Elementos__Soporte.length);
-
-      const sede = (() => {
-        const criterio = x => x && x.CodigoAbreviacion === valor.toString();
-        if (this.Sedes.some(criterio)) {
-          return this.Sedes.find(criterio).Id;
-        }
-        return '';
-      })();
-      const dependencia = (() => {
-        const criterio = x => res[0].hasOwnProperty('DependenciaId') && x.Id === res[0].DependenciaId.Id;
-        if (this.Dependencias.some(criterio)) {
-          return this.Dependencias.find(criterio).Nombre;
-        }
-        return '';
-      })();
-
-      this.firstForm = this.fb.group({
-        Formulario1: this.fb.group({
-          Id: [transaccion_.ActaRecibido.Id],
-          Sede: [
-            {
-              value: sede,
-              disabled: !this.getPermisoEditar(this.permisos.Acta),
-            },
-            { validators: this.actaRegistrada ? [] : [Validators.required] },
-          ],
-          Dependencia: [dependencia,
-            { validators: this.actaRegistrada ? [] : [Validators.required] }],
-          Ubicacion: [
-            {
-              value: transaccion_.ActaRecibido.UbicacionId === 0 ? '' : transaccion_.ActaRecibido.UbicacionId,
-              disabled: !this.getPermisoEditar(this.permisos.Acta),
-            },
-            { validators: this.actaRegistrada ? [] : [Validators.required] },
-          ],
-          Contratista: [
-            {
-              value: (() => {
-                const criterio = (contratista: TerceroCriterioContratista) =>
-                  contratista &&
-                  contratista.Tercero.Id === transaccion_.ActaRecibido.PersonaAsignada;
-                return this.Contratistas.some(criterio) ? this.Contratistas.find(criterio) : '';
-              })(),
-              disabled: !this.getPermisoEditar(this.permisos.Acta),
-            },
-            [Validators.required, this.validarTercero()],
-          ],
-        }),
-        Formulario2: Form2,
-        Formulario3: this.fb.group({
-          Datos_Adicionales: [transaccion_.ActaRecibido.Observaciones,
-          { validators: this.actaRegistrada ? [] : [Validators.required] }],
-        }),
-      }, { validators: this.checkValidness });
-      sede && dependencia ? this.Traer_Relacion_Ubicaciones(sede, dependencia) : null;
-      this.carga_agregada = true;
-
-      this.contratistasFiltrados = this.firstForm.get('Formulario1').get('Contratista').valueChanges.pipe(
-        startWith(''),
-        map(val => typeof val === 'string' ? val : this.muestraContratista(val)),
-        map(nombre => this.filtroContratistas(nombre)),
-      );
-      // console.log(this.contratistasFiltrados)
-    });
-  }
-
-  Cargar_Formularios2(transaccion_: any, elementos_: any) {
+  async Cargar_Formularios(transaccion_: TransaccionActaRecibido) {
+    const ar = transaccion_.ActaRecibido.TipoActaId.Id === 1;
     const Form2 = this.fb.array([]);
-    const elementos = new Array<any[]>();
-
-    for (const Soporte of transaccion_.Formulario2) {
-      const Formulario__2 = this.fb.group({
-        Id: [''],
-        Proveedor: [Soporte.Proveedor],
-        Consecutivo: [Soporte.Consecutivo],
-        Fecha_Factura: [Soporte.Fecha_Factura],
-        Soporte: [Soporte.Soporte, Validators.required],
+    transaccion_.SoportesActa.forEach((Soporte, index) => {
+      const formulario2 = this.fb.group({
+        Id: [Soporte.Id],
+        Consecutivo: [
+          {
+            value: Soporte.Consecutivo,
+            disabled: !this.getPermisoEditar(this.permisos.Acta),
+          },
+          { validators:  !ar || this.actaRegistrada ? [] : [Validators.required] },
+        ],
+        Fecha_Factura: [
+          {
+            value: new Date(Soporte.FechaSoporte) > new Date('1945') ?
+              new Date(Soporte.FechaSoporte.toString().split('Z')[0]) : '',
+            disabled: !this.getPermisoEditar(this.permisos.Acta),
+          },
+          { validators:  !ar ? [] : this.checkDate() }],
+        Soporte: [Soporte.DocumentoId, Validators.required],
       });
-      Form2.push(Formulario__2);
-    }
-    this.Elementos__Soporte = elementos_;
+      this.Validador[index] = true;
+      this.uidDocumento[index] = Soporte.DocumentoId;
+
+      Form2.push(formulario2);
+    });
+
+    transaccion_.UltimoEstado.UbicacionId ? await this.getSedeDepencencia(transaccion_.UltimoEstado.UbicacionId) : null;
 
     this.firstForm = this.fb.group({
       Formulario1: this.fb.group({
-        Id: [''],
-        Sede: [transaccion_.Formulario1.Sede],
-        Dependencia: [transaccion_.Formulario1.Dependencia],
-        Ubicacion: [transaccion_.Formulario1.Ubicacion],
-        Contratista: [transaccion_.Formulario1.Contratista, Validators.required],
+        Id: [transaccion_.ActaRecibido.Id],
+        Sede: [
+          {
+            value: this.sedeDependencia ? this.sedeDependencia.sede : '',
+            disabled: !this.getPermisoEditar(this.permisos.Acta),
+          },
+          { validators: this.actaRegistrada ? [] : [Validators.required] },
+        ],
+        Dependencia: [ this.sedeDependencia ? this.sedeDependencia.dependencia : '',
+        { validators: this.actaRegistrada ? [] : [Validators.required] }],
+        Ubicacion: [
+          {
+            value: transaccion_.UltimoEstado.UbicacionId === 0 ? '' : transaccion_.UltimoEstado.UbicacionId,
+            disabled: !this.getPermisoEditar(this.permisos.Acta),
+          },
+          { validators: this.actaRegistrada ? [] : [Validators.required] },
+        ],
+        Contratista: [
+          {
+            value: (() => {
+              const criterio = (contratista: TerceroCriterioContratista) =>
+                contratista &&
+                contratista.Tercero.Id === transaccion_.UltimoEstado.PersonaAsignadaId;
+              return this.Contratistas.some(criterio) ? this.Contratistas.find(criterio) : '';
+            })(),
+            disabled: !this.getPermisoEditar(this.permisos.Acta),
+          }, ar ? [Validators.required, this.validarTercero()] : [],
+        ],
+        Proveedor: [
+          {
+            value: transaccion_.UltimoEstado.ProveedorId === 0 ? null :
+              this.Proveedores.find((proveedor) =>
+                proveedor.Tercero.Id === transaccion_.UltimoEstado.ProveedorId),
+            disabled: !this.getPermisoEditar(this.permisos.Acta),
+          },
+          { validators: !ar ? [] : this.actaRegistrada ? [this.validarTercero()] : [Validators.required, this.validarTercero()] },
+        ],
       }),
       Formulario2: Form2,
       Formulario3: this.fb.group({
-        Datos_Adicionales: [transaccion_.Formulario3.Datos_Adicionales],
+        Datos_Adicionales: [transaccion_.UltimoEstado.Observaciones],
       }),
-    });
+    }, { validators: this.checkValidness });
+
+    this.initTerceros();
+    this.sedeDependencia ? this.Traer_Relacion_Ubicaciones(this.sedeDependencia.sede, this.sedeDependencia.dependencia) : null;
     this.carga_agregada = true;
-    this.Traer_Relacion_Ubicaciones(transaccion_.Formulario1.Sede, transaccion_.Formulario1.Dependencia);
   }
 
-  async Traer_Sede_Dependencia(id) {
-    await this.Actas_Recibido.getSedeDependencia(id).subscribe(res => {
-      // console.log(res);
-      const valor = res[0].EspacioFisicoId.Codigo.substring(0, 4);
-      // console.log(valor);
-      const Sede = this.Sedes.find(x => x.CodigoAbreviacion === valor.toString()).Id;
-      const _Dependencia = res[0].DependenciaId.Id;
-      // console.log(Sede, Dependencia);
-      return [Sede, _Dependencia];
+  private initTerceros() {
+    this.proveedoresFiltrados = this.firstForm.get('Formulario1').get('Proveedor').valueChanges.pipe(
+      startWith(''),
+      map(val => typeof val === 'string' ? val : this.muestraProveedor(val)),
+      map(nombre => this.filtroProveedores(nombre)),
+    );
+
+    this.contratistasFiltrados = this.firstForm.get('Formulario1').get('Contratista').valueChanges.pipe(
+      startWith(''),
+      map(val => typeof val === 'string' ? val : this.muestraContratista(val)),
+      map(nombre => this.filtroContratistas(nombre)),
+    );
+  }
+
+  async getSedeDepencencia(ubicacionId: number): Promise<void> {
+
+    return new Promise<void>(resolve => {
+      this.Actas_Recibido.getSedeDependencia(ubicacionId).toPromise().then(res => {
+
+        const espacioFisico = res[0].EspacioFisicoId.Codigo.substring(0, 4);
+        const _dependencia = res[0].DependenciaId.Id;
+
+        const sede = (() => {
+          const criterio = x => x && x.CodigoAbreviacion === espacioFisico.toString();
+          if (this.Sedes.some(criterio)) {
+            return this.Sedes.find(criterio).Id;
+          }
+          return '';
+        })();
+
+        const dependencia = (() => {
+          const criterio = x => _dependencia && x.Id === _dependencia;
+          if (this.Dependencias.some(criterio)) {
+            return this.Dependencias.find(criterio).Nombre;
+          }
+          return '';
+        })();
+
+        this.sedeDependencia = { sede: sede, dependencia: dependencia };
+
+        resolve();
+      });
     });
   }
 

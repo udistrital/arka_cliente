@@ -34,10 +34,8 @@ export class VerificacionElementosComponent implements OnInit {
     // console.log({data});
     this.store.select((state) => state).subscribe(
       (list) => {
-        this.Consumo = list.listConsumo[0];
-        this.ConsumoControlado = list.listConsumoControlado[0];
-        this.Devolutivo = list.listDevolutivo[0];
-        if (this.Consumo !== undefined && this.Devolutivo !== undefined && this.ConsumoControlado !== undefined) {
+        this.Clases = list.listClases[0];
+        if (this.Clases !== undefined) {
           this.AjustarDatos(data);
         }
       },
@@ -64,15 +62,9 @@ export class VerificacionElementosComponent implements OnInit {
   private clasesValidas: boolean = false;
 
   constructor(private translate: TranslateService,
-    private router: Router,
-    private actaRecibidoHelper: ActaRecibidoHelper,
-    private salidasHelper: SalidaHelper,
     private store: Store<IAppState>,
-    private listService: ListService,
-    private pUpManager: PopUpManager) {
-    this.listService.findSubgruposConsumo();
-    this.listService.findSubgruposConsumoControlado();
-    this.listService.findSubgruposDevolutivo();
+    private listService: ListService) {
+    this.listService.findClases();
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
       this.cargarCampos();
     });
@@ -84,12 +76,11 @@ export class VerificacionElementosComponent implements OnInit {
   }
   ngOnInit() {
   }
+
   public loadLists() {
     this.store.select((state) => state).subscribe(
       (list) => {
-        this.Consumo = list.listConsumo[0];
-        this.ConsumoControlado = list.listConsumoControlado[0];
-        this.Devolutivo = list.listDevolutivo[0];
+        this.Clases = list.listClases[0];
       },
     );
 

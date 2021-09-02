@@ -137,29 +137,27 @@ export class ActaEspecialComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.listService.findUbicaciones();
     this.listService.findDependencias();
     this.listService.findSedes();
-    this.listService.findUnidades();
-    this.listService.findProveedores();
     this.listService.findEstadosActa();
     this.listService.findEstadosElemento();
-    this.listService.findTipoBien();
-    this.TodaysDate = this.dateService.today();
-    this.loadLists();
+    this.TodaysDate = new Date;
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
     });
-    this.searchStr2 = new Array<string>();
+    this.initForms();
+    this.DatosElementos = [];
+    if (!this.userService.getPersonaId()) {
+      this.errores.set('terceros', true);
+    }
+  }
+
+  private async initForms() {
+    const data = [this.loadLists()];
     if (sessionStorage.Formulario_Acta_Especial == null) {
+      await Promise.all(data);
       this.Cargar_Formularios();
     } else {
       const formulario = JSON.parse(sessionStorage.Formulario_Acta_Especial);
-      let elementos;
-      if (sessionStorage.Elementos_Acta_Especial === []) {
-        elementos = [];
-      } else {
-        elementos = JSON.parse(sessionStorage.Elementos_Acta_Especial);
-      }
       (Swal as any).fire({
         type: 'warning',
         title: 'Registro sin completar',
@@ -169,9 +167,10 @@ export class ActaEspecialComponent implements OnInit {
         cancelButtonColor: '#3085d6',
         confirmButtonText: 'Seguir con anterior',
         cancelButtonText: 'Nuevo Registro, se eliminara el registro anterior',
-      }).then((result) => {
+      }).then(async (result) => {
         if (result.value) {
-          this.cargar(formulario, elementos);
+          await Promise.all(data);
+          this.Cargar_Formularios2(formulario);
         } else {
           (Swal as any).fire({
             type: 'warning',
@@ -181,38 +180,33 @@ export class ActaEspecialComponent implements OnInit {
             cancelButtonColor: '#3085d6',
             confirmButtonText: 'Si, Nuevo Registro',
             cancelButtonText: 'No, Usar Anterior',
-          }).then((result2) => {
+          }).then(async (result2) => {
             if (result2.value) {
               sessionStorage.removeItem('Formulario_Acta_Especial');
-              sessionStorage.removeItem('Elementos_Acta_Especial');
-              this.Cargar_Formularios();
+              await Promise.all(data);
             } else {
-              this.cargar(formulario, elementos);
+              await Promise.all(data);
+              this.Cargar_Formularios2(formulario);
             }
           });
         }
       });
     }
-    if (!this.userService.getPersonaId()) {
-      this.errores.set('terceros', true);
-    }
   }
 
-  public loadLists() {
-    this.store.select((state) => state).subscribe(
-      (list) => {
-        this.Ubicaciones = list.listUbicaciones[0];
-        this.Sedes = list.listSedes[0];
-        this.Dependencias = list.listDependencias[0];
-        this.Estados_Acta = list.listEstadosActa[0];
-        this.Estados_Elemento = list.listEstadosElemento[0];
-        this.Tipos_Bien = list.listTipoBien[0];
-        this.Unidades = list.listUnidades[0];
-        this.Proveedores = list.listProveedores[0];
-        this.dataService2 = this.completerService.local(this.Proveedores, 'compuesto', 'compuesto');
-        this.dataService3 = this.completerService.local(this.Dependencias, 'Nombre', 'Nombre');
-      },
-    );
+  public loadLists(): Promise<void> {
+    return new Promise<void>(async (resolve) => {
+      this.store.select((state) => state).subscribe((list) => {
+        this.Estados_Acta = list.listEstadosActa[0],
+          this.Estados_Elemento = list.listEstadosElemento[0],
+          this.Dependencias = list.listDependencias[0],
+          this.Sedes = list.listSedes[0],
+          this.dataService3 = this.completerService.local(this.Dependencias, 'Nombre', 'Nombre');
+          (this.Sedes && this.Sedes.length > 0 && this.Dependencias && this.Dependencias.length > 0 &&
+            this.Estados_Elemento && this.Estados_Elemento.length > 0 &&
+            this.Estados_Acta && this.Estados_Acta.length > 0) ? resolve() : null;
+      });
+    });
   }
 
   cleanURL(oldURL: string): SafeResourceUrl {
@@ -225,11 +219,10 @@ export class ActaEspecialComponent implements OnInit {
       Formulario1: this.Formulario_1,
       Formulario2: this.fb.array([this.Formulario_2]),
       Formulario3: this.Formulario_3,
-    });
-    this.SoporteElementosValidos = new Array<boolean>(1);
+    }, { validators: this.checkValidness });
   }
 
-  Cargar_Formularios2(transaccion_: any, elementos_: any) {
+  Cargar_Formularios2(transaccion_: any) {
     const Form2 = this.fb.array([]);
     for (const Soporte of transaccion_.Formulario2) {
       const Formulario__2 = this.fb.group({
@@ -237,9 +230,6 @@ export class ActaEspecialComponent implements OnInit {
       });
       Form2.push(Formulario__2);
     }
-    this.Elementos__Soporte = elementos_;
-    this.SoporteElementosValidos = new Array<boolean>(elementos_.length);
-
     this.firstForm = this.fb.group({
       Formulario1: this.fb.group({
         Id: [''],
@@ -251,44 +241,27 @@ export class ActaEspecialComponent implements OnInit {
       Formulario3: this.fb.group({
         Datos_Adicionales: [transaccion_.Formulario3.Datos_Adicionales],
       }),
-    });
+    }, { validators: this.checkValidness });
     this.Traer_Relacion_Ubicaciones(transaccion_.Formulario1.Ubicacion);
-    this.firstForm.get('Formulario1').statusChanges.subscribe(change => this.checkValidness(1, change));
-    this.firstForm.get('Formulario2').statusChanges.subscribe(change => this.checkValidness(2, change));
-    this.firstForm.get('Formulario3').statusChanges.subscribe(change => this.checkValidness(3, change));
-  }
-
-  private checkValidness(form, change) {
-    // console.log({form, change});
-    const errorForms = !(
-      this.firstForm.get('Formulario1').valid
-      && this.firstForm.get('Formulario2').valid
-      && this.firstForm.get('Formulario3').valid
-    );
-    if (errorForms) {
-      this.errores.set('formularios', true);
-    } else {
-      this.errores.delete('formularios');
-    }
   }
 
   get Formulario_1(): FormGroup {
-    return this.fb.group({
-      Sede: ['', Validators.required],
-      Dependencia: ['', Validators.required],
-      Ubicacion: ['', Validators.required],
+    const form1 = this.fb.group({
+      Sede: ['', [Validators.required]],
+      Dependencia: ['', [Validators.required]],
+      Ubicacion: ['', [Validators.required]],
     });
+    return form1;
   }
   get Formulario_2(): FormGroup {
-    return this.fb.group({
-      Id: [0],
+    const form2 = this.fb.group({
       Soporte: ['', Validators.required],
-      Elementos: this.fb.array([this.Elementos]),
     });
+    return form2;
   }
   get Formulario_3(): FormGroup {
     return this.fb.group({
-      Datos_Adicionales: ['', Validators.required],
+      Datos_Adicionales: [''],
     });
   }
 

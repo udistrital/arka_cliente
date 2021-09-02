@@ -109,43 +109,82 @@ export class VerificacionActaRecibidoComponent implements OnInit {
     });
     this.listService.findDependencias();
     this.listService.findSedes();
-    // this.listService.findUbicaciones();
+    this.listService.findUbicaciones();
     this.listService.findEstadosActa();
     this.listService.findEstadosElemento();
     this.listService.findTipoBien();
     this.listService.findUnidades();
     this.listService.findImpuestoIVA();
+    this.loadDependencias();
     this.Verificar_tabla = new Array<boolean>();
-    this.loadLists();
-    this.loadProveedores();
+    this.Acta = new TransaccionActaRecibido;
   }
 
-  public loadLists() {
-    this.store.select((state) => state).subscribe(
-      (list) => {
-
-        this.Estados_Acta = list.listEstadosActa[0];
-        this.Estados_Elemento = list.listEstadosElemento[0];
-        this.Tipos_Bien = list.listTipoBien[0];
-        this.Unidades = list.listUnidades[0];
-        this.Tarifas_Iva = list.listIVA[0];
-        this.Dependencias = list.listDependencias[0];
-        // this.Ubicaciones = list.listUbicaciones[0];
-        this.Sedes = list.listSedes[0];
-        // console.log(this.Proveedores)
-        // this.dataService = this.completerService.local(this.Ubicaciones, 'Nombre', 'Nombre');
-          this.cargarActa();
-      },
-    );
+  async loadDependencias() {
+    const data = [this.loadLists(), this.loadProveedores(), this.loadContratistas(), this.loadActa(), this.loadElementos()];
+    await Promise.all(data);
+    this.Cargar_Formularios(this.Acta);
   }
 
-  private loadProveedores() {
-    this.tercerosHelper.getTercerosByCriterio('proveedor').subscribe(res => {
-      this.Proveedores = res;
-      // console.log({'Proveedores': this.Proveedores});
-      this.cargarActa();
+  public loadLists(): Promise<void> {
+    return new Promise<void>(async (resolve) => {
+      this.store.select((state) => state).subscribe((list) => {
+        this.Estados_Acta = list.listEstadosActa[0],
+          this.Estados_Elemento = list.listEstadosElemento[0],
+          this.Tipos_Bien = list.listTipoBien[0],
+          this.Unidades = list.listUnidades[0],
+          this.Tarifas_Iva = list.listIVA[0],
+          this.Dependencias = list.listDependencias[0],
+          this.Sedes = list.listSedes[0],
+          this.Ubicaciones = list.listUbicaciones[0],
+
+          (this.Sedes && this.Sedes.length > 0 && this.Dependencias && this.Dependencias.length > 0 &&
+            this.Tarifas_Iva && this.Tarifas_Iva.length > 0 && this.Unidades && this.Unidades.length &&
+            this.Tipos_Bien && this.Tipos_Bien.length > 0 && this.Estados_Elemento &&
+            this.Estados_Elemento.length > 0 && this.Ubicaciones && this.Ubicaciones.length > 0 &&
+            this.Estados_Acta && this.Estados_Acta.length > 0) ? resolve() : null;
+      });
     });
   }
+
+  private loadProveedores(): Promise<void> {
+    return new Promise<void>(resolve => {
+      this.tercerosHelper.getTercerosByCriterio('proveedor').toPromise().then(res => {
+        this.Proveedores = res;
+        resolve();
+      });
+    });
+  }
+
+  private loadContratistas(): Promise<void> {
+    return new Promise<void>(resolve => {
+      this.tercerosHelper.getTercerosByCriterio('contratista').toPromise().then(res => {
+        this.Contratistas = res;
+        resolve();
+      });
+    });
+  }
+
+  private loadActa(): Promise<void> {
+    return new Promise<void>(resolve => {
+      this.Actas_Recibido.getTransaccionActa(this._ActaId, false).toPromise().then(res => {
+        this.Acta.UltimoEstado = res.UltimoEstado;
+        this.Acta.ActaRecibido = res.ActaRecibido;
+        this.Acta.SoportesActa = res.SoportesActa;
+        resolve();
+      });
+    });
+  }
+
+  private loadElementos(): Promise<void> {
+    return new Promise<void>(resolve => {
+      this.Actas_Recibido.getElementosActa(this._ActaId).toPromise().then(res => {
+        this.Acta.Elementos = res;
+        resolve();
+      });
+    });
+  }
+
   muestraProveedor(prov: Partial<TerceroCriterioProveedor>): string {
     if (prov) {
       const str = prov.Identificacion ? prov.Identificacion.Numero + ' - ' : '';
@@ -153,23 +192,13 @@ export class VerificacionActaRecibidoComponent implements OnInit {
     }
   }
 
-  private cargarActa() {
-    // console.log('cargarActa');
-    if (this.carga_agregada === undefined &&
-      this.Estados_Acta !== undefined && this.Estados_Elemento !== undefined &&
-      this.Tipos_Bien !== undefined && this.Unidades !== undefined &&
-      this.Tarifas_Iva !== undefined &&
-      this.Dependencias !== undefined && this.Sedes !== undefined &&
-      this._ActaId !== undefined && this.respuesta === undefined
-    ) {
-      this.carga_agregada = false;
-      // console.log('consultarActa');
-          this.Actas_Recibido.getTransaccionActa(this._ActaId).subscribe(Acta => {
-            // console.log(Acta);
-            this.respuesta = true;
-            this.Cargar_Formularios(Acta[0]);
-            // console.log('ok');
-          });
+  muestraContratista(contr: TerceroCriterioContratista): string {
+    if (contr && contr.Identificacion) {
+      return contr.Identificacion.Numero + ' - ' + contr.Tercero.NombreCompleto;
+    } else {
+      if (contr) {
+        return contr.Tercero.NombreCompleto;
+      }
     }
   }
 
@@ -200,130 +229,113 @@ export class VerificacionActaRecibidoComponent implements OnInit {
     }
 
   }
-  Cargar_Formularios(transaccion_: TransaccionActaRecibido) {
-    this.Actas_Recibido.getSedeDependencia(transaccion_.ActaRecibido.UbicacionId).subscribe(res => {
-      const valor = res[0].EspacioFisicoId.Codigo.substring(0, 4);
-      this.Acta = transaccion_;
+  async Cargar_Formularios(transaccion_: TransaccionActaRecibido) {
 
-      // console.log(this.Proveedores);
+    this.Acta = transaccion_;
+    const Form2 = this.fb.array([]);
 
-      const Form2 = this.fb.array([]);
-
-      for (const Soporte of transaccion_.SoportesActa) {
-
-        const Formulario__2 = this.fb.group({
-          Id: [Soporte.SoporteActa.Id],
-          Proveedor: [this.muestraProveedor(this.Proveedores.find(proveedor => proveedor.Tercero.Id === Soporte.SoporteActa.ProveedorId))],
-          Consecutivo: [Soporte.SoporteActa.Consecutivo],
-          Fecha_Factura: [{
-            value: new Date(Soporte.SoporteActa.FechaSoporte.toString().split('Z')[0]),
-            disabled: true,
-          }],
-          Soporte: [Soporte.SoporteActa.DocumentoId],
-          Elementos: this.fb.array([]),
-        });
-        this.Verificar_tabla.push(false);
-
-        if (Array.isArray(Soporte.Elementos))
-          for (const _Elemento of Soporte.Elementos) {
-
-            const Elemento___ = this.fb.group({
-              Id: [_Elemento.Id],
-              TipoBienId: [
-                (() => {
-                  const criterio = bien => {
-                    if (bien.hasOwnProperty('Id')
-                      && _Elemento.hasOwnProperty('TipoBienId') && _Elemento.TipoBienId
-                      && _Elemento.TipoBienId.hasOwnProperty('Id') && _Elemento.TipoBienId.Id) {
-                      return bien.Id.toString() === _Elemento.TipoBienId.Id.toString();
-                    } else {
-                      return false;
-                    }
-                  };
-                  if (Array.isArray(this.Tipos_Bien) && this.Tipos_Bien.some(criterio)) {
-                    return this.Tipos_Bien.find(criterio).Nombre;
-                  }
-                  return undefined;
-                })(),
-              ],
-              SubgrupoCatalogoId: [_Elemento.SubgrupoCatalogoId],
-              Nombre: [_Elemento.Nombre],
-              Cantidad: [_Elemento.Cantidad],
-              Marca: [_Elemento.Marca],
-              Serie: [_Elemento.Serie],
-              UnidadMedida: [
-                this.Unidades.find(unidad => unidad.Id.toString() === _Elemento.UnidadMedida.toString()).Unidad,
-              ],
-              ValorUnitario: [this.T_V(_Elemento.ValorUnitario.toString())],
-              Subtotal: [this.T_V(_Elemento.ValorTotal.toString())],
-              Descuento: [this.T_V(_Elemento.Descuento.toString())],
-              PorcentajeIvaId: [
-                this.Tarifas_Iva.find(iva => +iva.Tarifa === +_Elemento.PorcentajeIvaId) ?
-                  this.Tarifas_Iva.find(iva => +iva.Tarifa === +_Elemento.PorcentajeIvaId).Nombre : '',
-              ],
-              ValorIva: [this.T_V(_Elemento.ValorIva.toString())],
-              ValorTotal: [this.T_V(_Elemento.ValorFinal.toString())],
-              Verificado: [false],
-            });
-
-            (Formulario__2.get('Elementos') as FormArray).push(Elemento___);
-          }
-
-        Form2.push(Formulario__2);
-      }
-
-      let personarev: any = this.Proveedores.find(proveedor => proveedor.Tercero.Id === transaccion_.ActaRecibido.PersonaAsignada);
-      if (typeof personarev === 'undefined') {
-        personarev = { proveedor: 0 };
-        // color is undefined
-      }
-
-
-      this.firstForm = this.fb.group({
-        Formulario1: this.fb.group({
-          Id: [transaccion_.ActaRecibido.Id],
-          Sede: [this.Sedes.find(x => x.CodigoAbreviacion === valor.toString()).Nombre],
-          Dependencia: [this.Dependencias.find(x => x.Id === res[0].DependenciaId.Id).Nombre],
-          Ubicacion: [transaccion_.ActaRecibido.UbicacionId],
-          Contratista: [
-            transaccion_.ActaRecibido.PersonaAsignada,
-            Validators.required,
-          ],
-        }),
-        Formulario2: Form2,
-        Formulario3: this.fb.group({
-          Datos_Adicionales: [{
-            value: transaccion_.ActaRecibido.Observaciones,
-            disabled: true,
-          }],
-        }),
+    for (const Soporte of transaccion_.SoportesActa) {
+      const Formulario__2 = this.fb.group({
+        Id: [Soporte.Id],
+        Consecutivo: [Soporte.Consecutivo],
+        Fecha_Factura: [
+          new Date(Soporte.FechaSoporte) > new Date('1945') ?
+            new Date(Soporte.FechaSoporte.toString().split('Z')[0]) : ''],
+        Soporte: [Soporte.DocumentoId],
       });
-      this.Traer_Relacion_Ubicaciones(valor, res[0].DependenciaId.Id, transaccion_.ActaRecibido.UbicacionId);
-      this.carga_agregada = true;
+      Form2.push(Formulario__2);
+      this.Verificar_tabla.push(false);
+    }
 
+    const formElementos = this.fb.array([]);
+    if (Array.isArray(transaccion_.Elementos))
+    for (const _Elemento of transaccion_.Elementos) {
+      const Elemento___ = this.fb.group({
+        Id: [_Elemento.Id],
+        SubgrupoCatalogoId: [_Elemento.SubgrupoCatalogoId],
+        Nombre: [_Elemento.Nombre],
+        Cantidad: [_Elemento.Cantidad],
+        Marca: [_Elemento.Marca],
+        Serie: [_Elemento.Serie],
+        UnidadMedida: [
+          this.Unidades.find(unidad => unidad.Id.toString() === _Elemento.UnidadMedida.toString()).Unidad,
+        ],
+        ValorUnitario: [this.T_V(_Elemento.ValorUnitario.toString())],
+        Subtotal: [this.T_V(_Elemento.ValorTotal.toString())],
+        Descuento: [this.T_V(_Elemento.Descuento.toString())],
+        PorcentajeIvaId: [
+          this.Tarifas_Iva.find(iva => iva.Tarifa === _Elemento.PorcentajeIvaId) ?
+          this.Tarifas_Iva.find(iva => iva.Tarifa === _Elemento.PorcentajeIvaId).Nombre : '',
+        ],
+        ValorIva: [this.T_V(_Elemento.ValorIva.toString())],
+        ValorTotal: [this.T_V(_Elemento.ValorFinal.toString())],
+        Verificado: [false],
+      });
+      formElementos.push(Elemento___);
+    }
+    this.elementos = formElementos;
+    transaccion_.UltimoEstado.UbicacionId ? await this.getSedeDepencencia(transaccion_.UltimoEstado.UbicacionId) : null;
+
+    this.firstForm = this.fb.group({
+      Formulario1: this.fb.group({
+        Id: [transaccion_.ActaRecibido.Id],
+        Sede: [this.sedeDependencia ? this.sedeDependencia.sede : ''],
+        Dependencia: [this.sedeDependencia ? this.sedeDependencia.dependencia : ''],
+        Ubicacion: [
+          transaccion_.UltimoEstado.UbicacionId === 0 ? '' :
+          this.Ubicaciones.find(x => x.Id === transaccion_.UltimoEstado.UbicacionId).EspacioFisicoId.Nombre],
+        Proveedor: [
+          transaccion_.UltimoEstado.ProveedorId === 0 ? null :
+            this.muestraProveedor(this.Proveedores.find((proveedor) =>
+            proveedor.Tercero.Id === transaccion_.UltimoEstado.ProveedorId)),
+        ],
+        Contratista: [
+          transaccion_.UltimoEstado.PersonaAsignadaId === 0 ? null :
+            this.muestraContratista(this.Contratistas.find((proveedor) =>
+            proveedor.Tercero.Id === transaccion_.UltimoEstado.PersonaAsignadaId)),
+        ],
+      }),
+      FormularioE: formElementos,
+      Formulario2: Form2,
+      Formulario3: this.fb.group({
+        Datos_Adicionales: [transaccion_.UltimoEstado.Observaciones],
+      }),
+    });
+    this.carga_agregada = true;
+
+  }
+
+  async getSedeDepencencia(ubicacionId: number): Promise<void> {
+
+    return new Promise<void>(resolve => {
+      this.Actas_Recibido.getSedeDependencia(ubicacionId).toPromise().then(res => {
+
+        const espacioFisico = res[0].EspacioFisicoId.Codigo.substring(0, 4);
+        const _dependencia = res[0].DependenciaId.Id;
+
+        const sede = (() => {
+          const criterio = x => x && x.CodigoAbreviacion === espacioFisico.toString();
+          if (this.Sedes.some(criterio)) {
+            return this.Sedes.find(criterio).Nombre;
+          }
+          return '';
+        })();
+
+        const dependencia = (() => {
+          const criterio = x => _dependencia && x.Id === _dependencia;
+          if (this.Dependencias.some(criterio)) {
+            return this.Dependencias.find(criterio).Nombre;
+          }
+          return '';
+        })();
+
+        this.sedeDependencia = { sede: sede, dependencia: dependencia };
+
+        resolve();
+      });
     });
   }
 
-  Traer_Relacion_Ubicaciones(sede_, dependencia_, ubicacion_) {
-
-    // console.log(sede_)
-    const transaccion: any = {};
-    transaccion.Sede = this.Sedes.find((x) => x.CodigoAbreviacion === sede_);
-    transaccion.Dependencia = this.Dependencias.find((x) => x.Id === dependencia_);
-    // console.log(transaccion);
-    if (transaccion.Sede !== undefined && transaccion.Dependencia !== undefined) {
-      this.Actas_Recibido.postRelacionSedeDependencia(transaccion).subscribe((res: any) => {
-        // console.log(res)
-        if (Object.keys(res[0]).length !== 0) {
-          this.Ubicaciones = res[0].Relaciones;
-          this.firstForm.get('Formulario1').get('Ubicacion').setValue(
-            this.Ubicaciones.find(x => x.Id === ubicacion_).Nombre);
-        } else {
-          this.Ubicaciones = undefined;
-        }
-      });
-    }
-  }
   downloadFile(index: any) {
 
     const id_documento = (this.firstForm.get('Formulario2') as FormArray).at(index).get('Soporte').value;

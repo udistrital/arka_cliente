@@ -118,14 +118,12 @@ export class RegistroActaRecibidoComponent implements OnInit {
     private nuxeoService: NuxeoService,
     private documentoService: DocumentoService,
     private userService: UserService,
-    private dateService: NbDateService<Date>,
   ) {
     this.TodaysDate = new Date();
     this.fileDocumento = [];
     this.Validador = [];
     this.uidDocumento = [];
     this.idDocumento = [];
-    this.listo = new Map<string, boolean>();
   }
 
   ngOnInit() {
@@ -197,7 +195,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
 
   private loadContratistas(): Promise<void> {
     return new Promise<void>(resolve => {
-      this.tercerosHelper.getTercerosByCriterio('contratista').toPromise().then( res => {
+      this.tercerosHelper.getTercerosByCriterio('contratista').toPromise().then(res => {
         this.Contratistas = res;
         resolve();
       });
@@ -213,20 +211,20 @@ export class RegistroActaRecibidoComponent implements OnInit {
     if (contr && contr.Identificacion && contr.Tercero) {
       return contr.Identificacion.Numero + ' - ' + contr.Tercero.NombreCompleto;
     } else if (contr && contr.Tercero) {
-        return contr.Tercero.NombreCompleto;
-      }
+      return contr.Tercero.NombreCompleto;
+    }
   }
   private cambiosContratista(control: AbstractControl): Observable<Partial<TerceroCriterioContratista>[]> {
     return control.valueChanges
-    .pipe(
-      startWith(''),
-      map(val => typeof val === 'string' ? val : this.muestraContratista(val)),
-      map(nombre => this.filtroContratistas(nombre)),
-    );
+      .pipe(
+        startWith(''),
+        map(val => typeof val === 'string' ? val : this.muestraContratista(val)),
+        map(nombre => this.filtroContratistas(nombre)),
+      );
   }
   private loadProveedores(): Promise<void> {
     return new Promise<void>(resolve => {
-      this.tercerosHelper.getTercerosByCriterio('proveedor').toPromise().then( res => {
+      this.tercerosHelper.getTercerosByCriterio('proveedor').toPromise().then(res => {
         this.Proveedores = res;
         resolve();
       });
@@ -247,11 +245,11 @@ export class RegistroActaRecibidoComponent implements OnInit {
   }
   private cambiosProveedor(control: AbstractControl): Observable<Partial<TerceroCriterioProveedor>[]> {
     return control.valueChanges
-    .pipe(
-      startWith(''),
-      map(val => typeof val === 'string' ? val : this.muestraProveedor(val)),
-      map(nombre => this.filtroProveedores(nombre)),
-    );
+      .pipe(
+        startWith(''),
+        map(val => typeof val === 'string' ? val : this.muestraProveedor(val)),
+        map(nombre => this.filtroProveedores(nombre)),
+      );
   }
 
   download(index) {
@@ -313,29 +311,28 @@ export class RegistroActaRecibidoComponent implements OnInit {
     const Form2 = this.fb.array([]);
     for (const Soporte of transaccion_.Formulario2) {
       const Formulario__2 = this.fb.group({
-        Id: [''],
-        Proveedor: [Soporte.Proveedor.Tercero ? Soporte.Proveedor : '', [this.validarTercero()]],
         Consecutivo: [Soporte.Consecutivo],
-        Fecha_Factura: [Soporte.Fecha_Factura ? this.dateService.parse(Soporte.Fecha_Factura, 'MM dd yyyy') : ''],
+        FechaSoporte: [Soporte.FechaSoporte ? new Date(Soporte.FechaSoporte.toString().split('Z')[0]) : ''],
         Soporte: ['', Validators.required],
       });
-      this.proveedoresFiltrados = this.cambiosProveedor(Formulario__2.get('Proveedor'));
       Form2.push(Formulario__2);
     }
 
     this.firstForm = this.fb.group({
       Formulario1: this.fb.group({
-        Id: [''],
         Sede: [transaccion_.Formulario1.Sede],
         Dependencia: [transaccion_.Formulario1.Dependencia],
         Ubicacion: [transaccion_.Formulario1.Ubicacion],
         Contratista: [transaccion_.Formulario1.Contratista.Tercero ? transaccion_.Formulario1.Contratista : '',
           [Validators.required, this.validarTercero()]],
-      }),
-      Formulario2: Form2,
-    });
-    this.Traer_Relacion_Ubicaciones(transaccion_.Formulario1.Ubicacion);
+        Proveedor: [transaccion_.Formulario1.Proveedor.Tercero ? transaccion_.Formulario1.Proveedor : '',
+          [this.validarTercero()]],
+        }),
+        Formulario2: Form2,
+      });
+    this.proveedoresFiltrados = this.cambiosProveedor(this.firstForm.get('Formulario1').get('Proveedor'));
     this.contratistasFiltrados = this.cambiosContratista(this.firstForm.get('Formulario1').get('Contratista'));
+    this.Traer_Relacion_Ubicaciones(transaccion_.Formulario1.Ubicacion);
   }
 
   get Formulario_1(): FormGroup {
@@ -344,18 +341,18 @@ export class RegistroActaRecibidoComponent implements OnInit {
       Dependencia: [''],
       Ubicacion: [''],
       Contratista: ['', [Validators.required, this.validarTercero()]],
+      Proveedor: ['', [this.validarTercero()]],
     });
     this.contratistasFiltrados = this.cambiosContratista(form1.get('Contratista'));
+    this.proveedoresFiltrados = this.cambiosProveedor(form1.get('Proveedor'));
     return form1;
   }
   get Formulario_2(): FormGroup {
     const form2 = this.fb.group({
-      Proveedor: ['', [this.validarTercero()]],
       Consecutivo: [''],
-      Fecha_Factura: [''],
+      FechaSoporte: [''],
       Soporte: ['', Validators.required],
     });
-    this.proveedoresFiltrados = this.cambiosProveedor(form2.get('Proveedor'));
     return form2;
   }
 
