@@ -9,15 +9,15 @@
   </nb-card>
 
   <!-- lectura -->
-  <ngx-ver-detalle *ngIf="verActa" [Id_Acta]="actaSeleccionada"></ngx-ver-detalle>
+  <ngx-ver-acta-recibido *ngIf="verActa" [Id_Acta]="actaSeleccionada" [Modo]="'ver'"></ngx-ver-acta-recibido>
 
   <!-- escritura -->
   <ngx-edicion-acta-recibido *ngIf="editarActa" [estado]="estadoActaSeleccionada"
     [Id_Acta]="actaSeleccionada"></ngx-edicion-acta-recibido>
 
   <!-- "lectura" (+ checkboxes) -->
-  <ngx-verificacion-acta-recibido *ngIf="validarActa"
-    [Id_Acta]="actaSeleccionada"></ngx-verificacion-acta-recibido>
+  <ngx-ver-acta-recibido *ngIf="validarActa"
+    [Id_Acta]="actaSeleccionada" [Modo]="'verificar'"></ngx-ver-acta-recibido>
 
   <div class="justify-content-center float-right" *ngIf="actaSeleccionada !== ''">
     <button type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off"

@@ -93,9 +93,9 @@
                     </nb-card-header>
                     <nb-card-body>
                       <div class="pre-scrollable">
-                        <ngx-verificacion-elementos [DatosRecibidos]='elementos.value' [mode]='"multi"' (DatosEnviados)="Verificar_Tabla($event, i)"></ngx-verificacion-elementos>
+                        <ngx-capturar-elementos [Modo]="Modo" [ActaRecibidoId]="Acta.ActaRecibido.Id"
+                          (ElementosValidos)="eventoElementosSeleccionados($event)" (DatosEnviados)="eventoElementos($event)" (DatosTotales)="eventoTotales($event)"></ngx-capturar-elementos>
                       </div>
-
                     </nb-card-body>
                   </nb-card>
                 </div>
@@ -105,25 +105,25 @@
           </nb-card-body>
         </nb-card>
 
-        <nb-card *ngIf="Acta.Elementos && Acta.Elementos.length > 0">
+        <nb-card *ngIf="totales">
           <nb-card-header>{{'GLOBAL.Acta_Recibido.VerificacionActa.Consolidado' | translate}}</nb-card-header>
           <nb-card-body>
             <table class="consolidado">
               <tr>
                 <th class="cell-3">{{'GLOBAL.Acta_Recibido.VerificacionActa.Subtotal' | translate}}</th>
-                <td class="cell-3">{{getGranSubtotal() | currency}}</td>
+                <td class="cell-3">{{totales.Subtotal | currency}}</td>
               </tr>
               <tr>
                 <th class="cell-3">{{'GLOBAL.Acta_Recibido.VerificacionActa.Descuento' | translate}}</th>
-                <td class="cell-3">{{getGranDescuentos() | currency}}</td>
+                <td class="cell-3">{{totales.Descuento | currency}}</td>
               </tr>
               <tr>
                 <th class="cell-3">{{'GLOBAL.Acta_Recibido.VerificacionActa.ValorIva' | translate}}</th>
-                <td class="cell-3">{{getGranValorIva() | currency}}</td>
+                <td class="cell-3">{{totales.ValorIva | currency}}</td>
               </tr>
               <tr>
                 <th class="cell-3">{{'GLOBAL.Acta_Recibido.VerificacionActa.Total' | translate}}</th>
-                <td class="cell-3">{{getGranTotal() | currency}}</td>
+                <td class="cell-3">{{totales.ValorTotal | currency}}</td>
               </tr>
             </table>
           </nb-card-body>
@@ -135,17 +135,15 @@
             <div class="form-group  col-lg-12">
               <label>{{'GLOBAL.Acta_Recibido.VerificacionActa.Observaciones' | translate}}</label>
               <div class="input-group">
-                <textarea rows="5"
-                  placeholder="Proporciona datos adicionales que no se pueden expresar en el formulario"
-                  class="form-control" formControlName="Datos_Adicionales" required></textarea>
+                <textarea rows="5" class="form-control" formControlName="Datos_Adicionales"></textarea>
               </div>
             </div>
           </nb-card-body>
-          <nb-card-footer>
+          <nb-card-footer *ngIf="Modo === 'verificar'">
             <div class="justify-content-center">
-              <button nbButton
-                (click)="Revisar_Totales2()">{{'GLOBAL.Acta_Recibido.VerificacionActa.Rechazar' | translate}}</button>
-              <button nbButton [disabled]="!bandera2" (click)="Revisar_Totales()"
+              <button nbButton (click)="Revisar_Totales2()">{{'GLOBAL.Acta_Recibido.VerificacionActa.Rechazar' |
+                translate}}</button>
+              <button nbButton [disabled]="!bandera" (click)="Revisar_Totales()"
                 class="float-right">{{'GLOBAL.Acta_Recibido.VerificacionActa.Verificar' | translate}}</button>
             </div>
           </nb-card-footer>
