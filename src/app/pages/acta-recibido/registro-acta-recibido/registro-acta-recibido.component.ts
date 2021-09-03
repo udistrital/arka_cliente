@@ -339,7 +339,6 @@ export class RegistroActaRecibidoComponent implements OnInit {
 
   get Formulario_1(): FormGroup {
     const ae = this.tipoActa === 'especial';
-    console.log(ae);
     const form1 = this.fb.group({
       Sede: ['', ae ? [Validators.required] : []],
       Dependencia: ['', ae ? [Validators.required] : []],
@@ -381,7 +380,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
       this.cargarTab = true;
     }
   }
-  
+
   removeTab(i: number) {
     this.selectedTab = i - 1;
     (this.firstForm.get('Formulario2') as FormArray).removeAt(i);

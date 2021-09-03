@@ -11,7 +11,7 @@
       <nb-card *ngIf="actaSeleccionada !== ''" [nbSpinner]="!mostrarActa || !mostrarMovimientos || anulando">
         <nb-card-body>
 
-          <ngx-ver-detalle (mostrarData)="mostrarDetalleActa($event)" [Id_Acta]="actaSeleccionada"></ngx-ver-detalle>
+          <ngx-ver-acta-recibido [Modo]="'ver'" [Id_Acta]="actaSeleccionada"></ngx-ver-acta-recibido>
 
         </nb-card-body>
         <nb-card-body>

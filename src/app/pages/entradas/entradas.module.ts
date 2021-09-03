@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ThemeModule } from '../../@theme/theme.module';
+import { ActaRecibidoModule } from '../acta-recibido/acta-recibido.module';
 
 import { EntradasRoutingModule, routedComponents } from './entradas-routing.module';
 import { EntradasComponent } from './entradas.component';
@@ -14,7 +15,6 @@ import { TercerosComponent } from './terceros/terceros.component';
 import { ConsultaEntradaComponent } from './consulta-entrada/consulta-entrada.component';
 import { Ng2SmartTableModule } from 'ngx-smart-table';
 import { OwlDateTimeModule, OwlNativeDateTimeModule } from 'ng-pick-datetime';
-import { TablaEntradasComponent } from './tabla-entradas/tabla-entradas.component';
 import { CajaMenorComponent } from './caja-menor/caja-menor.component';
 import { AprovechamientosComponent } from './aprovechamientos/aprovechamientos.component';
 import { AdicionesMejorasComponent } from './adiciones-mejoras/adiciones-mejoras.component';
@@ -22,7 +22,6 @@ import { IntangiblesAdquiridosComponent } from './intangibles-adquiridos/intangi
 import { ExtranjeroComponent } from './extranjero/extranjero.component';
 import { ProvisionalComponent } from './provisional/provisional.component';
 import { IntangiblesDesarrolladosComponent } from './intangibles-desarrollados/intangibles-desarrollados.component';
-
 
 @NgModule({
   declarations: [
@@ -36,7 +35,6 @@ import { IntangiblesDesarrolladosComponent } from './intangibles-desarrollados/i
     RegistroComponent,
     TercerosComponent,
     ConsultaEntradaComponent,
-    TablaEntradasComponent,
     CajaMenorComponent,
     AprovechamientosComponent,
     AdicionesMejorasComponent,
@@ -44,7 +42,6 @@ import { IntangiblesDesarrolladosComponent } from './intangibles-desarrollados/i
     ExtranjeroComponent,
     ProvisionalComponent,
     IntangiblesDesarrolladosComponent,
-
   ],
   imports: [
     CommonModule,
@@ -53,6 +50,7 @@ import { IntangiblesDesarrolladosComponent } from './intangibles-desarrollados/i
     OwlDateTimeModule,
     OwlNativeDateTimeModule,
     Ng2SmartTableModule,
+    ActaRecibidoModule,
   ],
 })
 export class EntradasModule { }

@@ -3,7 +3,7 @@ import { LocalDataSource } from 'ngx-smart-table';
 import { ActaRecibido, ActaRecibidoUbicacion } from '../../../@core/data/models/acta_recibido/acta_recibido';
 import { Tercero } from '../../../@core/data/models/terceros';
 import { PopUpManager } from '../../../managers/popUpManager';
-import { VerDetalleComponent } from '../../acta-recibido/ver-detalle/ver-detalle.component';
+import { VerActaRecibidoComponent } from '../../acta-recibido/ver-acta-recibido/ver-acta-recibido.component';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
 import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
 import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
@@ -437,7 +437,7 @@ export class ListaMovimientosComponent implements OnInit {
   }
 
   loadActas(): void {
-    this.actaRecibidoHelper.getActasRecibidoPorEstados(6).subscribe(res => {
+    this.actaRecibidoHelper.getAllActasRecibidoByEstado(['Asociada a Entrada']).subscribe(res => {
       if (Array.isArray(res) && res.length !== 0) {
         const data = <Array<ActaRecibidoUbicacion>>res;
         this.actas = data;
