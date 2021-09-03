@@ -6,7 +6,7 @@
         <nb-card formGroupName="Formulario1">
           <nb-card-header>{{'GLOBAL.Acta_Recibido.VerificacionActa.DatosTitle' | translate}}</nb-card-header>
           <nb-card-body>
-            <div class="row">
+            <div class="row" *ngIf="Acta.ActaRecibido.TipoActaId.Id === 1">
               <div class="form-group col-sm">
                 <label>{{'GLOBAL.Acta_Recibido.ContratistaAsignado' | translate}}</label>
                 <div class="input-group">

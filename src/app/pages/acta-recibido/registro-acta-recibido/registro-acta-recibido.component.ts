@@ -85,6 +85,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
   Validador: any;
   TodaysDate: any;
   Registrando: Boolean;
+  cargarTab: boolean;
   DatosElementos: Array<any>;
   errores: Map<string, boolean>;
   private validarElementos: boolean;
@@ -366,20 +367,24 @@ export class RegistroActaRecibidoComponent implements OnInit {
     });
   }
 
-  deleteSoportes(index: number) {
-    (this.firstForm.get('Formulario2') as FormArray).removeAt(index);
+  tab() {
+    if (this.cargarTab) {
+      this.selectedTab = this.firstForm.get('Formulario2').value.length - 1;
+      this.cargarTab = false;
+    }
   }
 
-  addTab() {
-    this.addSoportes();
-    this.searchStr2.push();
-    this.selected.setValue(this.firstForm.get('Formulario2').value.length - 1);
+  addSoporte($event) {
+    if ($event === this.firstForm.get('Formulario2').value.length && !this.cargarTab) {
+      (this.firstForm.get('Formulario2') as FormArray).push(this.Formulario_2);
+      this.selectedTab = this.firstForm.get('Formulario2').value.length;
+      this.cargarTab = true;
+    }
   }
-
+  
   removeTab(i: number) {
-    this.deleteSoportes(i);
-    this.searchStr2.splice(i, 1);
-    this.selected.setValue(i - 1);
+    this.selectedTab = i - 1;
+    (this.firstForm.get('Formulario2') as FormArray).removeAt(i);
   }
 
   async postSoporteNuxeo(files: any) {
