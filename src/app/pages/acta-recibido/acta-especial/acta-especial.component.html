@@ -104,10 +104,10 @@
 
             <nb-card>
               <nb-card-body>
-                <ngx-capturar-elementos *ngIf="getPermisoEditar(permisos.Elementos)"  [Modo]="'agregar'"
+                <ngx-gestionar-elementos *ngIf="getPermisoEditar(permisos.Elementos)"  [Modo]="'agregar'"
                   (DatosTotales)="eventoTotales($event)" (DatosEnviados)="eventoListaElementos($event)"
                   (ElementosValidos)="setElementosValidos($event)">
-                </ngx-capturar-elementos>
+                </ngx-gestionar-elementos>
               </nb-card-body>
               <nb-card-footer>
                 <div class="justify-content-center">

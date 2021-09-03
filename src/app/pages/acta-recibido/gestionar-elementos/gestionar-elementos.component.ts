@@ -23,11 +23,11 @@ import { Subgrupo } from '../../../@core/data/models/catalogo/jerarquia';
 import { Detalle } from '../../../@core/data/models/catalogo/detalle';
 
 @Component({
-  selector: 'ngx-capturar-elementos',
+  selector: 'ngx-gestionar-elementos',
   templateUrl: './gestionar-elementos.component.html',
   styleUrls: ['./gestionar-elementos.component.scss'],
 })
-export class CapturarElementosComponent implements OnInit {
+export class GestionarElementosComponent implements OnInit {
   form: FormGroup;
   Validador: boolean = false;
   Totales: DatosLocales;

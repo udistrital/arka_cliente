@@ -190,11 +190,11 @@
                       </nb-card>
 
                       <!-- Elementos asociados al Soporte -->
-                      <ngx-capturar-elementos
+                      <ngx-gestionar-elementos
                         *ngIf="getPermisoEditar(permisos.Elementos) && !actaRegistrada"
                         (DatosTotales)="eventoTotales($event)" [ActaRecibidoId]="_Acta_Id" [Modo]="'agregar'"
                         (DatosEnviados)="eventoListaElementos($event)" (ElementosValidos)="setElementosValidos($event)">
-                      </ngx-capturar-elementos>
+                      </ngx-gestionar-elementos>
 
                     </div>
                   </mat-tab>
