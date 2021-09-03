@@ -24,8 +24,8 @@ import { Detalle } from '../../../@core/data/models/catalogo/detalle';
 
 @Component({
   selector: 'ngx-capturar-elementos',
-  templateUrl: './capturar-elementos.component.html',
-  styleUrls: ['./capturar-elementos.component.scss'],
+  templateUrl: './gestionar-elementos.component.html',
+  styleUrls: ['./gestionar-elementos.component.scss'],
 })
 export class CapturarElementosComponent implements OnInit {
   form: FormGroup;
@@ -132,15 +132,17 @@ export class CapturarElementosComponent implements OnInit {
     } else {
       this.dataSource = new MatTableDataSource<ElementoActa>();
     }
+    this.DatosEnviados.emit(this.elementos);
+    this.DatosTotales.emit(this.Totales);
     this.ver();
     this.cargando = false;
   }
 
   ReglasColumnas() {
+    const check = this.Modo === 'ver' ? [] : ['AccionesMacro'];
     this.ocultarAsignacionCatalogo = !this.confService.getAccion('mostrarAsignacionCatalogo');
     if (this.ocultarAsignacionCatalogo) {
-      this.displayedColumns = [
-        'AccionesMacro',
+      this.displayedColumns = check.concat([
         'Nombre',
         'Cantidad',
         'Marca',
@@ -152,11 +154,9 @@ export class CapturarElementosComponent implements OnInit {
         'PorcentajeIvaId',
         'ValorIva',
         'ValorTotal',
-        'Acciones',
-      ];
+      ]);
     } else {
-      this.displayedColumns = [
-        'AccionesMacro',
+      this.displayedColumns = check.concat([
         'CodigoSubgrupo',
         'SubgrupoCatalogoId',
         'TipoBienId',
@@ -171,9 +171,9 @@ export class CapturarElementosComponent implements OnInit {
         'PorcentajeIvaId',
         'ValorIva',
         'ValorTotal',
-        'Acciones',
-      ];
+      ]);
     }
+    this.Modo === 'agregar' ? this.displayedColumns.push('Acciones') : null;
   }
 
   onSelectedClase(selected: CompleterItem, fila: number) {
@@ -209,22 +209,17 @@ export class CapturarElementosComponent implements OnInit {
   // a cada elemento
   private validarElementos(): boolean {
     return (
-      Array.isArray(this.dataSource.data)
-      && this.dataSource.data.length // Al menos un elemento
-      && this.dataSource.data.every(elem => (
-          elem.hasOwnProperty('SubgrupoCatalogoId')
-          && elem.SubgrupoCatalogoId
-          && !isNaN(elem.SubgrupoCatalogoId)
-      ))
+      this.dataSource && Array.isArray(this.dataSource.data) &&
+        this.dataSource.data.length &&
+        this.dataSource.data.every(x => x.SubgrupoCatalogoId.SubgrupoId.Id) ? true : false
     );
   }
 
   ver() {
     if (this.dataSource && this.dataSource.data) {
       this.refrescaCheckTotal();
-      this.DatosTotales.emit(this.Totales);
-      this.ElementosValidos.emit(this.validarElementos());
-      this.DatosEnviados.emit(this.dataSource.data);
+      this.Modo === 'agregar' ? this.ElementosValidos.emit(this.validarElementos()) : null;
+      this.Modo === 'agregar' ? this.DatosEnviados.emit(this.dataSource.data) : null;
     } else {
       this.ElementosValidos.emit(false);
     }
@@ -634,6 +629,7 @@ export class CapturarElementosComponent implements OnInit {
     }
     this.checkTodos = checkTodos;
     this.checkParcial = checkParcial;
+    this.enviarSeleccionados();
   }
 
   cambioCheckTodos(marcar: boolean) {
@@ -654,7 +650,12 @@ export class CapturarElementosComponent implements OnInit {
   private estadoShift: boolean = false;
   private basePaginas: number = 0;
 
+  enviarSeleccionados() {
+    this.Modo === 'verificar' ? this.ElementosValidos.emit(this.elementosSeleccionados()) : null;
+  }
+
   setCasilla(fila: number, checked: boolean) {
+    this.enviarSeleccionados();
     fila += this.basePaginas;
     // console.log({fila, checked, 'shift': this.estadoShift, 'anterior': this.checkAnterior});
     if (this.estadoShift && this.checkAnterior !== undefined) { // Shift presionado
@@ -671,6 +672,14 @@ export class CapturarElementosComponent implements OnInit {
       }
     }
     this.refrescaCheckTotal();
+  }
+
+  private elementosSeleccionados(): boolean {
+    return (
+      this.dataSource && Array.isArray(this.dataSource.data) &&
+        this.dataSource.data.length &&
+        this.dataSource.data.every(x => x.seleccionado) ? true : false
+    );
   }
 
   keyDownTablaShift() {

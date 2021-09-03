@@ -1,6 +1,6 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { CapturarElementosComponent } from './capturar-elementos.component';
+import { CapturarElementosComponent } from './gestionar-elementos.component';
 
 describe('CapturarElementosComponent', () => {
   let component: CapturarElementosComponent;
