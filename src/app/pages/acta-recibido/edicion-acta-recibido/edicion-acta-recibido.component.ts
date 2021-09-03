@@ -103,6 +103,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
   private elementosValidos: boolean = false;
   private validarElementos: boolean;
   Acta: TransaccionActaRecibido;
+  totales: any;
 
   permisos: {
     Acta: Permiso,
@@ -852,10 +853,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
     this.DatosElementos = event;
   }
 
-  // Totales
-  eventoTotales(event: any, index: number) {
-    this.DatosTotales = event;
-  }
   Revisar_Totales() {
     (Swal as any).fire({
       type: 'warning',
@@ -932,18 +929,10 @@ export class EdicionActaRecibidoComponent implements OnInit {
     });
   }
 
-  getGranSubtotal() {
-    return this.DatosTotales.Descuento;
+  eventoTotales(event) {
+    this.totales = event;
   }
-  getGranDescuentos() {
-      return this.DatosTotales.Descuento;
-  }
-  getGranValorIva() {
-      return this.DatosTotales.ValorIva;
-  }
-  getGranTotal() {
-      return this.DatosTotales.ValorTotal;
-  }
+
   clear() {
     this.firstForm.get('Formulario2')['controls'][0].get('Fecha_Factura').patchValue('');
     this.firstForm.get('Formulario2')['controls'][0].get('Fecha_Factura').setValidators(this.checkDate());

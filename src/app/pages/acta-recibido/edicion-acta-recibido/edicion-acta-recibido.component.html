@@ -220,25 +220,25 @@
           <!-- Resumen, Validación, Envío, Guardar -->
           <mat-step label="Datos Adicionales" formGroupName="Formulario3">
 
-            <nb-card *ngIf="DatosElementos && DatosElementos.length > 0">
+            <nb-card *ngIf="totales">
               <nb-card-header>{{'GLOBAL.Acta_Recibido.EdicionActa.Consolidado' | translate}}</nb-card-header>
               <nb-card-body>
                 <table class="consolidado">
                   <tr>
                     <th class="cell-3">{{'GLOBAL.Acta_Recibido.EdicionActa.Subtotal' | translate}}</th>
-                    <td class="cell-3">{{getGranSubtotal() | currency}}</td>
+                    <td class="cell-3">{{totales.Subtotal | currency}}</td>
                   </tr>
                   <tr>
                     <th class="cell-3">{{'GLOBAL.Acta_Recibido.EdicionActa.Descuento' | translate}}</th>
-                    <td class="cell-3">{{getGranDescuentos() | currency}}</td>
+                    <td class="cell-3">{{totales.Descuento | currency}}</td>
                   </tr>
                   <tr>
                     <th class="cell-3">{{'GLOBAL.Acta_Recibido.EdicionActa.ValorIva' | translate}}</th>
-                    <td class="cell-3">{{getGranValorIva() | currency}}</td>
+                    <td class="cell-3">{{totales.ValorIva | currency}}</td>
                   </tr>
                   <tr>
                     <th class="cell-3">{{'GLOBAL.Acta_Recibido.EdicionActa.Total' | translate}}</th>
-                    <td class="cell-3">{{getGranTotal() | currency}}</td>
+                    <td class="cell-3">{{totales.ValorTotal | currency}}</td>
                   </tr>
                 </table>
               </nb-card-body>
