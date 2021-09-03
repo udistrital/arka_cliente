@@ -3,8 +3,6 @@ import { Routes, RouterModule } from '@angular/router';
 import { ActaRecibidoComponent } from './acta-recibido.component';
 import { RegistroActaRecibidoComponent } from './registro-acta-recibido/registro-acta-recibido.component';
 import { ConsultaActaRecibidoComponent } from './consulta-acta-recibido/consulta-acta-recibido.component';
-import { EdicionActaRecibidoComponent } from './edicion-acta-recibido/edicion-acta-recibido.component';
-import { ActaEspecialComponent } from './acta-especial/acta-especial.component';
 
 const routes: Routes = [{
   path: '',
@@ -17,26 +15,12 @@ const routes: Routes = [{
     {
       path: 'registro_acta_recibido',
       component: RegistroActaRecibidoComponent,
+      data: { tipoActa: 'regular' },
     },
     {
-      path: 'edicion_acta_recibido',
-      component: EdicionActaRecibidoComponent,
-    },
-    {
-      path: 'verificacion_acta_recibido',
-      component: VerificacionActaRecibidoComponent,
-    },
-    {
-      path: 'ver_detalle',
-      component: VerDetalleComponent,
-    },
-    {
-      path: 'capturar_elementos',
-      component: CapturarElementosComponent,
-    },
-    {
-      path: 'acta_especial',
-      component: ActaEspecialComponent,
+      path: 'registro_acta_especial',
+      component: RegistroActaRecibidoComponent,
+      data: { tipoActa: 'especial' },
     },
   ],
 }];

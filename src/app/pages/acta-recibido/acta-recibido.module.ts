@@ -20,7 +20,6 @@ import { NgxCurrencyModule } from 'ngx-currency';
 import { rootReducer } from '../../@core/store/rootReducer';
 import { Store, StoreModule } from '@ngrx/store';
 import { ListService } from '../../@core/store/services/list.service';
-import { ActaEspecialComponent } from './acta-especial/acta-especial.component';
 import { VerActaRecibidoComponent } from './ver-acta-recibido/ver-acta-recibido.component';
 
 
@@ -32,7 +31,6 @@ import { VerActaRecibidoComponent } from './ver-acta-recibido/ver-acta-recibido.
     ConsultaActaRecibidoComponent,
     EdicionActaRecibidoComponent,
     GestionarElementosComponent,
-    ActaEspecialComponent,
   ],
   imports: [
     CommonModule,
