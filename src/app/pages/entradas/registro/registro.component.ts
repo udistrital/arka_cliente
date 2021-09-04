@@ -81,13 +81,11 @@ export class RegistroComponent implements OnInit {
       columns: {
         Id: {
           title: this.translate.instant('GLOBAL.consecutivo'),
+          width: '70',
         },
         FechaCreacion: {
-          title: this.translate.instant('GLOBAL.fecha_creacion'),
-          valuePrepareFunction: (value: any) => {
-            const date = value.split('T');
-            return date[0];
-          },
+          title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.FechaCreacionHeader'),
+          width: '70',
           filter: {
             type: 'daterange',
             config: {
@@ -98,11 +96,8 @@ export class RegistroComponent implements OnInit {
           },
         },
         FechaVistoBueno: {
-          title: this.translate.instant('GLOBAL.fecha_visto_bueno'),
-          valuePrepareFunction: (value: any) => {
-            const date = value.split('T');
-            return date[0];
-          },
+          title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.FechaVistoBuenoHeader'),
+          width: '70',
           filter: {
             type: 'daterange',
             config: {
@@ -113,12 +108,21 @@ export class RegistroComponent implements OnInit {
           },
         },
         RevisorId: {
-          title: this.translate.instant('GLOBAL.revisor'),
+          title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.ModificadaPor'),
+          valuePrepareFunction: (value: any) => {
+            return value;
+          },
         },
         UbicacionId: {
-          title: this.translate.instant('GLOBAL.ubicacion'),
+          title: this.translate.instant('GLOBAL.dependencia'),
           valuePrepareFunction: (value: any) => {
-            return value.EspacioFisicoId.Nombre.toUpperCase();
+            return value;
+          },
+        },
+        PersonaAsignada: {
+          title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.AceptadaPor'),
+          valuePrepareFunction: (value: any) => {
+            return value;
           },
         },
         /*
@@ -140,11 +144,12 @@ export class RegistroComponent implements OnInit {
   }
 
   loadActas(): void {
-    this.actaRecibidoHelper.getActasRecibido().subscribe(res => {
+    this.actaRecibidoHelper.getAllActasRecibidoByEstado(['Aceptada']).subscribe(res => {
       if (Array.isArray(res) && res.length !== 0) {
-        const data = <Array<ActaRecibidoUbicacion>>res;
+        const data = <Array<any>>res;
         this.actas = data;
-        this.mostrarData();
+        this.source.load(res);
+        this.mostrar = true;
       }
     });
   }
@@ -175,8 +180,8 @@ export class RegistroComponent implements OnInit {
   }
 
   onCustom(event) {
-    this.actaRecibidoHelper.getTransaccionActa(event.data.Id).subscribe(res => {
-      res[0].SoportesActa[0].SoporteActa.ProveedorId ?
+    this.actaRecibidoHelper.getTransaccionActa(event.data.Id, true).subscribe(res => {
+      res.ActaRecibido.TipoActaId.Id === 1 ?
         this.entradasHelper.getTiposEntradaByOrden(1).subscribe(res_ => {
           this.tiposDeEntradas = res_;
         }) : this.entradasHelper.getTiposEntradaByOrden(2).subscribe(res__ => {

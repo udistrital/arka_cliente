@@ -4,41 +4,34 @@ import { map, startWith } from 'rxjs/operators';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, FormControl, FormArray, ValidatorFn, AbstractControl, ValidationErrors } from '@angular/forms';
 import { NuxeoService } from '../../../@core/utils/nuxeo.service';
-import { AuthInterceptor } from './../../../@core/_Interceptor/auth.Interceptor';
 import { MatTable } from '@angular/material';
 import 'hammerjs';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
 import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
 import { ActaRecibido } from '../../../@core/data/models/acta_recibido/acta_recibido';
-import { Elemento, Impuesto } from '../../../@core/data/models/acta_recibido/elemento';
-import { TipoBien } from '../../../@core/data/models/acta_recibido/tipo_bien';
-import { SoporteActa, Ubicacion } from '../../../@core/data/models/acta_recibido/soporte_acta';
-import { Proveedor } from '../../../@core/data/models/acta_recibido/Proveedor';
+import { Elemento } from '../../../@core/data/models/acta_recibido/elemento';
+import { SoporteActa } from '../../../@core/data/models/acta_recibido/soporte_acta';
 import { EstadoActa_t } from '../../../@core/data/models/acta_recibido/estado_acta';
-import { EstadoElemento } from '../../../@core/data/models/acta_recibido/estado_elemento';
 import { HistoricoActa } from '../../../@core/data/models/acta_recibido/historico_acta';
-import { TransaccionSoporteActa, TransaccionActaRecibido } from '../../../@core/data/models/acta_recibido/transaccion_acta_recibido';
+import { TransaccionActaRecibido } from '../../../@core/data/models/acta_recibido/transaccion_acta_recibido';
 import { TerceroCriterioContratista, TerceroCriterioProveedor } from '../../../@core/data/models/terceros_criterio';
 import Swal from 'sweetalert2';
-import { ToasterService, ToasterConfig, Toast, BodyOutputType } from 'angular2-toaster';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
-import { Unidad } from '../../../@core/data/models/acta_recibido/unidades';
 import { CompleterData, CompleterService } from 'ng2-completer';
 import { Store } from '@ngrx/store';
 import { IAppState } from '../../../@core/store/app.state';
 import { ListService } from '../../../@core/store/services/list.service';
-import { combineAll } from 'rxjs-compat/operator/combineAll';
 import { SafeResourceUrl, DomSanitizer } from '@angular/platform-browser';
 import { PopUpManager } from '../../../managers/popUpManager';
 import { ConfiguracionService } from '../../../@core/data/configuracion.service';
 import { DocumentoService } from '../../../@core/data/documento.service';
-import { analyzeAndValidateNgModules } from '@angular/compiler';
 import { HttpErrorResponse } from '@angular/common/http';
 import { UserService } from '../../../@core/data/users.service';
 import { RolUsuario_t as Rol, PermisoUsuario_t as Permiso } from '../../../@core/data/models/roles/rol_usuario';
 import { permisosSeccionesActas } from './reglas';
-import { NbDateService } from '@nebular/theme';
 import { isObject } from 'rxjs/internal-compatibility';
+import { TipoActa } from '../../../@core/data/models/acta_recibido/tipo_acta';
+import { EstadoElemento } from '../../../@core/data/models/acta_recibido/estado_elemento';
 
 @Component({
   selector: 'ngx-edicion-acta-recibido',
@@ -47,11 +40,9 @@ import { isObject } from 'rxjs/internal-compatibility';
 })
 export class EdicionActaRecibidoComponent implements OnInit {
 
-  config: ToasterConfig;
   searchStr: string;
   searchStr2: string[];
   searchStr3: string;
-  cargandoTerceros: boolean = true;
   private Contratistas: TerceroCriterioContratista[];
   contratistasFiltrados: Observable<TerceroCriterioContratista[]>;
   private Proveedores: Partial<TerceroCriterioProveedor>[];
@@ -77,7 +68,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
   Validador: any[] = [];
   uidDocumento: any[] = [];
   idDocumento: any[] = [];
-  ActaEspecial: boolean;
 
   // Tablas parametricas
 
@@ -91,38 +81,30 @@ export class EdicionActaRecibidoComponent implements OnInit {
 
   }
 
+
   @Input('estado') estadoActa: string;
   actaRegistrada: boolean;
   Estados_Acta: any;
-  Tipos_Bien: any;
   Estados_Elemento: any;
 
   // Modelos
 
-  Acta__: ActaRecibido;
-  Elementos__Soporte: Array<any[]>;
-  Soportes_Acta: Array<SoporteActa>;
-  Historico_Acta: HistoricoActa;
-  Transaccion__: TransaccionActaRecibido;
-  Unidades: any;
   DatosElementos: Array<any>;
-  Acta: ActaRecibido;
   TodaysDate: any;
-  observable: any;
-
-  Ubicaciones: any;
   UbicacionesFiltradas: any;
   Sedes: any;
   Dependencias: any;
   DatosTotales: any;
-  Totales: Array<any>;
   dataService3: CompleterData;
-  Tarifas_Iva: any;
   guardando: boolean = false;
+  sedeDependencia: any;
   private actaCargada: boolean = false;
   private SoporteElementosValidos: Array<boolean>;
   private elementosValidos: boolean = false;
   private validarElementos: boolean;
+  Acta: TransaccionActaRecibido;
+  totales: any;
+  minLength: number = 4;
 
   permisos: {
     Acta: Permiso,
@@ -151,7 +133,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
     private fb: FormBuilder,
     private Actas_Recibido: ActaRecibidoHelper,
     private tercerosHelper: TercerosHelper,
-    private toasterService: ToasterService,
     private completerService: CompleterService,
     private store: Store<IAppState>,
     private confService: ConfiguracionService,
@@ -161,7 +142,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
     private nuxeoService: NuxeoService,
     private documentoService: DocumentoService,
     private userService: UserService,
-    private dateService: NbDateService<Date>,
   ) {
     this.Contratistas = [];
     this.Proveedores = [];
@@ -172,7 +152,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
     this.idDocumento = [];
     this.searchStr2 = new Array<string>();
     this.DatosElementos = new Array<any>();
-    this.Elementos__Soporte = new Array<any>();
     this.TodaysDate = new Date();
   }
 
@@ -183,18 +162,20 @@ export class EdicionActaRecibidoComponent implements OnInit {
     this.listService.findSedes();
     this.listService.findEstadosActa();
     this.listService.findEstadosElemento();
-    this.listService.findTipoBien();
-    this.listService.findUnidades();
-    this.listService.findImpuestoIVA();
     this.defineSiHayQueValidarElementosParaEnviar();
-    this.loadLists();
     this.cargaPermisos();
-    if (!this.userService.getPersonaId()) {
-      this.errores.set('terceros', true);
-    }
+    this.errores = new Map<string, boolean>();
+    this.Acta = new TransaccionActaRecibido;
+    this.initForms();
     this.actaRegistrada = this.estadoActa === 'Registrada' ? true : false;
   }
 
+  private async initForms() {
+    const data = [this.loadLists(), this.loadProveedores(), this.loadContratistas(), this.cargaActa()];
+    await Promise.all(data);
+    this.Cargar_Formularios(this.Acta);
+    this.actaCargada = true;
+  }
   // Los permisos en cada sección dependen del estado del acta y del rol.
   cargaPermisos() {
     // console.log({'this.estadoActualActa': this.estadoActa});
@@ -298,101 +279,47 @@ export class EdicionActaRecibidoComponent implements OnInit {
     // console.log({elemValiudos: this.elementosValidos});
   }
 
-  Cargar_localStorage(Acta: any) {
-    if (sessionStorage.Formulario_Edicion == null) {
-      this.Cargar_Formularios(Acta);
-    } else {
-      const formulario = JSON.parse(sessionStorage.Formulario_Edicion);
-      // console.log(sessionStorage.Formulario_Edicion);
-      // console.log(sessionStorage.Elementos_Formulario_Edicion);
-      let elementos;
-      if (sessionStorage.Elementos_Formulario_Edicion === []) {
-        elementos = [];
-      } else {
-        elementos = JSON.parse(sessionStorage.getItem('Elementos_Formulario_Edicion'));
-        // console.log(elementos);
-      }
-      (Swal as any).fire({
-        type: 'warning',
-        title: 'Edicion sin completar del acta ' + `${formulario.Formulario1.Id}`,
-        text: 'Existe un Edicion nuevo sin terminar, que desea hacer?',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#3085d6',
-        confirmButtonText: 'Seguir con anterior',
-        cancelButtonText: 'Nuevo Edicion, se eliminara el Edicion anterior',
-      }).then((result) => {
-        if (result.value) {
-          this.Cargar_Formularios2(formulario, elementos);
-        } else {
-          (Swal as any).fire({
-            type: 'warning',
-            title: 'Ultima Palabra?',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#3085d6',
-            confirmButtonText: 'Si, Nuevo Edicion',
-            cancelButtonText: 'No, Usar Anterior',
-          }).then((result2) => {
-            if (result2.value) {
-              sessionStorage.removeItem('Formulario_Edicion');
-              sessionStorage.removeItem('Elementos_Formulario_Edicion');
-              this.Cargar_Formularios(Acta);
-            } else {
-              this.Cargar_Formularios2(formulario, elementos);
-            }
-          });
-        }
+  private cargaActa(): Promise<void> {
+    return new Promise<void>(resolve => {
+      this.Actas_Recibido.getTransaccionActa(this._Acta_Id, false).subscribe(async Acta => {
+        this.Acta = Acta;
+        resolve();
       });
-    }
+    });
   }
 
-  public loadLists() {
-    this.store.select((state) => state).subscribe(
-      (list) => {
-        this.Estados_Acta = list.listEstadosActa[0];
-        this.Estados_Elemento = list.listEstadosElemento[0];
-        this.Tipos_Bien = list.listTipoBien[0];
-        this.Unidades = list.listUnidades[0];
-        this.Tarifas_Iva = list.listIVA[0];
-        this.Dependencias = list.listDependencias[0];
-        this.Sedes = list.listSedes[0];
-        this.dataService3 = this.completerService.local(this.Dependencias, 'Nombre', 'Nombre');
-        this.cargaActa();
-      },
-    );
-  }
-
-  private cargaActa() {
-    if (!this.actaCargada &&
-      this.Estados_Acta !== undefined &&
-      this.Estados_Elemento !== undefined &&
-      this.Tipos_Bien !== undefined &&
-      this.Unidades !== undefined &&
-      this.Tarifas_Iva !== undefined &&
-      this.Dependencias !== undefined &&
-      this.Sedes !== undefined &&
-      this._Acta_Id !== undefined
-    ) {
-      this.Actas_Recibido.getTransaccionActa(this._Acta_Id).subscribe(async Acta => {
-        await this.loadTerceros();
-        this.Cargar_Formularios(Acta[0]);
-        this.actaCargada = true;
-      });
-    }
-  }
-
-  private loadTerceros() {
-    return new Promise<void>(async (resolve, reject) => {
-      this.tercerosHelper.getTercerosByCriterio('contratista').subscribe(res => {
+  private loadContratistas(): Promise<void> {
+    return new Promise<void>(resolve => {
+      this.tercerosHelper.getTercerosByCriterio('contratista').toPromise().then(res => {
         this.Contratistas = res;
-        this.tercerosHelper.getTercerosByCriterio('proveedor').subscribe(resP => {
-          this.Proveedores = resP;
-          this.cargandoTerceros = false;
-          resolve();
-        });
-      }, error => {
-        reject(error);
+        resolve();
+      });
+    });
+  }
+
+  private loadProveedores(): Promise<void> {
+    return new Promise<void>(resolve => {
+      this.tercerosHelper.getTercerosByCriterio('proveedor').toPromise().then(res => {
+        this.Proveedores = res;
+        resolve();
+      });
+    });
+  }
+
+  private loadLists(): Promise<void> {
+    return new Promise<void>(async (resolve) => {
+      this.store.select((state) => state).subscribe(list => {
+        this.Sedes = list.listSedes[0],
+          this.Dependencias = list.listDependencias[0],
+          this.Estados_Acta = list.listEstadosActa[0],
+          this.Estados_Elemento = list.listEstadosElemento[0],
+          this.dataService3 = this.completerService.local(this.Dependencias, 'Nombre', 'Nombre'),
+          !this.userService.getPersonaId() ? this.errores.set('terceros', true) : null,
+
+          (this.Sedes && this.Sedes.length > 0 && this.Dependencias && this.Dependencias.length > 0 &&
+            this.Estados_Elemento && this.Estados_Elemento.length > 0 &&
+            this.Estados_Acta && this.Estados_Acta.length > 0 &&
+            this.Estados_Elemento && this.Estados_Elemento.length > 0) ? resolve() : null;
       });
     });
   }
@@ -471,191 +398,129 @@ export class EdicionActaRecibidoComponent implements OnInit {
 
   }
 
-  Cargar_Formularios(transaccion_: TransaccionActaRecibido) {
-    this.Actas_Recibido.getSedeDependencia(transaccion_.ActaRecibido.UbicacionId).subscribe(res => {
-      let valor = '';
-      if (res[0].hasOwnProperty('EspacioFisicoId') && res[0].EspacioFisicoId.hasOwnProperty('Codigo')) {
-        valor = res[0].EspacioFisicoId.Codigo.substring(0, 4);
-      }
-      const Form2 = this.fb.array([]);
-      const elementos = new Array<any[]>();
-      transaccion_.SoportesActa.forEach((Soporte, index) => {
-        // this.ActaEspecial = Soporte.SoporteActa.ProveedorId.toString() === '0' ? true : false;
-        this.ActaEspecial = false;
-        const Formulario__2 = this.fb.group({
-          Id: [Soporte.SoporteActa.Id],
-          Proveedor: [
-            {
-              value: Soporte.SoporteActa.ProveedorId === 0 ? null :
-                this.Proveedores.find((proveedor) =>
-                  proveedor.Tercero.Id === Soporte.SoporteActa.ProveedorId),
-              disabled: !this.getPermisoEditar(this.permisos.Acta),
-            },
-            { validators: this.actaRegistrada ? [this.validarTercero()] : [Validators.required, this.validarTercero()] },
-          ],
-          Consecutivo: [
-            {
-              value: Soporte.SoporteActa.Consecutivo,
-              disabled: !this.getPermisoEditar(this.permisos.Acta),
-            },
-            { validators: this.actaRegistrada ? [] : [Validators.required] },
-          ],
-          Fecha_Factura: [
-            {
-              value: new Date(Soporte.SoporteActa.FechaSoporte) > new Date('1945') ?
-               new Date(Soporte.SoporteActa.FechaSoporte.toString().split('Z')[0]) : '',
-              disabled: !this.getPermisoEditar(this.permisos.Acta),
-            },
-            { validators: this.checkDate() }],
-          Soporte: [Soporte.SoporteActa.DocumentoId, Validators.required],
-        });
-        this.Validador[index] = true;
-        this.uidDocumento[index] = Soporte.SoporteActa.DocumentoId;
-        const elementoSoporte = [];
-        if (Soporte.Elementos && Soporte.Elementos.length)
-          for (const _Elemento of Soporte.Elementos) { // Para alguna actas lanza error "Cannot read 'length' of null"
-
-            const Elemento___ = {
-              Id: _Elemento.Id,
-              TipoBienId: _Elemento.TipoBienId !== null ?
-                this.Tipos_Bien.find(tipo => tipo.Id.toString() === _Elemento.TipoBienId.Id.toString()).Id : 0,
-              SubgrupoCatalogoId: _Elemento.SubgrupoCatalogoId,
-              Nombre: _Elemento.Nombre,
-              Cantidad: _Elemento.Cantidad,
-              Marca: _Elemento.Marca,
-              Serie: _Elemento.Serie,
-              UnidadMedida: this.Unidades.find(unidad => unidad.Id.toString() === _Elemento.UnidadMedida.toString()).Id,
-              ValorUnitario: _Elemento.ValorUnitario,
-              Subtotal: _Elemento.ValorTotal,
-              Descuento: _Elemento.Descuento,
-              PorcentajeIvaId: this.Tarifas_Iva.find(tarifa => tarifa.Tarifa === _Elemento.PorcentajeIvaId) ?
-                this.Tarifas_Iva.find(tarifa => tarifa.Tarifa === _Elemento.PorcentajeIvaId).Tarifa : '',
-              ValorIva: _Elemento.ValorIva,
-              ValorTotal: _Elemento.ValorFinal,
-            };
-            elementoSoporte.push(Elemento___);
-          }
-        elementos.push(elementoSoporte);
-        // Nota: si se va a usar más de un soporte y el proveedor sigue haciendo parte del soporte,
-        // habrá que hacer de proveedoresFiltrados un arreglo.
-        this.proveedoresFiltrados = Formulario__2.get('Proveedor').valueChanges.pipe(
-          startWith(''),
-          map(val => typeof val === 'string' ? val : this.muestraProveedor(val)),
-          map(nombre => this.filtroProveedores(nombre)),
-        );
-        Form2.push(Formulario__2);
-      });
-
-      this.Elementos__Soporte = elementos;
-      this.SoporteElementosValidos = new Array<boolean>(this.Elementos__Soporte.length);
-
-      const sede = (() => {
-        const criterio = x => x && x.CodigoAbreviacion === valor.toString();
-        if (this.Sedes.some(criterio)) {
-          return this.Sedes.find(criterio).Id;
-        }
-        return '';
-      })();
-      const dependencia = (() => {
-        const criterio = x => res[0].hasOwnProperty('DependenciaId') && x.Id === res[0].DependenciaId.Id;
-        if (this.Dependencias.some(criterio)) {
-          return this.Dependencias.find(criterio).Nombre;
-        }
-        return '';
-      })();
-
-      this.firstForm = this.fb.group({
-        Formulario1: this.fb.group({
-          Id: [transaccion_.ActaRecibido.Id],
-          Sede: [
-            {
-              value: sede,
-              disabled: !this.getPermisoEditar(this.permisos.Acta),
-            },
-            { validators: this.actaRegistrada ? [] : [Validators.required] },
-          ],
-          Dependencia: [dependencia,
-            { validators: this.actaRegistrada ? [] : [Validators.required] }],
-          Ubicacion: [
-            {
-              value: transaccion_.ActaRecibido.UbicacionId === 0 ? '' : transaccion_.ActaRecibido.UbicacionId,
-              disabled: !this.getPermisoEditar(this.permisos.Acta),
-            },
-            { validators: this.actaRegistrada ? [] : [Validators.required] },
-          ],
-          Contratista: [
-            {
-              value: (() => {
-                const criterio = (contratista: TerceroCriterioContratista) =>
-                  contratista &&
-                  contratista.Tercero.Id === transaccion_.ActaRecibido.PersonaAsignada;
-                return this.Contratistas.some(criterio) ? this.Contratistas.find(criterio) : '';
-              })(),
-              disabled: !this.getPermisoEditar(this.permisos.Acta),
-            },
-            [Validators.required, this.validarTercero()],
-          ],
-        }),
-        Formulario2: Form2,
-        Formulario3: this.fb.group({
-          Datos_Adicionales: [transaccion_.ActaRecibido.Observaciones,
-          { validators: this.actaRegistrada ? [] : [Validators.required] }],
-        }),
-      }, { validators: this.checkValidness });
-      sede && dependencia ? this.Traer_Relacion_Ubicaciones(sede, dependencia) : null;
-      this.carga_agregada = true;
-
-      this.contratistasFiltrados = this.firstForm.get('Formulario1').get('Contratista').valueChanges.pipe(
-        startWith(''),
-        map(val => typeof val === 'string' ? val : this.muestraContratista(val)),
-        map(nombre => this.filtroContratistas(nombre)),
-      );
-      // console.log(this.contratistasFiltrados)
-    });
-  }
-
-  Cargar_Formularios2(transaccion_: any, elementos_: any) {
+  async Cargar_Formularios(transaccion_: TransaccionActaRecibido) {
+    const ar = transaccion_.ActaRecibido.TipoActaId.Id === 1;
     const Form2 = this.fb.array([]);
-    const elementos = new Array<any[]>();
-
-    for (const Soporte of transaccion_.Formulario2) {
-      const Formulario__2 = this.fb.group({
-        Id: [''],
-        Proveedor: [Soporte.Proveedor],
-        Consecutivo: [Soporte.Consecutivo],
-        Fecha_Factura: [Soporte.Fecha_Factura],
-        Soporte: [Soporte.Soporte, Validators.required],
+    transaccion_.SoportesActa.forEach((Soporte, index) => {
+      const formulario2 = this.fb.group({
+        Id: [Soporte.Id],
+        Consecutivo: [
+          {
+            value: Soporte.Consecutivo,
+            disabled: !this.getPermisoEditar(this.permisos.Acta),
+          },
+          { validators:  !ar || this.actaRegistrada ? [] : [Validators.required] },
+        ],
+        Fecha_Factura: [
+          {
+            value: new Date(Soporte.FechaSoporte) > new Date('1945') ?
+              new Date(Soporte.FechaSoporte.toString().split('Z')[0]) : '',
+            disabled: !this.getPermisoEditar(this.permisos.Acta),
+          },
+          { validators:  !ar ? [] : this.checkDate() }],
+        Soporte: [Soporte.DocumentoId, Validators.required],
       });
-      Form2.push(Formulario__2);
-    }
-    this.Elementos__Soporte = elementos_;
+      this.Validador[index] = true;
+      this.uidDocumento[index] = Soporte.DocumentoId;
+
+      Form2.push(formulario2);
+    });
+
+    transaccion_.UltimoEstado.UbicacionId ? await this.getSedeDepencencia(transaccion_.UltimoEstado.UbicacionId) : null;
 
     this.firstForm = this.fb.group({
       Formulario1: this.fb.group({
-        Id: [''],
-        Sede: [transaccion_.Formulario1.Sede],
-        Dependencia: [transaccion_.Formulario1.Dependencia],
-        Ubicacion: [transaccion_.Formulario1.Ubicacion],
-        Contratista: [transaccion_.Formulario1.Contratista, Validators.required],
+        Id: [transaccion_.ActaRecibido.Id],
+        Sede: [
+          {
+            value: this.sedeDependencia ? this.sedeDependencia.sede : '',
+            disabled: !this.getPermisoEditar(this.permisos.Acta),
+          },
+          { validators: this.actaRegistrada ? [] : [Validators.required] },
+        ],
+        Dependencia: [ this.sedeDependencia ? this.sedeDependencia.dependencia : '',
+        { validators: this.actaRegistrada ? [] : [Validators.required] }],
+        Ubicacion: [
+          {
+            value: transaccion_.UltimoEstado.UbicacionId === 0 ? '' : transaccion_.UltimoEstado.UbicacionId,
+            disabled: !this.getPermisoEditar(this.permisos.Acta),
+          },
+          { validators: this.actaRegistrada ? [] : [Validators.required] },
+        ],
+        Contratista: [
+          {
+            value: (() => {
+              const criterio = (contratista: TerceroCriterioContratista) =>
+                contratista &&
+                contratista.Tercero.Id === transaccion_.UltimoEstado.PersonaAsignadaId;
+              return this.Contratistas.some(criterio) ? this.Contratistas.find(criterio) : '';
+            })(),
+            disabled: !this.getPermisoEditar(this.permisos.Acta),
+          }, ar ? [Validators.required, this.validarTercero()] : [],
+        ],
+        Proveedor: [
+          {
+            value: transaccion_.UltimoEstado.ProveedorId === 0 ? null :
+              this.Proveedores.find((proveedor) =>
+                proveedor.Tercero.Id === transaccion_.UltimoEstado.ProveedorId),
+            disabled: !this.getPermisoEditar(this.permisos.Acta),
+          },
+          { validators: !ar ? [] : this.actaRegistrada ? [this.validarTercero()] : [Validators.required, this.validarTercero()] },
+        ],
       }),
       Formulario2: Form2,
       Formulario3: this.fb.group({
-        Datos_Adicionales: [transaccion_.Formulario3.Datos_Adicionales],
+        Datos_Adicionales: [transaccion_.UltimoEstado.Observaciones],
       }),
-    });
+    }, { validators: this.checkValidness });
+
+    this.initTerceros();
+    this.sedeDependencia ? this.Traer_Relacion_Ubicaciones(this.sedeDependencia.sede, this.sedeDependencia.dependencia) : null;
     this.carga_agregada = true;
-    this.Traer_Relacion_Ubicaciones(transaccion_.Formulario1.Sede, transaccion_.Formulario1.Dependencia);
   }
 
-  async Traer_Sede_Dependencia(id) {
-    await this.Actas_Recibido.getSedeDependencia(id).subscribe(res => {
-      // console.log(res);
-      const valor = res[0].EspacioFisicoId.Codigo.substring(0, 4);
-      // console.log(valor);
-      const Sede = this.Sedes.find(x => x.CodigoAbreviacion === valor.toString()).Id;
-      const _Dependencia = res[0].DependenciaId.Id;
-      // console.log(Sede, Dependencia);
-      return [Sede, _Dependencia];
+  private initTerceros() {
+    this.proveedoresFiltrados = this.firstForm.get('Formulario1').get('Proveedor').valueChanges.pipe(
+      startWith(''),
+      map(val => typeof val === 'string' ? val : this.muestraProveedor(val)),
+      map(nombre => this.filtroProveedores(nombre)),
+    );
+
+    this.contratistasFiltrados = this.firstForm.get('Formulario1').get('Contratista').valueChanges.pipe(
+      startWith(''),
+      map(val => typeof val === 'string' ? val : this.muestraContratista(val)),
+      map(nombre => this.filtroContratistas(nombre)),
+    );
+  }
+
+  async getSedeDepencencia(ubicacionId: number): Promise<void> {
+
+    return new Promise<void>(resolve => {
+      this.Actas_Recibido.getSedeDependencia(ubicacionId).toPromise().then(res => {
+
+        const espacioFisico = res[0].EspacioFisicoId.Codigo.substring(0, 4);
+        const _dependencia = res[0].DependenciaId.Id;
+
+        const sede = (() => {
+          const criterio = x => x && x.CodigoAbreviacion === espacioFisico.toString();
+          if (this.Sedes.some(criterio)) {
+            return this.Sedes.find(criterio).Id;
+          }
+          return '';
+        })();
+
+        const dependencia = (() => {
+          const criterio = x => _dependencia && x.Id === _dependencia;
+          if (this.Dependencias.some(criterio)) {
+            return this.Dependencias.find(criterio).Nombre;
+          }
+          return '';
+        })();
+
+        this.sedeDependencia = { sede: sede, dependencia: dependencia };
+
+        resolve();
+      });
     });
   }
 
@@ -663,7 +528,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
     sede = (sede) ? sede : this.firstForm.get('Formulario1').get('Sede').value;
     dependencia = (dependencia) ? dependencia : this.firstForm.get('Formulario1').get('Dependencia').value;
     if (this.firstForm.get('Formulario1').get('Sede').valid && this.firstForm.get('Formulario1').get('Dependencia').valid &&
-      sede !== '' && dependencia !== '' && this.Sedes && this.Dependencias) {
+      sede !== undefined && dependencia !== undefined && this.Sedes && this.Dependencias) {
       this.UbicacionesFiltradas = [];
       this.carga_agregada ? this.firstForm.patchValue({ Formulario1: { Ubicacion: '' } }) : null;
       const transaccion: any = {};
@@ -677,16 +542,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
     }
   }
 
-
-  get Formulario_1(): FormGroup {
-    return this.fb.group({
-      Id: [0],
-      Sede: [''],
-      Dependencia: [''],
-      Ubicacion: [''],
-      Contratista: ['', Validators.required],
-    });
-  }
   get Formulario_2(): FormGroup {
     return this.fb.group({
       Id: [0],
@@ -694,30 +549,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
       Consecutivo: [''],
       Fecha_Factura: [''],
       Soporte: ['', Validators.required],
-      Elementos: this.fb.array([this.Elementos]),
-    });
-  }
-  get Elementos(): FormGroup {
-    return this.fb.group({
-      Id: [0],
-      TipoBienId: [''],
-      SubgrupoCatalogoId: [''],
-      Nombre: [''],
-      Cantidad: ['0'],
-      Marca: [''],
-      Serie: [''],
-      UnidadMedida: [''],
-      ValorUnitario: ['0'],
-      Subtotal: ['0'],
-      Descuento: ['0'],
-      PorcentajeIvaId: [''],
-      ValorIva: ['0'],
-      ValorTotal: ['0'],
-    });
-  }
-  get Formulario_3(): FormGroup {
-    return this.fb.group({
-      Datos_Adicionales: [''],
     });
   }
 
@@ -861,32 +692,29 @@ export class EdicionActaRecibidoComponent implements OnInit {
       const start = async () => {
         await this.asyncForEach(this.fileDocumento, async (file) => {
           await this.postSoporteNuxeo([file]);
-          // console.log(file);
         });
-        // console.log('Done');
       };
       await start();
     }
     this.Datos = this.firstForm.value;
-    // console.log(this.Elementos__Soporte);
-    // console.log({Datos: this.Datos});
-    const Transaccion_Acta = new TransaccionActaRecibido();
-    Transaccion_Acta.ActaRecibido = this.Registrar_Acta(this.Datos.Formulario1, this.Datos.Formulario3);
+    const transaccionActa = new TransaccionActaRecibido();
+
+    transaccionActa.ActaRecibido = this.generarActa();
     let nuevoEstado: EstadoActa_t;
     if (siguienteEtapa) {
       nuevoEstado = (this.estadoActa === 'Registrada') ? EstadoActa_t.EnElaboracion : EstadoActa_t.EnVerificacion;
     } else {
       nuevoEstado = this.Estados_Acta.find(estado => estado.Nombre === this.estadoActa).Id; // el nuevo estado es el mismo
     }
-    Transaccion_Acta.UltimoEstado = this.Registrar_Estado_Acta(Transaccion_Acta.ActaRecibido, nuevoEstado);
-    const Soportes = new Array<TransaccionSoporteActa>();
-    this.Datos.Formulario2.forEach((soporte, index) => {
-      Soportes.push(this.Registrar_Soporte(soporte, this.Elementos__Soporte[index], Transaccion_Acta.ActaRecibido));
-    });
-    Transaccion_Acta.SoportesActa = Soportes;
-    // console.log({Transaccion_Acta});
-    this.Actas_Recibido.putTransaccionActa(Transaccion_Acta, Transaccion_Acta.ActaRecibido.Id).subscribe((res: any) => {
-      // console.log(res);
+
+    transaccionActa.UltimoEstado = this.generarEstadoActa(this.Datos.Formulario1, this.Datos.Formulario3, nuevoEstado);
+    transaccionActa.Elementos = this.generarElementos();
+
+    const Soportes: SoporteActa[] = this.Datos.Formulario2
+      .map((soporte, index) => this.generarSoporte(soporte, index));
+    transaccionActa.SoportesActa = Soportes;
+
+    this.Actas_Recibido.putTransaccionActa(transaccionActa, transaccionActa.ActaRecibido.Id).subscribe((res: any) => {
       if (res !== null) {
         let titulo, descripcion, idTitulo, idDescripcion;
         if (siguienteEtapa) {
@@ -908,7 +736,8 @@ export class EdicionActaRecibidoComponent implements OnInit {
         }).then((willDelete) => {
           if (willDelete.value && siguienteEtapa) {
             const formularios = this.firstForm.value;
-            const cedulaprov = formularios.Formulario2[0].Proveedor.Identificacion.Numero;
+            const cedulaprov = formularios.Formulario1.Proveedor && formularios.Formulario1.Proveedor.Identificacion ?
+              formularios.Formulario1.Proveedor.Identificacion.Numero : '';
             const cedularev = formularios.Formulario1.Contratista.Identificacion.Numero;
             if (enviara === 1) {
               this.EnviarEmail(cedulaprov);
@@ -944,147 +773,88 @@ export class EdicionActaRecibidoComponent implements OnInit {
     });
   }
 
-  Registrar_Acta(Datos: any, Datos2: any): ActaRecibido {
+  private generarActa(): ActaRecibido {
 
-    const Acta_de_Recibido = new ActaRecibido();
+    const actaRecibido = new ActaRecibido;
 
-    Acta_de_Recibido.Id = parseFloat(Datos.Id);
-    Acta_de_Recibido.Activo = true;
-    Acta_de_Recibido.FechaCreacion = new Date();
-    Acta_de_Recibido.FechaModificacion = new Date();
-    Acta_de_Recibido.RevisorId = this.userService.getPersonaId();
-    Acta_de_Recibido.UbicacionId = parseFloat(Datos.Ubicacion);
-    Acta_de_Recibido.Observaciones = Datos2.Datos_Adicionales;
-    Acta_de_Recibido.PersonaAsignada = Datos.Contratista.Tercero.Id;
+    actaRecibido.Id = +this._Acta_Id;
+    actaRecibido.Activo = true;
+    actaRecibido.TipoActaId = <TipoActa>{Id: this.Acta.ActaRecibido.TipoActaId.Id};
 
-    return Acta_de_Recibido;
+    return actaRecibido;
   }
-  Registrar_Estado_Acta(__: ActaRecibido, Estado: number): HistoricoActa {
 
-    const Historico_ = new HistoricoActa();
+  private generarEstadoActa(form1: any, form3: any, Estado: number): HistoricoActa {
 
-    Historico_.Id = null;
-    Historico_.ActaRecibidoId = __;
-    Historico_.Activo = true;
-    Historico_.EstadoActaId = this.Estados_Acta.find(estado => estado.Id === Estado);
-    Historico_.FechaCreacion = new Date();
-    Historico_.FechaModificacion = new Date();
+    const historico = new HistoricoActa;
 
-    return Historico_;
+    historico.Id = null;
+    historico.ProveedorId = form1.Proveedor ? form1.Proveedor.Tercero.Id : null;
+    historico.UbicacionId = form1.Ubicacion ? form1.Ubicacion : null;
+    historico.RevisorId = this.userService.getPersonaId();
+    historico.PersonaAsignadaId = form1.Contratista.Tercero.Id;
+    historico.Observaciones = form3.Datos_Adicionales;
+    historico.FechaVistoBueno = null;
+    historico.ActaRecibidoId = <ActaRecibido>{Id: +this._Acta_Id};
+    historico.EstadoActaId = this.Estados_Acta.find(estado => estado.Id === Estado);
+    historico.Activo = true;
+
+    return historico;
   }
-  Registrar_Soporte(Datos: any, Elementos_: any, __: ActaRecibido): TransaccionSoporteActa {
-    const Soporte_Acta = new SoporteActa();
-    const Transaccion = new TransaccionSoporteActa();
-    Soporte_Acta.Id = parseFloat(Datos.Id);
-    Soporte_Acta.ActaRecibidoId = __;
-    Soporte_Acta.Activo = true;
-    Soporte_Acta.Consecutivo = Datos.Consecutivo;
-    Soporte_Acta.FechaCreacion = new Date();
-    Soporte_Acta.FechaModificacion = new Date();
-    Soporte_Acta.FechaSoporte = Datos.Fecha_Factura ? Datos.Fecha_Factura : null;
-    Soporte_Acta.ProveedorId = this.ActaEspecial ? 0 : Datos.Proveedor ? Datos.Proveedor.Tercero.Id : 0;
-    Transaccion.SoporteActa = Soporte_Acta;
-    Transaccion.Elementos = this.Registrar_Elementos(Elementos_, Soporte_Acta);
 
-    return Transaccion;
+  private generarSoporte(form2: any, index: number): SoporteActa {
+
+    const soporteActa = new SoporteActa;
+
+    soporteActa.Id = form2.Id;
+    soporteActa.Consecutivo = form2.Consecutivo;
+    soporteActa.DocumentoId = this.idDocumento[index];
+    soporteActa.FechaSoporte = form2.Fecha_Factura ? form2.Fecha_Factura : null;
+    soporteActa.ActaRecibidoId = <ActaRecibido>{Id: +this._Acta_Id};
+    soporteActa.Activo = true;
+
+    return soporteActa;
   }
-  Registrar_Elementos(Datos: any, Soporte: SoporteActa): Array<Elemento> {
-    const Elementos_Soporte = new Array<Elemento>();
 
-    for (const datos of Datos) {
+  private generarElementos(): Array<Elemento> {
 
-      const Elemento__ = new Elemento;
-      const valorTotal = (parseFloat(this.Pipe2Number(datos.Subtotal)) - parseFloat(this.Pipe2Number(datos.Descuento)));
+    const elementosActa = new Array<Elemento>();
 
-      Elemento__.Id = parseFloat(Datos.Id);
-      Elemento__.Nombre = datos.Nombre;
-      Elemento__.Cantidad = parseFloat(this.Pipe2Number(datos.Cantidad));
-      Elemento__.Marca = datos.Marca;
-      Elemento__.Serie = datos.Serie;
-      Elemento__.UnidadMedida = this.Unidades.find(unidad => unidad.Id === parseFloat(datos.UnidadMedida)).Id;
-      Elemento__.ValorUnitario = parseFloat(this.Pipe2Number(datos.ValorUnitario));
-      Elemento__.Subtotal = parseFloat(this.Pipe2Number(datos.Subtotal));
-      Elemento__.Descuento = parseFloat(this.Pipe2Number(datos.Descuento));
-      Elemento__.ValorTotal = valorTotal;
-      Elemento__.PorcentajeIvaId = parseFloat(datos.PorcentajeIvaId);
-      Elemento__.ValorIva = parseFloat(this.Pipe2Number(datos.ValorIva));
-      Elemento__.ValorFinal = parseFloat(this.Pipe2Number(datos.ValorTotal));
-      Elemento__.SubgrupoCatalogoId = parseFloat(datos.SubgrupoCatalogoId);
-      Elemento__.Verificado = false;
-      Elemento__.TipoBienId = this.Tipos_Bien.find(bien => bien.Id === parseFloat(datos.TipoBienId));
-      Elemento__.EstadoElementoId = this.Estados_Acta.find(estado => estado.Id === 1);
-      Elemento__.SoporteActaId = Soporte;
-      Elemento__.Activo = true;
-      Elemento__.FechaCreacion = new Date();
-      Elemento__.FechaModificacion = new Date();
-      Elementos_Soporte.push(Elemento__);
+    for (const datos of this.DatosElementos) {
+
+      const elemento = new Elemento;
+      const valorTotal = parseFloat(datos.Subtotal) - parseFloat(datos.Descuento);
+      const subgrupo = datos.SubgrupoCatalogoId.SubgrupoId.Id;
+
+      elemento.Id = datos.Id;
+      elemento.Nombre = datos.Nombre;
+      elemento.Cantidad = parseInt(datos.Cantidad, 10);
+      elemento.Marca = datos.Marca;
+      elemento.Serie = datos.Serie;
+      elemento.UnidadMedida = parseInt(datos.UnidadMedida, 10);
+      elemento.ValorUnitario = parseFloat(datos.ValorUnitario);
+      elemento.Subtotal = parseFloat(datos.Subtotal);
+      elemento.Descuento = parseFloat(datos.Descuento);
+      elemento.ValorTotal = valorTotal;
+      elemento.PorcentajeIvaId = parseInt(datos.PorcentajeIvaId, 10);
+      elemento.ValorIva = parseFloat(datos.ValorIva);
+      elemento.ValorFinal = parseFloat(datos.ValorTotal);
+      elemento.SubgrupoCatalogoId = subgrupo ? subgrupo : null;
+      elemento.EstadoElementoId = <EstadoElemento>{Id: 1};
+      elemento.ActaRecibidoId = <ActaRecibido>{Id: +this._Acta_Id};
+      elemento.Activo = true;
+
+      elementosActa.push(elemento);
 
     }
-    return Elementos_Soporte;
-  }
-
-  displayedColumns = [
-    'TipoBienId',
-    'SubgrupoCatalogoId',
-    'Nombre',
-    'Cantidad',
-    'Marca',
-    'Serie',
-    'UnidadMedida',
-    'ValorUnitario',
-    'Subtotal',
-    'Descuento',
-    'PorcentajeIvaId',
-    'ValorIva',
-    'ValorTotal',
-    'Acciones',
-  ];
-  Pipe2Number(any: string) {
-    // if (any !== null) {
-    //   return any.replace(/[$,]/g, '');
-    // } else {
-    //   return '0';
-    // }
-    return any;
-  }
-  valortotal(subtotal: string, descuento: string, iva: string) {
-    return (parseFloat(subtotal) - parseFloat(descuento) + parseFloat(iva));
-  }
-  valorXcantidad(valor_unitario: string, cantidad: string) {
-    return (parseFloat(valor_unitario) * parseFloat(cantidad));
-  }
-  valor_iva(subtotal: string, descuento: string, porcentaje_iva: string) {
-    return ((parseFloat(subtotal) - parseFloat(descuento)) * parseFloat(porcentaje_iva) / 100);
+    return elementosActa;
   }
 
   // Datos
-  ver(event: any, index: number) {
+  eventoListaElementos(event: any) {
     this.DatosElementos = event;
-    if (this.Elementos__Soporte === undefined) {
-      this.Elementos__Soporte = new Array<any>(this.DatosElementos);
-    } else {
-      if (index < (this.Elementos__Soporte.length)) {
-        this.Elementos__Soporte[index] = this.DatosElementos;
-      } else {
-        this.Elementos__Soporte.push(this.DatosElementos);
-      }
-    }
-    // console.log({event, index, 'this.Elementos__Soporte': this.Elementos__Soporte});
   }
 
-  // Totales
-  ver2(event: any, index: number) {
-    this.DatosTotales = event;
-    if (this.Totales === undefined) {
-      this.Totales = new Array<any>(this.DatosTotales);
-    } else {
-      if (index < (this.Totales.length)) {
-        this.Totales[index] = this.DatosTotales;
-      } else {
-        this.Totales.push(this.DatosTotales);
-      }
-    }
-  }
   Revisar_Totales() {
     (Swal as any).fire({
       type: 'warning',
@@ -1130,29 +900,9 @@ export class EdicionActaRecibidoComponent implements OnInit {
     });
   }
 
-  setElementosValidos(soporte: number, valido: boolean): void {
-    if (this.validarElementos) {
-      this.SoporteElementosValidos[soporte] = valido;
-      this.validaSoportes();
-    }
-  }
-
-  // TODO: Colocar más validaciones necesarias previo al envío a revisor, acá
-  private validaSoportes(): void {
-    this.elementosValidos = (
-      Array.isArray(this.Elementos__Soporte)
-      && this.Elementos__Soporte.length // Al menos un soporte
-      && this.Elementos__Soporte.every((sop, idx) => (
-        Array.isArray(sop)
-        && sop.length // Al menos un elemento
-        && this.SoporteElementosValidos[idx]
-      ))
-    );
-    if (this.elementosValidos) {
-      this.errores.delete('clases');
-    } else {
-      this.errores.set('clases', true);
-    }
+  setElementosValidos(event: any): void {
+    this.validarElementos = event;
+    !this.validarElementos && !this.actaRegistrada ? this.errores.set('clases', true) : this.errores.delete('clases');
   }
 
   // Enviar a revisor/proveedor?
@@ -1181,45 +931,8 @@ export class EdicionActaRecibidoComponent implements OnInit {
     });
   }
 
-  getGranSubtotal() {
-    if (this.Totales !== [] && this.Totales !== undefined) {
-      return this.Totales.map(t => t.Subtotal).reduce((acc, value) => parseFloat(acc) + parseFloat(value));
-    } else {
-      return '0';
-    }
-  }
-  getGranDescuentos() {
-
-    if (this.Totales !== [] && this.Totales !== undefined) {
-      return this.Totales.map(t => t.Descuento).reduce((acc, value) => parseFloat(acc) + parseFloat(value));
-    } else {
-      return '0';
-    }
-  }
-  getGranValorIva() {
-
-    if (this.Totales !== [] && this.Totales !== undefined) {
-      return this.Totales.map(t => t.ValorIva).reduce((acc, value) => parseFloat(acc) + parseFloat(value));
-    } else {
-      return '0';
-    }
-  }
-  getGranTotal() {
-
-    if (this.Totales !== [] && this.Totales !== undefined) {
-      return this.Totales.map(t => t.ValorTotal).reduce((acc, value) => parseFloat(acc) + parseFloat(value));
-    } else {
-      return '0';
-    }
-  }
-  usarLocalStorage() {
-    if (sessionStorage.Formulario_Edicion == null) {
-      sessionStorage.setItem('Formulario_Edicion', JSON.stringify(this.firstForm.value));
-      sessionStorage.setItem('Elementos_Formulario_Edicion', JSON.stringify(this.Elementos__Soporte));
-    } else {
-      sessionStorage.setItem('Formulario_Edicion', JSON.stringify(this.firstForm.value));
-      sessionStorage.setItem('Elementos_Formulario_Edicion', JSON.stringify(this.Elementos__Soporte));
-    }
+  eventoTotales(event) {
+    this.totales = event;
   }
 
   clear() {

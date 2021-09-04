@@ -1,46 +1,34 @@
-import { Component, OnInit, ViewChild, ElementRef, Input, Output, EventEmitter, OnChanges, SimpleChanges, HostListener } from '@angular/core';
-import * as XLSX from 'xlsx';
+import { Component, OnInit, ViewChild, ElementRef, Input, Output, EventEmitter } from '@angular/core';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
-import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
 import Swal from 'sweetalert2';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource, MatTable } from '@angular/material/table';
 import { TipoBien } from '../../../@core/data/models/acta_recibido/tipo_bien';
-import { DatosLocales, DatosLocales2 } from './datos_locales';
-import { Unidad } from '../../../@core/data/models/acta_recibido/unidades';
-import { Impuesto } from '../../../@core/data/models/acta_recibido/elemento';
-import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/catalogoElementosHelper';
+import { DatosLocales } from './datos_locales';
+import { ElementoActa } from '../../../@core/data/models/acta_recibido/elemento';
 import { Store } from '@ngrx/store';
 import { IAppState } from '../../../@core/store/app.state';
 import { ConfiguracionService } from '../../../@core/data/configuracion.service';
 import { ListService } from '../../../@core/store/services/list.service';
-import { HttpErrorResponse } from '@angular/common/http';
 import { NuxeoService } from '../../../@core/utils/nuxeo.service';
-import { DocumentoService } from '../../../@core/data/documento.service';
 import { isNumeric } from 'rxjs/internal-compatibility';
 import { isArray } from 'util';
 import { MatCheckbox } from '@angular/material';
 import { CompleterData, CompleterService, CompleterItem } from 'ng2-completer';
-import { Observable } from 'rxjs';
-import { Row } from 'ngx-smart-table/lib/data-set/row';
-import { DatePipe } from '@angular/common';
 import { RolUsuario_t as Rol, PermisoUsuario_t as Permiso } from '../../../@core/data/models/roles/rol_usuario';
-import { UserService } from '../../../@core/data/users.service';
+import { Subgrupo } from '../../../@core/data/models/catalogo/jerarquia';
+import { Detalle } from '../../../@core/data/models/catalogo/detalle';
 
 @Component({
-  selector: 'ngx-capturar-elementos',
-  templateUrl: './capturar-elementos.component.html',
-  styleUrls: ['./capturar-elementos.component.scss'],
+  selector: 'ngx-gestionar-elementos',
+  templateUrl: './gestionar-elementos.component.html',
+  styleUrls: ['./gestionar-elementos.component.scss'],
 })
-export class CapturarElementosComponent implements OnInit {
-  ControlClases = new FormControl();
-  filteredOptions: Observable<string[]>;
-  fileString: string | ArrayBuffer;
-  arrayBuffer: Iterable<number>;
+export class GestionarElementosComponent implements OnInit {
   form: FormGroup;
-  buffer: Uint8Array;
   Validador: boolean = false;
   Totales: DatosLocales;
   loading: boolean = false;
@@ -54,28 +42,24 @@ export class CapturarElementosComponent implements OnInit {
   dataSource: MatTableDataSource<any>;
   dataSource2: MatTableDataSource<any>;
 
-  @Input() DatosRecibidos: any;
+  @Input() ActaRecibidoId: number;
+  @Input() Modo: string = 'agregar';
   @Output() DatosEnviados = new EventEmitter();
   @Output() DatosTotales = new EventEmitter();
   @Output() ElementosValidos = new EventEmitter<boolean>();
 
-  private lists: IAppState;
   respuesta: any;
-  Tipos_Bien: any;
   Unidades: any;
   Tarifas_Iva: any;
   nombreArchivo: any;
-  Consumo: any;
-  ConsumoControlado: any;
-  Devolutivo: any;
   Clases: any;
-  Codigo: any;
   displayedColumns: any[];
   checkTodos: boolean = false;
   checkParcial: boolean = false;
   ocultarAsignacionCatalogo: boolean;
   ErroresCarga: string = '';
   cargando: boolean = true;
+  elementos: Array<ElementoActa>;
 
   constructor(
     private fb: FormBuilder,
@@ -83,101 +67,82 @@ export class CapturarElementosComponent implements OnInit {
     private actaRecibidoHelper: ActaRecibidoHelper,
     private store: Store<IAppState>,
     private listService: ListService,
-    private nuxeoService: NuxeoService,
     private confService: ConfiguracionService,
-    private documentoService: DocumentoService,
-    private catalogoHelper: CatalogoElementosHelper,
-    private userService: UserService,
     private completerService: CompleterService,
   ) {
     this.Totales = new DatosLocales();
   }
 
   ngOnInit() {
-    this.loadLists();
+    this.listService.findUnidades();
+    this.listService.findImpuestoIVA();
+    this.listService.findClases();
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
     });
     this.createForm();
     this.ReglasColumnas();
+    this.initForms();
   }
 
-  public loadLists() {
-    this.listService.findSubgruposConsumo();
-    this.listService.findSubgruposConsumoControlado();
-    this.listService.findSubgruposDevolutivo();
-    this.listService.findEstadosElemento();
-    this.listService.findTipoBien();
-    this.listService.findUnidades();
-    this.listService.findImpuestoIVA();
-    this.listService.findClases();
 
-    this.store.select((state) => state).subscribe(
-      (list) => {
-        this.lists = list;
-        this.muestraData();
-      },
-    );
+  private async initForms() {
+    await this.loadLists();
+    this.cargarForms(await this.loadElementos());
   }
 
-  private muestraData() {
-    let clases;
-    const todoCargado = (
-      this.cargando && this.lists
-      && Array.isArray(this.lists.listConsumo) && this.lists.listConsumo[0]
-      && Array.isArray(this.lists.listConsumoControlado) && this.lists.listConsumoControlado[0]
-      && Array.isArray(this.lists.listDevolutivo) && this.lists.listDevolutivo[0]
-      && Array.isArray(this.lists.listTipoBien) && this.lists.listTipoBien[0]
-      && Array.isArray(this.lists.listUnidades) && this.lists.listUnidades[0]
-      && Array.isArray(this.lists.listIVA) && this.lists.listIVA[0]
-      && Array.isArray(this.lists.listClases) && this.lists.listClases[0]
-      && (() => {
-        clases = this.lists.listClases[0];
-        return Array.isArray(clases) && clases.length;
-      })()
-    );
-    if (todoCargado) {
-      this.Consumo = this.lists.listConsumo[0];
-      this.ConsumoControlado = this.lists.listConsumoControlado[0];
-      this.Devolutivo = this.lists.listDevolutivo[0];
-      this.Tipos_Bien = this.lists.listTipoBien[0];
-      this.Unidades = this.lists.listUnidades[0];
-      this.Tarifas_Iva = this.lists.listIVA[0];
+  private loadLists(): Promise<void> {
+    return new Promise<void>(async (resolve) => {
+      this.store.select((state) => state).subscribe(list => {
+        this.Unidades = list.listUnidades[0],
+          this.Tarifas_Iva = list.listIVA[0],
+          this.Clases = list.listClases[0],
+          this.dataService = this.completerService.local(this.Clases, 'SubgrupoId.Nombre', 'SubgrupoId.Nombre'),
 
-      this.Clases = clases.map(v => {
-        v.mostrar = v.SubgrupoId.Codigo + ' - ' + v.SubgrupoId.Nombre;
-        return v;
+
+          (this.Unidades && this.Unidades.length > 0 &&
+            this.Tarifas_Iva && this.Tarifas_Iva.length > 0 &&
+            this.Clases && this.Clases.length > 0) ? resolve() : null;
       });
-      this.dataService = this.completerService.local(this.Clases, 'mostrar', 'mostrar');
+    });
+  }
 
-      if (this.DatosRecibidos !== undefined) {
-        this.dataSource = new MatTableDataSource(this.DatosRecibidos);
-        this.respuesta = this.DatosRecibidos;
-        this.getDescuentos();
-        this.getSubtotales();
-        this.getIVA();
-        this.getTotales();
-        this.getClasesElementos();
-      } else {
-        this.dataSource = new MatTableDataSource();
-      }
+  private loadElementos(): Promise<boolean> {
+    return new Promise<boolean>(resolve => {
+      this.ActaRecibidoId ? this.actaRecibidoHelper.getElementosActa(this.ActaRecibidoId).toPromise().then(res => {
+        if (res && res.length > 0) {
+          this.elementos = res;
+          resolve(true);
+        } else {
+          resolve(false);
+        }
+      }) : resolve(false);
+    });
+  }
+
+  private cargarForms(cargarElementos: boolean) {
+    if (cargarElementos) {
+      this.dataSource = new MatTableDataSource<ElementoActa>(this.elementos);
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
-      for (let i = 0; i < this.dataSource.data.length; i++) {
-        if (this.dataSource.data[i].CodigoSubgrupo === undefined) {
-          this.dataSource.data[i].CodigoSubgrupo = '';
-        }
-      }
-
-      this.ver();
-      this.cargando = false;
+      this.respuesta = this.elementos;
+      this.getDescuentos();
+      this.getSubtotales();
+      this.getIVA();
+      this.getTotales();
+    } else {
+      this.dataSource = new MatTableDataSource<ElementoActa>();
     }
+    this.DatosEnviados.emit(this.elementos);
+    this.DatosTotales.emit(this.Totales);
+    this.ver();
+    this.cargando = false;
   }
 
   ReglasColumnas() {
+    const check = this.Modo === 'ver' ? [] : ['AccionesMacro'];
     this.ocultarAsignacionCatalogo = !this.confService.getAccion('mostrarAsignacionCatalogo');
     if (this.ocultarAsignacionCatalogo) {
-      this.displayedColumns = [
-        'AccionesMacro',
+      this.displayedColumns = check.concat([
         'Nombre',
         'Cantidad',
         'Marca',
@@ -189,11 +154,9 @@ export class CapturarElementosComponent implements OnInit {
         'PorcentajeIvaId',
         'ValorIva',
         'ValorTotal',
-        'Acciones',
-      ];
+      ]);
     } else {
-      this.displayedColumns = [
-        'AccionesMacro',
+      this.displayedColumns = check.concat([
         'CodigoSubgrupo',
         'SubgrupoCatalogoId',
         'TipoBienId',
@@ -208,55 +171,58 @@ export class CapturarElementosComponent implements OnInit {
         'PorcentajeIvaId',
         'ValorIva',
         'ValorTotal',
-        'Acciones',
-      ];
+      ]);
     }
+    this.Modo === 'agregar' ? this.displayedColumns.push('Acciones') : null;
   }
 
   onSelectedClase(selected: CompleterItem, fila: number) {
-    if (selected) {
-    this.dataSource.data[fila].CodigoSubgrupo = selected.originalObject.SubgrupoId.Codigo;
-    this.dataSource.data[fila].TipoBienId = selected.originalObject.TipoBienId.Id;
-    this.dataSource.data[fila].SubgrupoCatalogoId = selected.originalObject.SubgrupoId.Id;
-    this.dataSource.data[fila].TipoBienNombre = selected.originalObject.TipoBienId.Nombre;
-    } else {
-      this.dataSource.data[fila].CodigoSubgrupo = '';
-      this.dataSource.data[fila].TipoBienId = '';
-      this.dataSource.data[fila].SubgrupoCatalogoId = '';
-      this.dataSource.data[fila].TipoBienNombre = '';
+    if (selected && selected.originalObject) {
+      this.updateClase(selected, fila);
     }
   }
 
-  onBlurClase(idx: number) {
-    if (!this.dataSource.data[idx].NombreClase) {
-      this.dataSource.data[idx].CodigoSubgrupo = '';
-      this.dataSource.data[idx].TipoBienId = '';
-      this.dataSource.data[idx].SubgrupoCatalogoId = '';
-      this.dataSource.data[idx].TipoBienNombre = '';
+  updateClase(selected: CompleterItem, fila: number) {
+    if (selected && selected.originalObject) {
+      const subgrupo = new Detalle;
+      subgrupo.SubgrupoId = new Subgrupo;
+      subgrupo.SubgrupoId = selected.originalObject.SubgrupoId;
+      subgrupo.TipoBienId = selected.originalObject.TipoBienId;
+
+      this.dataSource.data[fila].SubgrupoCatalogoId = subgrupo;
     }
+    this.ver();
+  }
+
+  onBlurClase(idx: number) {
+    if (!this.dataSource.data[idx].SubgrupoCatalogoId.SubgrupoId.Nombre) {
+      const subgrupo = new Detalle;
+      subgrupo.SubgrupoId = new Subgrupo;
+      subgrupo.TipoBienId = new TipoBien;
+
+      this.dataSource.data[idx].SubgrupoCatalogoId = subgrupo;
+    }
+    this.ver();
   }
 
   // TODO: De ser necesario, agregar otras validaciones asociadas
   // a cada elemento
   private validarElementos(): boolean {
     return (
-      Array.isArray(this.dataSource.data)
-      && this.dataSource.data.length // Al menos un elemento
-      && this.dataSource.data.every(elem => (
-          elem.hasOwnProperty('SubgrupoCatalogoId')
-          && elem.SubgrupoCatalogoId
-          && !isNaN(elem.SubgrupoCatalogoId)
-      ))
+      this.dataSource && Array.isArray(this.dataSource.data) &&
+        this.dataSource.data.length &&
+        this.dataSource.data.every(x => x.SubgrupoCatalogoId.SubgrupoId.Id) ? true : false
     );
   }
 
   ver() {
-    this.refrescaCheckTotal();
-    // console.log(this.DatosEnviados)
-    this.DatosEnviados.emit(this.dataSource.data);
-    this.DatosTotales.emit(this.Totales);
-    this.ElementosValidos.emit(this.validarElementos());
-    // console.log(this.dataSource.data)
+    if (this.dataSource && this.dataSource.data) {
+      this.refrescaCheckTotal();
+      this.Modo === 'agregar' ? this.ElementosValidos.emit(this.validarElementos()) : null;
+      this.Modo === 'agregar' ? this.DatosEnviados.emit(this.dataSource.data) : null;
+    } else {
+      this.ElementosValidos.emit(false);
+    }
   }
 
   TraerPlantilla() {
@@ -514,34 +480,6 @@ export class CapturarElementosComponent implements OnInit {
     }
   }
 
-  getClasesElementos() {
-    if (this.Clases && this.Clases.length) {
-      this.dataSource.data.map((elemento) => {
-        elemento.TipoBienNombre = elemento.TipoBienId !== 0 ? (() => {
-          const criterio = x => x && x.Id === elemento.TipoBienId;
-          if (this.Tipos_Bien.some(criterio)) {
-            return this.Tipos_Bien.find(criterio).Nombre;
-          }
-          return '';
-        })() : '';
-        elemento.CodigoSubgrupo = elemento.TipoBienId !== 0 ? (() => {
-          const criterio = x => x && x.SubgrupoId.Id === elemento.SubgrupoCatalogoId;
-          if (this.Clases.some(criterio)) {
-            return this.Clases.find(criterio).SubgrupoId.Codigo;
-          }
-          return '';
-        })() : '';
-        elemento.NombreClase = elemento.TipoBienId !== 0 ? (() => {
-          const criterio = x => x.SubgrupoId.Id === elemento.SubgrupoCatalogoId;
-          if (this.Clases.some(criterio)) {
-            return this.Clases.find((x) => x.SubgrupoId.Id === elemento.SubgrupoCatalogoId).SubgrupoId.Nombre;
-          }
-          return '';
-        })() : '';
-      });
-    }
-  }
-
   getTotales() {
     if (this.dataSource.data.length !== 0) {
       this.Totales.ValorTotal = this.dataSource.data.map(t => t.ValorTotal).reduce((acc, value) => parseFloat(acc) + parseFloat(value));
@@ -557,19 +495,19 @@ export class CapturarElementosComponent implements OnInit {
   }
 
   addElemento() {
+    const subgrupo = new Detalle;
+    subgrupo.SubgrupoId = new Subgrupo;
+    subgrupo.TipoBienId = new TipoBien;
     const data = this.dataSource.data;
     data.unshift({
-      Cantidad: '1',
+      Cantidad: '0',
       Nombre: '',
       Descuento: '0',
       Marca: '',
-      NivelInventariosId: '1',
       PorcentajeIvaId: '0',
       Serie: '',
-      SubgrupoCatalogoId: '',
-      CodigoSubgrupo: '',
+      SubgrupoCatalogoId: subgrupo,
       Subtotal: '0',
-      TipoBienId: '',
       UnidadMedida: '2',
       ValorIva: '0',
       ValorTotal: '0',
@@ -664,23 +602,23 @@ export class CapturarElementosComponent implements OnInit {
     }
   }
 
-  onClase(selected: CompleterItem) {
-    const seleccionados = this.getSeleccionados();
-    seleccionados.forEach((index) => {
-      this.dataSource.data[index].CodigoSubgrupo = selected.originalObject.SubgrupoId.Codigo;
-      this.dataSource.data[index].TipoBienId = selected.originalObject.TipoBienId.Id;
-      this.dataSource.data[index].SubgrupoCatalogoId = selected.originalObject.SubgrupoId.Id;
-      this.dataSource.data[index].TipoBienNombre = selected.originalObject.TipoBienId.Nombre;
-      this.dataSource.data[index].NombreClase = selected.originalObject.SubgrupoId.Nombre;
-      this.dataSource.data[index].seleccionado = false;
-    });
+  onClaseMultiple(selected: CompleterItem) {
+    if (selected && selected.originalObject) {
+      const subgrupo = new Detalle;
+      const seleccionados = this.getSeleccionados();
+
+      this.cambioCheckTodos(false);
+      subgrupo.SubgrupoId = selected.originalObject.SubgrupoId;
+      subgrupo.TipoBienId = selected.originalObject.TipoBienId;
+      seleccionados.forEach((index) => { this.updateClase(selected, index); });
+    }
     this.ver();
   }
 
   refrescaCheckTotal() {
     let checkTodos = false;
     let checkParcial = false;
-    if (isArray(this.dataSource.data) && this.dataSource.data.length) {
+    if (this.dataSource && isArray(this.dataSource.data) && this.dataSource.data.length) {
       if (this.dataSource.data.every(elem => elem.seleccionado)) {
         // console.log('todos');
         checkTodos = true;
@@ -691,6 +629,7 @@ export class CapturarElementosComponent implements OnInit {
     }
     this.checkTodos = checkTodos;
     this.checkParcial = checkParcial;
+    this.enviarSeleccionados();
   }
 
   cambioCheckTodos(marcar: boolean) {
@@ -711,7 +650,12 @@ export class CapturarElementosComponent implements OnInit {
   private estadoShift: boolean = false;
   private basePaginas: number = 0;
 
+  enviarSeleccionados() {
+    this.Modo === 'verificar' ? this.ElementosValidos.emit(this.elementosSeleccionados()) : null;
+  }
+
   setCasilla(fila: number, checked: boolean) {
+    this.enviarSeleccionados();
     fila += this.basePaginas;
     // console.log({fila, checked, 'shift': this.estadoShift, 'anterior': this.checkAnterior});
     if (this.estadoShift && this.checkAnterior !== undefined) { // Shift presionado
@@ -728,6 +672,14 @@ export class CapturarElementosComponent implements OnInit {
       }
     }
     this.refrescaCheckTotal();
+  }
+
+  private elementosSeleccionados(): boolean {
+    return (
+      this.dataSource && Array.isArray(this.dataSource.data) &&
+        this.dataSource.data.length &&
+        this.dataSource.data.every(x => x.seleccionado) ? true : false
+    );
   }
 
   keyDownTablaShift() {

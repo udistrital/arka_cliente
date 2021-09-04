@@ -1,5 +1,5 @@
-import { SubgrupoID } from './jerarquia';
-import { TipoBienID } from '../acta_recibido/tipo_bien';
+import { SubgrupoComun } from './jerarquia';
+import { TipoBien } from '../acta_recibido/tipo_bien';
 
 export class DetalleID {
   Id: number;
@@ -10,8 +10,8 @@ export class Detalle extends DetalleID {
   Valorizacion: boolean;
   Deterioro: boolean;
   Activo: boolean;
-  SubgrupoId: SubgrupoID;
-  TipoBienId: TipoBienID;
+  SubgrupoId: SubgrupoComun;
+  TipoBienId: TipoBien;
   FechaCreacion: Date;
   FechaModificacion: Date;
 }

@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { CapturarElementosComponent } from './capturar-elementos.component';
+import { GestionarElementosComponent } from './gestionar-elementos.component';
 
-describe('CapturarElementosComponent', () => {
-  let component: CapturarElementosComponent;
-  let fixture: ComponentFixture<CapturarElementosComponent>;
+describe('GestionarElementosComponent', () => {
+  let component: GestionarElementosComponent;
+  let fixture: ComponentFixture<GestionarElementosComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ CapturarElementosComponent ],
+      declarations: [ GestionarElementosComponent ],
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(CapturarElementosComponent);
+    fixture = TestBed.createComponent(GestionarElementosComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

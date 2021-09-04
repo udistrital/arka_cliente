@@ -187,11 +187,10 @@ export class ListService {
     this.store.select(REDUCER_LIST.TipoBien).subscribe(
       (list: any) => {
         if (!list || list.length === 0) {
-          this.ActaRecibido.getParametros()
+          this.CatalogoElementos.getTipoBien()
             .subscribe(
               (res: any[]) => {
-
-                this.addList(REDUCER_LIST.TipoBien, res[0].TipoBien);
+                this.addList(REDUCER_LIST.TipoBien, res);
               },
               error => {
                 this.addList(REDUCER_LIST.TipoBien, []);

@@ -151,10 +151,6 @@ export class ConsultaActaRecibidoComponent implements OnInit {
         FechaCreacion: {
           title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.FechaCreacionHeader'),
           width: '70px',
-          valuePrepareFunction: (value: any) => {
-            const date = value.split('T');
-            return date[0];
-          },
           filter: {
             type: 'daterange',
             config: {
@@ -167,10 +163,6 @@ export class ConsultaActaRecibidoComponent implements OnInit {
         FechaModificacion: {
           title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.FechaModificacionHeader'),
           width: '70px',
-          valuePrepareFunction: (value: any) => {
-            const date = value.split('T');
-            return date[0];
-          },
           filter: {
             type: 'daterange',
             config: {
@@ -189,10 +181,6 @@ export class ConsultaActaRecibidoComponent implements OnInit {
         FechaVistoBueno: {
           title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.FechaVistoBuenoHeader'),
           width: '70px',
-          valuePrepareFunction: (value: any) => {
-            const date = value.split('T');
-            return date[0];
-          },
           filter: {
             type: 'daterange',
             config: {
@@ -255,7 +243,7 @@ export class ConsultaActaRecibidoComponent implements OnInit {
     // console.log({'idActa': id});
 
     // 1. Traer acta tal cual está
-    this.actaRecibidoHelper.getTransaccionActa(id).subscribe(acta => {
+    this.actaRecibidoHelper.getTransaccionActa(id, true).subscribe(acta => {
       // console.log({'actaHelper': acta});
       // 2. Crear estado "Anulada"
 
@@ -269,7 +257,7 @@ export class ConsultaActaRecibidoComponent implements OnInit {
         FechaModificacion: new Date(),
       };
       Transaccion_Acta.UltimoEstado = nuevoEstado;
-      Transaccion_Acta.ActaRecibido.Observaciones += ' // Razon de anulación: ' + obs;
+      Transaccion_Acta.UltimoEstado.Observaciones += ' // Razon de anulación: ' + obs;
 
       // 3. Anular acta
       this.actaRecibidoHelper.putTransaccionActa(Transaccion_Acta, id)

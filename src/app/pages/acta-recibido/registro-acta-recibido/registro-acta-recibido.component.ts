@@ -1,7 +1,5 @@
-import { AuthInterceptor } from './../../../@core/_Interceptor/auth.Interceptor';
-import { Formulario } from './../edicion-acta-recibido/datos_locales';
-import { Component, OnInit, ViewChild, ViewChildren, QueryList } from '@angular/core';
-import { Subscription, combineLatest, Observable } from 'rxjs';
+import { Component, OnInit, ViewChild, ViewChildren, QueryList, Input } from '@angular/core';
+import { Subscription, Observable } from 'rxjs';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, FormControl, FormArray, ValidatorFn, ValidationErrors } from '@angular/forms';
 import { NuxeoService } from '../../../@core/utils/nuxeo.service';
@@ -10,36 +8,27 @@ import 'hammerjs';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
 import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
 import { ActaRecibido } from '../../../@core/data/models/acta_recibido/acta_recibido';
-import { Elemento, Impuesto } from '../../../@core/data/models/acta_recibido/elemento';
-import { TipoBien } from '../../../@core/data/models/acta_recibido/tipo_bien';
-import { SoporteActa, Ubicacion } from '../../../@core/data/models/acta_recibido/soporte_acta';
-import { ActaRecibidoUbicacion } from '../../../@core/data/models/acta_recibido/acta_recibido';
-
-import { Proveedor } from '../../../@core/data/models/acta_recibido/Proveedor';
+import { Elemento } from '../../../@core/data/models/acta_recibido/elemento';
+import { SoporteActa } from '../../../@core/data/models/acta_recibido/soporte_acta';
 import { EstadoActa_t } from '../../../@core/data/models/acta_recibido/estado_acta';
-import { EstadoElemento } from '../../../@core/data/models/acta_recibido/estado_elemento';
 import { TerceroCriterioContratista, TerceroCriterioProveedor } from '../../../@core/data/models/terceros_criterio';
 import { HistoricoActa } from '../../../@core/data/models/acta_recibido/historico_acta';
-import { TransaccionSoporteActa, TransaccionActaRecibido } from '../../../@core/data/models/acta_recibido/transaccion_acta_recibido';
+import { TransaccionActaRecibido } from '../../../@core/data/models/acta_recibido/transaccion_acta_recibido';
 import Swal from 'sweetalert2';
-import { ToasterService, ToasterConfig, Toast, BodyOutputType } from 'angular2-toaster';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
-import { Unidad } from '../../../@core/data/models/acta_recibido/unidades';
 import { CompleterService, CompleterData } from 'ng2-completer';
-import { HttpLoaderFactory } from '../../../app.module';
-import { analyzeAndValidateNgModules } from '@angular/compiler';
 import { Store } from '@ngrx/store';
 import { IAppState } from '../../../@core/store/app.state';
 import { ListService } from '../../../@core/store/services/list.service';
 import { PopUpManager } from '../../../managers/popUpManager';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { DocumentoService } from '../../../@core/data/documento.service';
-import { HttpErrorResponse } from '@angular/common/http';
 import { UserService } from '../../../@core/data/users.service';
 import { AbstractControl } from '@angular/forms/src/model';
-import { NbDateService } from '@nebular/theme';
 import { map, startWith } from 'rxjs/operators';
 import { isObject } from 'rxjs/internal-compatibility';
+import { TipoActa } from '../../../@core/data/models/acta_recibido/tipo_acta';
+import { EstadoElemento } from '../../../@core/data/models/acta_recibido/estado_elemento';
 
 @Component({
   selector: 'ngx-registro-acta-recibido',
@@ -48,18 +37,11 @@ import { isObject } from 'rxjs/internal-compatibility';
 })
 export class RegistroActaRecibidoComponent implements OnInit {
 
-  config: ToasterConfig;
-  searchStr: string;
-  searchStr2: Array<string>;
-  searchStr3: string;
-  protected dataService: CompleterData;
-  protected dataService2: CompleterData;
   protected dataService3: CompleterData;
   private Contratistas: TerceroCriterioContratista[];
   contratistasFiltrados: Observable<Partial<TerceroCriterioContratista>[]>;
   private Proveedores: Partial<TerceroCriterioProveedor>[];
   proveedoresFiltrados: Observable<Partial<TerceroCriterioProveedor>[]>;
-  listo: Map<string, boolean>;
 
   // Mensajes de error
   errMess: any;
@@ -71,6 +53,8 @@ export class RegistroActaRecibidoComponent implements OnInit {
   // Variables de Formulario
   firstForm: FormGroup;
   @ViewChild('fform') firstFormDirective;
+  tipoActa: string = 'regular';
+  selectedTab: number = 0;
   Datos: any;
   index;
   selected = new FormControl(0);
@@ -101,15 +85,19 @@ export class RegistroActaRecibidoComponent implements OnInit {
   Validador: any;
   TodaysDate: any;
   Registrando: Boolean;
+  cargarTab: boolean;
+  DatosElementos: Array<any>;
+  errores: Map<string, boolean>;
+  private validarElementos: boolean;
+  totales: any;
+  minLength: number = 4;
 
   constructor(
     private translate: TranslateService,
     private router: Router,
-    private route: ActivatedRoute,
     private fb: FormBuilder,
     private Actas_Recibido: ActaRecibidoHelper,
     private tercerosHelper: TercerosHelper,
-    private toasterService: ToasterService,
     private completerService: CompleterService,
     private store: Store<IAppState>,
     private listService: ListService,
@@ -118,14 +106,14 @@ export class RegistroActaRecibidoComponent implements OnInit {
     private nuxeoService: NuxeoService,
     private documentoService: DocumentoService,
     private userService: UserService,
-    private dateService: NbDateService<Date>,
+    private route: ActivatedRoute,
   ) {
     this.TodaysDate = new Date();
     this.fileDocumento = [];
     this.Validador = [];
     this.uidDocumento = [];
     this.idDocumento = [];
-    this.listo = new Map<string, boolean>();
+    this.errores = new Map<string, boolean>();
   }
 
   ngOnInit() {
@@ -135,17 +123,25 @@ export class RegistroActaRecibidoComponent implements OnInit {
     this.listService.findEstadosActa();
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
     });
+    this.route.data.subscribe(data => {
+      if (data && data.tipoActa !== null && data.tipoActa !== undefined) {
+        this.tipoActa = data.tipoActa;
+      }
+    });
     this.initForms();
-    this.searchStr2 = new Array<string>();
+    if (!this.userService.getPersonaId()) {
+      this.errores.set('terceros', true);
+    }
   }
 
   private async initForms() {
+    const ae = this.tipoActa === 'especial';
     const data = [this.loadLists(), this.loadProveedores(), this.loadContratistas()];
-    if (sessionStorage.Formulario_Registro == null) {
+    if ((!ae && sessionStorage.Formulario_Registro == null) || (ae && sessionStorage.Formulario_Acta_Especial == null)) {
       await Promise.all(data);
       this.Cargar_Formularios();
     } else {
-      const formulario = JSON.parse(sessionStorage.Formulario_Registro);
+      const formulario = JSON.parse(!ae ? sessionStorage.Formulario_Registro : sessionStorage.Formulario_Acta_Especial);
       (Swal as any).fire({
         type: 'warning',
         title: 'Registro sin completar',
@@ -170,7 +166,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
             cancelButtonText: 'No, Usar Anterior',
           }).then(async (result2) => {
             if (result2.value) {
-              sessionStorage.removeItem('Formulario_Registro');
+              sessionStorage.removeItem(!ae ? 'Formulario_Registro' : 'Formulario_Acta_Especial');
               await Promise.all(data);
               this.Cargar_Formularios();
             } else {
@@ -197,7 +193,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
 
   private loadContratistas(): Promise<void> {
     return new Promise<void>(resolve => {
-      this.tercerosHelper.getTercerosByCriterio('contratista').toPromise().then( res => {
+      this.tercerosHelper.getTercerosByCriterio('contratista').toPromise().then(res => {
         this.Contratistas = res;
         resolve();
       });
@@ -213,20 +209,20 @@ export class RegistroActaRecibidoComponent implements OnInit {
     if (contr && contr.Identificacion && contr.Tercero) {
       return contr.Identificacion.Numero + ' - ' + contr.Tercero.NombreCompleto;
     } else if (contr && contr.Tercero) {
-        return contr.Tercero.NombreCompleto;
-      }
+      return contr.Tercero.NombreCompleto;
+    }
   }
   private cambiosContratista(control: AbstractControl): Observable<Partial<TerceroCriterioContratista>[]> {
     return control.valueChanges
-    .pipe(
-      startWith(''),
-      map(val => typeof val === 'string' ? val : this.muestraContratista(val)),
-      map(nombre => this.filtroContratistas(nombre)),
-    );
+      .pipe(
+        startWith(''),
+        map(val => typeof val === 'string' ? val : this.muestraContratista(val)),
+        map(nombre => this.filtroContratistas(nombre)),
+      );
   }
   private loadProveedores(): Promise<void> {
     return new Promise<void>(resolve => {
-      this.tercerosHelper.getTercerosByCriterio('proveedor').toPromise().then( res => {
+      this.tercerosHelper.getTercerosByCriterio('proveedor').toPromise().then(res => {
         this.Proveedores = res;
         resolve();
       });
@@ -247,11 +243,11 @@ export class RegistroActaRecibidoComponent implements OnInit {
   }
   private cambiosProveedor(control: AbstractControl): Observable<Partial<TerceroCriterioProveedor>[]> {
     return control.valueChanges
-    .pipe(
-      startWith(''),
-      map(val => typeof val === 'string' ? val : this.muestraProveedor(val)),
-      map(nombre => this.filtroProveedores(nombre)),
-    );
+      .pipe(
+        startWith(''),
+        map(val => typeof val === 'string' ? val : this.muestraProveedor(val)),
+        map(nombre => this.filtroProveedores(nombre)),
+      );
   }
 
   download(index) {
@@ -306,77 +302,89 @@ export class RegistroActaRecibidoComponent implements OnInit {
     this.firstForm = this.fb.group({
       Formulario1: this.Formulario_1,
       Formulario2: this.fb.array([this.Formulario_2]),
-    });
+      Formulario3: this.Formulario_3,
+    }, { validators: this.checkValidness });
   }
 
   Cargar_Formularios2(transaccion_: any) {
+    const ae = this.tipoActa === 'especial';
     const Form2 = this.fb.array([]);
     for (const Soporte of transaccion_.Formulario2) {
       const Formulario__2 = this.fb.group({
-        Id: [''],
-        Proveedor: [Soporte.Proveedor.Tercero ? Soporte.Proveedor : '', [this.validarTercero()]],
         Consecutivo: [Soporte.Consecutivo],
-        Fecha_Factura: [Soporte.Fecha_Factura ? this.dateService.parse(Soporte.Fecha_Factura, 'MM dd yyyy') : ''],
+        FechaSoporte: [Soporte.FechaSoporte ? new Date(Soporte.FechaSoporte.toString().split('Z')[0]) : ''],
         Soporte: ['', Validators.required],
       });
-      this.proveedoresFiltrados = this.cambiosProveedor(Formulario__2.get('Proveedor'));
       Form2.push(Formulario__2);
     }
 
     this.firstForm = this.fb.group({
       Formulario1: this.fb.group({
-        Id: [''],
-        Sede: [transaccion_.Formulario1.Sede],
-        Dependencia: [transaccion_.Formulario1.Dependencia],
-        Ubicacion: [transaccion_.Formulario1.Ubicacion],
+        Sede: [transaccion_.Formulario1.Sede, ae ? [Validators.required] : []],
+        Dependencia: [transaccion_.Formulario1.Dependencia, ae ? [Validators.required] : []],
+        Ubicacion: [transaccion_.Formulario1.Ubicacion, ae ? [Validators.required] : []],
         Contratista: [transaccion_.Formulario1.Contratista.Tercero ? transaccion_.Formulario1.Contratista : '',
-          [Validators.required, this.validarTercero()]],
-      }),
-      Formulario2: Form2,
-    });
-    this.Traer_Relacion_Ubicaciones(transaccion_.Formulario1.Ubicacion);
+          !ae ? [Validators.required, this.validarTercero()] : []],
+        Proveedor: [transaccion_.Formulario1.Proveedor.Tercero ? transaccion_.Formulario1.Proveedor : '',
+          [this.validarTercero()]],
+        }),
+        Formulario2: Form2,
+        Formulario3: this.fb.group({
+          Datos_Adicionales: [transaccion_.Formulario3.Datos_Adicionales],
+        }),
+      }, { validators: this.checkValidness });
+    this.proveedoresFiltrados = this.cambiosProveedor(this.firstForm.get('Formulario1').get('Proveedor'));
     this.contratistasFiltrados = this.cambiosContratista(this.firstForm.get('Formulario1').get('Contratista'));
+    this.Traer_Relacion_Ubicaciones(transaccion_.Formulario1.Ubicacion);
   }
 
   get Formulario_1(): FormGroup {
+    const ae = this.tipoActa === 'especial';
     const form1 = this.fb.group({
-      Sede: [''],
-      Dependencia: [''],
-      Ubicacion: [''],
-      Contratista: ['', [Validators.required, this.validarTercero()]],
+      Sede: ['', ae ? [Validators.required] : []],
+      Dependencia: ['', ae ? [Validators.required] : []],
+      Ubicacion: ['', ae ? [Validators.required] : []],
+      Contratista: ['', !ae ? [Validators.required, this.validarTercero()] : []],
+      Proveedor: ['', [this.validarTercero()]],
     });
     this.contratistasFiltrados = this.cambiosContratista(form1.get('Contratista'));
+    this.proveedoresFiltrados = this.cambiosProveedor(form1.get('Proveedor'));
     return form1;
   }
+
   get Formulario_2(): FormGroup {
     const form2 = this.fb.group({
-      Proveedor: ['', [this.validarTercero()]],
       Consecutivo: [''],
-      Fecha_Factura: [''],
+      FechaSoporte: [''],
       Soporte: ['', Validators.required],
     });
-    this.proveedoresFiltrados = this.cambiosProveedor(form2.get('Proveedor'));
     return form2;
   }
 
-  addSoportes() {
-    (this.firstForm.get('Formulario2') as FormArray).push(this.Formulario_2);
+  get Formulario_3(): FormGroup {
+    return this.fb.group({
+      Datos_Adicionales: [''],
+    });
   }
 
-  deleteSoportes(index: number) {
-    (this.firstForm.get('Formulario2') as FormArray).removeAt(index);
+  tab() {
+    if (this.cargarTab) {
+      this.selectedTab = this.firstForm.get('Formulario2').value.length - 1;
+      this.cargarTab = false;
+    }
   }
 
-  addTab() {
-    this.addSoportes();
-    this.searchStr2.push();
-    this.selected.setValue(this.firstForm.get('Formulario2').value.length - 1);
+  addSoporte($event) {
+    if ($event === this.firstForm.get('Formulario2').value.length && !this.cargarTab) {
+      (this.firstForm.get('Formulario2') as FormArray).push(this.Formulario_2);
+      this.selectedTab = this.firstForm.get('Formulario2').value.length;
+      this.cargarTab = true;
+    }
   }
 
   removeTab(i: number) {
-    this.deleteSoportes(i);
-    this.searchStr2.splice(i, 1);
-    this.selected.setValue(i - 1);
+    this.selectedTab = i - 1;
+    (this.firstForm.get('Formulario2') as FormArray).removeAt(i);
   }
 
   async postSoporteNuxeo(files: any) {
@@ -401,6 +409,20 @@ export class RegistroActaRecibidoComponent implements OnInit {
     });
   }
 
+  eventoTotales(event) {
+    this.totales = event;
+  }
+
+  eventoListaElementos(event: any) {
+    this.DatosElementos = event;
+    sessionStorage.setItem('Elementos_Acta_Especial', JSON.stringify(this.DatosElementos));
+  }
+
+  setElementosValidos(event: any): void {
+    this.validarElementos = event;
+    !this.validarElementos ? this.errores.set('clases', true) : this.errores.delete('clases');
+  }
+
   async asyncForEach(array, callback) {
     for (let index = 0; index < array.length; index++) {
       await callback(array[index], index, array);
@@ -409,32 +431,36 @@ export class RegistroActaRecibidoComponent implements OnInit {
 
   async onFirstSubmit() {
     this.Registrando = true;
+    const ae = this.tipoActa === 'especial';
     const start = async () => {
       await this.asyncForEach(this.fileDocumento, async (file) => {
         await this.postSoporteNuxeo([file]);
       });
     };
     await start();
-    this.Datos = this.firstForm.value;
-    const Transaccion_Acta = new TransaccionActaRecibido();
-    Transaccion_Acta.ActaRecibido = this.Registrar_Acta(this.Datos.Formulario1);
-    Transaccion_Acta.UltimoEstado = this.Registrar_Estado_Acta(Transaccion_Acta.ActaRecibido, EstadoActa_t.Registrada);
-    const Soportes = new Array<TransaccionSoporteActa>();
-    this.Datos.Formulario2.forEach((soporte, index) => {
-      Soportes.push(this.Registrar_Soporte(soporte, Transaccion_Acta.ActaRecibido, index));
-    });
+    const transaccionActa = new TransaccionActaRecibido();
 
-    Transaccion_Acta.SoportesActa = Soportes;
-    // console.log({Transaccion_Acta, validador: this.validador});
+    this.Datos = this.firstForm.value;
+    transaccionActa.ActaRecibido = this.generarActa();
+    transaccionActa.UltimoEstado = this.generarEstadoActa(this.Datos, ae ? EstadoActa_t.Aceptada : EstadoActa_t.Registrada);
+    transaccionActa.Elementos = <Elemento[]>[];
+    ae ? transaccionActa.Elementos = this.generarElementos() : null;
+
+    const Soportes: SoporteActa[] = this.Datos.Formulario2
+      .map((soporte, index) => this.generarSoporte(soporte, index));
+    transaccionActa.SoportesActa = Soportes;
+
     if (this.validador === false) {
-      this.Actas_Recibido.postTransaccionActa(Transaccion_Acta).subscribe((res: any) => {
+      this.Actas_Recibido.postTransaccionActa(transaccionActa).subscribe((res: any) => {
         if (res !== null) {
           (Swal as any).fire({
-            type: 'success',
             title: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.RegistradaTitle', { ID: res.ActaRecibido.Id }),
             text: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.Registrada', { ID: res.ActaRecibido.Id }),
+            type: 'success',
+            showConfirmButton: false,
+            timer: 4000,
           });
-          sessionStorage.removeItem('Formulario_Registro');
+          sessionStorage.removeItem(!ae ? 'Formulario_Registro' : 'Formulario_Acta_Especial');
           this.router.navigate(['/pages/acta_recibido/consulta_acta_recibido']);
           this.Registrando = false;
         } else {
@@ -454,55 +480,83 @@ export class RegistroActaRecibidoComponent implements OnInit {
     }
   }
 
-  Registrar_Acta(Datos: any): ActaRecibido {
-    // console.log({Datos});
-    const Acta_de_Recibido = new ActaRecibido();
-    Acta_de_Recibido.Id = null;
-    Acta_de_Recibido.Activo = true;
-    Acta_de_Recibido.FechaCreacion = new Date();
-    Acta_de_Recibido.FechaModificacion = new Date();
-    Acta_de_Recibido.RevisorId = this.userService.getPersonaId();
-    Acta_de_Recibido.UbicacionId = Datos.Ubicacion ? Datos.Ubicacion : null;
-    Acta_de_Recibido.Observaciones = null;
-    Acta_de_Recibido.PersonaAsignada = Datos.Contratista.Tercero.Id;
-    return Acta_de_Recibido;
+  private generarActa(): ActaRecibido {
+    const ta = this.tipoActa === 'especial' ? 2 : 1;
+
+    const actaRecibido = new ActaRecibido;
+    actaRecibido.Id = null;
+    actaRecibido.Activo = true;
+    actaRecibido.TipoActaId = <TipoActa>{Id: ta};
+
+    return actaRecibido;
   }
 
-  Registrar_Estado_Acta(Acta: ActaRecibido, Estado: number): HistoricoActa {
+  private generarEstadoActa(Datos: any, Estado: number): HistoricoActa {
 
-    const Historico_ = new HistoricoActa();
+    const historico = new HistoricoActa;
+    const ae = this.tipoActa === 'especial';
 
-    Historico_.Id = null;
-    Historico_.ActaRecibidoId = Acta;
-    Historico_.Activo = true;
-    Historico_.EstadoActaId = this.Estados_Acta.find(estado => estado.Id === Estado);
-    Historico_.FechaCreacion = new Date();
-    Historico_.FechaModificacion = new Date();
+    historico.Id = null;
+    historico.ProveedorId = Datos.Formulario1.Proveedor ? Datos.Formulario1.Proveedor.Tercero.Id : null;
+    historico.UbicacionId = Datos.Formulario1.Ubicacion ? Datos.Formulario1.Ubicacion : null;
+    historico.RevisorId = this.userService.getPersonaId();
+    historico.PersonaAsignadaId = ae ? this.userService.getPersonaId() : Datos.Formulario1.Contratista.Tercero.Id;
+    historico.Observaciones = null;
+    historico.FechaVistoBueno = null;
+    historico.ActaRecibidoId = new ActaRecibido;
+    historico.EstadoActaId = this.Estados_Acta.find(estado => estado.Id === Estado);
+    historico.Activo = true;
 
-    return Historico_;
+    return historico;
   }
 
-  Registrar_Soporte(Datos: any, Acta: ActaRecibido, index: number): TransaccionSoporteActa {
-    // console.log({Datos});
+  private generarSoporte(Datos: any, index: number): SoporteActa {
 
-    const Soporte_Acta = new SoporteActa();
-    const Transaccion = new TransaccionSoporteActa();
+    const soporteActa = new SoporteActa;
 
-    Soporte_Acta.Id = null;
-    Soporte_Acta.ActaRecibidoId = Acta;
-    Soporte_Acta.Activo = true;
-    Soporte_Acta.Consecutivo = Datos.Consecutivo;
-    Soporte_Acta.FechaCreacion = new Date();
-    Soporte_Acta.FechaModificacion = new Date();
-    Soporte_Acta.FechaSoporte = Datos.Fecha_Factura ? Datos.Fecha_Factura : null;
-    Soporte_Acta.ProveedorId = Datos.Proveedor ? Datos.Proveedor.Tercero.Id : null;
-    Soporte_Acta.DocumentoId = this.idDocumento[index];
+    soporteActa.Id = null;
+    soporteActa.Consecutivo = Datos.Consecutivo;
+    soporteActa.DocumentoId = this.idDocumento[index];
+    soporteActa.FechaSoporte = Datos.FechaSoporte ? Datos.FechaSoporte : null;
+    soporteActa.ActaRecibidoId = new ActaRecibido;
+    soporteActa.Activo = true;
 
-    Transaccion.SoporteActa = Soporte_Acta;
-    // Transaccion.Elementos = this.Registrar_Elementos(Soporte_Acta);
-    Transaccion.Elementos = <Elemento[]>[];
     this.validador = false;
-    return Transaccion;
+    return soporteActa;
+  }
+
+  private generarElementos(): Array<Elemento> {
+    const ee = this.tipoActa === 'especial' ? 2 : 1;
+    const elementosActa = new Array<Elemento>();
+
+    if (this.DatosElementos && this.DatosElementos.length > 0) {
+
+      for (const datos of this.DatosElementos) {
+
+        const elemento = new Elemento;
+        const valorTotal = parseFloat(datos.Subtotal) - parseFloat(datos.Descuento);
+
+        elemento.Id = null;
+        elemento.Nombre = datos.Nombre;
+        elemento.Cantidad = parseInt(datos.Cantidad, 10);
+        elemento.Marca = datos.Marca;
+        elemento.Serie = datos.Serie;
+        elemento.UnidadMedida = parseInt(datos.UnidadMedida, 10);
+        elemento.ValorUnitario = parseFloat(datos.ValorUnitario);
+        elemento.Subtotal = parseFloat(datos.Subtotal);
+        elemento.Descuento = parseFloat(datos.Descuento);
+        elemento.ValorTotal = valorTotal;
+        elemento.PorcentajeIvaId = parseInt(datos.PorcentajeIvaId, 10);
+        elemento.ValorIva = parseFloat(datos.ValorIva);
+        elemento.ValorFinal = parseFloat(datos.ValorTotal);
+        elemento.SubgrupoCatalogoId = datos.SubgrupoCatalogoId.SubgrupoId.Id;
+        elemento.EstadoElementoId = <EstadoElemento>{Id: ee};
+        elemento.ActaRecibidoId = new ActaRecibido;
+        elemento.Activo = true;
+        elementosActa.push(elemento);
+      }
+    }
+    return elementosActa;
   }
 
   // Posible TODO: Esta función también se repite en los componentes
@@ -544,7 +598,9 @@ export class RegistroActaRecibidoComponent implements OnInit {
     });
   }
 
-  usarLocalStorage() {
+  usarLocalStorage(event$) {
+    this.tipoActa === 'especial' ?
+    sessionStorage.setItem('Formulario_Acta_Especial', JSON.stringify(this.firstForm.value)) :
     sessionStorage.setItem('Formulario_Registro', JSON.stringify(this.firstForm.value));
   }
 
@@ -569,18 +625,28 @@ export class RegistroActaRecibidoComponent implements OnInit {
   }
 
   clear() {
-    this.firstForm.get('Formulario2')['controls'][0].get('Fecha_Factura').patchValue('');
-    this.firstForm.get('Formulario2')['controls'][0].get('Fecha_Factura').setErrors(null);
+    this.firstForm.get('Formulario2')['controls'][0].get('FechaSoporte').patchValue('');
+    this.firstForm.get('Formulario2')['controls'][0].get('FechaSoporte').setErrors(null);
   }
+
   private validarTercero(): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
       const valor = control.value;
-      const checkStringLength = typeof(valor) === 'string' && valor.length < 4 && valor !== '' ? true : false;
-      const checkInvalidString = typeof(valor) === 'string' && valor !== '' ? true : false;
-      const checkInvalidTercero = typeof(valor) === 'object' && !valor.Tercero ? true : false;
-      return checkStringLength ? {errorLongitudMinima: true} :
-      checkInvalidString || checkInvalidTercero ? {terceroNoValido: true} : null;
+      const checkStringLength = typeof (valor) === 'string' && valor.length < 4 && valor !== '' ? true : false;
+      const checkInvalidString = typeof (valor) === 'string' && valor !== '' ? true : false;
+      const checkInvalidTercero = typeof (valor) === 'object' && !valor.Tercero ? true : false;
+      return checkStringLength ? { errorLongitudMinima: true } :
+        checkInvalidString || checkInvalidTercero ? { terceroNoValido: true } : null;
     };
+  }
+
+  private checkValidness: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
+    const errors = !(
+      control.get('Formulario1').valid &&
+      control.get('Formulario2').valid &&
+      control.get('Formulario3').valid);
+    errors ? this.errores.set('formularios', true) : this.errores.delete('formularios');
+    return errors ? { formularios: true } : null;
   }
 
 }

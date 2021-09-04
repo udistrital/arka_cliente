@@ -66,3 +66,20 @@
 p {
   margin-top: 0.5rem;
 }
+
+table.consolidado {
+  width: auto;
+  margin: auto;
+}
+
+.botones {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0;
+  button {
+    margin-left: 1rem;
+  }
+  .anterior {
+    align-self: flex-start;
+  }
+}

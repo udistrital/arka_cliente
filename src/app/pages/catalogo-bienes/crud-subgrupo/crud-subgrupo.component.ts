@@ -132,7 +132,7 @@ export class CrudSubgrupoComponent implements OnInit, OnChanges {
       detalle.Id = formData.DetalleId;
       detalle.Depreciacion = formData.Depreciacion;
       detalle.Valorizacion = formData.Valorizacion;
-      detalle.TipoBienId = <TipoBienID>{ Id: tipoBien };
+      detalle.TipoBienId = <TipoBien>{ Id: tipoBien };
       detalle.FechaModificacion = new Date;
       trSubrupo.DetalleSubgrupo = detalle;
     }
@@ -164,7 +164,7 @@ export class CrudSubgrupoComponent implements OnInit, OnChanges {
       detalle.Id = formData.DetalleId;
       detalle.Depreciacion = formData.Depreciacion;
       detalle.Valorizacion = formData.Valorizacion;
-      detalle.TipoBienId = <TipoBienID>{ Id: tipoBien };
+      detalle.TipoBienId = <TipoBien>{ Id: tipoBien };
       trSubrupo.DetalleSubgrupo = detalle;
     }
 

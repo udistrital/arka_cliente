@@ -385,3 +385,4 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
       .reduce((acc: number, tipoMov: TiposMovimiento) => acc + (tipoMov.mostrar() ? tipoMov.data.length : 0), 0);
   }
 }
+

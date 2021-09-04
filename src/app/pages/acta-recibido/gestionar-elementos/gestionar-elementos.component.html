@@ -1,4 +1,4 @@
-<div class="card-2">
+<div class="card-2" *ngIf="Modo === 'agregar'">
   <form [formGroup]="form" (ngSubmit)="onSubmit()">
     <nb-card>
       <nb-card-header>{{'GLOBAL.Acta_Recibido.CapturarElementos.CargaMasivaTitle' | translate }}</nb-card-header>
@@ -39,12 +39,12 @@
   <nb-card-header>{{'GLOBAL.Acta_Recibido.CapturarElementos.ArticulosRelacionadosTitle' | translate }}</nb-card-header>
   <nb-card-body>
 
-    <div class="row">
+    <div class="row" *ngIf="Modo === 'agregar'">
       <button nbButton [disabled]="!checkParcial && !checkTodos"  (click)="borraSeleccionados()" style="margin-left: 10px;height: 45px;">Borrar
         Seleccionados</button>
       <div class="col">
         <ng2-completer *ngIf="!ocultarAsignacionCatalogo" type="text" inputClass="cell form-control" style="height: 8px;" placeholder="Asignar clase"
-          [datasource]="dataService" [minSearchLength]="4" (selected)="onClase($event)"
+          [datasource]="dataService" [minSearchLength]="4" (selected)="onClaseMultiple($event)"
           [disableInput]="!checkParcial && !checkTodos" [clearSelected]="true" [clearUnselected]="false">
         </ng2-completer>
       </div>
@@ -60,7 +60,7 @@
       <ng-container matColumnDef="AccionesMacro">
         <th mat-header-cell *matHeaderCellDef>
           <mat-checkbox aria-label="Seleccionar/Deseleccionar Todo"
-            (change)="cambioCheckTodos($event.checked)" nbPopover="Seleccionar/Deseleccionar Todo" #checkTodoInput
+            (change)="cambioCheckTodos($event.checked)" nbPopover="Seleccionar/Deseleccionar Todo" #checkTodoInput (click)="enviarSeleccionados()"
             nbPopoverTrigger="hover" nbPopoverPlacement="left" [checked]="checkTodos" [indeterminate]="checkParcial">
           </mat-checkbox>
         </th>
@@ -79,7 +79,7 @@
         </th>
         <td mat-cell *matCellDef="let element; let rowIndex = index">
           <div>
-            <input disabled nbInput type="text" fieldSize="tiny" class="cell" [(value)]="element.CodigoSubgrupo"
+            <input disabled nbInput type="text" fieldSize="tiny" class="cell" [(ngModel)]="element.SubgrupoCatalogoId.SubgrupoId.Codigo"
               readonly>
           </div>
         </td>
@@ -94,9 +94,9 @@
         </th>
         <td mat-cell *matCellDef="let element; let rowIndex = index">
           <div style="width: 150px;">
-            <ng2-completer nbInput type="text" inputClass="cell form-control" style="border: 0rem" fieldSize="tiny"
+            <ng2-completer nbInput type="text" inputClass="cell form-control" style="border: 0rem" fieldSize="tiny" [disabled]="Modo !== 'agregar'"
               [datasource]="dataService" [minSearchLength]="4" (blur)="onBlurClase(rowIndex)" (selected)="onSelectedClase($event,rowIndex)"
-              [(ngModel)]="element.NombreClase"></ng2-completer>
+              [(ngModel)]="element.SubgrupoCatalogoId.SubgrupoId.Nombre"></ng2-completer>
           </div>
         </td>
         <td mat-footer-cell *matFooterCellDef></td>
@@ -108,7 +108,7 @@
           {{'GLOBAL.Acta_Recibido.CapturarElementos.TipoBienHeader' | translate }} </th>
         <td mat-cell *matCellDef="let element; let rowIndex = index">
           <div>
-            <input disabled nbInput type="text" fieldSize="tiny" class="cell" [(ngModel)]="element.TipoBienNombre"
+            <input disabled nbInput type="text" fieldSize="tiny" class="cell" [(ngModel)]="element.SubgrupoCatalogoId.TipoBienId.Nombre"
               readonly>
           </div>
         </td>
@@ -122,7 +122,7 @@
         <th mat-header-cell *matHeaderCellDef mat-sort-header>
           {{'GLOBAL.Acta_Recibido.CapturarElementos.DescripcionHeader' | translate }} </th>
         <td mat-cell *matCellDef="let element; let rowIndex = index">
-          <input nbInput type="text" fieldSize="tiny" class="cell"
+          <input nbInput type="text" fieldSize="tiny" class="cell" [disabled]="Modo !== 'agregar'"
             placeholder="{{'GLOBAL.Acta_Recibido.CapturarElementos.DescripcionHeader' | translate }}"
             [(ngModel)]="element.Nombre" required>
         </td>
@@ -135,7 +135,7 @@
           {{'GLOBAL.Acta_Recibido.CapturarElementos.CantidadHeader' | translate }} </th>
         <td mat-cell *matCellDef="let element; let rowIndex = index">
           <input currencyMask [options]="{allowNegative: false, prefix: ''}" nbInput type="text" fieldSize="tiny"
-            class="cell-2" placeholder="{{'GLOBAL.Acta_Recibido.CapturarElementos.CantidadHeader' | translate }}"
+            class="cell-2"  [disabled]="Modo === 'verificar'" placeholder="{{'GLOBAL.Acta_Recibido.CapturarElementos.CantidadHeader' | translate }}"
             (ngModelChange)="element.Subtotal = valorXcantidad(element.ValorUnitario, $event).toString();
               element.ValorTotal = valortotal(valorXcantidad(element.ValorUnitario, $event).toString(),element.Descuento,element.ValorIva).toString();
               element.ValorIva = valor_iva(valorXcantidad(element.ValorUnitario, $event).toString(),element.Descuento,element.PorcentajeIvaId).toString();"
@@ -150,7 +150,7 @@
           {{'GLOBAL.Acta_Recibido.CapturarElementos.MarcaHeader' | translate }}
         </th>
         <td mat-cell *matCellDef="let element; let rowIndex = index">
-          <input nbInput type="text" fieldSize="tiny" class="cell"
+          <input nbInput  [disabled]="Modo !== 'agregar'" type="text" fieldSize="tiny" class="cell"
             placeholder="{{'GLOBAL.Acta_Recibido.CapturarElementos.MarcaHeader' | translate }}"
             [(ngModel)]="element.Marca" required>
         </td>
@@ -163,7 +163,7 @@
           {{'GLOBAL.Acta_Recibido.CapturarElementos.SerieHeader' | translate }}
         </th>
         <td mat-cell *matCellDef="let element; let rowIndex = index">
-          <input nbInput type="text" fieldSize="tiny" class="cell"
+          <input nbInput [disabled]="Modo !== 'agregar'" type="text" fieldSize="tiny" class="cell"
             placeholder="{{'GLOBAL.Acta_Recibido.CapturarElementos.SerieHeader' | translate }}"
             [(ngModel)]="element.Serie" required>
         </td>
@@ -175,7 +175,7 @@
         <th mat-header-cell *matHeaderCellDef mat-sort-header>
           {{'GLOBAL.Acta_Recibido.CapturarElementos.UnidadMedidaHeader' | translate }} </th>
         <td mat-cell *matCellDef="let element; let rowIndex = index">
-          <select nbInput type="text" class="cell" [(ngModel)]="element.UnidadMedida" required>
+          <select nbInput [disabled]="Modo !== 'agregar'" type="text" class="cell" [(ngModel)]="element.UnidadMedida" required>
             <option *ngFor="let unidad of Unidades" [(value)]="unidad.Id">{{unidad.Unidad}}</option>
           </select>
         </td>
@@ -188,7 +188,7 @@
           {{'GLOBAL.Acta_Recibido.CapturarElementos.ValorUnitarioHeader' | translate }} </th>
         <td mat-cell *matCellDef="let element; let rowIndex = index">
 
-          <input currencyMask [options]="{allowNegative: false}" nbInput type="text" fieldSize="tiny" class="cell"
+          <input currencyMask [options]="{allowNegative: false}" nbInput [disabled]="Modo !== 'agregar'" type="text" fieldSize="tiny" class="cell"
             placeholder="{{'GLOBAL.Acta_Recibido.CapturarElementos.ValorUnitarioHeader' | translate }}"
             (ngModelChange)="element.Subtotal = valorXcantidad($event, element.Cantidad).toString();
               element.ValorIva = valor_iva(valorXcantidad($event, element.Cantidad).toString(),element.Descuento,element.PorcentajeIvaId).toString();
@@ -216,7 +216,7 @@
         <th mat-header-cell *matHeaderCellDef mat-sort-header>
           {{'GLOBAL.Acta_Recibido.CapturarElementos.DescuentoHeader' | translate }} </th>
         <td mat-cell *matCellDef="let element; let rowIndex = index">
-          <input currencyMask [options]="{allowNegative: false}" nbInput type="text" fieldSize="tiny" class="cell"
+          <input currencyMask [options]="{allowNegative: false}" nbInput [disabled]="Modo !== 'agregar'" type="text" fieldSize="tiny" class="cell"
             placeholder="{{'GLOBAL.Acta_Recibido.CapturarElementos.DescuentoHeader' | translate }}"
             [(ngModel)]="element.Descuento" (ngModelChange)="element.ValorIva = valor_iva(element.Subtotal,$event,element.PorcentajeIvaId).toString();
               element.ValorTotal = valortotal(element.Subtotal,$event,element.ValorIva).toString();" required>
@@ -232,7 +232,7 @@
           {{'GLOBAL.Acta_Recibido.CapturarElementos.IVAHeader' | translate }}
         </th>
         <td mat-cell *matCellDef="let element; let rowIndex = index">
-          <select nbInput type="text" class="cell form-control" [(ngModel)]="element.PorcentajeIvaId"
+          <select nbInput [disabled]="Modo !== 'agregar'"type="text" class="cell form-control" [(ngModel)]="element.PorcentajeIvaId"
             (ngModelChange)="element.ValorIva = valor_iva(element.Subtotal,element.Descuento,$event).toString();
               element.ValorTotal = valortotal(element.Subtotal,element.Descuento,valor_iva(element.Subtotal,element.Descuento,$event).toString()).toString();" required>
             <option *ngFor="let tarifas of Tarifas_Iva" [(value)]="tarifas.Tarifa">{{tarifas.Nombre}}</option>
