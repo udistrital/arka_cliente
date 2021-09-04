@@ -104,6 +104,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
   private validarElementos: boolean;
   Acta: TransaccionActaRecibido;
   totales: any;
+  minLength: number = 4;
 
   permisos: {
     Acta: Permiso,
@@ -707,11 +708,11 @@ export class EdicionActaRecibidoComponent implements OnInit {
     }
 
     transaccionActa.UltimoEstado = this.generarEstadoActa(this.Datos.Formulario1, this.Datos.Formulario3, nuevoEstado);
-    const Soportes = new Array<SoporteActa>();
-    this.Datos.Formulario2.forEach((soporte, index) => { Soportes.push(this.generarSoporte(soporte, index)); });
-
-    transaccionActa.SoportesActa = Soportes;
     transaccionActa.Elementos = this.generarElementos();
+
+    const Soportes: SoporteActa[] = this.Datos.Formulario2
+      .map((soporte, index) => this.generarSoporte(soporte, index));
+    transaccionActa.SoportesActa = Soportes;
 
     this.Actas_Recibido.putTransaccionActa(transaccionActa, transaccionActa.ActaRecibido.Id).subscribe((res: any) => {
       if (res !== null) {
@@ -735,7 +736,8 @@ export class EdicionActaRecibidoComponent implements OnInit {
         }).then((willDelete) => {
           if (willDelete.value && siguienteEtapa) {
             const formularios = this.firstForm.value;
-            const cedulaprov = formularios.Formulario1.Proveedor ? formularios.Formulario1.Proveedor.Identificacion.Numero : '';
+            const cedulaprov = formularios.Formulario1.Proveedor && formularios.Formulario1.Proveedor.Identificacion ?
+              formularios.Formulario1.Proveedor.Identificacion.Numero : '';
             const cedularev = formularios.Formulario1.Contratista.Identificacion.Numero;
             if (enviara === 1) {
               this.EnviarEmail(cedulaprov);
@@ -806,7 +808,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
 
     soporteActa.Id = form2.Id;
     soporteActa.Consecutivo = form2.Consecutivo;
-    soporteActa.DocumentoId = 2400; // this.idDocumento[index];
+    soporteActa.DocumentoId = this.idDocumento[index];
     soporteActa.FechaSoporte = form2.Fecha_Factura ? form2.Fecha_Factura : null;
     soporteActa.ActaRecibidoId = <ActaRecibido>{Id: +this._Acta_Id};
     soporteActa.Activo = true;

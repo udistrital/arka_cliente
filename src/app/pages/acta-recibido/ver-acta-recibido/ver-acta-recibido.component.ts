@@ -78,6 +78,7 @@ export class VerActaRecibidoComponent implements OnInit {
   proveedoresFiltrados: Observable<Partial<TerceroCriterioProveedor>[]>;
   UbicacionesFiltradas: any;
   dataService3: CompleterData;
+  minLength: number = 4;
 
   constructor(
     private translate: TranslateService,

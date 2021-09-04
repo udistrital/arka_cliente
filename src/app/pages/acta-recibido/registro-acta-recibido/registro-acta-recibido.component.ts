@@ -90,6 +90,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
   errores: Map<string, boolean>;
   private validarElementos: boolean;
   totales: any;
+  minLength: number = 4;
 
   constructor(
     private translate: TranslateService,
@@ -438,7 +439,6 @@ export class RegistroActaRecibidoComponent implements OnInit {
     };
     await start();
     const transaccionActa = new TransaccionActaRecibido();
-    const Soportes = new Array<SoporteActa>();
 
     this.Datos = this.firstForm.value;
     transaccionActa.ActaRecibido = this.generarActa();
@@ -446,7 +446,8 @@ export class RegistroActaRecibidoComponent implements OnInit {
     transaccionActa.Elementos = <Elemento[]>[];
     ae ? transaccionActa.Elementos = this.generarElementos() : null;
 
-    this.Datos.Formulario2.forEach((soporte, index) => { Soportes.push(this.generarSoporte(soporte, index)); });
+    const Soportes: SoporteActa[] = this.Datos.Formulario2
+      .map((soporte, index) => this.generarSoporte(soporte, index));
     transaccionActa.SoportesActa = Soportes;
 
     if (this.validador === false) {
@@ -486,8 +487,6 @@ export class RegistroActaRecibidoComponent implements OnInit {
     actaRecibido.Id = null;
     actaRecibido.Activo = true;
     actaRecibido.TipoActaId = <TipoActa>{Id: ta};
-    actaRecibido.FechaCreacion = new Date();
-    actaRecibido.FechaModificacion = new Date();
 
     return actaRecibido;
   }
@@ -507,8 +506,6 @@ export class RegistroActaRecibidoComponent implements OnInit {
     historico.ActaRecibidoId = new ActaRecibido;
     historico.EstadoActaId = this.Estados_Acta.find(estado => estado.Id === Estado);
     historico.Activo = true;
-    historico.FechaCreacion = new Date();
-    historico.FechaModificacion = new Date();
 
     return historico;
   }
@@ -519,12 +516,10 @@ export class RegistroActaRecibidoComponent implements OnInit {
 
     soporteActa.Id = null;
     soporteActa.Consecutivo = Datos.Consecutivo;
-    soporteActa.DocumentoId = 2400; // this.idDocumento[index];
+    soporteActa.DocumentoId = this.idDocumento[index];
     soporteActa.FechaSoporte = Datos.FechaSoporte ? Datos.FechaSoporte : null;
     soporteActa.ActaRecibidoId = new ActaRecibido;
     soporteActa.Activo = true;
-    soporteActa.FechaCreacion = new Date();
-    soporteActa.FechaModificacion = new Date();
 
     this.validador = false;
     return soporteActa;

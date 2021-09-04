@@ -12,7 +12,7 @@
                 <div class="row" *ngIf="Acta.ActaRecibido.TipoActaId.Id === 1">
                   <div class="form-group col-sm">
                       <label>{{'GLOBAL.Acta_Recibido.ContratistaAsignado' | translate}}</label>
-                      <input matInput type="text" class="form-control" placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : '4'} }}"
+                      <input matInput type="text" class="form-control" placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : minLength} }}"
                         formControlName="Contratista" [matAutocomplete]="autoContratista">
                         <mat-autocomplete #autoContratista="matAutocomplete" [displayWith]="muestraContratista">
                           <mat-option *ngFor="let contr of contratistasFiltrados | async" [value]="contr">
@@ -24,7 +24,7 @@
                           {{'GLOBAL.Errores.ErrorRequerido' | translate}}</p>
                         <p class="campo"
                           *ngIf="firstForm.get('Formulario1.Contratista').errors && firstForm.get('Formulario1.Contratista').errors.errorLongitudMinima">
-                          {{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : '4'} }}</p>
+                          {{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : minLength} }}</p>
                         <p class="campo"
                           *ngIf="firstForm.get('Formulario1.Contratista').errors && firstForm.get('Formulario1.Contratista').errors.terceroNoValido">
                           {{'GLOBAL.Errores.ErrorTercero' | translate}}</p>
@@ -32,7 +32,7 @@
                     <div class="form-group col-sm">
                       <label>{{'GLOBAL.Acta_Recibido.EdicionActa.Proveedor' | translate}}</label>
                       <input matInput type="text" class="form-control"
-                      placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : '4'} }}"
+                      placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : minLength} }}"
                       formControlName="Proveedor" [matAutocomplete]="autoProveedor">
                       <mat-autocomplete #autoProveedor="matAutocomplete" [displayWith]="muestraProveedor">
                         <mat-option *ngFor="let prov of proveedoresFiltrados | async" [value]="prov">
@@ -44,7 +44,7 @@
                         {{'GLOBAL.Errores.ErrorRequerido' | translate}}</p>
                       <p class="campo"
                         *ngIf="firstForm.get('Formulario1.Proveedor').errors && firstForm.get('Formulario1.Proveedor').errors.errorLongitudMinima">
-                        {{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : '4'} }}</p>
+                        {{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : minLength} }}</p>
                       <p class="campo"
                         *ngIf="firstForm.get('Formulario1.Proveedor').errors && firstForm.get('Formulario1.Proveedor').errors.terceroNoValido">
                         {{'GLOBAL.Errores.ErrorTercero' | translate}}</p>
@@ -66,7 +66,7 @@
                       formControlName="Dependencia"
                       (change)="Traer_Relacion_Ubicaciones()" [disableInput]="!getPermisoEditar(permisos.Acta)"
                       [minSearchLength]="3" [clearUnselected]="true" (blur)="Traer_Relacion_Ubicaciones()"
-                      placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : '3'} }}">
+                      placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : minLength} }}">
                     </ng2-completer>
                     <p class="campo" *ngIf="firstForm.get('Formulario1').get('Dependencia').invalid">
                       {{'GLOBAL.Errores.ErrorRequerido' | translate}}</p>

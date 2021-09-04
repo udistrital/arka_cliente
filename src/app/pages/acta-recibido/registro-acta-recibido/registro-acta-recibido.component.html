@@ -14,7 +14,7 @@
                 <div class="form-group col-sm">
                   <label>{{'GLOBAL.Acta_Recibido.ContratistaAsignado' | translate}}</label>
                   <input matInput type="text" class="form-control"
-                    placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : '4'} }}" formControlName="Contratista"
+                    placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : minLength} }}" formControlName="Contratista"
                     [matAutocomplete]="autoContratista" />
                   <mat-autocomplete #autoContratista="matAutocomplete" [displayWith]="muestraContratista"
                     (optionSelected)="usarLocalStorage()">
@@ -27,7 +27,7 @@
                     {{'GLOBAL.placeholder' | translate}}</p>
                   <p class="campo"
                     *ngIf="firstForm.get('Formulario1.Contratista').errors && firstForm.get('Formulario1.Contratista').errors.errorLongitudMinima">
-                    {{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : '4'} }}</p>
+                    {{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : minLength} }}</p>
                   <p class="campo"
                     *ngIf="firstForm.get('Formulario1.Contratista').errors && firstForm.get('Formulario1.Contratista').errors.terceroNoValido">
                     {{'GLOBAL.Errores.ErrorTercero' | translate}}</p>
@@ -35,7 +35,7 @@
                 <div class="form-group col-sm">
                   <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Proveedor' | translate}}</label>
                   <input matInput type="text" class="form-control"
-                    placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : '4'} }}" formControlName="Proveedor"
+                    placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : minLength} }}" formControlName="Proveedor"
                     [matAutocomplete]="autoProveedor" />
                   <mat-autocomplete #autoProveedor="matAutocomplete" [displayWith]="muestraProveedor"
                     (optionSelected)="usarLocalStorage()">
@@ -45,7 +45,7 @@
                   </mat-autocomplete>
                   <p class="campo"
                     *ngIf="firstForm.get('Formulario1.Proveedor').errors && firstForm.get('Formulario1.Proveedor').errors.errorLongitudMinima">
-                    {{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : '4'} }}</p>
+                    {{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : minLength} }}</p>
                   <p class="campo"
                     *ngIf="firstForm.get('Formulario1.Proveedor').errors && firstForm.get('Formulario1.Proveedor').errors.terceroNoValido">
                     {{'GLOBAL.Errores.ErrorTercero' | translate}}</p>
@@ -68,7 +68,7 @@
                     (keyup)="Traer_Relacion_Ubicaciones()" [datasource]="dataService3"
                     formControlName="Dependencia" [minSearchLength]="2"
                     (change)="usarLocalStorage(); Traer_Relacion_Ubicaciones();"
-                    placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : '4'} }}">
+                    placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : minLength} }}">
                   </ng2-completer>
                   <p class="campo" *ngIf="firstForm.get('Formulario1').get('Dependencia').invalid">
                     {{'GLOBAL.placeholder' | translate}}</p>
@@ -257,7 +257,7 @@
                 </button>
                 <button nbButton matStepperNext (click)="Revisar_Totales()"
                   [disabled]="!firstForm.get('Formulario1').valid || !firstForm.get('Formulario2').valid"
-                  class="float-right">{{'GLOBAL.Acta_Recibido.RegistroActa.GuardarCambiosButton' | translate}}
+                  class="float-right">{{'GLOBAL.Acta_Recibido.RegistroActa.BotonRegistro' | translate}}
                 </button>
               </div>
             </nb-card-footer>
@@ -326,7 +326,7 @@
               <span class="fas fa-exclamation-triangle fa-2x"></span>
             </button>
             <button nbButton matStepperNext (click)="Revisar_Totales()" [disabled]="errores && errores.size > 0">
-              {{'GLOBAL.Acta_Recibido.RegistroActa.GuardarCambiosButton' | translate}}
+              {{'GLOBAL.Acta_Recibido.RegistroActa.BotonRegistro' | translate}}
             </button>
           </div>
         </mat-step>
