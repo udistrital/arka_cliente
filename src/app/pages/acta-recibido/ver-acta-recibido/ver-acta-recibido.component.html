@@ -10,31 +10,47 @@
               <div class="form-group col-sm">
                 <label>{{'GLOBAL.Acta_Recibido.ContratistaAsignado' | translate}}</label>
                 <div class="input-group">
-                  <input type="text" placeholder="NIT o Razón social" class="form-control" 
-                    formControlName="Contratista" readonly>
+                  <input matInput type="text" placeholder="{{'GLOBAL.Acta_Recibido.ContratistaAsignado' | translate }}"
+                    class="form-control" formControlName="Contratista" [matAutocomplete]="autoContratista">
+                    <mat-autocomplete #autoContratista="matAutocomplete" [displayWith]="muestraContratista">
+                      <mat-option *ngFor="let contr of contratistasFiltrados | async" [value]="contr">
+                        {{muestraContratista(contr)}}
+                      </mat-option>
+                    </mat-autocomplete>
                 </div>
               </div>
               <div class="form-group col-sm">
                 <label>{{'GLOBAL.Acta_Recibido.DetalleActa.Proveedor' | translate}}</label>
-                <div class="input-group">
-                  <input type="text" placeholder="NIT o Razón social" class="form-control" 
-                    formControlName="Proveedor" readonly>
-                </div>
+                <input matInput type="text" class="form-control"
+                formControlName="Proveedor" [matAutocomplete]="autoProveedor">
+                <mat-autocomplete #autoProveedor="matAutocomplete" [displayWith]="muestraProveedor">
+                  <mat-option *ngFor="let prov of proveedoresFiltrados | async" [value]="prov">
+                    {{muestraProveedor(prov)}}
+                  </mat-option>
+                </mat-autocomplete>
               </div>
             </div>
 
             <div class="row">
               <div class="form-group col-sm">
-                <label>{{'GLOBAL.Acta_Recibido.VerificacionActa.Sede' | translate}}</label>
-                <input class="form-control" formControlName="Sede" readonly>
+                <label>{{'GLOBAL.Acta_Recibido.EdicionActa.Sede' | translate}}</label>
+                <mat-select type="text" class="form-control" formControlName="Sede">
+                  <mat-option *ngFor="let sede of Sedes" [(value)]="sede.Id">{{sede.Nombre}}</mat-option>
+                </mat-select>
               </div>
               <div class="form-group col-sm">
-                <label>{{'GLOBAL.Acta_Recibido.VerificacionActa.Dependencia' | translate}}</label>
-                <input class="form-control" formControlName="Dependencia" readonly>
+                <label>{{'GLOBAL.Acta_Recibido.EdicionActa.Dependencia' | translate}}</label>
+                <ng2-completer style="border: 0rem" inputClass="form-control" nbInput [datasource]="dataService3"
+                  formControlName="Dependencia" [minSearchLength]="3" [clearUnselected]="true"
+                  placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : '3'} }}">
+                </ng2-completer>
               </div>
               <div class="form-group col-sm">
-                <label>{{'GLOBAL.Acta_Recibido.VerificacionActa.Ubicacion' | translate}}</label>
-                <input class="form-control" formControlName="Ubicacion" readonly>
+                <label>{{'GLOBAL.Acta_Recibido.EdicionActa.Ubicacion' | translate}}</label>
+                <mat-select type="text" class="form-control" formControlName="Ubicacion">
+                  <mat-option *ngFor="let ubicacion of UbicacionesFiltradas" [(value)]="ubicacion.Id">{{ubicacion.Nombre}}
+                  </mat-option>
+                </mat-select>
               </div>
             </div>
           </nb-card-body>
@@ -56,17 +72,16 @@
                           <div class="form-group col-sm">
                             <label>{{'GLOBAL.Acta_Recibido.DetalleActa.Consecutivo' | translate}}</label>
                             <div class="input-group">
-                              <input nbInput type="text" placeholder="Consecutivo" class="form-control" formControlName="Consecutivo"
-                                readonly>
+                              <input nbInput type="text" placeholder="Consecutivo" class="form-control" formControlName="Consecutivo">
                             </div>
                           </div>
 
                           <div class="form-group col-sm">
                             <label>{{'GLOBAL.Acta_Recibido.DetalleActa.FechaSoporte' | translate}}</label>
                             <div class="input-group">
-                              <input nbInput class="form-control" [nbDatepicker]="formpicker"
-                                formControlName="Fecha_Factura" disabled readonly>
-                              <nb-datepicker #formpicker readonly></nb-datepicker>
+                              <input nbInput class="form-control" placeholder="{{'GLOBAL.Acta_Recibido.VerificacionActa.FechaSoporte' | translate }}"
+                                [nbDatepicker]="formpicker" formControlName="Fecha_Factura">
+                              <nb-datepicker #formpicker></nb-datepicker>
                             </div>
                           </div>
                         </div>
@@ -88,24 +103,21 @@
                       </div>
                     </nb-card-body>
                   </nb-card>
-                  <nb-card>
-                    <nb-card-header>{{'GLOBAL.Acta_Recibido.VerificacionActa.ArticulosRelacionadosTitle' | translate}}
-                    </nb-card-header>
-                    <nb-card-body>
-                      <div class="pre-scrollable">
-                        <ngx-gestionar-elementos [Modo]="Modo" [ActaRecibidoId]="Acta.ActaRecibido.Id"
-                          (ElementosValidos)="eventoElementosSeleccionados($event)" (DatosEnviados)="eventoElementos($event)" (DatosTotales)="eventoTotales($event)"></ngx-gestionar-elementos>
-                      </div>
-                    </nb-card-body>
-                  </nb-card>
                 </div>
               </mat-tab>
-
             </mat-tab-group>
+
+            <nb-card-body>
+              <div>
+                <ngx-gestionar-elementos [Modo]="Modo" [ActaRecibidoId]="Acta.ActaRecibido.Id"
+                  (ElementosValidos)="eventoElementosSeleccionados($event)" (DatosEnviados)="eventoElementos($event)"
+                  (DatosTotales)="eventoTotales($event)"></ngx-gestionar-elementos>
+              </div>
+            </nb-card-body>
           </nb-card-body>
         </nb-card>
 
-        <nb-card *ngIf="totales">
+        <nb-card *ngIf="totales && elementos && elementos.length > 0">
           <nb-card-header>{{'GLOBAL.Acta_Recibido.VerificacionActa.Consolidado' | translate}}</nb-card-header>
           <nb-card-body>
             <table class="consolidado">
@@ -135,7 +147,8 @@
             <div class="form-group  col-lg-12">
               <label>{{'GLOBAL.Acta_Recibido.VerificacionActa.Observaciones' | translate}}</label>
               <div class="input-group">
-                <textarea rows="5" class="form-control" formControlName="Datos_Adicionales"></textarea>
+                <textarea rows="5" class="form-control" placeholder="{{'GLOBAL.Acta_Recibido.VerificacionActa.FechaSoporte' | translate }}"
+                  formControlName="Datos_Adicionales"></textarea>
               </div>
             </div>
           </nb-card-body>

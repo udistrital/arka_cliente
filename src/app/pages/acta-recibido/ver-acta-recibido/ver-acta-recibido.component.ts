@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild, ViewChildren, QueryList, Input } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Observable, Subscription } from 'rxjs';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, FormControl, FormArray } from '@angular/forms';
 import { NuxeoService } from '../../../@core/utils/nuxeo.service';
@@ -26,6 +26,9 @@ import { ListService } from '../../../@core/store/services/list.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { UserService } from '../../../@core/data/users.service';
 import { TipoActa } from '../../../@core/data/models/acta_recibido/tipo_acta';
+import { map, startWith } from 'rxjs/operators';
+import { isObject } from 'util';
+import { CompleterData, CompleterService } from 'ng2-completer';
 
 @Component({
   selector: 'ngx-ver-acta-recibido',
@@ -71,6 +74,10 @@ export class VerActaRecibidoComponent implements OnInit {
   sedeDependencia: any;
   elementos: any;
   totales: any;
+  contratistasFiltrados: Observable<TerceroCriterioContratista[]>;
+  proveedoresFiltrados: Observable<Partial<TerceroCriterioProveedor>[]>;
+  UbicacionesFiltradas: any;
+  dataService3: CompleterData;
 
   constructor(
     private translate: TranslateService,
@@ -84,8 +91,10 @@ export class VerActaRecibidoComponent implements OnInit {
     private store: Store<IAppState>,
     private listService: ListService,
     private userService: UserService,
-
+    private completerService: CompleterService,
   ) {
+    this.Contratistas = [];
+    this.Proveedores = [];
   }
 
   ngOnInit() {
@@ -121,6 +130,7 @@ export class VerActaRecibidoComponent implements OnInit {
           this.Dependencias = list.listDependencias[0],
           this.Sedes = list.listSedes[0],
           this.Ubicaciones = list.listUbicaciones[0],
+          this.dataService3 = this.completerService.local(this.Dependencias, 'Nombre', 'Nombre'),
 
           (this.Sedes && this.Sedes.length > 0 && this.Dependencias && this.Dependencias.length > 0 &&
             this.Tarifas_Iva && this.Tarifas_Iva.length > 0 && this.Unidades && this.Unidades.length &&
@@ -160,11 +170,26 @@ export class VerActaRecibidoComponent implements OnInit {
     });
   }
 
+  private filtroProveedores(nombre: string): Partial<TerceroCriterioProveedor>[] {
+    // console.log('filtroProveedores');
+    if (nombre.length >= 4 && Array.isArray(this.Proveedores)) {
+      const valorFiltrado = nombre.toLowerCase();
+      return this.Proveedores.filter(prov => this.muestraProveedor(prov).toLowerCase().includes(valorFiltrado));
+    } else return [];
+  }
+
   muestraProveedor(prov: Partial<TerceroCriterioProveedor>): string {
     if (prov) {
       const str = prov.Identificacion ? prov.Identificacion.Numero + ' - ' : '';
       return str + prov.Tercero.NombreCompleto;
     }
+  }
+
+  private filtroContratistas(nombre: string): TerceroCriterioContratista[] {
+    if (nombre.length >= 4 && Array.isArray(this.Contratistas)) {
+      const valorFiltrado = nombre.toLowerCase();
+      return this.Contratistas.filter(contr => this.muestraContratista(contr).toLowerCase().includes(valorFiltrado));
+    } else return [];
   }
 
   muestraContratista(contr: TerceroCriterioContratista): string {
@@ -197,10 +222,15 @@ export class VerActaRecibidoComponent implements OnInit {
     for (const Soporte of transaccion_.SoportesActa) {
       const Formulario__2 = this.fb.group({
         Id: [Soporte.Id],
-        Consecutivo: [Soporte.Consecutivo],
-        Fecha_Factura: [
-          new Date(Soporte.FechaSoporte) > new Date('1945') ?
-            new Date(Soporte.FechaSoporte.toString().split('Z')[0]) : ''],
+        Consecutivo: [{
+          value: Soporte.Consecutivo,
+          disabled: true,
+        }],
+        Fecha_Factura: [{
+          value: new Date(Soporte.FechaSoporte) > new Date('1945') ?
+            new Date(Soporte.FechaSoporte.toString().split('Z')[0]) : '',
+          disabled: true,
+        }],
         Soporte: [Soporte.DocumentoId],
       });
       Form2.push(Formulario__2);
@@ -212,29 +242,44 @@ export class VerActaRecibidoComponent implements OnInit {
     this.firstForm = this.fb.group({
       Formulario1: this.fb.group({
         Id: [transaccion_.ActaRecibido.Id],
-        Sede: [this.sedeDependencia ? this.sedeDependencia.sede : ''],
-        Dependencia: [this.sedeDependencia ? this.sedeDependencia.dependencia : ''],
-        Ubicacion: [
-          transaccion_.UltimoEstado.UbicacionId === 0 ? '' :
-          this.Ubicaciones.find(x => x.Id === transaccion_.UltimoEstado.UbicacionId).EspacioFisicoId.Nombre],
-        Proveedor: [
-          transaccion_.UltimoEstado.ProveedorId === 0 ? null :
-            this.muestraProveedor(this.Proveedores.find((proveedor) =>
-            proveedor.Tercero.Id === transaccion_.UltimoEstado.ProveedorId)),
-        ],
-        Contratista: [
-          transaccion_.UltimoEstado.PersonaAsignadaId === 0 ? null :
-            this.muestraContratista(this.Contratistas.find((proveedor) =>
-            proveedor.Tercero.Id === transaccion_.UltimoEstado.PersonaAsignadaId)),
-        ],
+        Sede: [{
+          value: this.sedeDependencia ? this.sedeDependencia.sede : '',
+          disabled: true,
+        }],
+        Dependencia: [{
+          value: this.sedeDependencia ? this.sedeDependencia.dependencia : '',
+          disabled: true,
+        }],
+        Ubicacion: [{
+          value: transaccion_.UltimoEstado.UbicacionId === 0 ? '' : transaccion_.UltimoEstado.UbicacionId,
+          disabled: true,
+        }],
+        Proveedor: [{
+          value: transaccion_.UltimoEstado.ProveedorId === 0 ? null :
+            this.Proveedores.find((proveedor) =>
+              proveedor.Tercero.Id === transaccion_.UltimoEstado.ProveedorId),
+          disabled: true,
+        }],
+        Contratista: [{
+          value: (() => {
+            const criterio = (contratista: TerceroCriterioContratista) =>
+              contratista &&
+              contratista.Tercero.Id === transaccion_.UltimoEstado.PersonaAsignadaId;
+            return this.Contratistas.some(criterio) ? this.Contratistas.find(criterio) : '';
+          })(),
+          disabled: true,
+        }],
       }),
       Formulario2: Form2,
       Formulario3: this.fb.group({
-        Datos_Adicionales: [transaccion_.UltimoEstado.Observaciones],
+        Datos_Adicionales: [{
+          value: transaccion_.UltimoEstado.Observaciones,
+          disabled: true,
+        }],
       }),
     });
+    this.initTerceros();
     this.carga_agregada = true;
-
   }
 
   async getSedeDepencencia(ubicacionId: number): Promise<void> {
@@ -248,7 +293,7 @@ export class VerActaRecibidoComponent implements OnInit {
         const sede = (() => {
           const criterio = x => x && x.CodigoAbreviacion === espacioFisico.toString();
           if (this.Sedes.some(criterio)) {
-            return this.Sedes.find(criterio).Nombre;
+            return this.Sedes.find(criterio);
           }
           return '';
         })();
@@ -256,16 +301,40 @@ export class VerActaRecibidoComponent implements OnInit {
         const dependencia = (() => {
           const criterio = x => _dependencia && x.Id === _dependencia;
           if (this.Dependencias.some(criterio)) {
-            return this.Dependencias.find(criterio).Nombre;
+            return this.Dependencias.find(criterio);
           }
           return '';
         })();
 
-        this.sedeDependencia = { sede: sede, dependencia: dependencia };
+        const transaccion: any = {};
+        transaccion.Sede = this.Sedes.find((x) => x.Id === sede.Id);
+        transaccion.Dependencia = this.Dependencias.find((x) => x.Id === dependencia.Id);
+
+        this.Actas_Recibido.postRelacionSedeDependencia(transaccion).subscribe((res_: any) => {
+          if (isObject(res_[0].Relaciones)) {
+            this.UbicacionesFiltradas = res_[0].Relaciones;
+          }
+        });
+
+        this.sedeDependencia = { sede: sede.Id, dependencia: dependencia.Nombre };
 
         resolve();
       });
     });
+  }
+
+  private initTerceros() {
+    this.proveedoresFiltrados = this.firstForm.get('Formulario1').get('Proveedor').valueChanges.pipe(
+      startWith(''),
+      map(val => typeof val === 'string' ? val : this.muestraProveedor(val)),
+      map(nombre => this.filtroProveedores(nombre)),
+    );
+
+    this.contratistasFiltrados = this.firstForm.get('Formulario1').get('Contratista').valueChanges.pipe(
+      startWith(''),
+      map(val => typeof val === 'string' ? val : this.muestraContratista(val)),
+      map(nombre => this.filtroContratistas(nombre)),
+    );
   }
 
   downloadFile(index: any) {
@@ -308,8 +377,8 @@ export class VerActaRecibidoComponent implements OnInit {
     const nuevoEstado = aceptar ? EstadoActa_t.Aceptada : EstadoActa_t.EnModificacion;
     transaccionActa.UltimoEstado = this.generarEstadoActa(this.Datos.Formulario1, this.Datos.Formulario3, nuevoEstado, aceptar);
 
-    const Soportes = new Array<SoporteActa>();
-    this.Datos.Formulario2.forEach((soporte, index) => { Soportes.push(this.generarSoporte(soporte, index)); });
+    const Soportes: SoporteActa[] = (this.firstForm.get('Formulario2') as FormArray).controls
+      .map((soporte, index) => this.generarSoporte(soporte, index));
 
     transaccionActa.SoportesActa = Soportes;
     transaccionActa.Elementos = <Elemento[]>[];
@@ -356,14 +425,18 @@ export class VerActaRecibidoComponent implements OnInit {
 
   private generarEstadoActa(form1: any, form3: any, Estado: number, aceptar: boolean): HistoricoActa {
 
+    const proveedor = this.firstForm.get('Formulario1.Proveedor').value;
+    const ubicacionId = this.firstForm.get('Formulario1.Ubicacion').value;
+    const contratista = this.firstForm.get('Formulario1.Contratista').value;
+    const observaciones = this.firstForm.get('Formulario3.Datos_Adicionales').value;
     const historico = new HistoricoActa();
+
     historico.Id = null;
-    historico.ProveedorId = form1.Proveedor ? this.Proveedores.find(prov => this.muestraProveedor(prov) === form1.Proveedor).Tercero.Id : null;
-    historico.UbicacionId = form1.Ubicacion ? this.Ubicaciones.find(ubc => ubc.EspacioFisicoId.Nombre === form1.Ubicacion).Id : 0;
-    historico.PersonaAsignadaId = form1.Contratista ?
-      this.Contratistas.find(contr => this.muestraContratista(contr) === form1.Contratista).Tercero.Id : 0;
+    historico.ProveedorId = proveedor ? proveedor.Tercero.Id : null;
+    historico.UbicacionId = ubicacionId ? ubicacionId : null;
+    historico.PersonaAsignadaId = contratista ? contratista.Tercero.Id : null;
     historico.RevisorId = this.userService.getPersonaId();
-    historico.Observaciones = form3;
+    historico.Observaciones = observaciones;
     historico.FechaVistoBueno = aceptar ? new Date() : null;
     historico.ActaRecibidoId = <ActaRecibido>{ Id: +this._ActaId };
     historico.EstadoActaId = this.Estados_Acta.find(estado => estado.Id === Estado);
@@ -376,10 +449,10 @@ export class VerActaRecibidoComponent implements OnInit {
 
     const soporteActa = new SoporteActa();
 
-    soporteActa.Id = form2.Id;
-    soporteActa.Consecutivo = form2.Consecutivo;
-    soporteActa.DocumentoId = 2400; // this.idDocumento[index];
-    soporteActa.FechaSoporte = form2.Fecha_Factura ? form2.Fecha_Factura : null;
+    soporteActa.Id = form2.controls.Id.value;
+    soporteActa.Consecutivo = form2.controls.Consecutivo.value;
+    soporteActa.DocumentoId = form2.controls.Soporte.value;
+    soporteActa.FechaSoporte = form2.controls.Fecha_Factura.value;
     soporteActa.ActaRecibidoId = <ActaRecibido>{ Id: +this._ActaId };
     soporteActa.Activo = true;
 
