@@ -252,12 +252,35 @@
                   </mat-tab>
                 </mat-tab-group>
               </nb-card-body>
+
               <nb-card-footer>
                 <div class="justify-content-center">
-                  <button nbButton
-                    matStepperPrevious>{{'GLOBAL.Acta_Recibido.EdicionActa.AnteriorButton' | translate}}</button>
+                  <button nbButton matStepperPrevious>
+                    {{'GLOBAL.Acta_Recibido.EdicionActa.AnteriorButton' | translate}}
+                  </button>
                   <button nbButton matStepperNext
-                    [disabled]="!firstForm.get('Formulario1').valid || (!firstForm.get('Formulario2').valid)"
+                    [disabled]="!firstForm.get('Formulario1').valid || !firstForm.get('Formulario2').valid"
+                    class="float-right">{{'GLOBAL.Acta_Recibido.EdicionActa.SiguienteButton' | translate}}
+                  </button>
+                </div>
+              </nb-card-footer>
+            </nb-card>
+          </mat-step>
+
+          <!-- Elementos asociados al Soporte -->
+          <mat-step label="{{'GLOBAL.Acta_Recibido.EdicionActa.ElementosTitle' | translate}}" 
+            *ngIf="getPermisoEditar(permisos.Elementos) && !actaRegistrada">
+            <nb-card>
+              <ngx-gestionar-elementos
+                (DatosTotales)="eventoTotales($event)" [ActaRecibidoId]="_Acta_Id" [Modo]="'agregar'"
+                (DatosEnviados)="eventoListaElementos($event)" (ElementosValidos)="setElementosValidos($event)">
+              </ngx-gestionar-elementos>
+              <nb-card-footer>
+                <div class="justify-content-center">
+                  <button nbButton matStepperPrevious>
+                    {{'GLOBAL.Acta_Recibido.EdicionActa.AnteriorButton' | translate}}</button>
+                  <button nbButton matStepperNext
+                    [disabled]="!firstForm.get('Formulario1').valid || !firstForm.get('Formulario2').valid || !DatosElementos || DatosElementos.length === 0 || !validarElementos"
                     class="float-right">{{'GLOBAL.Acta_Recibido.EdicionActa.SiguienteButton' | translate}}</button>
                 </div>
               </nb-card-footer>
@@ -265,11 +288,11 @@
           </mat-step>
 
           <!-- Resumen, Validación, Envío, Guardar -->
-          <mat-step label="Datos Adicionales" formGroupName="Formulario3">
-
-            <nb-card *ngIf="totales">
-              <nb-card-header>{{'GLOBAL.Acta_Recibido.EdicionActa.Consolidado' | translate}}</nb-card-header>
+          <mat-step  label="{{'GLOBAL.Acta_Recibido.RegistroActa.DatosAdicionales' | translate}}" formGroupName="Formulario3">
+            <nb-card>
               <nb-card-body>
+                <div class="form-group  col-lg-12" *ngIf="totales && DatosElementos && DatosElementos.length > 1">
+                  <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Consolidado' | translate}}</label>
                 <table class="consolidado">
                   <tr>
                     <th class="cell-3">{{'GLOBAL.Acta_Recibido.EdicionActa.Subtotal' | translate}}</th>
@@ -288,17 +311,13 @@
                     <td class="cell-3">{{totales.ValorTotal | currency}}</td>
                   </tr>
                 </table>
-              </nb-card-body>
-            </nb-card>
-
-            <nb-card>
-              <nb-card-body>
+              </div>
                 <div class="form-group  col-lg-12">
                   <label>{{'GLOBAL.Acta_Recibido.EdicionActa.Observaciones' | translate}}</label>
                   <div class="input-group">
-                    <textarea rows="5"
-                      placeholder="Proporciona datos adicionales que no se pueden expresar en el formulario"
-                      class="form-control" formControlName="Datos_Adicionales"></textarea>
+                    <textarea rows="5" placeholder="{{'GLOBAL.Acta_Recibido.RegistroActa.Observaciones2' | translate}}"
+                      class="form-control" formControlName="Datos_Adicionales">
+                    </textarea>
                   </div>
                     <p class="campo" *ngIf="firstForm.get('Formulario3').get('Datos_Adicionales').invalid">
                       {{'GLOBAL.Errores.ErrorRequerido' | translate}}</p>
@@ -306,12 +325,14 @@
               </nb-card-body>
               <nb-card-footer>
                 <div class="justify-content-center">
-                  <button nbButton
-                    matStepperPrevious>{{'GLOBAL.Acta_Recibido.EdicionActa.AnteriorButton' | translate}}</button>
+                  <button nbButton matStepperPrevious>
+                    {{'GLOBAL.Acta_Recibido.EdicionActa.AnteriorButton' | translate}}
+                  </button>
                   <button nbButton (click)="Revisar_Totales2()" *ngIf="getPermisoEditar(permisos.Acta) || getPermisoEditar(permisos.Elementos)"
-                    [disabled]="!firstForm.get('Formulario3').valid || (!firstForm.get('Formulario2').valid)
-                    || !firstForm.get('Formulario3').valid || (this.estadoActa === 'Aceptada' && errores.size > 0)"
-                    class="float-right">{{'GLOBAL.Acta_Recibido.EdicionActa.GuardarCambiosButton' | translate}}</button>
+                    [disabled]="!firstForm.get('Formulario1').valid || !firstForm.get('Formulario2').valid
+                    || !firstForm.get('Formulario3').valid || (this.estadoActa === 'Aceptada' && errores.size > 0)" class="float-right">
+                    {{'GLOBAL.Acta_Recibido.EdicionActa.GuardarCambiosButton' | translate}}
+                  </button>
                 </div>
               </nb-card-footer>
             </nb-card>
@@ -320,10 +341,12 @@
             <button mat-icon-button type="button" *ngIf="errores && (errores.size > 0)" [nbPopover]="erroresTemplate" nbPopoverTrigger="hover">
                 <span class="fas fa-exclamation-triangle fa-2x"></span>
               </button>
-              <button nbButton (click)="Revisar_Totales3(1)" *ngIf="accion.envHabilitado"
-              [disabled]="this.errores.size > 0">{{ accion.envTexto }}</button>
-              <button nbButton (click)="Revisar_Totales3(2)" *ngIf="accion.envContratistaHabilitado"
-              [disabled]="this.errores.size > 0">{{ accion.envContratista }}</button>
+              <button nbButton (click)="Revisar_Totales3(1)" *ngIf="accion.envHabilitado" [disabled]="this.errores.size > 0">
+                {{ accion.envTexto }}
+              </button>
+              <button nbButton (click)="Revisar_Totales3(2)" *ngIf="accion.envContratistaHabilitado" [disabled]="this.errores.size > 0">
+                {{ accion.envContratista }}
+              </button>
             </div>
 
           </mat-step>
@@ -333,11 +356,15 @@
     </nb-card-body>
   </nb-card>
 
-<ng-template #erroresTemplate><nb-card><nb-card-body>
-  {{ 'GLOBAL.Acta_Recibido.Errores.Mensaje' | translate }}
-  <ul>
-    <li *ngIf="errores.get('terceros')">{{ 'GLOBAL.Acta_Recibido.Errores.Terceros' | translate }}</li>
-    <li *ngIf="errores.get('formularios')">{{ 'GLOBAL.Acta_Recibido.Errores.Formularios' | translate }}</li>
-    <li *ngIf="errores.get('clases')">{{ 'GLOBAL.Acta_Recibido.Errores.Clases' | translate }}</li>
-  </ul>
-</nb-card-body></nb-card></ng-template>
+<ng-template #erroresTemplate>
+  <nb-card>
+    <nb-card-body>
+      {{ 'GLOBAL.Acta_Recibido.Errores.Mensaje' | translate }}
+      <ul>
+        <li *ngIf="errores.get('terceros')">{{ 'GLOBAL.Acta_Recibido.Errores.Terceros' | translate }}</li>
+        <li *ngIf="errores.get('formularios')">{{ 'GLOBAL.Acta_Recibido.Errores.Formularios' | translate }}</li>
+        <li *ngIf="errores.get('clases')">{{ 'GLOBAL.Acta_Recibido.Errores.Clases' | translate }}</li>
+      </ul>
+    </nb-card-body>
+  </nb-card>
+</ng-template>

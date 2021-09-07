@@ -248,8 +248,8 @@
                   {{'GLOBAL.Acta_Recibido.RegistroActa.AnteriorButton' | translate}}
                 </button>
                 <button nbButton *ngIf="tipoActa === 'regular'" (click)="Revisar_Totales()"
-                  [disabled]="!firstForm.get('Formulario1').valid || !firstForm.get('Formulario2').valid"
-                  class="float-right">{{'GLOBAL.Acta_Recibido.RegistroActa.BotonRegistro' | translate}}
+                  [disabled]="!firstForm.get('Formulario1').valid || !firstForm.get('Formulario2').valid" class="float-right">
+                  {{'GLOBAL.Acta_Recibido.RegistroActa.BotonRegistro' | translate}}
                 </button>
                 <button nbButton matStepperNext *ngIf="tipoActa === 'especial'" class="float-right"
                   [disabled]="!firstForm.get('Formulario1').valid || !firstForm.get('Formulario2').valid">
@@ -280,9 +280,9 @@
         </mat-step>
 
         <mat-step *ngIf="tipoActa === 'especial'" label="{{'GLOBAL.Acta_Recibido.RegistroActa.DatosAdicionales' | translate}}" formGroupName="Formulario3">
-          <nb-card *ngIf="totales && DatosElementos && DatosElementos.length > 1">
+          <nb-card>
             <nb-card-body>
-              <div class="form-group  col-lg-12">
+              <div class="form-group  col-lg-12" *ngIf="totales && DatosElementos && DatosElementos.length > 1">
                 <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Consolidado' | translate}}</label>
                 <table class="consolidado">
                   <tr>
@@ -303,11 +303,7 @@
                   </tr>
                 </table>
               </div>
-            </nb-card-body>
-          </nb-card>
 
-          <nb-card>
-            <nb-card-body>
               <div class="form-group  col-lg-12">
                 <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Observaciones' | translate}}</label>
                 <div class="input-group">
@@ -339,11 +335,15 @@
     </form>
   </nb-card-body>
 
-  <ng-template #erroresTemplate><nb-card><nb-card-body>
-    {{ 'GLOBAL.Acta_Recibido.Errores.Mensaje' | translate }}
-    <ul>
-      <li *ngIf="errores.get('terceros')">{{ 'GLOBAL.Acta_Recibido.Errores.Terceros' | translate }}</li>
-      <li *ngIf="errores.get('formularios')">{{ 'GLOBAL.Acta_Recibido.Errores.Formularios' | translate }}</li>
-      <li *ngIf="errores.get('clases')">{{ 'GLOBAL.Acta_Recibido.Errores.Clases' | translate }}</li>
-    </ul>
-  </nb-card-body></nb-card></ng-template>
+  <ng-template #erroresTemplate>
+    <nb-card>
+      <nb-card-body>
+        {{ 'GLOBAL.Acta_Recibido.Errores.Mensaje' | translate }}
+        <ul>
+          <li *ngIf="errores.get('terceros')">{{ 'GLOBAL.Acta_Recibido.Errores.Terceros' | translate }}</li>
+          <li *ngIf="errores.get('formularios')">{{ 'GLOBAL.Acta_Recibido.Errores.Formularios' | translate }}</li>
+          <li *ngIf="errores.get('clases')">{{ 'GLOBAL.Acta_Recibido.Errores.Clases' | translate }}</li>
+        </ul>
+      </nb-card-body>
+    </nb-card>
+  </ng-template>
