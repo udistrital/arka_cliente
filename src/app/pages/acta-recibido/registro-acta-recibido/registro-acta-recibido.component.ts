@@ -77,18 +77,14 @@ export class RegistroActaRecibidoComponent implements OnInit {
   DatosTotales: any;
   Totales: Array<any>;
   fileDocumento: any[];
-  uidDocumento: any;
   idDocumento: number[];
-  validador: boolean;
-  validador_soporte: number;
   Nombre: any;
-  Validador: any;
   TodaysDate: any;
   Registrando: Boolean;
   cargarTab: boolean;
   DatosElementos: Array<any>;
   errores: Map<string, boolean>;
-  private validarElementos: boolean;
+  public validarElementos: boolean;
   totales: any;
   minLength: number = 4;
 
@@ -110,8 +106,6 @@ export class RegistroActaRecibidoComponent implements OnInit {
   ) {
     this.TodaysDate = new Date();
     this.fileDocumento = [];
-    this.Validador = [];
-    this.uidDocumento = [];
     this.idDocumento = [];
     this.errores = new Map<string, boolean>();
   }
@@ -272,17 +266,14 @@ export class RegistroActaRecibidoComponent implements OnInit {
           file.IdDocumento = 13; // tipo de documento (API documentos_crud)
           file.file = event.target.files[0];
           this.fileDocumento[index] = file;
-          this.Validador[index] = true;
         } else {
           (Swal as any).fire({
             title: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.Tamaño_title'),
             text: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.Tamaño_placeholder'),
             type: 'warning',
           });
-          this.Validador[index] = false;
         }
       } else {
-        this.Validador[index] = false;
         this.pUpManager.showErrorAlert('error' + this.translate.instant('GLOBAL.error'));
       }
     }
@@ -290,8 +281,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
 
   clearFile(index) {
     (this.firstForm.get('Formulario2') as FormArray).at(index).get('Soporte').setValue('');
-    this.fileDocumento[index] = undefined;
-    this.Validador[index] = undefined;
+    this.fileDocumento.splice(index, 1);
   }
 
   cleanURL(oldURL: string): SafeResourceUrl {
@@ -315,6 +305,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
         FechaSoporte: [Soporte.FechaSoporte ? new Date(Soporte.FechaSoporte.toString().split('Z')[0]) : ''],
         Soporte: ['', Validators.required],
       });
+      this.fileDocumento.push(undefined);
       Form2.push(Formulario__2);
     }
 
@@ -358,6 +349,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
       FechaSoporte: [''],
       Soporte: ['', Validators.required],
     });
+    this.fileDocumento.push(undefined);
     return form2;
   }
 
@@ -374,7 +366,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
     }
   }
 
-  addSoporte($event) {
+  addTab($event) {
     if ($event === this.firstForm.get('Formulario2').value.length && !this.cargarTab) {
       (this.firstForm.get('Formulario2') as FormArray).push(this.Formulario_2);
       this.selectedTab = this.firstForm.get('Formulario2').value.length;
@@ -385,22 +377,25 @@ export class RegistroActaRecibidoComponent implements OnInit {
   removeTab(i: number) {
     this.selectedTab = i - 1;
     (this.firstForm.get('Formulario2') as FormArray).removeAt(i);
+    this.fileDocumento.splice(i, 1);
   }
 
   async postSoporteNuxeo(files: any) {
-    return new Promise(async (resolve, reject) => {
+    return new Promise<void>(async (resolve, reject) => {
       files.forEach((file) => {
         file.Id = file.nombre;
         file.nombre = 'soporte_' + file.IdDocumento + '_acta_recibido';
         file.key = 'soporte_' + file.IdDocumento;
       });
-      await this.nuxeoService.getDocumentos$(files, this.documentoService)
+      this.nuxeoService.getDocumentos$(files, this.documentoService)
         .subscribe(response => {
           if (Object.keys(response).length === files.length) {
-            files.forEach((file, index) => {
-              this.uidDocumento[index] = file.uid;
-              this.idDocumento[index] = response[file.key].Id;
-              resolve(response[file.key].Id);
+            files.forEach((file) => {
+              const a = this.idDocumento[this.idDocumento.length - 1] === response[file.key].Id;
+              if (!a) {
+                this.idDocumento.push(response[file.key].Id);
+              }
+              resolve();
             });
           }
         }, error => {
@@ -450,34 +445,26 @@ export class RegistroActaRecibidoComponent implements OnInit {
       .map((soporte, index) => this.generarSoporte(soporte, index));
     transaccionActa.SoportesActa = Soportes;
 
-    if (this.validador === false) {
-      this.Actas_Recibido.postTransaccionActa(transaccionActa).subscribe((res: any) => {
-        if (res !== null) {
-          (Swal as any).fire({
-            title: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.RegistradaTitle', { ID: res.ActaRecibido.Id }),
-            text: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.Registrada', { ID: res.ActaRecibido.Id }),
-            type: 'success',
-            showConfirmButton: false,
-            timer: 4000,
-          });
-          sessionStorage.removeItem(!ae ? 'Formulario_Registro' : 'Formulario_Acta_Especial');
-          this.router.navigate(['/pages/acta_recibido/consulta_acta_recibido']);
-          this.Registrando = false;
-        } else {
-          (Swal as any).fire({
-            type: 'error',
-            title: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.RegistradaTitleNO'),
-            text: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.RegistradaNO'),
-          });
-        }
-      });
-    } else {
-      (Swal as any).fire({
-        type: 'error',
-        title: 'Datos Erróneos',
-        text: 'Existen datos no válidos',
-      });
-    }
+    this.Actas_Recibido.postTransaccionActa(transaccionActa).subscribe((res: any) => {
+      if (res !== null) {
+        (Swal as any).fire({
+          title: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.RegistradaTitle', { ID: res.ActaRecibido.Id }),
+          text: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.Registrada', { ID: res.ActaRecibido.Id }),
+          type: 'success',
+          showConfirmButton: false,
+          timer: 4000,
+        });
+        sessionStorage.removeItem(!ae ? 'Formulario_Registro' : 'Formulario_Acta_Especial');
+        this.router.navigate(['/pages/acta_recibido/consulta_acta_recibido']);
+        this.Registrando = false;
+      } else {
+        (Swal as any).fire({
+          type: 'error',
+          title: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.RegistradaTitleNO'),
+          text: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.RegistradaNO'),
+        });
+      }
+    });
   }
 
   private generarActa(): ActaRecibido {
@@ -521,7 +508,6 @@ export class RegistroActaRecibidoComponent implements OnInit {
     soporteActa.ActaRecibidoId = new ActaRecibido;
     soporteActa.Activo = true;
 
-    this.validador = false;
     return soporteActa;
   }
 

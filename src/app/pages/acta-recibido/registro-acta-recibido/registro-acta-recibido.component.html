@@ -95,10 +95,10 @@
         <!-- Soportes -->
         <mat-step label="{{'GLOBAL.Acta_Recibido.RegistroActa.SoporteTitle' | translate}}" formArrayName="Formulario2">
           <nb-card [nbSpinner]="cargarTab">
-            <nb-card-body>
-              <mat-tab-group [(selectedIndex)]="selectedTab" animationDuration="500ms" (selectedIndexChange)="addSoporte($event)"
+            <nb-card-body style="padding-bottom: 0">
+              <mat-tab-group [(selectedIndex)]="selectedTab" animationDuration="500ms" (selectedIndexChange)="addTab($event)"
                 (animationDone)="tab()">
-
+          
                 <!-- cada soporte   -->
                 <mat-tab *ngFor="let soporte of firstForm.get('Formulario2')['controls']; let i = index" [formGroupName]="i">
                   <ng-template mat-tab-label>
@@ -122,16 +122,16 @@
                             <div class="form-group col-sm">
                               <label>{{'GLOBAL.Acta_Recibido.RegistroActa.FechaSoporte' | translate}}</label>
                               <div class="input-group">
-                                <input nbInput
-                                  placeholder="{{'GLOBAL.Acta_Recibido.RegistroActa.FechaFiltro' | translate}}"
-                                  class="form-control" [nbDatepicker]="formpicker" formControlName="FechaSoporte" (keyup.Backspace)="clear()">
+                                <input nbInput placeholder="{{'GLOBAL.Acta_Recibido.RegistroActa.FechaFiltro' | translate}}"
+                                  class="form-control" [nbDatepicker]="formpicker" formControlName="FechaSoporte"
+                                  (keyup.Backspace)="clear()">
                                 <nb-datepicker #formpicker [max]="TodaysDate" (dateChange)="usarLocalStorage($event)">
                                 </nb-datepicker>
                               </div>
                               <p class="campo" *ngIf="soporte.get('FechaSoporte').invalid">
                                 {{'GLOBAL.Errores.ErrorFecha' | translate}}</p>
                             </div>
-
+          
                           </div>
                           <div class="col">
                             <div class="form-group col-sm">
@@ -140,7 +140,8 @@
                                 <nb-card-body>
                                   <div class="col-sm soporte">
                                     <div>
-                                      <button nbButton type="button" [disabled]="fileDocumento[i] !== undefined" (click)="fileInputDocumento.click();">
+                                      <button nbButton type="button" [disabled]="fileDocumento[i]"
+                                        (click)="fileInputDocumento.click();">
                                         <i class="fas fa-file-upload fa-2x"></i>
                                         <input #fileInputDocumento formControlName="Soporte" type="file"
                                           (change)="onInputFileDocumento($event, i)" style="display:none;"
@@ -148,8 +149,8 @@
                                       </button>
                                     </div>
                                     <p></p>
-                                    <p *ngIf="Validador[i]">{{fileDocumento[i].name}}</p>
-                                    <p *ngIf="!Validador[i]">
+                                    <p *ngIf="fileDocumento[i]">{{fileDocumento[i].name}}</p>
+                                    <p *ngIf="!fileDocumento[i]">
                                       {{'GLOBAL.Acta_Recibido.CapturarElementos.ValidadorPlaceholder' | translate: {EXT:
                                       'pdf'} }}
                                     </p>
@@ -161,7 +162,7 @@
                                     </div>
                                     <p></p>
                                     <div>
-                                      <button type="button" *ngIf="Validador[i]" class="btn btn-primary"
+                                      <button type="button" *ngIf="fileDocumento[i]" class="btn btn-primary"
                                         (click)="clearFile(i)">
                                         {{'GLOBAL.Acta_Recibido.CapturarElementos.LimpiarEspacioButton' | translate }}
                                       </button>
@@ -198,8 +199,7 @@
                             <div class="form-group col-sm">
                               <label>{{'GLOBAL.Acta_Recibido.RegistroActa.FechaSoporte' | translate}}</label>
                               <div class="input-group">
-                                <input nbInput
-                                  placeholder="{{'GLOBAL.Acta_Recibido.RegistroActa.FechaFiltro' | translate}}"
+                                <input nbInput placeholder="{{'GLOBAL.Acta_Recibido.RegistroActa.FechaFiltro' | translate}}"
                                   class="form-control" [nbDatepicker]="formpicker">
                                 <nb-datepicker #formpicker>
                                 </nb-datepicker>
@@ -215,9 +215,8 @@
                                     <div>
                                       <button nbButton type="button" (click)="fileInputDocumento.click();">
                                         <i class="fas fa-file-upload fa-2x"></i>
-                                        <input #fileInputDocumento type="file"
-                                          style="display:none;"
-                                          accept="application/pdf" data-max-size="5120">
+                                        <input #fileInputDocumento type="file" style="display:none;" accept="application/pdf"
+                                          data-max-size="5120">
                                       </button>
                                     </div>
                                     <p></p>
@@ -242,67 +241,72 @@
                 </mat-tab>
               </mat-tab-group>
             </nb-card-body>
-
-            <nb-card-body *ngIf="tipoActa === 'especial'">
-              <ngx-gestionar-elementos [Modo]="'agregar'"
-                (DatosTotales)="eventoTotales($event)" (DatosEnviados)="eventoListaElementos($event)"
-                (ElementosValidos)="setElementosValidos($event)">
-              </ngx-gestionar-elementos>
-            </nb-card-body>
-
-            <nb-card-footer *ngIf="tipoActa === 'regular'">
+          
+            <nb-card-footer style="padding-top: 0">
               <div class="justify-content-center">
                 <button nbButton matStepperPrevious>
                   {{'GLOBAL.Acta_Recibido.RegistroActa.AnteriorButton' | translate}}
                 </button>
-                <button nbButton matStepperNext (click)="Revisar_Totales()"
+                <button nbButton *ngIf="tipoActa === 'regular'" (click)="Revisar_Totales()"
                   [disabled]="!firstForm.get('Formulario1').valid || !firstForm.get('Formulario2').valid"
                   class="float-right">{{'GLOBAL.Acta_Recibido.RegistroActa.BotonRegistro' | translate}}
+                </button>
+                <button nbButton matStepperNext *ngIf="tipoActa === 'especial'" class="float-right"
+                  [disabled]="!firstForm.get('Formulario1').valid || !firstForm.get('Formulario2').valid">
+                  {{'GLOBAL.Acta_Recibido.RegistroActa.SiguienteButton' | translate}}
                 </button>
               </div>
             </nb-card-footer>
           </nb-card>
-
-          <nb-card-footer *ngIf="tipoActa === 'especial'">
-            <div class="justify-content-center">
-              <button nbButton matStepperPrevious>
-                {{'GLOBAL.Acta_Recibido.RegistroActa.AnteriorButton' | translate}}
-              </button>
-              <button nbButton matStepperNext class="float-right"
-                [disabled]="!firstForm.get('Formulario1').valid || !DatosElementos || DatosElementos.length === 0">
-                {{'GLOBAL.Acta_Recibido.RegistroActa.SiguienteButton' | translate}}
-              </button>
-            </div>
-          </nb-card-footer>
+        </mat-step>
+        
+        <mat-step *ngIf="tipoActa === 'especial'" label="{{'GLOBAL.Acta_Recibido.RegistroActa.ElementosTitle' | translate}}">
+          <nb-card>
+            <ngx-gestionar-elementos [Modo]="'agregar'" (DatosTotales)="eventoTotales($event)"
+              (DatosEnviados)="eventoListaElementos($event)" (ElementosValidos)="setElementosValidos($event)">
+            </ngx-gestionar-elementos>
+            <nb-card-footer>
+              <div class="justify-content-center">
+                <button nbButton matStepperPrevious>
+                  {{'GLOBAL.Acta_Recibido.RegistroActa.AnteriorButton' | translate}}
+                </button>
+                <button nbButton matStepperNext class="float-right"
+                  [disabled]="!firstForm.get('Formulario1').valid || !firstForm.get('Formulario2').valid || !DatosElementos || DatosElementos.length === 0 || !validarElementos">
+                  {{'GLOBAL.Acta_Recibido.RegistroActa.SiguienteButton' | translate}}
+                </button>
+              </div>
+            </nb-card-footer>
+          </nb-card>
         </mat-step>
 
         <mat-step *ngIf="tipoActa === 'especial'" label="{{'GLOBAL.Acta_Recibido.RegistroActa.DatosAdicionales' | translate}}" formGroupName="Formulario3">
-          <nb-card *ngIf="totales && DatosElementos && DatosElementos.length > 0">
-            <nb-card-header>{{'GLOBAL.Acta_Recibido.RegistroActa.Consolidado' | translate}}</nb-card-header>
+          <nb-card *ngIf="totales && DatosElementos && DatosElementos.length > 1">
             <nb-card-body>
-              <table class="consolidado">
-                <tr>
-                  <th class="cell-3">{{'GLOBAL.Acta_Recibido.RegistroActa.Subtotal' | translate}}</th>
-                  <td class="cell-3">{{totales.Subtotal | currency}}</td>
-                </tr>
-                <tr>
-                  <th class="cell-3">{{'GLOBAL.Acta_Recibido.RegistroActa.Descuento' | translate}}</th>
-                  <td class="cell-3">{{totales.Descuento | currency}}</td>
-                </tr>
-                <tr>
-                  <th class="cell-3">{{'GLOBAL.Acta_Recibido.RegistroActa.ValorIva' | translate}}</th>
-                  <td class="cell-3">{{totales.ValorIva | currency}}</td>
-                </tr>
-                <tr>
-                  <th class="cell-3">{{'GLOBAL.Acta_Recibido.RegistroActa.Total' | translate}}</th>
-                  <td class="cell-3">{{totales.ValorTotal | currency}}</td>
-                </tr>
-              </table>
+              <div class="form-group  col-lg-12">
+                <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Consolidado' | translate}}</label>
+                <table class="consolidado">
+                  <tr>
+                    <th class="cell-3">{{'GLOBAL.Acta_Recibido.RegistroActa.Subtotal' | translate}}</th>
+                    <td class="cell-3">{{totales.Subtotal | currency}}</td>
+                  </tr>
+                  <tr>
+                    <th class="cell-3">{{'GLOBAL.Acta_Recibido.RegistroActa.Descuento' | translate}}</th>
+                    <td class="cell-3">{{totales.Descuento | currency}}</td>
+                  </tr>
+                  <tr>
+                    <th class="cell-3">{{'GLOBAL.Acta_Recibido.RegistroActa.ValorIva' | translate}}</th>
+                    <td class="cell-3">{{totales.ValorIva | currency}}</td>
+                  </tr>
+                  <tr>
+                    <th class="cell-3">{{'GLOBAL.Acta_Recibido.RegistroActa.Total' | translate}}</th>
+                    <td class="cell-3">{{totales.ValorTotal | currency}}</td>
+                  </tr>
+                </table>
+              </div>
             </nb-card-body>
           </nb-card>
 
           <nb-card>
-            <nb-card-header>{{'GLOBAL.Acta_Recibido.RegistroActa.DatosAdicionales' | translate}}</nb-card-header>
             <nb-card-body>
               <div class="form-group  col-lg-12">
                 <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Observaciones' | translate}}</label>
