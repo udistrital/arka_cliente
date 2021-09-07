@@ -571,10 +571,9 @@ export class EdicionActaRecibidoComponent implements OnInit {
       .subscribe(response => {
         const filesResponse = <any>response;
         if (Object.keys(filesResponse).length === filesToGet.length) {
-          // console.log("files", filesResponse);
           filesToGet.forEach((file: any) => {
             const url = filesResponse[file.Id];
-            window.open(url);
+            url ? window.open(url) : null;
           });
         }
       },
