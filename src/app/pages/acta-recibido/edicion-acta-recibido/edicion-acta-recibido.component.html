@@ -91,17 +91,19 @@
           </mat-step>
 
           <!-- Soportes -->
-          <mat-step label="Datos de Soporte" formArrayName="Formulario2">
-            <nb-card>
+          <mat-step label="{{'GLOBAL.Acta_Recibido.EdicionActa.SoporteTitle' | translate}}" formArrayName="Formulario2">
+            <nb-card [nbSpinner]="cargarTab">
               <nb-card-body>
-                <mat-tab-group [selectedIndex]="selected.value" (selectedIndexChange)="selected.setValue($event)">
+                <mat-tab-group [(selectedIndex)]="selectedTab" animationDuration="500ms" (selectedIndexChange)="addTab($event)"
+                (animationDone)="tab()">
 
                   <!-- cada soporte -->
                   <mat-tab *ngFor="let soporte of firstForm.get('Formulario2')['controls']; let i = index"
                     [formGroupName]="i">
                     <ng-template mat-tab-label>
                       {{'GLOBAL.Acta_Recibido.EdicionActa.SoporteSubTitle' | translate}} &nbsp; {{i + 1}} &nbsp; &nbsp;
-                      &nbsp; &nbsp;<i class="fas fa-window-close" (click)="removeTab(i)" *ngIf="getPermisoEditar(permisos.Acta)"></i>
+                      &nbsp; &nbsp;<i class="fas fa-window-close" (click)="removeTab(i)"
+                      *ngIf="getPermisoEditar(permisos.Acta) && firstForm.get('Formulario2').value.length > 1"></i>
                     </ng-template>
                     <div>
 
@@ -146,7 +148,7 @@
                                   <nb-card-body>
                                     <div class="col-sm soporte">
                                       <div>
-                                        <button nbButton type="button" [disabled]="fileDocumento[i] !== undefined || uidDocumento[i] !== undefined"
+                                        <button nbButton type="button" [disabled]="fileDocumento[i] || idDocumento[i]"
                                         (click)="fileInputDocumento.click()" *ngIf="getPermisoEditar(permisos.Acta)">
                                           <i class="fas fa-file-upload fa-2x"></i>
                                           <input #fileInputDocumento type="file"
@@ -155,24 +157,20 @@
                                         </button>
                                       </div>
                                       <p></p>
-                                      <p *ngIf="Validador[i] && fileDocumento[i] !== undefined">{{fileDocumento[i].name}}</p>
-                                      <p *ngIf="!Validador[i]">
+                                      <p *ngIf="fileDocumento[i]">{{fileDocumento[i].name}}</p>
+                                      <p *ngIf="!fileDocumento[i] && !idDocumento[i]">
                                         {{'GLOBAL.Acta_Recibido.CapturarElementos.ValidadorPlaceholder' | translate: {EXT: 'pdf'} }}
                                       </p>
                                       <div>
-                                        <button nbButton type="button" *ngIf="fileDocumento[i]" target="_blank"
-                                          (click)="download(i)">
-                                          {{'GLOBAL.Acta_Recibido.Ver' | translate}}
-                                        </button>
-                                        <button nbButton type="button" *ngIf="fileDocumento[i] === undefined && uidDocumento[i] !== undefined" target="_blank"
-                                          (click)="downloadFile(uidDocumento[i])">
+                                        <button nbButton type="button" *ngIf="idDocumento[i] || fileDocumento[i]" target="_blank"
+                                          (click)="getFile(i)">
                                           {{'GLOBAL.Acta_Recibido.Ver' | translate}}
                                         </button>
                                       </div>
                                       <p></p>
                                       <div>
                                         <button type="button"
-                                          *ngIf="(fileDocumento[i] !== undefined || uidDocumento[i] !== undefined) && getPermisoEditar(permisos.Acta)"
+                                          *ngIf="(fileDocumento[i] || idDocumento[i]) && getPermisoEditar(permisos.Acta)"
                                           class="btn btn-primary" (click)="clearFile(i)">
                                           {{'GLOBAL.Acta_Recibido.CapturarElementos.LimpiarEspacioButton' | translate }}
                                         </button>
@@ -189,19 +187,68 @@
                         </nb-card-body>
                       </nb-card>
 
-                      <!-- Elementos asociados al Soporte -->
-                      <ngx-gestionar-elementos
-                        *ngIf="getPermisoEditar(permisos.Elementos) && !actaRegistrada"
-                        (DatosTotales)="eventoTotales($event)" [ActaRecibidoId]="_Acta_Id" [Modo]="'agregar'"
-                        (DatosEnviados)="eventoListaElementos($event)" (ElementosValidos)="setElementosValidos($event)">
-                      </ngx-gestionar-elementos>
 
                     </div>
                   </mat-tab>
-                  <mat-tab [disabled]="false" *ngIf="getPermisoEditar(permisos.Acta)">
+                  <mat-tab  *ngIf="getPermisoEditar(permisos.Acta)">
                     <ng-template mat-tab-label>
-                      <i class="fas fa-plus-square fa-2x" (click)="addTab()"></i>
+                      <i class="fas fa-plus-square fa-2x"></i>
                     </ng-template>
+                    <div>
+                      <nb-card>
+                        <nb-card-body>
+                          <div class="row">
+                            <div class="col" *ngIf="Acta.ActaRecibido.TipoActaId.Id === 1">
+                              <div class="form-group col-sm">
+                                <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Consecutivo' | translate}}</label>
+                                <div class="input-group">
+                                  <input nbInput type="text"
+                                    placeholder="{{'GLOBAL.Acta_Recibido.RegistroActa.SeleccioneFiltro' | translate}}"
+                                    class="form-control">
+                                </div>
+                              </div>
+                              <div class="form-group col-sm">
+                                <label>{{'GLOBAL.Acta_Recibido.RegistroActa.FechaSoporte' | translate}}</label>
+                                <div class="input-group">
+                                  <input nbInput placeholder="{{'GLOBAL.Acta_Recibido.RegistroActa.FechaFiltro' | translate}}"
+                                    class="form-control" [nbDatepicker]="formpicker">
+                                  <nb-datepicker #formpicker>
+                                  </nb-datepicker>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col">
+                              <div class="form-group col-sm">
+                                <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Soporte' | translate}}</label>
+                                <nb-card>
+                                  <nb-card-body>
+                                    <div class="col-sm soporte">
+                                      <div>
+                                        <button nbButton type="button" (click)="fileInputDocumento.click();">
+                                          <i class="fas fa-file-upload fa-2x"></i>
+                                          <input #fileInputDocumento type="file" style="display:none;" accept="application/pdf"
+                                            data-max-size="5120">
+                                        </button>
+                                      </div>
+                                      <p></p>
+                                      <p></p>
+                                      <p>
+                                        {{'GLOBAL.Acta_Recibido.CapturarElementos.ValidadorPlaceholder' | translate: {EXT:
+                                        'pdf'} }}
+                                      </p>
+                                      <div>
+                                        <p class="campo">{{'GLOBAL.Errores.ErrorRequerido' | translate}}</p>
+                                      </div>
+                                      <p></p>
+                                    </div>
+                                  </nb-card-body>
+                                </nb-card>
+                              </div>
+                            </div>
+                          </div>
+                        </nb-card-body>
+                      </nb-card>
+                    </div>
                   </mat-tab>
                 </mat-tab-group>
               </nb-card-body>
