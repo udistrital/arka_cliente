@@ -159,23 +159,20 @@ export class ExtranjeroComponent implements OnInit {
     });
   }
 
-  private loadSoporte(): void {
-    this.actaRecibidoHelper.getSoporte(this.actaRecibidoId).subscribe(res => {
+  loadSoporte(): void {
+    this.actaRecibidoHelper.getTransaccionActa(this.actaRecibidoId, false).subscribe(res => {
       if (res !== null) {
-        for (const index in res) {
-          if (res.hasOwnProperty(index)) {
-            const soporte = new SoporteActaProveedor;
-            soporte.Id = res[index].Id;
-            soporte.Consecutivo = res[index].Consecutivo;
-            soporte.Proveedor = res[index].ProveedorId;
-            soporte.FechaSoporte = res[index].FechaSoporte;
-            this.soportes.push(soporte);
-          }
+          res.SoportesActa.forEach(soporte => {
+            const soporteActa = new SoporteActaProveedor;
+            soporteActa.Id = soporte.Id;
+            soporteActa.Consecutivo = soporte.Consecutivo;
+            soporteActa.FechaSoporte = soporte.FechaSoporte;
+            this.soportes.push(soporteActa);
+          });
         }
-        this.proveedor = this.soportes[0].Proveedor.NomProveedor;
-        const date = this.soportes[0].FechaSoporte.toString().split('T');
-        this.fechaFactura = date[0];
-      }
+      this.proveedor = res.UltimoEstado.ProveedorId;
+      const date = this.soportes[0].FechaSoporte.toString().split('T');
+      this.fechaFactura = date[0];
     });
   }
 

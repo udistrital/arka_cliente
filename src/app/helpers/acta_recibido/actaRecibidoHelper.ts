@@ -202,7 +202,7 @@ export class ActaRecibidoHelper {
      */
     public getSoporte(actaId) {
         this.rqManager.setPath('ACTA_RECIBIDO_SERVICE');
-        return this.rqManager.get('acta_recibido/soporte_acta?query=Activo:True,ActaRecibidoId__Id:' + actaId).pipe(
+        return this.rqManager.get('soporte_acta?query=Activo:True,ActaRecibidoId__Id:' + actaId).pipe(
             map(
                 (res) => {
                     if (res === 'error') {

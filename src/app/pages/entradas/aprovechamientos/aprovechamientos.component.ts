@@ -112,19 +112,21 @@ export class AprovechamientosComponent implements OnInit {
   }
 
   private loadProveedor() {
-    this.actaRecibidoHelper.getSoporte(this.actaRecibidoId).subscribe(res => {
+    this.actaRecibidoHelper.getTransaccionActa(this.actaRecibidoId, false).subscribe(res => {
       if (res !== null) {
-        for (const index in res) {
-          if (res.hasOwnProperty(index)) {
-            const soporte = new SoporteActaProveedor;
-            soporte.Proveedor = res[index].ProveedorId;
-            this.soportes.push(soporte);
-          }
+          res.SoportesActa.forEach(soporte => {
+            const soporteActa = new SoporteActaProveedor;
+            soporteActa.Id = soporte.Id;
+            soporteActa.Consecutivo = soporte.Consecutivo;
+            soporteActa.FechaSoporte = soporte.FechaSoporte;
+            this.soportes.push(soporteActa);
+          });
         }
-        const proveedor = this.soportes[0].Proveedor.NumDocumento;
-        this.filtroProveedores(proveedor);
-      }
-    });
+        this.proveedor = this.Proveedores.find(x =>
+          x.Id = res.UltimoEstado.ProveedorId).NomProveedor;
+          const date = this.soportes[0].FechaSoporte.toString().split('T');
+          this.fechaFactura = date[0];
+      });
   }
 
   private loadLists() {
