@@ -59,7 +59,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
   // Variables de Formulario
   firstForm: FormGroup;
   @ViewChild('fform') firstFormDirective;
-  Datos: any;
   carga_agregada: boolean;
   index;
   selected = new FormControl(0);
@@ -397,6 +396,8 @@ export class EdicionActaRecibidoComponent implements OnInit {
   }
 
   async Cargar_Formularios(transaccion_: TransaccionActaRecibido) {
+
+    transaccion_.UltimoEstado.UbicacionId ? await this.getSedeDepencencia(transaccion_.UltimoEstado.UbicacionId) : null;
     const ar = transaccion_.ActaRecibido.TipoActaId.Id === 1;
     const Form2 = this.fb.array([]);
     transaccion_.SoportesActa.forEach((Soporte, index) => {
@@ -416,15 +417,13 @@ export class EdicionActaRecibidoComponent implements OnInit {
             disabled: !this.getPermisoEditar(this.permisos.Acta),
           },
           { validators:  !ar ? [] : this.checkDate() }],
-        Soporte: [Soporte.DocumentoId, Validators.required],
+        Soporte: [Soporte.DocumentoId ? Soporte.DocumentoId : '', Validators.required],
       });
       this.fileDocumento.push(undefined);
       this.idDocumento.push(Soporte.DocumentoId);
 
       Form2.push(formulario2);
     });
-
-    transaccion_.UltimoEstado.UbicacionId ? await this.getSedeDepencencia(transaccion_.UltimoEstado.UbicacionId) : null;
 
     this.firstForm = this.fb.group({
       Formulario1: this.fb.group({
@@ -473,7 +472,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
     }, { validators: this.checkValidness });
 
     this.initTerceros();
-    this.sedeDependencia ? this.Traer_Relacion_Ubicaciones(this.sedeDependencia.sede, this.sedeDependencia.dependencia) : null;
     this.carga_agregada = true;
   }
 
@@ -502,7 +500,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
         const sede = (() => {
           const criterio = x => x && x.CodigoAbreviacion === espacioFisico.toString();
           if (this.Sedes.some(criterio)) {
-            return this.Sedes.find(criterio).Id;
+            return this.Sedes.find(criterio);
           }
           return '';
         })();
@@ -510,12 +508,22 @@ export class EdicionActaRecibidoComponent implements OnInit {
         const dependencia = (() => {
           const criterio = x => _dependencia && x.Id === _dependencia;
           if (this.Dependencias.some(criterio)) {
-            return this.Dependencias.find(criterio).Nombre;
+            return this.Dependencias.find(criterio);
           }
           return '';
         })();
 
-        this.sedeDependencia = { sede: sede, dependencia: dependencia };
+        const transaccion: any = {};
+        transaccion.Sede = this.Sedes.find((x) => x.Id === sede.Id);
+        transaccion.Dependencia = this.Dependencias.find((x) => x.Id === dependencia.Id);
+
+        this.Actas_Recibido.postRelacionSedeDependencia(transaccion).subscribe((res_: any) => {
+          if (isObject(res_[0].Relaciones)) {
+            this.UbicacionesFiltradas = res_[0].Relaciones;
+          }
+        });
+
+        this.sedeDependencia = { sede: sede.Id, dependencia: dependencia.Nombre };
 
         resolve();
       });
@@ -674,7 +682,10 @@ export class EdicionActaRecibidoComponent implements OnInit {
             files.forEach((file) => {
               const a = this.idDocumento.findIndex((doc) => doc === undefined);
               const b = this.idDocumento.find(id => id === response[file.key].Id);
-              a >= 0 && !b ? this.idDocumento[a] = response[file.key].Id : null;
+              if (a >= 0 && !b) {
+                this.idDocumento[a] = response[file.key].Id;
+                this.fileDocumento[a] = undefined;
+              }
               resolve();
             });
           }
@@ -688,15 +699,12 @@ export class EdicionActaRecibidoComponent implements OnInit {
   private async onFirstSubmit(siguienteEtapa: boolean = false, enviara: number = 0) {
     const filestoPost = this.fileDocumento.filter(file => file !== undefined);
     this.guardando = true;
-    if (!siguienteEtapa) {
-      const start = async () => {
-        await this.asyncForEach(filestoPost, async (file) => {
-          await this.postSoporteNuxeo([file]);
-        });
-      };
-      await start();
-    }
-    this.Datos = this.firstForm.value;
+    const start = async () => {
+      await this.asyncForEach(filestoPost, async (file) => {
+        await this.postSoporteNuxeo([file]);
+      });
+    };
+    await start();
     const transaccionActa = new TransaccionActaRecibido();
 
     transaccionActa.ActaRecibido = this.generarActa();
@@ -707,11 +715,12 @@ export class EdicionActaRecibidoComponent implements OnInit {
       nuevoEstado = this.Estados_Acta.find(estado => estado.Nombre === this.estadoActa).Id; // el nuevo estado es el mismo
     }
 
-    transaccionActa.UltimoEstado = this.generarEstadoActa(this.Datos.Formulario1, this.Datos.Formulario3, nuevoEstado);
+    transaccionActa.UltimoEstado = this.generarEstadoActa(nuevoEstado);
     transaccionActa.Elementos = this.generarElementos();
 
-    const Soportes: SoporteActa[] = this.Datos.Formulario2
+    const Soportes: SoporteActa[] = (this.firstForm.get('Formulario2') as FormArray).controls
       .map((soporte, index) => this.generarSoporte(soporte, index));
+
     transaccionActa.SoportesActa = Soportes;
 
     this.Actas_Recibido.putTransaccionActa(transaccionActa, transaccionActa.ActaRecibido.Id).subscribe((res: any) => {
@@ -784,19 +793,23 @@ export class EdicionActaRecibidoComponent implements OnInit {
     return actaRecibido;
   }
 
-  private generarEstadoActa(form1: any, form3: any, Estado: number): HistoricoActa {
+  private generarEstadoActa(Estado: number): HistoricoActa {
 
-    const historico = new HistoricoActa;
     const ae = this.Acta.ActaRecibido.TipoActaId.Id === 2;
+    const proveedor = this.firstForm.get('Formulario1.Proveedor').value;
+    const ubicacionId = this.firstForm.get('Formulario1.Ubicacion').value;
+    const contratista = this.firstForm.get('Formulario1.Contratista').value;
+    const observaciones = this.firstForm.get('Formulario3.Datos_Adicionales').value;
+    const historico = new HistoricoActa;
 
     historico.Id = null;
-    historico.ProveedorId = form1.Proveedor ? form1.Proveedor.Tercero.Id : null;
-    historico.UbicacionId = form1.Ubicacion ? form1.Ubicacion : null;
+    historico.ProveedorId = proveedor ? proveedor.Tercero.Id : null;
+    historico.UbicacionId = ubicacionId ? ubicacionId : null;
     historico.RevisorId = this.userService.getPersonaId();
-    historico.PersonaAsignadaId = ae ? this.userService.getPersonaId() : form1.Contratista.Tercero.Id;
-    historico.Observaciones = form3.Datos_Adicionales;
+    historico.PersonaAsignadaId = ae ? this.userService.getPersonaId() : contratista ? contratista.Tercero.Id : null;
+    historico.Observaciones = observaciones;
     historico.FechaVistoBueno = null;
-    historico.ActaRecibidoId = <ActaRecibido>{Id: +this._Acta_Id};
+    historico.ActaRecibidoId = <ActaRecibido>{ Id: +this._Acta_Id };
     historico.EstadoActaId = this.Estados_Acta.find(estado => estado.Id === Estado);
     historico.Activo = true;
 
