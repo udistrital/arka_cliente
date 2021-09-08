@@ -87,6 +87,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
   public validarElementos: boolean;
   totales: any;
   minLength: number = 4;
+  sizeSoporte: number = 5;
 
   constructor(
     private translate: TranslateService,
@@ -254,22 +255,22 @@ export class RegistroActaRecibidoComponent implements OnInit {
   }
 
   onInputFileDocumento(event, index) {
-    const max_size = 1;
     if (event.target.files.length > 0) {
       const file = event.target.files[0];
       if (file.type === 'application/pdf') {
 
-        if (file.size < max_size * 1024000) {
+        if (file.size < this.sizeSoporte * 1024000) {
 
           file.urlTemp = URL.createObjectURL(event.srcElement.files[0]);
           file.url = this.cleanURL(file.urlTemp);
           file.IdDocumento = 13; // tipo de documento (API documentos_crud)
           file.file = event.target.files[0];
+          (this.firstForm.get('Formulario2') as FormArray).at(index).get('Soporte').setValue(file.name);
           this.fileDocumento[index] = file;
         } else {
           (Swal as any).fire({
-            title: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.Tamaño_title'),
-            text: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.Tamaño_placeholder'),
+            title: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.ErrorSizeSoporteTitle'),
+            text: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.ErrorSizeSoporteText', { SIZE: this.sizeSoporte }),
             type: 'warning',
           });
         }

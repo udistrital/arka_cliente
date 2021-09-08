@@ -143,9 +143,8 @@
                                       <button nbButton type="button" [disabled]="fileDocumento[i]"
                                         (click)="fileInputDocumento.click();">
                                         <i class="fas fa-file-upload fa-2x"></i>
-                                        <input #fileInputDocumento formControlName="Soporte" type="file"
-                                          (change)="onInputFileDocumento($event, i)" style="display:none;"
-                                          accept="application/pdf" data-max-size="5120">
+                                        <input #fileInputDocumento type="file" (change)="onInputFileDocumento($event, i)"
+                                         style="display:none;" accept="application/pdf">
                                       </button>
                                     </div>
                                     <p></p>
@@ -153,6 +152,9 @@
                                     <p *ngIf="!fileDocumento[i]">
                                       {{'GLOBAL.Acta_Recibido.CapturarElementos.ValidadorPlaceholder' | translate: {EXT:
                                       'pdf'} }}
+                                    </p>
+                                    <p *ngIf="!fileDocumento[i]">
+                                      {{'GLOBAL.Acta_Recibido.RegistroActa.SizeSoporte' | translate: {SIZE: sizeSoporte} }}
                                     </p>
                                     <div>
                                       <button nbButton type="button" *ngIf="fileDocumento[i]" target="_blank"

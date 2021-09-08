@@ -151,15 +151,17 @@
                                         <button nbButton type="button" [disabled]="fileDocumento[i] || idDocumento[i]"
                                         (click)="fileInputDocumento.click()" *ngIf="getPermisoEditar(permisos.Acta)">
                                           <i class="fas fa-file-upload fa-2x"></i>
-                                          <input #fileInputDocumento type="file"
-                                            (change)="onInputFileDocumento($event, i)" style="display:none;"
-                                            accept="application/pdf" data-max-size="5120" />
+                                          <input #fileInputDocumento type="file" (change)="onInputFileDocumento($event, i)"
+                                            style="display:none;" accept="application/pdf">
                                         </button>
                                       </div>
                                       <p></p>
                                       <p *ngIf="fileDocumento[i]">{{fileDocumento[i].name}}</p>
                                       <p *ngIf="!fileDocumento[i] && !idDocumento[i]">
                                         {{'GLOBAL.Acta_Recibido.CapturarElementos.ValidadorPlaceholder' | translate: {EXT: 'pdf'} }}
+                                      </p>
+                                      <p *ngIf="!fileDocumento[i] && !idDocumento[i]">
+                                        {{'GLOBAL.Acta_Recibido.RegistroActa.SizeSoporte' | translate: {SIZE: sizeSoporte} }}
                                       </p>
                                       <div>
                                         <button nbButton type="button" *ngIf="idDocumento[i] || fileDocumento[i]" target="_blank"

@@ -104,6 +104,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
   minLength: number = 4;
   cargarTab: boolean;
   selectedTab: number = 0;
+  sizeSoporte: number = 5;
 
   permisos: {
     Acta: Permiso,
@@ -600,14 +601,11 @@ export class EdicionActaRecibidoComponent implements OnInit {
   }
 
   onInputFileDocumento(event, index) {
-    // console.log(event.target.files);
-    // console.log(event.srcElement.files);
-    const max_size = 1;
     if (event.target.files.length > 0) {
       const file = event.target.files[0];
       if (file.type === 'application/pdf') {
 
-        if (file.size < max_size * 1024000) {
+        if (file.size < this.sizeSoporte * 1024000) {
 
           file.urlTemp = URL.createObjectURL(event.srcElement.files[0]);
           file.url = this.cleanURL(file.urlTemp);
@@ -619,8 +617,8 @@ export class EdicionActaRecibidoComponent implements OnInit {
 
         } else {
           (Swal as any).fire({
-            title: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.Tamaño_title'),
-            text: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.Tamaño_placeholder'),
+            title: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.ErrorSizeSoporteTitle'),
+            text: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.ErrorSizeSoporteText', { SIZE: this.sizeSoporte }),
             type: 'warning',
           });
         }
