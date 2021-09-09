@@ -149,7 +149,7 @@ export class DonacionComponent implements OnInit {
             soporteActa.FechaSoporte = soporte.FechaSoporte;
             this.soportes.push(soporteActa);
           });
-        }
+      }
       this.proveedor = res.UltimoEstado.ProveedorId;
       const date = this.soportes[0].FechaSoporte.toString().split('T');
       this.fechaFactura = date[0];
