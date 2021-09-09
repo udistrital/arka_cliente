@@ -19,7 +19,7 @@ export class CatalogoElementosHelper {
      */
     public getCatalogo(activo: boolean = true) {
         this.rqManager.setPath('CATALOGO_ELEMENTOS_SERVICE');
-        let endpoint = 'catalogo?limit=-1';
+        let endpoint = 'catalogo?sortby=FechaModificacion&order=desc&limit=-1';
         if (activo) {
             endpoint += '&query=Activo:true';
         }

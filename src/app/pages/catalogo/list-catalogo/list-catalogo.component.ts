@@ -7,6 +7,7 @@ import Swal from 'sweetalert2';
 import 'style-loader!angular2-toaster/toaster.css';
 import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/catalogoElementosHelper';
 import {Router} from '@angular/router';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'ngx-list-catalogo',
@@ -62,7 +63,7 @@ export class ListCatalogoComponent implements OnInit {
       columns: {
         Nombre: {
           title: this.translate.instant('GLOBAL.nombre'),
-          width: '40%',
+          width: '30%',
           // type: 'string;',
           valuePrepareFunction: (value) => {
             return value;
@@ -70,9 +71,26 @@ export class ListCatalogoComponent implements OnInit {
         },
         Descripcion: {
           title: this.translate.instant('GLOBAL.descripcion'),
-          width: '40%',
+          width: '30%',
           // type: 'string;',
           valuePrepareFunction: (value) => {
+            return value;
+          },
+        },
+        FechaModificacion: {
+          title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.FechaModificacionHeader'),
+          width: '20%',
+          filter: {
+            type: 'daterange',
+            config: {
+              daterange: {
+                format: 'yyyy/mm/dd',
+              },
+            },
+          },
+          valuePrepareFunction: (value) => {
+            value = value.split(' ');
+            value = value[0];
             return value;
           },
         },
