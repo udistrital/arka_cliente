@@ -216,7 +216,10 @@ export class VerActaRecibidoComponent implements OnInit {
 
   async Cargar_Formularios(transaccion_: TransaccionActaRecibido) {
 
-    transaccion_.UltimoEstado.UbicacionId ? await this.getSedeDepencencia(transaccion_.UltimoEstado.UbicacionId) : null;
+    if (transaccion_.UltimoEstado.UbicacionId) {
+      await this.getSedeDepencencia(transaccion_.UltimoEstado.UbicacionId);
+    }
+
     this.Acta = transaccion_;
     const Form2 = this.fb.array([]);
 

@@ -398,7 +398,10 @@ export class EdicionActaRecibidoComponent implements OnInit {
 
   async Cargar_Formularios(transaccion_: TransaccionActaRecibido) {
 
-    transaccion_.UltimoEstado.UbicacionId ? await this.getSedeDepencencia(transaccion_.UltimoEstado.UbicacionId) : null;
+    if (transaccion_.UltimoEstado.UbicacionId) {
+      await this.getSedeDepencencia(transaccion_.UltimoEstado.UbicacionId);
+    }
+
     const ar = transaccion_.ActaRecibido.TipoActaId.Id === 1;
     const Form2 = this.fb.array([]);
     transaccion_.SoportesActa.forEach((Soporte, index) => {
@@ -582,7 +585,9 @@ export class EdicionActaRecibidoComponent implements OnInit {
         if (Object.keys(filesResponse).length === filesToGet.length) {
           filesToGet.forEach((file: any) => {
             const url = filesResponse[file.Id];
-            url ? window.open(url) : null;
+            if (url !== undefined) {
+              window.open(url);
+            }
           });
         }
       },

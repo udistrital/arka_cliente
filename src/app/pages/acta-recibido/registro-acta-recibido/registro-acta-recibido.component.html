@@ -98,7 +98,7 @@
             <nb-card-body style="padding-bottom: 0">
               <mat-tab-group [(selectedIndex)]="selectedTab" animationDuration="500ms" (selectedIndexChange)="addTab($event)"
                 (animationDone)="tab()">
-          
+
                 <!-- cada soporte   -->
                 <mat-tab *ngFor="let soporte of firstForm.get('Formulario2')['controls']; let i = index" [formGroupName]="i">
                   <ng-template mat-tab-label>
@@ -131,7 +131,7 @@
                               <p class="campo" *ngIf="soporte.get('FechaSoporte').invalid">
                                 {{'GLOBAL.Errores.ErrorFecha' | translate}}</p>
                             </div>
-          
+
                           </div>
                           <div class="col">
                             <div class="form-group col-sm">
@@ -243,7 +243,7 @@
                 </mat-tab>
               </mat-tab-group>
             </nb-card-body>
-          
+
             <nb-card-footer style="padding-top: 0">
               <div class="justify-content-center">
                 <button nbButton matStepperPrevious>
@@ -261,7 +261,7 @@
             </nb-card-footer>
           </nb-card>
         </mat-step>
-        
+
         <mat-step *ngIf="tipoActa === 'especial'" label="{{'GLOBAL.Acta_Recibido.RegistroActa.ElementosTitle' | translate}}">
           <nb-card>
             <ngx-gestionar-elementos [Modo]="'agregar'" (DatosTotales)="eventoTotales($event)"
