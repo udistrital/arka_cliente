@@ -8,7 +8,7 @@
       {{'GLOBAL.salidas.consulta_salida_info' | translate}}
     </mat-card-subtitle>
 
-    <ng2-smart-table [settings]="settings" [source]="source" (custom)="onCustom($event)" *ngIf="!detalle">
+    <ng2-smart-table [settings]="settings" [source]="source" (custom)="onCustom($event)" (create)="onRegister($event)" *ngIf="!detalle">
     </ng2-smart-table>
 
     <ngx-consulta-salida-especifica [salida_id]="salidaId" *ngIf="detalle">

@@ -110,6 +110,15 @@
       "movimientos": {
         "name": "Movimientos",
         "children": {
+          "entradas": {
+            "name": "Inputs"
+          },
+          "salidas": {
+            "name": "Outputs"
+          },
+          "bajas": {
+            "name": "Deregister"
+          },
           "consulta": {
             "name": "Consultar Baja de Bien"
           },
@@ -738,6 +747,7 @@
     "no_data_salidas": "No outputs were found for this entry",
     "detalle_entrada": "Entry Detail",
     "registrar_nueva_entrada": "New Entry",
+    "registrar_nueva_salida": "New Output",
     "elementos_entrada": "Entry Elements",
     "volver": "Return",
     "factura": "Bill",
