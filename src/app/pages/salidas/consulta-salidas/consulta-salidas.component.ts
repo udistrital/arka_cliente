@@ -77,7 +77,7 @@ export class ConsultaSalidasComponent implements OnInit {
       actions: {
         columnTitle: this.translate.instant('GLOBAL.detalle'),
         position: 'right',
-        edit: true,
+        edit: false,
         delete: false,
         custom: [
           {
@@ -90,6 +90,7 @@ export class ConsultaSalidasComponent implements OnInit {
       add: {
         addButtonContent: '<i class="fas fa-plus" title="' + t.registrar + '" aria-label="' + t.registrar + '"></i>',
       },
+      mode: 'external',
       columns: {
         Id: {
           title: 'Consecutivo',
