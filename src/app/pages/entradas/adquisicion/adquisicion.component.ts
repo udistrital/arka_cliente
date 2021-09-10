@@ -13,6 +13,7 @@ import { Router, NavigationExtras } from '@angular/router';
 import { NbStepperComponent } from '@nebular/theme';
 import Swal from 'sweetalert2';
 import { isObject } from 'rxjs/internal-compatibility';
+import { Soporte } from '../soporteHelper';
 
 @Component({
   selector: 'ngx-adquisicion',
@@ -55,10 +56,10 @@ export class AdquisicionComponent implements OnInit {
 
   @ViewChild('stepper') stepper: NbStepperComponent;
 
-  @Input() actaRecibidoId: Number;
+  @Input() actaRecibidoId: number;
 
   constructor(private router: Router, private entradasHelper: EntradaHelper, private actaRecibidoHelper: ActaRecibidoHelper,
-    private pUpManager: PopUpManager, private fb: FormBuilder) {
+    private pUpManager: PopUpManager, private fb: FormBuilder, private soporteHelper: Soporte) {
     this.checked = false;
     this.tipoContratoSelect = false;
     this.vigenciaSelect = false;
@@ -171,7 +172,11 @@ export class AdquisicionComponent implements OnInit {
         }
         if (existe) {
           this.loadContratoEspecifico();
-          this.loadSoporte();
+          this.soporteHelper.cargarSoporte(this.actaRecibidoId).then(info => {
+            this.fechaFactura = info.fecha,
+            this.soportes = info.soportes,
+            this.proveedor = info.proveedor;
+          });
         } else {
           this.stepper.previous();
           this.iniciarContrato();

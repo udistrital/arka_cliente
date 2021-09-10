@@ -13,6 +13,7 @@ import { NavigationExtras, Router } from '@angular/router';
 import { NbStepperComponent } from '@nebular/theme';
 import Swal from 'sweetalert2';
 import { isObject } from 'rxjs/internal-compatibility';
+import { Soporte } from '../soporteHelper';
 
 @Component({
   selector: 'ngx-donacion',
@@ -58,10 +59,10 @@ export class DonacionComponent implements OnInit {
 
   @ViewChild('stepper') stepper: NbStepperComponent;
 
-  @Input() actaRecibidoId: Number;
+  @Input() actaRecibidoId: number;
 
   constructor(private router: Router, private entradasHelper: EntradaHelper, private actaRecibidoHelper: ActaRecibidoHelper,
-    private pUpManager: PopUpManager, private fb: FormBuilder) {
+    private pUpManager: PopUpManager, private fb: FormBuilder, private soporteHelper: Soporte) {
     this.tipoContratoSelect = false;
     this.vigenciaSelect = false;
     this.solicitanteSelect = false;
@@ -139,23 +140,6 @@ export class DonacionComponent implements OnInit {
     });
   }
 
-  loadSoporte(): void {
-    this.actaRecibidoHelper.getTransaccionActa(this.actaRecibidoId, false).subscribe(res => {
-      if (res !== null) {
-          res.SoportesActa.forEach(soporte => {
-            const soporteActa = new SoporteActaProveedor;
-            soporteActa.Id = soporte.Id;
-            soporteActa.Consecutivo = soporte.Consecutivo;
-            soporteActa.FechaSoporte = soporte.FechaSoporte;
-            this.soportes.push(soporteActa);
-          });
-      }
-      this.proveedor = res.UltimoEstado.ProveedorId;
-      const date = this.soportes[0].FechaSoporte.toString().split('T');
-      this.fechaFactura = date[0];
-    });
-  }
-
   loadSolicitantes(): void {
     this.entradasHelper.getSolicitantes(this.fechaSolicitante).subscribe(res => {
       while (this.ordenadores.length > 0) {
@@ -189,7 +173,11 @@ export class DonacionComponent implements OnInit {
         }
         if (existe) {
           this.loadContratoEspecifico();
-          this.loadSoporte();
+          this.soporteHelper.cargarSoporte(this.actaRecibidoId).then(info => {
+            this.fechaFactura = info.fecha,
+            this.soportes = info.soportes,
+            this.proveedor = info.proveedor;
+          });
         } else {
           this.stepper.previous();
           this.iniciarContrato();
@@ -227,7 +215,6 @@ export class DonacionComponent implements OnInit {
     const soporteId: string = event.target.options[event.target.options.selectedIndex].value;
     for (const i in this.soportes) {
       if (this.soportes[i].Id.toString() === soporteId) {
-        this.proveedor = this.soportes[i].Proveedor.NomProveedor;
         const date = this.soportes[i].FechaSoporte.toString().split('T');
         this.fechaFactura = date[0];
       }

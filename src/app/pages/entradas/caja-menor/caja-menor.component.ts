@@ -17,6 +17,7 @@ import { TerceroCriterioJefe, TerceroCriterioPlanta } from '../../../@core/data/
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import Swal from 'sweetalert2';
+import { Soporte } from '../soporteHelper';
 
 
 @Component({
@@ -58,7 +59,7 @@ export class CajaMenorComponent implements OnInit {
   cargando_supervisores: boolean = true;
   cargando_ordenadores: boolean = true;
 
-  @Input() actaRecibidoId: Number;
+  @Input() actaRecibidoId: number;
 
   constructor(
     private router: Router,
@@ -70,7 +71,8 @@ export class CajaMenorComponent implements OnInit {
     private sanitization: DomSanitizer,
     private documentoService: DocumentoService,
     private tercerosHelper: TercerosHelper,
-    private translate: TranslateService) {
+    private translate: TranslateService,
+    private soporteHelper: Soporte) {
     this.ordenadores = new Array<OrdenadorGasto>();
     this.solicitanteSelect = false;
     this.ordenadorId = 0;
@@ -227,19 +229,10 @@ export class CajaMenorComponent implements OnInit {
     }
   }
   loadSoporte(): void {
-    this.actaRecibidoHelper.getTransaccionActa(this.actaRecibidoId, false).subscribe(res => {
-      if (res !== null) {
-          res.SoportesActa.forEach(soporte => {
-            const soporteActa = new SoporteActaProveedor;
-            soporteActa.Id = soporte.Id;
-            soporteActa.Consecutivo = soporte.Consecutivo;
-            soporteActa.FechaSoporte = soporte.FechaSoporte;
-            this.soportes.push(soporteActa);
-          });
-        }
-      this.proveedor = res.UltimoEstado.ProveedorId;
-      const date = this.soportes[0].FechaSoporte.toString().split('T');
-      this.fechaFactura = date[0];
+    this.soporteHelper.cargarSoporte(this.actaRecibidoId).then(info => {
+      this.fechaFactura = info.fecha,
+      this.soportes = info.soportes,
+      this.proveedor = info.proveedor;
     });
   }
   onObservacionSubmit() {
