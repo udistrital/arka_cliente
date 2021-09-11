@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild, ViewChildren, QueryList, Input } from '@angular/core';
 import { Observable, Subscription } from 'rxjs';
 import { Router } from '@angular/router';
-import { FormBuilder, FormGroup, FormControl, FormArray } from '@angular/forms';
+import { FormBuilder, FormGroup, FormControl, FormArray, AbstractControl } from '@angular/forms';
 import { NuxeoService } from '../../../@core/utils/nuxeo.service';
 import { MatTable } from '@angular/material';
 import 'hammerjs';
@@ -446,14 +446,14 @@ export class VerActaRecibidoComponent implements OnInit {
     return historico;
   }
 
-  private generarSoporte(form2: any, index: any): SoporteActa {
+  private generarSoporte(form2: AbstractControl, index: any): SoporteActa {
 
     const soporteActa = new SoporteActa();
 
-    soporteActa.Id = form2.controls.Id.value;
-    soporteActa.Consecutivo = form2.controls.Consecutivo.value;
-    soporteActa.DocumentoId = form2.controls.Soporte.value;
-    soporteActa.FechaSoporte = form2.controls.Fecha_Factura.value;
+    soporteActa.Id = form2.get('Id').value;
+    soporteActa.Consecutivo = form2.get('Consecutivo').value;
+    soporteActa.DocumentoId = form2.get('Soporte').value;
+    soporteActa.FechaSoporte = form2.get('Fecha_Factura').value ? form2.get('Fecha_Factura').value : null;
     soporteActa.ActaRecibidoId = <ActaRecibido>{ Id: +this._ActaId };
     soporteActa.Activo = true;
 

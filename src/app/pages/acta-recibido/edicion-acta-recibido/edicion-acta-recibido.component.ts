@@ -819,14 +819,13 @@ export class EdicionActaRecibidoComponent implements OnInit {
     return historico;
   }
 
-  private generarSoporte(form2: any, index: number): SoporteActa {
-
+  private generarSoporte(form2: AbstractControl, index: number): SoporteActa {
     const soporteActa = new SoporteActa;
 
-    soporteActa.Id = form2.Id;
-    soporteActa.Consecutivo = form2.Consecutivo;
+    soporteActa.Id = form2.get('Id').value;
+    soporteActa.Consecutivo = form2.get('Consecutivo').value;
     soporteActa.DocumentoId = this.idDocumento[index];
-    soporteActa.FechaSoporte = form2.Fecha_Factura ? form2.Fecha_Factura : null;
+    soporteActa.FechaSoporte = form2.get('Fecha_Factura').value ? form2.get('Fecha_Factura').value : null;
     soporteActa.ActaRecibidoId = <ActaRecibido>{Id: +this._Acta_Id};
     soporteActa.Activo = true;
 
