@@ -47,7 +47,6 @@ export class VerActaRecibidoComponent implements OnInit {
   // Variables de Formulario
   firstForm: FormGroup;
   @ViewChild('fform') firstFormDirective;
-  Datos: any;
   carga_agregada: boolean;
   index;
   selected = new FormControl(0);
@@ -217,6 +216,10 @@ export class VerActaRecibidoComponent implements OnInit {
 
   async Cargar_Formularios(transaccion_: TransaccionActaRecibido) {
 
+    if (transaccion_.UltimoEstado.UbicacionId) {
+      await this.getSedeDepencencia(transaccion_.UltimoEstado.UbicacionId);
+    }
+
     this.Acta = transaccion_;
     const Form2 = this.fb.array([]);
 
@@ -238,7 +241,6 @@ export class VerActaRecibidoComponent implements OnInit {
       this.Verificar_tabla.push(false);
     }
 
-    transaccion_.UltimoEstado.UbicacionId ? await this.getSedeDepencencia(transaccion_.UltimoEstado.UbicacionId) : null;
 
     this.firstForm = this.fb.group({
       Formulario1: this.fb.group({
@@ -355,7 +357,7 @@ export class VerActaRecibidoComponent implements OnInit {
           // console.log("files", filesResponse);
           filesToGet.forEach((file: any) => {
             const url = filesResponse[file.Id];
-            window.open(url);
+            url ? window.open(url) : null;
           });
         }
       },
@@ -371,12 +373,10 @@ export class VerActaRecibidoComponent implements OnInit {
 
   private onFirstSubmit(aceptar: boolean = false) {
 
-    this.Datos = this.firstForm.value;
-    this.Datos.Formulario3 = this.firstForm.get('Formulario3').get('Datos_Adicionales').value;
     const transaccionActa = new TransaccionActaRecibido();
     transaccionActa.ActaRecibido = this.generarActa();
     const nuevoEstado = aceptar ? EstadoActa_t.Aceptada : EstadoActa_t.EnModificacion;
-    transaccionActa.UltimoEstado = this.generarEstadoActa(this.Datos.Formulario1, this.Datos.Formulario3, nuevoEstado, aceptar);
+    transaccionActa.UltimoEstado = this.generarEstadoActa(nuevoEstado, aceptar);
 
     const Soportes: SoporteActa[] = (this.firstForm.get('Formulario2') as FormArray).controls
       .map((soporte, index) => this.generarSoporte(soporte, index));
@@ -424,7 +424,7 @@ export class VerActaRecibidoComponent implements OnInit {
   }
 
 
-  private generarEstadoActa(form1: any, form3: any, Estado: number, aceptar: boolean): HistoricoActa {
+  private generarEstadoActa(Estado: number, aceptar: boolean): HistoricoActa {
 
     const proveedor = this.firstForm.get('Formulario1.Proveedor').value;
     const ubicacionId = this.firstForm.get('Formulario1.Ubicacion').value;
@@ -485,7 +485,7 @@ export class VerActaRecibidoComponent implements OnInit {
       elemento.ValorIva = parseFloat(datos.ValorIva);
       elemento.ValorFinal = parseFloat(datos.ValorTotal);
       elemento.SubgrupoCatalogoId = subgrupo ? subgrupo : null;
-      elemento.EstadoElementoId = <EstadoElemento>{Id: estadoId};
+      elemento.EstadoElementoId = <EstadoElemento>{ Id: estadoId };
       elemento.ActaRecibidoId = <ActaRecibido>{ Id: +this._ActaId };
       elemento.Activo = true;
 
@@ -493,16 +493,6 @@ export class VerActaRecibidoComponent implements OnInit {
 
     }
     return elementosActa;
-  }
-
-  valortotal(subtotal: string, descuento: string, iva: string) {
-    return (parseFloat(subtotal) - parseFloat(descuento) + parseFloat(iva));
-  }
-  valorXcantidad(valor_unitario: string, cantidad: string) {
-    return (parseFloat(valor_unitario) * parseFloat(cantidad)).toString();
-  }
-  valor_iva(subtotal: string, descuento: string, porcentaje_iva: string) {
-    return ((parseFloat(subtotal) - parseFloat(descuento)) * parseFloat(porcentaje_iva) / 100);
   }
 
   revisorValido(): boolean {

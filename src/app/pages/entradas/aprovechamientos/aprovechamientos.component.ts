@@ -18,6 +18,8 @@ import { IAppState } from '../../../@core/store/app.state';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import Swal from 'sweetalert2';
+import { Soporte } from '../soporteHelper';
+
 
 @Component({
   selector: 'ngx-aprovechamientos',
@@ -53,7 +55,7 @@ export class AprovechamientosComponent implements OnInit {
 
   @ViewChild('stepper') stepper: NbStepperComponent;
 
-  @Input() actaRecibidoId: Number;
+  @Input() actaRecibidoId: number;
 
   constructor(
     private router: Router,
@@ -64,6 +66,7 @@ export class AprovechamientosComponent implements OnInit {
     private fb: FormBuilder,
     private listService: ListService,
     private store: Store<IAppState>,
+    private soporteHelper: Soporte,
   ) {
     this.vigenciaSelect = false;
     this.soportes = new Array<SoporteActaProveedor>();
@@ -111,22 +114,6 @@ export class AprovechamientosComponent implements OnInit {
     // } else return [];
   }
 
-  private loadProveedor() {
-    this.actaRecibidoHelper.getSoporte(this.actaRecibidoId).subscribe(res => {
-      if (res !== null) {
-        for (const index in res) {
-          if (res.hasOwnProperty(index)) {
-            const soporte = new SoporteActaProveedor;
-            soporte.Proveedor = res[index].ProveedorId;
-            this.soportes.push(soporte);
-          }
-        }
-        const proveedor = this.soportes[0].Proveedor.NumDocumento;
-        this.filtroProveedores(proveedor);
-      }
-    });
-  }
-
   private loadLists() {
     this.store.select(state => state.listProveedores).subscribe(
       (res) => {
@@ -140,7 +127,13 @@ export class AprovechamientosComponent implements OnInit {
             );
           this.cargando_proveedores = false;
           // console.log({proveedores: this.Proveedores});
-          this.loadProveedor();
+
+          this.soporteHelper.cargarSoporte(this.actaRecibidoId).then(info => {
+            this.fechaFactura = info.fecha,
+            this.soportes = info.soportes,
+            this.proveedor = this.Proveedores.find(x =>
+              x.Id = info.proveedor).NomProveedor;
+          });
         }
       },
     );

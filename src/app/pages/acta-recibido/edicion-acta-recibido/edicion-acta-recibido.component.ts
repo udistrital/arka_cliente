@@ -59,14 +59,11 @@ export class EdicionActaRecibidoComponent implements OnInit {
   // Variables de Formulario
   firstForm: FormGroup;
   @ViewChild('fform') firstFormDirective;
-  Datos: any;
   carga_agregada: boolean;
   index;
   selected = new FormControl(0);
   _Acta_Id: number;
   fileDocumento: any[] = [];
-  Validador: any[] = [];
-  uidDocumento: any[] = [];
   idDocumento: any[] = [];
 
   // Tablas parametricas
@@ -101,10 +98,13 @@ export class EdicionActaRecibidoComponent implements OnInit {
   private actaCargada: boolean = false;
   private SoporteElementosValidos: Array<boolean>;
   private elementosValidos: boolean = false;
-  private validarElementos: boolean;
+  validarElementos: boolean;
   Acta: TransaccionActaRecibido;
   totales: any;
   minLength: number = 4;
+  cargarTab: boolean;
+  selectedTab: number = 0;
+  sizeSoporte: number = 5;
 
   permisos: {
     Acta: Permiso,
@@ -147,8 +147,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
     this.Proveedores = [];
     this.errores = new Map<string, boolean>();
     this.fileDocumento = [];
-    this.Validador = [];
-    this.uidDocumento = [];
     this.idDocumento = [];
     this.searchStr2 = new Array<string>();
     this.DatosElementos = new Array<any>();
@@ -399,6 +397,11 @@ export class EdicionActaRecibidoComponent implements OnInit {
   }
 
   async Cargar_Formularios(transaccion_: TransaccionActaRecibido) {
+
+    if (transaccion_.UltimoEstado.UbicacionId) {
+      await this.getSedeDepencencia(transaccion_.UltimoEstado.UbicacionId);
+    }
+
     const ar = transaccion_.ActaRecibido.TipoActaId.Id === 1;
     const Form2 = this.fb.array([]);
     transaccion_.SoportesActa.forEach((Soporte, index) => {
@@ -418,15 +421,13 @@ export class EdicionActaRecibidoComponent implements OnInit {
             disabled: !this.getPermisoEditar(this.permisos.Acta),
           },
           { validators:  !ar ? [] : this.checkDate() }],
-        Soporte: [Soporte.DocumentoId, Validators.required],
+        Soporte: [Soporte.DocumentoId ? Soporte.DocumentoId : '', Validators.required],
       });
-      this.Validador[index] = true;
-      this.uidDocumento[index] = Soporte.DocumentoId;
+      this.fileDocumento.push(undefined);
+      this.idDocumento.push(Soporte.DocumentoId);
 
       Form2.push(formulario2);
     });
-
-    transaccion_.UltimoEstado.UbicacionId ? await this.getSedeDepencencia(transaccion_.UltimoEstado.UbicacionId) : null;
 
     this.firstForm = this.fb.group({
       Formulario1: this.fb.group({
@@ -475,7 +476,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
     }, { validators: this.checkValidness });
 
     this.initTerceros();
-    this.sedeDependencia ? this.Traer_Relacion_Ubicaciones(this.sedeDependencia.sede, this.sedeDependencia.dependencia) : null;
     this.carga_agregada = true;
   }
 
@@ -504,7 +504,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
         const sede = (() => {
           const criterio = x => x && x.CodigoAbreviacion === espacioFisico.toString();
           if (this.Sedes.some(criterio)) {
-            return this.Sedes.find(criterio).Id;
+            return this.Sedes.find(criterio);
           }
           return '';
         })();
@@ -512,12 +512,22 @@ export class EdicionActaRecibidoComponent implements OnInit {
         const dependencia = (() => {
           const criterio = x => _dependencia && x.Id === _dependencia;
           if (this.Dependencias.some(criterio)) {
-            return this.Dependencias.find(criterio).Nombre;
+            return this.Dependencias.find(criterio);
           }
           return '';
         })();
 
-        this.sedeDependencia = { sede: sede, dependencia: dependencia };
+        const transaccion: any = {};
+        transaccion.Sede = this.Sedes.find((x) => x.Id === sede.Id);
+        transaccion.Dependencia = this.Dependencias.find((x) => x.Id === dependencia.Id);
+
+        this.Actas_Recibido.postRelacionSedeDependencia(transaccion).subscribe((res_: any) => {
+          if (isObject(res_[0].Relaciones)) {
+            this.UbicacionesFiltradas = res_[0].Relaciones;
+          }
+        });
+
+        this.sedeDependencia = { sede: sede.Id, dependencia: dependencia.Nombre };
 
         resolve();
       });
@@ -543,6 +553,8 @@ export class EdicionActaRecibidoComponent implements OnInit {
   }
 
   get Formulario_2(): FormGroup {
+    this.fileDocumento.push(undefined);
+    this.idDocumento.push(undefined);
     return this.fb.group({
       Id: [0],
       Proveedor: [''],
@@ -552,7 +564,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
     });
   }
 
-  download(index) {
+  private download(index) {
     const new_tab = window.open(this.fileDocumento[index].urlTemp, this.fileDocumento[index].urlTemp, '_blank');
     new_tab.onload = () => {
       new_tab.location = this.fileDocumento[index].urlTemp;
@@ -560,7 +572,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
     new_tab.focus();
   }
 
-  downloadFile(id_documento: any) {
+  private downloadFile(id_documento: any) {
     const filesToGet = [
       {
         Id: id_documento,
@@ -571,10 +583,11 @@ export class EdicionActaRecibidoComponent implements OnInit {
       .subscribe(response => {
         const filesResponse = <any>response;
         if (Object.keys(filesResponse).length === filesToGet.length) {
-          // console.log("files", filesResponse);
           filesToGet.forEach((file: any) => {
             const url = filesResponse[file.Id];
-            window.open(url);
+            if (url !== undefined) {
+              window.open(url);
+            }
           });
         }
       },
@@ -588,15 +601,16 @@ export class EdicionActaRecibidoComponent implements OnInit {
         });
   }
 
+  public getFile(i: number) {
+    this.idDocumento[i] ? this.downloadFile(this.idDocumento[i]) : this.download(i);
+  }
+
   onInputFileDocumento(event, index) {
-    // console.log(event.target.files);
-    // console.log(event.srcElement.files);
-    const max_size = 1;
     if (event.target.files.length > 0) {
       const file = event.target.files[0];
       if (file.type === 'application/pdf') {
 
-        if (file.size < max_size * 1024000) {
+        if (file.size < this.sizeSoporte * 1024000) {
 
           file.urlTemp = URL.createObjectURL(event.srcElement.files[0]);
           file.url = this.cleanURL(file.urlTemp);
@@ -604,22 +618,19 @@ export class EdicionActaRecibidoComponent implements OnInit {
           file.file = event.target.files[0];
           (this.firstForm.get('Formulario2') as FormArray).at(index).get('Soporte').setValue(file.name);
           this.fileDocumento[index] = file;
-          this.Validador[index] = true;
-          this.uidDocumento[index] = undefined;
+          this.idDocumento[index] = undefined;
 
         } else {
           (Swal as any).fire({
-            title: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.Tamaño_title'),
-            text: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.Tamaño_placeholder'),
+            title: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.ErrorSizeSoporteTitle'),
+            text: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.ErrorSizeSoporteText', { SIZE: this.sizeSoporte }),
             type: 'warning',
           });
-          this.Validador[index] = false;
         }
         // console.log(file);
         // console.log(this.fileDocumento);
 
       } else {
-        this.Validador[index] = false;
         this.pUpManager.showErrorAlert('error' + this.translate.instant('GLOBAL.error'));
       }
     }
@@ -627,56 +638,58 @@ export class EdicionActaRecibidoComponent implements OnInit {
   clearFile(index) {
     (this.firstForm.get('Formulario2') as FormArray).at(index).get('Soporte').setValue('');
     this.fileDocumento[index] = undefined;
-    this.Validador[index] = undefined;
-    this.uidDocumento[index] = undefined;
+    this.idDocumento[index] = undefined;
   }
+
   cleanURL(oldURL: string): SafeResourceUrl {
     return this.sanitization.bypassSecurityTrustUrl(oldURL);
   }
-
 
   addSoportes() {
     (this.firstForm.get('Formulario2') as FormArray).push(this.Formulario_2);
     this.SoporteElementosValidos.push(false);
   }
-  deleteSoportes(index: number) {
-    (this.firstForm.get('Formulario2') as FormArray).removeAt(index);
-    this.SoporteElementosValidos.splice(index, 1);
+
+  tab() {
+    if (this.cargarTab) {
+      this.selectedTab = this.firstForm.get('Formulario2').value.length - 1;
+      this.cargarTab = false;
+    }
   }
-  addTab() {
-    this.addSoportes();
-    this.selected.setValue(this.firstForm.get('Formulario2').value.length - 1);
+
+  addTab($event) {
+    if ($event === this.firstForm.get('Formulario2').value.length && !this.cargarTab) {
+      (this.firstForm.get('Formulario2') as FormArray).push(this.Formulario_2);
+      this.selectedTab = this.firstForm.get('Formulario2').value.length;
+      this.cargarTab = true;
+    }
   }
+
   removeTab(i: number) {
-    this.deleteSoportes(i);
-    this.selected.setValue(i - 1);
+    this.selectedTab = i - 1;
+    (this.firstForm.get('Formulario2') as FormArray).removeAt(i);
+    this.fileDocumento.splice(i, 1);
+    this.idDocumento.splice(i, 1);
   }
+
   async postSoporteNuxeo(files: any) {
-    // console.log(files);
-    return new Promise(async (resolve, reject) => {
+    return new Promise<void>(async (resolve, reject) => {
       files.forEach((file) => {
-        // console.log(file);
         file.Id = file.nombre;
         file.nombre = 'soporte_' + file.IdDocumento + '_acta_recibido';
-        // file.key = file.Id;
         file.key = 'soporte_' + file.IdDocumento;
       });
-      // console.log(files);
-      await this.nuxeoService.getDocumentos$(files, this.documentoService)
+      this.nuxeoService.getDocumentos$(files, this.documentoService)
         .subscribe(response => {
-          // console.log('response', response);
           if (Object.keys(response).length === files.length) {
-            // console.log('response', response);
-            files.forEach((file, index) => {
-              if (file !== undefined) {
-                this.uidDocumento[index] = file.uid;
-                this.idDocumento[index] = response[file.key].Id;
-                // console.log(this.idDocumento);
-                resolve(response[file.key].Id);
-              } else {
-                resolve(this.idDocumento[index]);
+            files.forEach((file) => {
+              const a = this.idDocumento.findIndex((doc) => doc === undefined);
+              const b = this.idDocumento.find(id => id === response[file.key].Id);
+              if (a >= 0 && !b) {
+                this.idDocumento[a] = response[file.key].Id;
+                this.fileDocumento[a] = undefined;
               }
-
+              resolve();
             });
           }
         }, error => {
@@ -687,16 +700,14 @@ export class EdicionActaRecibidoComponent implements OnInit {
 
   // Envío (a (proveedor y/o contratista)/revisor) o guardado
   private async onFirstSubmit(siguienteEtapa: boolean = false, enviara: number = 0) {
+    const filestoPost = this.fileDocumento.filter(file => file !== undefined);
     this.guardando = true;
-    if (!siguienteEtapa) {
-      const start = async () => {
-        await this.asyncForEach(this.fileDocumento, async (file) => {
-          await this.postSoporteNuxeo([file]);
-        });
-      };
-      await start();
-    }
-    this.Datos = this.firstForm.value;
+    const start = async () => {
+      await this.asyncForEach(filestoPost, async (file) => {
+        await this.postSoporteNuxeo([file]);
+      });
+    };
+    await start();
     const transaccionActa = new TransaccionActaRecibido();
 
     transaccionActa.ActaRecibido = this.generarActa();
@@ -707,11 +718,12 @@ export class EdicionActaRecibidoComponent implements OnInit {
       nuevoEstado = this.Estados_Acta.find(estado => estado.Nombre === this.estadoActa).Id; // el nuevo estado es el mismo
     }
 
-    transaccionActa.UltimoEstado = this.generarEstadoActa(this.Datos.Formulario1, this.Datos.Formulario3, nuevoEstado);
+    transaccionActa.UltimoEstado = this.generarEstadoActa(nuevoEstado);
     transaccionActa.Elementos = this.generarElementos();
 
-    const Soportes: SoporteActa[] = this.Datos.Formulario2
+    const Soportes: SoporteActa[] = (this.firstForm.get('Formulario2') as FormArray).controls
       .map((soporte, index) => this.generarSoporte(soporte, index));
+
     transaccionActa.SoportesActa = Soportes;
 
     this.Actas_Recibido.putTransaccionActa(transaccionActa, transaccionActa.ActaRecibido.Id).subscribe((res: any) => {
@@ -784,18 +796,23 @@ export class EdicionActaRecibidoComponent implements OnInit {
     return actaRecibido;
   }
 
-  private generarEstadoActa(form1: any, form3: any, Estado: number): HistoricoActa {
+  private generarEstadoActa(Estado: number): HistoricoActa {
 
+    const ae = this.Acta.ActaRecibido.TipoActaId.Id === 2;
+    const proveedor = this.firstForm.get('Formulario1.Proveedor').value;
+    const ubicacionId = this.firstForm.get('Formulario1.Ubicacion').value;
+    const contratista = this.firstForm.get('Formulario1.Contratista').value;
+    const observaciones = this.firstForm.get('Formulario3.Datos_Adicionales').value;
     const historico = new HistoricoActa;
 
     historico.Id = null;
-    historico.ProveedorId = form1.Proveedor ? form1.Proveedor.Tercero.Id : null;
-    historico.UbicacionId = form1.Ubicacion ? form1.Ubicacion : null;
+    historico.ProveedorId = proveedor ? proveedor.Tercero.Id : null;
+    historico.UbicacionId = ubicacionId ? ubicacionId : null;
     historico.RevisorId = this.userService.getPersonaId();
-    historico.PersonaAsignadaId = form1.Contratista.Tercero.Id;
-    historico.Observaciones = form3.Datos_Adicionales;
+    historico.PersonaAsignadaId = ae ? this.userService.getPersonaId() : contratista ? contratista.Tercero.Id : null;
+    historico.Observaciones = observaciones;
     historico.FechaVistoBueno = null;
-    historico.ActaRecibidoId = <ActaRecibido>{Id: +this._Acta_Id};
+    historico.ActaRecibidoId = <ActaRecibido>{ Id: +this._Acta_Id };
     historico.EstadoActaId = this.Estados_Acta.find(estado => estado.Id === Estado);
     historico.Activo = true;
 

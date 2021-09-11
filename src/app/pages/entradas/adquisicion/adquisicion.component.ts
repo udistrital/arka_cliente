@@ -13,6 +13,7 @@ import { Router, NavigationExtras } from '@angular/router';
 import { NbStepperComponent } from '@nebular/theme';
 import Swal from 'sweetalert2';
 import { isObject } from 'rxjs/internal-compatibility';
+import { Soporte } from '../soporteHelper';
 
 @Component({
   selector: 'ngx-adquisicion',
@@ -55,10 +56,10 @@ export class AdquisicionComponent implements OnInit {
 
   @ViewChild('stepper') stepper: NbStepperComponent;
 
-  @Input() actaRecibidoId: Number;
+  @Input() actaRecibidoId: number;
 
   constructor(private router: Router, private entradasHelper: EntradaHelper, private actaRecibidoHelper: ActaRecibidoHelper,
-    private pUpManager: PopUpManager, private fb: FormBuilder) {
+    private pUpManager: PopUpManager, private fb: FormBuilder, private soporteHelper: Soporte) {
     this.checked = false;
     this.tipoContratoSelect = false;
     this.vigenciaSelect = false;
@@ -139,20 +140,17 @@ export class AdquisicionComponent implements OnInit {
   }
 
   loadSoporte(): void {
-    this.actaRecibidoHelper.getSoporte(this.actaRecibidoId).subscribe(res => {
+    this.actaRecibidoHelper.getTransaccionActa(this.actaRecibidoId, false).subscribe(res => {
       if (res !== null) {
-        for (const index in res) {
-          if (res.hasOwnProperty(index)) {
-            const soporte = new SoporteActaProveedor;
-            soporte.Id = res[index].Id;
-            soporte.Consecutivo = res[index].Consecutivo;
-            soporte.Proveedor = res[index].ProveedorId;
-            soporte.FechaSoporte = res[index].FechaSoporte;
-            this.soportes.push(soporte);
-          }
+          res.SoportesActa.forEach(soporte => {
+            const soporteActa = new SoporteActaProveedor;
+            soporteActa.Id = soporte.Id;
+            soporteActa.Consecutivo = soporte.Consecutivo;
+            soporteActa.FechaSoporte = soporte.FechaSoporte;
+            this.soportes.push(soporteActa);
+          });
         }
-      }
-      this.proveedor = this.soportes[0].Proveedor.NomProveedor;
+      this.proveedor = res.UltimoEstado.ProveedorId;
       const date = this.soportes[0].FechaSoporte.toString().split('T');
       this.fechaFactura = date[0];
     });
@@ -174,7 +172,11 @@ export class AdquisicionComponent implements OnInit {
         }
         if (existe) {
           this.loadContratoEspecifico();
-          this.loadSoporte();
+          this.soporteHelper.cargarSoporte(this.actaRecibidoId).then(info => {
+            this.fechaFactura = info.fecha,
+            this.soportes = info.soportes,
+            this.proveedor = info.proveedor;
+          });
         } else {
           this.stepper.previous();
           this.iniciarContrato();

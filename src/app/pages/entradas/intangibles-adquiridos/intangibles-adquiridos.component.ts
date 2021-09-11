@@ -13,6 +13,7 @@ import { Router, NavigationExtras } from '@angular/router';
 import { NbStepperComponent } from '@nebular/theme';
 import Swal from 'sweetalert2';
 import { isObject } from 'rxjs/internal-compatibility';
+import { Soporte } from '../soporteHelper';
 
 @Component({
   selector: 'ngx-intangibles-adquiridos',
@@ -54,10 +55,10 @@ export class IntangiblesAdquiridosComponent implements OnInit {
 
   @ViewChild('stepper') stepper: NbStepperComponent;
 
-  @Input() actaRecibidoId: Number;
+  @Input() actaRecibidoId: number;
 
   constructor(private router: Router, private entradasHelper: EntradaHelper, private actaRecibidoHelper: ActaRecibidoHelper,
-    private pUpManager: PopUpManager, private fb: FormBuilder) {
+    private pUpManager: PopUpManager, private fb: FormBuilder, private soporteHelper: Soporte) {
     this.checked = false;
     this.tipoContratoSelect = false;
     this.vigenciaSelect = false;
@@ -137,26 +138,6 @@ export class IntangiblesAdquiridosComponent implements OnInit {
     });
   }
 
-  loadSoporte(): void {
-    this.actaRecibidoHelper.getSoporte(this.actaRecibidoId).subscribe(res => {
-      if (res !== null) {
-        for (const index in res) {
-          if (res.hasOwnProperty(index)) {
-            const soporte = new SoporteActaProveedor;
-            soporte.Id = res[index].Id;
-            soporte.Consecutivo = res[index].Consecutivo;
-            soporte.Proveedor = res[index].ProveedorId;
-            soporte.FechaSoporte = res[index].FechaSoporte;
-            this.soportes.push(soporte);
-          }
-        }
-        this.proveedor = this.soportes[0].Proveedor.NomProveedor;
-        const date = this.soportes[0].FechaSoporte.toString().split('T');
-        this.fechaFactura = date[0];
-      }
-    });
-  }
-
   /**
    * Métodos para validar campos requeridos en el formulario.
    */
@@ -173,7 +154,11 @@ export class IntangiblesAdquiridosComponent implements OnInit {
         }
         if (existe) {
           this.loadContratoEspecifico();
-          this.loadSoporte();
+          this.soporteHelper.cargarSoporte(this.actaRecibidoId).then(info => {
+            this.fechaFactura = info.fecha,
+            this.soportes = info.soportes,
+            this.proveedor = info.proveedor;
+          });
         } else {
           this.stepper.previous();
           this.iniciarContrato();
@@ -210,7 +195,6 @@ export class IntangiblesAdquiridosComponent implements OnInit {
     const soporteId: string = event.target.options[event.target.options.selectedIndex].value;
     for (const i in this.soportes) {
       if (this.soportes[i].Id.toString() === soporteId) {
-        this.proveedor = this.soportes[i].Proveedor.NomProveedor;
         const date = this.soportes[i].FechaSoporte.toString().split('T');
         this.fechaFactura = date[0];
       }

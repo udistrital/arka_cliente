@@ -11,6 +11,7 @@ import { SoporteActaProveedor } from '../../../@core/data/models/acta_recibido/s
 import { Supervisor } from '../../../@core/data/models/entrada/supervisor';
 import Swal from 'sweetalert2';
 import { isObject } from 'rxjs/internal-compatibility';
+import { Soporte } from '../soporteHelper';
 
 @Component({
   selector: 'ngx-extranjero',
@@ -38,7 +39,6 @@ export class ExtranjeroComponent implements OnInit {
   proveedor: string;
   fechaFactura: string;
   validar: boolean;
-
   private opcionTipoContrato: string;
   private opcionvigencia: string;
 
@@ -47,7 +47,7 @@ export class ExtranjeroComponent implements OnInit {
 
   @ViewChild('stepper') stepper: NbStepperComponent;
 
-  @Input() actaRecibidoId: Number;
+  @Input() actaRecibidoId: number;
 
   constructor(
     private router: Router,
@@ -55,6 +55,7 @@ export class ExtranjeroComponent implements OnInit {
     private entradasHelper: EntradaHelper,
     private actaRecibidoHelper: ActaRecibidoHelper,
     private fb: FormBuilder,
+    private soporteHelper: Soporte,
   ) {
     this.tipoContratoSelect = false;
     this.vigenciaSelect = false;
@@ -159,26 +160,6 @@ export class ExtranjeroComponent implements OnInit {
     });
   }
 
-  private loadSoporte(): void {
-    this.actaRecibidoHelper.getSoporte(this.actaRecibidoId).subscribe(res => {
-      if (res !== null) {
-        for (const index in res) {
-          if (res.hasOwnProperty(index)) {
-            const soporte = new SoporteActaProveedor;
-            soporte.Id = res[index].Id;
-            soporte.Consecutivo = res[index].Consecutivo;
-            soporte.Proveedor = res[index].ProveedorId;
-            soporte.FechaSoporte = res[index].FechaSoporte;
-            this.soportes.push(soporte);
-          }
-        }
-        this.proveedor = this.soportes[0].Proveedor.NomProveedor;
-        const date = this.soportes[0].FechaSoporte.toString().split('T');
-        this.fechaFactura = date[0];
-      }
-    });
-  }
-
   // Métodos para cambiar estados de los select.
 
   changeSelectTipoContrato(event) {
@@ -201,7 +182,6 @@ export class ExtranjeroComponent implements OnInit {
     const soporteId: string = event.target.options[event.target.options.selectedIndex].value;
     for (const i in this.soportes) {
       if (this.soportes[i].Id.toString() === soporteId) {
-        this.proveedor = this.soportes[i].Proveedor.NomProveedor;
         const date = this.soportes[i].FechaSoporte.toString().split('T');
         this.fechaFactura = date[0];
       }
@@ -233,7 +213,11 @@ export class ExtranjeroComponent implements OnInit {
         }
         if (existe) {
           this.loadContratoEspecifico();
-          this.loadSoporte();
+          this.soporteHelper.cargarSoporte(this.actaRecibidoId).then(info => {
+            this.fechaFactura = info.fecha,
+            this.soportes = info.soportes,
+            this.proveedor = info.proveedor;
+          });
         } else {
           this.stepper.previous();
           this.iniciarContrato();

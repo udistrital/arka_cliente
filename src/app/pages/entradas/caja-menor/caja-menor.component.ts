@@ -17,6 +17,7 @@ import { TerceroCriterioJefe, TerceroCriterioPlanta } from '../../../@core/data/
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import Swal from 'sweetalert2';
+import { Soporte } from '../soporteHelper';
 
 
 @Component({
@@ -58,7 +59,7 @@ export class CajaMenorComponent implements OnInit {
   cargando_supervisores: boolean = true;
   cargando_ordenadores: boolean = true;
 
-  @Input() actaRecibidoId: Number;
+  @Input() actaRecibidoId: number;
 
   constructor(
     private router: Router,
@@ -70,7 +71,8 @@ export class CajaMenorComponent implements OnInit {
     private sanitization: DomSanitizer,
     private documentoService: DocumentoService,
     private tercerosHelper: TercerosHelper,
-    private translate: TranslateService) {
+    private translate: TranslateService,
+    private soporteHelper: Soporte) {
     this.ordenadores = new Array<OrdenadorGasto>();
     this.solicitanteSelect = false;
     this.ordenadorId = 0;
@@ -227,25 +229,11 @@ export class CajaMenorComponent implements OnInit {
     }
   }
   loadSoporte(): void {
-    this.actaRecibidoHelper.getSoporte(this.actaRecibidoId).subscribe(res => {
-      if (res !== null) {
-        for (const index in res) {
-          if (res.hasOwnProperty(index)) {
-            const soporte = new SoporteActaProveedor;
-            soporte.Id = res[index].Id;
-            soporte.Consecutivo = res[index].Consecutivo;
-            soporte.Proveedor = res[index].ProveedorId;
-            soporte.FechaSoporte = res[index].FechaSoporte;
-            this.soportes.push(soporte);
-          }
-        }
-      }
+    this.soporteHelper.cargarSoporte(this.actaRecibidoId).then(info => {
+      this.fechaFactura = info.fecha,
+      this.soportes = info.soportes,
+      this.proveedor = info.proveedor;
     });
-    if (this.soportes[0]) {
-      this.proveedor = this.soportes[0].Proveedor.NomProveedor;
-      const date = this.soportes[0].FechaSoporte.toString().split('T');
-      this.fechaFactura = date[0];
-    }
   }
   onObservacionSubmit() {
     this.validar = true;
