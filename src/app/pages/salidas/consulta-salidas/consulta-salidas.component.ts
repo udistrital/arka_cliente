@@ -67,13 +67,16 @@ export class ConsultaSalidasComponent implements OnInit {
   }
 
   loadTablaSettings() {
+    const t = {
+      registrar: this.translate.instant('GLOBAL.registrar_nueva_salida'),
+      editar: this.translate.instant('GLOBAL.Acta_Recibido.EdicionActa.Title'),
+    };
     this.settings = {
       hideSubHeader: false,
       noDataMessage: this.translate.instant('GLOBAL.no_data_entradas'),
       actions: {
         columnTitle: this.translate.instant('GLOBAL.detalle'),
         position: 'right',
-        add: false,
         edit: false,
         delete: false,
         custom: [
@@ -84,6 +87,10 @@ export class ConsultaSalidasComponent implements OnInit {
           },
         ],
       },
+      add: {
+        addButtonContent: '<i class="fas fa-plus" title="' + t.registrar + '" aria-label="' + t.registrar + '"></i>',
+      },
+      mode: 'external',
       columns: {
         Id: {
           title: 'Consecutivo',
@@ -227,6 +234,9 @@ export class ConsultaSalidasComponent implements OnInit {
   onCustom(event) {
     this.salidaId = `${event.data.Id}`;
     this.detalle = true;
+  }
+  onRegister() {
+    this.router.navigate(['/pages/salidas/registro_salidas']);
   }
   onVolver() {
     // this.source.empty().then(() => {
