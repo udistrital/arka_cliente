@@ -60,12 +60,6 @@ export class DinamicformComponent implements OnInit, OnChanges, OnDestroy {
       }
       return d;
     });
-
-
-    if (this.escritura !== undefined) {
-       this.normalform.campos[0].deshabilitar = this.escritura 
-	}
-
   }
 
   ngOnChanges(changes) {
