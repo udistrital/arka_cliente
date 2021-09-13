@@ -233,7 +233,7 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
       for (let i = 0; i < this.formMovimiento.campos.length; i++) {
         this.formMovimiento.campos[i].label = this.translate.instant('GLOBAL.' + this.formMovimiento.campos[i].label_i18n);
         this.formMovimiento.campos[i].placeholder = this.translate.instant('GLOBAL.placeholder_' + this.formMovimiento.campos[i].label_i18n);
-        this.formMovimiento.campos[i].deshabilitar = this.deshabilitar || ( this.tipo_movimiento === 'GLOBAL.Salidas' && i === 1);
+        this.formMovimiento.campos[i].deshabilitar =  (this.tipo_movimiento === 'GLOBAL.Salidas' && i === 1);
 /*        this.formMovimiento.campos[i].requerido = !(this.tipo_movimiento === 'GLOBAL.Entradas' && i === 0 &&
           this.indice !== 0 || this.tipo_movimiento === 'GLOBAL.Salidas' && i === 1);*/
         this.formMovimiento.campos[i].requerido = !(this.tipo_movimiento === 'GLOBAL.Entradas' && i === 0 &&

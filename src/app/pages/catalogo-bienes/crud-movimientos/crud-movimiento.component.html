@@ -1,6 +1,6 @@
 <div *ngIf="movimiento_id" [nbSpinner]="cargando">
     <toaster-container [toasterconfig]="config"></toaster-container>
     <ngx-dinamicform  [normalform]="formMovimiento" [modeloData]="info_movimiento"
-        (resultSmart)="validarForm($event)" [clean]="clean">
+        (resultSmart)="validarForm($event)" [escritura]="escritura" [clean]="clean">
     </ngx-dinamicform>
 </div>

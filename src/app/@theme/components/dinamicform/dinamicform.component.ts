@@ -13,6 +13,7 @@ export class DinamicformComponent implements OnInit, OnChanges, OnDestroy {
 
   @Input('normalform') normalform: any;
   @Input('modeloData') modeloData: any;
+  @Input('escritura') escritura: boolean;
   @Input('clean') clean: boolean;
   @Output() result: EventEmitter<any> = new EventEmitter();
   @Output() resultAux: EventEmitter<any> = new EventEmitter();
@@ -41,6 +42,7 @@ export class DinamicformComponent implements OnInit, OnChanges, OnDestroy {
     if (!this.normalform.tipo_formulario) {
       this.normalform.tipo_formulario = 'grid';
     }
+
     this.normalform.campos = this.normalform.campos.map(d => {
       d.clase = 'form-control';
       if (d.relacion === undefined) {
@@ -58,6 +60,12 @@ export class DinamicformComponent implements OnInit, OnChanges, OnDestroy {
       }
       return d;
     });
+
+
+    if (this.escritura !== undefined) {
+       this.normalform.campos[0].deshabilitar = this.escritura 
+	}
+
   }
 
   ngOnChanges(changes) {
