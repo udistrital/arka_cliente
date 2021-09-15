@@ -1,14 +1,17 @@
-import { Component, OnInit, Input, EventEmitter, Output, OnChanges, TemplateRef } from '@angular/core';
+import { Component, OnInit, Input, EventEmitter, Output, OnChanges, TemplateRef, ViewChild } from '@angular/core';
 import { NbTreeGridDataSource, NbSortDirection, NbSortRequest, NbTreeGridDataSourceBuilder, NbDialogService } from '@nebular/theme';
 import { Observable, combineLatest } from 'rxjs';
 import { PopUpManager } from '../../../managers/popUpManager';
 import { CuentasGrupoTransaccion } from '../../../@core/data/models/catalogo/cuentas_subgrupo';
 import { Subgrupo } from '../../../@core/data/models/catalogo/jerarquia';
 import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/catalogoElementosHelper';
+import { DynamicDatabase, DynamicDataSource, DynamicFlatNode } from '../../../helpers/catalogo-elementos/arbolHelper';
 import { TipoBien } from '../../../@core/data/models/acta_recibido/tipo_bien';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { TipoNivel } from '../../../@core/data/models/catalogo/tipo_nivel';
 import { NivelHelper as nh } from '../../../@core/utils/niveles.helper';
+import {FlatTreeControl} from '@angular/cdk/tree';
+import { MatTable } from '@angular/material/table';
 
 interface TreeNode<T> {
   data: T;
@@ -34,6 +37,20 @@ interface CatalogoArbol {
 })
 export class ArbolComponent implements OnInit, OnChanges {
 
+
+  @ViewChild(MatTable) table: MatTable<any>;
+
+  treeControl: FlatTreeControl<DynamicFlatNode>;
+
+  dataSourcex: DynamicDataSource;
+
+  getLevel = (node: DynamicFlatNode) => node.level;
+
+  isExpandable = (node: DynamicFlatNode) => node.expandible;
+
+  hasChild = (_: number, _nodeData: DynamicFlatNode) => _nodeData.expandible;
+
+
   data: TreeNode<CatalogoArbol>[];
   data2: TreeNode<CatalogoArbol>[];
   customColumn = 'Codigo';
@@ -58,8 +75,8 @@ export class ArbolComponent implements OnInit, OnChanges {
   @Input() updateSignal: Observable<string[]>;
   @Input() acciones: boolean = false;
   @Input() elementos: boolean = false;
-  @Input() subgruposInactivos: boolean = false;
   @Output() fila = new EventEmitter<CatalogoArbol>();
+  @Input() subgruposInactivos: boolean = false;
   tipos_de_bien: TipoBien;
   elementosSubgrupo: TipoBien;
   customColumn2: any;
@@ -73,12 +90,15 @@ export class ArbolComponent implements OnInit, OnChanges {
     private translate: TranslateService,
     private pUpManager: PopUpManager,
     private dialogService: NbDialogService,
-  ) {
+    private database: DynamicDatabase,
+    ) {
+    this.treeControl = new FlatTreeControl<DynamicFlatNode>(this.getLevel, this.isExpandable);
     this.stringBusqueda = '';
     this.aux = 0;
   }
 
   ngOnInit() {
+    this.dataSourcex = new DynamicDataSource(this.treeControl, this.database, this.subgruposInactivos, this.elementos);
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
       this.construirForm();
     });
@@ -257,17 +277,14 @@ export class ArbolComponent implements OnInit, OnChanges {
     //     }
     //   }
     // });
+    this.database.getNivelSuperior(this.catalogoId, this.subgruposInactivos).subscribe(res => {
+      this.dataSourcex.data = res;
       this.mostrar = true;
-      if (res !== null) {
-        if (res[0].hasOwnProperty('data')) {
-          this.data = res;
-          this.aux = res;
-          this.dataSource = this.dataSourceBuilder.create(this.data);
-        } else {
-          this.dataSource = this.dataSourceBuilder.create([]);
-        }
-      }
     });
+
+  }
+  array(n: number): any[] {
+    return Array(n);
   }
 
   getSelectedRow(selectedRow) {

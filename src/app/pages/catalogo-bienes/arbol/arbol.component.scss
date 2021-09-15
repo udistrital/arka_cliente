@@ -75,3 +75,38 @@ button[nbTreeGridRowToggle] {
 .dialogo nb-card-header {
   text-align: center;
 }
+
+.file {
+  margin: 1px solid !important;
+}
+
+.indent {
+  width: 10px;
+}
+
+table {
+  width: 100%;
+}
+
+th.mat-header-cell {
+    border: 0;
+    text-align: center;
+}
+
+.mat-header-row {
+  background-color: rgba(128, 128, 128, 0.1);
+  height: 5em;
+}
+
+.fila {
+  display: flex;
+  align-items: center;
+  div, th {
+    flex: 1;
+  }
+}
+
+.fila-centrado {
+  display: flex;
+  justify-content: center;
+}
