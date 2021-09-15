@@ -40,7 +40,7 @@ export class VerActaRecibidoComponent implements OnInit {
   Verificar_tabla: boolean[];
   // Mensajes de error
   errMess: any;
-  estadoActa: string = "";
+  estadoActa: string = '';
 
   // Decorador para renderizar los cambios en las tablas de elementos
   @ViewChildren(MatTable) _matTable: QueryList<MatTable<any>>;
