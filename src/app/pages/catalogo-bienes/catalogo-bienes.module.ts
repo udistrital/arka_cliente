@@ -15,6 +15,7 @@ import { CrudSubgrupoComponent } from './crud-subgrupo/crud-subgrupo.component';
 import { RegistroElementosComponent } from './registro-elementos/registro-elementos.component';
 import { RegistroCuentasCatalogoComponent } from './registro-cuentas-catalogo/registro-cuentas-catalogo.component';
 import { CrudMovimientoComponent } from './crud-movimientos/crud-movimiento.component';
+import { MatTreeModule } from '@angular/material';
 
 @NgModule({
   declarations: [
@@ -34,6 +35,7 @@ import { CrudMovimientoComponent } from './crud-movimientos/crud-movimiento.comp
     CatalogoBienesRoutingModule,
     NbTreeGridModule,
     ThemeModule,
+    MatTreeModule,
   ],
   exports: [
     ConsultaCatalogoComponent,

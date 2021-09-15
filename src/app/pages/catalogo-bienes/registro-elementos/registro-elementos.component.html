@@ -10,7 +10,7 @@
           <option *ngFor="let item of catalogos" value="{{ item.Id }}">{{ item.Nombre }}</option>
         </select>
 
-        <ngx-arbol *ngIf="catalogoId !== 0" [catalogoId]="catalogoId" (fila)="treeEvent($event)" [elementos]=true [acciones]=true [subgruposInactivos]=true [updateSignal]="updateTree">
+        <ngx-arbol *ngIf="catalogoId !== 0" [catalogoId]="catalogoId" (fila)="treeEvent($event)" [elementos]=true [subgruposInactivos]=true [updateSignal]="updateTree">
           <p>
             <span class="fas fa-info-circle"></span>&nbsp;
             <em>{{'GLOBAL.catalogo.elementosInfo1' | translate}}</em>
