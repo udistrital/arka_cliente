@@ -1,9 +1,5 @@
 import { NivelClasificacion } from './nivel_clasificacion';
 
-export class CuentaContable {
-    Id: number;
-    Saldo: number;
-}
 
 export class Cuenta {
     Id: number;
@@ -12,4 +8,9 @@ export class Cuenta {
     Descripcion: string;
     Codigo: string;
     NivelClasificacion: NivelClasificacion;
+}
+
+export class CuentaContable extends Cuenta {
+    Id: number;
+    Saldo: number;
 }
