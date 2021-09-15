@@ -1,5 +1,8 @@
 <nb-card>
-  <nb-card-header><h2>{{'GLOBAL.Acta_Recibido.EdicionActa.TitleId' | translate: {ID: _Acta_Id} }}</h2></nb-card-header>
+  <nb-card-header>
+	  <h2>{{'GLOBAL.Acta_Recibido.EdicionActa.TitleId' | translate: {ID: _Acta_Id} }}</h2>
+      <label>{{'GLOBAL.Acta_Recibido.ConsultaActas.EstadoHeader' | translate}}: {{estadoActa}}</label>
+  </nb-card-header>
   <nb-card-body [nbSpinner]="!firstForm || guardando">
     <form *ngIf="firstForm" [formGroup]="firstForm" #fform="ngForm" class="step-container">
       <mat-vertical-stepper [linear]="true" #stepper>
