@@ -245,8 +245,18 @@ export class ArbolComponent implements OnInit, OnChanges {
   }
 
   loadTreeCatalogo() {
-    this.mostrar = false;
-    this.catalogoHelper.getArbolCatalogo(this.catalogoId, this.elementos, this.subgruposInactivos).subscribe((res) => {
+    // this.catalogoHelper.getArbolCatalogo(this.catalogoId, this.elementos).subscribe((res) => {
+    //   this.mostrar = true;
+    //   if (res !== null) {
+    //     if (res[0].hasOwnProperty('data')) {
+    //       this.data = res;
+    //       this.aux = res;
+    //       this.dataSource = this.dataSourceBuilder.create(this.data);
+    //     } else {
+    //       this.dataSource = this.dataSourceBuilder.create([]);
+    //     }
+    //   }
+    // });
       this.mostrar = true;
       if (res !== null) {
         if (res[0].hasOwnProperty('data')) {
