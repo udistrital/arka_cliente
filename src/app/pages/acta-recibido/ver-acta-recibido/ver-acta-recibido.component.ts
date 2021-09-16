@@ -40,6 +40,7 @@ export class VerActaRecibidoComponent implements OnInit {
   Verificar_tabla: boolean[];
   // Mensajes de error
   errMess: any;
+  estadoActa: string = '';
 
   // Decorador para renderizar los cambios en las tablas de elementos
   @ViewChildren(MatTable) _matTable: QueryList<MatTable<any>>;
@@ -163,6 +164,7 @@ export class VerActaRecibidoComponent implements OnInit {
     return new Promise<void>(resolve => {
       this.Actas_Recibido.getTransaccionActa(this._ActaId, false).toPromise().then(res => {
         this.Acta.UltimoEstado = res.UltimoEstado;
+        this.estadoActa = this.Acta.UltimoEstado.EstadoActaId.Nombre;
         this.Acta.ActaRecibido = res.ActaRecibido;
         this.Acta.SoportesActa = res.SoportesActa;
         resolve();

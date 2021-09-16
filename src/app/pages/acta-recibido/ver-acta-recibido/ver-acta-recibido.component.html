@@ -1,5 +1,7 @@
 <nb-card>
-  <nb-card-header><h2>{{'GLOBAL.Acta_Recibido.VerificacionActa.TitleId' | translate: {ID: _ActaId} }}</h2></nb-card-header>
+  <nb-card-header><h2>{{'GLOBAL.Acta_Recibido.VerificacionActa.TitleId' | translate: {ID: _ActaId} }}</h2>
+  <label>{{'GLOBAL.Acta_Recibido.ConsultaActas.EstadoHeader' | translate}}: {{this.estadoActa}}</label>
+  </nb-card-header>
   <nb-card-body [nbSpinner]="!carga_agregada">
     <form [formGroup]="firstForm" #fform="ngForm" class="step-container" *ngIf="firstForm">
 
