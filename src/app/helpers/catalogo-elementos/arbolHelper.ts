@@ -1,13 +1,10 @@
 import { CollectionViewer, SelectionChange } from '@angular/cdk/collections';
 import { FlatTreeControl } from '@angular/cdk/tree';
-import { Component, Injectable, Input } from '@angular/core';
-import { BehaviorSubject, merge, Observable, of as observableOf } from 'rxjs';
+import { Injectable } from '@angular/core';
+import { BehaviorSubject, merge, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { RequestManager } from '../../managers/requestManager';
 
-@Injectable({
-    providedIn: 'root',
-})
 /** Flat node with expandable and level information */
 export class DynamicFlatNode {
     constructor(public item: any,
@@ -60,9 +57,6 @@ export class DynamicDatabase {
  * The input will be a json object string, and the output is a list of `FileNode` with nested
  * structure.
  */
-@Injectable({
-    providedIn: 'root',
-})
 export class DynamicDataSource {
     children: any;
     dataChange = new BehaviorSubject<DynamicFlatNode[]>([]);

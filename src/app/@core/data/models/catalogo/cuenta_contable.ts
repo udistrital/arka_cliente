@@ -11,6 +11,5 @@ export class Cuenta {
 }
 
 export class CuentaContable extends Cuenta {
-    Id: number;
     Saldo: number;
 }
