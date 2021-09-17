@@ -1,9 +1,9 @@
-<div [nbSpinner]="!mostrar">
+<!-- <div [nbSpinner]="!mostrar">
     <label class="search-label" for="search">{{'GLOBAL.search' | translate}}:</label>
     <input nbInput [(ngModel)]="stringBusqueda" (ngModelChange)="filterSearch()" id="search" class="search-input">
-    <ng-content></ng-content>
+    <ng-content></ng-content> -->
     <!-- <input nbInput [nbFilterInput]="dataSource" id="search" class="search-input"> -->
-    <table [nbTreeGrid]="dataSource" nbSort (sort)="updateSort($event)">
+    <!-- <table [nbTreeGrid]="dataSource" nbSort (sort)="updateSort($event)">
 
         <tr nbTreeGridHeaderRow *nbTreeGridHeaderRowDef="allColumns"></tr>
         <tr nbTreeGridRow *nbTreeGridRowDef="let row; columns: allColumns" (click)="getSelectedRow(row.data)" [clickToToggle]="false"
@@ -32,24 +32,21 @@
                 <span *nbSortHeaderIcon="let asc = isAscending; let desc = isDescending"
                 [class]="'fas ' + (asc ? 'fa-sort-up' :(desc ? 'fa-sort-down' :'fa-sort'))"></span>
             </th>
-            <td nbTreeGridCell *nbTreeGridCellDef="let row" class="text-uppercase">
+            <td nbTreeGridCell *nbTreeGridCellDef="let row" class="text-uppercase"> -->
                 <!-- PARA DEPURACIÓN - Descomentar alguna de las dos siguientes -->
                 <!-- <pre>{{imprime({"column":column,"row.data[column]":row.data[column]})}}</pre> -->
                 <!-- <pre>{{imprime({"row":row,"column":column})}}</pre> -->
 
                 <!-- Campo "único" -->
-                <span *ngIf="row.data[column] !== undefined && row.data[column].Id === undefined && column !== 'Activo'">
-                    {{ row.data[column] || '-' }}</span>
-
-                <span *ngIf="column === 'Activo'">
-                    {{ (row.data[column] ? 'GLOBAL.activo' : 'GLOBAL.inactivo') | translate}}</span>
+                <!-- <span *ngIf="row.data[column] !== undefined && row.data[column].Id === undefined">
+                    {{ row.data[column] || '-' }}</span> -->
 
                 <!-- Campo normalizado, asociado a una "tabla paramétrica" -->
-                <span *ngIf="row.data[column] !== undefined && row.data[column].Id !== undefined">
-                    {{ row.data[column].Nombre || '-' }}</span>
+                <!-- <span *ngIf="row.data[column] !== undefined && row.data[column].Id !== undefined">
+                    {{ row.data[column].Nombre || '-' }}</span> -->
 
                 <!-- Acciones -->
-                <span *ngIf="column === 'Acciones' && row.data.TipoNivelId" class="fas fa-info-circle fa-2x"
+                <!-- <span *ngIf="column === 'Acciones' && row.data.TipoNivelId" class="fas fa-info-circle fa-2x"
                 [nbPopover]="'GLOBAL.info_adicional' | translate" nbPopoverTrigger="hover"
                 (click)="getDetalle(row.data, dialogoDetalle)"></span>
             </td>
@@ -57,7 +54,7 @@
 
     </table>
 
-</div>
+</div> -->
 
 <ng-template #dialogoDetalle let-ref="dialogRef">
     <nb-card class="dialogo">
@@ -77,17 +74,17 @@
         <div *ngFor="let cuenta of cuentasContables" class="row">
             <div class="col">
                 <p class="font-weight-bold text-uppercase">{{ 'GLOBAL.tipo_movimiento' | translate }}:
-                    <span class="font-weight-normal">{{ cuenta.SubtipoMovimientoId.Nombre }}</span></p>
+                    <span *ngIf="cuenta.SubtipoMovimientoId" class="font-weight-normal">{{ cuenta.SubtipoMovimientoId.Nombre }}</span></p>
 
             </div>
             <div class="col">
                 <p class="font-weight-bold text-uppercase">Cuenta Crédito:
-                    <span class="font-weight-normal">{{ cuenta.CuentaCreditoId.Codigo }}</span></p>
+                    <span *ngIf="cuenta.CuentaCreditoId" class="font-weight-normal">{{ cuenta.CuentaCreditoId.Codigo }}</span></p>
 
             </div>
             <div class="col">
                 <p class="font-weight-bold text-uppercase">Cuenta Débito:
-                    <span class="font-weight-normal">{{ cuenta.CuentaDebitoId.Codigo }}</span></p>
+                    <span *ngIf="cuenta.CuentaDebitoId"  class="font-weight-normal">{{ cuenta.CuentaDebitoId.Codigo }}</span></p>
 
             </div>
         </div>
@@ -109,4 +106,64 @@
         </button>
         </nb-card-footer>
     </nb-card>
+
 </ng-template>
+
+<div [nbSpinner]="!mostrar">
+    <table class="mat-table">
+        <thead class="mat-header-row fila">
+            <th class="mat-header-cell">
+                {{ 'GLOBAL.codigo' | translate }}
+            </th>
+            <th class="mat-header-cell">
+                {{ 'GLOBAL.Nombre' | translate }}
+            </th>
+            <th class="mat-header-cell">
+                {{ 'GLOBAL.Descripcion' | translate }}
+            </th>
+            <th  *ngIf="!acciones" class="mat-header-cell">
+                {{ 'GLOBAL.estado' | translate }}
+            </th>
+            <th *ngIf="acciones" class="mat-header-cell">
+                {{ 'GLOBAL.info' | translate }}
+            </th>
+        </thead>
+    </table>
+    <mat-tree [dataSource]="dataSourcex" [treeControl]="treeControl" class="border-top border-left border-right">
+        <mat-tree-node style="border: 0 solid" *matTreeNodeDef="let node"
+            (click)="getSelectedRow(node.item)" class="border-bottom fila">
+                <div class="fila">
+                    <span *ngFor="let i of array(treeControl.getLevel(node))" class="indent"></span>
+                    <button mat-icon-button disabled></button>
+                    {{node.item.Codigo}}
+                </div>
+                <div>{{node.item.Nombre}}</div>
+                <div>{{node.item.Descripcion}}</div>
+                <div class="fila-centrado" *ngIf="!acciones">{{ (node.item.Activo ? 'GLOBAL.activo' : 'GLOBAL.inactivo') | translate }}</div>
+                <div class="fila-centrado" *ngIf="acciones">
+                    <span *ngIf="node.item.TipoNivelId" class="fas fa-info-circle fa-2x"
+                        (click)="getDetalle(node.item, dialogoDetalle)"></span>
+                </div>
+        </mat-tree-node>
+        <mat-tree-node [nbSpinner]="node.isLoading" *matTreeNodeDef="let node; when: hasChild" class="border-bottom fila"
+            (click)="getSelectedRow(node.item)">
+            <div class="fila">
+                <span *ngFor="let i of array(treeControl.getLevel(node))" class="indent"></span>
+                <button mat-icon-button [attr.aria-label]="'Toggle ' + node.item" matTreeNodeToggle>
+                    <mat-icon class="mat-icon-rtl-mirror">
+                        {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
+                    </mat-icon>
+                </button>
+                {{node.item.Codigo}}
+            </div>
+            <div>{{node.item.Nombre}}</div>
+            <div>{{node.item.Descripcion}}</div>
+            <div class="fila-centrado" *ngIf="!acciones">{{ (node.item.Activo ? 'GLOBAL.activo' : 'GLOBAL.inactivo') | translate}}</div>
+            <div class="fila-centrado" *ngIf="acciones">
+                <span *ngIf="node.item.TipoNivelId" class="fas fa-info-circle fa-2x"
+                    (click)="getDetalle(node.item, dialogoDetalle)"></span>
+            </div>
+        </mat-tree-node>
+    </mat-tree>
+
+</div>
