@@ -607,7 +607,6 @@ export class GestionarElementosComponent implements OnInit {
       const subgrupo = new Detalle;
       const seleccionados = this.getSeleccionados();
 
-      this.cambioCheckTodos(false);
       subgrupo.SubgrupoId = selected.originalObject.SubgrupoId;
       subgrupo.TipoBienId = selected.originalObject.TipoBienId;
       seleccionados.forEach((index) => { this.updateClase(selected, index); });
