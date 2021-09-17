@@ -90,7 +90,7 @@ export class CrudGrupoComponent implements OnInit, OnChanges {
                 showConfirmButton: false,
                 timer: 2500,
               });
-              this.eventChange.emit(true);
+              this.eventChange.emit({item: subgrupo, parentId: 0});
             }
           });
       }
@@ -118,6 +118,7 @@ export class CrudGrupoComponent implements OnInit, OnChanges {
 
         this.catalogoElementosService.postGrupo(trGrupo).toPromise()
           .then(res => {
+            console.log(res)
             if (res !== null) {
               (Swal as any).fire({
                 title: this.translate.instant('GLOBAL.Creado'),
@@ -126,7 +127,7 @@ export class CrudGrupoComponent implements OnInit, OnChanges {
                 showConfirmButton: false,
                 timer: 2500,
               });
-              this.eventChange.emit(true);
+              this.eventChange.emit({item: trGrupo.Subgrupo, prentId: 0});
             }
           });
 

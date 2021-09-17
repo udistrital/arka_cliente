@@ -124,6 +124,22 @@ export class DynamicDataSource {
         node.isLoading = false;
     }
 
+    updateNode(node: any, parentId: number){
+        console.log(node, parentId)
+        if (parentId === 0) {
+            const index = this.data.map(e => e.item.Id).indexOf(node.Id);
+            this.data[index].item = node;
+            this.dataChange.next(this.data);
+        } else {
+            const parentIndex = this.data.map(e => e.item.Id).indexOf(parentId);
+            const parent = this.data.find(e => e.item.Id === parentId);
+            const nodes = <DynamicFlatNode>{item: node, level: parent.level + 1, expandible: false};
+            this.data.splice(parentIndex + 1, 0, nodes);
+            parent.expandible && this.dataChange.next(this.data);
+        }
+
+    }
+
     private loadChildren(Id: number): Promise<void> {
         return new Promise<void>(resolve => {
           this.database.getChildren(Id, this.inactivos, this.elementos).then( res => {

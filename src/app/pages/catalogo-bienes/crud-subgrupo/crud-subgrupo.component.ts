@@ -148,6 +148,7 @@ export class CrudSubgrupoComponent implements OnInit, OnChanges {
       .then(res => {
         if (res !== null) {
           this.showAlert();
+          this.eventChange.emit({item: subgrupo, parentId: 0});
         }
       });
   }
@@ -179,9 +180,10 @@ export class CrudSubgrupoComponent implements OnInit, OnChanges {
     trSubrupo.SubgrupoPadre = <SubgrupoID>{ 'Id': this.subgrupo.Id };
 
     this.catalogoElementosService.postSubgrupo(trSubrupo).toPromise()
-      .then(res => {
+      .then((res: any) => {
         if (res !== null) {
           this.showAlert();
+          this.eventChange.emit({item: res.SubgrupoHijo, parentId: res.SubgrupoPadre.Id});
         }
       });
   }
@@ -235,7 +237,6 @@ export class CrudSubgrupoComponent implements OnInit, OnChanges {
       showConfirmButton: false,
       timer: 2500,
     });
-    this.eventChange.emit(true);
   }
 
 }
