@@ -137,10 +137,11 @@ export class CrudSubgrupoComponent implements OnInit, OnChanges {
       const tipoBien = formData.TipoBienId && formData.TipoBienId.Id ? formData.TipoBienId.Id : formData.TipoBienId;
       const detalle = new Detalle;
       detalle.Id = formData.DetalleId;
+      detalle.Activo = true;
       detalle.Depreciacion = formData.Depreciacion;
       detalle.Valorizacion = formData.Valorizacion;
       detalle.TipoBienId = <TipoBien>{ Id: tipoBien };
-      detalle.FechaModificacion = new Date;
+      detalle.SubgrupoId = <SubgrupoComun>{Id: this.subgrupo.Id};
       trSubrupo.DetalleSubgrupo = detalle;
     }
 
@@ -188,9 +189,9 @@ export class CrudSubgrupoComponent implements OnInit, OnChanges {
 
     this.catalogoElementosService.postSubgrupo(trSubrupo).toPromise()
       .then((res: any) => {
-        if (res !== null) {
+        if (res.SubgrupoHijo) {
           this.showAlert();
-          this.eventChange.emit({item: res.SubgrupoHijo, parentId: res.SubgrupoPadre.Id});
+          this.eventChange.emit({item: trSubrupo.SubgrupoHijo, parentId: res.SubgrupoPadre.Id});
         }
       });
   }

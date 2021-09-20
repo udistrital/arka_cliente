@@ -118,7 +118,6 @@ export class CrudGrupoComponent implements OnInit, OnChanges {
 
         this.catalogoElementosService.postGrupo(trGrupo).toPromise()
           .then(res => {
-            console.log(res)
             if (res !== null) {
               (Swal as any).fire({
                 title: this.translate.instant('GLOBAL.Creado'),
@@ -127,7 +126,7 @@ export class CrudGrupoComponent implements OnInit, OnChanges {
                 showConfirmButton: false,
                 timer: 2500,
               });
-              this.eventChange.emit({item: trGrupo.Subgrupo, prentId: 0});
+              this.eventChange.emit({item: trGrupo.Subgrupo, parentId: -1});
             }
           });
 

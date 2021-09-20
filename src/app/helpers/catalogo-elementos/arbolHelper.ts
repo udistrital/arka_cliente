@@ -124,20 +124,25 @@ export class DynamicDataSource {
         node.isLoading = false;
     }
 
-    updateNode(node: any, parentId: number){
-        console.log(node, parentId)
+    updateNode(node: any, parentId: number) {
         if (parentId === 0) {
             const index = this.data.map(e => e.item.Id).indexOf(node.Id);
             this.data[index].item = node;
-            this.dataChange.next(this.data);
+        } else if (parentId === -1) {
+            const nodes = <DynamicFlatNode>{ item: node, level: 0, expandible: false };
+            this.data.push(nodes);
         } else {
-            const parentIndex = this.data.map(e => e.item.Id).indexOf(parentId);
             const parent = this.data.find(e => e.item.Id === parentId);
-            const nodes = <DynamicFlatNode>{item: node, level: parent.level + 1, expandible: false};
-            this.data.splice(parentIndex + 1, 0, nodes);
-            parent.expandible && this.dataChange.next(this.data);
+            const parentIndex = this.data.map(e => e.item.Id).indexOf(parentId);
+            this.data[parentIndex].expandible = true;
+            const nodes = <DynamicFlatNode>{ item: node, level: parent.level + 1, expandible: false };
+            const expanded = parentIndex < this.data.length - 1 && this.data[parentIndex].expandible &&
+                parent.level === this.data[parentIndex + 1].level - 1;
+            if (expanded) {
+                this.data.splice(parentIndex + 1, 0, nodes);
+            }
         }
-
+        this.dataChange.next(this.data);
     }
 
     private loadChildren(Id: number): Promise<void> {
