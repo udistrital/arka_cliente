@@ -333,7 +333,7 @@ export class ArbolComponent implements OnInit, OnChanges {
         }
         this.cuentasContables = <Array<CuentasGrupoTransaccion>>cuentas;
       }
-      if (Object.keys(detalle[0]).length !== 0) {
+      if (detalle.length !== 0) {
         this.tipos_de_bien = <TipoBien>detalle[0].TipoBienId;
       } else {
         this.tipos_de_bien = undefined;
