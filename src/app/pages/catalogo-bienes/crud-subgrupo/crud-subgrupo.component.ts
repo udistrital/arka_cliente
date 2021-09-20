@@ -1,4 +1,4 @@
-import { Grupo2, Subgrupo, SubgrupoID } from '../../../@core/data/models/catalogo/jerarquia';
+import { Grupo2, Subgrupo, SubgrupoComun, SubgrupoID } from '../../../@core/data/models/catalogo/jerarquia';
 import { Detalle } from '../../../@core/data/models/catalogo/detalle';
 import { TipoNivelID, Nivel_t } from '../../../@core/data/models/catalogo/tipo_nivel';
 import { NivelHelper as nh } from '../../../@core/utils/niveles.helper';
@@ -98,23 +98,30 @@ export class CrudSubgrupoComponent implements OnInit, OnChanges {
     } else if (this.subgrupo.TipoNivelId.Id === Nivel_t.Clase) {
 
       this.catalogoElementosService.getDetalleSubgrupo(this.subgrupo.Id).toPromise().then(res => {
-        if (res !== null) {
-          const detalleSubgrupo = res[0];
-          const clase = new Grupo2;
+        const clase = new Grupo2;
 
-          clase.Id = detalleSubgrupo.SubgrupoId.Id;
-          clase.Activo = detalleSubgrupo.SubgrupoId.Activo;
-          clase.Codigo = detalleSubgrupo.SubgrupoId.Codigo.substring(4, 6);
-          clase.Nombre = detalleSubgrupo.SubgrupoId.Nombre;
-          clase.Descripcion = detalleSubgrupo.SubgrupoId.Descripcion;
+        clase.Id = this.subgrupo.Id;
+        clase.Activo = this.subgrupo.Activo;
+        clase.Codigo = this.subgrupo.Codigo.substring(4, 6);
+        clase.Nombre = this.subgrupo.Nombre;
+        clase.Descripcion = this.subgrupo.Descripcion;
+
+        if (res.length > 0) {
+          const detalleSubgrupo = res[0];
+
           clase.DetalleId = detalleSubgrupo.Id;
           clase.TipoBienId = detalleSubgrupo.TipoBienId;
           clase.Depreciacion = detalleSubgrupo.Depreciacion;
           clase.Valorizacion = detalleSubgrupo.Valorizacion;
 
-          this.infoSubgrupo = clase;
-          this.cargando = false;
+        } else {
+          clase.DetalleId = 0;
+          clase.TipoBienId = { Id: 0 };
+          clase.Depreciacion = false;
+          clase.Valorizacion = false;
         }
+        this.cargando = false;
+        this.infoSubgrupo = clase;
       });
     }
   }
