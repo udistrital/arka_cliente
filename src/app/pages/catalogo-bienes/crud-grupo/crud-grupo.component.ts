@@ -79,7 +79,6 @@ export class CrudGrupoComponent implements OnInit, OnChanges {
     };
     (Swal as any).fire(opt).then((willDelete) => {
       if (willDelete.value) {
-
         this.catalogoElementosService.putGrupo(subgrupo, subgrupo.Id).toPromise()
           .then(res => {
             if (res !== null) {
@@ -117,8 +116,8 @@ export class CrudGrupoComponent implements OnInit, OnChanges {
         trGrupo.Subgrupo.TipoNivelId = <TipoNivelID>{ 'Id': Nivel_t.Grupo };
 
         this.catalogoElementosService.postGrupo(trGrupo).toPromise()
-          .then(res => {
-            if (res !== null) {
+        .then((res: any) => {
+          if (res.Subgrupo) {
               (Swal as any).fire({
                 title: this.translate.instant('GLOBAL.Creado'),
                 text: this.translate.instant('GLOBAL.subgrupo.grupo.respuesta_crear_ok'),
@@ -126,7 +125,7 @@ export class CrudGrupoComponent implements OnInit, OnChanges {
                 showConfirmButton: false,
                 timer: 2500,
               });
-              this.eventChange.emit({item: trGrupo.Subgrupo, parentId: -1});
+              this.eventChange.emit({item: res.Subgrupo, parentId: -1});
             }
           });
 
