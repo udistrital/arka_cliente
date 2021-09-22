@@ -1,5 +1,5 @@
 import { Catalogo } from '../../../@core/data/models/catalogo/catalogo';
-import { TipoNivelID, Nivel_t } from '../../../@core/data/models/catalogo/tipo_nivel';
+import { TipoNivelID, Nivel_t, TipoNivel } from '../../../@core/data/models/catalogo/tipo_nivel';
 import { Subgrupo } from '../../../@core/data/models/catalogo/jerarquia';
 import { GrupoTransaccion } from '../../../@core/data/models/catalogo/transacciones';
 import { Component, OnInit, Input, Output, EventEmitter, OnChanges } from '@angular/core';
@@ -113,7 +113,6 @@ export class CrudGrupoComponent implements OnInit, OnChanges {
         catalogo.Id = parseFloat(this.catalogoId.toString());
         trGrupo.Catalogo = catalogo;
         trGrupo.Subgrupo = subgrupo;
-        trGrupo.Subgrupo.TipoNivelId = <TipoNivelID>{ 'Id': Nivel_t.Grupo };
 
         this.catalogoElementosService.postGrupo(trGrupo).toPromise()
         .then((res: any) => {
@@ -135,10 +134,20 @@ export class CrudGrupoComponent implements OnInit, OnChanges {
 
   validarForm(event) {
     if (event.valid) {
-        if (this.infoGrupo === undefined) {
-          this.createGrupo(event.data.Grupo);
+
+      const grupo = new Subgrupo;
+
+      grupo.Id = this.infoGrupo ? event.data.Grupo.Id : null;
+      grupo.Activo = event.data.Grupo.Activo;
+      grupo.Codigo = event.data.Grupo.Codigo;
+      grupo.Nombre = event.data.Grupo.Nombre;
+      grupo.Descripcion = event.data.Grupo.Descripcion;
+      grupo.TipoNivelId = <TipoNivel>{ Id: Nivel_t.Grupo };
+
+      if (this.infoGrupo === undefined) {
+          this.createGrupo(grupo);
         } else {
-          this.updateGrupo(event.data.Grupo);
+          this.updateGrupo(grupo);
         }
     }
   }
