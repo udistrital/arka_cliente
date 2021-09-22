@@ -89,8 +89,6 @@ export class CrudSubgrupoComponent implements OnInit, OnChanges {
       subgrupo.Codigo = this.subgrupo.Codigo.substring(this.subgrupo.TipoNivelId.Id * 2 - 4, this.subgrupo.TipoNivelId.Id * 2 - 2);
       subgrupo.Nombre = this.subgrupo.Nombre;
       subgrupo.Descripcion = this.subgrupo.Descripcion;
-      subgrupo.FechaCreacion = this.subgrupo.FechaCreacion;
-      subgrupo.FechaModificacion = this.subgrupo.FechaModificacion;
       subgrupo.TipoNivelId = this.subgrupo.TipoNivelId;
       this.infoSubgrupo = subgrupo;
       this.cargando = false;
@@ -150,7 +148,6 @@ export class CrudSubgrupoComponent implements OnInit, OnChanges {
     subgrupo.Nombre = formData.Nombre;
     subgrupo.Codigo = formData.Codigo;
     subgrupo.Descripcion = formData.Descripcion;
-    subgrupo.FechaModificacion = new Date;
     subgrupo.TipoNivelId = <TipoNivelID>{ Id: nivel };
     trSubrupo.SubgrupoHijo = subgrupo;
     this.catalogoElementosService.putSubgrupo(trSubrupo, subgrupo.Id).toPromise()

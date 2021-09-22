@@ -126,7 +126,8 @@ export class DynamicDataSource {
 
     updateNode(node: any, parentId: number) {
         if (parentId === 0) {
-            const index = this.data.map(e => e.item.Id).indexOf(node.Id);
+            const index = this.data.map(e => e.item.Id + e.item.TipoNivelId ? e.item.TipoNivelId.Id : '' ).
+                indexOf(node.Id + node.TipoNivelId ? node.TipoNivelId.Id : '');
             this.data[index].item = node;
         } else if (parentId === -1) {
             const nodes = <DynamicFlatNode>{ item: node, level: 0, expandible: false };

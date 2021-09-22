@@ -91,8 +91,6 @@ export class RegistroElementosComponent implements OnInit {
       this.info_elemento.Descripcion = event.Descripcion;
       this.info_elemento.SubgrupoId = event.SubgrupoId;
       this.info_elemento.Activo = event.Activo;
-      this.info_elemento.FechaCreacion = event.FechaCreacion;
-      this.info_elemento.FechaModificacion = event.FechaModificacion;
       this.subgrupo = event.SubgrupoId;
       this.ver_formulario = true;
     } else {
