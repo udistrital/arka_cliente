@@ -72,7 +72,7 @@ export class ArbolComponent implements OnInit, OnChanges {
   nivelSeleccionado: string;
 
   @Input() catalogoId: number;
-  @Input() updateSignal: Observable<string[]>;
+  @Input() updateSignal: any;
   @Input() acciones: boolean = false;
   @Input() elementos: boolean = false;
   @Output() fila = new EventEmitter<CatalogoArbol>();
@@ -113,8 +113,8 @@ export class ArbolComponent implements OnInit, OnChanges {
     this.cuentasContables = new Array<CuentasGrupoTransaccion>();
 
     if (this.updateSignal) {
-      this.updateSignal.subscribe(() => {
-        this.loadTreeCatalogo();
+      this.updateSignal.subscribe((res) => {
+        this.dataSourcex.updateNode(res.item, res.parentId);
       });
     }
   }
@@ -333,7 +333,7 @@ export class ArbolComponent implements OnInit, OnChanges {
         }
         this.cuentasContables = <Array<CuentasGrupoTransaccion>>cuentas;
       }
-      if (Object.keys(detalle[0]).length !== 0) {
+      if (detalle.length !== 0) {
         this.tipos_de_bien = <TipoBien>detalle[0].TipoBienId;
       } else {
         this.tipos_de_bien = undefined;

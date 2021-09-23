@@ -64,11 +64,9 @@ export class RegistroCatalogoComponent implements OnInit {
     });
   }
 
-  recargarCatalogo() {
-    this.eventChange.emit(true);
-    setTimeout(() => {
-      this.QuitarVista();
-    }, 2000);
+  recargarCatalogo(event) {
+    this.eventChange.emit(event);
+    this.QuitarVista();
   }
 
   onChange(catalogo) {

@@ -89,7 +89,7 @@ export class ListCatalogoComponent implements OnInit {
             },
           },
           valuePrepareFunction: (value) => {
-            value = value.split(' ');
+            value = value.split('T');
             value = value[0];
             return value;
           },

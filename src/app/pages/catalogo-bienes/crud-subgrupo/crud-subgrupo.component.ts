@@ -1,4 +1,4 @@
-import { Grupo2, Subgrupo, SubgrupoID } from '../../../@core/data/models/catalogo/jerarquia';
+import { Grupo2, Subgrupo, SubgrupoComun, SubgrupoID } from '../../../@core/data/models/catalogo/jerarquia';
 import { Detalle } from '../../../@core/data/models/catalogo/detalle';
 import { TipoNivelID, Nivel_t } from '../../../@core/data/models/catalogo/tipo_nivel';
 import { NivelHelper as nh } from '../../../@core/utils/niveles.helper';
@@ -89,8 +89,6 @@ export class CrudSubgrupoComponent implements OnInit, OnChanges {
       subgrupo.Codigo = this.subgrupo.Codigo.substring(this.subgrupo.TipoNivelId.Id * 2 - 4, this.subgrupo.TipoNivelId.Id * 2 - 2);
       subgrupo.Nombre = this.subgrupo.Nombre;
       subgrupo.Descripcion = this.subgrupo.Descripcion;
-      subgrupo.FechaCreacion = this.subgrupo.FechaCreacion;
-      subgrupo.FechaModificacion = this.subgrupo.FechaModificacion;
       subgrupo.TipoNivelId = this.subgrupo.TipoNivelId;
       this.infoSubgrupo = subgrupo;
       this.cargando = false;
@@ -98,23 +96,30 @@ export class CrudSubgrupoComponent implements OnInit, OnChanges {
     } else if (this.subgrupo.TipoNivelId.Id === Nivel_t.Clase) {
 
       this.catalogoElementosService.getDetalleSubgrupo(this.subgrupo.Id).toPromise().then(res => {
-        if (res !== null) {
-          const detalleSubgrupo = res[0];
-          const clase = new Grupo2;
+        const clase = new Grupo2;
 
-          clase.Id = detalleSubgrupo.SubgrupoId.Id;
-          clase.Activo = detalleSubgrupo.SubgrupoId.Activo;
-          clase.Codigo = detalleSubgrupo.SubgrupoId.Codigo.substring(4, 6);
-          clase.Nombre = detalleSubgrupo.SubgrupoId.Nombre;
-          clase.Descripcion = detalleSubgrupo.SubgrupoId.Descripcion;
+        clase.Id = this.subgrupo.Id;
+        clase.Activo = this.subgrupo.Activo;
+        clase.Codigo = this.subgrupo.Codigo.substring(4, 6);
+        clase.Nombre = this.subgrupo.Nombre;
+        clase.Descripcion = this.subgrupo.Descripcion;
+
+        if (res.length > 0) {
+          const detalleSubgrupo = res[0];
+
           clase.DetalleId = detalleSubgrupo.Id;
           clase.TipoBienId = detalleSubgrupo.TipoBienId;
           clase.Depreciacion = detalleSubgrupo.Depreciacion;
           clase.Valorizacion = detalleSubgrupo.Valorizacion;
 
-          this.infoSubgrupo = clase;
-          this.cargando = false;
+        } else {
+          clase.DetalleId = 0;
+          clase.TipoBienId = { Id: 0 };
+          clase.Depreciacion = false;
+          clase.Valorizacion = false;
         }
+        this.cargando = false;
+        this.infoSubgrupo = clase;
       });
     }
   }
@@ -130,10 +135,11 @@ export class CrudSubgrupoComponent implements OnInit, OnChanges {
       const tipoBien = formData.TipoBienId && formData.TipoBienId.Id ? formData.TipoBienId.Id : formData.TipoBienId;
       const detalle = new Detalle;
       detalle.Id = formData.DetalleId;
+      detalle.Activo = true;
       detalle.Depreciacion = formData.Depreciacion;
       detalle.Valorizacion = formData.Valorizacion;
       detalle.TipoBienId = <TipoBien>{ Id: tipoBien };
-      detalle.FechaModificacion = new Date;
+      detalle.SubgrupoId = <SubgrupoComun>{Id: this.subgrupo.Id};
       trSubrupo.DetalleSubgrupo = detalle;
     }
 
@@ -142,12 +148,13 @@ export class CrudSubgrupoComponent implements OnInit, OnChanges {
     subgrupo.Nombre = formData.Nombre;
     subgrupo.Codigo = formData.Codigo;
     subgrupo.Descripcion = formData.Descripcion;
-    subgrupo.FechaModificacion = new Date;
+    subgrupo.TipoNivelId = <TipoNivelID>{ Id: nivel };
     trSubrupo.SubgrupoHijo = subgrupo;
     this.catalogoElementosService.putSubgrupo(trSubrupo, subgrupo.Id).toPromise()
       .then(res => {
         if (res !== null) {
           this.showAlert();
+          this.eventChange.emit({item: subgrupo, parentId: 0});
         }
       });
   }
@@ -179,9 +186,10 @@ export class CrudSubgrupoComponent implements OnInit, OnChanges {
     trSubrupo.SubgrupoPadre = <SubgrupoID>{ 'Id': this.subgrupo.Id };
 
     this.catalogoElementosService.postSubgrupo(trSubrupo).toPromise()
-      .then(res => {
-        if (res !== null) {
+      .then((res: any) => {
+        if (res.SubgrupoHijo) {
           this.showAlert();
+          this.eventChange.emit({item: res.SubgrupoHijo, parentId: res.SubgrupoPadre.Id});
         }
       });
   }
@@ -235,7 +243,6 @@ export class CrudSubgrupoComponent implements OnInit, OnChanges {
       showConfirmButton: false,
       timer: 2500,
     });
-    this.eventChange.emit(true);
   }
 
 }

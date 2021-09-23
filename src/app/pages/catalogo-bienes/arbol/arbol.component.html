@@ -130,27 +130,12 @@
         </thead>
     </table>
     <mat-tree [dataSource]="dataSourcex" [treeControl]="treeControl" class="border-top border-left border-right">
-        <mat-tree-node style="border: 0 solid" *matTreeNodeDef="let node"
-            (click)="getSelectedRow(node.item)" class="border-bottom fila">
-                <div class="fila">
-                    <span *ngFor="let i of array(treeControl.getLevel(node))" class="indent"></span>
-                    <button mat-icon-button disabled></button>
-                    {{node.item.Codigo}}
-                </div>
-                <div>{{node.item.Nombre}}</div>
-                <div>{{node.item.Descripcion}}</div>
-                <div class="fila-centrado" *ngIf="!acciones">{{ (node.item.Activo ? 'GLOBAL.activo' : 'GLOBAL.inactivo') | translate }}</div>
-                <div class="fila-centrado" *ngIf="acciones">
-                    <span *ngIf="node.item.TipoNivelId" class="fas fa-info-circle fa-2x"
-                        (click)="getDetalle(node.item, dialogoDetalle)"></span>
-                </div>
-        </mat-tree-node>
         <mat-tree-node [nbSpinner]="node.isLoading" *matTreeNodeDef="let node; when: hasChild" class="border-bottom fila"
             (click)="getSelectedRow(node.item)">
             <div class="fila">
                 <span *ngFor="let i of array(treeControl.getLevel(node))" class="indent"></span>
-                <button mat-icon-button [attr.aria-label]="'Toggle ' + node.item" matTreeNodeToggle>
-                    <mat-icon class="mat-icon-rtl-mirror">
+                <button [disabled]="!node.expandible" mat-icon-button [attr.aria-label]="'Toggle ' + node.item" matTreeNodeToggle>
+                    <mat-icon *ngIf="node.expandible" class="mat-icon-rtl-mirror">
                         {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
                     </mat-icon>
                 </button>

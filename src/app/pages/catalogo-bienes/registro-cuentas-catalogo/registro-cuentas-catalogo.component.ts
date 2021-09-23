@@ -292,7 +292,7 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
         };
         this.catalogoElementosService.getDetalleSubgrupo(event.Id).subscribe(res2 => {
         //  console.log("entra al getDetalleSubgrupo")
-          if (Object.keys(res2[0]).length !== 0) {
+          if (res2.length !== 0) {
             this.Movimientos = [];
             this.depreciacion_ok = res2[0].Depreciacion;
             this.valorizacion_ok = res2[0].Valorizacion;

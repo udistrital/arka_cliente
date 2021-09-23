@@ -91,8 +91,6 @@ export class RegistroElementosComponent implements OnInit {
       this.info_elemento.Descripcion = event.Descripcion;
       this.info_elemento.SubgrupoId = event.SubgrupoId;
       this.info_elemento.Activo = event.Activo;
-      this.info_elemento.FechaCreacion = event.FechaCreacion;
-      this.info_elemento.FechaModificacion = event.FechaModificacion;
       this.subgrupo = event.SubgrupoId;
       this.ver_formulario = true;
     } else {
@@ -138,7 +136,7 @@ export class RegistroElementosComponent implements OnInit {
               this.cleanForm();
               this.subgrupo = undefined;
               this.ver_formulario = false;
-              this.updateTree.emit(true);
+              this.updateTree.emit({item: res, parentId: elemento.SubgrupoId.Id});
             } else {
               this.errorSubmit(post);
             }
@@ -156,7 +154,7 @@ export class RegistroElementosComponent implements OnInit {
               this.cleanForm();
               this.subgrupo = undefined;
               this.ver_formulario = false;
-              this.updateTree.emit(true);
+              this.updateTree.emit({item: res, parentId: 0});
             } else {
               this.errorSubmit(post);
             }
