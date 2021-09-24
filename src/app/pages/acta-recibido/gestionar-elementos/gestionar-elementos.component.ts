@@ -8,7 +8,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource, MatTable } from '@angular/material/table';
 import { TipoBien } from '../../../@core/data/models/acta_recibido/tipo_bien';
 import { DatosLocales } from './datos_locales';
-import { ElementoActa } from '../../../@core/data/models/acta_recibido/elemento';
+import { ElementoActa, ElementoActaTabla } from '../../../@core/data/models/acta_recibido/elemento';
 import { Store } from '@ngrx/store';
 import { IAppState } from '../../../@core/store/app.state';
 import { ConfiguracionService } from '../../../@core/data/configuracion.service';
@@ -59,7 +59,7 @@ export class GestionarElementosComponent implements OnInit {
   ocultarAsignacionCatalogo: boolean;
   ErroresCarga: string = '';
   cargando: boolean = true;
-  elementos: Array<ElementoActa>;
+  elementos: Array<ElementoActaTabla>;
 
   constructor(
     private fb: FormBuilder,
@@ -88,6 +88,11 @@ export class GestionarElementosComponent implements OnInit {
   private async initForms() {
     await this.loadLists();
     this.cargarForms(await this.loadElementos());
+    const clases = this.Clases.map(v => {
+      v.mostrar = v.SubgrupoId.Codigo + ' - ' + v.SubgrupoId.Nombre;
+      return v;
+    });
+    this.dataService = this.completerService.local(clases, 'mostrar', 'mostrar');
   }
 
   private loadLists(): Promise<void> {
@@ -96,7 +101,6 @@ export class GestionarElementosComponent implements OnInit {
         this.Unidades = list.listUnidades[0],
           this.Tarifas_Iva = list.listIVA[0],
           this.Clases = list.listClases[0],
-          this.dataService = this.completerService.local(this.Clases, 'SubgrupoId.Nombre', 'SubgrupoId.Nombre'),
 
 
           (this.Unidades && this.Unidades.length > 0 &&
@@ -121,6 +125,8 @@ export class GestionarElementosComponent implements OnInit {
 
   private cargarForms(cargarElementos: boolean) {
     if (cargarElementos) {
+      this.elementos.forEach(el => el.Combinado = el.SubgrupoCatalogoId.SubgrupoId.Id ?
+        el.SubgrupoCatalogoId.SubgrupoId.Codigo + ' - ' + el.SubgrupoCatalogoId.SubgrupoId.Nombre : '');
       this.dataSource = new MatTableDataSource<ElementoActa>(this.elementos);
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
@@ -157,7 +163,6 @@ export class GestionarElementosComponent implements OnInit {
       ]);
     } else {
       this.displayedColumns = check.concat([
-        'CodigoSubgrupo',
         'SubgrupoCatalogoId',
         'TipoBienId',
         'Nombre',
@@ -189,13 +194,14 @@ export class GestionarElementosComponent implements OnInit {
       subgrupo.SubgrupoId = selected.originalObject.SubgrupoId;
       subgrupo.TipoBienId = selected.originalObject.TipoBienId;
 
+      this.dataSource.data[fila].Combinado = selected.originalObject.mostrar;
       this.dataSource.data[fila].SubgrupoCatalogoId = subgrupo;
     }
     this.ver();
   }
 
   onBlurClase(idx: number) {
-    if (!this.dataSource.data[idx].SubgrupoCatalogoId.SubgrupoId.Nombre) {
+    if (!this.dataSource.data[idx].Combinado) {
       const subgrupo = new Detalle;
       subgrupo.SubgrupoId = new Subgrupo;
       subgrupo.TipoBienId = new TipoBien;

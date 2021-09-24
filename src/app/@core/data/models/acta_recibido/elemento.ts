@@ -69,3 +69,7 @@ export class ElementoActa {
     FechaCreacion: Date;
     FechaModificacion: Date;
 }
+
+export class ElementoActaTabla extends ElementoActa {
+    Combinado: string;
+}
