@@ -3,6 +3,7 @@ import { ToasterConfig, ToasterService, Toast, BodyOutputType } from 'angular2-t
 import { TranslateService } from '@ngx-translate/core';
 import { spagoBIService } from '../../../@core/utils/spagoBIAPI/spagoBIService';
 import { Router } from '@angular/router';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'ngx-registro-entradas',
@@ -14,6 +15,7 @@ export class RegistroEntradasComponent implements OnInit {
   config: ToasterConfig;
   consecutivo: string;
   detalle: boolean;
+  loading: boolean;
 
   @ViewChild('spagoBIDocumentArea') spagoBIDocumentArea: ElementRef;
   @Input() reportConfig: any;
@@ -26,18 +28,17 @@ export class RegistroEntradasComponent implements OnInit {
   loadParametros() {
     const navigation = this.router.getCurrentNavigation();
     this.consecutivo = '';
-     if (navigation.extras.state) {
-       const state = navigation.extras.state as { consecutivo: number };
-       this.consecutivo = (state.consecutivo).toString();
-     }
+    if (navigation.extras.state) {
+      const state = navigation.extras.state as { consecutivo: number };
+      this.consecutivo = (state.consecutivo).toString();
+    }
   }
 
   initReportConfig() {
     if (this.consecutivo === '') {
       this.reportConfig = {
-        // documentLabel: 'ARKA reporte entrada', // Prod
-        documentLabel: 'prueba_arka', // Dev
-        executionRole: '/spagobi/user/admin',
+        documentLabel: environment.SPAGOBI.DOCUMENT_LABEL_ENTRADAS,
+        executionRole: '/spagobi/user',
         displayToolbar: true,
         displaySliders: true,
         iframe: {
@@ -47,12 +48,10 @@ export class RegistroEntradasComponent implements OnInit {
         },
       };
     } else {
-      const parametros = 'consecutivo=' + this.consecutivo + '&outputType=PDF';
+      const parametros = 'consecutivo=' + this.consecutivo;
       this.reportConfig = {
-        // documentLabel: 'ARKA reporte entrada', // Prod
-        documentLabel: 'prueba_arka', // Dev
-        eecutionRole: '/spagobi/user/admin',
-        // parameters: {'PARAMETERS': 'param_1=1&param_2=2'},
+        documentLabel: environment.SPAGOBI.DOCUMENT_LABEL_ENTRADAS,
+        executionRole: '/spagobi/user',
         parameters: { 'PARAMETERS': parametros },
         displayToolbar: true,
         displaySliders: true,
@@ -65,19 +64,10 @@ export class RegistroEntradasComponent implements OnInit {
     }
   }
 
-  callbackFunction(result, args, success) {
-    if (success === true) {
-
-      const iframeSpago = spagoBIService.getDocumentHtml(this.reportConfig);
-      this.url = iframeSpago.split('"')[3];
-      // debugger;
-      // this.spagoBIDocumentArea.nativeElement.innerHTML = html;
-    } else {
-      // console.info('ERROR: authentication failed! Invalid username and/or password ');
-      const message = this.translate.instant('reportes.error_obteniendo_reporte');
-      this.spagoBIDocumentArea.nativeElement.innerHTML = `<h5>${message}</h5>`;
-      this.showToast('error', 'Error', this.translate.instant('reportes.error_obteniendo_reporte'));
-    }
+  callbackFunction() {
+    const iframeSpago = spagoBIService.getDocumentHtml(this.reportConfig);
+    this.url = iframeSpago.split('"')[3];
+    this.loading = false;
   }
 
   ngOnInit() {
@@ -85,6 +75,7 @@ export class RegistroEntradasComponent implements OnInit {
   }
 
   getReport() {
+    this.loading = true;
     spagoBIService.getReport(this, this.callbackFunction);
   }
 

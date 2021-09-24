@@ -32,12 +32,12 @@ export const environment = {
 
   SPAGOBI: {
     PROTOCOL: 'https',
-    HOST: 'intelligentia.udistrital.edu.co',
-    PORT: '8443',
-    CONTEXTPATH: 'SpagoBI',
-    USER: 'sergio_orjuela',
-    PASSWORD: 'sergio_orjuela',
-    DOCUMENTLABEL: 'prueba_arka',
+    HOST: 'inteligenciainstitucional.portaloas.udistrital.edu.co',
+    PORT: '443',
+    CONTEXTPATH: 'knowage',
+    USER: 'desarrollooas',
+    PASSWORD: 'desarrollooas',
+    DOCUMENT_LABEL_ENTRADAS: 'RteEntradaArka',
   },
   TOKEN: {
     AUTORIZATION_URL: 'https://autenticacion.portaloas.udistrital.edu.co/oauth2/authorize',

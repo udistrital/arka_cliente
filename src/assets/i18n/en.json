@@ -977,6 +977,9 @@
      "title_error_desactivacion": "Error when trying to disable the Good Type",
      "error_activacion": "The good type could not be enabled",
      "error_desactivacion": "The good type could not be disabled"
+   },
+   "reportes": {
+     "entrada_titulo": "Entry Report"
    }
   }
 }
