@@ -84,7 +84,7 @@ tr.mat-footer-row {
                                   supported by Chrome, Edge, Opera and Firefox */
 }
 
-/deep/ #clase .completer-input {
+/deep/ ng2-completer[id="clase"] .completer-input {
   width: 100%;
   color: #000000;
   background-color: #ffffff;
