@@ -53,16 +53,6 @@
     text-align: center;
   }
 
-// Para que la lista de Dependencias no salga "recortada" (Ver Issue #315)
-:host /deep/ ng2-completer[formcontrolname="Dependencia"] .completer-dropdown-holder {
-  position: fixed;
-}
-:host /deep/ ng2-completer[formcontrolname="Dependencia"] .completer-dropdown {
-  max-height: 200px !important;
-  overflow-y: scroll;
-  overflow-x: hidden;
-}
-
 p {
   margin-top: 0.5rem;
 }
