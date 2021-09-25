@@ -83,3 +83,7 @@ tr.mat-footer-row {
             user-select: none; /* Non-prefixed version, currently
                                   supported by Chrome, Edge, Opera and Firefox */
 }
+
+::ng-deep ng2-completer[id="clase"] .completer-input {
+  height: 50px;
+}
