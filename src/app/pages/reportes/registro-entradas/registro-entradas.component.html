@@ -1,15 +1,13 @@
 <toaster-container [toasterconfig]="config"></toaster-container>
 <nb-card>
-    <div class="dinamic-form">
-        <fieldset [ngClass]="{'fieldseter':true}">
-            <legend align="left">
-                <small>{{'GLOBAL.reportes.entrada_titulo' | translate}}</small>
-            </legend>
-            <div #spagoBIDocumentArea></div>
-            <div [nbSpinner]="loading">
-                <iframe [src]="url | safe" class="reporte"></iframe>
-            </div>
-        </fieldset>
+    <div [nbSpinner]="loading">
+        <legend align="left">
+            <small>{{'GLOBAL.reportes.entrada_titulo' | translate}}</small>
+        </legend>
+        <div #spagoBIDocumentArea></div>
+        <div>
+            <iframe [src]="url | safe" class="reporte"></iframe>
+        </div>
     </div>
 </nb-card>
 
@@ -19,3 +17,7 @@
         Registrar Nueva Entrada
     </button>
 </div>
+
+<!-- <div #knowageDocumentArea>
+
+</div> -->

@@ -21,7 +21,7 @@ export class RegistroEntradasComponent implements OnInit {
   @Input() reportConfig: any;
 
   constructor(private router: Router, private translate: TranslateService, private toasterService: ToasterService) {
-    this.loadParametros();
+    // this.loadParametros();
     this.initReportConfig();
   }
 
@@ -35,6 +35,16 @@ export class RegistroEntradasComponent implements OnInit {
   }
 
   initReportConfig() {
+    this.consecutivo  = 'P1-00419-2021'
+    this.url = environment.SPAGOBI.PROTOCOL + '://' + environment.SPAGOBI.HOST +
+      '/' + environment.SPAGOBI.CONTEXTPATH + '/' +
+      '/servlet/AdapterHTTP?ACTION_NAME=EXECUTE_DOCUMENT_ACTION&NEW_SESSION=TRUE&IGNORE_SUBOBJECTS_VIEWPOINTS_SNAPSHOTS=true&flag=0&TOOLBAR_VISIBLE=true&OBJECT_LABEL=' +
+      environment.SPAGOBI.DOCUMENT_LABEL_ENTRADAS + '&PARAMETERS=consecutivo=' + this.consecutivo;
+    this.loading = false;
+
+
+
+      console.log(this.url)
     if (this.consecutivo === '') {
       this.reportConfig = {
         documentLabel: environment.SPAGOBI.DOCUMENT_LABEL_ENTRADAS,
@@ -66,12 +76,14 @@ export class RegistroEntradasComponent implements OnInit {
 
   callbackFunction() {
     const iframeSpago = spagoBIService.getDocumentHtml(this.reportConfig);
-    this.url = iframeSpago.split('"')[3];
+    console.log(iframeSpago.split('"')[3])
+    // this.url = iframeSpago.split('"')[3];
+    // this.url = 'https://inteligenciainstitucional.portaloas.udistrital.edu.co/knowage/servlet/AdapterHTTP?ACTION_NAME=EXECUTE_DOCUMENT_ACTION&OBJECT_LABEL=RteTitan&TOOLBAR_VISIBLE=true&ORGANIZATION=DEFAULT_TENANT&NEW_SESSION=true';
     this.loading = false;
   }
 
   ngOnInit() {
-    this.getReport();
+    // this.getReport();
   }
 
   getReport() {
