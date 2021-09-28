@@ -43,7 +43,7 @@ export class RegistroEntradasComponent implements OnInit {
     this.loading = false;
 
 
-
+    spagoBIService.buildUrl('DOCUMENT_LABEL_ENTRADAS', 'P1-00419-2021')
       console.log(this.url)
     if (this.consecutivo === '') {
       this.reportConfig = {
@@ -83,7 +83,7 @@ export class RegistroEntradasComponent implements OnInit {
   }
 
   ngOnInit() {
-    // this.getReport();
+    this.getReport();
   }
 
   getReport() {
