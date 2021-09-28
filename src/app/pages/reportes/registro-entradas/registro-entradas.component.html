@@ -1,23 +1,15 @@
 <toaster-container [toasterconfig]="config"></toaster-container>
-<nb-card>
-    <div [nbSpinner]="loading">
-        <legend align="left">
-            <small>{{'GLOBAL.reportes.entrada_titulo' | translate}}</small>
-        </legend>
-        <div #spagoBIDocumentArea></div>
-        <div>
-            <iframe [src]="url | safe" class="reporte"></iframe>
-        </div>
-    </div>
+<nb-card [nbSpinner]="loading">
+    <nb-card-header>
+        <h2>{{'GLOBAL.reportes.entrada_titulo' | translate}}</h2>
+    </nb-card-header>
+    <nb-card-body class="reporte">
+        <iframe [src]="url | safe"></iframe>
+    </nb-card-body>
+    <nb-card-footer>
+        <button type="button" class="btn btn-primary" (click)="onRegister()">
+            {{'GLOBAL.registrar_nueva_salida' | translate}}
+        </button>
+    </nb-card-footer>
+
 </nb-card>
-
-<div class="justify-content-center float-left pt-4" *ngIf="!detalle">
-    <button type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off"
-        (click)="onRegister()">
-        Registrar Nueva Entrada
-    </button>
-</div>
-
-<!-- <div #knowageDocumentArea>
-
-</div> -->
