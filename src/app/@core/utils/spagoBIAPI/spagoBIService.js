@@ -38,12 +38,11 @@ function getReport(scope, callbackFunction) {
 }
 
 function buildUrl(documentLabel, parameters) {
-    const label = environment.SPAGOBI.documentLabel;
-    const url = environment.SPAGOBI.PROTOCOL + '://' + environment.SPAGOBI.HOST +
-    '/' + environment.SPAGOBI.CONTEXTPATH + '/' +
-    '/servlet/AdapterHTTP?ACTION_NAME=EXECUTE_DOCUMENT_ACTION&NEW_SESSION=TRUE&IGNORE_SUBOBJECTS_VIEWPOINTS_SNAPSHOTS=true&flag=0&TOOLBAR_VISIBLE=true&OBJECT_LABEL=' +
-    label + (parameters ? '&PARAMETERS=consecutivo%3D' + parameters : '');
-    console.log(url);
+    const label = environment.SPAGOBI[documentLabel];
+    const url = environment.SPAGOBI.PROTOCOL + '://' + environment.SPAGOBI.HOST + '/' + environment.SPAGOBI.CONTEXTPATH +
+        '/servlet/AdapterHTTP?ACTION_NAME=EXECUTE_DOCUMENT_ACTION&NEW_SESSION=TRUE&IGNORE_SUBOBJECTS_VIEWPOINTS_SNAPSHOTS=true&flag=0&TOOLBAR_VISIBLE=true&OBJECT_LABEL=' +
+        label + (parameters ? '&PARAMETERS=' + parameters : '');
+    return url;
 }
 
 var spagoBIService = {};

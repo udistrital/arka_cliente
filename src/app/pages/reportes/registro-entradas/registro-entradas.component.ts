@@ -14,15 +14,12 @@ export class RegistroEntradasComponent implements OnInit {
   url = '';
   config: ToasterConfig;
   consecutivo: string;
-  detalle: boolean;
   loading: boolean;
 
   @ViewChild('spagoBIDocumentArea') spagoBIDocumentArea: ElementRef;
   @Input() reportConfig: any;
 
   constructor(private router: Router, private translate: TranslateService, private toasterService: ToasterService) {
-    // this.loadParametros();
-    this.initReportConfig();
   }
 
   loadParametros() {
@@ -34,61 +31,14 @@ export class RegistroEntradasComponent implements OnInit {
     }
   }
 
-  initReportConfig() {
-    this.consecutivo  = 'P1-00419-2021'
-    this.url = environment.SPAGOBI.PROTOCOL + '://' + environment.SPAGOBI.HOST +
-      '/' + environment.SPAGOBI.CONTEXTPATH + '/' +
-      '/servlet/AdapterHTTP?ACTION_NAME=EXECUTE_DOCUMENT_ACTION&NEW_SESSION=TRUE&IGNORE_SUBOBJECTS_VIEWPOINTS_SNAPSHOTS=true&flag=0&TOOLBAR_VISIBLE=true&OBJECT_LABEL=' +
-      environment.SPAGOBI.DOCUMENT_LABEL_ENTRADAS + '&PARAMETERS=consecutivo=' + this.consecutivo;
-    this.loading = false;
-
-
-    spagoBIService.buildUrl('DOCUMENT_LABEL_ENTRADAS', 'P1-00419-2021')
-      console.log(this.url)
-    if (this.consecutivo === '') {
-      this.reportConfig = {
-        documentLabel: environment.SPAGOBI.DOCUMENT_LABEL_ENTRADAS,
-        executionRole: '/spagobi/user',
-        displayToolbar: true,
-        displaySliders: true,
-        iframe: {
-          style: 'border: solid rgb(0,0,0,0.2) 1px;',
-          height: '500px;',
-          width: '100%',
-        },
-      };
-    } else {
-      const parametros = 'consecutivo=' + this.consecutivo;
-      this.reportConfig = {
-        documentLabel: environment.SPAGOBI.DOCUMENT_LABEL_ENTRADAS,
-        executionRole: '/spagobi/user',
-        parameters: { 'PARAMETERS': parametros },
-        displayToolbar: true,
-        displaySliders: true,
-        iframe: {
-          style: 'border: solid rgb(0,0,0,0.2) 1px;',
-          height: '500px;',
-          width: '100%',
-        },
-      };
-    }
-  }
-
-  callbackFunction() {
-    const iframeSpago = spagoBIService.getDocumentHtml(this.reportConfig);
-    console.log(iframeSpago.split('"')[3])
-    // this.url = iframeSpago.split('"')[3];
-    // this.url = 'https://inteligenciainstitucional.portaloas.udistrital.edu.co/knowage/servlet/AdapterHTTP?ACTION_NAME=EXECUTE_DOCUMENT_ACTION&OBJECT_LABEL=RteTitan&TOOLBAR_VISIBLE=true&ORGANIZATION=DEFAULT_TENANT&NEW_SESSION=true';
-    this.loading = false;
-  }
-
   ngOnInit() {
     this.getReport();
   }
 
   getReport() {
-    this.loading = true;
-    spagoBIService.getReport(this, this.callbackFunction);
+    const parametros = this.consecutivo ? 'consecutivo=' + this.consecutivo : '';
+    this.url = spagoBIService.buildUrl('DOCUMENT_LABEL_ENTRADAS', parametros);
+    this.loading = false;
   }
 
   private showToast(type: string, title: string, body: string) {
