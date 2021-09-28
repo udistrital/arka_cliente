@@ -14,15 +14,12 @@ export class RegistroEntradasComponent implements OnInit {
   url = '';
   config: ToasterConfig;
   consecutivo: string;
-  detalle: boolean;
   loading: boolean;
 
   @ViewChild('spagoBIDocumentArea') spagoBIDocumentArea: ElementRef;
   @Input() reportConfig: any;
 
   constructor(private router: Router, private translate: TranslateService, private toasterService: ToasterService) {
-    this.loadParametros();
-    this.initReportConfig();
   }
 
   loadParametros() {
@@ -34,49 +31,14 @@ export class RegistroEntradasComponent implements OnInit {
     }
   }
 
-  initReportConfig() {
-    if (this.consecutivo === '') {
-      this.reportConfig = {
-        documentLabel: environment.SPAGOBI.DOCUMENT_LABEL_ENTRADAS,
-        executionRole: '/spagobi/user',
-        displayToolbar: true,
-        displaySliders: true,
-        iframe: {
-          style: 'border: solid rgb(0,0,0,0.2) 1px;',
-          height: '500px;',
-          width: '100%',
-        },
-      };
-    } else {
-      const parametros = 'consecutivo=' + this.consecutivo;
-      this.reportConfig = {
-        documentLabel: environment.SPAGOBI.DOCUMENT_LABEL_ENTRADAS,
-        executionRole: '/spagobi/user',
-        parameters: { 'PARAMETERS': parametros },
-        displayToolbar: true,
-        displaySliders: true,
-        iframe: {
-          style: 'border: solid rgb(0,0,0,0.2) 1px;',
-          height: '500px;',
-          width: '100%',
-        },
-      };
-    }
-  }
-
-  callbackFunction() {
-    const iframeSpago = spagoBIService.getDocumentHtml(this.reportConfig);
-    this.url = iframeSpago.split('"')[3];
-    this.loading = false;
-  }
-
   ngOnInit() {
     this.getReport();
   }
 
   getReport() {
-    this.loading = true;
-    spagoBIService.getReport(this, this.callbackFunction);
+    const parametros = this.consecutivo ? 'consecutivo=' + this.consecutivo : '';
+    this.url = spagoBIService.buildUrl('DOCUMENT_LABEL_ENTRADAS', parametros);
+    this.loading = false;
   }
 
   private showToast(type: string, title: string, body: string) {
