@@ -439,8 +439,13 @@ export class EdicionActaRecibidoComponent implements OnInit {
           },
           { validators: this.actaRegistrada ? [] : [Validators.required] },
         ],
-        Dependencia: [ this.sedeDependencia ? this.sedeDependencia.dependencia : '',
-        { validators: this.actaRegistrada ? [] : [Validators.required] }],
+        Dependencia: [
+          {
+            value: this.sedeDependencia ? this.sedeDependencia.dependencia : '',
+            disabled: !this.getPermisoEditar(this.permisos.Acta),
+          },
+          { validators: this.actaRegistrada ? [] : [Validators.required] },
+        ],
         Ubicacion: [
           {
             value: transaccion_.UltimoEstado.UbicacionId === 0 ? '' : transaccion_.UltimoEstado.UbicacionId,
@@ -747,10 +752,9 @@ export class EdicionActaRecibidoComponent implements OnInit {
           text: this.translate.instant(descripcion, idDescripcion),
         }).then((willDelete) => {
           if (willDelete.value && siguienteEtapa) {
-            const formularios = this.firstForm.value;
-            const cedulaprov = formularios.Formulario1.Proveedor && formularios.Formulario1.Proveedor.Identificacion ?
-              formularios.Formulario1.Proveedor.Identificacion.Numero : '';
-            const cedularev = formularios.Formulario1.Contratista.Identificacion.Numero;
+            const cedulaprov = this.firstForm.get('Formulario1.Proveedor').value && this.firstForm.get('Formulario1.Proveedor').value.Identificacion ?
+              this.firstForm.get('Formulario1.Proveedor').value.Identificacion.Numero : '';
+            const cedularev = this.firstForm.get('Formulario1.Contratista').value.Identificacion.Numero;
             if (enviara === 1) {
               this.EnviarEmail(cedulaprov);
               this.EnviarEmail(cedularev);
