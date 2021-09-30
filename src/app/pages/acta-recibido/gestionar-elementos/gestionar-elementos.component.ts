@@ -136,6 +136,7 @@ export class GestionarElementosComponent implements OnInit {
       this.getIVA();
       this.getTotales();
     } else {
+      this.elementos = new Array<ElementoActaTabla>();
       this.dataSource = new MatTableDataSource<ElementoActa>();
     }
     this.DatosEnviados.emit(this.elementos);
