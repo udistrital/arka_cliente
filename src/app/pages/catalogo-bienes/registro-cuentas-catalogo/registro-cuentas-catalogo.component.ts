@@ -19,8 +19,6 @@ import { FormControl } from '@angular/forms';
 import { CuentasFormulario, CuentaGrupo } from '../../../@core/data/models/catalogo/cuentas_grupo';
 import { CuentasGrupoTransaccion } from '../../../@core/data/models/catalogo/cuentas_subgrupo';
 import { element } from '@angular/core/src/render3';
-import { ToasterConfig, Toast, BodyOutputType, ToasterService } from 'angular2-toaster';
-import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 
 class TiposMovimiento {
   tipo: string;
@@ -37,7 +35,6 @@ class TiposMovimiento {
 export class RegistroCuentasCatalogoComponent implements OnInit {
   grupo_id: number;
 
-  @Output() eventChange = new EventEmitter();
   @ViewChildren(CrudMovimientoComponent) ref: QueryList<CrudMovimientoComponent>;
   info_grupo: Grupo;
   formGrupo: any;
@@ -55,7 +52,6 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
   TiposMovimientos: TiposMovimiento[] = [];
   selected = new FormControl(0);
   Movimientos: any[];
-  config: ToasterConfig;
   all_mov: number;
   all_mov_ok: boolean;
   depreciacion_ok: boolean;
@@ -78,7 +74,6 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
     private store: Store<IAppState>,
     private confService: ConfiguracionService,
     private listService: ListService,
-    private toasterService: ToasterService,
   ) {
     this.cargando_catalogos = true;
     this.puede_editar = false;
@@ -239,10 +234,6 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
     });
   }
 
-  recargarCatalogo() {
-    this.eventChange.emit(true);
-  }
-
   onChange(catalogo) {
     this.uid_1 = undefined;
     this.catalogoId = catalogo;
@@ -306,42 +297,21 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
           };
           this.catalogoElementosService.putTransaccionCuentasSubgrupo(mov, this.uid_1.Id)
             .subscribe(res => {
-              this.recargarCatalogo();
-              this.Movimientos = [];
-              this.showToast(
-                'info',
-                this.translate.instant('GLOBAL.Actualizado'),
-                this.translate.instant('GLOBAL.Actualizado_Movimientos_placeholder'),
-              );
-              setTimeout(() => {
-                this.QuitarVista();
+              if (res !== null) {
                 this.guardando = false;
-              }, 2000);
+                (Swal as any).fire({
+                  title: this.translate.instant('GLOBAL.Actualizado'),
+                  text: this.translate.instant('GLOBAL.Actualizado_Movimientos_placeholder'),
+                  type: 'success',
+                  showConfirmButton: false,
+                  timer: 1000,
+                });
+              }
             });
         }
       });
   }
 
-  private showToast(type: string, title: string, body: string) {
-    this.config = new ToasterConfig({
-      // 'toast-top-full-width', 'toast-bottom-full-width', 'toast-top-left', 'toast-top-center'
-      positionClass: 'toast-top-center',
-      timeout: 5000,  // ms
-      newestOnTop: true,
-      tapToDismiss: false, // hide on click
-      preventDuplicates: true,
-      animation: 'slideDown', // 'fade', 'flyLeft', 'flyRight', 'slideDown', 'slideUp'
-      limit: 5,
-    });
-    const toast: Toast = {
-      type: type, // 'default', 'info', 'success', 'warning', 'error'
-      title: title,
-      body: body,
-      showCloseButton: true,
-      bodyOutputType: BodyOutputType.TrustedHtml,
-    };
-    this.toasterService.popAsync(toast);
-  }
   Bool2Number(bool: boolean, num: number) {
     if (bool === true) {
       return num;

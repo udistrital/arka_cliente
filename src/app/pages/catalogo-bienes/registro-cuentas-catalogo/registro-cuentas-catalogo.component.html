@@ -1,4 +1,3 @@
-<toaster-container [toasterconfig]="config"></toaster-container>
 <div class="row">
 
   <nb-card class="col">
@@ -19,7 +18,7 @@
           <option disabled selected>{{'GLOBAL.seleccionar' | translate}}...</option>
           <option *ngFor="let item of catalogos" value="{{ item.Id }}">{{ item.Nombre }}</option>
         </select>
-        <ngx-arbol *ngIf="catalogoId !== 0" [catalogoId]="catalogoId" (fila)="receiveMessage($event)" [updateSignal]="eventChange">
+        <ngx-arbol *ngIf="catalogoId !== 0" [catalogoId]="catalogoId" (fila)="receiveMessage($event)">
           <p>
             <span class="fas fa-info-circle"></span>&nbsp;
             <em>{{'GLOBAL.catalogo.claseInfo' | translate}}</em>
@@ -41,8 +40,8 @@
           <mat-step>
             <ng-template matStepLabel>{{lbl | translate}}</ng-template>
             <ngx-crud-movimiento *ngFor="let tab of movs; let i = index" [escritura]="modificando_cuentas && puede_editar"
-            [subgrupo_id]="uid_1" [movimiento_id]="tab" [tipo_movimiento]="lbl"  [indice] = "i" (formulario)="ver3($event)"
-            (eventChange)="recargarCatalogo()" (setCuentasEntradas)="actualizarCuentaEntradas($event)" [cuentaEntradas]="cuentaGlobalEntradas" ></ngx-crud-movimiento>
+              [subgrupo_id]="uid_1" [movimiento_id]="tab" [tipo_movimiento]="lbl"  [indice] = "i" (formulario)="ver3($event)"
+              (setCuentasEntradas)="actualizarCuentaEntradas($event)" [cuentaEntradas]="cuentaGlobalEntradas" ></ngx-crud-movimiento>
             <div class="justify-content-center">
               <button nbButton
                 matStepperPrevious>{{'GLOBAL.Acta_Recibido.RegistroActa.AnteriorButton' | translate}}</button>
