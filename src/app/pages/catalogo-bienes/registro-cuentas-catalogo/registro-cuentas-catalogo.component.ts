@@ -193,58 +193,29 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
   ver3(event) {
   //  console.log("llega", this.Movimientos)
     this.movOk = true;
-    let mov_existente: boolean;
     if (event.Id === undefined) {
     //  console.log("Indefinido")
-      this.Movimientos.forEach((element1: CuentaGrupo) => {
-        if (element1.SubtipoMovimientoId === event.SubtipoMovimientoId) {
-          mov_existente = true;
-          element1.CuentaCreditoId = event.CuentaCreditoId;
-          element1.CuentaDebitoId = event.CuentaDebitoId;
-        }
-      });
-      if (mov_existente !== true) {
-        this.Movimientos.push(<CuentaGrupo>event);
-      }
-
+    const index  = this.Movimientos.findIndex((elemento: CuentaGrupo) => (
+      elemento.SubtipoMovimientoId === event.SubtipoMovimientoId ));
+    if (index !== -1) {
+      this.Movimientos[index].CuentaCreditoId = event.CuentaCreditoId;
+      this.Movimientos[index].CuentaDebitoId = event.CuentaDebitoId;
     } else {
-      this.Movimientos.forEach((element2: CuentaGrupo) => {
-
-        if (element2.Id === event.Id) {
-
-          element2.CuentaCreditoId = event.CuentaCreditoId;
-          element2.CuentaDebitoId = event.CuentaDebitoId;
-          mov_existente = true;
-        }
-      });
-      if (mov_existente !== true) {
+      this.Movimientos.push(<CuentaGrupo>event);
+    }
+    } else {
+      const index  = this.Movimientos.findIndex((elemento: CuentaGrupo) => (
+        elemento.Id === event.Id ));
+      if (index !== -1) {
+        this.Movimientos[index].CuentaCreditoId = event.CuentaCreditoId;
+        this.Movimientos[index].CuentaDebitoId = event.CuentaDebitoId;
+      } else {
         this.Movimientos.push(<CuentaGrupo>event);
       }
     }
+
     this.all_mov_ok = false;
-    this.Movimientos.forEach(elemento => {
-       if (elemento.CuentaCreditoId === undefined || elemento.CuentaCreditoId === null ||
-           elemento.CuentaDebitoId === undefined || elemento.CuentaDebitoId === null) {
-           switch (elemento.Tipo_Texto) {
-            case 'GLOBAL.Salidas':
-                if (elemento.CuentaDebitoId === undefined || elemento.CuentaDebitoId === null)  {
-                this.movOk = false;
-                }
-                break;
-            case 'GLOBAL.Entradas':
-                if (elemento.CuentaCreditoId === undefined || elemento.CuentaCreditoId === null)  {
-                this.movOk = false;
-                }
-                break;
-            default:
-                this.movOk = false;
-                break;
-           }
-
-
-       }
-    });
-
+    this.movOk = !this.Movimientos.some(elemento => (!elemento.CuentaCreditoId && !elemento.CuentaDebitoId) );
     if (this.movOk && this.Movimientos.length === this.all_mov) {
       this.all_mov_ok = true;
     }
@@ -298,7 +269,6 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
             this.valorizacion_ok = res2[0].Valorizacion;
             this.Total_Movimientos();
           } else {
-            this.Movimientos = [];
             this.depreciacion_ok = false;
             this.valorizacion_ok = false;
             this.Total_Movimientos();
