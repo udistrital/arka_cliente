@@ -6,6 +6,7 @@ import { RegistroCatalogoComponent } from './registro-catalogo/registro-catalogo
 import { RegistroElementosComponent } from './registro-elementos/registro-elementos.component';
 import { RegistroCuentasCatalogoComponent } from './registro-cuentas-catalogo/registro-cuentas-catalogo.component';
 import { CrudMovimientoComponent } from './crud-movimientos/crud-movimiento.component';
+import { TiposBienComponent } from './tipos-bien/tipos-bien.component';
 
 
 const routes: Routes = [{
@@ -31,6 +32,10 @@ const routes: Routes = [{
     {
       path: 'registro_cuentas',
       component: CrudMovimientoComponent,
+    },
+    {
+      path: 'tipos-bien',
+      component: TiposBienComponent,
     },
   ],
 }];

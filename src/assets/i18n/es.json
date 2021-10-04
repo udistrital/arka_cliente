@@ -37,6 +37,9 @@
           },
           "cuentas": {
             "name": "Asignación de Cuentas"
+          },
+          "tipos_bien": {
+            "name": "Tipos de bien"
           }
         }
       },

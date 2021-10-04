@@ -37,6 +37,9 @@
           },
           "cuentas": {
             "name": "Accounts Assignment"
+          },
+          "tipos_bien": {
+            "name": "Types of assets"
           }
         }
       },
