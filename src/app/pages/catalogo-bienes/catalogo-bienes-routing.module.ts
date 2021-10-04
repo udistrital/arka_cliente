@@ -34,7 +34,7 @@ const routes: Routes = [{
       component: CrudMovimientoComponent,
     },
     {
-      path: 'tipos-bien',
+      path: 'tipos_bien',
       component: TiposBienComponent,
     },
   ],
