@@ -401,12 +401,15 @@ export class VerActaRecibidoComponent implements OnInit {
         text = this.translate.instant(base_i18n + (aceptar ? 'VerificadaNO' : 'RechazadaNO'));
       }
       if (res !== null) {
-        (Swal as any).fire({type: 'success', title, text}).then((willDelete) => {
-          if (willDelete.value) {
-            this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
-              this.router.navigateByUrl('/pages/acta_recibido/consulta_acta_recibido');
-            });
-          }
+        (Swal as any).fire({
+          title: title,
+          text: text,
+          type: 'success',
+          showConfirmButton: false,
+          timer: 2000,
+        });
+        this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+          this.router.navigateByUrl('/pages/acta_recibido/consulta_acta_recibido');
         });
       } else {
         (Swal as any).fire({type: 'error', title, text});

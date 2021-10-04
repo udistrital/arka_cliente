@@ -750,26 +750,27 @@ export class EdicionActaRecibidoComponent implements OnInit {
           type: 'success',
           title: this.translate.instant(titulo, idTitulo),
           text: this.translate.instant(descripcion, idDescripcion),
-        }).then((willDelete) => {
-          if (willDelete.value && siguienteEtapa) {
-            const cedulaprov = this.firstForm.get('Formulario1.Proveedor').value && this.firstForm.get('Formulario1.Proveedor').value.Identificacion ?
-              this.firstForm.get('Formulario1.Proveedor').value.Identificacion.Numero : '';
-            const cedularev = this.firstForm.get('Formulario1.Contratista').value.Identificacion.Numero;
-            if (enviara === 1) {
-              this.EnviarEmail(cedulaprov);
-              this.EnviarEmail(cedularev);
-            }
-            if (enviara === 2) {
-              this.EnviarEmail(cedularev);
-            }
-
-            // Se usa una redirección "dummy", intermedia. Ver
-            // https://stackoverflow.com/a/49509706/3180052
-            this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
-              this.router.navigateByUrl('/pages/acta_recibido/consulta_acta_recibido');
-            });
-          }
+          showConfirmButton: false,
+          timer: 2000,
         });
+        if (siguienteEtapa) {
+          const cedulaprov = this.firstForm.get('Formulario1.Proveedor').value && this.firstForm.get('Formulario1.Proveedor').value.Identificacion ?
+            this.firstForm.get('Formulario1.Proveedor').value.Identificacion.Numero : '';
+          const cedularev = this.firstForm.get('Formulario1.Contratista').value.Identificacion.Numero;
+          if (enviara === 1) {
+            this.EnviarEmail(cedulaprov);
+            this.EnviarEmail(cedularev);
+          }
+          if (enviara === 2) {
+            this.EnviarEmail(cedularev);
+          }
+
+          // Se usa una redirección "dummy", intermedia. Ver
+          // https://stackoverflow.com/a/49509706/3180052
+          this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+            this.router.navigateByUrl('/pages/acta_recibido/consulta_acta_recibido');
+          });
+        }
       } else {
         let titulo, mensaje;
         if (siguienteEtapa) {

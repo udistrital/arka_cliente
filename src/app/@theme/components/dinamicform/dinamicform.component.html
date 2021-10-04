@@ -408,7 +408,7 @@
                         <div *ngSwitchCase="'autocompletedouble'" style="width: 100%;" floatLabel="always">
                                 <mat-label>{{c.requerido?'* '+c.label:c.label}}:</mat-label>
                                 <ng2-completer style="border: 0rem" [clearUnselected]="true" nbInput inputClass="form-control"
-                                [datasource]="dataService[c.id]" [(ngModel)]="c.valor" (ngModelChange)="validCampo(c)"
+                                [datasource]="dataService[c.id]" [(ngModel)]="c.valor" (ngModelChange)="eventoCompleter()"
                                 [ngModelOptions]="{standalone: true}" [disabled]="!escritura || c.deshabilitar"
                                 [minSearchLength]="c.minSearchLength" (selected)="eventoCuentas(c)"
                                 [placeholder]="c.valor?(c.key?c.valor[c.key]:c.valor|json):c.placeholder">

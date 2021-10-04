@@ -19,8 +19,6 @@ import { FormControl } from '@angular/forms';
 import { CuentasFormulario, CuentaGrupo } from '../../../@core/data/models/catalogo/cuentas_grupo';
 import { CuentasGrupoTransaccion } from '../../../@core/data/models/catalogo/cuentas_subgrupo';
 import { element } from '@angular/core/src/render3';
-import { ToasterConfig, Toast, BodyOutputType, ToasterService } from 'angular2-toaster';
-import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 
 class TiposMovimiento {
   tipo: string;
@@ -37,7 +35,6 @@ class TiposMovimiento {
 export class RegistroCuentasCatalogoComponent implements OnInit {
   grupo_id: number;
 
-  @Output() eventChange = new EventEmitter();
   @ViewChildren(CrudMovimientoComponent) ref: QueryList<CrudMovimientoComponent>;
   info_grupo: Grupo;
   formGrupo: any;
@@ -55,7 +52,6 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
   TiposMovimientos: TiposMovimiento[] = [];
   selected = new FormControl(0);
   Movimientos: any[];
-  config: ToasterConfig;
   all_mov: number;
   all_mov_ok: boolean;
   depreciacion_ok: boolean;
@@ -78,7 +74,6 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
     private store: Store<IAppState>,
     private confService: ConfiguracionService,
     private listService: ListService,
-    private toasterService: ToasterService,
   ) {
     this.cargando_catalogos = true;
     this.puede_editar = false;
@@ -193,58 +188,29 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
   ver3(event) {
   //  console.log("llega", this.Movimientos)
     this.movOk = true;
-    let mov_existente: boolean;
     if (event.Id === undefined) {
     //  console.log("Indefinido")
-      this.Movimientos.forEach((element1: CuentaGrupo) => {
-        if (element1.SubtipoMovimientoId === event.SubtipoMovimientoId) {
-          mov_existente = true;
-          element1.CuentaCreditoId = event.CuentaCreditoId;
-          element1.CuentaDebitoId = event.CuentaDebitoId;
-        }
-      });
-      if (mov_existente !== true) {
-        this.Movimientos.push(<CuentaGrupo>event);
-      }
-
+    const index  = this.Movimientos.findIndex((elemento: CuentaGrupo) => (
+      elemento.SubtipoMovimientoId === event.SubtipoMovimientoId ));
+    if (index !== -1) {
+      this.Movimientos[index].CuentaCreditoId = event.CuentaCreditoId;
+      this.Movimientos[index].CuentaDebitoId = event.CuentaDebitoId;
     } else {
-      this.Movimientos.forEach((element2: CuentaGrupo) => {
-
-        if (element2.Id === event.Id) {
-
-          element2.CuentaCreditoId = event.CuentaCreditoId;
-          element2.CuentaDebitoId = event.CuentaDebitoId;
-          mov_existente = true;
-        }
-      });
-      if (mov_existente !== true) {
+      this.Movimientos.push(<CuentaGrupo>event);
+    }
+    } else {
+      const index  = this.Movimientos.findIndex((elemento: CuentaGrupo) => (
+        elemento.Id === event.Id ));
+      if (index !== -1) {
+        this.Movimientos[index].CuentaCreditoId = event.CuentaCreditoId;
+        this.Movimientos[index].CuentaDebitoId = event.CuentaDebitoId;
+      } else {
         this.Movimientos.push(<CuentaGrupo>event);
       }
     }
+
     this.all_mov_ok = false;
-    this.Movimientos.forEach(elemento => {
-       if (elemento.CuentaCreditoId === undefined || elemento.CuentaCreditoId === null ||
-           elemento.CuentaDebitoId === undefined || elemento.CuentaDebitoId === null) {
-           switch (elemento.Tipo_Texto) {
-            case 'GLOBAL.Salidas':
-                if (elemento.CuentaDebitoId === undefined || elemento.CuentaDebitoId === null)  {
-                this.movOk = false;
-                }
-                break;
-            case 'GLOBAL.Entradas':
-                if (elemento.CuentaCreditoId === undefined || elemento.CuentaCreditoId === null)  {
-                this.movOk = false;
-                }
-                break;
-            default:
-                this.movOk = false;
-                break;
-           }
-
-
-       }
-    });
-
+    this.movOk = !this.Movimientos.some(elemento => (!elemento.CuentaCreditoId && !elemento.CuentaDebitoId) );
     if (this.movOk && this.Movimientos.length === this.all_mov) {
       this.all_mov_ok = true;
     }
@@ -266,10 +232,6 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
         this.cargando_catalogos = false;
       }
     });
-  }
-
-  recargarCatalogo() {
-    this.eventChange.emit(true);
   }
 
   onChange(catalogo) {
@@ -298,7 +260,6 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
             this.valorizacion_ok = res2[0].Valorizacion;
             this.Total_Movimientos();
           } else {
-            this.Movimientos = [];
             this.depreciacion_ok = false;
             this.valorizacion_ok = false;
             this.Total_Movimientos();
@@ -336,42 +297,21 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
           };
           this.catalogoElementosService.putTransaccionCuentasSubgrupo(mov, this.uid_1.Id)
             .subscribe(res => {
-              this.recargarCatalogo();
-              this.Movimientos = [];
-              this.showToast(
-                'info',
-                this.translate.instant('GLOBAL.Actualizado'),
-                this.translate.instant('GLOBAL.Actualizado_Movimientos_placeholder'),
-              );
-              setTimeout(() => {
-                this.QuitarVista();
+              if (res !== null) {
                 this.guardando = false;
-              }, 2000);
+                (Swal as any).fire({
+                  title: this.translate.instant('GLOBAL.Actualizado'),
+                  text: this.translate.instant('GLOBAL.Actualizado_Movimientos_placeholder'),
+                  type: 'success',
+                  showConfirmButton: false,
+                  timer: 1000,
+                });
+              }
             });
         }
       });
   }
 
-  private showToast(type: string, title: string, body: string) {
-    this.config = new ToasterConfig({
-      // 'toast-top-full-width', 'toast-bottom-full-width', 'toast-top-left', 'toast-top-center'
-      positionClass: 'toast-top-center',
-      timeout: 5000,  // ms
-      newestOnTop: true,
-      tapToDismiss: false, // hide on click
-      preventDuplicates: true,
-      animation: 'slideDown', // 'fade', 'flyLeft', 'flyRight', 'slideDown', 'slideUp'
-      limit: 5,
-    });
-    const toast: Toast = {
-      type: type, // 'default', 'info', 'success', 'warning', 'error'
-      title: title,
-      body: body,
-      showCloseButton: true,
-      bodyOutputType: BodyOutputType.TrustedHtml,
-    };
-    this.toasterService.popAsync(toast);
-  }
   Bool2Number(bool: boolean, num: number) {
     if (bool === true) {
       return num;

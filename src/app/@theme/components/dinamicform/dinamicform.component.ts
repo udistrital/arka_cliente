@@ -274,6 +274,9 @@ export class DinamicformComponent implements OnInit, OnChanges, OnDestroy {
   eventoCuentas(c: any) {
     c.valor && this.init && c.nombre === 'CuentaDebitoId' ? this.resultSmart.emit({'CuentaDebitoId': c}) : null;
   }
+  eventoCompleter() {
+    this.resultSmart.emit(this.validForm());
+  }
 
   validCampo2(c): boolean {
     if (c.uppercase) {
