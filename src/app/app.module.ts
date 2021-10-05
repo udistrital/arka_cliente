@@ -32,6 +32,8 @@ import { ListService } from './@core/store/services/list.service';
 import { Store, StoreModule } from '@ngrx/store';
 import { rootReducer } from './@core/store/rootReducer';
 import { NuxeoService } from './@core/utils/nuxeo.service';
+import { LoginComponent } from './login/login.component';
+import { LoadComponent } from './load/load.component';
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http, './assets/i18n/', '.json');
 }
@@ -56,7 +58,11 @@ export class MaterialModule {}
 
 
 @NgModule({
-  declarations: [AppComponent],
+  declarations: [
+    AppComponent,
+    LoginComponent,
+    LoadComponent,
+  ],
   imports: [
     CdkTableModule,
     StoreModule.forRoot(rootReducer),
