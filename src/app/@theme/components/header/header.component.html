@@ -1,14 +1,14 @@
 <div class="header-container" [class.left]="position === 'normal'" [class.right]="position === 'inverse'">
   <div class="logo-containter">
-   
+
     <a (click)="toggleSidebar()" href="#" class="navigation" >
         <img class="logo-kronos" src="../../../../assets/images/isotipo arkaII.svg">
     </a>
-    <a href="#" class="navigation">
+    <a class="navigation" (click)="goToHome()">
         <img class="logo-kronos_2" src="../../../../assets/images/Arka II Isotipo 2tipo.svg">
     </a>
   </div>
-  
+
   <!-- <ngx-theme-switcher></ngx-theme-switcher> -->
 </div>
 
