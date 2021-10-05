@@ -2,9 +2,18 @@ import { Injectable } from '@angular/core';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { ConfiguracionService } from './configuracion.service';
 import { RequestManager } from '../../managers/requestManager';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable, throwError } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import { Menu, TipoOpcion } from './models/configuracion_crud';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
+
+const httpOptions = {
+  headers: new HttpHeaders({
+    'Accept': 'application/json',
+  }),
+};
+const path = environment.CONF_MENU_SERVICE;
 
 @Injectable()
 export class MenuService {
@@ -17,6 +26,7 @@ export class MenuService {
     /*
     private reqManager: RequestManager,
     // */
+    private http: HttpClient,
     private translate: TranslateService,
     private confService: ConfiguracionService,
   ) {
@@ -27,7 +37,6 @@ export class MenuService {
   traerMenus(): Observable<Partial<Menu>[]> {
     return this.confService.getConfig().pipe(map(
       (res: Partial<Menu>[]) => {
-        // console.log(this.filtrarMenus(res));
         return this.filtrarMenus(res);
       },
     ));
@@ -67,6 +76,33 @@ export class MenuService {
         newm['children'] = this.convertirMenuNebular(original.Opciones, level + '.children');
       }
       return newm;
+    });
+  }
+
+  get(endpoint) {
+    return this.http.get(path + endpoint, httpOptions).pipe(map(
+      (res: Partial<Menu>[]) => {
+        return this.filtrarMenus(res);
+      },
+    ),
+    );
+  }
+
+  private handleError(error: HttpErrorResponse) {
+    if (error.error instanceof ErrorEvent) {
+      // A client-side or network error occurred. Handle it accordingly.
+      console.error('An error occurred:', error.error.message);
+    } else {
+      // The backend returned an unsuccessful response code.
+      // The response body may contain clues as to what went wrong,
+      console.error(
+        `Backend returned code ${error.status}, ` +
+        `body was: ${error.error}`);
+    }
+    // return an observable with a user-facing error message
+    return throwError({
+      status: error.status,
+      message: 'Something bad happened; please try again later.',
     });
   }
 
