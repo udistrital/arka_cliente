@@ -4,8 +4,7 @@
     </nb-card-header>
     <nb-card-body [nbSpinner]="cargandoListaKardex"><nb-card><nb-card-body>
 
-      <!-- CARD PARA MOSTRAR LAS SOLICITUDES *ngIf="!detalle" -->
-      <!-- <p class="h4 pb-4" *ngIf="!detalle">{{'GLOBAL.mensaje_consulta_entrada' | translate}}</p> -->
+      <!-- CARD PARA MOSTRAR LAS SOLICITUDES -->
       <p *ngIf="!kardex"><span class="fas fa-info-circle"></span>&nbsp;
         <em>{{'GLOBAL.BodegaConsumo.Consulta.Indice' | translate}}</em>
       </p>

@@ -300,19 +300,19 @@
                   <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Consolidado' | translate}}</label>
                 <table class="consolidado">
                   <tr>
-                    <th class="cell-3">{{'GLOBAL.Acta_Recibido.EdicionActa.Subtotal' | translate}}</th>
+                    <th id="c1" class="cell-3">{{'GLOBAL.Acta_Recibido.EdicionActa.Subtotal' | translate}}</th>
                     <td class="cell-3">{{totales.Subtotal | currency}}</td>
                   </tr>
                   <tr>
-                    <th class="cell-3">{{'GLOBAL.Acta_Recibido.EdicionActa.Descuento' | translate}}</th>
+                    <th id="c2" class="cell-3">{{'GLOBAL.Acta_Recibido.EdicionActa.Descuento' | translate}}</th>
                     <td class="cell-3">{{totales.Descuento | currency}}</td>
                   </tr>
                   <tr>
-                    <th class="cell-3">{{'GLOBAL.Acta_Recibido.EdicionActa.ValorIva' | translate}}</th>
+                    <th id="c3" class="cell-3">{{'GLOBAL.Acta_Recibido.EdicionActa.ValorIva' | translate}}</th>
                     <td class="cell-3">{{totales.ValorIva | currency}}</td>
                   </tr>
                   <tr>
-                    <th class="cell-3">{{'GLOBAL.Acta_Recibido.EdicionActa.Total' | translate}}</th>
+                    <th id="c4" class="cell-3">{{'GLOBAL.Acta_Recibido.EdicionActa.Total' | translate}}</th>
                     <td class="cell-3">{{totales.ValorTotal | currency}}</td>
                   </tr>
                 </table>

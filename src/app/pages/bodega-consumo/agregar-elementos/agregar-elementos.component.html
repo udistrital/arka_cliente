@@ -4,7 +4,7 @@
     </nb-card-header>
     <nb-card-body [nbSpinner]="!mostrar">
 
-      <!-- CARD PARA MOSTRAR LAS SOLICITUDES *ngIf="!detalle" -->
+      <!-- CARD PARA MOSTRAR LAS SOLICITUDES -->
       <nb-card><nb-card-body>
       <p><span class="fas fa-info-circle"></span>&nbsp;<em>{{ 'GLOBAL.BodegaConsumo.Solicitud.Ayuda' | translate }}</em></p>
       <ng2-smart-table [settings]="settings" [source]="source" (custom)="onCustom($event)">
