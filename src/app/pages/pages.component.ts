@@ -42,30 +42,30 @@ export class PagesComponent implements OnInit {
     });
   }
 
-  translateTree(tree: any) {
+  addIcons(tree: any) {
     const trans = tree.map((n: any) => {
       let node = {};
-      if (!n.Url.indexOf('http')) {
+      if (!n.link) {
         node = {
-          title: n.Nombre,
+          title: n.title,
           icon: 'nb-list',
-          url: n.Url,
+          url: n.link,
           home: false,
           key: n.Nombre,
           children: [],
         };
       } else {
         node = {
-          title: n.Nombre,
+          title: n.title,
           icon: 'nb-list',
-          link: n.Url,
+          link: n.link,
           home: false,
           key: n.Nombre,
         };
       }
-      if (n.hasOwnProperty('Opciones')) {
-        if (n.Opciones !== null) {
-          const children = this.translateTree(n.Opciones);
+      if (n.hasOwnProperty('children')) {
+        if (n.children !== null) {
+          const children = this.addIcons(n.children);
             node = { ...node, ...{ children: children }, ...{ icon: 'nb-compose' } };
           }
           return node;
@@ -78,27 +78,11 @@ export class PagesComponent implements OnInit {
 
   getMenu(roles) {
     this.roles = roles;
-    const homeOption = {
-      title: 'dashboard',
-      icon: 'nb-home',
-      url: '#/pages/dashboard',
-      home: true,
-      key: 'dashboard',
-    };
-    this.menu = [homeOption];
-
-    if (this.roles.length === 0) {
-      this.roles = 'ASPIRANTE';
-    }
 
     this.menuws.get(roles + '/arka_ii_main').subscribe(
       data => {
         this.dataMenu = <any>data;
-        // this.menu = this.translateTree(this.dataMenu)
-        this.menu = this.menuws.convertirMenuNebular(this.dataMenu, 'MENU.main');
-
-        this.menu.unshift(homeOption);
-        this.translateMenu();
+        this.buildMenu();
       },
       (error: HttpErrorResponse) => {
 
@@ -130,19 +114,7 @@ export class PagesComponent implements OnInit {
           });
         }
 
-        // this.menu = MENU_ITEMS;
-        this.translateMenu();
       });
-    this.translateMenu();
-    this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
-      this.translateMenu();
-    });
-  }
-
-  getStringRolesUrl(separador: string = ','): string {
-    return this.roles
-    .filter(rol => !rol.includes('/'))
-    .join(separador).replace('/', '%2F');
   }
 
   ngOnInit() {
@@ -154,70 +126,23 @@ export class PagesComponent implements OnInit {
       this.getMenu(Array.from(new Set(roles)));
     });
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
-    });
-
-  }
-
-  private translateMenu(): void {
-    this.menu.forEach((menuItem: any) => {
-      this.translateMenuTitle(menuItem);
+      this.buildMenu();
     });
   }
 
-  /**
-   * Translates one root menu item and every nested children
-   * @param menuItem
-   * @param prefix
-   */
-  private translateMenuTitle(menuItem: any, prefix: string = ''): void {
-    let key = '';
-    try {
-      key = (prefix !== '')
-        ? PagesComponent.getMenuItemKey(menuItem, prefix)
-        : PagesComponent.getMenuItemKey(menuItem);
-    } catch (e) {
-      // Key not found, don't change the menu item
-      return;
-    }
+  buildMenu(){
 
-    this.translate.get(key).subscribe((translation: string) => {
-      menuItem.title = translation;
-    });
-    if (menuItem.children != null) {
-      // apply same on every child
-      menuItem.children.forEach((childMenuItem: any) => {
-        // We remove the nested key and then use it as prefix for every child
-        this.translateMenuTitle(childMenuItem, PagesComponent.trimLastSelector(key));
-      });
-    }
+    const homeOption = {
+      title: this.translate.instant('MENU.main.inicio.name'),
+      icon: 'nb-home',
+      url: '#/pages/dashboard',
+      home: true,
+      key: 'dashboard',
+    };
+
+    const menuNb = this.menuws.convertirMenuNebular(this.dataMenu, 'MENU.main');
+    this.menu = this.addIcons(menuNb);
+    this.menu.unshift(homeOption);
   }
 
-  /**
-   * Resolves the translation key for a menu item. The prefix must be supplied for every child menu item
-   * @param menuItem
-   * @param prefix
-   * @returns {string}
-   */
-  private static getMenuItemKey(menuItem: any, prefix: string = 'MENU'): string {
-    if (menuItem.key == null) {
-      throw new Error('Key not found');
-    }
-
-    const key = menuItem.key.toLowerCase();
-    if (menuItem.children != null) {
-      return prefix + '.' + key + '.' + key; // Translation is nested
-    }
-    return prefix + '.' + key;
-  }
-
-  /**
-   * Used to remove the nested key for translations
-   * @param key
-   * @returns {string}
-   */
-  private static trimLastSelector(key: string): string {
-    const keyParts = key.split('.');
-    keyParts.pop();
-    return keyParts.join('.');
-  }
 }
