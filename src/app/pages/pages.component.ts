@@ -8,6 +8,7 @@ import { ImplicitAutenticationService } from './../@core/utils/implicit_autentic
 import { environment } from '../../environments/environment';
 import { NbSidebarService } from '@nebular/theme';
 import { RouteConfigLoadStart, Router } from '@angular/router';
+import { Menu } from '../@core/data/models/configuracion_crud';
 
 
 @Component({
@@ -81,7 +82,7 @@ export class PagesComponent implements OnInit {
 
     this.menuws.get(roles + '/arka_ii_main').subscribe(
       data => {
-        this.dataMenu = <any>data;
+        this.dataMenu = this.menuws.filtrarMenus(<Partial<Menu>[]>data);
         this.buildMenu();
       },
       (error: HttpErrorResponse) => {
@@ -136,8 +137,6 @@ export class PagesComponent implements OnInit {
       title: this.translate.instant('MENU.main.inicio.name'),
       icon: 'nb-home',
       url: '#/pages/dashboard',
-      home: true,
-      key: 'dashboard',
     };
 
     const menuNb = this.menuws.convertirMenuNebular(this.dataMenu, 'MENU.main');

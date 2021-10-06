@@ -80,11 +80,8 @@ export class MenuService {
   }
 
   get(endpoint) {
-    return this.http.get(path + endpoint, httpOptions).pipe(map(
-      (res: Partial<Menu>[]) => {
-        return this.filtrarMenus(res);
-      },
-    ),
+    return this.http.get(path + endpoint, httpOptions).pipe(
+      catchError(this.handleError),
     );
   }
 
