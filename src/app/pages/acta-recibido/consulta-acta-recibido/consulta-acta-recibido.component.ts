@@ -14,7 +14,7 @@ import { UserService } from '../../../@core/data/users.service';
 import { RolUsuario_t as Rol, PermisoUsuario_t as Permiso } from '../../../@core/data/models/roles/rol_usuario';
 import { TransaccionActaRecibido } from '../../../@core/data/models/acta_recibido/transaccion_acta_recibido';
 import { HistoricoActa } from '../../../@core/data/models/acta_recibido/historico_acta';
-import { EstadoActa_t } from '../../../@core/data/models/acta_recibido/estado_acta';
+import { EstadoActa, EstadoActa_t } from '../../../@core/data/models/acta_recibido/estado_acta';
 import { permisosSeccionesActas } from '../../acta-recibido/edicion-acta-recibido/reglas';
 
 @Component({
@@ -240,23 +240,17 @@ export class ConsultaActaRecibidoComponent implements OnInit {
   }
 
   anularActa(id: number, obs: string) {
-    // console.log({'idActa': id});
+    this.mostrar = false;
 
     // 1. Traer acta tal cual está
     this.actaRecibidoHelper.getTransaccionActa(id, true).subscribe(acta => {
-      // console.log({'actaHelper': acta});
+
       // 2. Crear estado "Anulada"
 
-      const Transaccion_Acta = <TransaccionActaRecibido>acta[0];
-      const nuevoEstado = <HistoricoActa>{
-        Id: null,
-        ActaRecibidoId: Transaccion_Acta.ActaRecibido,
-        Activo: true,
-        EstadoActaId: { Id: EstadoActa_t.Anulada },
-        FechaCreacion: new Date(),
-        FechaModificacion: new Date(),
-      };
-      Transaccion_Acta.UltimoEstado = nuevoEstado;
+      const Transaccion_Acta = <TransaccionActaRecibido>acta;
+
+      Transaccion_Acta.UltimoEstado.Id = null;
+      Transaccion_Acta.UltimoEstado.EstadoActaId = <EstadoActa>{ Id: EstadoActa_t.Anulada };
       Transaccion_Acta.UltimoEstado.Observaciones += ' // Razon de anulación: ' + obs;
 
       // 3. Anular acta
@@ -269,6 +263,8 @@ export class ConsultaActaRecibidoComponent implements OnInit {
                 { ACTA: id }),
               text: this.translate.instant('GLOBAL.Acta_Recibido.AnuladaOkMsg',
                 { ACTA: id }),
+                showConfirmButton: false,
+                timer: 2000,
             });
 
             // Se usa una redirección "dummy", intermedia. Ver
@@ -276,6 +272,7 @@ export class ConsultaActaRecibidoComponent implements OnInit {
             this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
               this.router.navigateByUrl('/pages/acta_recibido/consulta_acta_recibido');
             });
+            this.mostrar = true;
           }
         });
     });
