@@ -36,18 +36,6 @@ export class ConfiguracionService {
     // */
   }
 
-  private cargaOpciones(): void {
-    // console.log('cargaOpciones');
-    const roles = this.userService.getStringRolesUrl();
-    const endpoint = 'menu_opcion_padre/ArbolMenus/' + roles + '/' + this.app;
-    this.get(endpoint).subscribe(res => {
-      this.configuraciones = res;
-      this.$conf.next(this.configuraciones);
-      this.$conf.complete();
-      // console.log({configuraciones: this.configuraciones});
-    });
-  }
-
   getConfig() {
     return this.$conf.asObservable();
   }
@@ -63,6 +51,10 @@ export class ConfiguracionService {
 
   setParametro(parametro: Parametro) {
     return this.put('parametro', parametro);
+  }
+
+  setAcciones(configuraciones: any) {
+    this.configuraciones = configuraciones;
   }
 
   getAccion(accion: string): Partial<Menu> {

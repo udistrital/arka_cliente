@@ -9,6 +9,7 @@ import { environment } from '../../environments/environment';
 import { NbSidebarService } from '@nebular/theme';
 import { RouteConfigLoadStart, Router } from '@angular/router';
 import { Menu } from '../@core/data/models/configuracion_crud';
+import { ConfiguracionService } from '../@core/data/configuracion.service';
 
 
 @Component({
@@ -32,6 +33,7 @@ export class PagesComponent implements OnInit {
 
   constructor(
     public menuws: MenuService,
+    private configuracion: ConfiguracionService,
     private autenticacion: ImplicitAutenticationService,
     protected sidebarService: NbSidebarService,
     private router: Router,
@@ -82,6 +84,7 @@ export class PagesComponent implements OnInit {
 
     this.menuws.get(roles + '/arka_ii_main').subscribe(
       data => {
+        this.configuracion.setAcciones(data);
         this.dataMenu = this.menuws.filtrarMenus(<Partial<Menu>[]>data);
         this.buildMenu();
       },
@@ -131,7 +134,7 @@ export class PagesComponent implements OnInit {
     });
   }
 
-  buildMenu(){
+  buildMenu() {
 
     const homeOption = {
       title: this.translate.instant('MENU.main.inicio.name'),
