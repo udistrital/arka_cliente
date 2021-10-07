@@ -1,16 +1,32 @@
-<div class="col-lg-12">
-  <nb-card [nbSpinner]="updating || !mostrar">
-    <nb-card-header>
-
-      <h1>{{'GLOBAL.parametros.tiposBien.title' | translate}}</h1>
-
-    </nb-card-header>
-    <nb-card-body>
-
-      <p class="h4 pb-4">{{'GLOBAL.parametros.tiposBien.subtitle' | translate}}</p>
-      <ng2-smart-table  [source]="source" [settings]="settings" (edit)="ActualizarTipoBien($event)">
-      </ng2-smart-table>
-
-    </nb-card-body>
+<div class="row">
+  <nb-card class="col">
+    <nb-card [nbSpinner]="updating || !mostrar">
+      <nb-card-header>
+  
+        <h1>{{'GLOBAL.parametros.tiposBien.title' | translate}}</h1>
+  
+      </nb-card-header>
+      <nb-card-body>
+  
+        <p class="h4 pb-4">{{'GLOBAL.parametros.tiposBien.subtitle' | translate}}</p>
+        <ng2-smart-table  [source]="source" [settings]="settings" (edit)="ActualizarTipoBien($event)" (create)="onRegister($event)">
+        </ng2-smart-table>
+  
+      </nb-card-body>
+    </nb-card>
   </nb-card>
+
+  <div class="col" *ngIf="registrar || editar">
+    <nb-card >
+      <nb-card-header>
+        {{'REGISTRAR TIPO BIEN'}}        
+      </nb-card-header>
+      <ngx-registro-tipo-bien >
+      </ngx-registro-tipo-bien>
+      <nb-card-footer>
+        <button nbButton >{{'GLOBAL.volver' | translate}}</button>
+        <button nbButton class="float-right">{{"Agregar"}}</button>
+      </nb-card-footer>
+    </nb-card>
+  </div>
 </div>

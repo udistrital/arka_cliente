@@ -16,6 +16,8 @@ export class TiposBienComponent implements OnInit {
   settings: any;
   TiposBien: LocalDataSource;
   source: LocalDataSource;
+  registrar: boolean= false;
+  editar: boolean= false;
   constructor(
     private translate: TranslateService,
     private catalogoHelper: CatalogoElementosHelper,
@@ -176,5 +178,8 @@ export class TiposBienComponent implements OnInit {
       }
     });
   }
-
+  onRegister() {
+    this.registrar = true;
+    this.editar = false;
+  }
 }
