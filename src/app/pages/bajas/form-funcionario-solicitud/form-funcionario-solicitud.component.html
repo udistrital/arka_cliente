@@ -1,8 +1,3 @@
-<!-- <code>
-  <pre>
-    {{form_salida.value | json}}
-  </pre>
-</code> -->
 <form [formGroup]="form_salida" #fform="ngForm" class="step-container">
   <nb-card (click)="onSubmit()" (keyup)="onSubmit()">
     <nb-card-header>
@@ -30,8 +25,6 @@
               (click)="Traer_Relacion_Ubicaciones();">
               <option *ngFor="let sede of Sedes" [(value)]="sede.Id">{{sede.Nombre}}</option>
             </select>
-            <!-- <p class="campo" *ngIf="firstForm.get('Formulario1').get('Sede').invalid">
-                {{'GLOBAL.placeholder' | translate}}</p> -->
           </div>
           <div class="form-group col-sm">
             <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Dependencia' | translate}}</label>
@@ -40,8 +33,6 @@
               (change)="Traer_Relacion_Ubicaciones()"
               placeholder="{{'GLOBAL.Acta_Recibido.RegistroActa.SeleccioneFiltro' | translate}}">
             </ng2-completer>
-            <!-- <p class="campo" *ngIf="firstForm.get('Formulario1').get('Dependencia').untouched">
-                {{'GLOBAL.placeholder' | translate}}</p> -->
           </div>
           <div class="form-group col-sm">
             <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Ubicacion' | translate}}</label>
@@ -50,15 +41,9 @@
               <option *ngFor="let ubicacion of Ubicaciones" [(value)]="ubicacion.Id">{{ubicacion.Nombre}}
               </option>
             </select>
-            <!-- <p class="campo" *ngIf="firstForm.get('Formulario1').get('Ubicacion').invalid">
-                {{'GLOBAL.placeholder' | translate}}</p> -->
           </div>
         </div>
       </div>
     </nb-card-body>
-    <!-- <nb-card-footer>
-      <button nbButton [disabled]="!form_salida.valid" (click)="verfificarProveedor()" class="float-right">Añadir
-        Elemento</button>
-    </nb-card-footer> -->
   </nb-card>
 </form>

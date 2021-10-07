@@ -2,9 +2,9 @@
   <nb-card>
     <nb-card-body class="bla">
         <header *ngIf="Datos" class="row form-group"><table class="col-sm input-group">
-          <tr><th>{{'GLOBAL.Nombre' | translate}}:</th><td>{{ Datos.Nombre }}</td></tr>
-          <tr><th>{{'GLOBAL.Descripcion' | translate}}:</th><td>{{ Datos.ElementoCatalogoId.Descripcion }}</td></tr>
-          <tr><th>{{'GLOBAL.cantidadMax' | translate}}:</th><td>{{ Datos.SaldoCantidad }}</td></tr>
+          <tr><th id="col-nombre">{{'GLOBAL.Nombre' | translate}}:</th><td>{{ Datos.Nombre }}</td></tr>
+          <tr><th id="col-descripcion">{{'GLOBAL.Descripcion' | translate}}:</th><td>{{ Datos.ElementoCatalogoId.Descripcion }}</td></tr>
+          <tr><th id="col-cantidadmax">{{'GLOBAL.cantidadMax' | translate}}:</th><td>{{ Datos.SaldoCantidad }}</td></tr>
         </table></header>
         <div class="row">
           <div class="form-group col-sm">
