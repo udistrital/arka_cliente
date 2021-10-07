@@ -105,8 +105,8 @@
                     [formGroupName]="i">
                     <ng-template mat-tab-label>
                       {{'GLOBAL.Acta_Recibido.EdicionActa.SoporteSubTitle' | translate}} &nbsp; {{i + 1}} &nbsp; &nbsp;
-                      &nbsp; &nbsp;<i class="fas fa-window-close" (click)="removeTab(i)"
-                      *ngIf="getPermisoEditar(permisos.Acta) && firstForm.get('Formulario2').value.length > 1"></i>
+                      &nbsp; &nbsp;<em class="fas fa-window-close" (click)="removeTab(i)"
+                      *ngIf="getPermisoEditar(permisos.Acta) && firstForm.get('Formulario2').value.length > 1"></em>
                     </ng-template>
                     <div>
 
@@ -153,7 +153,7 @@
                                       <div>
                                         <button nbButton type="button" [disabled]="fileDocumento[i] || idDocumento[i]"
                                         (click)="fileInputDocumento.click()" *ngIf="getPermisoEditar(permisos.Acta)">
-                                          <i class="fas fa-file-upload fa-2x"></i>
+                                          <em class="fas fa-file-upload fa-2x"></em>
                                           <input #fileInputDocumento type="file" (change)="onInputFileDocumento($event, i)"
                                             style="display:none;" accept="application/pdf">
                                         </button>
@@ -197,7 +197,7 @@
                   </mat-tab>
                   <mat-tab  *ngIf="getPermisoEditar(permisos.Acta)">
                     <ng-template mat-tab-label>
-                      <i class="fas fa-plus-square fa-2x"></i>
+                        <em class="fas fa-plus-square fa-2x"></em>
                     </ng-template>
                     <div>
                       <nb-card>
@@ -230,7 +230,7 @@
                                     <div class="col-sm soporte">
                                       <div>
                                         <button nbButton type="button" (click)="fileInputDocumento.click();">
-                                          <i class="fas fa-file-upload fa-2x"></i>
+                                          <em class="fas fa-file-upload fa-2x"></em>
                                           <input #fileInputDocumento type="file" style="display:none;" accept="application/pdf"
                                             data-max-size="5120">
                                         </button>
@@ -300,19 +300,19 @@
                   <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Consolidado' | translate}}</label>
                 <table class="consolidado">
                   <tr>
-                    <th id="c1" class="cell-3">{{'GLOBAL.Acta_Recibido.EdicionActa.Subtotal' | translate}}</th>
+                    <th id="col-totales" class="cell-3">{{'GLOBAL.Acta_Recibido.EdicionActa.Subtotal' | translate}}</th>
                     <td class="cell-3">{{totales.Subtotal | currency}}</td>
                   </tr>
                   <tr>
-                    <th id="c2" class="cell-3">{{'GLOBAL.Acta_Recibido.EdicionActa.Descuento' | translate}}</th>
+                    <th id="col-descuento" class="cell-3">{{'GLOBAL.Acta_Recibido.EdicionActa.Descuento' | translate}}</th>
                     <td class="cell-3">{{totales.Descuento | currency}}</td>
                   </tr>
                   <tr>
-                    <th id="c3" class="cell-3">{{'GLOBAL.Acta_Recibido.EdicionActa.ValorIva' | translate}}</th>
+                    <th id="col-valoriva" class="cell-3">{{'GLOBAL.Acta_Recibido.EdicionActa.ValorIva' | translate}}</th>
                     <td class="cell-3">{{totales.ValorIva | currency}}</td>
                   </tr>
                   <tr>
-                    <th id="c4" class="cell-3">{{'GLOBAL.Acta_Recibido.EdicionActa.Total' | translate}}</th>
+                    <th id="col-valortotal" class="cell-3">{{'GLOBAL.Acta_Recibido.EdicionActa.Total' | translate}}</th>
                     <td class="cell-3">{{totales.ValorTotal | currency}}</td>
                   </tr>
                 </table>
