@@ -1,4 +1,4 @@
 <div [nbSpinner]="cargando">
-  <ngx-dinamicform  [normalform]="formTipoBien">
+  <ngx-dinamicform  [normalform]="formTipoBien" (result)="validarForm($event)">
   </ngx-dinamicform>
 </div>

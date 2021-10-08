@@ -21,7 +21,7 @@
       <nb-card-header>
         {{'REGISTRAR TIPO BIEN'}}        
       </nb-card-header>
-      <ngx-registro-tipo-bien >
+      <ngx-registro-tipo-bien (eventChange)="recargarlista($event)">
       </ngx-registro-tipo-bien>
       <nb-card-footer>
         <button nbButton >{{'GLOBAL.volver' | translate}}</button>
