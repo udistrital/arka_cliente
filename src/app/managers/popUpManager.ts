@@ -37,7 +37,7 @@ export class PopUpManager {
     }
 
     public showAlert(status: string, text: string, titulo: string = status) {
-        (Swal as any).fire({
+        return this.showAlertWithOptions({
             type: status,
             title: titulo,
             text: text,
@@ -45,13 +45,17 @@ export class PopUpManager {
         });
     }
 
+    public showAlertWithOptions(options: any) {
+        return (Swal as any).fire(options);
+    }
+
     public showSuccessAlert(text) {
-        this.showAlert('success', text,
+        return this.showAlert('success', text,
             this.translate.instant('GLOBAL.operacion_exitosa'));
     }
 
     public showErrorAlert(text) {
-        this.showAlert('error', text,
+        return this.showAlert('error', text,
             this.translate.instant('GLOBAL.error'));
     }
 }
