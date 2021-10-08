@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { RequestManager } from '../../managers/requestManager';
 import { PopUpManager } from '../../managers/popUpManager';
 import { map } from 'rxjs/operators';
+import { TipoBien } from '../../@core/data/models/acta_recibido/tipo_bien';
 
 @Injectable({
     providedIn: 'root',
@@ -770,11 +771,32 @@ export class CatalogoElementosHelper {
  */
     public getAllTiposBien() {
         this.rqManager.setPath('CATALOGO_ELEMENTOS_SERVICE');
-        return this.rqManager.get('tipo_bien?Activo:true&limit=-1&sortby=Id&order=asc').pipe(
+        return this.rqManager.get('tipo_bien?limit=-1&sortby=Id&order=asc').pipe(
             map(
                 (res) => {
                     if (res === 'error') {
                         this.pUpManager.showErrorAlert('No se pudo consultar los tipos de bien');
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
+
+    /**
+ * Post  Tipos de bien
+ * If the response has errors in the OAS API it should show a popup message with an error.
+ * If the response is successs, it returns the object's data.
+ * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
+ */
+     public postTipoBien(TrTipoBien) {
+        this.rqManager.setPath('CATALOGO_ELEMENTOS_SERVICE');
+        return this.rqManager.post('tipo_bien', TrTipoBien).pipe(
+            map(
+                (res) => {
+                    if (res['Type'] === 'error') {
+                        this.pUpManager.showErrorAlert('Error');
                         return undefined;
                     }
                     return res;
@@ -789,9 +811,9 @@ export class CatalogoElementosHelper {
  * If the response is successs, it returns the object's data.
  * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
  */
- public putTipoBien(TipoBien) {
+ public putTipoBien(TipodeBien) {
     this.rqManager.setPath('CATALOGO_ELEMENTOS_SERVICE');
-    return this.rqManager.put('tipo_bien', TipoBien).pipe(
+    return this.rqManager.put('tipo_bien', TipodeBien).pipe(
         map(
             (res) => {
                 if (res) {
