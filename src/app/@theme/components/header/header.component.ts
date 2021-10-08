@@ -27,7 +27,6 @@ export class HeaderComponent implements OnInit {
   username = '';
   userMenu = [{ title: 'ver todas', icon: 'fa fa-list' }];
   public noNotify: any = '0';
-  private autenticacion = new ImplicitAutenticationService;
   public activeLang = 'es';
   toggle: boolean;
   clientes$: Observable<boolean>;
@@ -39,7 +38,7 @@ export class HeaderComponent implements OnInit {
     private analyticsService: AnalyticsService,
     private layoutService: LayoutService,
     public notificacionService: NotificacionesService,
-    // private catalogoService: CatalogoService,
+    private autenticacion: ImplicitAutenticationService,
     public translate: TranslateService) {
 
     this.translate = translate;
@@ -56,7 +55,14 @@ export class HeaderComponent implements OnInit {
         });
         this.userMenu = [...temp.slice(0, 7), ...[{ title: 'ver todas', icon: 'fa fa-list' }]];
       });
-    this.liveToken();
+
+    this.autenticacion.user$.subscribe((data: any) => {
+      const { user, userService } = data;
+      console.info({ user, userService });
+      this.username = typeof user.email !== 'undefined' ? user.email : typeof userService.email !== 'undefined' ? userService.email : '';
+      this.liveTokenValue = this.username !== '';
+    });
+
   }
 
 
@@ -88,12 +94,9 @@ export class HeaderComponent implements OnInit {
   changeStateNoView(): void {
     this.notificacionService.changeStateNoView(this.username);
   }
-  login(): void {
-    this.autenticacion.getAuthorizationUrl(false);
-  }
+
   logout() {
-    this.autenticacion.logout();
-    // this.liveTokenValue = auth.live(true);
+    this.autenticacion.logout('from header');
   }
   toggleSidebar(): boolean {
     this.sidebarService.toggle(true, 'menu-sidebar');

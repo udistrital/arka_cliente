@@ -1,88 +1,148 @@
 import { Component, OnInit } from '@angular/core';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
-import { NbMenuItem } from '@nebular/theme';
 import { MenuService } from '../@core/data/menu.service';
+import { HttpErrorResponse } from '@angular/common/http';
+import Swal from 'sweetalert2';
+import 'style-loader!angular2-toaster/toaster.css';
+import { ImplicitAutenticationService } from './../@core/utils/implicit_autentication.service';
+import { environment } from '../../environments/environment';
+import { NbSidebarService } from '@nebular/theme';
+import { RouteConfigLoadStart, Router } from '@angular/router';
 import { Menu } from '../@core/data/models/configuracion_crud';
-import { AutenticationService } from '../@core/utils/authentication.service';
 import { ConfiguracionService } from '../@core/data/configuracion.service';
-import { PopUpManager } from '../managers/popUpManager';
-import { NbToastStatus as s } from '@nebular/theme/components/toastr/model';
 
-/**
- * Tiempo antes que expire el token, en milisegundos
- */
-const T_ADV_TIMEOUT: number = 1 * 60 * 1000;
 
 @Component({
   selector: 'ngx-pages',
-  styleUrls: ['pages.component.scss'],
   template: `
     <ngx-sample-layout>
       <nb-menu [items]="menu"></nb-menu>
       <router-outlet></router-outlet>
-      <footer></footer>
     </ngx-sample-layout>
   `,
 })
+
 export class PagesComponent implements OnInit {
 
-  menu: NbMenuItem[];
-
-  private menus: Partial<Menu>[];
+  public menu = [];
+  hijo: any;
+  hijo2: any;
+  rol: String;
+  dataMenu: any;
+  roles: any;
 
   constructor(
-    private translate: TranslateService,
-    private auth: AutenticationService,
-    private pUpManager: PopUpManager,
-    private menuService: MenuService,
-    private confService: ConfiguracionService,
-  ) {
-    this.menu = [];
+    public menuws: MenuService,
+    private configuracion: ConfiguracionService,
+    private autenticacion: ImplicitAutenticationService,
+    protected sidebarService: NbSidebarService,
+    private router: Router,
+    private translate: TranslateService) {
+    router.events.subscribe((event) => {
+      if (event instanceof RouteConfigLoadStart) {
+        this.sidebarService.collapse('menu-sidebar');
+      }
+    });
+  }
+
+  addIcons(tree: any) {
+    const trans = tree.map((n: any) => {
+      let node = {};
+      if (!n.link) {
+        node = {
+          title: n.title,
+          icon: 'nb-list',
+          url: n.link,
+          home: false,
+          key: n.Nombre,
+          children: [],
+        };
+      } else {
+        node = {
+          title: n.title,
+          icon: 'nb-list',
+          link: n.link,
+          home: false,
+          key: n.Nombre,
+        };
+      }
+      if (n.hasOwnProperty('children')) {
+        if (n.children !== null) {
+          const children = this.addIcons(n.children);
+          node = { ...node, ...{ children: children }, ...{ icon: 'nb-compose' } };
+        }
+      }
+      return node;
+    });
+    return trans;
+  }
+
+  getMenu(roles) {
+    this.roles = roles;
+
+    this.menuws.get(roles + '/arka_ii_main').subscribe(
+      data => {
+        this.configuracion.setAcciones(data);
+        this.dataMenu = this.menuws.filtrarMenus(<Partial<Menu>[]>data);
+        this.buildMenu();
+      },
+      (error: HttpErrorResponse) => {
+
+        if (this.dataMenu === undefined) {
+          (Swal as any).fire({
+            icon: 'info',
+            title: this.translate.instant('ERROR.rol_insuficiente_titulo'),
+            text: this.translate.instant('ERROR.rol_insuficiente'),
+            confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
+            onAfterClose: () => {
+              window.location.href =
+                environment.TOKEN.SIGN_OUT_URL +
+                '?id_token_hint=' +
+                window.localStorage.getItem('id_token') +
+                '&post_logout_redirect_uri=' +
+                environment.TOKEN.SIGN_OUT_REDIRECT_URL +
+                '&state=' +
+                window.localStorage.getItem('state');
+            },
+          });
+        } else {
+          (Swal as any).fire({
+            icon: 'error',
+            title: error.status + '',
+            text: this.translate.instant('ERROR.' + error.status),
+            footer: this.translate.instant('GLOBAL.cargar') + '-' +
+              this.translate.instant('GLOBAL.menu'),
+            confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
+          });
+        }
+
+      });
   }
 
   ngOnInit() {
+    this.autenticacion.user$.subscribe((data: any) => {
+      const { user, userService } = data;
+      const roleUser = typeof user.role !== 'undefined' ? user.role : [];
+      const roleUserService = typeof userService.role !== 'undefined' ? userService.role : [];
+      const roles = (roleUser.concat(roleUserService)).filter((data2: any) => (data2.indexOf('/') === -1));
+      this.getMenu(Array.from(new Set(roles)));
+    });
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
-      this.muestraMenu();
-    });
-
-    this.construirMenu();
-    this.ajustarNotificacionesTimeoutToken();
-  }
-
-  private construirMenu(): void {
-    this.menuService.traerMenus().subscribe(m => {
-      this.menus = m;
-      this.muestraMenu();
+      this.buildMenu();
     });
   }
 
-  private muestraMenu(): void {
-    this.menu = this.menuService.convertirMenuNebular(this.menus, 'MENU.main');
+  buildMenu() {
+
+    const homeOption = {
+      title: this.translate.instant('MENU.main.inicio.name'),
+      icon: 'nb-home',
+      url: '#/pages/dashboard',
+    };
+
+    const menuNb = this.menuws.convertirMenuNebular(this.dataMenu, 'MENU.main');
+    this.menu = this.addIcons(menuNb);
+    this.menu.unshift(homeOption);
   }
 
-  private ajustarNotificacionesTimeoutToken() {
-    const queda = this.auth.remains();
-    // console.log({queda});
-
-    // Mostrar el tiempo de la sesion
-    window.setTimeout(() => {
-      const minutos = Math.trunc(queda / 1000 / 60);
-      // this.pUpManager.showToast('basic','msg_58','titulo');
-      this.pUpManager.showToast(
-        {status: <s>'basic', duration: 6000},
-        this.translate.instant('GLOBAL.notificaciones.t_restante', {MINUTES: minutos}),
-        this.translate.instant('GLOBAL.info'));
-
-      // TODO: Revisar los colores del tema para usar a futuro el siguiente mensaje:
-      // this.pUpManager.showSuccesToast('msg_63');
-    });
-    // Registrar la notificación cuando esté por expirar el token
-    window.setTimeout(() => {
-      const minutos = Math.trunc(T_ADV_TIMEOUT / 1000 / 60);
-      this.pUpManager.showAlert(
-        'warning',
-        this.translate.instant('GLOBAL.notificaciones.t_restante_alerta', {MINUTES: minutos}),
-        this.translate.instant('GLOBAL.notificaciones.t_restante_titulo'));
-    }, queda - T_ADV_TIMEOUT);
-  }
 }

@@ -4,7 +4,10 @@
     "SELECT": "Cambiar idioma",
     "LOGIN": "Iniciar sesion",
     "LOGOUT": "Cerrar sesion",
-    "THEME": "Tema"
+    "THEME": "Tema",
+    "OAS": "Oficina Asesora de Sistemas OAS",
+    "login": "Iniciar Sesión",
+    "desarrolladoPor": "Desarrollado por"
   },
   "MENU": {
     "menu": {
@@ -14,6 +17,9 @@
       "configurar_rol": "Rol"
     },
     "main": {
+      "inicio": {
+        "name": "Inicio"
+      },
       "catalogo": {
         "name": "Catálogo de Elementos",
         "children": {

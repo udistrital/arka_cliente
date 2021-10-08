@@ -7,7 +7,6 @@ import { webSocket } from 'rxjs/webSocket';
 import { map } from 'rxjs-compat/operators/map';
 import { ImplicitAutenticationService } from './implicit_autentication.service';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
-import { NotificacionEstadoUsuario } from '../data/models/configuracion_crud';
 
 const { NOTIFICACION_SERVICE, production } = environment;
 
@@ -26,13 +25,13 @@ export class NotificacionesService {
 
     private arrayMessagesSubject = new Subject();
     public arrayMessages$ = this.arrayMessagesSubject.asObservable();
-    private autenticacion = new ImplicitAutenticationService;
     timerPing$ = interval(30000);
     roles: any;
 
 
     constructor(
         private confService: ConfiguracionService,
+        private autenticacion: ImplicitAutenticationService,
     ) {
         this.listMessage = [];
         this.notificacion_estado_usuario = [];
@@ -125,7 +124,7 @@ export class NotificacionesService {
     }
 
     queryNotification() {
-        this.confService.get('notificacion_estado_usuario?query=Usuario:' + this.payload.sub + ',Activo:true&sortby=id&order=asc&limit=-1')
+        this.confService.get('notificacion_estado_usuario?query=Usuario:' + this.payload.sub + ',Activo:true&sortby=id&order=asc&limit=0')
             .subscribe((resp: any) => {
                 if (resp !== null) {
                     this.notificacion_estado_usuario = resp;

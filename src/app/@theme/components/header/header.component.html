@@ -1,14 +1,15 @@
 <div class="header-container" [class.left]="position === 'normal'" [class.right]="position === 'inverse'">
   <div class="logo-containter">
-   
+
     <a (click)="toggleSidebar()" href="#" class="navigation" >
         <img alt="Oficina Asesora de Sistemas" class="logo-kronos" src="../../../../assets/images/isotipo arkaII.svg">
     </a>
-    <a href="#" class="navigation">
+    <a class="navigation" (click)="goToHome()">
         <img alt="Arka II" class="logo-kronos_2" src="../../../../assets/images/Arka II Isotipo 2tipo.svg">
     </a>
   </div>
-  
+
+  <!-- <ngx-theme-switcher></ngx-theme-switcher> -->
 </div>
 
 <div class="header-container">
@@ -28,8 +29,9 @@
     <nb-action [hidden]="liveTokenValue">
       <div class="dropdown ghost-dropdown">
         <div class="btn-with-icon-example">
-          <button type="button" nbButton status="primary" (click)="login()">
+          <button type="button" nbButton status="primary">
             <em class="nb-user"></em>
+
             <span>{{ 'HOME.LOGIN' | translate }}</span>
           </button>
         </div>
