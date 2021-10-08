@@ -9,10 +9,12 @@ import {TranslateService} from '@ngx-translate/core';
 import 'hammerjs';
 import { Router } from '@angular/router';
 import { ImplicitAutenticationService } from './@core/utils/implicit_autentication.service';
+import { environment } from '../environments/environment';
 
+const urlStyles = `@import url("${ environment.ASSETS_SERVICE }gaia-style.css");`;
 @Component({
   selector: 'ngx-app',
-  styleUrls: ['./app.component.scss'],
+  styles: [ urlStyles ],
   template: '<router-outlet></router-outlet>',
 })
 export class AppComponent implements OnInit {

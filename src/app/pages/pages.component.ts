@@ -16,7 +16,7 @@ import { ConfiguracionService } from '../@core/data/configuracion.service';
   selector: 'ngx-pages',
   template: `
     <ngx-sample-layout>
-      <nb-menu [items]='menu'></nb-menu>
+      <nb-menu [items]="menu"></nb-menu>
       <router-outlet></router-outlet>
     </ngx-sample-layout>
   `,
@@ -69,13 +69,13 @@ export class PagesComponent implements OnInit {
       if (n.hasOwnProperty('children')) {
         if (n.children !== null) {
           const children = this.addIcons(n.children);
-            node = { ...node, ...{ children: children }, ...{ icon: 'nb-compose' } };
-          }
-          return node;
-        } else {
-          return node;
+          node = { ...node, ...{ children: children }, ...{ icon: 'nb-compose' } };
         }
-      });
+        return node;
+      } else {
+        return node;
+      }
+    });
     return trans;
   }
 

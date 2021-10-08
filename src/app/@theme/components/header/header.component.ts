@@ -94,12 +94,9 @@ export class HeaderComponent implements OnInit {
   changeStateNoView(): void {
     this.notificacionService.changeStateNoView(this.username);
   }
-  login(): void {
-    // this.autenticacion.getAuthorizationUrl(false);
-  }
+
   logout() {
     this.autenticacion.logout('from header');
-    // this.liveTokenValue = auth.live(true);
   }
   toggleSidebar(): boolean {
     this.sidebarService.toggle(true, 'menu-sidebar');

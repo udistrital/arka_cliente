@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ImplicitAutenticationService } from '../@core/utils/';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'ngx-login',
@@ -10,7 +11,7 @@ export class LoginComponent implements OnInit {
 
   constructor(private autenticacion: ImplicitAutenticationService) { }
   appname = 'arka';
-  basePathAssets = 'https://pruebasassets.portaloas.udistrital.edu.co/';
+  basePathAssets = environment.ASSETS_SERVICE;
   @Input('isloading') isloading: boolean = false;
   @Output() loginEvent: EventEmitter<any> = new EventEmitter();
 

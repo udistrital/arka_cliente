@@ -12,7 +12,7 @@ import { environment } from '../../../environments/environment';
 })
 
 export class ImplicitAutenticationService {
-    environment = environment.TOKEN;
+    environment = environment;
     logoutUrl: any;
     params: any;
     payload: any;
@@ -110,7 +110,7 @@ export class ImplicitAutenticationService {
             };
             const userTemp = payload.email;
             this.user = { user: userTemp };
-            this.httpClient.post<any>(this.environment.AUTENTICACION_MID, {
+            this.httpClient.post<any>(this.environment.AUTENTICACION_MID + 'token/userRol', {
                 user: (payload.email),
             }, this.httpOptions)
                 .pipe(retry(3))
@@ -133,9 +133,9 @@ export class ImplicitAutenticationService {
         const state = localStorage.getItem('state');
         const idToken = localStorage.getItem('id_token');
         if (!!state && !!idToken) {
-            this.logoutUrl = this.environment.SIGN_OUT_URL;
+            this.logoutUrl = this.environment.TOKEN.SIGN_OUT_URL;
             this.logoutUrl += '?id_token_hint=' + idToken;
-            this.logoutUrl += '&post_logout_redirect_uri=' + this.environment.SIGN_OUT_REDIRECT_URL;
+            this.logoutUrl += '&post_logout_redirect_uri=' + this.environment.TOKEN.SIGN_OUT_REDIRECT_URL;
             this.logoutUrl += '&state=' + state;
             this.clearStorage();
             this.logoutSubject.next(action);
@@ -195,11 +195,11 @@ export class ImplicitAutenticationService {
         if (!this.params.state) {
             this.params.state = this.generateState();
         }
-        let url = this.params.AUTORIZATION_URL + '?' +
-            'client_id=' + encodeURIComponent(this.params.CLIENTE_ID) + '&' +
-            'redirect_uri=' + encodeURIComponent(this.params.REDIRECT_URL) + '&' + // + window.location.href + '&' para redirect con regex
-            'response_type=' + encodeURIComponent(this.params.RESPONSE_TYPE) + '&' +
-            'scope=' + encodeURIComponent(this.params.SCOPE) + '&' +
+        let url = this.params.TOKEN.AUTORIZATION_URL + '?' +
+            'client_id=' + encodeURIComponent(this.params.TOKEN.CLIENTE_ID) + '&' +
+            'redirect_uri=' + encodeURIComponent(this.params.TOKEN.REDIRECT_URL) + '&' + // + window.location.href + '&' para redirect con regex
+            'response_type=' + encodeURIComponent(this.params.TOKEN.RESPONSE_TYPE) + '&' +
+            'scope=' + encodeURIComponent(this.params.TOKEN.SCOPE) + '&' +
             'state_url=' + encodeURIComponent(window.location.hash);
         if (this.params.hasOwnProperty('nonce')) {
             url += '&nonce=' + encodeURIComponent(this.params.nonce);

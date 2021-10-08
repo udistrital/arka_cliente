@@ -20,7 +20,6 @@ export class ConfiguracionService {
   ) {
     this.configuraciones = [];
     this.$conf = new Subject<Partial<Menu>[]>();
-    // this.cargaOpciones();
     /*
     // SOLO PARA PRUEBAS
     const parametro = 'modificandoCuentas';
