@@ -1,6 +1,6 @@
 <div class="row">
   <nb-card class="col">
-    <nb-card [nbSpinner]="updating || !mostrar">
+    <nb-card [nbSpinner]="updating || !spinner">
       <nb-card-header>
   
         <h1>{{'GLOBAL.parametros.tiposBien.title' | translate}}</h1>
@@ -16,13 +16,13 @@
     </nb-card>
   </nb-card>
 
-  <div class="col" *ngIf="registrar || editar">
+  <div class="col" *ngIf="mostrar">
     <nb-card >
       <nb-card-header>
         {{'REGISTRAR TIPO BIEN'}}        
       </nb-card-header>
-      <ngx-registro-tipo-bien (eventChange)="recargarlista($event)">
-      </ngx-registro-tipo-bien>
+      <ngx-registro-tipo-bien (Guardar)="Registrar()" [(tipobien)]="tipo_bien"></ngx-registro-tipo-bien>
+      <!-- <button type="button" (click)="Registrar()">GUARDAR</button> -->
     </nb-card>
   </div>
 </div>
