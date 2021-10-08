@@ -225,6 +225,7 @@ export class GestionarElementosComponent implements OnInit {
   ver() {
     if (this.ocultarAsignacionCatalogo && this.dataSource && this.dataSource.data && this.dataSource.data.length) {
       this.ElementosValidos.emit(true);
+      this.DatosEnviados.emit(this.dataSource.data);
     } else if (this.dataSource && this.dataSource.data) {
       this.refrescaCheckTotal();
       this.Modo === 'agregar' ? this.ElementosValidos.emit(this.validarElementos()) : null;

@@ -1,24 +1,24 @@
   <p-table class="table table-striped table-bordered d-flex justify-content-xl-center" [value]="kardex" [nbSpinner]="cargando">
     <ng-template pTemplate="header">
       <tr>
-        <th class="align-middle" rowspan="2"><strong>{{'GLOBAL.fecha' | translate}}</strong></th>
-        <th class="align-middle" rowspan="2"><strong>{{'GLOBAL.detalle' | translate}}</strong></th>
-        <th class="align-middle" colspan="3"><strong>{{'GLOBAL.Entradas' | translate}}</strong></th>
-        <th class="align-middle" colspan="3"><strong>{{'GLOBAL.Salidas' | translate}}</strong></th>
-        <th class="align-middle" colspan="3"><strong>{{'GLOBAL.Saldo' | translate}}</strong></th>
+        <th id="col-fecha" class="align-middle" rowspan="2"><strong>{{'GLOBAL.fecha' | translate}}</strong></th>
+        <th id="col-detalle" class="align-middle" rowspan="2"><strong>{{'GLOBAL.detalle' | translate}}</strong></th>
+        <th id="col-entradas" class="align-middle" colspan="3"><strong>{{'GLOBAL.Entradas' | translate}}</strong></th>
+        <th id="col-salidas" class="align-middle" colspan="3"><strong>{{'GLOBAL.Salidas' | translate}}</strong></th>
+        <th id="col-saldo" class="align-middle" colspan="3"><strong>{{'GLOBAL.Saldo' | translate}}</strong></th>
       </tr>
       <tr>
-        <th>{{'GLOBAL.cantidad' | translate}}</th>
-        <th>V. Unitario</th>
-        <th>V. Total</th>
+        <th id="col-cantidad">{{'GLOBAL.cantidad' | translate}}</th>
+        <th id="col-unitario">V. Unitario</th>
+        <th id="col-total">V. Total</th>
 
-        <th>{{'GLOBAL.cantidad' | translate}}</th>
-        <th>V. Unitario</th>
-        <th>V. Total</th>
+        <th id="col-cantidad-1">{{'GLOBAL.cantidad' | translate}}</th>
+        <th id="col-unitario-1">V. Unitario</th>
+        <th id="col-total-1">V. Total</th>
 
-        <th>{{'GLOBAL.cantidad' | translate}}</th>
-        <th>V. Unitario</th>
-        <th>V. Total</th>
+        <th id="col-cantidad-2">{{'GLOBAL.cantidad' | translate}}</th>
+        <th id="col-unitario-2">V. Unitario</th>
+        <th id="col-total-2">V. Total</th>
       </tr>
     </ng-template>
     <ng-template pTemplate="body" let-kardex>

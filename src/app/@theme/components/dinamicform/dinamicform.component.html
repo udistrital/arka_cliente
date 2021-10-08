@@ -1,5 +1,4 @@
 <div class="dinamic-form" [ngSwitch]="normalform.tipo_formulario">
-
     <!-- Form  basic -->
     <form class="form-horizontal" *ngSwitchCase="'basic'">
         <fieldset>
@@ -480,7 +479,7 @@
                         <!--buttton -->
                         <button class="{{c.claseBoton}}" *ngSwitchCase="'button'" (click)="auxButton(c)">
                             {{c.info}}
-                            <i class="{{c.icono}}"></i>
+                            <em class="{{c.icono}}"></em>
                         </button>
                     </div>
                 </div>

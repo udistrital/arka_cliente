@@ -95,7 +95,7 @@
                               <nb-card-body>
                                 <div class="col-sm soporte">
                                   <button nbButton type="button" (click)="downloadFile(i)">
-                                    <i class="fas fa-eye fa-2x"></i>
+                                    <em class="fas fa-eye fa-2x"></em>
                                   </button>
                                 </div>
                               </nb-card-body>
@@ -124,19 +124,19 @@
           <nb-card-body>
             <table class="consolidado">
               <tr>
-                <th class="cell-3">{{'GLOBAL.Acta_Recibido.VerificacionActa.Subtotal' | translate}}</th>
+                <th id="c1" class="cell-3">{{'GLOBAL.Acta_Recibido.VerificacionActa.Subtotal' | translate}}</th>
                 <td class="cell-3">{{totales.Subtotal | currency}}</td>
               </tr>
               <tr>
-                <th class="cell-3">{{'GLOBAL.Acta_Recibido.VerificacionActa.Descuento' | translate}}</th>
+                <th id="c2" class="cell-3">{{'GLOBAL.Acta_Recibido.VerificacionActa.Descuento' | translate}}</th>
                 <td class="cell-3">{{totales.Descuento | currency}}</td>
               </tr>
               <tr>
-                <th class="cell-3">{{'GLOBAL.Acta_Recibido.VerificacionActa.ValorIva' | translate}}</th>
+                <th id="c3" class="cell-3">{{'GLOBAL.Acta_Recibido.VerificacionActa.ValorIva' | translate}}</th>
                 <td class="cell-3">{{totales.ValorIva | currency}}</td>
               </tr>
               <tr>
-                <th class="cell-3">{{'GLOBAL.Acta_Recibido.VerificacionActa.Total' | translate}}</th>
+                <th id="c4" class="cell-3">{{'GLOBAL.Acta_Recibido.VerificacionActa.Total' | translate}}</th>
                 <td class="cell-3">{{totales.ValorTotal | currency}}</td>
               </tr>
             </table>

@@ -6,11 +6,11 @@
 
         <nb-card *ngIf="paso === 1"><nb-card-body><table>
             <tr>
-                <th>{{ 'GLOBAL.Elemento.Uno' | translate }}</th>
-                <th>{{ 'GLOBAL.marca' | translate }}</th>
-                <th>{{ 'GLOBAL.serie' | translate }}</th>
-                <th>{{ 'GLOBAL.subgrupo.clase.nombre' | translate }}</th>
-                <th>{{ 'GLOBAL.cantidad' | translate }}</th>
+                <th id="col-elemento-uno">{{ 'GLOBAL.Elemento.Uno' | translate }}</th>
+                <th id="col-marca">{{ 'GLOBAL.marca' | translate }}</th>
+                <th id="col-serie">{{ 'GLOBAL.serie' | translate }}</th>
+                <th id="col-nombre">{{ 'GLOBAL.subgrupo.clase.nombre' | translate }}</th>
+                <th id="col-cantidad">{{ 'GLOBAL.cantidad' | translate }}</th>
             </tr>
             <tr>
                 <td>{{ElementoSinAsignar.Nombre}}</td>

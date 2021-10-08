@@ -112,19 +112,19 @@
 <div [nbSpinner]="!mostrar">
     <table class="mat-table">
         <thead class="mat-header-row fila">
-            <th class="mat-header-cell">
+            <th id="col-codigo" class="mat-header-cell">
                 {{ 'GLOBAL.codigo' | translate }}
             </th>
-            <th class="mat-header-cell">
+            <th id="col-nombre" class="mat-header-cell">
                 {{ 'GLOBAL.Nombre' | translate }}
             </th>
-            <th class="mat-header-cell">
+            <th id="col-descripcion" class="mat-header-cell">
                 {{ 'GLOBAL.Descripcion' | translate }}
             </th>
-            <th  *ngIf="!acciones" class="mat-header-cell">
+            <th id="col-estado" *ngIf="!acciones" class="mat-header-cell">
                 {{ 'GLOBAL.estado' | translate }}
             </th>
-            <th *ngIf="acciones" class="mat-header-cell">
+            <th id="col-info" *ngIf="acciones" class="mat-header-cell">
                 {{ 'GLOBAL.info' | translate }}
             </th>
         </thead>

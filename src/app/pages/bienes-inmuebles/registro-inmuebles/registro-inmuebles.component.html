@@ -12,14 +12,6 @@
             formControlName="inicioCtrl" required>
           </div>
         </div>
-        <!-- <div class="form-group col-sm">
-          <label>Fecha de registro</label>
-          <div class="input-group">
-            <input nbInput shape="semi-round" placeholder="{{'GLOBAL.placeholder_fecha' | translate}}"
-               class="form-control" [nbDatepicker]="formpicker" required>
-            <nb-datepicker  #formpicker></nb-datepicker>
-          </div>
-        </div> -->
         <div class="form-group col-sm">
           <label>Dirección del inmueble</label>
           <div class="input-group">
@@ -42,7 +34,7 @@
           <label>Registro Catastro</label>
           <div class="input-group">
             <button nbButton type="button" (click)="fileInputDocumento.click();">
-              <i class="fas fa-file-upload fa-2x"></i>
+              <em class="fas fa-file-upload fa-2x"></em>
               <input #fileInputDocumento formControlName="inicioCtrl" type="file"
                 style="display:none;" accept="application/pdf" data-max-size="5120" />
             </button>
@@ -102,7 +94,7 @@
           <label>Planos del bien inmueble</label>
           <div class="input-group">
             <button nbButton type="button" (click)="fileInputDocumento.click();">
-              <i class="fas fa-file-upload fa-2x"></i>
+              <em class="fas fa-file-upload fa-2x"></em>
               <input #fileInputDocumento formControlName="plantaCtrl" type="file"
                 style="display:none;" accept="application/pdf" data-max-size="5120" />
             </button>
@@ -203,7 +195,7 @@
           <label>Soporte</label>
           <div class="input-group">
             <button nbButton type="button" (click)="fileInputDocumento.click();">
-              <i class="fas fa-file-upload fa-2x"></i>
+              <em class="fas fa-file-upload fa-2x"></em>
               <input #fileInputDocumento formControlName="soporteCtrl" type="file"
                 style="display:none;" accept="application/pdf" data-max-size="5120" />
             </button>

@@ -103,8 +103,8 @@
                 <mat-tab *ngFor="let soporte of firstForm.get('Formulario2')['controls']; let i = index" [formGroupName]="i">
                   <ng-template mat-tab-label>
                     {{'GLOBAL.Acta_Recibido.RegistroActa.SoporteSubTitle' | translate}} &nbsp; {{i + 1}} &nbsp; &nbsp;
-                    &nbsp; &nbsp;<i class="fas fa-window-close" (click)="removeTab(i); usarLocalStorage()"
-                      *ngIf="firstForm.get('Formulario2').value.length > 1"></i>
+                    &nbsp; &nbsp;<em class="fas fa-window-close" (click)="removeTab(i); usarLocalStorage()"
+                      *ngIf="firstForm.get('Formulario2').value.length > 1"></em>
                   </ng-template>
                   <div>
                     <nb-card>
@@ -142,7 +142,7 @@
                                     <div>
                                       <button nbButton type="button" [disabled]="fileDocumento[i]"
                                         (click)="fileInputDocumento.click();">
-                                        <i class="fas fa-file-upload fa-2x"></i>
+                                        <em class="fas fa-file-upload fa-2x"></em>
                                         <input #fileInputDocumento type="file" (change)="onInputFileDocumento($event, i)"
                                          style="display:none;" accept="application/pdf">
                                       </button>
@@ -183,7 +183,7 @@
                 </mat-tab>
                 <mat-tab>
                   <ng-template mat-tab-label>
-                    <i class="fas fa-plus-square fa-2x"></i>
+                    <em class="fas fa-plus-square fa-2x"></em>
                   </ng-template>
                   <div>
                     <nb-card>
@@ -216,7 +216,7 @@
                                   <div class="col-sm soporte">
                                     <div>
                                       <button nbButton type="button" (click)="fileInputDocumento.click();">
-                                        <i class="fas fa-file-upload fa-2x"></i>
+                                        <em class="fas fa-file-upload fa-2x"></em>
                                         <input #fileInputDocumento type="file" style="display:none;" accept="application/pdf"
                                           data-max-size="5120">
                                       </button>
@@ -288,19 +288,19 @@
                 <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Consolidado' | translate}}</label>
                 <table class="consolidado">
                   <tr>
-                    <th class="cell-3">{{'GLOBAL.Acta_Recibido.RegistroActa.Subtotal' | translate}}</th>
+                    <th id="c1" class="cell-3">{{'GLOBAL.Acta_Recibido.RegistroActa.Subtotal' | translate}}</th>
                     <td class="cell-3">{{totales.Subtotal | currency}}</td>
                   </tr>
                   <tr>
-                    <th class="cell-3">{{'GLOBAL.Acta_Recibido.RegistroActa.Descuento' | translate}}</th>
+                    <th id="c2" class="cell-3">{{'GLOBAL.Acta_Recibido.RegistroActa.Descuento' | translate}}</th>
                     <td class="cell-3">{{totales.Descuento | currency}}</td>
                   </tr>
                   <tr>
-                    <th class="cell-3">{{'GLOBAL.Acta_Recibido.RegistroActa.ValorIva' | translate}}</th>
+                    <th id="c3" class="cell-3">{{'GLOBAL.Acta_Recibido.RegistroActa.ValorIva' | translate}}</th>
                     <td class="cell-3">{{totales.ValorIva | currency}}</td>
                   </tr>
                   <tr>
-                    <th class="cell-3">{{'GLOBAL.Acta_Recibido.RegistroActa.Total' | translate}}</th>
+                    <th id="c4" class="cell-3">{{'GLOBAL.Acta_Recibido.RegistroActa.Total' | translate}}</th>
                     <td class="cell-3">{{totales.ValorTotal | currency}}</td>
                   </tr>
                 </table>
