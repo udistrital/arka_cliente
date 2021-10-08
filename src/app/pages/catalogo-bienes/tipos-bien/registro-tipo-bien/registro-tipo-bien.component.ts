@@ -38,8 +38,8 @@ export class RegistroTipoBienComponent implements OnInit {
   validarForm(event) {
     if (event.valid) {
       (Swal as any).fire({
-        title: this.translate.instant("Registro Tipo de bien"),
-        text: this.translate.instant("¿Desea registrar los datos ingresados?"),
+        title: this.translate.instant('Registro Tipo de bien'),
+        text: this.translate.instant('¿Desea registrar los datos ingresados?'),
         type: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#3085D6',
@@ -49,21 +49,21 @@ export class RegistroTipoBienComponent implements OnInit {
       }).then((willDelete) => {
         if (willDelete.value) {
             this.registrarTipoBien(event.data.TipoBien);
-            
+
         }
       });
-      
+
     }
   }
-  registrarTipoBien(formData:any){
-    const trtipobien=new TipoBien;
-    trtipobien.NumeroOrden= (formData.Kardex === true) ? 1 : 2;
+  registrarTipoBien(formData: any) {
+    const trtipobien = new TipoBien;
+    trtipobien.NumeroOrden = (formData.Kardex === true) ? 1 : 2;
     trtipobien.Activo = formData.Activo;
     trtipobien.Nombre = formData.Nombre;
-    trtipobien.Descripcion=formData.Observaciones;
-    trtipobien.CodigoAbreviacion=formData.CodigoAbreviacion;
+    trtipobien.Descripcion = formData.Observaciones;
+    trtipobien.CodigoAbreviacion = formData.CodigoAbreviacion;
     // console.log(trtipobien)
-    this.eventChange.emit({registrado:true})
+    this.eventChange.emit({registrado: true});
     this.catalogoHelper.postTipoBien(trtipobien).toPromise()
     .then((res: any) => {
       if (res) {
@@ -71,13 +71,12 @@ export class RegistroTipoBienComponent implements OnInit {
         // console.log(res);
       }
     });
-    
+
   }
-  private showAlert()
-  {
+  private showAlert() {
     (Swal as any).fire({
-      title: this.translate.instant("Tipo de bien registrado"),
-      text: this.translate.instant("Tipo de bien registrado con éxito"),
+      title: this.translate.instant('Tipo de bien registrado'),
+      text: this.translate.instant('Tipo de bien registrado con éxito'),
       type: 'success',
       showConfirmButton: false,
       timer: 2500,

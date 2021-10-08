@@ -1,4 +1,4 @@
-import { Component, OnInit,Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { Router } from '@angular/router';
 import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
 import { LocalDataSource } from 'ngx-smart-table';
@@ -183,11 +183,10 @@ export class TiposBienComponent implements OnInit {
   onRegister() {
     this.registrar = true;
   }
-  recargarlista(event)
-  {
-    if(event.registrado){
+  recargarlista(event) {
+    if (event.registrado) {
       this.router.navigateByUrl('/RefrshComponent', {skipLocationChange: true}).then(
-        ()=> this.router.navigate(['/pages/catalogo_bienes/tipos_bien']));
+        () => this.router.navigate(['/pages/catalogo_bienes/tipos_bien']));
     }
   }
 }
