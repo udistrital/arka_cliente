@@ -71,10 +71,8 @@ export class PagesComponent implements OnInit {
           const children = this.addIcons(n.children);
           node = { ...node, ...{ children: children }, ...{ icon: 'nb-compose' } };
         }
-        return node;
-      } else {
-        return node;
       }
+      return node;
     });
     return trans;
   }
