@@ -19,7 +19,7 @@
   <div class="col" *ngIf="mostrar">
     <nb-card >
       <nb-card-header>
-        {{'REGISTRAR TIPO BIEN'}}        
+        {{'GLOBAL.parametros.tiposBien.registro_title' | translate}}       
       </nb-card-header>
       <ngx-registro-tipo-bien (Guardar)="Registrar()" [(tipobien)]="tipo_bien"></ngx-registro-tipo-bien>
       <!-- <button type="button" (click)="Registrar()">GUARDAR</button> -->

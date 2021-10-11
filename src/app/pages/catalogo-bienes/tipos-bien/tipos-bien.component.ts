@@ -2,6 +2,7 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { Router } from '@angular/router';
 import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
 import { LocalDataSource } from 'ngx-smart-table';
+import { PopUpManager } from '../../../managers/popUpManager';
 import Swal from 'sweetalert2';
 import { TipoBien } from '../../../@core/data/models/acta_recibido/tipo_bien';
 import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/catalogoElementosHelper';
@@ -26,6 +27,7 @@ export class TiposBienComponent implements OnInit {
     private translate: TranslateService,
     private catalogoHelper: CatalogoElementosHelper,
     private router: Router,
+    private pupmanager: PopUpManager,
   ) {
 
     this.source = new LocalDataSource();
@@ -151,8 +153,8 @@ export class TiposBienComponent implements OnInit {
     let mensaje;
     if (this.nuevo) {
       mensaje = {
-        title: this.translate.instant('Registro Tipo de bien'),
-        text: this.translate.instant('¿Desea registrar los datos ingresados?'),
+        title: this.translate.instant('Registro GLOBAL.parametros.tiposBien.registro_title'),
+        text: this.translate.instant('GLOBAL.parametros.tiposBien.registro_text'),
         type: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#3085D6',
@@ -162,8 +164,8 @@ export class TiposBienComponent implements OnInit {
       };
     } else {
       mensaje = {
-        title: this.translate.instant('Actualizacion de Tipo de bien'),
-        text: this.translate.instant('¿Desea actualizar los datos ingresados?'),
+        title: this.translate.instant('GLOBAL.parametros.tiposBien.actualizacion_title'),
+        text: this.translate.instant('GLOBAL.parametros.tiposBien.actualizacion_text'),
         type: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#3085D6',
@@ -174,23 +176,22 @@ export class TiposBienComponent implements OnInit {
     }
     (Swal as any).fire(mensaje).then((willDelete) => {
       if (willDelete.value) {
+        let text;
         // console.log(this.tipo_bien);
         if (this.nuevo) {
+          text = this.translate.instant('GLOBAL.parametros.tiposBien.registro_succes');
           this.catalogoHelper.postTipoBien(this.tipo_bien).toPromise()
           .then((res: any) => {
             if (res) {
-              this.showAlertRegister();
-              this.recargarlista();
-              this.mostrar = false;
+              this.succesOp(text);
             }
           });
         } else {
+          text = this.translate.instant('GLOBAL.parametros.tiposBien.actualizacion_succes');
           this.catalogoHelper.putTipoBien(this.tipo_bien).toPromise()
           .then((res: any) => {
             if (res) {
-              this.showAlertEdit();
-              this.recargarlista();
-              this.mostrar = false;
+              this.succesOp(text);
             }
           });
         }
@@ -203,22 +204,9 @@ export class TiposBienComponent implements OnInit {
     this.router.navigateByUrl('/RefrshComponent', {skipLocationChange: true}).then(
       () => this.router.navigate(['/pages/catalogo_bienes/tipos_bien']));
   }
-  private showAlertRegister() {
-    (Swal as any).fire({
-      title: this.translate.instant('Tipo de bien registrado'),
-      text: this.translate.instant('Tipo de bien registrado con éxito'),
-      type: 'success',
-      showConfirmButton: false,
-      timer: 2500,
-    });
-  }
-  private showAlertEdit() {
-    (Swal as any).fire({
-      title: this.translate.instant('Tipo de bien registrado'),
-      text: this.translate.instant('Tipo de bien registrado con éxito'),
-      type: 'success',
-      showConfirmButton: false,
-      timer: 2500,
-    });
+  private succesOp(text) {
+    this.pupmanager.showSuccessAlert(text);
+    this.recargarlista();
+    this.mostrar = false;
   }
 }

@@ -979,7 +979,13 @@
      "title_error_activacion": "Error when trying to enable the Good Type",
      "title_error_desactivacion": "Error when trying to disable the Good Type",
      "error_activacion": "The good type could not be enabled",
-     "error_desactivacion": "The good type could not be disabled"
+     "error_desactivacion": "The good type could not be disabled",
+     "registro_succes": "Type of property satisfactorily registered",
+     "actualizacion_succes": "Type of property satisfactorily updated",
+     "registro_title": "Type of property register",
+     "actualizacion_title":"Updating type of property",
+     "registro_text":"Do you want to register the data entered?",
+     "actualizacion_text": "Do you want to update the data entered?"
    },
    "reportes": {
      "entrada_titulo": "Entry Report"
