@@ -9,7 +9,7 @@
       <nb-card-body>
   
         <p class="h4 pb-4">{{'GLOBAL.parametros.tiposBien.subtitle' | translate}}</p>
-        <ng2-smart-table  [source]="source" [settings]="settings" (edit)="ActualizarTipoBien($event)" (create)="onRegister($event)">
+        <ng2-smart-table  [source]="source" [settings]="settings" (edit)="ActualizarTipoBien($event)" (create)="onRegister()">
         </ng2-smart-table>
   
       </nb-card-body>
