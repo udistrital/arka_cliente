@@ -965,8 +965,8 @@
         "error_desactivacion": "La entrada no ha sido inhabilitada correctamente"
       },
       "tiposBien": {
-        "title": "Administrar tipos de bien",
-        "subtitle": "Seleccione un tipo de bien para cambiar su estado",
+        "title": "Administrar tipos de bien y servicios",
+        "subtitle": "Seleccione un tipo de bien o servicio para cambiar su estado",
         "title_activacion": "Habilitar Tipo de Bien",
         "title_desactivacion": "Inhabilitar Tipo de Bien",
         "confirmar_activacion": "¿Desea habilitar este tipo de bien?",
@@ -980,10 +980,10 @@
         "error_activacion": "El tipo de bien no ha sido habilitado correctamente",
         "error_desactivacion": "El tipo de bien no ha sido inhabilitado correctamente",
         "asignable_kardex": "Asignable a Kárdex",
-        "registro_succes": "Tipo de bien registrado satisfactoriamente",
-        "actualizacion_succes": "Tipo de bien registrado satisfactoriamente",
-        "registro_title": "Registrar tipo de bien",
-        "actualizacion_title":"Actualización tipo de bien",
+        "registro_succes": "Tipo de bien o servicio registrado satisfactoriamente",
+        "actualizacion_succes": "Tipo de bien o sevicio actualizado satisfactoriamente",
+        "registro_title": "Registrar tipo de bien o servicio",
+        "actualizacion_title":"Actualización tipo de bien o servicio",
         "registro_text":"¿Desea registrar los datos ingresados?",
         "actualizacion_text": "¿Desea actualizar los datos ingresados?"
       }
