@@ -16,6 +16,9 @@ import { RegistroElementosComponent } from './registro-elementos/registro-elemen
 import { RegistroCuentasCatalogoComponent } from './registro-cuentas-catalogo/registro-cuentas-catalogo.component';
 import { CrudMovimientoComponent } from './crud-movimientos/crud-movimiento.component';
 import { MatTreeModule } from '@angular/material';
+import { TiposBienComponent } from './tipos-bien/tipos-bien.component';
+import { Ng2SmartTableModule } from 'ngx-smart-table';
+import { RegistroTipoBienComponent } from './tipos-bien/registro-tipo-bien/registro-tipo-bien.component';
 
 @NgModule({
   declarations: [
@@ -28,6 +31,8 @@ import { MatTreeModule } from '@angular/material';
     RegistroElementosComponent,
     CrudMovimientoComponent,
     RegistroCuentasCatalogoComponent,
+    TiposBienComponent,
+    RegistroTipoBienComponent,
   ],
   imports: [
     CommonModule,
@@ -36,6 +41,7 @@ import { MatTreeModule } from '@angular/material';
     NbTreeGridModule,
     ThemeModule,
     MatTreeModule,
+    Ng2SmartTableModule,
   ],
   exports: [
     ConsultaCatalogoComponent,

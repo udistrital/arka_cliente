@@ -43,6 +43,9 @@
           },
           "cuentas": {
             "name": "Accounts Assignment"
+          },
+          "tipos_bien": {
+            "name": "Types of assets"
           }
         }
       },
@@ -969,8 +972,8 @@
     "error_desactivacion": "The entry type could not be disabled"
    },
    "tiposBien": {
-     "title": "Manage good types",
-     "subtitle": "Select a good type to change its state",
+     "title": "Manage good types or services",
+     "subtitle": "Select a good type or service to change its state",
      "title_activacion": "Enable Good Type",
      "title_desactivacion": "Disable Good Type",
      "confirmar_activacion": "Are you sure to Enable the selected good type?",
@@ -982,7 +985,13 @@
      "title_error_activacion": "Error when trying to enable the Good Type",
      "title_error_desactivacion": "Error when trying to disable the Good Type",
      "error_activacion": "The good type could not be enabled",
-     "error_desactivacion": "The good type could not be disabled"
+     "error_desactivacion": "The good type could not be disabled",
+     "registro_succes": "Type of property or service satisfactorily registered",
+     "actualizacion_succes": "Type of property or service satisfactorily updated",
+     "registro_title": "Type of property register or service",
+     "actualizacion_title":"Updating type of property or service",
+     "registro_text":"Do you want to register the data entered?",
+     "actualizacion_text": "Do you want to update the data entered?"
    },
    "reportes": {
      "entrada_titulo": "Entry Report"
