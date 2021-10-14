@@ -139,12 +139,19 @@
       </div>
       <div class="row">
         <div class="form-group col-sm">
-          <label>Registro de Importacion</label>
-          <input type="text" class="form-control" formControlName="regImportCtrl">
+          <label>Divisa</label>
+          <select class="form-control" formControlName="divisaCtrl">
+            <option disabled selected>{{'GLOBAL.seleccionar' | translate}}...</option>
+            <option [value]="div" *ngFor="let div of divisas">{{div.CodigoAbreviacion}}</option>
+          </select>
         </div>
         <div class="form-group col-sm">
           <label>Tasa Representativa del Mercado</label>
           <input type="number" class="form-control" formControlName="trmCtrl">
+        </div>
+        <div class="form-group col-sm">
+          <label>Registro de Importacion</label>
+          <input type="text" class="form-control" formControlName="regImportCtrl">
         </div>
       </div>
       <div class="row">

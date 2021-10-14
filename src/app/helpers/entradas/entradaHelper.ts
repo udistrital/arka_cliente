@@ -349,4 +349,19 @@ export class EntradaHelper {
             );
     }
 
+    public getDivisas() {
+        this.rqManager.setPath('PARAMETROS_SERVICE');
+        return this.rqManager.get('parametro?query=TipoParametroId__Nombre:Divisas').pipe(
+                map(
+                    (res) => {
+                        if (res === 'error') {
+                            this.pUpManager.showErrorAlert('No se pudo consultar el parametro divisas');
+                            return undefined;
+                        }
+                        return res;
+                    },
+                ),
+            );
+    }
+
 }
