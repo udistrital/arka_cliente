@@ -320,6 +320,12 @@
             entradaEspecifica.TasaRepresentativaMercado }}</p>
         </div>
       </div>
+      <div *ngIf="detalle && !edit && entradaEspecifica.TipoEntradaId.Nombre === 'Compras extranjeras'" class="row">
+        <div class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.Divisa' | translate }}</strong>: {{ entradaEspecifica.Divisa
+            }}</p>
+        </div>
+      </div>
         
       <!-- INTANGIBLES DESARROLLADOS -->
       <div *ngIf="detalle && !edit && entradaEspecifica.TipoEntradaId.Nombre === 'Desarrollo interior'" class="row">

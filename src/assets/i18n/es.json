@@ -905,7 +905,7 @@
       "CantMin": "Cantidad Mínima",
       "CantAprobada": "Cantidad Aprobada"
     },
-
+    "Divisa":"Divisa",
     "registrar_entrada": "Registrar Entrada",
     "mensaje_registrar_entrada": "Seleccione el acta de recibido a la cual desea realizarle entrada dando clic en el ícono de acciones ubicado al costado derecho de la tabla.",
     "datos_contrato": "Datos de Contrato",

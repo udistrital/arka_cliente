@@ -443,6 +443,7 @@ export class ConsultaEntradaComponent implements OnInit {
     this.entradaEspecifica.Observacion = info.Movimiento.Observacion; // OBSERVACIÓN
     this.entradaEspecifica.RegistroImportacion = detalle.num_reg_importacion; // NUMERO DE IMPORTACION
     this.entradaEspecifica.TasaRepresentativaMercado = detalle.TRM; // TASA REPRESENTATIVA DEL MERCADO
+    this.entradaEspecifica.Divisa = detalle.divisa;
     this.documentoId = false; // SOPORTE
     this.loadContrato(); // CONTRATO
     // this.mostrar=true;
