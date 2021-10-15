@@ -1,6 +1,11 @@
 kind: pipeline
 name: oas_cliente_ci
 
+trigger:
+  event:
+    exclude:
+      - tag
+
 steps:
 - name: check_readme
   image: jjvargass/qa_develoment:latest
@@ -46,16 +51,17 @@ steps:
     event:
     - push
 
-# - name: prueba_unitarias
-#   image: node:12.6.0
-#   commands:
-#   - npm i
-#   - npm run test
-#   when:
-#     branch:
-#     - feature/*
-#     - hotfix/*
-#     - unitest
+- name: prueba_unitarias
+  failure: ignore
+  image: node:12.6.0
+  commands:
+  - npm i
+  - npm run test
+  when:
+    branch:
+    - feature/*
+    - hotfix/*
+    - unitest
 
 - name:  pruebas_linter
   image: node:12.6.0
