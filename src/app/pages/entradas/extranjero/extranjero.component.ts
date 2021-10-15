@@ -38,6 +38,7 @@ export class ExtranjeroComponent implements OnInit {
   soportes: Array<SoporteActaProveedor>; // Soportes
   proveedor: string;
   fechaFactura: string;
+  divisas: string;
   validar: boolean;
   private opcionTipoContrato: string;
   private opcionvigencia: string;
@@ -71,6 +72,7 @@ export class ExtranjeroComponent implements OnInit {
   ngOnInit() {
     this.getTipoEntrada();
     this.getFormatoEntrada();
+    this.getDivisas();
     this.contratoForm = this.fb.group({
       contratoCtrl: ['', [
         Validators.required,
@@ -81,6 +83,7 @@ export class ExtranjeroComponent implements OnInit {
     this.facturaForm = this.fb.group({
       facturaCtrl: ['', Validators.nullValidator],
       regImportCtrl: ['', Validators.maxLength(20)],
+      divisaCtrl: ['', Validators.nullValidator],
       trmCtrl: ['', [
         Validators.required,
         Validators.max(9999999999),
@@ -96,6 +99,14 @@ export class ExtranjeroComponent implements OnInit {
       supervisorCtrl: ['', Validators.nullValidator],
     });
     this.getVigencia();
+  }
+  private getDivisas() {
+    this.entradasHelper.getDivisas().subscribe(res => {
+      if (res) {
+        this.divisas = res.Data;
+        // console.log(this.divisas);
+      }
+    });
   }
 
   private getTipoEntrada() {
@@ -247,6 +258,7 @@ export class ExtranjeroComponent implements OnInit {
         tipo_contrato: this.opcionTipoContrato === '14' ? 'Orden de Servicios' :
         this.opcionTipoContrato === '15' ? 'Orden de Compra' : '',
         num_reg_importacion: this.facturaForm.value.regImportCtrl,
+        divisa: this.facturaForm.value.divisaCtrl,
         TRM: this.facturaForm.value.trmCtrl,
       };
       const movimientoAdquisicion = {
