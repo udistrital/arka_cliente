@@ -100,7 +100,7 @@ steps:
   - npm run build:test
   when:
     branch:
-    - dependabot/*
+    - dependabot/**
     - develop
     - feature/*
     - release/*
