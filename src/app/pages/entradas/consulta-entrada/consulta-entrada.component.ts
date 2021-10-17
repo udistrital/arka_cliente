@@ -135,7 +135,7 @@ export class ConsultaEntradaComponent implements OnInit {
             },
           },
         },
-        TipoEntradaId: {
+        FormatoTipoMovimientoId: {
           title: this.translate.instant('GLOBAL.tipo_entrada'),
           valuePrepareFunction: (value: any) => {
             return value;
@@ -143,7 +143,7 @@ export class ConsultaEntradaComponent implements OnInit {
           filter: {
             type: 'list',
             config: {
-              selectText: 'Select...',
+              selectText: this.translate.instant('GLOBAL.seleccionar') + '...',
               list: [
                 { value: 'Adquisición', title: 'Adquisición' },
                 { value: 'Elaboración Propia', title: 'Elaboración Propia' },
@@ -167,27 +167,17 @@ export class ConsultaEntradaComponent implements OnInit {
   }
 
   loadEntradas(): void {
-    this.entradasHelper.getEntradas().subscribe(res => {
-      if (res !== null) {
-        const data = <Array<any>>res;
-        for (const datos in Object.keys(data)) {
-          if (data.hasOwnProperty(datos) && data[datos].Movimiento.Id !== undefined) {
-            const entrada = new Entrada;
-            const tipoEntradaAux = new TipoEntrada;
-            const detalle = JSON.parse((data[datos].Movimiento.Detalle));
-            entrada.Id = data[datos].Movimiento.Id;
-            entrada.ActaRecibidoId = detalle.acta_recibido_id;
-            entrada.FechaCreacion = data[datos].Movimiento.FechaCreacion;
-            entrada.Consecutivo = detalle.consecutivo;
-            // tipoEntradaAux.Nombre = data[datos].TipoMovimiento.Nombre; // Innecesario, genera un error en el filter.
-            entrada.TipoEntradaId = data[datos].TipoMovimiento.Nombre;
-            this.entradas.push(entrada);
-          }
-        }
-        // console.log(this.entradas)
-        this.source.load(this.entradas);
-        this.mostrar = true;
+    this.entradasHelper.getEntradas(false).subscribe(res => {
+      if (res.length) {
+        res.forEach(entrada => {
+          entrada.Detalle = JSON.parse((entrada.Detalle));
+          entrada.ActaRecibidoId = entrada.Detalle.acta_recibido_id;
+          entrada.Consecutivo = entrada.Detalle.consecutivo;
+          entrada.FormatoTipoMovimientoId = entrada.FormatoTipoMovimientoId.Nombre
+        });
+        this.source.load(res);
       }
+      this.mostrar = true;
     });
   }
 

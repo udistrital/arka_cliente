@@ -116,13 +116,15 @@ export class EntradaHelper {
      * If the response is successs, it returns the object's data.
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
      */
-    public getEntradas() {
-        this.rqManager.setPath('ARKA_SERVICE');
-        return this.rqManager.get('entrada').pipe(
+    public getEntradas(tramiteOnly: boolean) {
+        const query = 'movimiento?limit=-1&query=EstadoMovimientoId__Nombre' + (!tramiteOnly ?
+            '__startswith:Entrada' : ':Entrada En Trámite');
+        this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
+        return this.rqManager.get(query).pipe(
             map(
                 (res) => {
                     if (res === 'error') {
-                        this.pUpManager.showErrorAlert('No se pudo consultar el contrato contratos');
+                        this.pUpManager.showErrorAlert('No se pudieron consultar las entradas');
                         return undefined;
                     }
                     return res;
