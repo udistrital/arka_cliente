@@ -47,7 +47,6 @@ export class TercerosComponent implements OnInit {
   // Selects
   opcionTipoContrato: string;
   opcionvigencia: string;
-  tipoEntrada: any;
   formatoTipoMovimiento: any;
 
   @ViewChild('stepper') stepper: NbStepperComponent;
@@ -65,7 +64,6 @@ export class TercerosComponent implements OnInit {
     this.fechaFactura = '';
     this.validar = false;
     this.iniciarContrato();
-    this.getTipoEntrada();
     this.getFormatoEntrada();
   }
 
@@ -228,14 +226,6 @@ export class TercerosComponent implements OnInit {
     this.contratoEspecifico.Supervisor = supervisorAux;
   }
 
-  getTipoEntrada() {
-    this.entradasHelper.getTipoEntradaByAcronimoAndNombre('e_arka', 'Terceros').subscribe(res => {
-      if (res !== undefined) {
-        this.tipoEntrada = res;
-      }
-    });
-  }
-
   getFormatoEntrada() {
     this.entradasHelper.getFormatoEntradaByName('Terceros').subscribe(res => {
       if (res !== null) {
@@ -273,11 +263,7 @@ export class TercerosComponent implements OnInit {
         FormatoTipoMovimientoId: {
           Id: this.formatoTipoMovimiento[0].Id,
         },
-        EstadoMovimientoId: {
-          Id: 2, // REVISAR
-        },
         SoporteMovimientoId: 0,
-        IdTipoMovimiento: this.tipoEntrada.Id,
       };
 
       this.entradasHelper.postEntrada(movimientoAdquisicion).subscribe((res: any) => {

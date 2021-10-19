@@ -34,7 +34,6 @@ export class ReposicionComponent implements OnInit {
   fileDocumento: any;
   validar: boolean = false;
   formatoTipoMovimiento: any;
-  tipoEntrada: any;
   proveedor: string;
   fechaFactura: string;
   checked: boolean;
@@ -63,7 +62,6 @@ export class ReposicionComponent implements OnInit {
       observacionCtrl: ['', Validators.nullValidator],
     });
     this.getFormatoEntrada();
-    this.getTipoEntrada();
     this.loadSoporte();
   }
 
@@ -137,14 +135,6 @@ export class ReposicionComponent implements OnInit {
     });
   }
 
-  getTipoEntrada() {
-    this.entradasHelper.getTipoEntradaByAcronimoAndNombre('e_arka', 'Reposición').subscribe(res => {
-      if (res !== undefined) {
-        this.tipoEntrada = res;
-      }
-    });
-  }
-
   getFormatoEntrada() {
     this.entradasHelper.getFormatoEntradaByName('Reposición').subscribe(res => {
       if (res !== null) {
@@ -175,11 +165,7 @@ export class ReposicionComponent implements OnInit {
         FormatoTipoMovimientoId: {
           Id: this.formatoTipoMovimiento[0].Id,
         },
-        EstadoMovimientoId: {
-          Id: 2, // REVISAR
-        },
         SoporteMovimientoId: this.idDocumento,
-        IdTipoMovimiento: this.tipoEntrada.Id,
       };
       // console.log(movimientoReposicion);
 

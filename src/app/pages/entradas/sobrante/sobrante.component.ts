@@ -33,7 +33,6 @@ export class SobranteComponent implements OnInit {
   uidDocumento: string;
   idDocumento: number;
 
-  tipoEntrada: any;
   formatoTipoMovimiento: any;
 
   @Input() actaRecibidoId: Number;
@@ -45,7 +44,6 @@ export class SobranteComponent implements OnInit {
     this.solicitanteSelect = false;
     this.ordenadorId = 0;
     this.validar = false;
-    this.getTipoEntrada();
     this.getFormatoEntrada();
   }
 
@@ -79,14 +77,6 @@ export class SobranteComponent implements OnInit {
     this.vigencia = new Date().getFullYear();
   }
 
-  getTipoEntrada() {
-    this.entradasHelper.getTipoEntradaByAcronimoAndNombre('e_arka', 'Sobrante').subscribe(res => {
-      if (res !== undefined) {
-        this.tipoEntrada = res;
-      }
-    });
-  }
-
   getFormatoEntrada() {
     this.entradasHelper.getFormatoEntradaByName('Sobrante').subscribe(res => {
       if (res !== null) {
@@ -113,11 +103,7 @@ export class SobranteComponent implements OnInit {
         FormatoTipoMovimientoId: {
           Id: this.formatoTipoMovimiento[0].Id,
         },
-        EstadoMovimientoId: {
-          Id: 2, // REVISAR
-        },
         SoporteMovimientoId: this.idDocumento,
-        IdTipoMovimiento: this.tipoEntrada.Id,
       };
 
       this.entradasHelper.postEntrada(movimientoAdquisicion).subscribe((res: any) => {

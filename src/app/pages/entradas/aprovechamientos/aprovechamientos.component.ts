@@ -46,7 +46,6 @@ export class AprovechamientosComponent implements OnInit {
   cargando_proveedores: boolean = true;
   cargando_supervisores: boolean = true;
 
-  private tipoEntrada: any;
   private formatoTipoMovimiento: any;
   private Proveedores: Proveedor[];
   proveedoresFiltrados: Observable<Proveedor[]>;
@@ -76,7 +75,6 @@ export class AprovechamientosComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.getTipoEntrada();
     this.getFormatoEntrada();
     this.fechaForm = this.fb.group({
       fechaCtrl: ['', Validators.required],
@@ -185,14 +183,6 @@ export class AprovechamientosComponent implements OnInit {
     return '';
   }
 
-  private getTipoEntrada() {
-    this.entradasHelper.getTipoEntradaByAcronimoAndNombre('e_arka', 'Aprovechamientos').subscribe(res => {
-      if (res !== undefined) {
-        this.tipoEntrada = res;
-      }
-    });
-  }
-
   private getFormatoEntrada() {
     this.entradasHelper.getFormatoEntradaByName('Partes por Aprovechamientos').subscribe(res => {
       if (res !== null) {
@@ -232,11 +222,7 @@ export class AprovechamientosComponent implements OnInit {
         FormatoTipoMovimientoId: {
           Id: this.formatoTipoMovimiento[0].Id,
         },
-        EstadoMovimientoId: {
-          Id: 2, // Movimiento adecuado para registrar una entrada como aprobada
-        },
         SoporteMovimientoId: 0,
-        IdTipoMovimiento: this.tipoEntrada.Id,
       };
       // console.log({movimientoAdquisicion});
       this.entradasHelper.postEntrada(movimientoAdquisicion).subscribe((res: any) => {

@@ -44,7 +44,6 @@ export class ExtranjeroComponent implements OnInit {
   private opcionvigencia: string;
 
   private formatoTipoMovimiento: any;
-  private tipoEntrada: any;
 
   @ViewChild('stepper') stepper: NbStepperComponent;
 
@@ -70,7 +69,6 @@ export class ExtranjeroComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.getTipoEntrada();
     this.getFormatoEntrada();
     this.getDivisas();
     this.contratoForm = this.fb.group({
@@ -105,14 +103,6 @@ export class ExtranjeroComponent implements OnInit {
       if (res) {
         this.divisas = res.Data;
         // console.log(this.divisas);
-      }
-    });
-  }
-
-  private getTipoEntrada() {
-    this.entradasHelper.getTipoEntradaByAcronimoAndNombre('e_arka', 'Compras extranjeras').subscribe(res => {
-      if (res !== undefined) {
-        this.tipoEntrada = res;
       }
     });
   }
@@ -268,11 +258,7 @@ export class ExtranjeroComponent implements OnInit {
         FormatoTipoMovimientoId: {
           Id: this.formatoTipoMovimiento[0].Id,
         },
-        EstadoMovimientoId: {
-          Id: 2, // Movimiento adecuado para registrar una entrada como aprobada
-        },
         SoporteMovimientoId: 0,
-        IdTipoMovimiento: this.tipoEntrada.Id,
       };
       // console.log({movimientoAdquisicion});
       this.entradasHelper.postEntrada(movimientoAdquisicion).subscribe((res: any) => {

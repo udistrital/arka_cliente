@@ -51,9 +51,6 @@ export class ElaboracionPropiaComponent implements OnInit {
   cargando_supervisores: boolean = true;
   cargando_ordenadores: boolean = true;
 
-
-
-  tipoEntrada: any;
   formatoTipoMovimiento: any;
 
   @Input() actaRecibidoId: Number;
@@ -91,7 +88,6 @@ export class ElaboracionPropiaComponent implements OnInit {
       supervisorCtrl: ['', Validators.required],
     });
     this.getVigencia();
-    this.getTipoEntrada();
     this.getFormatoEntrada();
     this.loadSupervisores();
     this.loadOrdenadores();
@@ -282,14 +278,6 @@ export class ElaboracionPropiaComponent implements OnInit {
     this.vigencia = new Date().getFullYear();
   }
 
-  getTipoEntrada() {
-    this.entradasHelper.getTipoEntradaByAcronimoAndNombre('e_arka', 'Elaboración Propia').subscribe(res => {
-      if (res !== undefined) {
-        this.tipoEntrada = res;
-      }
-    });
-  }
-
   getFormatoEntrada() {
     this.entradasHelper.getFormatoEntradaByName('Elaboración Propia').subscribe(res => {
       if (res !== null) {
@@ -321,11 +309,7 @@ export class ElaboracionPropiaComponent implements OnInit {
         FormatoTipoMovimientoId: {
           Id: this.formatoTipoMovimiento[0].Id,
         },
-        EstadoMovimientoId: {
-          Id: 2, // REVISAR
-        },
         SoporteMovimientoId: this.idDocumento,
-        IdTipoMovimiento: this.tipoEntrada.Id,
       };
 
       this.entradasHelper.postEntrada(movimientoAdquisicion).subscribe((res: any) => {

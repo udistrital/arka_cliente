@@ -54,7 +54,6 @@ export class DonacionComponent implements OnInit {
   fechaSolicitante: string;
   ordenadores: Array<OrdenadorGasto>;
 
-  tipoEntrada: any;
   formatoTipoMovimiento: any;
 
   @ViewChild('stepper') stepper: NbStepperComponent;
@@ -75,7 +74,6 @@ export class DonacionComponent implements OnInit {
     this.validar = false;
     this.ordenadorId = 0;
     this.iniciarContrato();
-    this.getTipoEntrada();
     this.getFormatoEntrada();
   }
 
@@ -263,14 +261,6 @@ export class DonacionComponent implements OnInit {
     this.vigencia = new Date().getFullYear();
   }
 
-  getTipoEntrada() {
-    this.entradasHelper.getTipoEntradaByAcronimoAndNombre('e_arka', 'Donación').subscribe(res => {
-      if (res !== undefined) {
-        this.tipoEntrada = res;
-      }
-    });
-  }
-
   getFormatoEntrada() {
     this.entradasHelper.getFormatoEntradaByName('Donación').subscribe(res => {
       if (res !== null) {
@@ -302,11 +292,7 @@ export class DonacionComponent implements OnInit {
         FormatoTipoMovimientoId: {
           Id: this.formatoTipoMovimiento[0].Id,
         },
-        EstadoMovimientoId: {
-          Id: 2, // REVISAR
-        },
         SoporteMovimientoId: 0,
-        IdTipoMovimiento: this.tipoEntrada.Id,
       };
 
       this.entradasHelper.postEntrada(movimientoAdquisicion).subscribe((res: any) => {

@@ -48,8 +48,6 @@ export class IntangiblesDesarrolladosComponent implements OnInit {
   soportes: Array<SoporteActaProveedor>;
   proveedor: string;
 
-
-  tipoEntrada: any;
   formatoTipoMovimiento: any;
 
   cargando_proveedores: boolean = true;
@@ -94,7 +92,6 @@ export class IntangiblesDesarrolladosComponent implements OnInit {
       supervisorCtrl: ['', Validators.required],
     });
     this.getVigencia();
-    this.getTipoEntrada();
     this.getFormatoEntrada();
     this.loadSupervisores();
     this.loadOrdenadores();
@@ -235,14 +232,6 @@ changeSolicitante(event) {
     this.vigencia = new Date().getFullYear();
   }
 
-  getTipoEntrada() {
-    this.entradasHelper.getTipoEntradaByAcronimoAndNombre('e_arka', 'Desarrollo interior').subscribe(res => {
-      if (res !== undefined) {
-        this.tipoEntrada = res;
-      }
-    });
-  }
-
   getFormatoEntrada() {
     this.entradasHelper.getFormatoEntradaByName('Intangibles desarrollados').subscribe(res => {
       if (res !== null) {
@@ -270,11 +259,7 @@ changeSolicitante(event) {
         FormatoTipoMovimientoId: {
           Id: this.formatoTipoMovimiento[0].Id,
         },
-        EstadoMovimientoId: {
-          Id: 2, // REVISAR
-        },
         SoporteMovimientoId: this.idDocumento,
-        IdTipoMovimiento: this.tipoEntrada.Id,
       };
 
       this.entradasHelper.postEntrada(movimientoAdquisicion).subscribe((res: any) => {

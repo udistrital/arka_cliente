@@ -53,7 +53,6 @@ export class CajaMenorComponent implements OnInit {
   proveedor: string;
   fechaFactura: string;
 
-  tipoEntrada: any;
   formatoTipoMovimiento: any;
   cargando_proveedores: boolean = true;
   cargando_supervisores: boolean = true;
@@ -102,7 +101,6 @@ export class CajaMenorComponent implements OnInit {
       facturaCtrl: ['', Validators.nullValidator],
     });
     this.getVigencia();
-    this.getTipoEntrada();
     this.getFormatoEntrada();
     this.loadSupervisores();
     this.loadOrdenadores();
@@ -250,14 +248,6 @@ export class CajaMenorComponent implements OnInit {
     this.vigencia = new Date().getFullYear();
   }
 
-  getTipoEntrada() {
-    this.entradasHelper.getTipoEntradaByAcronimoAndNombre('e_arka', 'Caja menor').subscribe(res => {
-      if (res !== undefined) {
-        this.tipoEntrada = res;
-      }
-    });
-  }
-
   getFormatoEntrada() {
     this.entradasHelper.getFormatoEntradaByName('Caja Menor').subscribe(res => {
       if (res !== null) {
@@ -298,11 +288,7 @@ export class CajaMenorComponent implements OnInit {
         FormatoTipoMovimientoId: {
           Id: this.formatoTipoMovimiento[0].Id,
         },
-        EstadoMovimientoId: {
-          Id: 2, // REVISAR
-        },
         SoporteMovimientoId: this.idDocumento,
-        IdTipoMovimiento: this.tipoEntrada.Id,
       };
 
       this.entradasHelper.postEntrada(movimientoAdquisicion).subscribe((res: any) => {
