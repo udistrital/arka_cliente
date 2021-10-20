@@ -108,16 +108,13 @@ export class ConsultaEntradaComponent implements OnInit {
       },
       mode: 'external',
       columns: {
-        /*
-        Id: {
-          title: 'ID',
-        },
-        // */
         Consecutivo: {
           title: this.translate.instant('GLOBAL.consecutivo'),
+          width: '150px',
         },
         ActaRecibidoId: {
           title: this.translate.instant('GLOBAL.Acta_Recibido.una'),
+          width: '140px',
         },
         FechaCreacion: {
           title: this.translate.instant('GLOBAL.fecha_entrada'),
@@ -137,9 +134,7 @@ export class ConsultaEntradaComponent implements OnInit {
         },
         FormatoTipoMovimientoId: {
           title: this.translate.instant('GLOBAL.tipo_entrada'),
-          valuePrepareFunction: (value: any) => {
-            return value;
-          },
+          width: '300px',
           filter: {
             type: 'list',
             config: {

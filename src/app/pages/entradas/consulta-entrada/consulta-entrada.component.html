@@ -7,9 +7,11 @@
     <!-- CARD PARA MOSTRAR LAS SOLICITUDES *ngIf="!detalle" -->
     <p class="h4 pb-4" *ngIf="!detalle && !edit">{{'GLOBAL.mensaje_consulta_entrada' | translate}}</p>
 
-    <ng2-smart-table [settings]="settings" [source]="source" (custom)="onCustom($event)" (create)="onRegister($event)"
-      *ngIf="!detalle && !edit" (edit)="onEdit($event)">
-    </ng2-smart-table>
+    <div class="container-tabla">
+      <ng2-smart-table [settings]="settings" [source]="source" (custom)="onCustom($event)" (create)="onRegister($event)"
+        *ngIf="!detalle && !edit" (edit)="onEdit($event)">
+      </ng2-smart-table>
+    </div>
 
     <ngx-registro *ngIf="edit && entradaEdit" [EntradaEdit]="entradaEdit"></ngx-registro>
 
