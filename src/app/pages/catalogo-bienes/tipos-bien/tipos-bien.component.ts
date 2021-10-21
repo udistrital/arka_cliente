@@ -153,7 +153,7 @@ export class TiposBienComponent implements OnInit {
     let mensaje;
     if (this.nuevo) {
       mensaje = {
-        title: this.translate.instant('Registro GLOBAL.parametros.tiposBien.registro_title'),
+        title: this.translate.instant('GLOBAL.parametros.tiposBien.registro_title'),
         text: this.translate.instant('GLOBAL.parametros.tiposBien.registro_text'),
         type: 'warning',
         showCancelButton: true,
