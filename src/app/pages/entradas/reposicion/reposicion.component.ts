@@ -11,6 +11,7 @@ import { SafeResourceUrl, DomSanitizer } from '@angular/platform-browser';
 import { SoporteActaProveedor } from '../../../@core/data/models/acta_recibido/soporte_acta';
 import { Router, NavigationExtras } from '@angular/router';
 import Swal from 'sweetalert2';
+import { EstadoMovimiento } from '../../../@core/data/models/entrada/entrada';
 
 @Component({
   selector: 'ngx-reposicion',
@@ -37,6 +38,7 @@ export class ReposicionComponent implements OnInit {
   proveedor: string;
   fechaFactura: string;
   checked: boolean;
+  registrando: boolean;
 
    @ViewChild('file') fileInput: ElementRef;
    @Input() actaRecibidoId: Number;
@@ -151,10 +153,10 @@ export class ReposicionComponent implements OnInit {
    */
   async onSubmit() {
     if (this.encargado.length !== 0 && this.validar === true) {
+      this.registrando = true;
       const detalle = {
         acta_recibido_id: +this.actaRecibidoId,
-        consecutivo: 'P2',
-        documento_contable_id: 1, // REVISAR
+        consecutivo: 'P8',
         placa_id: this.placa,
         encargado_id: this.encargadoId,
       };
@@ -166,27 +168,24 @@ export class ReposicionComponent implements OnInit {
           Id: this.formatoTipoMovimiento[0].Id,
         },
         SoporteMovimientoId: this.idDocumento,
+        EstadoMovimientoId: new EstadoMovimiento,
       };
       // console.log(movimientoReposicion);
 
       this.entradasHelper.postEntrada(movimientoReposicion).subscribe((res: any) => {
         if (res !== null) {
-          const elstring = JSON.stringify(res.Detalle);
-          const posini = elstring.indexOf('consecutivo') + 16;
-          if (posini !== -1) {
-              const posfin = elstring.indexOf('\"', posini);
-              const elresultado = elstring.substr(posini, posfin - posini - 1);
-              detalle.consecutivo = elresultado;
-          }
+          this.registrando = false;
           (Swal as any).fire({
             type: 'success',
-            title: 'Entrada N° ' + `${detalle.consecutivo}` + ' Registrada',
-            text: 'La Entrada N° ' + `${detalle.consecutivo}` + ' ha sido registrada de forma exitosa',
+            title: this.translate.instant('GLOBAL.movimientos.entradas.registroTtlOk', { CONSECUTIVO: res.Consecutivo }),
+            text: this.translate.instant('GLOBAL.movimientos.entradas.registroTxtOk', { CONSECUTIVO: res.Consecutivo }),
+            showConfirmButton: false,
+            timer: 2000,
           });
-          const navigationExtras: NavigationExtras = { state: { consecutivo: res.Id } };
+          const navigationExtras: NavigationExtras = { state: { consecutivo: res.Consecutivo } };
           this.router.navigate(['/pages/reportes/registro-entradas'], navigationExtras);
         } else {
-          this.pUpManager.showErrorAlert('No es posible hacer el registro.');
+          this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.entradas.registroFail'));
         }
       });
     }

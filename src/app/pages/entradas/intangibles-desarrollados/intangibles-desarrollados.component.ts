@@ -14,7 +14,7 @@ import { TerceroCriterioJefe, TerceroCriterioPlanta } from '../../../@core/data/
 import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
 import {Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
-import { Entrada } from '../../../@core/data/models/entrada/entrada';
+import { EstadoMovimiento } from '../../../@core/data/models/entrada/entrada';
 import { TipoEntrada } from '../../../@core/data/models/entrada/tipo_entrada';
 import Swal from 'sweetalert2';
 
@@ -49,6 +49,7 @@ export class IntangiblesDesarrolladosComponent implements OnInit {
   proveedor: string;
 
   formatoTipoMovimiento: any;
+  registrando: boolean;
 
   cargando_proveedores: boolean = true;
   cargando_supervisores: boolean = true;
@@ -244,10 +245,10 @@ changeSolicitante(event) {
    */
   async onSubmit() {
     if (this.validar) {
+      this.registrando = true;
       const detalle = {
         acta_recibido_id: +this.actaRecibidoId,
         consecutivo: 'P8',
-        documento_contable_id: 1, // REVISAR
         vigencia: this.ordenadorForm.value.vigenciaCtrl,
         supervisor: this.supervisorForm.value.supervisorCtrl.TerceroPrincipal.Id,
         ordenador_gasto_id: this.ordenadorForm.value.ordenadorCtrl.TerceroPrincipal.Id,
@@ -260,26 +261,23 @@ changeSolicitante(event) {
           Id: this.formatoTipoMovimiento[0].Id,
         },
         SoporteMovimientoId: this.idDocumento,
+        EstadoMovimientoId: new EstadoMovimiento,
       };
 
       this.entradasHelper.postEntrada(movimientoAdquisicion).subscribe((res: any) => {
         if (res !== null) {
-          const elstring = JSON.stringify(res.Detalle);
-          const posini = elstring.indexOf('consecutivo') + 16;
-          if (posini !== -1) {
-              const posfin = elstring.indexOf('\"', posini);
-              const elresultado = elstring.substr(posini, posfin - posini - 1);
-              detalle.consecutivo = elresultado;
-          }
+          this.registrando = false;
           (Swal as any).fire({
             type: 'success',
-            title: 'Entrada N° ' + `${detalle.consecutivo}` + ' Registrada',
-            text: 'La Entrada N° ' + `${detalle.consecutivo}` + ' ha sido registrada de forma exitosa',
+            title: this.translate.instant('GLOBAL.movimientos.entradas.registroTtlOk', { CONSECUTIVO: res.Consecutivo }),
+            text: this.translate.instant('GLOBAL.movimientos.entradas.registroTxtOk', { CONSECUTIVO: res.Consecutivo }),
+            showConfirmButton: false,
+            timer: 2000,
           });
-          const navigationExtras: NavigationExtras = { state: { consecutivo: detalle.consecutivo } };
+          const navigationExtras: NavigationExtras = { state: { consecutivo: res.Consecutivo } };
           this.router.navigate(['/pages/reportes/registro-entradas'], navigationExtras);
         } else {
-          this.pUpManager.showErrorAlert('No es posible hacer el registro.');
+          this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.entradas.registroFail'));
         }
       });
     } else {

@@ -786,6 +786,11 @@
     "observaciones": "Comments",
 
     "movimientos": {
+      "entradas": {
+        "registroTtlOk":"The Entry {{CONSECUTIVO}} was Registered",
+        "registroTxtOk":"The entry {{CONSECUTIVO}} has been successfully registered",
+        "registroFail":"There was an error creating the entry."
+      },
       "tipo": {
         "EA": {
           "nombre": "Acquisition",

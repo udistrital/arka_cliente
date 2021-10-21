@@ -4,7 +4,7 @@ import { Router, NavigationExtras } from '@angular/router';
 import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
 import { OrdenadorGasto } from '../../../@core/data/models/entrada/ordenador_gasto';
 import { PopUpManager } from '../../../managers/popUpManager';
-import { Entrada } from '../../../@core/data/models/entrada/entrada';
+import { EstadoMovimiento } from '../../../@core/data/models/entrada/entrada';
 import { TipoEntrada } from '../../../@core/data/models/entrada/tipo_entrada';
 import { TranslateService } from '@ngx-translate/core';
 import { SafeResourceUrl, DomSanitizer } from '@angular/platform-browser';
@@ -32,6 +32,7 @@ export class SobranteComponent implements OnInit {
   fileDocumento: any;
   uidDocumento: string;
   idDocumento: number;
+  registrando: boolean;
 
   formatoTipoMovimiento: any;
 
@@ -90,10 +91,10 @@ export class SobranteComponent implements OnInit {
    */
   async onSubmit() {
     if (this.validar) {
+      this.registrando = true;
       const detalle = {
         acta_recibido_id: +this.actaRecibidoId,
-        consecutivo: 'P5',
-        documento_contable_id: 1, // REVISAR
+        consecutivo: 'P8',
         vigencia: this.fechaForm.value.fechaCtrl,
       };
       const movimientoAdquisicion = {
@@ -104,26 +105,23 @@ export class SobranteComponent implements OnInit {
           Id: this.formatoTipoMovimiento[0].Id,
         },
         SoporteMovimientoId: this.idDocumento,
+        EstadoMovimientoId: new EstadoMovimiento,
       };
 
       this.entradasHelper.postEntrada(movimientoAdquisicion).subscribe((res: any) => {
         if (res !== null) {
-          const elstring = JSON.stringify(res.Detalle);
-          const posini = elstring.indexOf('consecutivo') + 16;
-          if (posini !== -1) {
-              const posfin = elstring.indexOf('\"', posini);
-              const elresultado = elstring.substr(posini, posfin - posini - 1);
-              detalle.consecutivo = elresultado;
-          }
+          this.registrando = false;
           (Swal as any).fire({
             type: 'success',
-            title: 'Entrada N° ' + `${detalle.consecutivo}` + ' Registrada',
-            text: 'La Entrada N° ' + `${detalle.consecutivo}` + ' ha sido registrada de forma exitosa',
+            title: this.translate.instant('GLOBAL.movimientos.entradas.registroTtlOk', { CONSECUTIVO: res.Consecutivo }),
+            text: this.translate.instant('GLOBAL.movimientos.entradas.registroTxtOk', { CONSECUTIVO: res.Consecutivo }),
+            showConfirmButton: false,
+            timer: 2000,
           });
-          const navigationExtras: NavigationExtras = { state: { consecutivo: res.Id } }; // REVISAR POR QUÉ RES LLEGA 0
+          const navigationExtras: NavigationExtras = { state: { consecutivo: res.Consecutivo } };
           this.router.navigate(['/pages/reportes/registro-entradas'], navigationExtras);
         } else {
-          this.pUpManager.showErrorAlert('No es posible hacer el registro.');
+          this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.entradas.registroFail'));
         }
       });
     } else {

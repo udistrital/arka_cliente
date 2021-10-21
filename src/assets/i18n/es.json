@@ -786,6 +786,11 @@
     "observaciones": "Observaciones",
 
     "movimientos": {
+      "entradas": {
+        "registroTtlOk":"Entrada {{CONSECUTIVO}} Registrada",
+        "registroTxtOk":"La entrada {{CONSECUTIVO}} ha sido registrada de manera exitosa",
+        "registroFail":"No es posible hacer el registro de la entrada"
+      },
       "tipo": {
         "EA": {
           "nombre": "Adquisición",

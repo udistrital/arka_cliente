@@ -8,7 +8,7 @@ import { NuxeoService } from '../../../@core/utils/nuxeo.service';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { DocumentoService } from '../../../@core/data/documento.service';
 import { TranslateService } from '@ngx-translate/core';
-import { Entrada } from '../../../@core/data/models/entrada/entrada';
+import { EstadoMovimiento } from '../../../@core/data/models/entrada/entrada';
 import { TipoEntrada } from '../../../@core/data/models/entrada/tipo_entrada';
 import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
 import { TerceroCriterioJefe, TerceroCriterioPlanta } from '../../../@core/data/models/terceros_criterio';
@@ -29,7 +29,7 @@ export class ElaboracionPropiaComponent implements OnInit {
   supervisorForm: FormGroup;
 
 
-
+  registrando: boolean;
   Supervisores: TerceroCriterioPlanta[];
   supervisoresFiltrados: Observable<TerceroCriterioPlanta[]>;
   Ordenadores: TerceroCriterioJefe[];
@@ -291,12 +291,12 @@ export class ElaboracionPropiaComponent implements OnInit {
    */
   async onSubmit() {
     if (this.validar) {
+      this.registrando = true;
       await this.postSoporteNuxeo([this.fileDocumento]);
 
       const detalle = {
         acta_recibido_id: +this.actaRecibidoId,
-        consecutivo: 'P3',
-        documento_contable_id: 1, // REVISAR
+        consecutivo: 'P8',
         supervisor: this.supervisorForm.value.supervisorCtrl.TerceroPrincipal.Id,
         vigencia_ordenador: this.ordenadorForm.value.vigenciaCtrl,
         ordenador_gasto_id: this.ordenadorForm.value.ordenadorCtrl.TerceroPrincipal.Id,
@@ -310,27 +310,23 @@ export class ElaboracionPropiaComponent implements OnInit {
           Id: this.formatoTipoMovimiento[0].Id,
         },
         SoporteMovimientoId: this.idDocumento,
+        EstadoMovimientoId: new EstadoMovimiento,
       };
 
       this.entradasHelper.postEntrada(movimientoAdquisicion).subscribe((res: any) => {
         if (res !== null) {
-
-          const elstring = JSON.stringify(res.Detalle);
-          const posini = elstring.indexOf('consecutivo') + 16;
-          if (posini !== -1) {
-              const posfin = elstring.indexOf('\"', posini);
-              const elresultado = elstring.substr(posini, posfin - posini - 1);
-              detalle.consecutivo = elresultado;
-          }
+          this.registrando = false;
           (Swal as any).fire({
             type: 'success',
-            title: 'Entrada N° ' + `${detalle.consecutivo}` + ' Registrada',
-            text: 'La Entrada N° ' + `${detalle.consecutivo}` + ' ha sido registrada de forma exitosa',
+            title: this.translate.instant('GLOBAL.movimientos.entradas.registroTtlOk', { CONSECUTIVO: res.Consecutivo }),
+            text: this.translate.instant('GLOBAL.movimientos.entradas.registroTxtOk', { CONSECUTIVO: res.Consecutivo }),
+            showConfirmButton: false,
+            timer: 2000,
           });
-          const navigationExtras: NavigationExtras = { state: { consecutivo: res.Id } };
+          const navigationExtras: NavigationExtras = { state: { consecutivo: res.Consecutivo } };
           this.router.navigate(['/pages/reportes/registro-entradas'], navigationExtras);
         } else {
-          this.pUpManager.showErrorAlert('No es posible hacer el registro.');
+          this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.entradas.registroFail'));
         }
       });
     } else {
