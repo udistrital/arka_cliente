@@ -507,6 +507,7 @@
     "Nombre": "Name",
     "Descripcion": "Description",
     "Acciones": "Actions",
+    "verDetalle" : "Ver Detalle",
 
     "Deshacer": "Undo",
     "colapsar": "Collapse",
@@ -796,6 +797,12 @@
 
     "movimientos": {
       "entradas": {
+        "noEntradasView": "There are no entries to view",
+        "noEntradasReview": "There are no entries to review",
+        "accionRevision": "Review Entry",
+        "errorListaEntradas": "Error getting the entries list",
+        "errorEstadosMov": "Error getting the status",
+        "errorRechazoEntrada": "Error when trying o reject the entry",
         "registroTtlOk":"The Entry {{CONSECUTIVO}} was Registered",
         "registroTxtOk":"The entry {{CONSECUTIVO}} has been successfully registered",
         "registroFail":"There was an error creating the entry.",

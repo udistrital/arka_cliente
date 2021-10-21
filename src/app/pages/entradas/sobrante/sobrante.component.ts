@@ -4,7 +4,7 @@ import { Router, NavigationExtras } from '@angular/router';
 import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
 import { OrdenadorGasto } from '../../../@core/data/models/entrada/ordenador_gasto';
 import { PopUpManager } from '../../../managers/popUpManager';
-import { EstadoMovimiento } from '../../../@core/data/models/entrada/entrada';
+import { EstadoMovimiento, TrMovimiento } from '../../../@core/data/models/entrada/entrada';
 import { TipoEntrada } from '../../../@core/data/models/entrada/tipo_entrada';
 import { TranslateService } from '@ngx-translate/core';
 import { SafeResourceUrl, DomSanitizer } from '@angular/platform-browser';
@@ -97,7 +97,7 @@ export class SobranteComponent implements OnInit {
         consecutivo: 'P8',
         vigencia: this.fechaForm.value.fechaCtrl,
       };
-      const movimientoAdquisicion = {
+      const movimientoAdquisicion = <TrMovimiento>{
         Observacion: this.observacionForm.value.observacionCtrl,
         Detalle: JSON.stringify(detalle),
         Activo: true,

@@ -3,7 +3,7 @@ import { Validators, FormBuilder, FormGroup, AbstractControl, ValidatorFn } from
 import { PopUpManager } from '../../../managers/popUpManager';
 import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
 import { Contrato } from '../../../@core/data/models/entrada/contrato';
-import { EstadoMovimiento } from '../../../@core/data/models/entrada/entrada';
+import { EstadoMovimiento, TrMovimiento } from '../../../@core/data/models/entrada/entrada';
 import { OrdenadorGasto } from '../../../@core/data/models/entrada/ordenador_gasto';
 import { Supervisor } from '../../../@core/data/models/entrada/supervisor';
 import { SoporteActaProveedor } from '../../../@core/data/models/acta_recibido/soporte_acta';
@@ -246,7 +246,7 @@ export class IntangiblesAdquiridosComponent implements OnInit {
         tipo_contrato: this.opcionTipoContrato === '14' ? 'Orden de Servicios' :
         this.opcionTipoContrato === '15' ? 'Orden de Compra' : '',
       };
-      const movimientoAdquisicion = {
+      const movimientoAdquisicion = <TrMovimiento>{
         Observacion: this.observacionForm.value.observacionCtrl,
         Detalle: JSON.stringify(detalle),
         Activo: true,

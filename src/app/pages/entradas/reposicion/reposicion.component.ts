@@ -11,7 +11,7 @@ import { SafeResourceUrl, DomSanitizer } from '@angular/platform-browser';
 import { SoporteActaProveedor } from '../../../@core/data/models/acta_recibido/soporte_acta';
 import { Router, NavigationExtras } from '@angular/router';
 import Swal from 'sweetalert2';
-import { EstadoMovimiento } from '../../../@core/data/models/entrada/entrada';
+import { EstadoMovimiento, TrMovimiento } from '../../../@core/data/models/entrada/entrada';
 
 @Component({
   selector: 'ngx-reposicion',
@@ -160,7 +160,7 @@ export class ReposicionComponent implements OnInit {
         placa_id: this.placa,
         encargado_id: this.encargadoId,
       };
-      const movimientoReposicion = {
+      const movimientoReposicion = <TrMovimiento>{
         Observacion: this.observacionForm.value.observacionCtrl,
         Detalle: JSON.stringify(detalle),
         Activo: true,

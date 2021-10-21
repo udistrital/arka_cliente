@@ -5,6 +5,7 @@ import { iif } from 'rxjs';
 import { PopUpManager } from '../../managers/popUpManager';
 import { TranslateService } from '@ngx-translate/core';
 import { DisponibilidadMovimientosService } from '../../@core/data/disponibilidad-movimientos.service';
+import { TrMovimiento } from '../../@core/data/models/entrada/entrada';
 
 @Injectable({
     providedIn: 'root',
@@ -89,13 +90,13 @@ export class EntradaHelper {
      * @param entradaData object to save in the DB
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
      */
-    public postEntrada(entradaData, entradaId: number = 0) {
+    public postEntrada(entradaData: Partial<TrMovimiento>, entradaId: number = 0) {
         return this.dispMvtos.movimientosPermitidos().pipe(
             switchMap(disp => iif(() => disp, this.postEntradaFinal(entradaData, entradaId))),
         );
     }
 
-    private postEntradaFinal(entradaData: any, entradaId: number) {
+    private postEntradaFinal(entradaData: Partial<TrMovimiento>, entradaId: number) {
         this.rqManager.setPath('ARKA_SERVICE');
         return this.rqManager.post('entrada/?entradaId=' + entradaId, entradaData).pipe(
             map(
@@ -124,7 +125,7 @@ export class EntradaHelper {
             map(
                 (res) => {
                     if (res === 'error') {
-                        this.pUpManager.showErrorAlert('No se pudieron consultar las entradas');
+                        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.entradas.errorListaEntradas'));
                         return undefined;
                     }
                     return res;
@@ -371,7 +372,7 @@ export class EntradaHelper {
             map(
                 (res) => {
                     if (res === 'error') {
-                        this.pUpManager.showErrorAlert('No se pudo consultar el parametro divisas');
+                        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.entradas.errorEstadosMov'));
                         return undefined;
                     }
                     return res;
@@ -388,7 +389,7 @@ export class EntradaHelper {
                     if (res) {
                         return res;
                     } else {
-                        this.pUpManager.showErrorAlert('No se pudo consultar el contrato contratos');
+                        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.entradas.errorRechazoEntrada'));
                         return undefined;
 
                     }

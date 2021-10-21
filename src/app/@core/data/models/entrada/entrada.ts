@@ -48,3 +48,7 @@ export class EstadoMovimiento {
     Activo: boolean;
     Descripcion: string;
 }
+
+export class TrMovimiento extends Movimiento {
+    SoporteMovimientoId: number;
+}
