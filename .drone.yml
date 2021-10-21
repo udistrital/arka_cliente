@@ -51,6 +51,9 @@ steps:
     event:
     - push
 
+# TODO: Ajustar para usar jest en vez de karma, se demora demasiado...
+# https://hubci.portaloas.udistrital.edu.co/udistrital/arka_cliente/935/1/5
+# Se dejará comentado mientras tanto
 - name: prueba_unitarias
   failure: ignore
   image: node:12.6.0
@@ -59,8 +62,8 @@ steps:
   - npm run test
   when:
     branch:
-    - feature/*
-    - hotfix/*
+    # - feature/*
+    # - hotfix/*
     - unitest
 
 - name:  pruebas_linter
