@@ -473,6 +473,8 @@
         "RechazadaNO":"El Acta no ha podido ser Devuelta de forma exitosa, intente más tarde"
       }
     },
+    "errorPermisosTtl": "Error cargando permisos de usuario",
+    "errorPermisosTxt": "No se pudieron obtener los permisos correctamente, intente más tarde",
     "error_soporte_title":"Error al obtener el soporte",
     "error_soporte_text":"Soporte corrupto o no registrado.",
     "fecha_inicio":"Fecha de inicio",
