@@ -29,7 +29,7 @@ export class ConsultaEntradaComponent implements OnInit {
   entradas: Array<Entrada>;
   detalle: boolean;
   actaRecibidoId: number;
-  consecutivoEntrada: string;
+  entradaId: string;
   entradaEspecifica: Entrada;
   contrato: Contrato;
   settings: any;
@@ -43,6 +43,8 @@ export class ConsultaEntradaComponent implements OnInit {
   Proveedor: any;
   Placa: any;
   encargado: any;
+  estadosMovimiento: Array<EstadoMovimiento>;
+  modo: string = 'consulta';
 
   constructor(
     private router: Router,
@@ -52,7 +54,8 @@ export class ConsultaEntradaComponent implements OnInit {
     private documentoService: DocumentoService,
     private listService: ListService,
     private store: Store<IAppState>,
-    private tercerosHelper: TercerosHelper) {
+    private tercerosHelper: TercerosHelper,
+    private route: ActivatedRoute) {
     this.source = new LocalDataSource();
     this.entradas = new Array<Entrada>();
     this.detalle = false;
@@ -88,6 +91,26 @@ export class ConsultaEntradaComponent implements OnInit {
       registrar: this.translate.instant('GLOBAL.registrar_nueva_entrada'),
       editar: this.translate.instant('GLOBAL.Acta_Recibido.EdicionActa.Title'),
     };
+
+    const columns = this.modo === 'consulta' ? {
+      EstadoMovimientoId: {
+        title: this.translate.instant('GLOBAL.tipo_entrada'),
+        width: '300px',
+        filter: {
+          type: 'list',
+          config: {
+            selectText: this.translate.instant('GLOBAL.seleccionar') + '...',
+            list: [
+              { value: 'Entrada En Trámite', title: 'En Trámite' },
+              { value: 'Entrada Aprobada', title: 'Aprobada' },
+              { value: 'Entrada Rechazada', title: 'Rechazada' },
+              { value: 'Entrada Con Salida', title: 'Con Salida' },
+            ],
+          },
+        },
+      },
+    } : [];
+
     this.settings = {
       hideSubHeader: false,
       noDataMessage: this.translate.instant('GLOBAL.no_data_entradas'),
@@ -99,7 +122,8 @@ export class ConsultaEntradaComponent implements OnInit {
         custom: [
           {
             name: this.translate.instant('GLOBAL.detalle'),
-            title: '<i class="fas fa-eye" title="Ver"></i>',
+            title: this.modo === 'consulta' ?
+              '<i class="fas fa-eye" title="Ver"></i>' : '<i class="fas fa-edit" title="Ver"></i>',
           },
         ],
       },
@@ -157,20 +181,23 @@ export class ConsultaEntradaComponent implements OnInit {
             },
           },
         },
+        ...columns,
       },
     };
   }
 
   loadEntradas(): void {
-    this.entradasHelper.getEntradas(false).subscribe(res => {
+    this.entradasHelper.getEntradas(this.modo === 'revision').subscribe(res => {
       if (res.length) {
         res.forEach(entrada => {
           entrada.Detalle = JSON.parse((entrada.Detalle));
           entrada.ActaRecibidoId = entrada.Detalle.acta_recibido_id;
           entrada.Consecutivo = entrada.Detalle.consecutivo;
-          entrada.FormatoTipoMovimientoId = entrada.FormatoTipoMovimientoId.Nombre
+          entrada.FormatoTipoMovimientoId = entrada.FormatoTipoMovimientoId.Nombre;
+          entrada.EstadoMovimientoId = entrada.EstadoMovimientoId.Nombre;
         });
         this.source.load(res);
+        this.source.setSort([{ field: 'FechaCreacion', direction: 'desc' }]);
       }
       this.mostrar = true;
     });
@@ -269,10 +296,16 @@ export class ConsultaEntradaComponent implements OnInit {
 
   loadOrdenador() {
 
+  loadEstados() {
+    this.entradasHelper.getEstadosMovimiento().toPromise().then(res => {
+      if (res.length > 0) {
+        this.estadosMovimiento = res;
+      }
+    });
   }
 
   loadSoporte() {
-    this.entradasHelper.getSoportes(this.consecutivoEntrada).subscribe(res => {
+    this.entradasHelper.getSoportes(this.entradaId).subscribe(res => {
       if (res !== null) {
         const data = <Array<any>>res;
 
@@ -487,7 +520,7 @@ export class ConsultaEntradaComponent implements OnInit {
     this.mostrar = false;
     this.actaRecibidoId = +`${event.data.ActaRecibidoId}`;
     // this.consecutivoEntrada = `${event.data.Consecutivo}`;
-    this.consecutivoEntrada = `${event.data.Id}`;
+    this.entradaId = `${event.data.Id}`;
     this.detalle = true;
     this.loadEntradaEspecifica();
   }
@@ -542,9 +575,15 @@ export class ConsultaEntradaComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.route.data.subscribe(data => {
+      if (data && data.modo !== null && data.modo !== undefined) {
+        this.modo = data.modo;
+      }
+    });
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
       this.loadTablaSettings();
     });
+    this.loadEstados();
     this.loadEntradas();
     this.loadLists();
     this.loadTablaSettings();

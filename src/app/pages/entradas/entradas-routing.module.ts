@@ -15,6 +15,12 @@ const routes: Routes = [{
     {
       path: 'consulta_entrada',
       component: ConsultaEntradaComponent,
+      data: { modo: 'consulta' },
+    },
+    {
+      path: 'aprobar_entrada',
+      component: ConsultaEntradaComponent,
+      data: { modo: 'revision' },
     },
   ],
 }];

@@ -120,7 +120,15 @@
         "name": "Movimientos",
         "children": {
           "entradas": {
-            "name": "Entradas"
+            "name": "Entradas",
+            "children": {
+              "consultarEntrada": {
+                "name": "Consultar Entradas"
+              },
+              "aprobarEntrada": {
+                "name": "Aprobar Entradas"
+              }
+            }
           },
           "salidas": {
             "name": "Salidas"
