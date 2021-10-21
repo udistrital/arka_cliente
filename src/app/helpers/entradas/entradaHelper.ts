@@ -89,15 +89,15 @@ export class EntradaHelper {
      * @param entradaData object to save in the DB
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
      */
-    public postEntrada(entradaData) {
+    public postEntrada(entradaData, entradaId: number = 0) {
         return this.dispMvtos.movimientosPermitidos().pipe(
-            switchMap(disp => iif(() => disp, this.postEntradaFinal(entradaData))),
+            switchMap(disp => iif(() => disp, this.postEntradaFinal(entradaData, entradaId))),
         );
     }
 
-    private postEntradaFinal(entradaData) {
+    private postEntradaFinal(entradaData: any, entradaId: number) {
         this.rqManager.setPath('ARKA_SERVICE');
-        return this.rqManager.post(`entrada/`, entradaData).pipe(
+        return this.rqManager.post('entrada/?entradaId=' + entradaId, entradaData).pipe(
             map(
                 (res) => {
                     if (res['Type'] === 'error') {
@@ -363,6 +363,38 @@ export class EntradaHelper {
                     },
                 ),
             );
+    }
+
+    public getEstadosMovimiento() {
+        this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
+        return this.rqManager.get('estado_movimiento?limit=-1').pipe(
+            map(
+                (res) => {
+                    if (res === 'error') {
+                        this.pUpManager.showErrorAlert('No se pudo consultar el parametro divisas');
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
+
+    public putMovimiento(movimiento: any) {
+        this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
+        return this.rqManager.put('movimiento', movimiento).pipe(
+            map(
+                (res) => {
+                    if (res) {
+                        return res;
+                    } else {
+                        this.pUpManager.showErrorAlert('No se pudo consultar el contrato contratos');
+                        return undefined;
+
+                    }
+                },
+            ),
+        );
     }
 
 }

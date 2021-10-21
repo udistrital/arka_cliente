@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { LocalDataSource } from 'ngx-smart-table';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
-import { Entrada } from '../../../@core/data/models/entrada/entrada';
+import { Entrada, EstadoMovimiento, Movimiento } from '../../../@core/data/models/entrada/entrada';
 import { Contrato } from '../../../@core/data/models/entrada/contrato';
 import { Supervisor } from '../../../@core/data/models/entrada/supervisor';
 import { OrdenadorGasto } from '../../../@core/data/models/entrada/ordenador_gasto';
@@ -11,11 +11,10 @@ import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { NuxeoService } from '../../../@core/utils/nuxeo.service';
 import { DocumentoService } from '../../../@core/data/documento.service';
 import { ListService } from '../../../@core/store/services/list.service';
-import { TerceroCriterioPlanta } from '../../../@core/data/models/terceros_criterio';
 import { Store } from '@ngrx/store';
 import { IAppState } from '../../../@core/store/app.state';
 import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
-import { Proveedor } from '../../../@core/data/models/acta_recibido/Proveedor';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'ngx-consulta-entrada',
@@ -44,7 +43,9 @@ export class ConsultaEntradaComponent implements OnInit {
   Placa: any;
   encargado: any;
   estadosMovimiento: Array<EstadoMovimiento>;
+  movimiento: Movimiento;
   modo: string = 'consulta';
+  filaSeleccionada: any;
 
   constructor(
     private router: Router,
@@ -62,6 +63,7 @@ export class ConsultaEntradaComponent implements OnInit {
     this.entradaEspecifica = new Entrada;
     this.contrato = new Contrato;
     this.documentoId = false;
+    this.movimiento = new Movimiento;
     this.iniciarParametros();
     this.listService.findClases();
     this.listService.findImpuestoIVA();
@@ -83,7 +85,6 @@ export class ConsultaEntradaComponent implements OnInit {
   onEdit(event) {
     this.edit = true;
     this.entradaEdit = event.data;
-    // console.log(this.entradaEdit);
   }
 
   loadTablaSettings() {
@@ -204,10 +205,10 @@ export class ConsultaEntradaComponent implements OnInit {
   }
 
   loadEntradaEspecifica(): void {
-    this.entradasHelper.getEntrada(this.consecutivoEntrada).subscribe(res => {
+    this.entradasHelper.getEntrada(this.entradaId).subscribe(res => {
       if (res !== null) {
-        // console.log(res);
-        switch (res[0].FormatoTipoMovimientoId.Nombre) {
+        this.movimiento = res[0];
+        switch (this.movimiento.FormatoTipoMovimientoId.Nombre) {
           case 'Adquisición': {
             this.loadDetalleAdquisicion(res[0]);
             break;
@@ -294,7 +295,56 @@ export class ConsultaEntradaComponent implements OnInit {
     } else this.mostrar = true;
   }
 
-  loadOrdenador() {
+  confirmSubmit(aprobar: boolean) {
+    (Swal as any).fire({
+      title: this.translate.instant('GLOBAL.movimientos.entradas.' + (aprobar ? 'aprobacion' : 'rechazo') + 'ConfrmTtl'),
+      text: this.translate.instant('GLOBAL.movimientos.entradas.' + (aprobar ? 'aprobacion' : 'rechazo') + 'ConfrmTxt'),
+      type: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: this.translate.instant('GLOBAL.si'),
+      cancelButtonText: this.translate.instant('GLOBAL.no'),
+    }).then((result) => {
+      if (result.value) {
+        this.onSubmitRevision(aprobar);
+      }
+    });
+  }
+
+  private onSubmitRevision(aprobar: boolean) {
+    this.mostrar = false;
+    if (aprobar) {
+      this.entradasHelper.postEntrada({}, +this.entradaId).toPromise().then((res: any) => {
+        if (res) {
+          this.alertSuccess(true);
+        }
+      });
+    } else {
+      const estado = this.estadosMovimiento.find(estadoMovimiento => estadoMovimiento.Nombre === 'Entrada Rechazada').Id;
+      this.movimiento.EstadoMovimientoId = <EstadoMovimiento>{ Id: estado };
+      this.entradasHelper.putMovimiento(this.movimiento).toPromise().then((res: any) => {
+        if (res) {
+          this.alertSuccess(false);
+        }
+      });
+    }
+  }
+
+
+  private alertSuccess(aprobar: boolean) {
+    const consecutivo = JSON.parse(this.movimiento.Detalle).consecutivo;
+    (Swal as any).fire({
+      type: 'success',
+      title: this.translate.instant('GLOBAL.movimientos.entradas.' + (aprobar ? 'aprobacion' : 'rechazo') + 'TtlOk'),
+      text: this.translate.instant('GLOBAL.movimientos.entradas.' + (aprobar ? 'aprobacion' : 'rechazo') + 'TxtOk', { CONSECUTIVO: consecutivo }),
+      showConfirmButton: false,
+      timer: 3000,
+    });
+    this.source.remove(this.filaSeleccionada);
+    this.onVolver();
+    this.mostrar = true;
+  }
 
   loadEstados() {
     this.entradasHelper.getEstadosMovimiento().toPromise().then(res => {
@@ -520,6 +570,7 @@ export class ConsultaEntradaComponent implements OnInit {
     this.mostrar = false;
     this.actaRecibidoId = +`${event.data.ActaRecibidoId}`;
     // this.consecutivoEntrada = `${event.data.Consecutivo}`;
+    this.filaSeleccionada = event.data;
     this.entradaId = `${event.data.Id}`;
     this.detalle = true;
     this.loadEntradaEspecifica();

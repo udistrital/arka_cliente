@@ -21,3 +21,30 @@ export class Entrada {
     Divisa: string;
     EstadoMovimientoId: number;
 }
+
+export class Movimiento {
+    Id: number;
+    Observacion: string;
+    Detalle: string;
+    Activo: boolean;
+    MovimientoPadreId: Movimiento;
+    FormatoTipoMovimientoId: FormatoTipoMovimiento;
+    EstadoMovimientoId: EstadoMovimiento;
+}
+
+export class FormatoTipoMovimiento {
+    Id: number;
+    Nombre: string;
+    Formato: string;
+    Descripcion: string;
+    CodigoAbreviacion: string;
+    NumeroOrden: number;
+    Activo: boolean;
+}
+
+export class EstadoMovimiento {
+    Id: number;
+    Nombre: string;
+    Activo: boolean;
+    Descripcion: string;
+}

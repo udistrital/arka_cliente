@@ -456,7 +456,7 @@
         "IVAHeader": "% IVA",
         "ValorIVAHeader": "IVA's Value",
         "ValorTotalHeader": "Total Value",
-        "Verificar": "Verifify",
+        "Verificar": "Approve",
         "Rechazar": "Reject",
         "Volver": "Back",
         "DatosVeridicosTitle": "Are You Sure?",
@@ -502,7 +502,8 @@
     "Adiciones y mejoras": "Additions and improvements",
     "Intangibles": "Inmaterial assets",
     "Provisional": "Provisions",
-
+    "si": "Yes",
+    "no": "No",
     "Nombre": "Name",
     "Descripcion": "Description",
     "Acciones": "Actions",
@@ -797,7 +798,15 @@
       "entradas": {
         "registroTtlOk":"The Entry {{CONSECUTIVO}} was Registered",
         "registroTxtOk":"The entry {{CONSECUTIVO}} has been successfully registered",
-        "registroFail":"There was an error creating the entry."
+        "registroFail":"There was an error creating the entry.",
+        "aprobacionConfrmTtl":"Confirm entry Approval",
+        "aprobacionConfrmTxt":"Are you sure to approve this entry?",
+        "aprobacionTtlOk": "Entry Approved",
+        "aprobacionTxtOk": "The entry {{CONSECUTIVO}} was successfully approved",
+        "rechazoConfrmTtl":"Confirm entry rejection",
+        "rechazoConfrmTxt":"Are you sure to reject this entry?",
+        "rechazoTtlOk": "Entry Rejected",
+        "rechazoTxtOk": "The entry {{CONSECUTIVO}} was successfully rejected"
       },
       "tipo": {
         "EA": {
