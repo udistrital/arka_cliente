@@ -119,14 +119,14 @@ export class TiposBienComponent implements OnInit {
             return value.toUpperCase();
           },
         },
-        Orden: {
-          title: this.translate.instant('GLOBAL.parametros.tiposBien.asignable_kardex'),
-          width: '170px',
-          filter: false,
-          valuePrepareFunction: (value: any) => {
-            return value === 1 ? 'Si' : 'No';
-          },
-        },
+        // Orden: {
+        //   title: this.translate.instant('GLOBAL.parametros.tiposBien.asignable_kardex'),
+        //   width: '170px',
+        //   filter: false,
+        //   valuePrepareFunction: (value: any) => {
+        //     return value === 1 ? 'Si' : 'No';
+        //   },
+        // },
         Activo: {
           width: '100px',
           title: this.translate.instant('GLOBAL.activo'),
