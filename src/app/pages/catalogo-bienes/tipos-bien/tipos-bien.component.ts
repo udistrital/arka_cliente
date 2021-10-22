@@ -209,4 +209,9 @@ export class TiposBienComponent implements OnInit {
     this.recargarlista();
     this.mostrar = false;
   }
+
+  volver() {
+    this.tipo_bien = undefined;
+    this.mostrar = false;
+  }
 }
