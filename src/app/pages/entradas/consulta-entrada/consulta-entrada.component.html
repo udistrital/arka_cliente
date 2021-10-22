@@ -7,16 +7,18 @@
     <!-- CARD PARA MOSTRAR LAS SOLICITUDES *ngIf="!detalle" -->
     <p class="h4 pb-4" *ngIf="!detalle && !edit">{{'GLOBAL.mensaje_consulta_entrada' | translate}}</p>
 
-    <ng2-smart-table [settings]="settings" [source]="source" (custom)="onCustom($event)" (create)="onRegister($event)"
-      *ngIf="!detalle && !edit" (edit)="onEdit($event)">
-    </ng2-smart-table>
+    <div class="container-tabla">
+      <ng2-smart-table [settings]="settings" [source]="source" (custom)="onCustom($event)" (create)="onRegister($event)"
+        *ngIf="!detalle && !edit">
+      </ng2-smart-table>
+    </div>
 
     <ngx-registro *ngIf="edit && entradaEdit" [EntradaEdit]="entradaEdit"></ngx-registro>
 
     <!-- CARD PARA MOSTRAR LOS DETALLES DE LAS SOLICITUDES -->
     <h5 *ngIf="detalle && !edit" class="pb-4">{{'GLOBAL.detalle_entrada' | translate}}</h5>
 
-    <div *ngIf="detalle && !edit" class="container">
+    <div *ngIf="detalle && !edit">
 
       <!-- ENTRADA -->
       <div class="row">
@@ -378,14 +380,19 @@
         <mat-icon>cloud_download</mat-icon>
       </button>
 
+      <ngx-gestionar-elementos [ActaRecibidoId]="actaRecibidoId" [Modo]="'ver'" *ngIf="detalle"></ngx-gestionar-elementos>
+
+      <nb-card-footer>
+        <div *ngIf="modo === 'revision'" class="justify-content-center" style="padding-bottom: 2rem;">
+          <button nbButton (click)="confirmSubmit(false)">{{'GLOBAL.Acta_Recibido.VerificacionActa.Rechazar' |
+            translate}}</button>
+          <button nbButton  (click)="confirmSubmit(true)"
+            class="float-right">{{'GLOBAL.Acta_Recibido.VerificacionActa.Verificar' | translate}}</button>
+        </div>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="onVolver()"
+            *ngIf="detalle && !edit">{{'GLOBAL.volver' | translate}}
+          </button>
+      </nb-card-footer>
     </div>
-
-    <ngx-gestionar-elementos [ActaRecibidoId]="actaRecibidoId" [Modo]="'ver'" *ngIf="detalle"></ngx-gestionar-elementos>
-
   </nb-card-body>
-  <nb-card-footer class="pt-4">
-    <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="onVolver()"
-      *ngIf="detalle && !edit">{{'GLOBAL.volver' | translate}}
-    </button>
-  </nb-card-footer>
 </nb-card>

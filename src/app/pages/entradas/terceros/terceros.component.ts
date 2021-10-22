@@ -7,12 +7,13 @@ import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoH
 import { PopUpManager } from '../../../managers/popUpManager';
 import { OrdenadorGasto } from '../../../@core/data/models/entrada/ordenador_gasto';
 import { Supervisor } from '../../../@core/data/models/entrada/supervisor';
-import { Entrada } from '../../../@core/data/models/entrada/entrada';
+import { EstadoMovimiento, TrMovimiento } from '../../../@core/data/models/entrada/entrada';
 import { TipoEntrada } from '../../../@core/data/models/entrada/tipo_entrada';
 import { NavigationExtras, Router } from '@angular/router';
 import { NbStepperComponent } from '@nebular/theme';
 import Swal from 'sweetalert2';
 import { isObject } from 'rxjs/internal-compatibility';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'ngx-terceros',
@@ -47,15 +48,15 @@ export class TercerosComponent implements OnInit {
   // Selects
   opcionTipoContrato: string;
   opcionvigencia: string;
-  tipoEntrada: any;
   formatoTipoMovimiento: any;
+  registrando: boolean;
 
   @ViewChild('stepper') stepper: NbStepperComponent;
 
   @Input() actaRecibidoId: Number;
 
   constructor(private router: Router, private entradasHelper: EntradaHelper, private actaRecibidoHelper: ActaRecibidoHelper,
-    private pUpManager: PopUpManager, private fb: FormBuilder) {
+    private pUpManager: PopUpManager, private fb: FormBuilder, private translate: TranslateService) {
     this.tipoContratoSelect = false;
     this.vigenciaSelect = false;
     this.contratos = new Array<Contrato>();
@@ -65,7 +66,6 @@ export class TercerosComponent implements OnInit {
     this.fechaFactura = '';
     this.validar = false;
     this.iniciarContrato();
-    this.getTipoEntrada();
     this.getFormatoEntrada();
   }
 
@@ -228,14 +228,6 @@ export class TercerosComponent implements OnInit {
     this.contratoEspecifico.Supervisor = supervisorAux;
   }
 
-  getTipoEntrada() {
-    this.entradasHelper.getTipoEntradaByAcronimoAndNombre('e_arka', 'Terceros').subscribe(res => {
-      if (res !== undefined) {
-        this.tipoEntrada = res;
-      }
-    });
-  }
-
   getFormatoEntrada() {
     this.entradasHelper.getFormatoEntradaByName('Terceros').subscribe(res => {
       if (res !== null) {
@@ -256,41 +248,41 @@ export class TercerosComponent implements OnInit {
    */
   onSubmit() {
     if (this.validar) {
+      this.registrando = true;
       const detalle = {
         acta_recibido_id: +this.actaRecibidoId,
-        consecutivo: 'P6-' + this.actaRecibidoId + '-' + new Date().getFullYear(),
-        documento_contable_id: 1, // REVISAR
+        consecutivo: 'P8',
         contrato_id: +this.contratoEspecifico.NumeroContratoSuscrito,
         vigencia_contrato: this.contratoForm.value.vigenciaCtrl,
         tercero_id: 0, // REVISAR
         tipo_contrato: this.opcionTipoContrato === '14' ? 'Orden de Servicios' :
           this.opcionTipoContrato === '15' ? 'Orden de Compra' : '',
       };
-      const movimientoAdquisicion = {
+      const movimientoAdquisicion = <TrMovimiento>{
         Observacion: this.observacionForm.value.observacionCtrl,
         Detalle: JSON.stringify(detalle),
         Activo: true,
         FormatoTipoMovimientoId: {
           Id: this.formatoTipoMovimiento[0].Id,
         },
-        EstadoMovimientoId: {
-          Id: 2, // REVISAR
-        },
         SoporteMovimientoId: 0,
-        IdTipoMovimiento: this.tipoEntrada.Id,
+        EstadoMovimientoId: new EstadoMovimiento,
       };
 
       this.entradasHelper.postEntrada(movimientoAdquisicion).subscribe((res: any) => {
         if (res !== null) {
+          this.registrando = false;
           (Swal as any).fire({
             type: 'success',
-            title: 'Entrada N° ' + `${detalle.consecutivo}` + ' Registrada',
-            text: 'La Entrada N° ' + `${detalle.consecutivo}` + ' ha sido registrada de forma exitosa',
+            title: this.translate.instant('GLOBAL.movimientos.entradas.registroTtlOk', { CONSECUTIVO: res.Consecutivo }),
+            text: this.translate.instant('GLOBAL.movimientos.entradas.registroTxtOk', { CONSECUTIVO: res.Consecutivo }),
+            showConfirmButton: false,
+            timer: 2000,
           });
-          const navigationExtras: NavigationExtras = { state: { consecutivo: detalle.consecutivo } };
+          const navigationExtras: NavigationExtras = { state: { consecutivo: res.Consecutivo } };
           this.router.navigate(['/pages/reportes/registro-entradas'], navigationExtras);
         } else {
-          this.pUpManager.showErrorAlert('No es posible hacer el registro.');
+          this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.entradas.registroFail'));
         }
       });
     } else {

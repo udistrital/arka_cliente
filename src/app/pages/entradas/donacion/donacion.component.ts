@@ -7,13 +7,14 @@ import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoH
 import { PopUpManager } from '../../../managers/popUpManager';
 import { OrdenadorGasto } from '../../../@core/data/models/entrada/ordenador_gasto';
 import { Supervisor } from '../../../@core/data/models/entrada/supervisor';
-import { Entrada } from '../../../@core/data/models/entrada/entrada';
+import { EstadoMovimiento, TrMovimiento } from '../../../@core/data/models/entrada/entrada';
 import { TipoEntrada } from '../../../@core/data/models/entrada/tipo_entrada';
 import { NavigationExtras, Router } from '@angular/router';
 import { NbStepperComponent } from '@nebular/theme';
 import Swal from 'sweetalert2';
 import { isObject } from 'rxjs/internal-compatibility';
 import { Soporte } from '../soporteHelper';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'ngx-donacion',
@@ -53,8 +54,7 @@ export class DonacionComponent implements OnInit {
   opcionSolicitante: string;
   fechaSolicitante: string;
   ordenadores: Array<OrdenadorGasto>;
-
-  tipoEntrada: any;
+  registrando: boolean;
   formatoTipoMovimiento: any;
 
   @ViewChild('stepper') stepper: NbStepperComponent;
@@ -62,7 +62,7 @@ export class DonacionComponent implements OnInit {
   @Input() actaRecibidoId: number;
 
   constructor(private router: Router, private entradasHelper: EntradaHelper, private actaRecibidoHelper: ActaRecibidoHelper,
-    private pUpManager: PopUpManager, private fb: FormBuilder, private soporteHelper: Soporte) {
+    private pUpManager: PopUpManager, private fb: FormBuilder, private soporteHelper: Soporte, private translate: TranslateService) {
     this.tipoContratoSelect = false;
     this.vigenciaSelect = false;
     this.solicitanteSelect = false;
@@ -75,7 +75,6 @@ export class DonacionComponent implements OnInit {
     this.validar = false;
     this.ordenadorId = 0;
     this.iniciarContrato();
-    this.getTipoEntrada();
     this.getFormatoEntrada();
   }
 
@@ -263,14 +262,6 @@ export class DonacionComponent implements OnInit {
     this.vigencia = new Date().getFullYear();
   }
 
-  getTipoEntrada() {
-    this.entradasHelper.getTipoEntradaByAcronimoAndNombre('e_arka', 'Donación').subscribe(res => {
-      if (res !== undefined) {
-        this.tipoEntrada = res;
-      }
-    });
-  }
-
   getFormatoEntrada() {
     this.entradasHelper.getFormatoEntradaByName('Donación').subscribe(res => {
       if (res !== null) {
@@ -284,10 +275,10 @@ export class DonacionComponent implements OnInit {
    */
   onSubmit() {
     if (this.validar) {
+      this.registrando = true;
       const detalle = {
         acta_recibido_id: +this.actaRecibidoId,
-        consecutivo: 'P4',
-        documento_contable_id: 1, // REVISAR
+        consecutivo: 'P8',
         contrato_id: +this.contratoEspecifico.NumeroContratoSuscrito,
         vigencia_contrato: this.contratoForm.value.vigenciaCtrl,
         vigencia_solicitante: this.solicitanteForm.value.fechaCtrl,
@@ -295,41 +286,31 @@ export class DonacionComponent implements OnInit {
         tipo_contrato: this.opcionTipoContrato === '14' ? 'Orden de Servicios' :
           this.opcionTipoContrato === '15' ? 'Orden de Compra' : '',
       };
-      const movimientoAdquisicion = {
+      const movimientoAdquisicion = <TrMovimiento>{
         Observacion: this.observacionForm.value.observacionCtrl,
         Detalle: JSON.stringify(detalle),
         Activo: true,
         FormatoTipoMovimientoId: {
           Id: this.formatoTipoMovimiento[0].Id,
         },
-        EstadoMovimientoId: {
-          Id: 2, // REVISAR
-        },
         SoporteMovimientoId: 0,
-        IdTipoMovimiento: this.tipoEntrada.Id,
+        EstadoMovimientoId: new EstadoMovimiento,
       };
 
       this.entradasHelper.postEntrada(movimientoAdquisicion).subscribe((res: any) => {
         if (res !== null) {
-
-          const elstring = JSON.stringify(res.Detalle);
-          const posini = elstring.indexOf('consecutivo') + 16;
-          if (posini !== -1) {
-            const posfin = elstring.indexOf('\"', posini);
-            const elresultado = elstring.substr(posini, posfin - posini - 1);
-            detalle.consecutivo = elresultado;
-          }
-
-
+          this.registrando = false;
           (Swal as any).fire({
             type: 'success',
-            title: 'Entrada N° ' + `${detalle.consecutivo}` + ' Registrada',
-            text: 'La Entrada N° ' + `${detalle.consecutivo}` + ' ha sido registrada de forma exitosa',
+            title: this.translate.instant('GLOBAL.movimientos.entradas.registroTtlOk', { CONSECUTIVO: res.Consecutivo }),
+            text: this.translate.instant('GLOBAL.movimientos.entradas.registroTxtOk', { CONSECUTIVO: res.Consecutivo }),
+            showConfirmButton: false,
+            timer: 2000,
           });
-          const navigationExtras: NavigationExtras = { state: { consecutivo: detalle.consecutivo } };
+          const navigationExtras: NavigationExtras = { state: { consecutivo: res.Consecutivo } };
           this.router.navigate(['/pages/reportes/registro-entradas'], navigationExtras);
         } else {
-          this.pUpManager.showErrorAlert('No es posible hacer el registro.');
+          this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.entradas.registroFail'));
         }
       });
     } else {

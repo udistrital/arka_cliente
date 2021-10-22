@@ -120,7 +120,15 @@
         "name": "Movimientos",
         "children": {
           "entradas": {
-            "name": "Inputs"
+            "name": "Entries",
+            "children": {
+              "consultarEntrada": {
+                "name": "Browse Entries"
+              },
+              "aprobarEntrada": {
+                "name": "Approve Entries"
+              }
+            }
           },
           "salidas": {
             "name": "Outputs"
@@ -448,7 +456,7 @@
         "IVAHeader": "% IVA",
         "ValorIVAHeader": "IVA's Value",
         "ValorTotalHeader": "Total Value",
-        "Verificar": "Verifify",
+        "Verificar": "Approve",
         "Rechazar": "Reject",
         "Volver": "Back",
         "DatosVeridicosTitle": "Are You Sure?",
@@ -465,6 +473,8 @@
         "RechazadaNO": "The Certificate hasn't been succesfully rejected, try again later"
       }
     },
+    "errorPermisosTtl": "Error loading user permissions",
+    "errorPermisosTxt": "The permissions were not loaded properly. Try later.",
     "Error_soporte_title":"Error when trying to get the support document",
     "Error_soporte_text":"Support document is corrupted or non registered.",
     "fecha_inicio": "Start date",
@@ -494,10 +504,12 @@
     "Adiciones y mejoras": "Additions and improvements",
     "Intangibles": "Inmaterial assets",
     "Provisional": "Provisions",
-
+    "si": "Yes",
+    "no": "No",
     "Nombre": "Name",
     "Descripcion": "Description",
     "Acciones": "Actions",
+    "verDetalle" : "Ver Detalle",
 
     "Deshacer": "Undo",
     "colapsar": "Collapse",
@@ -786,6 +798,25 @@
     "observaciones": "Comments",
 
     "movimientos": {
+      "entradas": {
+        "noEntradasView": "There are no entries to view",
+        "noEntradasReview": "There are no entries to review",
+        "accionRevision": "Review Entry",
+        "errorListaEntradas": "Error getting the entries list",
+        "errorEstadosMov": "Error getting the status",
+        "errorRechazoEntrada": "Error when trying o reject the entry",
+        "registroTtlOk":"The Entry {{CONSECUTIVO}} was Registered",
+        "registroTxtOk":"The entry {{CONSECUTIVO}} has been successfully registered",
+        "registroFail":"There was an error creating the entry.",
+        "aprobacionConfrmTtl":"Confirm entry Approval",
+        "aprobacionConfrmTxt":"Are you sure to approve this entry?",
+        "aprobacionTtlOk": "Entry Approved",
+        "aprobacionTxtOk": "The entry {{CONSECUTIVO}} was successfully approved",
+        "rechazoConfrmTtl":"Confirm entry rejection",
+        "rechazoConfrmTxt":"Are you sure to reject this entry?",
+        "rechazoTtlOk": "Entry Rejected",
+        "rechazoTxtOk": "The entry {{CONSECUTIVO}} was successfully rejected"
+      },
       "tipo": {
         "EA": {
           "nombre": "Acquisition",
