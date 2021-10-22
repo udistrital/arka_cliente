@@ -19,6 +19,8 @@ import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import Swal from 'sweetalert2';
 import { Soporte } from '../soporteHelper';
+import { EstadoMovimiento, TrMovimiento } from '../../../@core/data/models/entrada/entrada';
+import { TranslateService } from '@ngx-translate/core';
 
 
 @Component({
@@ -45,8 +47,8 @@ export class AprovechamientosComponent implements OnInit {
   validar: boolean = false;
   cargando_proveedores: boolean = true;
   cargando_supervisores: boolean = true;
+  registrando: boolean;
 
-  private tipoEntrada: any;
   private formatoTipoMovimiento: any;
   private Proveedores: Proveedor[];
   proveedoresFiltrados: Observable<Proveedor[]>;
@@ -67,6 +69,7 @@ export class AprovechamientosComponent implements OnInit {
     private listService: ListService,
     private store: Store<IAppState>,
     private soporteHelper: Soporte,
+    private translate: TranslateService,
   ) {
     this.vigenciaSelect = false;
     this.soportes = new Array<SoporteActaProveedor>();
@@ -76,7 +79,6 @@ export class AprovechamientosComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.getTipoEntrada();
     this.getFormatoEntrada();
     this.fechaForm = this.fb.group({
       fechaCtrl: ['', Validators.required],
@@ -185,14 +187,6 @@ export class AprovechamientosComponent implements OnInit {
     return '';
   }
 
-  private getTipoEntrada() {
-    this.entradasHelper.getTipoEntradaByAcronimoAndNombre('e_arka', 'Aprovechamientos').subscribe(res => {
-      if (res !== undefined) {
-        this.tipoEntrada = res;
-      }
-    });
-  }
-
   private getFormatoEntrada() {
     this.entradasHelper.getFormatoEntradaByName('Partes por Aprovechamientos').subscribe(res => {
       if (res !== null) {
@@ -217,46 +211,39 @@ export class AprovechamientosComponent implements OnInit {
    */
   onSubmit() {
     if (this.validar) {
+      this.registrando = true;
       const detalle = {
         acta_recibido_id: +this.actaRecibidoId,
-        consecutivo: 'P1',
-        documento_contable_id: 1, // REVISAR
+        consecutivo: 'P8',
         vigencia: this.fechaForm.value.fechaCtrl,
         supervisor: this.supervisorForm.value.supervisorCtrl.TerceroPrincipal.Id,
         proveedor: this.facturaForm.value.proveedorCtrl.compuesto,
       };
-      const movimientoAdquisicion = {
+      const movimientoAdquisicion = <TrMovimiento>{
         Observacion: this.observacionForm.value.observacionCtrl,
         Detalle: JSON.stringify(detalle),
         Activo: true,
         FormatoTipoMovimientoId: {
           Id: this.formatoTipoMovimiento[0].Id,
         },
-        EstadoMovimientoId: {
-          Id: 2, // Movimiento adecuado para registrar una entrada como aprobada
-        },
         SoporteMovimientoId: 0,
-        IdTipoMovimiento: this.tipoEntrada.Id,
+        EstadoMovimientoId: new EstadoMovimiento,
       };
       // console.log({movimientoAdquisicion});
       this.entradasHelper.postEntrada(movimientoAdquisicion).subscribe((res: any) => {
         if (res !== null) {
-          const elstring = JSON.stringify(res.Detalle);
-          const posini = elstring.indexOf('consecutivo') + 16;
-          if (posini !== -1) {
-            const posfin = elstring.indexOf('\"', posini);
-            const elresultado = elstring.substr(posini, posfin - posini - 1);
-            detalle.consecutivo = elresultado;
-          }
+          this.registrando = false;
           (Swal as any).fire({
             type: 'success',
-            title: 'Entrada N° ' + `${detalle.consecutivo}` + ' Registrada',
-            text: 'La Entrada N° ' + `${detalle.consecutivo}` + ' ha sido registrada de forma exitosa',
+            title: this.translate.instant('GLOBAL.movimientos.entradas.registroTtlOk', { CONSECUTIVO: res.Consecutivo }),
+            text: this.translate.instant('GLOBAL.movimientos.entradas.registroTxtOk', { CONSECUTIVO: res.Consecutivo }),
+            showConfirmButton: false,
+            timer: 2000,
           });
-          const navigationExtras: NavigationExtras = { state: { consecutivo: detalle.consecutivo } };
+          const navigationExtras: NavigationExtras = { state: { consecutivo: res.Consecutivo } };
           this.router.navigate(['/pages/reportes/registro-entradas'], navigationExtras);
         } else {
-          this.pUpManager.showErrorAlert('No es posible hacer el registro.');
+          this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.entradas.registroFail'));
         }
       });
     } else {

@@ -5,6 +5,7 @@ import { iif } from 'rxjs';
 import { PopUpManager } from '../../managers/popUpManager';
 import { TranslateService } from '@ngx-translate/core';
 import { DisponibilidadMovimientosService } from '../../@core/data/disponibilidad-movimientos.service';
+import { TrMovimiento } from '../../@core/data/models/entrada/entrada';
 
 @Injectable({
     providedIn: 'root',
@@ -89,15 +90,15 @@ export class EntradaHelper {
      * @param entradaData object to save in the DB
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
      */
-    public postEntrada(entradaData) {
+    public postEntrada(entradaData: Partial<TrMovimiento>, entradaId: number = 0) {
         return this.dispMvtos.movimientosPermitidos().pipe(
-            switchMap(disp => iif(() => disp, this.postEntradaFinal(entradaData))),
+            switchMap(disp => iif(() => disp, this.postEntradaFinal(entradaData, entradaId))),
         );
     }
 
-    private postEntradaFinal(entradaData) {
+    private postEntradaFinal(entradaData: Partial<TrMovimiento>, entradaId: number) {
         this.rqManager.setPath('ARKA_SERVICE');
-        return this.rqManager.post(`entrada/`, entradaData).pipe(
+        return this.rqManager.post('entrada/?entradaId=' + entradaId, entradaData).pipe(
             map(
                 (res) => {
                     if (res['Type'] === 'error') {
@@ -116,13 +117,15 @@ export class EntradaHelper {
      * If the response is successs, it returns the object's data.
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
      */
-    public getEntradas() {
-        this.rqManager.setPath('ARKA_SERVICE');
-        return this.rqManager.get('entrada').pipe(
+    public getEntradas(tramiteOnly: boolean) {
+        const query = 'movimiento?limit=-1&query=EstadoMovimientoId__Nombre' + (!tramiteOnly ?
+            '__startswith:Entrada' : ':Entrada En Trámite');
+        this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
+        return this.rqManager.get(query).pipe(
             map(
                 (res) => {
                     if (res === 'error') {
-                        this.pUpManager.showErrorAlert('No se pudo consultar el contrato contratos');
+                        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.entradas.errorListaEntradas'));
                         return undefined;
                     }
                     return res;
@@ -138,9 +141,8 @@ export class EntradaHelper {
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
      */
     public getEntrada(consecutivo) {
-        this.rqManager.setPath('ARKA_SERVICE');
-        // return this.rqManager.get('entrada_elemento?query=Consecutivo:' + consecutivo).pipe(
-        return this.rqManager.get('entrada/' + consecutivo).pipe(
+        this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
+        return this.rqManager.get('movimiento?query=Id:' + consecutivo).pipe(
             map(
                 (res) => {
                     if (res === 'error') {
@@ -362,6 +364,38 @@ export class EntradaHelper {
                     },
                 ),
             );
+    }
+
+    public getEstadosMovimiento() {
+        this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
+        return this.rqManager.get('estado_movimiento?limit=-1').pipe(
+            map(
+                (res) => {
+                    if (res === 'error') {
+                        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.entradas.errorEstadosMov'));
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
+
+    public putMovimiento(movimiento: any) {
+        this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
+        return this.rqManager.put('movimiento', movimiento).pipe(
+            map(
+                (res) => {
+                    if (res) {
+                        return res;
+                    } else {
+                        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.entradas.errorRechazoEntrada'));
+                        return undefined;
+
+                    }
+                },
+            ),
+        );
     }
 
 }
