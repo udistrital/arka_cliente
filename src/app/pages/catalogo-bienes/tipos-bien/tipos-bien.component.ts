@@ -49,7 +49,7 @@ export class TiposBienComponent implements OnInit {
         this.spinner = true;
         this.TiposBien.load(res);
         this.source.load(res);
-        // console.log(res);
+        this.source.setSort([{ field: 'Orden', direction: 'asc' }]);
       }
     });
   }
@@ -119,14 +119,11 @@ export class TiposBienComponent implements OnInit {
             return value.toUpperCase();
           },
         },
-        // Orden: {
-        //   title: this.translate.instant('GLOBAL.parametros.tiposBien.asignable_kardex'),
-        //   width: '170px',
-        //   filter: false,
-        //   valuePrepareFunction: (value: any) => {
-        //     return value === 1 ? 'Si' : 'No';
-        //   },
-        // },
+        Orden: {
+          title: this.translate.instant('GLOBAL.parametros.tiposBien.numeroOrden'),
+          width: '170px',
+          filter: false,
+        },
         Activo: {
           width: '100px',
           title: this.translate.instant('GLOBAL.activo'),
