@@ -25,9 +25,10 @@ export class SalidaHelper {
      * If the response is successs, it returns the object's data.
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
      */
-    public getSalidas() {
+    public getSalidas(tramiteOnly: boolean) {
+        const query = tramiteOnly ? '?tramite_only=true' : '';
         this.rqManager.setPath('ARKA_SERVICE');
-        return this.rqManager.get('salida/').pipe(
+        return this.rqManager.get('salida/' + query).pipe(
             map(
                 (res) => {
                     if (res === 'error') {

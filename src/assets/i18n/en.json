@@ -179,9 +179,6 @@
         "children": {
           "tiposEntrada": {
             "name": "Entry types"
-          },
-          "tiposBien": {
-            "name": "Good Types"
           }
         }
       }
@@ -798,6 +795,9 @@
     "observaciones": "Comments",
 
     "movimientos": {
+      "estadoTramite": "Awaiting review",
+      "estadoAprobado": "Approved",
+      "estadoRechazo": "Rejected",
       "entradas": {
         "noEntradasView": "There are no entries to view",
         "noEntradasReview": "There are no entries to review",

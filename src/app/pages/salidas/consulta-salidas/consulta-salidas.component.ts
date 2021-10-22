@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { LocalDataSource } from 'ngx-smart-table';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
-import { Entrada } from '../../../@core/data/models/entrada/entrada';
+import { Entrada, EstadoMovimiento } from '../../../@core/data/models/entrada/entrada';
 import { Contrato } from '../../../@core/data/models/entrada/contrato';
 import { Supervisor } from '../../../@core/data/models/entrada/supervisor';
 import { OrdenadorGasto } from '../../../@core/data/models/entrada/ordenador_gasto';
@@ -40,6 +40,8 @@ export class ConsultaSalidasComponent implements OnInit {
   Dependencias: any;
   Sedes: any;
   mostrar: boolean;
+  modo: string = 'consulta';
+  estadosMovimiento: Array<EstadoMovimiento>;
 
   constructor(
     private router: Router,
@@ -51,39 +53,82 @@ export class ConsultaSalidasComponent implements OnInit {
     private Actas_Recibido: ActaRecibidoHelper,
     private listService: ListService,
     private terceros: TercerosHelper,
+    private route: ActivatedRoute,
+    private entradasHelper: EntradaHelper,
   ) {
     this.source = new LocalDataSource();
     this.detalle = false;
-    this.loadTablaSettings();
   }
 
 
 
   ngOnInit() {
+    this.route.data.subscribe(data => {
+      if (data && data.modo !== null && data.modo !== undefined) {
+        this.modo = data.modo;
+        console.log(data)
+      }
+    });
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
       this.loadTablaSettings();
     });
-    this.loadSalidas();
+    // this.loadTablaSettings();
+    // this.loadSalidas();
+    this.loadEstados();
+  }
+
+  loadEstados() {
+    this.entradasHelper.getEstadosMovimiento().toPromise().then(res => {
+      if (res.length > 0) {
+        this.estadosMovimiento = res;
+        this.loadTablaSettings();
+        this.loadSalidas();
+      }
+    });
   }
 
   loadTablaSettings() {
     const t = {
-      registrar: this.translate.instant('GLOBAL.registrar_nueva_salida'),
-      editar: this.translate.instant('GLOBAL.Acta_Recibido.EdicionActa.Title'),
+      registrar: this.translate.instant('GLOBAL.registrar_nueva_entrada'),
+      accion: this.translate.instant('GLOBAL.' +
+        (this.modo === 'consulta' ? 'verDetalle' : 'movimientos.entradas.accionRevision')),
+      icon: this.modo === 'consulta' ? 'eye' : 'edit',
     };
+    const estadoSelect = 'GLOBAL.movimientos.estado';
+    const columns = this.modo === 'consulta' ? {
+      EstadoMovimientoId: {
+        title: this.translate.instant('GLOBAL.tipo_entrada'),
+        width: '300px',
+        filter: {
+          type: 'list',
+          config: {
+            selectText: this.translate.instant('GLOBAL.seleccionar') + '...',
+            list: [
+              { value: this.estadosMovimiento.find(status => status.Nombre === 'Salida En Trámite').Nombre,
+                title: this.translate.instant(estadoSelect + 'Tramite') },
+              { value: this.estadosMovimiento.find(status => status.Nombre === 'Salida Aprobada').Nombre,
+                title: this.translate.instant(estadoSelect + 'Aprobado') },
+              { value: this.estadosMovimiento.find(status => status.Nombre === 'Salida Rechazada').Nombre,
+                title: this.translate.instant(estadoSelect + 'Rechazo') },
+            ],
+          },
+        },
+      },
+    } : [];
+
     this.settings = {
       hideSubHeader: false,
-      noDataMessage: this.translate.instant('GLOBAL.no_data_entradas'),
+      noDataMessage: this.translate.instant('GLOBAL.movimientos.entradas.' +
+        (this.modo === 'consulta' ? 'noEntradasView' : 'noEntradasReview')),
       actions: {
-        columnTitle: this.translate.instant('GLOBAL.detalle'),
+        columnTitle: this.translate.instant('GLOBAL.Acciones'),
         position: 'right',
-        edit: false,
         delete: false,
+        edit: false,
         custom: [
           {
-            // name: this.translate.instant('GLOBAL.detalle'),
-            name: 'Seleccionar',
-            title: '<i class="fas fa-eye"></i>',
+            name: this.translate.instant('GLOBAL.detalle'),
+            title: '<i class="fas fa-' + t.icon + '" title="' + t.accion + '" aria-label="' + t.accion + '"></i>',
           },
         ],
       },
@@ -216,19 +261,27 @@ export class ConsultaSalidasComponent implements OnInit {
             }
           },
         },
+        ...columns,
       },
     };
+    console.log(this.settings)
   }
   loadSalidas(): void {
-
-    this.salidasHelper.getSalidas().subscribe(res1 => {
-      this.mostrar = true;
-      if (res1[0]) {
-        if (Object.keys(res1[0]).length !== 0) {
-          this.source.load(res1);
-        }
-
+    this.salidasHelper.getSalidas(this.modo === 'revision').subscribe(res => {
+      if (res.length) {
+        res.forEach(entrada => {
+          // entrada.Detalle = JSON.parse((entrada.Detalle));
+          // entrada.ActaRecibidoId = entrada.Detalle.acta_recibido_id;
+          // entrada.Consecutivo = entrada.Detalle.consecutivo;
+          // entrada.FormatoTipoMovimientoId = entrada.FormatoTipoMovimientoId.Nombre;
+          entrada.EstadoMovimientoId = this.estadosMovimiento.find(estado =>
+              estado.Id === entrada.EstadoMovimientoId).Nombre;
+        });
+        this.source.load(res);
+        this.source.setSort([{ field: 'FechaCreacion', direction: 'desc' }]);
       }
+      console.log(res)
+      this.mostrar = true;
     });
   }
   onCustom(event) {

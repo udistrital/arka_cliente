@@ -179,9 +179,6 @@
         "children": {
           "tiposEntrada": {
             "name": "Tipos de Entrada"
-          },
-          "tiposBien": {
-            "name": "Tipos de Bien"
           }
         }
       }
@@ -798,6 +795,9 @@
     "observaciones": "Observaciones",
 
     "movimientos": {
+      "estadoTramite": "En Trámite",
+      "estadoAprobado": "Aprobada",
+      "estadoRechazo": "Rechazada",
       "entradas": {
         "noEntradasView": "No se encontraron entradas",
         "noEntradasReview": "No hay entradas pendientes para ser revisadas",
