@@ -49,7 +49,7 @@ export class TiposBienComponent implements OnInit {
         this.spinner = true;
         this.TiposBien.load(res);
         this.source.load(res);
-        // console.log(res);
+        this.source.setSort([{ field: 'Orden', direction: 'desc' }]);
       }
     });
   }
@@ -81,7 +81,6 @@ export class TiposBienComponent implements OnInit {
         Id: {
           title: this.translate.instant('GLOBAL.consecutivo'),
           width: '100px',
-          filter: false,
           valuePrepareFunction: (value: any) => {
             return value;
           },
@@ -89,7 +88,6 @@ export class TiposBienComponent implements OnInit {
         Nombre: {
           title: this.translate.instant('GLOBAL.Nombre'),
           width: '170px',
-          filter: false,
           valuePrepareFunction: (value: any) => {
             return value;
           },
@@ -97,7 +95,6 @@ export class TiposBienComponent implements OnInit {
         FechaCreacion: {
           title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.FechaCreacionHeader'),
           width: '110px',
-          filter: false,
           valuePrepareFunction: (value: any) => {
             const date = value.split('T');
             return date[0];
@@ -106,7 +103,6 @@ export class TiposBienComponent implements OnInit {
         FechaModificacion: {
           title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.FechaModificacionHeader'),
           width: '110px',
-          filter: false,
           valuePrepareFunction: (value: any) => {
             const date = value.split('T');
             return date[0];
@@ -114,23 +110,17 @@ export class TiposBienComponent implements OnInit {
         },
         Descripcion: {
           title: this.translate.instant('GLOBAL.observaciones'),
-          filter: false,
           valuePrepareFunction: (value: any) => {
             return value.toUpperCase();
           },
         },
         Orden: {
-          title: this.translate.instant('GLOBAL.parametros.tiposBien.asignable_kardex'),
+          title: this.translate.instant('GLOBAL.parametros.tiposBien.numeroOrden'),
           width: '170px',
-          filter: false,
-          valuePrepareFunction: (value: any) => {
-            return value === 1 ? 'Si' : 'No';
-          },
         },
         Activo: {
           width: '100px',
           title: this.translate.instant('GLOBAL.activo'),
-          filter: false,
           valuePrepareFunction: (value: any) => {
             return value ? 'Si' : 'No';
           },
@@ -207,6 +197,11 @@ export class TiposBienComponent implements OnInit {
   private succesOp(text) {
     this.pupmanager.showSuccessAlert(text);
     this.recargarlista();
+    this.mostrar = false;
+  }
+
+  volver() {
+    this.tipo_bien = undefined;
     this.mostrar = false;
   }
 }

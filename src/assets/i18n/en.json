@@ -1018,6 +1018,7 @@
      "error_activacion": "The good type could not be enabled",
      "error_desactivacion": "The good type could not be disabled",
      "registro_succes": "Type of property or service satisfactorily registered",
+     "numeroOrden": "Order",
      "actualizacion_succes": "Type of property or service satisfactorily updated",
      "registro_title": "Type of property register or service",
      "actualizacion_title":"Updating type of property or service",
