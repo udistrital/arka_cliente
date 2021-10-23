@@ -616,7 +616,6 @@ export class TablaElementosAsignadosComponent implements OnInit {
     this.DatosElementos = new Array();
     for (const index in datos) {
       if (true) {
-        // console.log(datos[index])
         const elemento = new ElementoSalida();
         elemento.ValorUnitario = datos[index].ValorUnitario;
         elemento.ValorTotal = datos[index].ValorTotal;
@@ -626,23 +625,24 @@ export class TablaElementosAsignadosComponent implements OnInit {
         elemento.Marca = datos[index].Marca;
         elemento.Serie = datos[index].Serie;
         elemento.Placa = datos[index].Placa;
-        elemento.TipoBienId = datos[index].TipoBienId;
+        elemento.TipoBienId = datos[index].SubgrupoCatalogoId.TipoBienId;
         elemento.Funcionario = null;
         elemento.Sede = null;
         elemento.Asignado = false;
         elemento.Dependencia = null;
         elemento.Ubicacion = null;
         // console.log({Consumo:this.Consumo, ConsumoCon:this.ConsumoControlado});
-        if (datos[index].TipoBienId.Id === 1 && Object.keys(this.Consumo[0]).length !== 0) {
+        if (datos[index].SubgrupoCatalogoId.TipoBienId.Id === 1 && Object.keys(this.Consumo[0]).length !== 0) {
           elemento.SubgrupoCatalogoId = this.Consumo.find(x => x.SubgrupoId.Id === datos[index].SubgrupoCatalogoId).SubgrupoId;
         }
-        if (datos[index].TipoBienId.Id === 2 && Object.keys(this.ConsumoControlado[0]).length !== 0) {
-          elemento.SubgrupoCatalogoId = this.ConsumoControlado.find(x => x.SubgrupoId.Id === datos[index].SubgrupoCatalogoId).SubgrupoId;
+        if (datos[index].SubgrupoCatalogoId.TipoBienId.Id === 2 && Object.keys(this.ConsumoControlado[0]).length !== 0) {
+          elemento.SubgrupoCatalogoId = this.ConsumoControlado.find(
+            x => x.SubgrupoId.Id === datos[index].SubgrupoCatalogoId.SubgrupoId.Id).SubgrupoId;
         }
-        if (datos[index].TipoBienId.Id === 3 && Object.keys(this.Devolutivo[0]).length !== 0) {
-          elemento.SubgrupoCatalogoId = this.Devolutivo.find(x => x.SubgrupoId.Id === datos[index].SubgrupoCatalogoId).SubgrupoId;
+        if (datos[index].SubgrupoCatalogoId.TipoBienId.Id === 3 && Object.keys(this.Devolutivo[0]).length !== 0) {
+          elemento.SubgrupoCatalogoId = this.Devolutivo.find(x => x.SubgrupoId.Id === datos[index].SubgrupoCatalogoId.SubgrupoId.Id).SubgrupoId;
         }
-        if (datos[index].TipoBienId.Id === 1) {
+        if (datos[index].SubgrupoCatalogoId.TipoBienId.Id === 1) {
           this.ElementosConsumoSinAsignar.push(elemento);
           this.DatosConsumo.push(elemento);
         } else {
