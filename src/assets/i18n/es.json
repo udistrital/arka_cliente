@@ -801,6 +801,7 @@
       "entradas": {
         "noEntradasView": "No se encontraron entradas",
         "noEntradasReview": "No hay entradas pendientes para ser revisadas",
+        "noEntradasAprobadas": "No hay entradas aprobadas pendientes por asociar a salida",
         "accionRevision": "Revisar Entrada",
         "errorListaEntradas": "Error al consultar las entradas",
         "errorEstadosMov": "Error al consultar el estado movimiento",
@@ -816,6 +817,23 @@
         "rechazoConfrmTxt":"¿Está seguro que desea rechazar la entrada?",
         "rechazoTtlOk": "Entrada Rechazada",
         "rechazoTxtOk": "La entrada {{CONSECUTIVO}} ha sido rechazada de exitosamente"
+      },
+      "salidas": {
+        "nuevaSalida": "Registrar nueva salida",
+        "noSalidasView": "No se encontraron salidas",
+        "noSalidasReview": "No hay entradas pendientes para ser revisadas",
+        "accionRevision": "Revisar Salida",
+        "errorListaSalidas": "Error al consultar las entradas",
+        "registroTtlOk":"Salida Registrada",
+        "registroTxtOk":"La salida se ha registrada de manera exitosa",
+        "aprobacionConfrmTtl":"Confirmar Aprobación de Entrada",
+        "aprobacionConfrmTxt":"¿Está seguro que desea aprobar la salida?",
+        "aprobacionTtlOk": "Salida Aprobada",
+        "aprobacionTxtOk": "La salida {{CONSECUTIVO}} ha sido aprobada de exitosamente",
+        "rechazoConfrmTtl":"Confirmar Rechazo de Salida",
+        "rechazoConfrmTxt":"¿Está seguro que desea rechazar la salida?",
+        "rechazoTtlOk": "Salida Rechazada",
+        "rechazoTxtOk": "La salida {{CONSECUTIVO}} ha sido rechazada de exitosamente"
       },
       "tipo": {
         "EA": {

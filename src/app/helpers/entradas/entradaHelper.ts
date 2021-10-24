@@ -140,7 +140,7 @@ export class EntradaHelper {
      * If the response is successs, it returns the object's data.
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
      */
-    public getEntrada(consecutivo) {
+    public getMovimiento(consecutivo) {
         this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
         return this.rqManager.get('movimiento?query=Id:' + consecutivo).pipe(
             map(
