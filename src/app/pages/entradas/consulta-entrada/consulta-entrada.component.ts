@@ -46,6 +46,8 @@ export class ConsultaEntradaComponent implements OnInit {
   movimiento: Movimiento;
   modo: string = 'consulta';
   filaSeleccionada: any;
+  verComponente: boolean;
+  transaccionContable: any; 
 
   constructor(
     private router: Router,
@@ -316,8 +318,12 @@ export class ConsultaEntradaComponent implements OnInit {
     this.mostrar = false;
     if (aprobar) {
       this.entradasHelper.postEntrada({}, +this.entradaId).toPromise().then((res: any) => {
+//      this.entradasHelper.postEntrada({}, 672).toPromise().then((res: any) => {
+        console.log(res);
         if (res) {
-          this.alertSuccess(true);
+     	   this.mostrar = true;
+		   this.verComponente = true;
+           this.transaccionContable = res.transaccionContable
         }
       });
     } else {
