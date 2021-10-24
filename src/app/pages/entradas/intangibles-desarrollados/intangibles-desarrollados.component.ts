@@ -14,7 +14,7 @@ import { TerceroCriterioJefe, TerceroCriterioPlanta } from '../../../@core/data/
 import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
 import {Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
-import { EstadoMovimiento } from '../../../@core/data/models/entrada/entrada';
+import { EstadoMovimiento, TrMovimiento } from '../../../@core/data/models/entrada/entrada';
 import { TipoEntrada } from '../../../@core/data/models/entrada/tipo_entrada';
 import Swal from 'sweetalert2';
 
@@ -253,7 +253,7 @@ changeSolicitante(event) {
         supervisor: this.supervisorForm.value.supervisorCtrl.TerceroPrincipal.Id,
         ordenador_gasto_id: this.ordenadorForm.value.ordenadorCtrl.TerceroPrincipal.Id,
       };
-      const movimientoAdquisicion = {
+      const movimientoAdquisicion = <TrMovimiento>{
         Observacion: this.observacionForm.value.observacionCtrl,
         Detalle: JSON.stringify(detalle),
         Activo: true,

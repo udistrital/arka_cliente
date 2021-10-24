@@ -12,7 +12,7 @@ import { Supervisor } from '../../../@core/data/models/entrada/supervisor';
 import Swal from 'sweetalert2';
 import { isObject } from 'rxjs/internal-compatibility';
 import { Soporte } from '../soporteHelper';
-import { EstadoMovimiento } from '../../../@core/data/models/entrada/entrada';
+import { EstadoMovimiento, TrMovimiento } from '../../../@core/data/models/entrada/entrada';
 import { TranslateService } from '@ngx-translate/core';
 
 @Component({
@@ -254,7 +254,7 @@ export class ExtranjeroComponent implements OnInit {
         divisa: this.facturaForm.value.divisaCtrl,
         TRM: this.facturaForm.value.trmCtrl,
       };
-      const movimientoAdquisicion = {
+      const movimientoAdquisicion = <TrMovimiento>{
         Observacion: this.observacionForm.value.observacionCtrl,
         Detalle: JSON.stringify(detalle),
         Activo: true,

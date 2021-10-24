@@ -92,7 +92,9 @@ export class ConsultaEntradaComponent implements OnInit {
   loadTablaSettings() {
     const t = {
       registrar: this.translate.instant('GLOBAL.registrar_nueva_entrada'),
-      editar: this.translate.instant('GLOBAL.Acta_Recibido.EdicionActa.Title'),
+      accion: this.translate.instant('GLOBAL.' +
+        (this.modo === 'consulta' ? 'verDetalle' : 'movimientos.entradas.accionRevision')),
+      icon: this.modo === 'consulta' ? 'eye' : 'edit',
     };
 
     const columns = this.modo === 'consulta' ? {
@@ -116,7 +118,8 @@ export class ConsultaEntradaComponent implements OnInit {
 
     this.settings = {
       hideSubHeader: false,
-      noDataMessage: this.translate.instant('GLOBAL.no_data_entradas'),
+      noDataMessage: this.translate.instant('GLOBAL.movimientos.entradas.' +
+        (this.modo === 'consulta' ? 'noEntradasView' : 'noEntradasReview')),
       actions: {
         columnTitle: this.translate.instant('GLOBAL.Acciones'),
         position: 'right',
@@ -125,8 +128,7 @@ export class ConsultaEntradaComponent implements OnInit {
         custom: [
           {
             name: this.translate.instant('GLOBAL.detalle'),
-            title: this.modo === 'consulta' ?
-              '<i class="fas fa-eye" title="Ver"></i>' : '<i class="fas fa-edit" title="Ver"></i>',
+            title: '<i class="fas fa-' + t.icon + '" title="' + t.accion + '" aria-label="' + t.accion + '"></i>',
           },
         ],
       },

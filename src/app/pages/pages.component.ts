@@ -91,8 +91,8 @@ export class PagesComponent implements OnInit {
         if (this.dataMenu === undefined) {
           (Swal as any).fire({
             icon: 'info',
-            title: this.translate.instant('ERROR.rol_insuficiente_titulo'),
-            text: this.translate.instant('ERROR.rol_insuficiente'),
+            title: this.translate.instant('GLOBAL.errorPermisosTtl'),
+            text: this.translate.instant('GLOBAL.errorPermisosTxt'),
             confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
             onAfterClose: () => {
               window.location.href =

@@ -19,7 +19,7 @@ import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import Swal from 'sweetalert2';
 import { Soporte } from '../soporteHelper';
-import { EstadoMovimiento } from '../../../@core/data/models/entrada/entrada';
+import { EstadoMovimiento, TrMovimiento } from '../../../@core/data/models/entrada/entrada';
 import { TranslateService } from '@ngx-translate/core';
 
 
@@ -219,7 +219,7 @@ export class AprovechamientosComponent implements OnInit {
         supervisor: this.supervisorForm.value.supervisorCtrl.TerceroPrincipal.Id,
         proveedor: this.facturaForm.value.proveedorCtrl.compuesto,
       };
-      const movimientoAdquisicion = {
+      const movimientoAdquisicion = <TrMovimiento>{
         Observacion: this.observacionForm.value.observacionCtrl,
         Detalle: JSON.stringify(detalle),
         Activo: true,

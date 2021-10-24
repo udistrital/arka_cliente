@@ -473,6 +473,8 @@
         "RechazadaNO": "The Certificate hasn't been succesfully rejected, try again later"
       }
     },
+    "errorPermisosTtl": "Error loading user permissions",
+    "errorPermisosTxt": "The permissions were not loaded properly. Try later.",
     "Error_soporte_title":"Error when trying to get the support document",
     "Error_soporte_text":"Support document is corrupted or non registered.",
     "fecha_inicio": "Start date",
@@ -507,6 +509,7 @@
     "Nombre": "Name",
     "Descripcion": "Description",
     "Acciones": "Actions",
+    "verDetalle" : "Ver Detalle",
 
     "Deshacer": "Undo",
     "colapsar": "Collapse",
@@ -796,6 +799,12 @@
 
     "movimientos": {
       "entradas": {
+        "noEntradasView": "There are no entries to view",
+        "noEntradasReview": "There are no entries to review",
+        "accionRevision": "Review Entry",
+        "errorListaEntradas": "Error getting the entries list",
+        "errorEstadosMov": "Error getting the status",
+        "errorRechazoEntrada": "Error when trying o reject the entry",
         "registroTtlOk":"The Entry {{CONSECUTIVO}} was Registered",
         "registroTxtOk":"The entry {{CONSECUTIVO}} has been successfully registered",
         "registroFail":"There was an error creating the entry.",
