@@ -207,7 +207,7 @@ export class ConsultaEntradaComponent implements OnInit {
   }
 
   loadEntradaEspecifica(): void {
-    this.entradasHelper.getEntrada(this.entradaId).subscribe(res => {
+    this.entradasHelper.getMovimiento(this.entradaId).subscribe(res => {
       if (res !== null) {
         this.movimiento = res[0];
         switch (this.movimiento.FormatoTipoMovimientoId.Nombre) {

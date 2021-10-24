@@ -82,15 +82,16 @@ export class SalidaHelper {
     * @param entradaData object to save in the DB
     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
     */
-    public postSalidas(salidasData) {
+    public postSalidas(salidaId: number) {
         return this.dispMvtos.movimientosPermitidos().pipe(
-            switchMap(disp => iif( () => disp, this.postSalidasFinal(salidasData) )),
+            switchMap(disp => iif( () => disp, this.aprobarSalida(salidaId) )),
         );
     }
 
-    private postSalidasFinal(salidasData) {
+
+    private aprobarSalida(salidaId: number) {
         this.rqManager.setPath('ARKA_SERVICE');
-        return this.rqManager.post(`salida`, salidasData).pipe(
+        return this.rqManager.put('salida', {Id: salidaId}).pipe(
             map(
                 (res) => {
                     if (res['Type'] === 'error') {
