@@ -60,6 +60,21 @@ export class SalidaHelper {
             ),
         );
     }
+
+    public registrarSalidas(salidasData) {
+        this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
+        return this.rqManager.post('tr_salida', salidasData).pipe(
+            map(
+                (res) => {
+                    if (res['Type'] === 'error') {
+                        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.error_salida_no_registrada'));
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
     /**
     * Entrada Post
     * If the response has errors in the OAS API it should show a popup message with an error.
@@ -177,11 +192,11 @@ export class SalidaHelper {
      */
     public getEntradasSinSalida() {
         this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
-        return this.rqManager.get('movimiento?query=EstadoMovimientoId.Id:2&limit=-1').pipe(
+        return this.rqManager.get('movimiento?query=EstadoMovimientoId__Nombre:Entrada Aprobada&limit=-1').pipe(
             map(
                 (res) => {
                     if (res === 'error') {
-                        this.pUpManager.showErrorAlert('No se pudo consultar el contrato contratos');
+                        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.entradas.errorListaEntradas'));
                         return undefined;
                     }
                     return res;

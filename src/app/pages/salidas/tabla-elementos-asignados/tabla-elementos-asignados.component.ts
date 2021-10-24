@@ -1030,13 +1030,13 @@ export class TablaElementosAsignadosComponent implements OnInit {
       cancelButtonText: 'No',
     }).then((result) => {
       if (result.value) {
-        this.salidasHelper.postSalidas(Salidas).subscribe(res => {
+        this.salidasHelper.registrarSalidas(Salidas).subscribe(res => {
           // console.log(res);
           if (res) {
             (Swal as any).fire({
               type: 'success',
-              title: this.translate.instant('GLOBAL.salidas.exito_registro_titulo'),
-              text: this.translate.instant('GLOBAL.salidas.exito_registro_texto'),
+              title: this.translate.instant('GLOBAL.movimientos.salidas.registroTtlOk'),
+              text: this.translate.instant('GLOBAL.movimientos.salidas.registroTxtOk'),
             });
             this.router.navigate(['/pages/salidas/consulta_salidas']);
           }

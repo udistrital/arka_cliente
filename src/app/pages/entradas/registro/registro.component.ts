@@ -74,7 +74,7 @@ export class RegistroComponent implements OnInit {
         custom: [
           {
             name: 'detalle',
-            title: '<i class="fas fa-door-open" title="Seleccionar"></i>',
+            title: '<i class="fas fa-arrow-right" title="Seleccionar"></i>',
           },
         ],
       },

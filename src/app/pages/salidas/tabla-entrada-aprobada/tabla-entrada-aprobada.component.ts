@@ -80,9 +80,12 @@ export class TablaEntradaAprobadaComponent implements OnInit {
   }
 
   loadTablaSettings() {
+    const t = {
+      accion: this.translate.instant('GLOBAL.seleccionar'),
+    };
     this.settings = {
       hideSubHeader: false,
-      noDataMessage: this.translate.instant('GLOBAL.no_data_entradas'),
+      noDataMessage: this.translate.instant('GLOBAL.movimientos.entradas.noEntradasAprobadas'),
       actions: {
         columnTitle: this.translate.instant('GLOBAL.detalle'),
         position: 'right',
@@ -91,16 +94,12 @@ export class TablaEntradaAprobadaComponent implements OnInit {
         delete: false,
         custom: [
           {
-            // name: this.translate.instant('GLOBAL.detalle'),
-            name: 'Seleccionar',
-            title: '<i class="fas fa-pencil-alt" title="Ver"></i>',
+            name: t.accion,
+            title: '<i class="fas fa-arrow-right" title="' + t.accion + '" aria-label="' + t.accion + '"></i>',
           },
         ],
       },
       columns: {
-        Id: {
-          title: 'ID',
-        },
         Consecutivo: {
           title: this.translate.instant('GLOBAL.consecutivo'),
         },
@@ -123,7 +122,7 @@ export class TablaEntradaAprobadaComponent implements OnInit {
             },
           },
         },
-        TipoEntradaId: {
+        FormatoTipoMovimientoId: {
           title: this.translate.instant('GLOBAL.tipo_entrada'),
           valuePrepareFunction: (value: any) => {
             return value;
@@ -157,27 +156,22 @@ export class TablaEntradaAprobadaComponent implements OnInit {
   loadEntradas(): void {
 
     this.salidasHelper.getEntradasSinSalida().subscribe(res => {
-      if (Object.keys(res[0]).length !== 0) {
-        for (const datos of res) {
-          const entrada = new Entrada;
-          const tipoEntradaAux = new TipoEntrada;
-          const detalle = JSON.parse((datos.Detalle));
-          entrada.Id = datos.Id;
-          entrada.ActaRecibidoId = detalle.acta_recibido_id;
-          entrada.FechaCreacion = datos.FechaCreacion;
-          entrada.Consecutivo = detalle.consecutivo;
-          // tipoEntradaAux.Nombre = datos.FormatoTipoMovimientoId.Nombre;// Innecesario genera conflictos con el filter
-          entrada.TipoEntradaId = datos.FormatoTipoMovimientoId.Nombre;
-          this.entradas.push(entrada);
-        }
-        this.source.load(this.entradas);
-        this.showList = true;
+      if (res.length) {
+        res.forEach(entrada => {
+          entrada.Detalle = JSON.parse((entrada.Detalle));
+          entrada.ActaRecibidoId = entrada.Detalle.acta_recibido_id;
+          entrada.Consecutivo = entrada.Detalle.consecutivo;
+          entrada.FormatoTipoMovimientoId = entrada.FormatoTipoMovimientoId.Nombre;
+        });
+        this.source.load(res);
+        this.source.setSort([{ field: 'FechaCreacion', direction: 'desc' }]);
       }
+      this.showList = true;
     });
   }
 
   loadEntradaEspecifica(): void {
-    this.entradasHelper.getEntrada(this.consecutivoEntrada).subscribe(res => {
+    this.entradasHelper.getMovimiento(this.consecutivoEntrada).subscribe(res => {
       if (res !== null) {
         // console.log(res);
         switch (res[0].FormatoTipoMovimientoId.Nombre) {
