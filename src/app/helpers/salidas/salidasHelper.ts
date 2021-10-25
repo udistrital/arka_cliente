@@ -25,9 +25,10 @@ export class SalidaHelper {
      * If the response is successs, it returns the object's data.
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
      */
-    public getSalidas() {
+    public getSalidas(tramiteOnly: boolean) {
+        const query = tramiteOnly ? '?tramite_only=true' : '';
         this.rqManager.setPath('ARKA_SERVICE');
-        return this.rqManager.get('salida/').pipe(
+        return this.rqManager.get('salida' + query).pipe(
             map(
                 (res) => {
                     if (res === 'error') {
@@ -59,6 +60,22 @@ export class SalidaHelper {
             ),
         );
     }
+
+    public registrarSalidas(salidasData) {
+        this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
+        return this.rqManager.post('tr_salida', salidasData).pipe(
+            map(
+                (res) => {
+                    if (res['Type'] === 'error') {
+                        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.error_salida_no_registrada'));
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
+
     /**
     * Entrada Post
     * If the response has errors in the OAS API it should show a popup message with an error.
@@ -66,15 +83,15 @@ export class SalidaHelper {
     * @param entradaData object to save in the DB
     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
     */
-    public postSalidas(salidasData) {
+    public postSalidas(salidaId: number) {
         return this.dispMvtos.movimientosPermitidos().pipe(
-            switchMap(disp => iif( () => disp, this.postSalidasFinal(salidasData) )),
+            switchMap(disp => iif( () => disp, this.aprobarSalida(salidaId) )),
         );
     }
 
-    private postSalidasFinal(salidasData) {
+    private aprobarSalida(salidaId: number) {
         this.rqManager.setPath('ARKA_SERVICE');
-        return this.rqManager.post(`salida`, salidasData).pipe(
+        return this.rqManager.put('salida', { Id: salidaId }).pipe(
             map(
                 (res) => {
                     if (res['Type'] === 'error') {
@@ -176,11 +193,11 @@ export class SalidaHelper {
      */
     public getEntradasSinSalida() {
         this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
-        return this.rqManager.get('movimiento?query=EstadoMovimientoId.Id:2&limit=-1').pipe(
+        return this.rqManager.get('movimiento?query=EstadoMovimientoId__Nombre:Entrada Aprobada&limit=-1').pipe(
             map(
                 (res) => {
                     if (res === 'error') {
-                        this.pUpManager.showErrorAlert('No se pudo consultar el contrato contratos');
+                        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.entradas.errorListaEntradas'));
                         return undefined;
                     }
                     return res;

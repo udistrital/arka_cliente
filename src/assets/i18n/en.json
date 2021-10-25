@@ -131,7 +131,15 @@
             }
           },
           "salidas": {
-            "name": "Outputs"
+            "name": "Issues",
+            "children": {
+              "consultarSalida": {
+                "name": "Browse Issues"
+              },
+              "aprobarSalida": {
+                "name": "Approve Issues"
+              }
+            }
           },
           "bajas": {
             "name": "Deregister"
@@ -179,9 +187,6 @@
         "children": {
           "tiposEntrada": {
             "name": "Entry types"
-          },
-          "tiposBien": {
-            "name": "Good Types"
           }
         }
       }
@@ -798,9 +803,13 @@
     "observaciones": "Comments",
 
     "movimientos": {
+      "estadoTramite": "Awaiting review",
+      "estadoAprobado": "Approved",
+      "estadoRechazo": "Rejected",
       "entradas": {
         "noEntradasView": "There are no entries to view",
         "noEntradasReview": "There are no entries to review",
+        "noEntradasAprobadas": "There are no entries to create an issue",
         "accionRevision": "Review Entry",
         "errorListaEntradas": "Error getting the entries list",
         "errorEstadosMov": "Error getting the status",
@@ -816,6 +825,23 @@
         "rechazoConfrmTxt":"Are you sure to reject this entry?",
         "rechazoTtlOk": "Entry Rejected",
         "rechazoTxtOk": "The entry {{CONSECUTIVO}} was successfully rejected"
+      },
+      "salidas": {
+        "nuevaSalida": "Register a new issue",
+        "noSalidasView": "There are no issues to view",
+        "noSalidasReview": "There are no entries to review",
+        "accionRevision": "Review Entry",
+        "errorListaSalidas": "Error getting the issues list",
+        "registroTtlOk":"Issue Registered",
+        "registroTxtOk":"The issue was successfully registered",
+        "aprobacionConfrmTtl":"Confirm issue Approval",
+        "aprobacionConfrmTxt":"Are you sure to approve this issue?",
+        "aprobacionTtlOk": "Issue approved",
+        "aprobacionTxtOk": "The issue {{CONSECUTIVO}} was successfully approved",
+        "rechazoConfrmTtl":"Confirm issue rejection",
+        "rechazoConfrmTxt":"Are you sure to reject this issue?",
+        "rechazoTtlOk": "Issue Rejected",
+        "rechazoTxtOk": "The issue {{CONSECUTIVO}} was successfully rejected"
       },
       "tipo": {
         "EA": {

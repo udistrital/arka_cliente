@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { LocalDataSource } from 'ngx-smart-table';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
-import { Entrada } from '../../../@core/data/models/entrada/entrada';
+import { Entrada, EstadoMovimiento, Movimiento } from '../../../@core/data/models/entrada/entrada';
 import { Contrato } from '../../../@core/data/models/entrada/contrato';
 import { Supervisor } from '../../../@core/data/models/entrada/supervisor';
 import { OrdenadorGasto } from '../../../@core/data/models/entrada/ordenador_gasto';
@@ -18,6 +18,7 @@ import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoH
 import { parse } from 'path';
 import { combineLatest } from 'rxjs';
 import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'ngx-consulta-salidas',
@@ -40,6 +41,10 @@ export class ConsultaSalidasComponent implements OnInit {
   Dependencias: any;
   Sedes: any;
   mostrar: boolean;
+  modo: string = 'consulta';
+  estadosMovimiento: Array<EstadoMovimiento>;
+  movimiento: Movimiento;
+  filaSeleccionada: any;
 
   constructor(
     private router: Router,
@@ -51,39 +56,79 @@ export class ConsultaSalidasComponent implements OnInit {
     private Actas_Recibido: ActaRecibidoHelper,
     private listService: ListService,
     private terceros: TercerosHelper,
+    private route: ActivatedRoute,
+    private entradasHelper: EntradaHelper,
   ) {
     this.source = new LocalDataSource();
     this.detalle = false;
-    this.loadTablaSettings();
   }
 
 
 
   ngOnInit() {
+    this.route.data.subscribe(data => {
+      if (data && data.modo !== null && data.modo !== undefined) {
+        this.modo = data.modo;
+      }
+    });
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
       this.loadTablaSettings();
     });
-    this.loadSalidas();
+    this.loadEstados();
+  }
+
+  loadEstados() {
+    this.entradasHelper.getEstadosMovimiento().toPromise().then(res => {
+      if (res.length > 0) {
+        this.estadosMovimiento = res;
+        this.loadTablaSettings();
+        this.loadSalidas();
+      }
+    });
   }
 
   loadTablaSettings() {
     const t = {
-      registrar: this.translate.instant('GLOBAL.registrar_nueva_salida'),
-      editar: this.translate.instant('GLOBAL.Acta_Recibido.EdicionActa.Title'),
+      registrar: this.translate.instant('GLOBAL.movimientos.salidas.nuevaSalida'),
+      accion: this.translate.instant('GLOBAL.' +
+        (this.modo === 'consulta' ? 'verDetalle' : 'movimientos.salidas.accionRevision')),
+      icon: this.modo === 'consulta' ? 'eye' : 'edit',
     };
+    const estadoSelect = 'GLOBAL.movimientos.estado';
+    const columns = this.modo === 'consulta' ? {
+      EstadoMovimientoId: {
+        title: this.translate.instant('GLOBAL.tipo_entrada'),
+        width: '300px',
+        filter: {
+          type: 'list',
+          config: {
+            selectText: this.translate.instant('GLOBAL.seleccionar') + '...',
+            list: [
+              { value: this.estadosMovimiento.find(status => status.Nombre === 'Salida En Trámite').Nombre,
+                title: this.translate.instant(estadoSelect + 'Tramite') },
+              { value: this.estadosMovimiento.find(status => status.Nombre === 'Salida Aprobada').Nombre,
+                title: this.translate.instant(estadoSelect + 'Aprobado') },
+              { value: this.estadosMovimiento.find(status => status.Nombre === 'Salida Rechazada').Nombre,
+                title: this.translate.instant(estadoSelect + 'Rechazo') },
+            ],
+          },
+        },
+      },
+    } : [];
+
     this.settings = {
       hideSubHeader: false,
-      noDataMessage: this.translate.instant('GLOBAL.no_data_entradas'),
+      noDataMessage: this.translate.instant('GLOBAL.movimientos.entradas.' +
+        (this.modo === 'consulta' ? 'noSalidasView' : 'noSalidasReview')),
       actions: {
-        columnTitle: this.translate.instant('GLOBAL.detalle'),
+        columnTitle: this.translate.instant('GLOBAL.Acciones'),
         position: 'right',
-        edit: false,
         delete: false,
+        edit: false,
         custom: [
           {
-            // name: this.translate.instant('GLOBAL.detalle'),
-            name: 'Seleccionar',
-            title: '<i class="fas fa-eye"></i>',
+            name: this.translate.instant('GLOBAL.detalle'),
+            title: '<i class="fas fa-' + t.icon + '" title="' + t.accion + '" aria-label="' + t.accion + '"></i>',
           },
         ],
       },
@@ -216,35 +261,89 @@ export class ConsultaSalidasComponent implements OnInit {
             }
           },
         },
+        ...columns,
       },
     };
   }
   loadSalidas(): void {
-
-    this.salidasHelper.getSalidas().subscribe(res1 => {
-      this.mostrar = true;
-      if (res1[0]) {
-        if (Object.keys(res1[0]).length !== 0) {
-          this.source.load(res1);
-        }
-
+    this.salidasHelper.getSalidas(this.modo === 'revision').subscribe(res => {
+      if (res.length) {
+        res.forEach(salida => {
+          salida.EstadoMovimientoId = this.estadosMovimiento.find(estado =>
+            estado.Id === salida.EstadoMovimientoId).Nombre;
+        });
+        this.source.load(res);
+        this.source.setSort([{ field: 'FechaCreacion', direction: 'desc' }]);
       }
+      this.mostrar = true;
     });
   }
   onCustom(event) {
     this.salidaId = `${event.data.Id}`;
     this.detalle = true;
+    this.filaSeleccionada = event.data;
+    this.cargarSalida();
   }
   onRegister() {
     this.router.navigate(['/pages/salidas/registro_salidas']);
   }
   onVolver() {
-    // this.source.empty().then(() => {
     this.detalle = !this.detalle;
-    //   if (this.Dependencias !== undefined && this.Sedes !== undefined && this.Proveedores !== undefined) {
-    //    // console.log('ok');
-    //     this.loadSalidas();
-    //  }
-    // });
+  }
+
+  private cargarSalida () {
+    this.entradasHelper.getMovimiento(this.salidaId).toPromise().then((res: any) => {
+      this.movimiento = res[0];
+    });
+  }
+
+  confirmSubmit(aprobar: boolean) {
+    (Swal as any).fire({
+      title: this.translate.instant('GLOBAL.movimientos.salidas.' + (aprobar ? 'aprobacion' : 'rechazo') + 'ConfrmTtl'),
+      text: this.translate.instant('GLOBAL.movimientos.salidas.' + (aprobar ? 'aprobacion' : 'rechazo') + 'ConfrmTxt'),
+      type: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: this.translate.instant('GLOBAL.si'),
+      cancelButtonText: this.translate.instant('GLOBAL.no'),
+    }).then((result) => {
+      if (result.value) {
+        this.onSubmitRevision(aprobar);
+      }
+    });
+  }
+
+  private onSubmitRevision(aprobar: boolean) {
+    this.mostrar = false;
+    if (aprobar) {
+      this.salidasHelper.postSalidas(this.movimiento.Id).toPromise().then((res: any) => {
+        if (res) {
+          this.alertSuccess(true);
+        }
+      });
+    } else {
+      const estado = this.estadosMovimiento.find(estadoMovimiento => estadoMovimiento.Nombre === 'Salida Rechazada').Id;
+      this.movimiento.EstadoMovimientoId = <EstadoMovimiento>{ Id: estado };
+      this.entradasHelper.putMovimiento(this.movimiento).toPromise().then((res: any) => {
+        if (res) {
+          this.alertSuccess(false);
+        }
+      });
+    }
+  }
+
+  private alertSuccess(aprobar: boolean) {
+    (Swal as any).fire({
+      type: 'success',
+      title: this.translate.instant('GLOBAL.movimientos.salidas.' + (aprobar ? 'aprobacion' : 'rechazo') + 'TtlOk'),
+      text: this.translate.instant('GLOBAL.movimientos.salidas.' + (aprobar ? 'aprobacion' : 'rechazo') + 'TxtOk',
+        { CONSECUTIVO: this.movimiento.Id }),
+      showConfirmButton: false,
+      timer: 3000,
+    });
+    this.source.remove(this.filaSeleccionada);
+    this.onVolver();
+    this.mostrar = true;
   }
 }
