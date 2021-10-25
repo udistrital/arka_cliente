@@ -98,7 +98,7 @@ export class EntradaHelper {
 
     private postEntradaFinal(entradaData: Partial<TrMovimiento>, entradaId: number) {
         this.rqManager.setPath('ARKA_SERVICE');
-        return this.rqManager.post('entrada/?entradaId=' + entradaId, entradaData).pipe(
+        return this.rqManager.post('entrada?entradaId=' + entradaId, entradaData).pipe(
             map(
                 (res) => {
                     if (res['Type'] === 'error') {
