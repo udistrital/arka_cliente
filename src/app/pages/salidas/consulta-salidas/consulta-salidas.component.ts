@@ -74,8 +74,6 @@ export class ConsultaSalidasComponent implements OnInit {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
       this.loadTablaSettings();
     });
-    // this.loadTablaSettings();
-    // this.loadSalidas();
     this.loadEstados();
   }
 

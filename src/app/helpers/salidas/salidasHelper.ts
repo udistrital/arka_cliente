@@ -28,7 +28,7 @@ export class SalidaHelper {
     public getSalidas(tramiteOnly: boolean) {
         const query = tramiteOnly ? '?tramite_only=true' : '';
         this.rqManager.setPath('ARKA_SERVICE');
-        return this.rqManager.get('salida/' + query).pipe(
+        return this.rqManager.get('salida' + query).pipe(
             map(
                 (res) => {
                     if (res === 'error') {
@@ -75,6 +75,7 @@ export class SalidaHelper {
             ),
         );
     }
+
     /**
     * Entrada Post
     * If the response has errors in the OAS API it should show a popup message with an error.
@@ -88,10 +89,9 @@ export class SalidaHelper {
         );
     }
 
-
     private aprobarSalida(salidaId: number) {
         this.rqManager.setPath('ARKA_SERVICE');
-        return this.rqManager.put('salida', {Id: salidaId}).pipe(
+        return this.rqManager.put('salida', { Id: salidaId }).pipe(
             map(
                 (res) => {
                     if (res['Type'] === 'error') {
