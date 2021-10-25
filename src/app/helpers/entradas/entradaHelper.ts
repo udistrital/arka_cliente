@@ -304,11 +304,41 @@ export class EntradaHelper {
     }
     public getMovimientosArka(){
         this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
-        return this.rqManager.get('formato_tipo_movimiento?limit=-1').pipe(
+        return this.rqManager.get('formato_tipo_movimiento?limit=-1&sortby=Id&order=asc').pipe(
             map(
                 (res) => {
                     if (res === 'error') {
                         this.pUpManager.showErrorAlert('No se pudo consultar los tipos de movimiento');
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
+    public putMovimientoArka(TipoMovimiento) {
+        this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
+        return this.rqManager.put('formato_tipo_movimiento', TipoMovimiento).pipe(
+            map(
+                (res) => {
+                    if (res) {
+                        return res;
+                    } else {
+                        this.pUpManager.showErrorAlert('No se pudo consultar el contrato contratos');
+                        return undefined;
+
+                    }
+                },
+            ),
+        );
+    }
+    public postMovimientoArka(TrTipoMovimiento) {
+        this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
+        return this.rqManager.post('formato_tipo_movimiento', TrTipoMovimiento).pipe(
+            map(
+                (res) => {
+                    if (res['Type'] === 'error') {
+                        this.pUpManager.showErrorAlert('Error');
                         return undefined;
                     }
                     return res;

@@ -1,12 +1,12 @@
-export const FORM_TIPO_BIEN = {
-    titulo: 'Tipo de bien',
+export const FORM_TIPO_MOVIMIENTO = {
+    titulo: 'Tipo de movimiento',
     tipo_formulario: 'mini',
-    btn: 'Guardar tipo de bien',
+    btn: 'Guardar tipo de movimiento',
     alertas: true,
-    modelo: 'TipoBien',
+    modelo: 'TipoMovimiento',
     campos: [
         {
-            label: 'Tipo de bien',
+            label: 'Tipo de movimiento',
             etiqueta: 'input',
             claseGrid: 'col-lg-4 col-md-4 col-sm-4 col-xs-4',
             nombre: 'Nombre',
@@ -40,7 +40,7 @@ export const FORM_TIPO_BIEN = {
             label: 'Numero de orden',
             etiqueta: 'input',
             claseGrid: 'col-6',
-            nombre: 'Orden',
+            nombre: 'NumeroOrden',
             label_i18n: 'activo',
             placeholder_i18n: 'activo',
             requerido: false,

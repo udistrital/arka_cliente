@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter, OnChanges } from '@angular/core';
-import { FORM_TIPO_BIEN } from './form-tipo-bien';
+import { FORM_TIPO_MOVIMIENTO } from './form-tipo-movimiento';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
-import { TipoBien} from '../../../../@core/data/models/acta_recibido/tipo_bien';
+import { TipoMovimientoArka } from '../../../../@core/data/models/movimientos';
 
 @Component({
   selector: 'ngx-registro-tipo-movimiento',
@@ -10,10 +10,10 @@ import { TipoBien} from '../../../../@core/data/models/acta_recibido/tipo_bien';
 })
 export class RegistroTipoMovimientoComponent implements OnInit  {
   cargando: boolean = false;
-  formTipoBien: any;
+  formTipoMovimiento: any;
 
-  @Input () tipobien: TipoBien;
-  @Output() tipobienChange = new EventEmitter<TipoBien>();
+  @Input () tipomovimiento: TipoMovimientoArka;
+  @Output() tipomovimientoChange = new EventEmitter<TipoMovimientoArka>();
   @Output() Guardar = new EventEmitter<undefined>();
 
   constructor(
@@ -29,16 +29,17 @@ export class RegistroTipoMovimientoComponent implements OnInit  {
   }
   construirForm() {
     const titulo = 'FORMULARIO TB';
-    this.formTipoBien = FORM_TIPO_BIEN;
+    this.formTipoMovimiento = FORM_TIPO_MOVIMIENTO;
   }
   validarForm(event) {
     if (event.valid) {
       this.Guardar.emit();
-      this.registrarTipoBien(event.data.TipoBien);
+      console.log(event.data.TipoMovimiento)
+      this.registrarTipoMovimiento(event.data.TipoMovimiento);
     }
   }
-  registrarTipoBien(formData: any) {
+  registrarTipoMovimiento(formData: any) {
     // console.log(formData);
-    this.tipobienChange.emit(formData);
+    this.tipomovimientoChange.emit(formData);
   }
 }

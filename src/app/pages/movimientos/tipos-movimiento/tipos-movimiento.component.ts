@@ -19,7 +19,7 @@ export class TiposMovimientoComponent implements OnInit {
   spinner: boolean = false;
   updating: boolean;
   settings: any;
-  TiposBien: LocalDataSource;
+  TiposMovimiento: LocalDataSource;
   source: LocalDataSource;
   registrar: boolean= false;
   nuevo: boolean= false;
@@ -36,26 +36,26 @@ export class TiposMovimientoComponent implements OnInit {
   ) {
 
     this.source = new LocalDataSource();
-    this.TiposBien = new LocalDataSource();
-    this.loadTiposBien();
+    this.TiposMovimiento = new LocalDataSource();
+    this.loadTiposMovimiento();
   }
 
   ngOnInit() {
-    this.loadTiposBien();
+    this.loadTiposMovimiento();
     this.loadTablasSettings();
     this.mostrar = false;
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
     });
   }
 
-  loadTiposBien(): void {
+  loadTiposMovimiento(): void {
     
     this.entradasHelper.getMovimientosArka().subscribe(res => {
       if (Array.isArray(res) && res.length !== 0) {
         this.spinner = true;
-        this.TiposBien.load(res);
+        this.TiposMovimiento.load(res);
         this.source.load(res);
-        this.source.setSort([{ field: 'Orden', direction: 'desc' }]);
+        this.source.setSort([{ field: 'NumeroOrden', direction: 'desc' }]);
       }
     });
   }
@@ -120,7 +120,7 @@ export class TiposMovimientoComponent implements OnInit {
             return value.toUpperCase();
           },
         },
-        Orden: {
+        NumeroOrden: {
           title: this.translate.instant('GLOBAL.parametros.tiposBien.numeroOrden'),
           width: '170px',
         },
@@ -135,14 +135,14 @@ export class TiposMovimientoComponent implements OnInit {
     };
   }
 
-  ActualizarTipoBien(event) {
+  ActualizarTipoMovimiento(event) {
     this.nuevo = false;
-    this.tipo_bien  = event.data;
+    this.tipo_movimiento  = event.data;
     this.mostrar = true;
   }
   onRegister() {
     this.nuevo = true;
-    this.tipo_bien = new TipoBien();
+    this.tipo_movimiento = new TipoMovimientoArka();
     this.mostrar = true;
   }
   Registrar() {
@@ -173,10 +173,12 @@ export class TiposMovimientoComponent implements OnInit {
     (Swal as any).fire(mensaje).then((willDelete) => {
       if (willDelete.value) {
         let text;
-        // console.log(this.tipo_bien);
+        console.log(this.tipo_movimiento);
         if (this.nuevo) {
           text = this.translate.instant('GLOBAL.parametros.tiposBien.registro_succes');
-          this.catalogoHelper.postTipoBien(this.tipo_bien).toPromise()
+          const format = JSON.stringify({Elementos:null})
+          this.tipo_movimiento.Formato =format;
+          this.entradasHelper.postMovimientoArka(this.tipo_movimiento).toPromise()
           .then((res: any) => {
             if (res) {
               this.succesOp(text);
@@ -184,7 +186,7 @@ export class TiposMovimientoComponent implements OnInit {
           });
         } else {
           text = this.translate.instant('GLOBAL.parametros.tiposBien.actualizacion_succes');
-          this.catalogoHelper.putTipoBien(this.tipo_bien).toPromise()
+          this.entradasHelper.putMovimientoArka(this.tipo_movimiento).toPromise()
           .then((res: any) => {
             if (res) {
               this.succesOp(text);
@@ -207,7 +209,7 @@ export class TiposMovimientoComponent implements OnInit {
   }
 
   volver() {
-    this.tipo_bien = undefined;
+    this.tipo_movimiento = undefined;
     this.mostrar = false;
   }
 }
