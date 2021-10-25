@@ -302,7 +302,20 @@ export class EntradaHelper {
             ),
         );
     }
-
+    public getMovimientosArka(){
+        this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
+        return this.rqManager.get('formato_tipo_movimiento?limit=-1').pipe(
+            map(
+                (res) => {
+                    if (res === 'error') {
+                        this.pUpManager.showErrorAlert('No se pudo consultar los tipos de movimiento');
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
     public getFormatoEntrada() {
         this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
         return this.rqManager.get('formato_tipo_movimiento?query=NumeroOrden__lte:2&sortby=Id&order=asc&limit=-1').pipe(

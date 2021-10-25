@@ -1,0 +1,30 @@
+<div class="row">
+  <nb-card class="col">
+    <nb-card [nbSpinner]="updating || !spinner">
+      <nb-card-header>
+  
+        <h1>{{'GLOBAL.parametros.tiposBien.title' | translate}}</h1>
+  
+      </nb-card-header>
+      <nb-card-body>
+  
+        <p class="h4 pb-4">{{'GLOBAL.parametros.tiposBien.subtitle' | translate}}</p>
+        <ng2-smart-table  [source]="source" [settings]="settings" (edit)="ActualizarTipoBien($event)" (create)="onRegister()">
+        </ng2-smart-table>
+  
+      </nb-card-body>
+    </nb-card>
+  </nb-card>
+
+  <div class="col" *ngIf="mostrar">
+    <nb-card >
+      <nb-card-header>
+        {{'GLOBAL.parametros.tiposBien.registro_title' | translate}}
+      </nb-card-header>
+      <ngx-registro-tipo-movimiento (Guardar)="Registrar()" [(tipobien)]="tipo_bien"></ngx-registro-tipo-movimiento>
+    </nb-card>
+    <nb-card-footer>
+      <button type="button" class="btn btn-primary float-left" (click)="volver()">{{ 'GLOBAL.volver' | translate }}</button>
+    </nb-card-footer>
+  </div>
+</div>
