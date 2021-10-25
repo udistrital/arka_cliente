@@ -8,7 +8,7 @@ describe('RegistroTipoMovimientoComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ RegistroTipoMovimientoComponent ]
+      declarations: [ RegistroTipoMovimientoComponent ],
     })
     .compileComponents();
   }));

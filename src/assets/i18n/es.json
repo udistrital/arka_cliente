@@ -136,6 +136,9 @@
           "bajas": {
             "name": "Bajas"
           },
+          "tipos_movimiento": {
+            "name": "Tipos de movimiento"
+          },
           "consulta": {
             "name": "Consultar Baja de Bien"
           },
@@ -1024,7 +1027,15 @@
         "actualizacion_title":"Actualización tipo de bien o servicio",
         "registro_text":"¿Desea registrar los datos ingresados?",
         "actualizacion_text": "¿Desea actualizar los datos ingresados?"
-      }
+      },
+      "tiposMovimiento":{
+        "title": "Administrar tipos de movimiento",
+        "registro_title": "Type of movement",
+        "actualizacion_title":"Actualización tipo de movimiento",
+        "registro_succes": "Tipo de movimiento registrado satisfactoriamente",
+        "actualizacion_succes": "Tipo de movimiento actualizado satisfactoriamente",
+        "subtitle": "Seleccione un tipo de movimiento para cambiar su estado"
+     }
     },
     "reportes": {
       "entrada_titulo": "Reporte de Entrada"

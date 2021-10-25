@@ -6,7 +6,7 @@ import { TipoMovimientoArka } from '../../../../@core/data/models/movimientos';
 @Component({
   selector: 'ngx-registro-tipo-movimiento',
   templateUrl: './registro-tipo-movimiento.component.html',
-  styleUrls: ['./registro-tipo-movimiento.component.scss']
+  styleUrls: ['./registro-tipo-movimiento.component.scss'],
 })
 export class RegistroTipoMovimientoComponent implements OnInit  {
   cargando: boolean = false;
@@ -34,7 +34,7 @@ export class RegistroTipoMovimientoComponent implements OnInit  {
   validarForm(event) {
     if (event.valid) {
       this.Guardar.emit();
-      console.log(event.data.TipoMovimiento)
+      // console.log(event.data.TipoMovimiento);
       this.registrarTipoMovimiento(event.data.TipoMovimiento);
     }
   }

@@ -4,7 +4,7 @@ import { MovimientosComponent } from './movimientos.component';
 import { SolicitudBajaBienComponent } from './solicitud-baja-bien/solicitud-baja-bien.component';
 import { AprobacionBajaBienComponent } from './aprobacion-baja-bien/aprobacion-baja-bien.component';
 import { ConsultaBajaBienComponent } from './consulta-baja-bien/consulta-baja-bien.component';
-import{ TiposMovimientoComponent} from './tipos-movimiento/tipos-movimiento.component';
+import { TiposMovimientoComponent} from './tipos-movimiento/tipos-movimiento.component';
 
 const routes: Routes = [{
   path: '',

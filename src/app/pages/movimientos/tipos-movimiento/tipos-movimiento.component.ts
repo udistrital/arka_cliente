@@ -12,7 +12,7 @@ import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
 @Component({
   selector: 'ngx-tipos-movimiento',
   templateUrl: './tipos-movimiento.component.html',
-  styleUrls: ['./tipos-movimiento.component.scss']
+  styleUrls: ['./tipos-movimiento.component.scss'],
 })
 export class TiposMovimientoComponent implements OnInit {
   mostrar: boolean = false;
@@ -25,7 +25,7 @@ export class TiposMovimientoComponent implements OnInit {
   nuevo: boolean= false;
   tipo_bien: TipoBien;
   tipo_movimiento: TipoMovimientoArka;
-  
+
   @Output() eventChange = new EventEmitter();
   constructor(
     private translate: TranslateService,
@@ -49,7 +49,7 @@ export class TiposMovimientoComponent implements OnInit {
   }
 
   loadTiposMovimiento(): void {
-    
+
     this.entradasHelper.getMovimientosArka().subscribe(res => {
       if (Array.isArray(res) && res.length !== 0) {
         this.spinner = true;
@@ -149,7 +149,7 @@ export class TiposMovimientoComponent implements OnInit {
     let mensaje;
     if (this.nuevo) {
       mensaje = {
-        title: this.translate.instant('GLOBAL.parametros.tiposBien.registro_title'),
+        title: this.translate.instant('GLOBAL.parametros.tiposMovimiento.registro_title'),
         text: this.translate.instant('GLOBAL.parametros.tiposBien.registro_text'),
         type: 'warning',
         showCancelButton: true,
@@ -160,7 +160,7 @@ export class TiposMovimientoComponent implements OnInit {
       };
     } else {
       mensaje = {
-        title: this.translate.instant('GLOBAL.parametros.tiposBien.actualizacion_title'),
+        title: this.translate.instant('GLOBAL.parametros.tiposMovimiento.actualizacion_title'),
         text: this.translate.instant('GLOBAL.parametros.tiposBien.actualizacion_text'),
         type: 'warning',
         showCancelButton: true,
@@ -173,11 +173,11 @@ export class TiposMovimientoComponent implements OnInit {
     (Swal as any).fire(mensaje).then((willDelete) => {
       if (willDelete.value) {
         let text;
-        console.log(this.tipo_movimiento);
+        // console.log(this.tipo_movimiento);
         if (this.nuevo) {
-          text = this.translate.instant('GLOBAL.parametros.tiposBien.registro_succes');
-          const format = JSON.stringify({Elementos:null})
-          this.tipo_movimiento.Formato =format;
+          text = this.translate.instant('GLOBAL.parametros.tiposMovimiento.registro_succes');
+          const format = JSON.stringify({Elementos: null});
+          this.tipo_movimiento.Formato = format;
           this.entradasHelper.postMovimientoArka(this.tipo_movimiento).toPromise()
           .then((res: any) => {
             if (res) {
@@ -185,7 +185,7 @@ export class TiposMovimientoComponent implements OnInit {
             }
           });
         } else {
-          text = this.translate.instant('GLOBAL.parametros.tiposBien.actualizacion_succes');
+          text = this.translate.instant('GLOBAL.parametros.tiposMovimiento.actualizacion_succes');
           this.entradasHelper.putMovimientoArka(this.tipo_movimiento).toPromise()
           .then((res: any) => {
             if (res) {
