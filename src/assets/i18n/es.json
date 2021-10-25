@@ -131,7 +131,15 @@
             }
           },
           "salidas": {
-            "name": "Salidas"
+            "name": "Salidas",
+            "children": {
+              "consultarSalida": {
+                "name": "Consultar Salidas"
+              },
+              "aprobarSalida": {
+                "name": "Aprobar Salidas"
+              }
+            }
           },
           "bajas": {
             "name": "Bajas"

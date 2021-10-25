@@ -131,7 +131,15 @@
             }
           },
           "salidas": {
-            "name": "Outputs"
+            "name": "Issues",
+            "children": {
+              "consultarSalida": {
+                "name": "Browse Issues"
+              },
+              "aprobarSalida": {
+                "name": "Approve Issues"
+              }
+            }
           },
           "bajas": {
             "name": "Deregister"
