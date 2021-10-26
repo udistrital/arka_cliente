@@ -146,28 +146,26 @@ export class TiposMovimientoComponent implements OnInit {
     this.mostrar = true;
   }
   Registrar() {
+    const mensajeconf = {
+      type: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085D6',
+      cancelButtonColor: '#D33',
+      confirmButtonText: 'Si',
+      cancelButtonText: 'No',
+    };
     let mensaje;
     if (this.nuevo) {
       mensaje = {
+        ...mensajeconf,
         title: this.translate.instant('GLOBAL.parametros.tiposMovimiento.registro_title'),
         text: this.translate.instant('GLOBAL.parametros.tiposBien.registro_text'),
-        type: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085D6',
-        cancelButtonColor: '#D33',
-        confirmButtonText: 'Si',
-        cancelButtonText: 'No',
       };
     } else {
       mensaje = {
+        ...mensajeconf,
         title: this.translate.instant('GLOBAL.parametros.tiposMovimiento.actualizacion_title'),
         text: this.translate.instant('GLOBAL.parametros.tiposBien.actualizacion_text'),
-        type: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085D6',
-        cancelButtonColor: '#D33',
-        confirmButtonText: 'Si',
-        cancelButtonText: 'No',
       };
     }
     (Swal as any).fire(mensaje).then((willDelete) => {
