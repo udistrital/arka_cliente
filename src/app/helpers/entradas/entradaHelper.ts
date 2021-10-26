@@ -302,6 +302,7 @@ export class EntradaHelper {
             ),
         );
     }
+
     public getMovimientosArka() {
         this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
         return this.rqManager.get('formato_tipo_movimiento?limit=-1&sortby=Id&order=asc').pipe(
