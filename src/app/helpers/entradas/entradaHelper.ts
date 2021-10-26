@@ -317,6 +317,7 @@ export class EntradaHelper {
             ),
         );
     }
+
     public putMovimientoArka(TipoMovimiento) {
         this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
         return this.rqManager.put('formato_tipo_movimiento', TipoMovimiento).pipe(
