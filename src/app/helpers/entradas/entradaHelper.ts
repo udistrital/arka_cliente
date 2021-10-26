@@ -347,6 +347,7 @@ export class EntradaHelper {
             ),
         );
     }
+
     public getFormatoEntrada() {
         this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
         return this.rqManager.get('formato_tipo_movimiento?query=NumeroOrden__lte:2&sortby=Id&order=asc&limit=-1').pipe(
