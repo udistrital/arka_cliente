@@ -332,6 +332,7 @@ export class EntradaHelper {
             ),
         );
     }
+
     public postMovimientoArka(TrTipoMovimiento) {
         this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
         return this.rqManager.post('formato_tipo_movimiento', TrTipoMovimiento).pipe(
