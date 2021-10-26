@@ -118,7 +118,7 @@ export class ConsultaSalidasComponent implements OnInit {
 
     this.settings = {
       hideSubHeader: false,
-      noDataMessage: this.translate.instant('GLOBAL.movimientos.entradas.' +
+      noDataMessage: this.translate.instant('GLOBAL.movimientos.salidas.' +
         (this.modo === 'consulta' ? 'noSalidasView' : 'noSalidasReview')),
       actions: {
         columnTitle: this.translate.instant('GLOBAL.Acciones'),
