@@ -144,6 +144,9 @@
           "bajas": {
             "name": "Deregister"
           },
+          "tipos_movimiento": {
+            "name": "Movements type"
+          },
           "consulta": {
             "name": "Consultar Baja de Bien"
           },
@@ -1050,6 +1053,14 @@
      "actualizacion_title":"Updating type of property or service",
      "registro_text":"Do you want to register the data entered?",
      "actualizacion_text": "Do you want to update the data entered?"
+   },
+   "tiposMovimiento":{
+      "title": "Manage movements",
+      "registro_title": "Type of movement",
+      "actualizacion_title":"Updating type of movement",
+      "registro_succes": "Type of movement satisfactorily registered",
+      "actualizacion_succes": "Type of movement or service satisfactorily updated",
+      "subtitle": "Select a movement type to change its state"
    },
    "reportes": {
      "entrada_titulo": "Entry Report"
