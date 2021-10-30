@@ -251,6 +251,7 @@
         "CantidadHeader": "Quantity",
         "MarcaHeader": "Brand",
         "SerieHeader": "Series",
+        "PlacaHeader": "Badge",
         "UnidadMedidaHeader": "Measure's Unit",
         "ValorUnitarioHeader": "Unit Value",
         "SubtotalHeader": "Subtotal",

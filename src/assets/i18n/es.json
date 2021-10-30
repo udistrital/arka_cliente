@@ -251,6 +251,7 @@
         "CantidadHeader":"Cantidad",
         "MarcaHeader":"Marca",
         "SerieHeader":"Serie",
+        "PlacaHeader": "Placa",
         "UnidadMedidaHeader":"Unidad de Medida",
         "ValorUnitarioHeader":"Valor Unitario",
         "SubtotalHeader":"Subtotal",

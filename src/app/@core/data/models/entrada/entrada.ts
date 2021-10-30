@@ -52,3 +52,14 @@ export class EstadoMovimiento {
 export class TrMovimiento extends Movimiento {
     SoporteMovimientoId: number;
 }
+
+export class ElementoMovimientosArka {
+    Id: number;
+    ElementoActaId: number;
+    Activo: boolean;
+    SaldoCantidad: number;
+    SaldoValor: number;
+    Unidad: number;
+    ValorUnitario: number;
+    ValorTotal: number;
+}
