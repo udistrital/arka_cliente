@@ -844,7 +844,8 @@
         "rechazoConfrmTtl":"Confirm issue rejection",
         "rechazoConfrmTxt":"Are you sure to reject this issue?",
         "rechazoTtlOk": "Issue Rejected",
-        "rechazoTxtOk": "The issue {{CONSECUTIVO}} was successfully rejected"
+        "rechazoTxtOk": "The issue {{CONSECUTIVO}} was successfully rejected",
+        "errorFuncionario": "The civil servant is not properly registered"
       },
       "tipo": {
         "EA": {

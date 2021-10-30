@@ -51,16 +51,11 @@ export class FormElementosSeleccionadosComponent implements OnInit {
   Ubicaciones: any;
   Sedes: any;
   form_salida: FormGroup;
-  Datos: any;
   proveedorfiltro: string;
   elementos: any;
   elementos2: any;
   UbicacionesFiltradas: any;
 
-  @Input('Datos')
-  set name(datos_seleccionados: any) {
-    this.Datos = datos_seleccionados;
-  }
   @Output() DatosEnviados = new EventEmitter();
 
   constructor(
@@ -84,11 +79,9 @@ export class FormElementosSeleccionadosComponent implements OnInit {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
     });
     this.elementos = [];
-    // this.listService.findProveedores();
     this.listService.findDependencias();
     this.listService.findSedes();
     this.listService.findProveedores();
-    // this.listService.findUbicaciones();
     this.loadLists();
   }
 
@@ -101,11 +94,9 @@ export class FormElementosSeleccionadosComponent implements OnInit {
       (list) => {
         this.Dependencias = list.listDependencias[0];
         this.Proveedores = list.listProveedores[0];
-        // this.Ubicaciones = list.listUbicaciones[0];
         this.Sedes = list.listSedes[0];
         this.dataService2 = this.completerService.local(this.Proveedores, 'compuesto', 'compuesto');
         this.dataService3 = this.completerService.local(this.Dependencias, 'Nombre', 'Nombre');
-        // this.dataService = this.completerService.local(this.Ubicaciones, 'Nombre', 'Nombre');
       },
     );
   }
@@ -138,28 +129,15 @@ export class FormElementosSeleccionadosComponent implements OnInit {
   }
 
   onSubmit() {
-    const form = this.form_salida.value;
-    const proveedor___ = form.Proveedor.split(' ');
-
-    if (Object.keys(this.Datos.selected).length !== 0) {
-      const seleccionados = this.Datos.selected;
-      const datos = this.Datos.source.data;
-      // console.log({OJO:this.form_salida.get('Ubicacion')});
-      seleccionados.forEach((elemento) => {
-        elemento.Funcionario = this.elementos2;
-        // elemento.Funcionario = this.Proveedores.find(z => z.compuesto === form.Proveedor);
-        elemento.Sede = this.Sedes.find(y => y.Id === parseFloat(form.Sede));
-        elemento.Dependencia = this.Dependencias.find(y => y.Nombre === form.Dependencia);
-        elemento.Ubicacion = this.UbicacionesFiltradas.find(w => w.Id === parseFloat(form.Ubicacion));
-        elemento.Asignado = true;
-        datos.find(element => {
-          if (element.Id === elemento.Id) {
-            element = elemento;
-          }
-        });
-      });
-      // console.log(datos)
-      this.DatosEnviados.emit(datos);
+    if (this.elementos2) {
+      const form = this.form_salida.value;
+      form.Funcionario = this.elementos2;
+      form.Sede = this.Sedes.find(y => y.Id === parseFloat(form.Sede));
+      form.Dependencia = this.Dependencias.find(y => y.Nombre === form.Dependencia);
+      form.Ubicacion = this.UbicacionesFiltradas.find(w => w.Id === parseFloat(form.Ubicacion));
+      this.DatosEnviados.emit(form);
+    } else {
+      this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.salidas.errorFuncionario'));
     }
 
   }

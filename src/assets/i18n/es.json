@@ -844,7 +844,8 @@
         "rechazoConfrmTtl":"Confirmar Rechazo de Salida",
         "rechazoConfrmTxt":"¿Está seguro que desea rechazar la salida?",
         "rechazoTtlOk": "Salida Rechazada",
-        "rechazoTxtOk": "La salida {{CONSECUTIVO}} ha sido rechazada de exitosamente"
+        "rechazoTxtOk": "La salida {{CONSECUTIVO}} ha sido rechazada de exitosamente",
+        "errorFuncionario": "El funcionario seleccionado no está correctamente registrado"
       },
       "tipo": {
         "EA": {
