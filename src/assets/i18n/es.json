@@ -846,7 +846,8 @@
         "rechazoConfrmTxt":"¿Está seguro que desea rechazar la salida?",
         "rechazoTtlOk": "Salida Rechazada",
         "rechazoTxtOk": "La salida {{CONSECUTIVO}} ha sido rechazada de exitosamente",
-        "errorFuncionario": "El funcionario seleccionado no está correctamente registrado"
+        "errorFuncionario": "El funcionario seleccionado no está correctamente registrado",
+        "errorElementos": "La entrada no tiene elementos asociados para ser asignados"
       },
       "tipo": {
         "EA": {

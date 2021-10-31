@@ -1,161 +1,160 @@
 <mat-card-content>
-  <mat-tab-group mat-stretch-tabs [selectedIndex]="selected.value" (selectedIndexChange)="selected.setValue($event)">
+  <mat-tab-group mat-stretch-tabs (selectedTabChange)="tabChange()" [selectedIndex]="selected.value" (selectedIndexChange)="selected.setValue($event)">
     <mat-tab label="{{'GLOBAL.movimientos.tab_consumo_controlado' | translate}}">
       <p></p>
-      <mat-spinner style="margin:0 auto;" *ngIf="!showControlado" [diameter]="35" [value]="99" [mode]="mode">
+      <mat-spinner style="margin:0 auto;" *ngIf="!mostrar" [diameter]="35" [value]="99" [mode]="mode">
       </mat-spinner>
-      <mat-card-content *ngIf="showControlado">
+      <mat-card-content>
 
-        <mat-table #table class="noselect mat-table" [dataSource]="sourceDevolutivo" matSort
-          (keyup)="keyUpTabla($event)" (keydown.shift)="keyDownTablaShift()">
-          <div>
+        <mat-table *ngIf="sourceDevolutivo" #table class="noselect mat-table" [dataSource]="sourceDevolutivo" matSort>
 
-            <!-- Acciones Macro/Checkbox -->
-            <ng-container matColumnDef="AccionesMacro">
-              <th id="col-seleccionado" mat-header-cell *matHeaderCellDef>
-                <mat-checkbox aria-label="Seleccionar/Deseleccionar Todo" (change)="cambioCheckTodos(sourceDevolutivo, $event.checked)"
-                  nbPopover="Seleccionar/Deseleccionar Todo" #checkTodoInput nbPopoverTrigger="hover" nbPopoverPlacement="left"
-                  [checked]="checkTodos" [indeterminate]="checkParcial">
-                </mat-checkbox>
-              </th>
-              <td mat-cell *matCellDef="let element; let rowIndex = index">
-                <nb-checkbox (change)="setCasilla(sourceDevolutivo, rowIndex, $event.srcElement.checked)" [(ngModel)]="element.seleccionado">
-                </nb-checkbox>
-              </td>
-            </ng-container>
+          <!-- Acciones Macro/Checkbox -->
+          <ng-container matColumnDef="AccionesMacro">
+            <th id="col-seleccionado" mat-header-cell *matHeaderCellDef>
+              <mat-checkbox aria-label="Seleccionar/Deseleccionar Todo"
+                (change)="cambioCheckTodos(sourceDevolutivo, $event.checked)" nbPopover="Seleccionar/Deseleccionar Todo"
+                #checkTodoInput nbPopoverTrigger="hover" nbPopoverPlacement="left" [checked]="checkTodos"
+                [indeterminate]="checkParcial">
+              </mat-checkbox>
+            </th>
+            <td mat-cell *matCellDef="let element; let rowIndex = index">
+              <nb-checkbox (change)="setCasilla(basePaginasD, sourceDevolutivo, rowIndex, $event.srcElement.checked)"
+                [(ngModel)]="element.seleccionado">
+              </nb-checkbox>
+            </td>
+          </ng-container>
 
-            <!-- Nombre -->
-            <ng-container matColumnDef="Nombre">
-              <th id="col-nombre" mat-header-cell *matHeaderCellDef mat-sort-header>
-                {{'GLOBAL.Acta_Recibido.CapturarElementos.DescripcionHeader' | translate }} </th>
-              <td mat-cell *matCellDef="let element; let rowIndex = index">
-                <input nbInput type="text" fieldSize="tiny" class="cell"
-                  placeholder="{{'GLOBAL.Acta_Recibido.CapturarElementos.DescripcionHeader' | translate }}"
-                  [(ngModel)]="element.Nombre">
-              </td>
-            </ng-container>
+          <!-- Nombre -->
+          <ng-container matColumnDef="Nombre">
+            <th id="col-nombre" mat-header-cell *matHeaderCellDef mat-sort-header>
+              {{'GLOBAL.Acta_Recibido.CapturarElementos.DescripcionHeader' | translate }} </th>
+            <td mat-cell *matCellDef="let element; let rowIndex = index">
+              <input nbInput type="text" fieldSize="tiny" class="cell"
+                placeholder="{{'GLOBAL.Acta_Recibido.CapturarElementos.DescripcionHeader' | translate }}"
+                [(ngModel)]="element.Nombre">
+            </td>
+          </ng-container>
 
-            <!-- Cantidad -->
-            <ng-container matColumnDef="Cantidad">
-              <th id="col-cantidad" mat-header-cell *matHeaderCellDef mat-sort-header>
-                {{'GLOBAL.Acta_Recibido.CapturarElementos.CantidadHeader' | translate }} </th>
-              <td mat-cell *matCellDef="let element; let rowIndex = index">
-                <input nbInput type="number" fieldSize="tiny" class="cell-2" disabled
-                  placeholder="{{'GLOBAL.Acta_Recibido.CapturarElementos.CantidadHeader' | translate }}"
-                  [(ngModel)]="element.Cantidad">
-              </td>
-            </ng-container>
+          <!-- Cantidad -->
+          <ng-container matColumnDef="Cantidad">
+            <th id="col-cantidad" mat-header-cell *matHeaderCellDef mat-sort-header>
+              {{'GLOBAL.Acta_Recibido.CapturarElementos.CantidadHeader' | translate }} </th>
+            <td mat-cell *matCellDef="let element; let rowIndex = index">
+              <input nbInput type="number" fieldSize="tiny" class="cell-2" disabled
+                placeholder="{{'GLOBAL.Acta_Recibido.CapturarElementos.CantidadHeader' | translate }}"
+                [(ngModel)]="element.Cantidad">
+            </td>
+          </ng-container>
 
-            <!-- Subgrupo Catalogo -->
-            <ng-container matColumnDef="SubgrupoCatalogoId">
-              <th id="col-combinado" mat-header-cell *matHeaderCellDef mat-sort-header>
-                {{ 'GLOBAL.subgrupo.clase.nombre' | translate }}
-              </th>
-              <td mat-cell *matCellDef="let element; let rowIndex = index">
-                <div>
-                  <input disabled nbInput type="text" fieldSize="tiny" class="cell" [(ngModel)]="element.Combinado">
-                </div>
-              </td>
-            </ng-container>
+          <!-- Subgrupo Catalogo -->
+          <ng-container matColumnDef="SubgrupoCatalogoId">
+            <th id="col-combinado" mat-header-cell *matHeaderCellDef mat-sort-header>
+              {{ 'GLOBAL.subgrupo.clase.nombre' | translate }}
+            </th>
+            <td mat-cell *matCellDef="let element; let rowIndex = index">
+              <div>
+                <input disabled nbInput type="text" fieldSize="tiny" class="cell" [(ngModel)]="element.Combinado">
+              </div>
+            </td>
+          </ng-container>
 
-            <!-- Tipo de Bien -->
-            <ng-container matColumnDef="TipoBienId">
-              <th id="col-bien-nombre" mat-header-cell *matHeaderCellDef mat-sort-header>
-                {{'GLOBAL.Acta_Recibido.CapturarElementos.TipoBienHeader' | translate }} </th>
-              <td mat-cell *matCellDef="let element; let rowIndex = index">
-                <div>
-                  <input disabled nbInput type="text" fieldSize="tiny" class="cell"
-                    [(ngModel)]="element.SubgrupoCatalogoId.TipoBienId.Nombre">
-                </div>
-              </td>
-            </ng-container>
+          <!-- Tipo de Bien -->
+          <ng-container matColumnDef="TipoBienId">
+            <th id="col-bien-nombre" mat-header-cell *matHeaderCellDef mat-sort-header>
+              {{'GLOBAL.Acta_Recibido.CapturarElementos.TipoBienHeader' | translate }} </th>
+            <td mat-cell *matCellDef="let element; let rowIndex = index">
+              <div>
+                <input disabled nbInput type="text" fieldSize="tiny" class="cell"
+                  [(ngModel)]="element.SubgrupoCatalogoId.TipoBienId.Nombre">
+              </div>
+            </td>
+          </ng-container>
 
-            <!-- Placa -->
-            <ng-container matColumnDef="Placa">
-              <th id="col-placa" mat-header-cell *matHeaderCellDef mat-sort-header>
-                {{'GLOBAL.Acta_Recibido.CapturarElementos.PlacaHeader' | translate }}
-              </th>
-              <td mat-cell *matCellDef="let element; let rowIndex = index">
-                <input nbInput disabled type="text" fieldSize="tiny" class="cell"
-                  placeholder="{{'GLOBAL.Acta_Recibido.CapturarElementos.PlacaHeader' | translate }}"
-                  [(ngModel)]="element.Placa">
-              </td>
-            </ng-container>
+          <!-- Placa -->
+          <ng-container matColumnDef="Placa">
+            <th id="col-placa" mat-header-cell *matHeaderCellDef mat-sort-header>
+              {{'GLOBAL.Acta_Recibido.CapturarElementos.PlacaHeader' | translate }}
+            </th>
+            <td mat-cell *matCellDef="let element; let rowIndex = index">
+              <input nbInput disabled type="text" fieldSize="tiny" class="cell"
+                placeholder="{{'GLOBAL.Acta_Recibido.CapturarElementos.PlacaHeader' | translate }}"
+                [(ngModel)]="element.Placa">
+            </td>
+          </ng-container>
 
-            <!-- Marca -->
-            <ng-container matColumnDef="Marca">
-              <th id="col-marca" mat-header-cell *matHeaderCellDef mat-sort-header>
-                {{'GLOBAL.Acta_Recibido.CapturarElementos.MarcaHeader' | translate }}
-              </th>
-              <td mat-cell *matCellDef="let element; let rowIndex = index">
-                <input nbInput disabled type="text" fieldSize="tiny" class="cell"
-                  placeholder="{{'GLOBAL.Acta_Recibido.CapturarElementos.MarcaHeader' | translate }}"
-                  [(ngModel)]="element.Marca">
-              </td>
-            </ng-container>
+          <!-- Marca -->
+          <ng-container matColumnDef="Marca">
+            <th id="col-marca" mat-header-cell *matHeaderCellDef mat-sort-header>
+              {{'GLOBAL.Acta_Recibido.CapturarElementos.MarcaHeader' | translate }}
+            </th>
+            <td mat-cell *matCellDef="let element; let rowIndex = index">
+              <input nbInput disabled type="text" fieldSize="tiny" class="cell"
+                placeholder="{{'GLOBAL.Acta_Recibido.CapturarElementos.MarcaHeader' | translate }}"
+                [(ngModel)]="element.Marca">
+            </td>
+          </ng-container>
 
-            <!-- Serie -->
-            <ng-container matColumnDef="Serie">
-              <th id="col-serie" mat-header-cell *matHeaderCellDef mat-sort-header>
-                {{'GLOBAL.Acta_Recibido.CapturarElementos.SerieHeader' | translate }}
-              </th>
-              <td mat-cell *matCellDef="let element; let rowIndex = index">
-                <input nbInput disabled type="text" fieldSize="tiny" class="cell"
-                  placeholder="{{'GLOBAL.Acta_Recibido.CapturarElementos.SerieHeader' | translate }}"
-                  [(ngModel)]="element.Serie">
-              </td>
-            </ng-container>
+          <!-- Serie -->
+          <ng-container matColumnDef="Serie">
+            <th id="col-serie" mat-header-cell *matHeaderCellDef mat-sort-header>
+              {{'GLOBAL.Acta_Recibido.CapturarElementos.SerieHeader' | translate }}
+            </th>
+            <td mat-cell *matCellDef="let element; let rowIndex = index">
+              <input nbInput disabled type="text" fieldSize="tiny" class="cell"
+                placeholder="{{'GLOBAL.Acta_Recibido.CapturarElementos.SerieHeader' | translate }}"
+                [(ngModel)]="element.Serie">
+            </td>
+          </ng-container>
 
-            <!-- Funcionario -->
-            <ng-container matColumnDef="Funcionario">
-              <th id="col-funcionario" mat-header-cell *matHeaderCellDef mat-sort-header>
-                {{'GLOBAL.funcionario' | translate }}
-              </th>
-              <td mat-cell *matCellDef="let element; let rowIndex = index">
-                <input nbInput disabled type="text" fieldSize="tiny" class="cell"
-                  placeholder="{{'GLOBAL.funcionario' | translate }}"
-                  [(ngModel)]="element.Funcionario.NombreCompleto">
-              </td>
-            </ng-container>
+          <!-- Funcionario -->
+          <ng-container matColumnDef="Funcionario">
+            <th id="col-funcionario" mat-header-cell *matHeaderCellDef mat-sort-header>
+              {{'GLOBAL.funcionario' | translate }}
+            </th>
+            <td mat-cell *matCellDef="let element; let rowIndex = index">
+              <input nbInput disabled type="text" fieldSize="tiny" class="cell"
+                placeholder="{{'GLOBAL.funcionario' | translate }}" [(ngModel)]="element.Funcionario.NombreCompleto">
+            </td>
+          </ng-container>
 
-            <!-- Sede -->
-            <ng-container matColumnDef="Sede">
-              <th id="col-sede" mat-header-cell *matHeaderCellDef mat-sort-header>
-                {{'GLOBAL.sede' | translate }}
-              </th>
-              <td mat-cell *matCellDef="let element; let rowIndex = index">
-                <input nbInput disabled type="text" fieldSize="tiny" class="cell" placeholder="{{'GLOBAL.sede' | translate }}"
-                  [(ngModel)]="element.Sede.Nombre">
-              </td>
-            </ng-container>
+          <!-- Sede -->
+          <ng-container matColumnDef="Sede">
+            <th id="col-sede" mat-header-cell *matHeaderCellDef mat-sort-header>
+              {{'GLOBAL.sede' | translate }}
+            </th>
+            <td mat-cell *matCellDef="let element; let rowIndex = index">
+              <input nbInput disabled type="text" fieldSize="tiny" class="cell"
+                placeholder="{{'GLOBAL.sede' | translate }}" [(ngModel)]="element.Sede.Nombre">
+            </td>
+          </ng-container>
 
-            <!-- Dependencia -->
-            <ng-container matColumnDef="Dependencia">
-              <th id="col-dependencia" mat-header-cell *matHeaderCellDef mat-sort-header>
-                {{'GLOBAL.dependencia' | translate }}
-              </th>
-              <td mat-cell *matCellDef="let element; let rowIndex = index">
-                <input nbInput disabled type="text" fieldSize="tiny" class="cell"
-                  placeholder="{{'GLOBAL.dependencia' | translate }}" [(ngModel)]="element.Dependencia.Nombre">
-              </td>
-            </ng-container>
+          <!-- Dependencia -->
+          <ng-container matColumnDef="Dependencia">
+            <th id="col-dependencia" mat-header-cell *matHeaderCellDef mat-sort-header>
+              {{'GLOBAL.dependencia' | translate }}
+            </th>
+            <td mat-cell *matCellDef="let element; let rowIndex = index">
+              <input nbInput disabled type="text" fieldSize="tiny" class="cell"
+                placeholder="{{'GLOBAL.dependencia' | translate }}" [(ngModel)]="element.Dependencia.Nombre">
+            </td>
+          </ng-container>
 
-            <!-- Serie -->
-            <ng-container matColumnDef="Ubicacion">
-              <th id="col-ubicacion" mat-header-cell *matHeaderCellDef mat-sort-header>
-                {{'GLOBAL.ubicacion' | translate }}
-              </th>
-              <td mat-cell *matCellDef="let element; let rowIndex = index">
-                <input nbInput disabled type="text" fieldSize="tiny" class="cell"
-                  placeholder="{{'GLOBAL.ubicacion' | translate }}" [(ngModel)]="element.Ubicacion.Nombre">
-              </td>
-            </ng-container>
+          <!-- Serie -->
+          <ng-container matColumnDef="Ubicacion">
+            <th id="col-ubicacion" mat-header-cell *matHeaderCellDef mat-sort-header>
+              {{'GLOBAL.ubicacion' | translate }}
+            </th>
+            <td mat-cell *matCellDef="let element; let rowIndex = index">
+              <input nbInput disabled type="text" fieldSize="tiny" class="cell"
+                placeholder="{{'GLOBAL.ubicacion' | translate }}" [(ngModel)]="element.Ubicacion.Nombre">
+            </td>
+          </ng-container>
 
-          </div>
           <tr mat-header-row *matHeaderRowDef="displayedColumns;"></tr>
           <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
         </mat-table>
-        <!-- <mat-paginator [pageSizeOptions]="[10, 20, 30, 40, 50]" (page)="cambioPagina($event)"></mat-paginator> -->
+
+        <mat-paginator #paginatorD [pageSizeOptions]="[10, 25, 50]" (page)="cambioPagina(1, $event)"></mat-paginator>
 
         <ngx-form-elementos-seleccionados *ngIf="devolutivoSeleccionados" (DatosEnviados)="AjustarDatos2(sourceDevolutivo, $event)">
         </ngx-form-elementos-seleccionados>
@@ -164,173 +163,171 @@
           <label>{{'GLOBAL.Acta_Recibido.EdicionActa.Observaciones' | translate}}</label>
           <div class="input-group">
             <textarea rows="5" [(ngModel)]="Observaciones"
-              placeholder="Proporciona datos adicionales que no se pueden expresar en el formulario"
-              class="form-control" required></textarea>
+              placeholder="Proporciona datos adicionales que no se pueden expresar en el formulario" class="form-control"
+              required></textarea>
           </div>
         </div>
       </mat-card-content>
     </mat-tab>
     <mat-tab label="{{'GLOBAL.movimientos.tab_consumo' | translate}}">
       <p></p>
-      <mat-spinner style="margin:0 auto;" *ngIf="!showConsumo" [diameter]="35" [value]="99" [mode]="mode">
+      <mat-spinner style="margin:0 auto;" *ngIf="!mostrar" [diameter]="35" [value]="99" [mode]="mode">
       </mat-spinner>
-      <mat-card-content *ngIf="showConsumo">
+      <mat-card-content>
 
-        <mat-table #table class="noselect mat-table" [dataSource]="sourceConsumo" matSort (keyup)="keyUpTabla($event)"
-          (keydown.shift)="keyDownTablaShift()">
-          <div>
+        <mat-table *ngIf="sourceConsumo" #table class="noselect mat-table" [dataSource]="sourceConsumo" matSort>
 
-            <!-- Acciones Macro/Checkbox -->
-            <ng-container matColumnDef="AccionesMacro">
-              <th id="col-seleccionado" mat-header-cell *matHeaderCellDef>
-                <mat-checkbox aria-label="Seleccionar/Deseleccionar Todo" (change)="cambioCheckTodos(sourceConsumo, $event.checked)"
-                  nbPopover="Seleccionar/Deseleccionar Todo" #checkTodoInput nbPopoverTrigger="hover"
-                  nbPopoverPlacement="left" [checked]="checkTodos" [indeterminate]="checkParcial">
-                </mat-checkbox>
-              </th>
-              <td mat-cell *matCellDef="let element; let rowIndex = index">
-                <nb-checkbox (change)="setCasilla(sourceConsumo, rowIndex, $event.srcElement.checked)" [(ngModel)]="element.seleccionado">
-                </nb-checkbox>
-              </td>
-            </ng-container>
+          <!-- Acciones Macro/Checkbox -->
+          <ng-container matColumnDef="AccionesMacro">
+            <th id="col-seleccionado" mat-header-cell *matHeaderCellDef>
+              <mat-checkbox aria-label="Seleccionar/Deseleccionar Todo" (change)="cambioCheckTodos(sourceConsumo, $event.checked)"
+                nbPopover="Seleccionar/Deseleccionar Todo" #checkTodoInput nbPopoverTrigger="hover"
+                nbPopoverPlacement="left" [checked]="checkTodos" [indeterminate]="checkParcial">
+              </mat-checkbox>
+            </th>
+            <td mat-cell *matCellDef="let element; let rowIndex = index">
+              <nb-checkbox (change)="setCasilla(basePaginasC, sourceConsumo, rowIndex, $event.srcElement.checked)" [(ngModel)]="element.seleccionado">
+              </nb-checkbox>
+            </td>
+          </ng-container>
 
-            <!-- Nombre -->
-            <ng-container matColumnDef="Nombre">
-              <th id="col-nombre" mat-header-cell *matHeaderCellDef mat-sort-header>
-                {{'GLOBAL.Acta_Recibido.CapturarElementos.DescripcionHeader' | translate }} </th>
-              <td mat-cell *matCellDef="let element; let rowIndex = index">
-                <input nbInput type="text" fieldSize="tiny" class="cell"
-                  placeholder="{{'GLOBAL.Acta_Recibido.CapturarElementos.DescripcionHeader' | translate }}"
-                  [(ngModel)]="element.Nombre">
-              </td>
-            </ng-container>
+          <!-- Nombre -->
+          <ng-container matColumnDef="Nombre">
+            <th id="col-nombre" mat-header-cell *matHeaderCellDef mat-sort-header>
+              {{'GLOBAL.Acta_Recibido.CapturarElementos.DescripcionHeader' | translate }} </th>
+            <td mat-cell *matCellDef="let element; let rowIndex = index">
+              <input nbInput type="text" fieldSize="tiny" class="cell"
+                placeholder="{{'GLOBAL.Acta_Recibido.CapturarElementos.DescripcionHeader' | translate }}"
+                [(ngModel)]="element.Nombre">
+            </td>
+          </ng-container>
 
-            <!-- Cantidad -->
-            <ng-container matColumnDef="Cantidad">
-              <th id="col-cantidad" mat-header-cell *matHeaderCellDef mat-sort-header>
-                {{'GLOBAL.Acta_Recibido.CapturarElementos.CantidadHeader' | translate }} </th>
-              <td mat-cell *matCellDef="let element; let rowIndex = index">
-                <input nbInput type="text" fieldSize="tiny" class="cell-2" disabled
-                  placeholder="{{'GLOBAL.Acta_Recibido.CapturarElementos.CantidadHeader' | translate }}"
-                  [(ngModel)]="element.Cantidad">
-              </td>
-              <td mat-footer-cell *matFooterCellDef></td>
-            </ng-container>
+          <!-- Cantidad -->
+          <ng-container matColumnDef="Cantidad">
+            <th id="col-cantidad" mat-header-cell *matHeaderCellDef mat-sort-header>
+              {{'GLOBAL.Acta_Recibido.CapturarElementos.CantidadHeader' | translate }} </th>
+            <td mat-cell *matCellDef="let element; let rowIndex = index">
+              <input nbInput type="text" fieldSize="tiny" class="cell-2" disabled
+                placeholder="{{'GLOBAL.Acta_Recibido.CapturarElementos.CantidadHeader' | translate }}"
+                [(ngModel)]="element.Cantidad">
+            </td>
+            <td mat-footer-cell *matFooterCellDef></td>
+          </ng-container>
 
-            <!-- Subgrupo Catalogo -->
-            <ng-container matColumnDef="SubgrupoCatalogoId">
-              <th id="col-combinado" mat-header-cell *matHeaderCellDef mat-sort-header>
-                {{ 'GLOBAL.subgrupo.clase.nombre' | translate }}
-              </th>
-              <td mat-cell *matCellDef="let element; let rowIndex = index">
-                <div>
-                  <input disabled nbInput type="text" fieldSize="tiny" class="cell" [(ngModel)]="element.Combinado">
-                </div>
-              </td>
-              <td mat-footer-cell *matFooterCellDef></td>
-            </ng-container>
+          <!-- Subgrupo Catalogo -->
+          <ng-container matColumnDef="SubgrupoCatalogoId">
+            <th id="col-combinado" mat-header-cell *matHeaderCellDef mat-sort-header>
+              {{ 'GLOBAL.subgrupo.clase.nombre' | translate }}
+            </th>
+            <td mat-cell *matCellDef="let element; let rowIndex = index">
+              <div>
+                <input disabled nbInput type="text" fieldSize="tiny" class="cell" [(ngModel)]="element.Combinado">
+              </div>
+            </td>
+            <td mat-footer-cell *matFooterCellDef></td>
+          </ng-container>
 
-            <!-- Tipo de Bien -->
-            <ng-container matColumnDef="TipoBienId">
-              <th id="col-bien-nombre" mat-header-cell *matHeaderCellDef mat-sort-header>
-                {{'GLOBAL.Acta_Recibido.CapturarElementos.TipoBienHeader' | translate }} </th>
-              <td mat-cell *matCellDef="let element; let rowIndex = index">
-                <div>
-                  <input disabled nbInput type="text" fieldSize="tiny" class="cell"
-                    [(ngModel)]="element.SubgrupoCatalogoId.TipoBienId.Nombre">
-                </div>
-              </td>
-            </ng-container>
+          <!-- Tipo de Bien -->
+          <ng-container matColumnDef="TipoBienId">
+            <th id="col-bien-nombre" mat-header-cell *matHeaderCellDef mat-sort-header>
+              {{'GLOBAL.Acta_Recibido.CapturarElementos.TipoBienHeader' | translate }} </th>
+            <td mat-cell *matCellDef="let element; let rowIndex = index">
+              <div>
+                <input disabled nbInput type="text" fieldSize="tiny" class="cell"
+                  [(ngModel)]="element.SubgrupoCatalogoId.TipoBienId.Nombre">
+              </div>
+            </td>
+          </ng-container>
 
-            <!-- Placa -->
-            <ng-container matColumnDef="Placa">
-              <th id="col-placa" mat-header-cell *matHeaderCellDef mat-sort-header>
-                {{'GLOBAL.Acta_Recibido.CapturarElementos.PlacaHeader' | translate }}
-              </th>
-              <td mat-cell *matCellDef="let element; let rowIndex = index">
-                <input nbInput disabled type="text" fieldSize="tiny" class="cell"
-                  placeholder="{{'GLOBAL.Acta_Recibido.CapturarElementos.PlacaHeader' | translate }}"
-                  [(ngModel)]="element.Placa">
-              </td>
-            </ng-container>
+          <!-- Placa -->
+          <ng-container matColumnDef="Placa">
+            <th id="col-placa" mat-header-cell *matHeaderCellDef mat-sort-header>
+              {{'GLOBAL.Acta_Recibido.CapturarElementos.PlacaHeader' | translate }}
+            </th>
+            <td mat-cell *matCellDef="let element; let rowIndex = index">
+              <input nbInput disabled type="text" fieldSize="tiny" class="cell"
+                placeholder="{{'GLOBAL.Acta_Recibido.CapturarElementos.PlacaHeader' | translate }}"
+                [(ngModel)]="element.Placa">
+            </td>
+          </ng-container>
 
-            <!-- Marca -->
-            <ng-container matColumnDef="Marca">
-              <th id="col-marca" mat-header-cell *matHeaderCellDef mat-sort-header>
-                {{'GLOBAL.Acta_Recibido.CapturarElementos.MarcaHeader' | translate }}
-              </th>
-              <td mat-cell *matCellDef="let element; let rowIndex = index">
-                <input nbInput disabled type="text" fieldSize="tiny" class="cell"
-                  placeholder="{{'GLOBAL.Acta_Recibido.CapturarElementos.MarcaHeader' | translate }}"
-                  [(ngModel)]="element.Marca">
-              </td>
-            </ng-container>
+          <!-- Marca -->
+          <ng-container matColumnDef="Marca">
+            <th id="col-marca" mat-header-cell *matHeaderCellDef mat-sort-header>
+              {{'GLOBAL.Acta_Recibido.CapturarElementos.MarcaHeader' | translate }}
+            </th>
+            <td mat-cell *matCellDef="let element; let rowIndex = index">
+              <input nbInput disabled type="text" fieldSize="tiny" class="cell"
+                placeholder="{{'GLOBAL.Acta_Recibido.CapturarElementos.MarcaHeader' | translate }}"
+                [(ngModel)]="element.Marca">
+            </td>
+          </ng-container>
 
-            <!-- Serie -->
-            <ng-container matColumnDef="Serie">
-              <th id="col-serie" mat-header-cell *matHeaderCellDef mat-sort-header>
-                {{'GLOBAL.Acta_Recibido.CapturarElementos.SerieHeader' | translate }}
-              </th>
-              <td mat-cell *matCellDef="let element; let rowIndex = index">
-                <input nbInput disabled type="text" fieldSize="tiny" class="cell"
-                  placeholder="{{'GLOBAL.Acta_Recibido.CapturarElementos.SerieHeader' | translate }}"
-                  [(ngModel)]="element.Serie">
-              </td>
-            </ng-container>
+          <!-- Serie -->
+          <ng-container matColumnDef="Serie">
+            <th id="col-serie" mat-header-cell *matHeaderCellDef mat-sort-header>
+              {{'GLOBAL.Acta_Recibido.CapturarElementos.SerieHeader' | translate }}
+            </th>
+            <td mat-cell *matCellDef="let element; let rowIndex = index">
+              <input nbInput disabled type="text" fieldSize="tiny" class="cell"
+                placeholder="{{'GLOBAL.Acta_Recibido.CapturarElementos.SerieHeader' | translate }}"
+                [(ngModel)]="element.Serie">
+            </td>
+          </ng-container>
 
-            <!-- Funcionario -->
-            <ng-container matColumnDef="Funcionario">
-              <th id="col-funcionario" mat-header-cell *matHeaderCellDef mat-sort-header>
-                {{'GLOBAL.funcionario' | translate }}
-              </th>
-              <td mat-cell *matCellDef="let element; let rowIndex = index">
-                <input nbInput disabled type="text" fieldSize="tiny" class="cell"
-                  placeholder="{{'GLOBAL.funcionario' | translate }}"
-                  [(ngModel)]="element.Funcionario.NombreCompleto">
-              </td>
-            </ng-container>
+          <!-- Funcionario -->
+          <ng-container matColumnDef="Funcionario">
+            <th id="col-funcionario" mat-header-cell *matHeaderCellDef mat-sort-header>
+              {{'GLOBAL.funcionario' | translate }}
+            </th>
+            <td mat-cell *matCellDef="let element; let rowIndex = index">
+              <input nbInput disabled type="text" fieldSize="tiny" class="cell"
+                placeholder="{{'GLOBAL.funcionario' | translate }}"
+                [(ngModel)]="element.Funcionario.NombreCompleto">
+            </td>
+          </ng-container>
 
-            <!-- Sede -->
-            <ng-container matColumnDef="Sede">
-              <th id="col-sede" mat-header-cell *matHeaderCellDef mat-sort-header>
-                {{'GLOBAL.sede' | translate }}
-              </th>
-              <td mat-cell *matCellDef="let element; let rowIndex = index">
-                <input nbInput disabled type="text" fieldSize="tiny" class="cell"
-                  placeholder="{{'GLOBAL.sede' | translate }}"
-                  [(ngModel)]="element.Sede.Nombre">
-              </td>
-            </ng-container>
+          <!-- Sede -->
+          <ng-container matColumnDef="Sede">
+            <th id="col-sede" mat-header-cell *matHeaderCellDef mat-sort-header>
+              {{'GLOBAL.sede' | translate }}
+            </th>
+            <td mat-cell *matCellDef="let element; let rowIndex = index">
+              <input nbInput disabled type="text" fieldSize="tiny" class="cell"
+                placeholder="{{'GLOBAL.sede' | translate }}"
+                [(ngModel)]="element.Sede.Nombre">
+            </td>
+          </ng-container>
 
-            <!-- Dependencia -->
-            <ng-container matColumnDef="Dependencia">
-              <th id="col-dependencia" mat-header-cell *matHeaderCellDef mat-sort-header>
-                {{'GLOBAL.dependencia' | translate }}
-              </th>
-              <td mat-cell *matCellDef="let element; let rowIndex = index">
-                <input nbInput disabled type="text" fieldSize="tiny" class="cell"
-                  placeholder="{{'GLOBAL.dependencia' | translate }}"
-                  [(ngModel)]="element.Dependencia.Nombre">
-              </td>
-            </ng-container>
+          <!-- Dependencia -->
+          <ng-container matColumnDef="Dependencia">
+            <th id="col-dependencia" mat-header-cell *matHeaderCellDef mat-sort-header>
+              {{'GLOBAL.dependencia' | translate }}
+            </th>
+            <td mat-cell *matCellDef="let element; let rowIndex = index">
+              <input nbInput disabled type="text" fieldSize="tiny" class="cell"
+                placeholder="{{'GLOBAL.dependencia' | translate }}"
+                [(ngModel)]="element.Dependencia.Nombre">
+            </td>
+          </ng-container>
 
-            <!-- Ubicacion -->
-            <ng-container matColumnDef="Ubicacion">
-              <th id="col-ubicacion" mat-header-cell *matHeaderCellDef mat-sort-header>
-                {{'GLOBAL.ubicacion' | translate }}
-              </th>
-              <td mat-cell *matCellDef="let element; let rowIndex = index">
-                <input nbInput disabled type="text" fieldSize="tiny" class="cell"
-                  placeholder="{{'GLOBAL.ubicacion' | translate }}"
-                  [(ngModel)]="element.Ubicacion.Nombre">
-              </td>
-            </ng-container>
-          </div>
+          <!-- Ubicacion -->
+          <ng-container matColumnDef="Ubicacion">
+            <th id="col-ubicacion" mat-header-cell *matHeaderCellDef mat-sort-header>
+              {{'GLOBAL.ubicacion' | translate }}
+            </th>
+            <td mat-cell *matCellDef="let element; let rowIndex = index">
+              <input nbInput disabled type="text" fieldSize="tiny" class="cell"
+                placeholder="{{'GLOBAL.ubicacion' | translate }}"
+                [(ngModel)]="element.Ubicacion.Nombre">
+            </td>
+          </ng-container>
 
           <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
           <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
         </mat-table>
-        <!-- <mat-paginator [pageSizeOptions]="[10, 20, 30, 40, 50]" (page)="cambioPagina($event)"></mat-paginator> -->
+
+        <mat-paginator #paginatorC [pageSizeOptions]="[10, 25, 50]" (page)="cambioPagina(2, $event)"></mat-paginator>
 
         <ngx-form-elementos-seleccionados *ngIf="consumoSeleccionados" (DatosEnviados)="AjustarDatos2(sourceConsumo, $event)">
         </ngx-form-elementos-seleccionados>

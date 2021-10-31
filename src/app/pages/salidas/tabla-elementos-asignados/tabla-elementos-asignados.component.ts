@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, Input } from '@angular/core';
+import { Component, OnInit, ViewChild, Input, HostListener } from '@angular/core';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { FormControl } from '@angular/forms';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
@@ -6,13 +6,9 @@ import Swal from 'sweetalert2';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { ElementoActa, ElementoActaTabla } from '../../../@core/data/models/acta_recibido/elemento';
-import { Store } from '@ngrx/store';
-import { ListService } from '../../../@core/store/services/list.service';
+import { ElementoActa } from '../../../@core/data/models/acta_recibido/elemento';
 import { PopUpManager } from '../../../managers/popUpManager';
-import { IAppState } from '../../../@core/store/app.state';
 import { Router } from '@angular/router';
-import { ElementoSalida } from '../../../@core/data/models/salidas/salida_elementos';
 import { SalidaHelper } from '../../../helpers/salidas/salidasHelper';
 import { isArray } from 'util';
 import { MatCheckbox } from '@angular/material';
@@ -26,7 +22,6 @@ import { ElementoMovimientosArka } from '../../../@core/data/models/entrada/entr
 export class TablaElementosAsignadosComponent implements OnInit {
 
   actaRecibidoId: number;
-  Clases: any;
   formulario: boolean;
   Observaciones: string;
   ObservacionesConsumo: string;
@@ -34,17 +29,20 @@ export class TablaElementosAsignadosComponent implements OnInit {
   selected = new FormControl(0);
   estadoShift: boolean;
   JefeOficinaId: number;
-  showControlado: boolean;
-  showConsumo: boolean;
+  mostrar: boolean;
   mode: string = 'determinate';
   checkTodos: boolean = false;
   checkParcial: boolean = false;
   displayedColumns: string[];
   private checkAnterior: number = undefined;
-  private basePaginas: number = 0;
+  counter = 0;
+  basePaginasD: number = 0;
+  basePaginasC: number = 0;
 
-  @ViewChild(MatPaginator) paginator: MatPaginator;
-  @ViewChild(MatSort) sort: MatSort;
+  @ViewChild('paginatorD') paginatorD: MatPaginator;
+  @ViewChild('paginatorC') paginatorC: MatPaginator;
+  @ViewChild(MatSort) sortD: MatSort;
+  @ViewChild(MatSort) sortC: MatSort;
   @Input('actaRecibidoId')
   set name(acta_id: number) {
     this.actaRecibidoId = acta_id;
@@ -53,8 +51,6 @@ export class TablaElementosAsignadosComponent implements OnInit {
   set name2(entrada_id: string) {
     this.entradaId = entrada_id;
   }
-  elementosDevolutivo: Array<ElementoActaTabla>;
-  elementosConsumo: Array<ElementoActaTabla>;
   sourceDevolutivo: MatTableDataSource<any>;
   sourceConsumo: MatTableDataSource<any>;
   devolutivoSeleccionados: boolean;
@@ -87,16 +83,19 @@ export class TablaElementosAsignadosComponent implements OnInit {
             el.Combinado = el.SubgrupoCatalogoId.SubgrupoId.Id ?
               el.SubgrupoCatalogoId.SubgrupoId.Codigo + ' - ' + el.SubgrupoCatalogoId.SubgrupoId.Nombre : '';
         });
-        this.elementosConsumo = res.filter(el => el.SubgrupoCatalogoId.TipoBienId.Id === 1);
-        this.elementosDevolutivo = res.filter(el => el.SubgrupoCatalogoId.TipoBienId.Id !== 1);
-        this.sourceDevolutivo = new MatTableDataSource<ElementoActa>(this.elementosDevolutivo);
-        this.sourceConsumo = new MatTableDataSource<ElementoActa>(this.elementosConsumo);
-        this.sourceDevolutivo.paginator = this.paginator;
-        this.sourceDevolutivo.sort = this.sort;
-        this.showControlado = true;
-        this.showConsumo = true;
+        const elementosConsumo = res.filter(el => el.SubgrupoCatalogoId.TipoBienId.Id === 1);
+        const elementosDevolutivo = res.filter(el => el.SubgrupoCatalogoId.TipoBienId.Id !== 1);
+        this.sourceDevolutivo = new MatTableDataSource<ElementoActa>(elementosDevolutivo);
+        this.sourceConsumo = new MatTableDataSource<ElementoActa>(elementosConsumo);
+        this.sourceDevolutivo.paginator = this.paginatorD;
+        this.sourceDevolutivo.sort = this.sortD;
+        this.sourceConsumo.paginator = this.paginatorC;
+        this.sourceConsumo.sort = this.sortC;
+      } else {
+        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.salidas.errorElementos'));
       }
     });
+    this.mostrar = true;
   }
 
   private getJefeAlmacen() {
@@ -114,9 +113,23 @@ export class TablaElementosAsignadosComponent implements OnInit {
     this.checkAnterior = undefined;
     this.refrescaCheckTotal(source);
   }
+  @HostListener('window:keydown', ['$event'])
+  handleKeyDown(event: KeyboardEvent) {
+    if (event.shiftKey) {
+      this.estadoShift = true;
+    }
+  }
+  @HostListener('window:keyup', ['$event'])
+  handleKeyUp() {
+    this.estadoShift = false;
+  }
 
-  setCasilla(source, fila: number, checked: boolean) {
-    fila += this.basePaginas;
+  tabChange() {
+    this.checkAnterior = undefined;
+  }
+
+  setCasilla(base, source, fila: number, checked: boolean) {
+    fila += base;
     // console.log({fila, checked, 'shift': this.estadoShift, 'anterior': this.checkAnterior});
     if (this.estadoShift && this.checkAnterior !== undefined) { // Shift presionado
       const menor = Math.min(this.checkAnterior, fila);
@@ -169,9 +182,12 @@ export class TablaElementosAsignadosComponent implements OnInit {
     ];
   }
 
-  cambioPagina(eventoPagina) {
-    this.basePaginas = eventoPagina.pageIndex * eventoPagina.pageSize;
-    // console.log({eventoPagina, 'base': this.basePaginas});
+  cambioPagina(base, eventoPagina) {
+    if (base === 1) {
+      this.basePaginasD = eventoPagina.pageIndex * eventoPagina.pageSize;
+    } else {
+      this.basePaginasC = eventoPagina.pageIndex * eventoPagina.pageSize;
+    }
     this.checkDummy.focus();
   }
 
@@ -287,7 +303,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
         const obs = 'Salida con elementos Devolutivos o de Consumo Controlado asignados a funcionario.';
         accumulator[val] = accumulator[val] || {
           Salida: {
-            Observacion: obs + this.Observaciones ? ' // ' + this.Observaciones : '',
+            Observacion: this.Observaciones ? obs + ' // ' + this.Observaciones : obs,
             Detalle: JSON.stringify(detalle),
             Activo: true,
             MovimientoPadreId: {
@@ -331,7 +347,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
           const obs = 'Salida con elementos de consumo asignados a funcionario.';
           accumulator[val] = accumulator[val] || {
             Salida: {
-              Observacion: obs + this.ObservacionesConsumo ? ' // ' + this.ObservacionesConsumo : '',
+              Observacion: this.ObservacionesConsumo ? obs + ' // ' + this.ObservacionesConsumo : obs,
               Detalle: JSON.stringify(detalle),
               Activo: true,
               MovimientoPadreId: {
@@ -407,14 +423,6 @@ export class TablaElementosAsignadosComponent implements OnInit {
         });
       }
     });
-  }
-
-  keyDownTablaShift(evento: KeyboardEvent) {
-    this.estadoShift = true;
-  }
-
-  keyUpTabla(evento: KeyboardEvent) {
-    this.estadoShift = evento.shiftKey;
   }
 
 }
