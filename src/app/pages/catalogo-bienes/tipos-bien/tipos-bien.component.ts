@@ -125,6 +125,13 @@ export class TiposBienComponent implements OnInit {
             return value ? 'Si' : 'No';
           },
         },
+        Tipo_bien_padre: {
+          title: this.translate.instant('Bien Padre'),
+          width: '170px',
+          valuePrepareFunction: (value: any) => {
+            return value ? value.Nombre : 'N/A';
+          },
+        },
       },
     };
   }

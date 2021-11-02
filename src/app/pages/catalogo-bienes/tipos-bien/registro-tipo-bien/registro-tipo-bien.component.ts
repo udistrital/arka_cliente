@@ -2,6 +2,7 @@ import { Component, OnInit, Input, Output, EventEmitter, OnChanges } from '@angu
 import { FORM_TIPO_BIEN } from './form-tipo-bien';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { TipoBien} from '../../../../@core/data/models/acta_recibido/tipo_bien';
+import { CatalogoElementosHelper } from '../../../../helpers/catalogo-elementos/catalogoElementosHelper';
 
 @Component({
   selector: 'ngx-registro-tipo-bien',
@@ -11,12 +12,14 @@ import { TipoBien} from '../../../../@core/data/models/acta_recibido/tipo_bien';
 export class RegistroTipoBienComponent implements OnInit {
   cargando: boolean = false;
   formTipoBien: any;
+  tiposBien: Array<TipoBien>;
 
   @Input () tipobien: TipoBien;
   @Output() tipobienChange = new EventEmitter<TipoBien>();
   @Output() Guardar = new EventEmitter<undefined>();
 
   constructor(
+    private catalogoElementosService: CatalogoElementosHelper,
     private translate: TranslateService,
     ) {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
@@ -30,6 +33,15 @@ export class RegistroTipoBienComponent implements OnInit {
   construirForm() {
     const titulo = 'FORMULARIO TB';
     this.formTipoBien = FORM_TIPO_BIEN;
+    this.loadTiposBien();
+  }
+  loadTiposBien(): void {
+    this.catalogoElementosService.getTipoBien().toPromise().then(res => {
+      if (res !== null) {
+        this.tiposBien = res;
+        this.formTipoBien.campos[this.getIndexForm('Tipo_bien_padre')].opciones = this.tiposBien ? this.tiposBien : null;
+      }
+    });
   }
   validarForm(event) {
     if (event.valid) {
@@ -40,5 +52,14 @@ export class RegistroTipoBienComponent implements OnInit {
   registrarTipoBien(formData: any) {
     // console.log(formData);
     this.tipobienChange.emit(formData);
+  }
+  getIndexForm(nombre: String): number {
+    for (let index = 0; index < this.formTipoBien.campos.length; index++) {
+      const element = this.formTipoBien.campos[index];
+      if (element.nombre === nombre) {
+        return index;
+      }
+    }
+    return 0;
   }
 }
