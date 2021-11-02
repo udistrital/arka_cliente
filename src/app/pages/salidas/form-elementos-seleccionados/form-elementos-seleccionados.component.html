@@ -12,7 +12,6 @@
             class="form-control" (input)="changeNombreProveedor($event)" value='{{proveedorfiltro}}' list="elementosList"
             formControlName="Proveedor">
           <datalist id="elementosList">
-            <option value="sleccione un valor" selected disabled></option>
             <option *ngFor="let item of elementos" value='{{ item }}'></option>
           </datalist>
           <p class="error-field" *ngIf="form_salida.get('Proveedor').invalid">

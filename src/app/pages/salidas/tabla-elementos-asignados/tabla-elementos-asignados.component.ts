@@ -12,7 +12,8 @@ import { Router } from '@angular/router';
 import { SalidaHelper } from '../../../helpers/salidas/salidasHelper';
 import { isArray } from 'util';
 import { MatCheckbox } from '@angular/material';
-import { ElementoMovimientosArka } from '../../../@core/data/models/entrada/entrada';
+import { ElementoMovimientosArka, EstadoMovimiento, FormatoTipoMovimiento } from '../../../@core/data/models/entrada/entrada';
+import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
 
 @Component({
   selector: 'ngx-tabla-elementos-asignados',
@@ -43,6 +44,8 @@ export class TablaElementosAsignadosComponent implements OnInit {
   @ViewChild('paginatorC') paginatorC: MatPaginator;
   @ViewChild(MatSort) sortD: MatSort;
   @ViewChild(MatSort) sortC: MatSort;
+  formatoMovimientoBodega: FormatoTipoMovimiento;
+  formatoMovimientoFuncionario: FormatoTipoMovimiento;
   @Input('actaRecibidoId')
   set name(acta_id: number) {
     this.actaRecibidoId = acta_id;
@@ -61,7 +64,8 @@ export class TablaElementosAsignadosComponent implements OnInit {
     private router: Router,
     private actaRecibidoHelper: ActaRecibidoHelper,
     private salidasHelper: SalidaHelper,
-    private pUpManager: PopUpManager) {
+    private pUpManager: PopUpManager,
+    private entradasHelper: EntradaHelper) {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
     });
   }
@@ -70,6 +74,8 @@ export class TablaElementosAsignadosComponent implements OnInit {
     this.loadElementos();
     this.getJefeAlmacen();
     this.setColumnas();
+    this.getFormatoBodega();
+    this.getFormatoFuncionario();
   }
 
   private loadElementos() {
@@ -252,6 +258,22 @@ export class TablaElementosAsignadosComponent implements OnInit {
     return elemento;
   }
 
+  private getFormatoBodega() {
+    this.entradasHelper.getFormatoEntradaByName('Salida de Consumo').subscribe(res => {
+      if (res !== null) {
+        this.formatoMovimientoBodega = res[0];
+      }
+    });
+  }
+
+  private getFormatoFuncionario() {
+    this.entradasHelper.getFormatoEntradaByName('Salida').subscribe(res => {
+      if (res !== null) {
+        this.formatoMovimientoFuncionario = res[0];
+      }
+    });
+  }
+
   private salidaBodega() {
     const elementosBodega = this.sourceConsumo.data.filter(el =>
       el.Ubicacion.Nombre === 'SECCION ALMACEN GENERAL E INVENTARIOS' &&
@@ -273,11 +295,9 @@ export class TablaElementosAsignadosComponent implements OnInit {
             Id: parseFloat(this.entradaId),
           },
           FormatoTipoMovimientoId: {
-            Id: 9,
+            Id: this.formatoMovimientoBodega.Id,
           },
-          EstadoMovimientoId: {
-            Id: 3,
-          },
+          EstadoMovimientoId: new EstadoMovimiento,
         },
         Elementos: [],
       };
@@ -294,13 +314,13 @@ export class TablaElementosAsignadosComponent implements OnInit {
 
   private salidaFuncionarioDevolutivo() {
     if (this.sourceDevolutivo.data.length > 0) {
+      const obs = 'Salida con elementos Devolutivos o de Consumo Controlado asignados a funcionario.';
       const datos_agrupados2 = this.sourceDevolutivo.data.reduce((accumulator, currentValue) => {
         const detalle = {
           funcionario: currentValue.Funcionario.Id,
           ubicacion: currentValue.Ubicacion.Id,
         };
         const val = currentValue.Funcionario.Id + '-' + currentValue.Ubicacion.Id;
-        const obs = 'Salida con elementos Devolutivos o de Consumo Controlado asignados a funcionario.';
         accumulator[val] = accumulator[val] || {
           Salida: {
             Observacion: this.Observaciones ? obs + ' // ' + this.Observaciones : obs,
@@ -310,11 +330,9 @@ export class TablaElementosAsignadosComponent implements OnInit {
               Id: parseFloat(this.entradaId),
             },
             FormatoTipoMovimientoId: {
-              Id: 7,
+              Id: this.formatoMovimientoFuncionario.Id,
             },
-            EstadoMovimientoId: {
-              Id: 3,
-            },
+            EstadoMovimientoId: new EstadoMovimiento,
           },
           Elementos: [],
         };
@@ -335,6 +353,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
       el.Ubicacion.Nombre !== 'SECCION ALMACEN GENERAL E INVENTARIOS' ||
       el.Funcionario.Id !== this.JefeOficinaId,
     );
+    const obs = 'Salida con elementos de consumo asignados a funcionario.';
 
     if (elementosAsignados.length > 0) {
       const datos_agrupados2 = elementosAsignados.reduce((accumulator, currentValue) => {
@@ -344,7 +363,6 @@ export class TablaElementosAsignadosComponent implements OnInit {
             ubicacion: currentValue.Ubicacion.Id,
           };
           const val = currentValue.Funcionario.Id + '-' + currentValue.Ubicacion.Id;
-          const obs = 'Salida con elementos de consumo asignados a funcionario.';
           accumulator[val] = accumulator[val] || {
             Salida: {
               Observacion: this.ObservacionesConsumo ? obs + ' // ' + this.ObservacionesConsumo : obs,
@@ -354,11 +372,9 @@ export class TablaElementosAsignadosComponent implements OnInit {
                 Id: parseFloat(this.entradaId),
               },
               FormatoTipoMovimientoId: {
-                Id: 7,
+                Id: this.formatoMovimientoFuncionario.Id,
               },
-              EstadoMovimientoId: {
-                Id: 3,
-              },
+              EstadoMovimientoId: new EstadoMovimiento,
             },
             Elementos: [],
           };
@@ -400,8 +416,8 @@ export class TablaElementosAsignadosComponent implements OnInit {
 
     // console.log(Salidas);
     (Swal as any).fire({
-      title: 'Desea Registrar Salida?',
-      text: 'Está seguro de registrar los datos suministrados',
+      title: this.translate.instant('GLOBAL.movimientos.salidas.registroConfrmTtl'),
+      text: this.translate.instant('GLOBAL.movimientos.salidas.registroConfrmTxt'),
       type: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
@@ -410,13 +426,21 @@ export class TablaElementosAsignadosComponent implements OnInit {
       cancelButtonText: 'No',
     }).then((result) => {
       if (result.value) {
-        this.salidasHelper.registrarSalidas(Salidas).subscribe(res => {
-          // console.log(res);
+        this.salidasHelper.registrarSalida(Salidas).subscribe((res: any) => {
           if (res) {
+            const length = res.trSalida.Salidas.length;
+            const s = length > 1 ? 's' : '';
+            const consecutivo = JSON.parse(res.trSalida.Salidas[0].Salida.Detalle).consecutivo +
+              (length > 1 ? (' - ' + JSON.parse(res.trSalida.Salidas[length - 1].Salida.Detalle).consecutivo) : '');
+            const title = this.translate.instant('GLOBAL.movimientos.salidas.registroTtlOk', {S: s});
+            const text = this.translate.instant('GLOBAL.movimientos.salidas.registroTxtOk' +
+              (length > 1 ? 'Varios' : ''), {CONSECUTIVO: consecutivo});
             (Swal as any).fire({
               type: 'success',
-              title: this.translate.instant('GLOBAL.movimientos.salidas.registroTtlOk'),
-              text: this.translate.instant('GLOBAL.movimientos.salidas.registroTxtOk'),
+              title,
+              text,
+              showConfirmButton: false,
+              timer: 2000,
             });
             this.router.navigate(['/pages/salidas/consulta_salidas']);
           }

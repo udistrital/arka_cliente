@@ -63,3 +63,8 @@ export class ElementoMovimientosArka {
     ValorUnitario: number;
     ValorTotal: number;
 }
+
+export class TrSalida {
+    Salida: Movimiento;
+    Elementos: ElementoMovimientosArka[];
+}

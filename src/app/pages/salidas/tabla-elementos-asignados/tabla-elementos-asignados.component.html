@@ -1,12 +1,11 @@
 <mat-card-content>
   <mat-tab-group mat-stretch-tabs (selectedTabChange)="tabChange()" [selectedIndex]="selected.value" (selectedIndexChange)="selected.setValue($event)">
     <mat-tab label="{{'GLOBAL.movimientos.tab_consumo_controlado' | translate}}">
-      <p></p>
       <mat-spinner style="margin:0 auto;" *ngIf="!mostrar" [diameter]="35" [value]="99" [mode]="mode">
       </mat-spinner>
       <mat-card-content>
 
-        <mat-table *ngIf="sourceDevolutivo" #table class="noselect mat-table" [dataSource]="sourceDevolutivo" matSort>
+        <mat-table *ngIf="sourceDevolutivo" #table class="noselect" [dataSource]="sourceDevolutivo" matSort>
 
           <!-- Acciones Macro/Checkbox -->
           <ng-container matColumnDef="AccionesMacro">
@@ -139,7 +138,7 @@
             </td>
           </ng-container>
 
-          <!-- Serie -->
+          <!-- Ubicacion -->
           <ng-container matColumnDef="Ubicacion">
             <th id="col-ubicacion" mat-header-cell *matHeaderCellDef mat-sort-header>
               {{'GLOBAL.ubicacion' | translate }}
@@ -158,7 +157,6 @@
 
         <ngx-form-elementos-seleccionados *ngIf="devolutivoSeleccionados" (DatosEnviados)="AjustarDatos2(sourceDevolutivo, $event)">
         </ngx-form-elementos-seleccionados>
-        <p></p>
         <div class="form-group  col-lg-12">
           <label>{{'GLOBAL.Acta_Recibido.EdicionActa.Observaciones' | translate}}</label>
           <div class="input-group">
@@ -170,12 +168,11 @@
       </mat-card-content>
     </mat-tab>
     <mat-tab label="{{'GLOBAL.movimientos.tab_consumo' | translate}}">
-      <p></p>
       <mat-spinner style="margin:0 auto;" *ngIf="!mostrar" [diameter]="35" [value]="99" [mode]="mode">
       </mat-spinner>
       <mat-card-content>
 
-        <mat-table *ngIf="sourceConsumo" #table class="noselect mat-table" [dataSource]="sourceConsumo" matSort>
+        <mat-table *ngIf="sourceConsumo" #table class="noselect" [dataSource]="sourceConsumo" matSort>
 
           <!-- Acciones Macro/Checkbox -->
           <ng-container matColumnDef="AccionesMacro">
@@ -331,7 +328,6 @@
 
         <ngx-form-elementos-seleccionados *ngIf="consumoSeleccionados" (DatosEnviados)="AjustarDatos2(sourceConsumo, $event)">
         </ngx-form-elementos-seleccionados>
-        <p></p>
         <div class="form-group col-lg-12">
           <label>{{'GLOBAL.Acta_Recibido.EdicionActa.Observaciones' | translate}}</label>
           <div class="input-group">
