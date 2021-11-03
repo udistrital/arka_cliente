@@ -818,7 +818,7 @@
         "errorListaEntradas": "Error getting the entries list",
         "errorEstadosMov": "Error getting the status",
         "errorRechazoEntrada": "Error when trying o reject the entry",
-        "registroTtlOk":"The Entry {{CONSECUTIVO}} was Registered",
+        "registroTtlOk":"Entry Registered",
         "registroTxtOk":"The entry {{CONSECUTIVO}} has been successfully registered",
         "registroFail":"There was an error creating the entry.",
         "aprobacionConfrmTtl":"Confirm entry Approval",

@@ -818,7 +818,7 @@
         "errorListaEntradas": "Error al consultar las entradas",
         "errorEstadosMov": "Error al consultar el estado movimiento",
         "errorRechazoEntrada": "Error al rechazar el acta",
-        "registroTtlOk":"Entrada {{CONSECUTIVO}} Registrada",
+        "registroTtlOk":"Entrada Registrada",
         "registroTxtOk":"La entrada {{CONSECUTIVO}} ha sido registrada de manera exitosa",
         "registroFail":"No es posible hacer el registro de la entrada",
         "aprobacionConfrmTtl":"Confirmar Aprobación de Entrada",

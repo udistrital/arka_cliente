@@ -26,7 +26,7 @@ export class RegistroComponent implements OnInit {
   // Acta de recibido
   actaSeleccionada: string;
   settings: any;
-  opcionEntrada: string;
+  opcionEntrada: string = "";
   movimientoId: number;
 
   @Input() EntradaEdit: any;
