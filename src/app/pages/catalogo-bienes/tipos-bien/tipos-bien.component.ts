@@ -6,6 +6,9 @@ import { PopUpManager } from '../../../managers/popUpManager';
 import Swal from 'sweetalert2';
 import { TipoBien } from '../../../@core/data/models/acta_recibido/tipo_bien';
 import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/catalogoElementosHelper';
+import { checkAndUpdateBinding } from '@angular/core/src/view/util';
+import { flattenStyles } from '@angular/platform-browser/src/dom/dom_renderer';
+import { isObject } from 'util';
 
 @Component({
   selector: 'ngx-tipos-bien',
@@ -183,6 +186,12 @@ export class TiposBienComponent implements OnInit {
           });
         } else {
           text = this.translate.instant('GLOBAL.parametros.tiposBien.actualizacion_succes');
+          // let check = isObject(this.tipo_bien.Tipo_bien_padre);
+          // console.log(check)
+          // if(check === false) {
+          //   this.tipo_bien.Tipo_bien_padre = null;
+          //  }
+          this.tipo_bien.Tipo_bien_padre = this.tipo_bien.Tipo_bien_padre ? this.tipo_bien.Tipo_bien_padre : null;
           this.catalogoHelper.putTipoBien(this.tipo_bien).toPromise()
           .then((res: any) => {
             if (res) {

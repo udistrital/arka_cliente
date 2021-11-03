@@ -45,6 +45,7 @@ export class RegistroTipoBienComponent implements OnInit {
   }
   validarForm(event) {
     if (event.valid) {
+      // console.log(event.data.TipoBien)
       this.Guardar.emit();
       this.registrarTipoBien(event.data.TipoBien);
     }
