@@ -137,7 +137,7 @@ export class ConsultaSalidasComponent implements OnInit {
       },
       mode: 'external',
       columns: {
-        Id: {
+        Consecutivo: {
           title: 'Consecutivo',
         },
         Observacion: {
@@ -161,13 +161,6 @@ export class ConsultaSalidasComponent implements OnInit {
         },
         MovimientoPadreId: {
           title: 'Entrada Asociada',
-          valuePrepareFunction: (value: any) => {
-            if (value !== null) {
-              return value.Id;
-            } else {
-              return '';
-            }
-          },
         },
         Funcionario: {
           title: 'Funcionario',
@@ -269,6 +262,8 @@ export class ConsultaSalidasComponent implements OnInit {
     this.salidasHelper.getSalidas(this.modo === 'revision').subscribe(res => {
       if (res.length) {
         res.forEach(salida => {
+          const movimientoPadre = salida.MovimientoPadreId;
+          salida.MovimientoPadreId = movimientoPadre ? JSON.parse(movimientoPadre.Detalle).consecutivo : '';
           salida.EstadoMovimientoId = this.estadosMovimiento.find(estado =>
             estado.Id === salida.EstadoMovimientoId).Nombre;
         });
