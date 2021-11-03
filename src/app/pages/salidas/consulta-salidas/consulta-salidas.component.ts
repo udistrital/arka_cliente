@@ -317,7 +317,7 @@ export class ConsultaSalidasComponent implements OnInit {
   private onSubmitRevision(aprobar: boolean) {
     this.mostrar = false;
     if (aprobar) {
-      this.salidasHelper.postSalidas(this.movimiento.Id).toPromise().then((res: any) => {
+      this.salidasHelper.postSalida(this.movimiento.Id).toPromise().then((res: any) => {
         if (res) {
           this.alertSuccess(true);
         }

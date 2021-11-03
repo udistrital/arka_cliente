@@ -414,7 +414,6 @@ export class TablaElementosAsignadosComponent implements OnInit {
       }
     }
 
-    // console.log(Salidas);
     (Swal as any).fire({
       title: this.translate.instant('GLOBAL.movimientos.salidas.registroConfrmTtl'),
       text: this.translate.instant('GLOBAL.movimientos.salidas.registroConfrmTxt'),
@@ -432,16 +431,17 @@ export class TablaElementosAsignadosComponent implements OnInit {
             const s = length > 1 ? 's' : '';
             const consecutivo = JSON.parse(res.trSalida.Salidas[0].Salida.Detalle).consecutivo +
               (length > 1 ? (' - ' + JSON.parse(res.trSalida.Salidas[length - 1].Salida.Detalle).consecutivo) : '');
-            const title = this.translate.instant('GLOBAL.movimientos.salidas.registroTtlOk', {S: s});
+            const title = this.translate.instant('GLOBAL.movimientos.salidas.registroTtlOk', { S: s });
             const text = this.translate.instant('GLOBAL.movimientos.salidas.registroTxtOk' +
-              (length > 1 ? 'Varios' : ''), {CONSECUTIVO: consecutivo});
-            (Swal as any).fire({
+              (length > 1 ? 'Varios' : ''), { CONSECUTIVO: consecutivo });
+            const options = {
               type: 'success',
               title,
               text,
               showConfirmButton: false,
               timer: 2000,
-            });
+            };
+            this.pUpManager.showAlertWithOptions(options);
             this.router.navigate(['/pages/salidas/consulta_salidas']);
           }
         });

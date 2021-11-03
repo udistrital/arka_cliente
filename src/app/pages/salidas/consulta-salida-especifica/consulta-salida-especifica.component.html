@@ -4,13 +4,29 @@
 <mat-card *ngIf="salida">
 
   <mat-card-subtitle>
+    {{'GLOBAL.detalle_entrada' | translate}}
+  </mat-card-subtitle>
+
+  <mat-card-content>
+    <div class="row">
+      <div class="col">
+        <p class="text-uppercase"><strong>{{'GLOBAL.consecutivo' | translate}}</strong>: {{ salida.MovimientoPadreId.Detalle }}</p>
+      </div>
+      <div class="col">
+        <p class="text-uppercase"><strong>{{'GLOBAL.fecha_creacion' | translate}}</strong>
+          : {{ salida.MovimientoPadreId.FechaCreacion | date }}</p>
+      </div>
+    </div>
+  </mat-card-content>
+
+  <mat-card-subtitle>
     {{'GLOBAL.salidas.detalle_salida' | translate}}
   </mat-card-subtitle>
 
   <mat-card-content>
     <div class="row">
       <div class="col">
-        <p class="text-uppercase"><strong>{{'GLOBAL.consecutivo' | translate}}</strong>: {{ salida.Id }}</p>
+        <p class="text-uppercase"><strong>{{'GLOBAL.consecutivo' | translate}}</strong>: {{ salida.Consecutivo }}</p>
       </div>
       <div class="col">
         <p class="text-uppercase"><strong>{{'GLOBAL.fecha_creacion' | translate}}</strong>
