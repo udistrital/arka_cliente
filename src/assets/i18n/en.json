@@ -251,6 +251,7 @@
         "CantidadHeader": "Quantity",
         "MarcaHeader": "Brand",
         "SerieHeader": "Series",
+        "PlacaHeader": "Badge",
         "UnidadMedidaHeader": "Measure's Unit",
         "ValorUnitarioHeader": "Unit Value",
         "SubtotalHeader": "Subtotal",
@@ -817,7 +818,7 @@
         "errorListaEntradas": "Error getting the entries list",
         "errorEstadosMov": "Error getting the status",
         "errorRechazoEntrada": "Error when trying o reject the entry",
-        "registroTtlOk":"The Entry {{CONSECUTIVO}} was Registered",
+        "registroTtlOk":"Entry Registered",
         "registroTxtOk":"The entry {{CONSECUTIVO}} has been successfully registered",
         "registroFail":"There was an error creating the entry.",
         "aprobacionConfrmTtl":"Confirm entry Approval",
@@ -835,8 +836,11 @@
         "noSalidasReview": "There are no entries to review",
         "accionRevision": "Review Entry",
         "errorListaSalidas": "Error getting the issues list",
-        "registroTtlOk":"Issue Registered",
-        "registroTxtOk":"The issue was successfully registered",
+        "registroConfrmTtl":"Confirm issue registration",
+        "registroConfrmTxt":"Are you sure to register the issues with the information provided?",
+        "registroTtlOk":"Issue{{S}} Registered",
+        "registroTxtOk":"The issue {{CONSECUTIVO}} was successfully registered",
+        "registroTxtOkVarios":"The issues {{CONSECUTIVO}} were successfully registered",
         "aprobacionConfrmTtl":"Confirm issue Approval",
         "aprobacionConfrmTxt":"Are you sure to approve this issue?",
         "aprobacionTtlOk": "Issue approved",
@@ -844,7 +848,9 @@
         "rechazoConfrmTtl":"Confirm issue rejection",
         "rechazoConfrmTxt":"Are you sure to reject this issue?",
         "rechazoTtlOk": "Issue Rejected",
-        "rechazoTxtOk": "The issue {{CONSECUTIVO}} was successfully rejected"
+        "rechazoTxtOk": "The issue {{CONSECUTIVO}} was successfully rejected",
+        "errorFuncionario": "The civil servant is not properly registered",
+        "errorElementos": "The entry has no elements to issue"
       },
       "tipo": {
         "EA": {

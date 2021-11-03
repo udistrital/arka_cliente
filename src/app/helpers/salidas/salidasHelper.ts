@@ -61,21 +61,6 @@ export class SalidaHelper {
         );
     }
 
-    public registrarSalidas(salidasData) {
-        this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
-        return this.rqManager.post('tr_salida', salidasData).pipe(
-            map(
-                (res) => {
-                    if (res['Type'] === 'error') {
-                        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.error_salida_no_registrada'));
-                        return undefined;
-                    }
-                    return res;
-                },
-            ),
-        );
-    }
-
     /**
     * Entrada Post
     * If the response has errors in the OAS API it should show a popup message with an error.
@@ -83,15 +68,15 @@ export class SalidaHelper {
     * @param entradaData object to save in the DB
     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
     */
-    public postSalidas(salidaId: number) {
+    public postSalida(salidaId: number) {
         return this.dispMvtos.movimientosPermitidos().pipe(
-            switchMap(disp => iif( () => disp, this.aprobarSalida(salidaId) )),
+            switchMap(disp => iif( () => disp, this.registrarSalida([], salidaId) )),
         );
     }
 
-    private aprobarSalida(salidaId: number) {
+    public registrarSalida(salidasData, salidaId: number = 0) {
         this.rqManager.setPath('ARKA_SERVICE');
-        return this.rqManager.put('salida', { Id: salidaId }).pipe(
+        return this.rqManager.post('salida?salidaId=' + salidaId, salidasData).pipe(
             map(
                 (res) => {
                     if (res['Type'] === 'error') {
