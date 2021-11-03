@@ -186,12 +186,7 @@ export class TiposBienComponent implements OnInit {
           });
         } else {
           text = this.translate.instant('GLOBAL.parametros.tiposBien.actualizacion_succes');
-          // let check = isObject(this.tipo_bien.Tipo_bien_padre);
-          // console.log(check)
-          // if(check === false) {
-          //   this.tipo_bien.Tipo_bien_padre = null;
-          //  }
-          this.tipo_bien.Tipo_bien_padre = this.tipo_bien.Tipo_bien_padre ? this.tipo_bien.Tipo_bien_padre : null;
+          this.tipo_bien.Tipo_bien_padre= this.tipo_bien.Tipo_bien_padre ? this.tipo_bien.Tipo_bien_padre : null;
           this.catalogoHelper.putTipoBien(this.tipo_bien).toPromise()
           .then((res: any) => {
             if (res) {
