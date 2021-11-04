@@ -1051,6 +1051,8 @@
      "actualizacion_succes": "Type of property or service satisfactorily updated",
      "registro_title": "Type of property register or service",
      "actualizacion_title":"Updating type of property or service",
+     "necesita_placa":"Placa",
+     "bien_padre":"Bien padre",
      "registro_text":"Do you want to register the data entered?",
      "actualizacion_text": "Do you want to update the data entered?"
    },

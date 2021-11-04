@@ -83,7 +83,7 @@ export class TiposBienComponent implements OnInit {
       columns: {
         Id: {
           title: this.translate.instant('GLOBAL.consecutivo'),
-          width: '100px',
+          width: '40px',
           valuePrepareFunction: (value: any) => {
             return value;
           },
@@ -93,6 +93,20 @@ export class TiposBienComponent implements OnInit {
           width: '170px',
           valuePrepareFunction: (value: any) => {
             return value;
+          },
+        },
+        Tipo_bien_padre: {
+          title: this.translate.instant('GLOBAL.parametros.tiposBien.bien_padre'),
+          width: '170px',
+          valuePrepareFunction: (value: any) => {
+            return value ? value.Nombre : 'N/A';
+          },
+        },
+        NecesitaPlaca: {
+          width: '100px',
+          title: this.translate.instant('GLOBAL.parametros.tiposBien.necesita_placa'),
+          valuePrepareFunction: (value: any) => {
+            return value ? 'Si' : 'No';
           },
         },
         FechaCreacion: {
@@ -126,13 +140,6 @@ export class TiposBienComponent implements OnInit {
           title: this.translate.instant('GLOBAL.activo'),
           valuePrepareFunction: (value: any) => {
             return value ? 'Si' : 'No';
-          },
-        },
-        Tipo_bien_padre: {
-          title: this.translate.instant('Bien Padre'),
-          width: '170px',
-          valuePrepareFunction: (value: any) => {
-            return value ? value.Nombre : 'N/A';
           },
         },
       },
@@ -186,7 +193,7 @@ export class TiposBienComponent implements OnInit {
           });
         } else {
           text = this.translate.instant('GLOBAL.parametros.tiposBien.actualizacion_succes');
-          this.tipo_bien.Tipo_bien_padre= this.tipo_bien.Tipo_bien_padre ? this.tipo_bien.Tipo_bien_padre : null;
+          this.tipo_bien.Tipo_bien_padre = this.tipo_bien.Tipo_bien_padre ? this.tipo_bien.Tipo_bien_padre : null;
           this.catalogoHelper.putTipoBien(this.tipo_bien).toPromise()
           .then((res: any) => {
             if (res) {

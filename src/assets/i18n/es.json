@@ -1051,6 +1051,8 @@
         "actualizacion_succes": "Tipo de bien o sevicio actualizado satisfactoriamente",
         "registro_title": "Registrar tipo de bien o servicio",
         "actualizacion_title":"Actualización tipo de bien o servicio",
+        "necesita_placa":"Placa",
+        "bien_padre":"Bien padre",
         "registro_text":"¿Desea registrar los datos ingresados?",
         "actualizacion_text": "¿Desea actualizar los datos ingresados?"
       },
