@@ -59,7 +59,7 @@ export const FORM_TIPO_BIEN = {
             tipo: 'text',
         },
         {
-            label: 'Necesita placa',
+            label: 'Requiere placa',
             etiqueta: 'checkbox',
             claseGrid: 'col-4',
             nombre: 'NecesitaPlaca',
