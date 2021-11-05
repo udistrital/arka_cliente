@@ -25,8 +25,7 @@ export class KardexComponent implements OnInit {
 
     if (elemento !== undefined) {
       this.bodegaConsumoService.getElementosKardex(elemento).subscribe((res: any) => {
-        // console.log(res)
-        if (Object.keys(res[0]).length !== 0) {
+        if (res.length) {
           this.ArmarHojaKardex(res);
         }
         this.cargando = false;
@@ -50,7 +49,7 @@ export class KardexComponent implements OnInit {
 
     if (Object.keys(elemento).length !== 0) {
       this.bodegaConsumoService.getElementosKardex(elemento.ElementoCatalogoId).subscribe((res: any) => {
-        if (Object.keys(res[0]).length !== 0) {
+        if (res.length) {
           this.ArmarHojaKardex(res);
           this.ArmarMovimientoPrevio(elemento);
         }

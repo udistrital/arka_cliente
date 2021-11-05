@@ -97,7 +97,7 @@ export class ConsultaSolicitudComponent implements OnInit {
       // console.log('Modo: Consulta');
       this.bodegaHelper.getSolicitudesBodega().subscribe(res => {
         // console.log({resConsulta: res});
-        if (Object.keys(res[0]).length !== 0) {
+        if (res.length) {
           // console.log(res)
           this.completarInfoTercero(res);
         }
