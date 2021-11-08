@@ -33,6 +33,12 @@ export class RegistroTipoBienComponent implements OnInit {
   construirForm() {
     const titulo = 'FORMULARIO TB';
     this.formTipoBien = FORM_TIPO_BIEN;
+    this.formTipoBien.titulo = this.translate.instant('GLOBAL.tipo_bien');
+    this.formTipoBien.btn = this.translate.instant('GLOBAL.guardar');
+    for (let i = 0; i < this.formTipoBien.campos.length; i++) {
+      this.formTipoBien.campos[i].label = this.translate.instant('GLOBAL.' + this.formTipoBien.campos[i].label_i18n);
+      this.formTipoBien.campos[i].placeholder = this.translate.instant('GLOBAL.placeholder_' + this.formTipoBien.campos[i].label_i18n);
+    }
     this.loadTiposBien();
   }
   loadTiposBien(): void {

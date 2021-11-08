@@ -99,14 +99,14 @@ export class TiposBienComponent implements OnInit {
           title: this.translate.instant('GLOBAL.parametros.tiposBien.bien_padre'),
           width: '170px',
           valuePrepareFunction: (value: any) => {
-            return value ? value.Nombre : 'N/A';
+            return value ? value.Nombre : this.translate.instant('GLOBAL.n/a');
           },
         },
         NecesitaPlaca: {
           width: '100px',
           title: this.translate.instant('GLOBAL.parametros.tiposBien.necesita_placa'),
           valuePrepareFunction: (value: any) => {
-            return value ? 'Si' : 'No';
+            return value ? this.translate.instant('GLOBAL.si') : this.translate.instant('GLOBAL.no');
           },
         },
         FechaCreacion: {
@@ -139,7 +139,7 @@ export class TiposBienComponent implements OnInit {
           width: '100px',
           title: this.translate.instant('GLOBAL.activo'),
           valuePrepareFunction: (value: any) => {
-            return value ? 'Si' : 'No';
+            return value ? this.translate.instant('GLOBAL.si') : this.translate.instant('GLOBAL.no');
           },
         },
       },
