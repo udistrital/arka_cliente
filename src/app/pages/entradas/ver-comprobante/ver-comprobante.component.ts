@@ -12,7 +12,9 @@ export class VerComprobanteComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
+     console.log("esta es la transaccion: ")  
      console.log(this.transaccion)  
+     console.log(this.transaccion.Movimientos)  
   }
 
 }

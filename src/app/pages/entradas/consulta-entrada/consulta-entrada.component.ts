@@ -319,8 +319,8 @@ export class ConsultaEntradaComponent implements OnInit {
   private onSubmitRevision(aprobar: boolean) {
     this.mostrar = false;
     if (aprobar) {
-      this.entradasHelper.postEntrada({}, +this.entradaId).toPromise().then((res: any) => {
-//      this.entradasHelper.postEntrada({}, 672).toPromise().then((res: any) => {
+//      this.entradasHelper.postEntrada({}, +this.entradaId).toPromise().then((res: any) => {
+      this.entradasHelper.postEntrada({}, 672).toPromise().then((res: any) => {
         console.log(res);
         if (res) {
      	   this.mostrar = true;

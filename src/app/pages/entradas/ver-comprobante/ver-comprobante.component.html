@@ -1,54 +1,22 @@
 <p>
-Despliegue Comprobante
-<!--
-	"ConsecutivoId": 974,
-    "Etiquetas": "{\"TipoComprobanteId\":\"606f8cfeedf1f3b968512e3a\"}",
-    "Descripcion": "asiento contable",
-    "FechaTransaccion": "2021-10-22T15:30:48.370607591-05:00",
-    "Activo": true,
-    "movimientos": [
-      {
-        "TerceroId": 1,
-        "CuentaId": "1-6-35-03-18",
-        "NombreCuenta": "Mobiliario y Enseres",
-        "TipoMovimientoId": 344,
-        "Valor": 99483734.49599999,
-        "Descripcion": "primer movimiento",
-        "Activo": false
-      },
-      {
-        "TerceroId": 1,
-        "CuentaId": "8-1-96-11-06",
-        "NombreCuenta": "faltantes de bienes",
-        "TipoMovimientoId": 345,
-        "Valor": 99483734.49599999,
-        "Descripcion": "segundo movimiento",
-        "Activo": false
-      }
-    ]
-
-  <pre> {{transaccion | json}} </pre>
-
-
-  <h1> Display Data from Json File in Angular 9 </h1>  
-    
-  <table class="table table-striped">  
-    <thead>  
-        <tr>  
-          <th>ID</th>  
-          <th>Name</th>  
-          <th>Email</th>  
-          <th>Gender</th>  
-        </tr>  
-    </thead>  
-    <tbody>  
-      <tr *ngFor="let student of students">  
-        <td>{{ student.id }}</td>  
-        <td>{{ student.name }}</td>  
-        <td>{{ student.email }}</td>  
-        <td>{{ student.gender }}</td>  
-      </tr>  
-    </tbody>  
-  </table>  
--->
+Despliegue Comprobante:
 </p>
+<p>Activo: {{transaccion.Activo}}</p>
+<p>Consecutivo Id: {{transaccion.ConsecutivoId}}</p>
+<p>Descripcion: {{transaccion.Descripcion}}</p>
+<p>Etiquetas: {{transaccion.Etiquetas}}</p>
+<p>Fecha Transacción: {{transaccion.FechaTransaccion}}</p>
+<table>
+	<th>Tercero Id</th>
+	<th>Cuenta Id</th>
+	<th>Nombre Cuenta</th>
+	<th>Tipo Movimiento</th>
+	<th>Valor</th>
+	<tr *ngFor="let mvto of transaccion.movimientos">
+    <td>{{mvto.TerceroId}}</td>
+    <td>{{mvto.CuentaId}}</td>
+    <td>{{mvto.NombreCuenta}}</td>
+    <td>{{mvto.TipoMovimientoId}}</td>
+    <td>{{mvto.Valor}}</td>
+	</tr> 
+</table>
