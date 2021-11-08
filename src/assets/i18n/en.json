@@ -131,10 +131,21 @@
             }
           },
           "salidas": {
-            "name": "Outputs"
+            "name": "Issues",
+            "children": {
+              "consultarSalida": {
+                "name": "Browse Issues"
+              },
+              "aprobarSalida": {
+                "name": "Approve Issues"
+              }
+            }
           },
           "bajas": {
             "name": "Deregister"
+          },
+          "tipos_movimiento": {
+            "name": "Movements type"
           },
           "consulta": {
             "name": "Consultar Baja de Bien"
@@ -179,9 +190,6 @@
         "children": {
           "tiposEntrada": {
             "name": "Entry types"
-          },
-          "tiposBien": {
-            "name": "Good Types"
           }
         }
       }
@@ -243,6 +251,7 @@
         "CantidadHeader": "Quantity",
         "MarcaHeader": "Brand",
         "SerieHeader": "Series",
+        "PlacaHeader": "Badge",
         "UnidadMedidaHeader": "Measure's Unit",
         "ValorUnitarioHeader": "Unit Value",
         "SubtotalHeader": "Subtotal",
@@ -798,14 +807,18 @@
     "observaciones": "Comments",
 
     "movimientos": {
+      "estadoTramite": "Awaiting review",
+      "estadoAprobado": "Approved",
+      "estadoRechazo": "Rejected",
       "entradas": {
         "noEntradasView": "There are no entries to view",
         "noEntradasReview": "There are no entries to review",
+        "noEntradasAprobadas": "There are no entries to create an issue",
         "accionRevision": "Review Entry",
         "errorListaEntradas": "Error getting the entries list",
         "errorEstadosMov": "Error getting the status",
         "errorRechazoEntrada": "Error when trying o reject the entry",
-        "registroTtlOk":"The Entry {{CONSECUTIVO}} was Registered",
+        "registroTtlOk":"Entry Registered",
         "registroTxtOk":"The entry {{CONSECUTIVO}} has been successfully registered",
         "registroFail":"There was an error creating the entry.",
         "aprobacionConfrmTtl":"Confirm entry Approval",
@@ -816,6 +829,28 @@
         "rechazoConfrmTxt":"Are you sure to reject this entry?",
         "rechazoTtlOk": "Entry Rejected",
         "rechazoTxtOk": "The entry {{CONSECUTIVO}} was successfully rejected"
+      },
+      "salidas": {
+        "nuevaSalida": "Register a new issue",
+        "noSalidasView": "There are no issues to view",
+        "noSalidasReview": "There are no entries to review",
+        "accionRevision": "Review Entry",
+        "errorListaSalidas": "Error getting the issues list",
+        "registroConfrmTtl":"Confirm issue registration",
+        "registroConfrmTxt":"Are you sure to register the issues with the information provided?",
+        "registroTtlOk":"Issue{{S}} Registered",
+        "registroTxtOk":"The issue {{CONSECUTIVO}} was successfully registered",
+        "registroTxtOkVarios":"The issues {{CONSECUTIVO}} were successfully registered",
+        "aprobacionConfrmTtl":"Confirm issue Approval",
+        "aprobacionConfrmTxt":"Are you sure to approve this issue?",
+        "aprobacionTtlOk": "Issue approved",
+        "aprobacionTxtOk": "The issue {{CONSECUTIVO}} was successfully approved",
+        "rechazoConfrmTtl":"Confirm issue rejection",
+        "rechazoConfrmTxt":"Are you sure to reject this issue?",
+        "rechazoTtlOk": "Issue Rejected",
+        "rechazoTxtOk": "The issue {{CONSECUTIVO}} was successfully rejected",
+        "errorFuncionario": "The civil servant is not properly registered",
+        "errorElementos": "The entry has no elements to issue"
       },
       "tipo": {
         "EA": {
@@ -1018,11 +1053,20 @@
      "error_activacion": "The good type could not be enabled",
      "error_desactivacion": "The good type could not be disabled",
      "registro_succes": "Type of property or service satisfactorily registered",
+     "numeroOrden": "Order",
      "actualizacion_succes": "Type of property or service satisfactorily updated",
      "registro_title": "Type of property register or service",
      "actualizacion_title":"Updating type of property or service",
      "registro_text":"Do you want to register the data entered?",
      "actualizacion_text": "Do you want to update the data entered?"
+   },
+   "tiposMovimiento":{
+      "title": "Manage movements",
+      "registro_title": "Type of movement",
+      "actualizacion_title":"Updating type of movement",
+      "registro_succes": "Type of movement satisfactorily registered",
+      "actualizacion_succes": "Type of movement or service satisfactorily updated",
+      "subtitle": "Select a movement type to change its state"
    },
    "reportes": {
      "entrada_titulo": "Entry Report"

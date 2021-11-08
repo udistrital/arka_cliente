@@ -81,7 +81,14 @@ tr.mat-footer-row {
 
 ::ng-deep ng2-completer[id="clase"] .completer-input {
   height: 50px;
+  width: 250px;
 }
 ::ng-deep ng2-completer[id="clase"] .completer-dropdown {
   width: 250px !important;
 }
+
+.plus {
+  color: #991c1a;
+  cursor: pointer;
+  padding: 0 1rem;
+ }

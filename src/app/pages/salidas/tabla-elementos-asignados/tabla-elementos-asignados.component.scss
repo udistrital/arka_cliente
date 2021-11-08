@@ -95,3 +95,7 @@ ng2-smart-table table tr.selected {
             user-select: none; /* Non-prefixed version, currently
                                   supported by Chrome, Edge, Opera and Firefox */
 }
+
+.mat-table {
+  padding-top: 1rem;
+}

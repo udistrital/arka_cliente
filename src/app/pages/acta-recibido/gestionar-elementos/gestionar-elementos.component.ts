@@ -147,6 +147,7 @@ export class GestionarElementosComponent implements OnInit {
 
   ReglasColumnas() {
     const check = this.Modo === 'ver' ? [] : ['AccionesMacro'];
+    this.Modo === 'agregar' ? check.push('Acciones') : null;
     this.ocultarAsignacionCatalogo = !this.confService.getAccion('mostrarAsignacionCatalogo');
     if (this.ocultarAsignacionCatalogo) {
       this.displayedColumns = check.concat([
@@ -179,7 +180,6 @@ export class GestionarElementosComponent implements OnInit {
         'ValorTotal',
       ]);
     }
-    this.Modo === 'agregar' ? this.displayedColumns.push('Acciones') : null;
   }
 
   onSelectedClase(selected: CompleterItem, fila: number) {

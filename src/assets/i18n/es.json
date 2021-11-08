@@ -131,10 +131,21 @@
             }
           },
           "salidas": {
-            "name": "Salidas"
+            "name": "Salidas",
+            "children": {
+              "consultarSalida": {
+                "name": "Consultar Salidas"
+              },
+              "aprobarSalida": {
+                "name": "Aprobar Salidas"
+              }
+            }
           },
           "bajas": {
             "name": "Bajas"
+          },
+          "tipos_movimiento": {
+            "name": "Tipos de movimiento"
           },
           "consulta": {
             "name": "Consultar Baja de Bien"
@@ -179,9 +190,6 @@
         "children": {
           "tiposEntrada": {
             "name": "Tipos de Entrada"
-          },
-          "tiposBien": {
-            "name": "Tipos de Bien"
           }
         }
       }
@@ -243,6 +251,7 @@
         "CantidadHeader":"Cantidad",
         "MarcaHeader":"Marca",
         "SerieHeader":"Serie",
+        "PlacaHeader": "Placa",
         "UnidadMedidaHeader":"Unidad de Medida",
         "ValorUnitarioHeader":"Valor Unitario",
         "SubtotalHeader":"Subtotal",
@@ -798,14 +807,18 @@
     "observaciones": "Observaciones",
 
     "movimientos": {
+      "estadoTramite": "En Trámite",
+      "estadoAprobado": "Aprobada",
+      "estadoRechazo": "Rechazada",
       "entradas": {
         "noEntradasView": "No se encontraron entradas",
         "noEntradasReview": "No hay entradas pendientes para ser revisadas",
+        "noEntradasAprobadas": "No hay entradas aprobadas pendientes por asociar a salida",
         "accionRevision": "Revisar Entrada",
         "errorListaEntradas": "Error al consultar las entradas",
         "errorEstadosMov": "Error al consultar el estado movimiento",
         "errorRechazoEntrada": "Error al rechazar el acta",
-        "registroTtlOk":"Entrada {{CONSECUTIVO}} Registrada",
+        "registroTtlOk":"Entrada Registrada",
         "registroTxtOk":"La entrada {{CONSECUTIVO}} ha sido registrada de manera exitosa",
         "registroFail":"No es posible hacer el registro de la entrada",
         "aprobacionConfrmTtl":"Confirmar Aprobación de Entrada",
@@ -816,6 +829,28 @@
         "rechazoConfrmTxt":"¿Está seguro que desea rechazar la entrada?",
         "rechazoTtlOk": "Entrada Rechazada",
         "rechazoTxtOk": "La entrada {{CONSECUTIVO}} ha sido rechazada de exitosamente"
+      },
+      "salidas": {
+        "nuevaSalida": "Registrar nueva salida",
+        "noSalidasView": "No se encontraron salidas",
+        "noSalidasReview": "No hay entradas pendientes para ser revisadas",
+        "accionRevision": "Revisar Salida",
+        "errorListaSalidas": "Error al consultar las entradas",
+        "registroConfrmTtl":"Confirmar Registro de Salida",
+        "registroConfrmTxt":"¿Está seguro de registrar las salidas con la información suministrada?",
+        "registroTtlOk":"Salida{{S}} Registrada{{S}}",
+        "registroTxtOk":"La salida {{CONSECUTIVO}} se ha registrado de manera exitosa",
+        "registroTxtOkVarios":"Las salidas {{CONSECUTIVO}} se han registrado de manera exitosa",
+        "aprobacionConfrmTtl":"Confirmar Aprobación de Entrada",
+        "aprobacionConfrmTxt":"¿Está seguro que desea aprobar la salida?",
+        "aprobacionTtlOk": "Salida Aprobada",
+        "aprobacionTxtOk": "La salida {{CONSECUTIVO}} ha sido aprobada de exitosamente",
+        "rechazoConfrmTtl":"Confirmar Rechazo de Salida",
+        "rechazoConfrmTxt":"¿Está seguro que desea rechazar la salida?",
+        "rechazoTtlOk": "Salida Rechazada",
+        "rechazoTxtOk": "La salida {{CONSECUTIVO}} ha sido rechazada de exitosamente",
+        "errorFuncionario": "El funcionario seleccionado no está correctamente registrado",
+        "errorElementos": "La entrada no tiene elementos asociados para ser asignados"
       },
       "tipo": {
         "EA": {
@@ -1017,13 +1052,22 @@
         "error_activacion": "El tipo de bien no ha sido habilitado correctamente",
         "error_desactivacion": "El tipo de bien no ha sido inhabilitado correctamente",
         "asignable_kardex": "Asignable a Kárdex",
+        "numeroOrden": "Número de orden",
         "registro_succes": "Tipo de bien o servicio registrado satisfactoriamente",
         "actualizacion_succes": "Tipo de bien o sevicio actualizado satisfactoriamente",
         "registro_title": "Registrar tipo de bien o servicio",
         "actualizacion_title":"Actualización tipo de bien o servicio",
         "registro_text":"¿Desea registrar los datos ingresados?",
         "actualizacion_text": "¿Desea actualizar los datos ingresados?"
-      }
+      },
+      "tiposMovimiento":{
+        "title": "Administrar tipos de movimiento",
+        "registro_title": "Type of movement",
+        "actualizacion_title":"Actualización tipo de movimiento",
+        "registro_succes": "Tipo de movimiento registrado satisfactoriamente",
+        "actualizacion_succes": "Tipo de movimiento actualizado satisfactoriamente",
+        "subtitle": "Seleccione un tipo de movimiento para cambiar su estado"
+     }
     },
     "reportes": {
       "entrada_titulo": "Reporte de Entrada"

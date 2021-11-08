@@ -9,7 +9,7 @@ export class TipoMovimientoKronos extends Base {
 
 export class TipoMovimientoArka extends Base {
     Nombre: string;
-    Formato: JSON;
+    Formato: any;
     Descripcion: string;
     CodigoAbreviacion: string;
     NumeroOrden: number;
