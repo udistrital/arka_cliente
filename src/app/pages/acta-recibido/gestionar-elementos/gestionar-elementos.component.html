@@ -35,7 +35,7 @@
   </form>
 </div>
 
-<nb-card *ngIf="dataSource" [nbSpinner]="cargando">
+<nb-card [nbSpinner]="cargando">
   <nb-card-header>{{'GLOBAL.Acta_Recibido.CapturarElementos.ArticulosRelacionadosTitle' | translate }}</nb-card-header>
   <nb-card-body>
 
@@ -53,7 +53,7 @@
           style="height: 45px;">
       </div>
     </div>
-    <table mat-table #table class="noselect" [dataSource]="dataSource" matSort
+    <mat-table #table *ngIf="dataSource" class="noselect" [dataSource]="dataSource" matSort
       (keyup)="keyUpTabla($event)" (keydown.shift)="keyDownTablaShift()">
 
       <!-- Acciones Macro/Checkbox -->
@@ -269,7 +269,7 @@
       <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
       <tr mat-footer-row *matFooterRowDef="displayedColumns; sticky: true"></tr>
-    </table>
+    </mat-table>
 
     <mat-paginator [pageSizeOptions]="[10, 20, 30, 40, 50]" (page)="cambioPagina($event)"></mat-paginator>
   </nb-card-body>

@@ -219,7 +219,7 @@ export class GestionarElementosComponent implements OnInit {
       this.dataSource && Array.isArray(this.dataSource.data) &&
         this.dataSource.data.length &&
         !this.dataSource.data.some(x =>
-          (x.SubgrupoCatalogoId.SubgrupoId.Id === 0 || x.ValorTotal === 0)
+          (x.SubgrupoCatalogoId.SubgrupoId.Id === 0 || x.ValorTotal === 0),
         ) ? true : false
     );
   }
