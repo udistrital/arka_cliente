@@ -204,7 +204,7 @@ export class GestionarElementosComponent implements OnInit {
   onBlurClase(idx: number) {
     if (!this.dataSource.data[idx].Combinado) {
       const subgrupo = new Detalle;
-      subgrupo.SubgrupoId = new Subgrupo;
+      subgrupo.SubgrupoId = <Subgrupo>{ Id: 0 };
       subgrupo.TipoBienId = new TipoBien;
 
       this.dataSource.data[idx].SubgrupoCatalogoId = subgrupo;
@@ -218,7 +218,9 @@ export class GestionarElementosComponent implements OnInit {
     return (
       this.dataSource && Array.isArray(this.dataSource.data) &&
         this.dataSource.data.length &&
-        this.dataSource.data.every(x => x.SubgrupoCatalogoId.SubgrupoId.Id) ? true : false
+        !this.dataSource.data.some(x =>
+          (x.SubgrupoCatalogoId.SubgrupoId.Id === 0 || x.ValorTotal === 0),
+        ) ? true : false
     );
   }
 
@@ -506,22 +508,22 @@ export class GestionarElementosComponent implements OnInit {
 
   addElemento() {
     const subgrupo = new Detalle;
-    subgrupo.SubgrupoId = new Subgrupo;
+    subgrupo.SubgrupoId = <Subgrupo>{ Id: 0 };
     subgrupo.TipoBienId = new TipoBien;
     const data = this.dataSource.data;
     data.unshift({
-      Cantidad: '0',
+      Cantidad: 0,
       Nombre: '',
-      Descuento: '0',
+      Descuento: 0,
       Marca: '',
-      PorcentajeIvaId: '0',
+      PorcentajeIvaId: 0,
       Serie: '',
       SubgrupoCatalogoId: subgrupo,
-      Subtotal: '0',
-      UnidadMedida: '2',
-      ValorIva: '0',
-      ValorTotal: '0',
-      ValorUnitario: '0',
+      Subtotal: 0,
+      UnidadMedida: 13,
+      ValorIva: 0,
+      ValorTotal: 0,
+      ValorUnitario: 0,
     },
     );
     this.respuesta = data;
@@ -529,8 +531,6 @@ export class GestionarElementosComponent implements OnInit {
     this.ver();
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
-
-    // console.log(this.dataSource.data);
   }
 
   borraSeleccionados() {
@@ -651,8 +651,9 @@ export class GestionarElementosComponent implements OnInit {
 
   cambioPagina(eventoPagina) {
     this.basePaginas = eventoPagina.pageIndex * eventoPagina.pageSize;
-    // console.log({eventoPagina, 'base': this.basePaginas});
-    this.checkDummy.focus();
+    if (this.Modo !== 'ver') {
+      this.checkDummy.focus();
+    }
   }
 
   private checkAnterior: number = undefined;
@@ -702,30 +703,33 @@ export class GestionarElementosComponent implements OnInit {
     this.ver();
   }
 
-  valortotal(subtotal: string, descuento: string, iva: string) {
-    const total = (parseFloat(subtotal) - parseFloat(descuento) + parseFloat(iva));
-    if (total >= 0.00) {
-      return total;
-    } else {
-      return 0;
-    }
+  calcularValores(index) {
+    index = (this.paginator.pageIndex * this.paginator.pageSize) + index;
+    this.dataSource.data[index].Subtotal = this.getSubtotal(index);
+    this.dataSource.data[index].ValorIva = this.getIva(index);
+    this.dataSource.data[index].ValorTotal = this.getTotal(index);
+    this.ElementosValidos.emit(this.validarElementos());
   }
-  valorXcantidad(valor_unitario: string, cantidad: string) {
-    const total = (parseFloat(valor_unitario) * parseFloat(cantidad));
-    if (total >= 0.00) {
-      return total;
-    } else {
-      return '0';
-    }
+
+  private getIva(index: number) {
+    const tarifa = +this.dataSource.data[index].PorcentajeIvaId;
+    const impuesto = +this.Tarifas_Iva.find(tarifa_ => tarifa_.Tarifa === tarifa).Tarifa;
+    const total = ((parseFloat(this.dataSource.data[index].Subtotal) -
+      parseFloat(this.dataSource.data[index].Descuento)) * impuesto / 100);
+    return total > 0 ? total : 0;
   }
-  valor_iva(subtotal: string, descuento: string, porcentaje_iva: number) {
-    const tarifa = +porcentaje_iva;
-    const impuesto = this.Tarifas_Iva.find(tarifa_ => tarifa_.Tarifa === tarifa).Tarifa;
-    const total = ((parseFloat(subtotal) - parseFloat(descuento)) * impuesto / 100);
-    if (total >= 0.00) {
-      return total;
-    } else {
-      return '0';
-    }
+
+  private getSubtotal(index: number) {
+    const total = (parseFloat(this.dataSource.data[index].ValorUnitario) *
+      parseFloat(this.dataSource.data[index].Cantidad));
+    return total > 0 ? total : 0;
   }
+
+  private getTotal(index: number) {
+    const total = (parseFloat(this.dataSource.data[index].Subtotal) -
+      parseFloat(this.dataSource.data[index].Descuento) +
+      parseFloat(this.dataSource.data[index].ValorIva));
+    return total > 0 ? total : 0;
+  }
+
 }
