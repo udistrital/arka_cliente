@@ -237,7 +237,7 @@
         "Mensaje": "Corrija primero los siguientes problemas:",
         "Terceros": "Su usuario no está registrado en la Base de Datos de Terceros",
         "Formularios": "Hay campos incorrectos y/o pendientes por llenar",
-        "Clases": "Debe existir al menos un elemento, y cada uno con su clase asignada"
+        "Clases": "Debe existir al menos un elemento, cada uno con una clase asignada y valor total no nulo"
       },
       "CapturarElementos":{
         "CargaMasivaTitle":"Carga Masiva",

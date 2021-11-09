@@ -119,12 +119,9 @@
         <th id="col-cantidad" mat-header-cell *matHeaderCellDef mat-sort-header>
           {{'GLOBAL.Acta_Recibido.CapturarElementos.CantidadHeader' | translate }} </th>
         <td mat-cell *matCellDef="let element; let rowIndex = index">
-          <input currencyMask [options]="{allowNegative: false, prefix: ''}" nbInput type="text" fieldSize="tiny"
+          <input nbInput type="number" fieldSize="tiny" min="0"
             class="cell-2"  [disabled]="Modo === 'verificar'" placeholder="{{'GLOBAL.Acta_Recibido.CapturarElementos.CantidadHeader' | translate }}"
-            (ngModelChange)="element.Subtotal = valorXcantidad(element.ValorUnitario, $event).toString();
-              element.ValorTotal = valortotal(valorXcantidad(element.ValorUnitario, $event).toString(),element.Descuento,element.ValorIva).toString();
-              element.ValorIva = valor_iva(valorXcantidad(element.ValorUnitario, $event).toString(),element.Descuento,element.PorcentajeIvaId).toString();"
-            [(ngModel)]="element.Cantidad" required>
+            [(ngModel)]="element.Cantidad" (ngModelChange)="calcularValores(rowIndex)">
         </td>
         <td mat-footer-cell *matFooterCellDef></td>
       </ng-container>
@@ -175,9 +172,7 @@
 
           <input currencyMask [options]="{allowNegative: false}" nbInput [disabled]="Modo !== 'agregar'" type="text" fieldSize="tiny" class="cell"
             placeholder="{{'GLOBAL.Acta_Recibido.CapturarElementos.ValorUnitarioHeader' | translate }}"
-            (ngModelChange)="element.Subtotal = valorXcantidad($event, element.Cantidad).toString();
-              element.ValorIva = valor_iva(valorXcantidad($event, element.Cantidad).toString(),element.Descuento,element.PorcentajeIvaId).toString();
-              element.ValorTotal = valortotal(valorXcantidad($event, element.Cantidad).toString(),element.Descuento,element.ValorIva).toString();" [(ngModel)]="element.ValorUnitario" required>
+            [(ngModel)]="element.ValorUnitario" (ngModelChange)="calcularValores(rowIndex)">
         </td>
         <td mat-footer-cell *matFooterCellDef></td>
       </ng-container>
@@ -203,8 +198,7 @@
         <td mat-cell *matCellDef="let element; let rowIndex = index">
           <input currencyMask [options]="{allowNegative: false}" nbInput [disabled]="Modo !== 'agregar'" type="text" fieldSize="tiny" class="cell"
             placeholder="{{'GLOBAL.Acta_Recibido.CapturarElementos.DescuentoHeader' | translate }}"
-            [(ngModel)]="element.Descuento" (ngModelChange)="element.ValorIva = valor_iva(element.Subtotal,$event,element.PorcentajeIvaId).toString();
-              element.ValorTotal = valortotal(element.Subtotal,$event,element.ValorIva).toString();" required>
+            [(ngModel)]="element.Descuento" (ngModelChange)="calcularValores(rowIndex)">
         </td>
         <td mat-footer-cell *matFooterCellDef>
           <p *ngIf="respuesta">{{ getDescuentos() | currency }}</p>
@@ -217,9 +211,8 @@
           {{'GLOBAL.Acta_Recibido.CapturarElementos.IVAHeader' | translate }}
         </th>
         <td mat-cell *matCellDef="let element; let rowIndex = index">
-          <select nbInput [disabled]="Modo !== 'agregar'"type="text" class="cell form-control" [(ngModel)]="element.PorcentajeIvaId"
-            (ngModelChange)="element.ValorIva = valor_iva(element.Subtotal,element.Descuento,$event).toString();
-              element.ValorTotal = valortotal(element.Subtotal,element.Descuento,valor_iva(element.Subtotal,element.Descuento,$event).toString()).toString();" required>
+          <select nbInput [disabled]="Modo !== 'agregar'"type="text" class="cell form-control"
+            [(ngModel)]="element.PorcentajeIvaId" (ngModelChange)="calcularValores(rowIndex)">
             <option *ngFor="let tarifas of Tarifas_Iva" [(value)]="tarifas.Tarifa">{{tarifas.Nombre}}</option>
           </select>
         </td>
