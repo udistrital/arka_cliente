@@ -253,7 +253,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
     elemento.SaldoCantidad = elementoActa.Cantidad;
     elemento.SaldoValor = elementoActa.ValorTotal;
     elemento.Unidad = elementoActa.Cantidad;
-    elemento.ValorUnitario = elementoActa.ValorUnitario;
+    elemento.ValorUnitario = elementoActa.ValorTotal / elementoActa.Cantidad;
     elemento.ValorTotal = elementoActa.ValorTotal;
     return elemento;
   }
