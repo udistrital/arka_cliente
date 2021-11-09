@@ -6,6 +6,9 @@ import { PopUpManager } from '../../../managers/popUpManager';
 import Swal from 'sweetalert2';
 import { TipoBien } from '../../../@core/data/models/acta_recibido/tipo_bien';
 import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/catalogoElementosHelper';
+import { checkAndUpdateBinding } from '@angular/core/src/view/util';
+import { flattenStyles } from '@angular/platform-browser/src/dom/dom_renderer';
+import { isObject } from 'util';
 
 @Component({
   selector: 'ngx-tipos-bien',
@@ -80,7 +83,7 @@ export class TiposBienComponent implements OnInit {
       columns: {
         Id: {
           title: this.translate.instant('GLOBAL.consecutivo'),
-          width: '100px',
+          width: '40px',
           valuePrepareFunction: (value: any) => {
             return value;
           },
@@ -90,6 +93,20 @@ export class TiposBienComponent implements OnInit {
           width: '170px',
           valuePrepareFunction: (value: any) => {
             return value;
+          },
+        },
+        Tipo_bien_padre: {
+          title: this.translate.instant('GLOBAL.parametros.tiposBien.bien_padre'),
+          width: '170px',
+          valuePrepareFunction: (value: any) => {
+            return value ? value.Nombre : this.translate.instant('GLOBAL.n/a');
+          },
+        },
+        NecesitaPlaca: {
+          width: '100px',
+          title: this.translate.instant('GLOBAL.parametros.tiposBien.necesita_placa'),
+          valuePrepareFunction: (value: any) => {
+            return value ? this.translate.instant('GLOBAL.si') : this.translate.instant('GLOBAL.no');
           },
         },
         FechaCreacion: {
@@ -122,7 +139,7 @@ export class TiposBienComponent implements OnInit {
           width: '100px',
           title: this.translate.instant('GLOBAL.activo'),
           valuePrepareFunction: (value: any) => {
-            return value ? 'Si' : 'No';
+            return value ? this.translate.instant('GLOBAL.si') : this.translate.instant('GLOBAL.no');
           },
         },
       },
@@ -176,6 +193,7 @@ export class TiposBienComponent implements OnInit {
           });
         } else {
           text = this.translate.instant('GLOBAL.parametros.tiposBien.actualizacion_succes');
+          this.tipo_bien.Tipo_bien_padre = this.tipo_bien.Tipo_bien_padre ? this.tipo_bien.Tipo_bien_padre : null;
           this.catalogoHelper.putTipoBien(this.tipo_bien).toPromise()
           .then((res: any) => {
             if (res) {
