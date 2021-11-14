@@ -26,6 +26,7 @@ export class FormElementosSeleccionadosComponent implements OnInit {
   Ubicaciones: any;
   Sedes: any;
   form_salida: FormGroup;
+  UbicacionesFiltradas: any = [];
   private Funcionarios: TerceroCriterioContratista[];
   funcionariosFiltrados: Observable<Partial<TerceroCriterioContratista>[]>;
 
@@ -69,29 +70,41 @@ export class FormElementosSeleccionadosComponent implements OnInit {
       Funcionario: ['', [Validators.required, this.validarTercero()]],
       Sede: ['', Validators.required],
       Dependencia: ['', [Validators.required, this.validateObjectCompleter()]],
+      Ubicacion: [
+        {
+          value: '',
+          disabled: true,
+        },
+        { validators: [Validators.required] },
+      ],
       Observaciones: [''],
     });
     this.funcionariosFiltrados = this.cambiosFuncionario(form.get('Funcionario'));
     this.cambiosDependencia(form.get('Dependencia').valueChanges);
     return form;
   }
-  Traer_Relacion_Ubicaciones() {
-    const sede = this.form_salida.get('Sede').value;
-    const dependencia = this.form_salida.get('Dependencia').value;
-    if (this.form_salida.get('Sede').valid && this.form_salida.get('Dependencia').valid &&
-      sede !== undefined && dependencia !== undefined) {
+
+  public getUbicaciones() {
+    const sede = this.form_salida.get('Sede').valid ? this.form_salida.get('Sede').value : '';
+    const dependencia = this.form_salida.get('Dependencia').valid ? this.form_salida.get('Dependencia').value : '';
+    if (sede && dependencia) {
       this.UbicacionesFiltradas = [];
       const transaccion: any = {};
       transaccion.Sede = this.Sedes.find((x) => x.Id === parseFloat(sede));
-      transaccion.Dependencia = this.Dependencias.find((x) => x.Nombre === dependencia);
+      transaccion.Dependencia = dependencia;
       if (transaccion.Sede !== undefined && transaccion.Dependencia !== undefined) {
         this.Actas_Recibido.postRelacionSedeDependencia(transaccion).subscribe((res: any) => {
           if (isObject(res[0].Relaciones)) {
             this.form_salida.patchValue({ Ubicacion: '' });
             this.UbicacionesFiltradas = res[0].Relaciones;
+            this.form_salida.get('Ubicacion').enable();
           }
         });
       }
+    } else {
+      this.form_salida.patchValue({ Ubicacion: '' });
+      this.form_salida.get('Ubicacion').disable();
+      this.UbicacionesFiltradas = [];
     }
   }
 

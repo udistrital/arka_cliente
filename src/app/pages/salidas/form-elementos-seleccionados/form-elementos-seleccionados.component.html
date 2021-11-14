@@ -26,8 +26,9 @@
       <div class="row">
         <div class="form-group col-sm">
           <label class="label">{{'GLOBAL.Acta_Recibido.RegistroActa.Sede' | translate}}</label>
-          <mat-select type="text" class="form-control" formControlName="Sede" style="margin-right: 10%;"
-            (selectionChange)="Traer_Relacion_Ubicaciones();">
+          <mat-select type="text" class="form-control" formControlName="Sede" style="margin-right: 10%; height: auto;"
+            (selectionChange)="getUbicaciones();">
+            <mat-option value="">--{{ 'GLOBAL.seleccionar' | translate }}--</mat-option>
             <mat-option *ngFor="let sede of Sedes" [(value)]="sede.Id">{{sede.Nombre}}</mat-option>
           </mat-select>
           <p class="error-field" *ngIf="form_salida.get('Sede').invalid">
@@ -54,10 +55,11 @@
 
         <div class="form-group col-sm">
           <label class="ubicacion">{{'GLOBAL.Acta_Recibido.RegistroActa.Ubicacion' | translate}}</label>
-          <mat-select type="text" class="form-control ubicacion" formControlName="Ubicacion">
+          <mat-select type="text" style="height: auto;" class="form-control ubicacion" formControlName="Ubicacion">
+            <mat-option value="">--{{ 'GLOBAL.seleccionar' | translate }}--</mat-option>
             <mat-option *ngFor="let ubicacion of UbicacionesFiltradas" [(value)]="ubicacion.Id">{{ubicacion.Nombre}}</mat-option>
           </mat-select>
-          <p class="error-field ubicacion" *ngIf="form_salida.get('Ubicacion').invalid">
+          <p class="error-field ubicacion" *ngIf="!form_salida.get('Ubicacion').valid">
             {{'GLOBAL.Errores.ErrorRequerido' | translate}}</p>
         </div>
       </div>
@@ -70,8 +72,9 @@
     </div>
   </mat-card-content>
   <mat-card-actions>
-    <button mat-flat-button color="primary" (click)="verfificarProveedor()"
-      [disabled]="form_salida.get('Sede').invalid || form_salida.get('Dependencia').invalid || form_salida.get('Ubicacion').invalid  || form_salida.get('Proveedor').invalid"
-      class="float-right">{{'GLOBAL.movimientos.asignar_funcionario' | translate}}</button>
+    <button mat-flat-button color="primary" (click)="onSubmit()" type="button"
+      [disabled]="!form_salida.get('Funcionario').valid || !form_salida.get('Ubicacion').valid" class="float-right">
+      {{'GLOBAL.movimientos.asignar_funcionario' | translate}}
+    </button>
   </mat-card-actions>
 </form>
