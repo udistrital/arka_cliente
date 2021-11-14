@@ -487,6 +487,7 @@
     "errorPermisosTxt": "The permissions were not loaded properly. Try later.",
     "Error_soporte_title":"Error when trying to get the support document",
     "Error_soporte_text":"Support document is corrupted or non registered.",
+    "error_dependencias":"Error loading agencies",
     "fecha_inicio": "Start date",
     "fecha_fin": "End date",
     "fechainicio": "Start date",

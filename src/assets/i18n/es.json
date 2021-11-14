@@ -487,6 +487,7 @@
     "errorPermisosTxt": "No se pudieron obtener los permisos correctamente, intente más tarde",
     "error_soporte_title":"Error al obtener el soporte",
     "error_soporte_text":"Soporte corrupto o no registrado.",
+    "error_dependencias":"Error al consultar las dependencias",
     "fecha_inicio":"Fecha de inicio",
     "fecha_fin":"Fecha de finalizacion",
     "fechainicio":"Fecha de inicio",

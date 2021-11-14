@@ -7,6 +7,7 @@ import { Store } from '@ngrx/store';
 import { IAppState } from '../../../@core/store/app.state';
 import { ListService } from '../../../@core/store/services/list.service';
 import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
+import { OikosHelper } from '../../../helpers/oikos/oikosHelper';
 import { isObject } from 'rxjs/internal-compatibility';
 import { TerceroCriterioContratista } from '../../../@core/data/models/terceros_criterio';
 import { debounceTime, distinctUntilChanged, map, startWith, switchMap } from 'rxjs/operators';
@@ -34,6 +35,7 @@ export class FormElementosSeleccionadosComponent implements OnInit {
     private store: Store<IAppState>,
     private listService: ListService,
     private tercerosHelper: TercerosHelper,
+    private oikosHelper: OikosHelper,
   ) {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
     });
@@ -101,7 +103,7 @@ export class FormElementosSeleccionadosComponent implements OnInit {
 
   public onSubmit() {
     const form = this.form_salida.value;
-    form.Funcionario = form.Funcionario.TerceroPrincipal;
+    form.Funcionario = form.Funcionario.Tercero;
     form.Sede = this.Sedes.find(y => y.Id === parseFloat(form.Sede));
     form.Ubicacion = this.UbicacionesFiltradas.find(w => w.Id === parseFloat(form.Ubicacion));
     this.DatosEnviados.emit(form);
@@ -112,10 +114,10 @@ export class FormElementosSeleccionadosComponent implements OnInit {
   }
 
   public muestraFuncionario(contr: TerceroCriterioContratista): string {
-    if (contr && contr.Identificacion && contr.TerceroPrincipal) {
-      return contr.Identificacion.Numero + ' - ' + contr.TerceroPrincipal.NombreCompleto;
-    } else if (contr && contr.TerceroPrincipal) {
-      return contr.TerceroPrincipal.NombreCompleto;
+    if (contr && contr.Identificacion && contr.Tercero) {
+      return contr.Identificacion.Numero + ' - ' + contr.Tercero.NombreCompleto;
+    } else if (contr && contr.Tercero) {
+      return contr.Tercero.NombreCompleto;
     }
   }
 
@@ -148,7 +150,7 @@ export class FormElementosSeleccionadosComponent implements OnInit {
 
   private loadDependencias(text: string) {
     const queryOptions$ = text.length > 3 ?
-      this.tercerosHelper.getDependencias(text) :
+      this.oikosHelper.getDependencias(text) :
       new Observable((obs) => { obs.next([{}]); });
     return combineLatest([queryOptions$]).pipe(
       map(([queryOptions_$]) => ({
@@ -171,7 +173,7 @@ export class FormElementosSeleccionadosComponent implements OnInit {
       const valor = control.value;
       const checkStringLength = typeof (valor) === 'string' && valor.length < 4 && valor !== '' ? true : false;
       const checkInvalidString = typeof (valor) === 'string' && valor !== '' ? true : false;
-      const checkInvalidTercero = typeof (valor) === 'object' && !valor.TerceroPrincipal ? true : false;
+      const checkInvalidTercero = typeof (valor) === 'object' && !valor.Tercero ? true : false;
       return checkStringLength ? { errorLongitudMinima: true } :
         checkInvalidString || checkInvalidTercero ? { terceroNoValido: true } : null;
     };
