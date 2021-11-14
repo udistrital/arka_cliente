@@ -19,11 +19,6 @@ import { debounceTime, distinctUntilChanged, map, startWith, switchMap } from 'r
 })
 export class FormElementosSeleccionadosComponent implements OnInit {
   dependencias: any;
-  searchStr: string;
-  searchStr2: Array<string>;
-  searchStr3: string;
-  Proveedores: any;
-  Ubicaciones: any;
   Sedes: any;
   form_salida: FormGroup;
   UbicacionesFiltradas: any = [];
@@ -34,12 +29,8 @@ export class FormElementosSeleccionadosComponent implements OnInit {
 
   constructor(
     private translate: TranslateService,
-    private router: Router,
-    private route: ActivatedRoute,
     private fb: FormBuilder,
     private Actas_Recibido: ActaRecibidoHelper,
-    private toasterService: ToasterService,
-    private completerService: CompleterService,
     private store: Store<IAppState>,
     private listService: ListService,
     private tercerosHelper: TercerosHelper,
@@ -110,7 +101,7 @@ export class FormElementosSeleccionadosComponent implements OnInit {
 
   public onSubmit() {
     const form = this.form_salida.value;
-    form.Funcionario = form.Funcionario.Tercero;
+    form.Funcionario = form.Funcionario.TerceroPrincipal;
     form.Sede = this.Sedes.find(y => y.Id === parseFloat(form.Sede));
     form.Ubicacion = this.UbicacionesFiltradas.find(w => w.Id === parseFloat(form.Ubicacion));
     this.DatosEnviados.emit(form);
@@ -121,10 +112,10 @@ export class FormElementosSeleccionadosComponent implements OnInit {
   }
 
   public muestraFuncionario(contr: TerceroCriterioContratista): string {
-    if (contr && contr.Identificacion && contr.Tercero) {
-      return contr.Identificacion.Numero + ' - ' + contr.Tercero.NombreCompleto;
-    } else if (contr && contr.Tercero) {
-      return contr.Tercero.NombreCompleto;
+    if (contr && contr.Identificacion && contr.TerceroPrincipal) {
+      return contr.Identificacion.Numero + ' - ' + contr.TerceroPrincipal.NombreCompleto;
+    } else if (contr && contr.TerceroPrincipal) {
+      return contr.TerceroPrincipal.NombreCompleto;
     }
   }
 
@@ -180,7 +171,7 @@ export class FormElementosSeleccionadosComponent implements OnInit {
       const valor = control.value;
       const checkStringLength = typeof (valor) === 'string' && valor.length < 4 && valor !== '' ? true : false;
       const checkInvalidString = typeof (valor) === 'string' && valor !== '' ? true : false;
-      const checkInvalidTercero = typeof (valor) === 'object' && !valor.Tercero ? true : false;
+      const checkInvalidTercero = typeof (valor) === 'object' && !valor.TerceroPrincipal ? true : false;
       return checkStringLength ? { errorLongitudMinima: true } :
         checkInvalidString || checkInvalidTercero ? { terceroNoValido: true } : null;
     };
