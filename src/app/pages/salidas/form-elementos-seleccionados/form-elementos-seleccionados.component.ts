@@ -1,5 +1,6 @@
+import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { combineLatest, Observable } from 'rxjs';
 import { FormBuilder, FormGroup, Validators, ValidatorFn, AbstractControl, ValidationErrors } from '@angular/forms';
-import 'hammerjs';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { Store } from '@ngrx/store';
@@ -8,6 +9,7 @@ import { ListService } from '../../../@core/store/services/list.service';
 import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
 import { isObject } from 'rxjs/internal-compatibility';
 import { TerceroCriterioContratista } from '../../../@core/data/models/terceros_criterio';
+import { debounceTime, distinctUntilChanged, map, startWith, switchMap } from 'rxjs/operators';
 
 
 @Component({
@@ -16,14 +18,11 @@ import { TerceroCriterioContratista } from '../../../@core/data/models/terceros_
   styleUrls: ['./form-elementos-seleccionados.component.scss'],
 })
 export class FormElementosSeleccionadosComponent implements OnInit {
+  dependencias: any;
   searchStr: string;
   searchStr2: Array<string>;
   searchStr3: string;
-  dataService: CompleterData;
-  dataService2: CompleterData;
-  dataService3: CompleterData;
   Proveedores: any;
-  Dependencias: any;
   Ubicaciones: any;
   Sedes: any;
   form_salida: FormGroup;
@@ -60,9 +59,7 @@ export class FormElementosSeleccionadosComponent implements OnInit {
   public loadLists() {
     this.store.select((state) => state).subscribe(
       (list) => {
-        this.Dependencias = list.listDependencias[0];
         this.Sedes = list.listSedes[0];
-        this.dataService3 = this.completerService.local(this.Dependencias, 'Nombre', 'Nombre');
       },
     );
   }
@@ -71,9 +68,11 @@ export class FormElementosSeleccionadosComponent implements OnInit {
     const form = this.fb.group({
       Funcionario: ['', [Validators.required, this.validarTercero()]],
       Sede: ['', Validators.required],
+      Dependencia: ['', [Validators.required, this.validateObjectCompleter()]],
       Observaciones: [''],
     });
     this.funcionariosFiltrados = this.cambiosFuncionario(form.get('Funcionario'));
+    this.cambiosDependencia(form.get('Dependencia').valueChanges);
     return form;
   }
   Traer_Relacion_Ubicaciones() {
@@ -96,14 +95,16 @@ export class FormElementosSeleccionadosComponent implements OnInit {
     }
   }
 
-  onSubmit() {
-    if (this.elementos2) {
-      const form = this.form_salida.value;
+  public onSubmit() {
+    const form = this.form_salida.value;
     form.Funcionario = form.Funcionario.Tercero;
-    } else {
-      this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.salidas.errorFuncionario'));
-    }
+    form.Sede = this.Sedes.find(y => y.Id === parseFloat(form.Sede));
+    form.Ubicacion = this.UbicacionesFiltradas.find(w => w.Id === parseFloat(form.Ubicacion));
+    this.DatosEnviados.emit(form);
+  }
 
+  public muestraDependencia(field) {
+    return field ? field.Nombre : '';
   }
 
   public muestraFuncionario(contr: TerceroCriterioContratista): string {
@@ -116,12 +117,23 @@ export class FormElementosSeleccionadosComponent implements OnInit {
 
   private cambiosFuncionario(control: AbstractControl): Observable<Partial<TerceroCriterioContratista>[]> {
     return control.valueChanges
-    .pipe(
+      .pipe(
         startWith(''),
         map(val => typeof val === 'string' ? val : this.muestraFuncionario(val)),
         map(nombre => this.filtroFuncionarios(nombre)),
-        );
-      }
+      );
+  }
+
+  private cambiosDependencia(valueChanges: Observable<any>) {
+    valueChanges.pipe(
+      startWith(''),
+      debounceTime(250),
+      distinctUntilChanged(),
+      switchMap((val) => this.loadDependencias(val) ),
+    ).subscribe((response: any) => {
+      this.dependencias = response.queryOptions[0].Id ? response.queryOptions : [];
+    });
+  }
 
   private filtroFuncionarios(nombre: string): TerceroCriterioContratista[] {
     if (nombre.length >= 4 && Array.isArray(this.Funcionarios)) {
@@ -130,7 +142,16 @@ export class FormElementosSeleccionadosComponent implements OnInit {
     } else return [];
   }
 
-
+  private loadDependencias(text: string) {
+    const queryOptions$ = text.length > 3 ?
+      this.tercerosHelper.getDependencias(text) :
+      new Observable((obs) => { obs.next([{}]); });
+    return combineLatest([queryOptions$]).pipe(
+      map(([queryOptions_$]) => ({
+        queryOptions: queryOptions_$,
+      })),
+    );
+  }
 
   private loadFuncionarios(): Promise<void> {
     return new Promise<void>(resolve => {
@@ -151,5 +172,15 @@ export class FormElementosSeleccionadosComponent implements OnInit {
         checkInvalidString || checkInvalidTercero ? { terceroNoValido: true } : null;
     };
   }
+
+  private validateObjectCompleter(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const valor = control.value;
+      const checkStringLength = typeof (valor) === 'string' && valor.length < 4 && valor !== '' ? true : false;
+      const checkInvalidString = typeof (valor) === 'string' && valor !== '' ? true : false;
+      const checkInvalidObject = typeof (valor) === 'object' && !valor.Id ? true : false;
+      return checkStringLength ? { errorLongitudMinima: true } :
+        checkInvalidString || checkInvalidObject ? { dependenciaNoValido: true } : null;
+    };
   }
 }

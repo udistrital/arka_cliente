@@ -217,6 +217,7 @@
   "GLOBAL": {
     "Errores": {
       "ErrorTercero": "Ingrese un tercero válido",
+      "ErrorDependencia": "Ingrese una dependencia válida",
       "ErrorMinLength": "Escriba {{NUM}} o más caracteres",
       "ErrorFecha": "Ingrese una fecha válida",
       "ErrorRequerido": "Este campo es obligatorio"

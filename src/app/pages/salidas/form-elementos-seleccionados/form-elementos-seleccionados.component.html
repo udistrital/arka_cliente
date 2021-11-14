@@ -36,14 +36,22 @@
 
         <div class="form-group col-sm">
           <label class="label">{{'GLOBAL.Acta_Recibido.RegistroActa.Dependencia' | translate}}</label>
-          <ng2-completer style="border: 0rem" inputClass="form-control" 
-          (change)="Traer_Relacion_Ubicaciones()" [datasource]="dataService3"
-          formControlName="Dependencia" [minSearchLength]="3"
-            placeholder="{{'GLOBAL.Acta_Recibido.RegistroActa.SeleccioneFiltro' | translate}}">
-          </ng2-completer>
-          <p class="error-field" *ngIf="form_salida.get('Dependencia').invalid">
-            {{'GLOBAL.Errores.ErrorRequerido' | translate}}</p>
+          <input matInput type="text" formControlName="Dependencia" class="form-control" style="height: auto;"
+            placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}" [matAutocomplete]="auto">
+          <mat-autocomplete #auto="matAutocomplete" [displayWith]="muestraDependencia"
+            (optionSelected)="getUbicaciones()">
+            <mat-option *ngFor="let item of dependencias" [value]="item">
+              {{item.Nombre}}
+            </mat-option>
+          </mat-autocomplete>
+            <p class="error-field" *ngIf="form_salida.get('Dependencia').errors && form_salida.get('Dependencia').errors.required">
+              {{'GLOBAL.placeholder' | translate}}</p>
+            <p class="error-field" *ngIf="form_salida.get('Dependencia').errors && form_salida.get('Dependencia').errors.errorLongitudMinima">
+              {{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}</p>
+            <p class="error-field" *ngIf="form_salida.get('Dependencia').errors && form_salida.get('Dependencia').errors.dependenciaNoValido">
+              {{'GLOBAL.Errores.ErrorDependencia' | translate}}</p>
         </div>
+
         <div class="form-group col-sm">
           <label class="ubicacion">{{'GLOBAL.Acta_Recibido.RegistroActa.Ubicacion' | translate}}</label>
           <mat-select type="text" class="form-control ubicacion" formControlName="Ubicacion">
