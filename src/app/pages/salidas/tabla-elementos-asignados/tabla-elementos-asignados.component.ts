@@ -24,8 +24,6 @@ export class TablaElementosAsignadosComponent implements OnInit {
 
   actaRecibidoId: number;
   formulario: boolean;
-  Observaciones: string;
-  ObservacionesConsumo: string;
   entradaId: string;
   selected = new FormControl(0);
   estadoShift: boolean;
@@ -214,18 +212,8 @@ export class TablaElementosAsignadosComponent implements OnInit {
     source.data[index].Sede = item.Sede;
     source.data[index].Dependencia = item.Dependencia;
     source.data[index].Ubicacion = item.Ubicacion;
+    source.data[index].Observaciones = item.Observaciones;
     source.data[index].seleccionado = false;
-  }
-
-  asignarPlacas(datos: any, elemento: any) {
-    this.salidasHelper.getElemento(datos).subscribe((res: any) => {
-      if (res.Placa === '') {
-        this.salidasHelper.putElemento(res).subscribe((res1: any) => {
-          return res1.placa;
-        });
-      }
-    });
-    return '';
   }
 
   checkElementosAsignados() {
@@ -323,7 +311,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
         const val = currentValue.Funcionario.Id + '-' + currentValue.Ubicacion.Id;
         accumulator[val] = accumulator[val] || {
           Salida: {
-            Observacion: this.Observaciones ? obs + ' // ' + this.Observaciones : obs,
+            Observacion: currentValue.Observaciones ? obs + ' // ' + currentValue.Observaciones : obs,
             Detalle: JSON.stringify(detalle),
             Activo: true,
             MovimientoPadreId: {
@@ -365,7 +353,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
           const val = currentValue.Funcionario.Id + '-' + currentValue.Ubicacion.Id;
           accumulator[val] = accumulator[val] || {
             Salida: {
-              Observacion: this.ObservacionesConsumo ? obs + ' // ' + this.ObservacionesConsumo : obs,
+              Observacion: currentValue.Observaciones ? obs + ' // ' + currentValue.Observaciones : obs,
               Detalle: JSON.stringify(detalle),
               Activo: true,
               MovimientoPadreId: {

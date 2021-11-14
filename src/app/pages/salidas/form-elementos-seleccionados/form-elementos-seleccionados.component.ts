@@ -71,8 +71,7 @@ export class FormElementosSeleccionadosComponent implements OnInit {
     const form = this.fb.group({
       Funcionario: ['', [Validators.required, this.validarTercero()]],
       Sede: ['', Validators.required],
-      Dependencia: ['', Validators.required],
-      Ubicacion: ['', Validators.required],
+      Observaciones: [''],
     });
     this.funcionariosFiltrados = this.cambiosFuncionario(form.get('Funcionario'));
     return form;
