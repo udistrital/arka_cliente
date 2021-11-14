@@ -7,15 +7,20 @@
 
       <div class="row">
         <div class="form-group col-sm">
-          <label>{{'GLOBAL.funcionario' | translate}}</label>
-          <input type="text" placeholder="{{'GLOBAL.Acta_Recibido.RegistroActa.SeleccioneFiltro' | translate}}"
-            class="form-control" (input)="changeNombreProveedor($event)" value='{{proveedorfiltro}}' list="elementosList"
-            formControlName="Proveedor">
-          <datalist id="elementosList">
-            <option *ngFor="let item of elementos" value='{{ item }}'></option>
-          </datalist>
-          <p class="error-field" *ngIf="form_salida.get('Proveedor').invalid">
-            {{'GLOBAL.Errores.ErrorRequerido' | translate}}</p>
+          <label>{{'GLOBAL.Acta_Recibido.ContratistaAsignado' | translate}}</label>
+          <input matInput type="text" class="form-control" [matAutocomplete]="autoFuncionario" style="height: auto;"
+            placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}" formControlName="Funcionario">
+          <mat-autocomplete #autoFuncionario="matAutocomplete" [displayWith]="muestraFuncionario">
+            <mat-option *ngFor="let func of funcionariosFiltrados | async" [value]="func">
+              {{muestraFuncionario(func)}}
+            </mat-option>
+          </mat-autocomplete>
+          <p class="error-field" *ngIf="form_salida.get('Funcionario').errors && form_salida.get('Funcionario').errors.required">
+            {{'GLOBAL.placeholder' | translate}}</p>
+          <p class="error-field" *ngIf="form_salida.get('Funcionario').errors && form_salida.get('Funcionario').errors.errorLongitudMinima">
+            {{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}</p>
+          <p class="error-field" *ngIf="form_salida.get('Funcionario').errors && form_salida.get('Funcionario').errors.terceroNoValido">
+            {{'GLOBAL.Errores.ErrorTercero' | translate}}</p>
         </div>
       </div>
       <div class="row">

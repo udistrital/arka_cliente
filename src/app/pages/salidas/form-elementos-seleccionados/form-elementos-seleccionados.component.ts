@@ -1,37 +1,13 @@
-import { Component, OnInit, ViewChild, ViewChildren, QueryList, Input, Output, EventEmitter } from '@angular/core';
-import { Subscription, combineLatest, Observable } from 'rxjs';
-import { Router, ActivatedRoute } from '@angular/router';
-import { FormBuilder, FormGroup, Validators, FormControl, FormArray } from '@angular/forms';
-import { NuxeoService } from '../../../@core/utils/nuxeo.service';
-
-import { MatTable } from '@angular/material';
+import { FormBuilder, FormGroup, Validators, ValidatorFn, AbstractControl, ValidationErrors } from '@angular/forms';
 import 'hammerjs';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
-import { ActaRecibido } from '../../../@core/data/models/acta_recibido/acta_recibido';
-import { Elemento, Impuesto } from '../../../@core/data/models/acta_recibido/elemento';
-import { TipoBien } from '../../../@core/data/models/acta_recibido/tipo_bien';
-import { SoporteActa, Ubicacion } from '../../../@core/data/models/acta_recibido/soporte_acta';
-import { Proveedor } from '../../../@core/data/models/acta_recibido/Proveedor';
-import { EstadoActa } from '../../../@core/data/models/acta_recibido/estado_acta';
-import { EstadoElemento } from '../../../@core/data/models/acta_recibido/estado_elemento';
-import { HistoricoActa } from '../../../@core/data/models/acta_recibido/historico_acta';
-import { TransaccionActaRecibido } from '../../../@core/data/models/acta_recibido/transaccion_acta_recibido';
-import Swal from 'sweetalert2';
-import { ToasterService, ToasterConfig, Toast, BodyOutputType } from 'angular2-toaster';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
-import { Unidad } from '../../../@core/data/models/acta_recibido/unidades';
-import { CompleterService, CompleterData } from 'ng2-completer';
-import { HttpLoaderFactory } from '../../../app.module';
-import { analyzeAndValidateNgModules } from '@angular/compiler';
 import { Store } from '@ngrx/store';
 import { IAppState } from '../../../@core/store/app.state';
 import { ListService } from '../../../@core/store/services/list.service';
-import { PopUpManager } from '../../../managers/popUpManager';
-import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-import { DocumentoService } from '../../../@core/data/documento.service';
 import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
-import { NbStepperComponent } from '@nebular/theme';
 import { isObject } from 'rxjs/internal-compatibility';
+import { TerceroCriterioContratista } from '../../../@core/data/models/terceros_criterio';
 
 
 @Component({
@@ -51,10 +27,8 @@ export class FormElementosSeleccionadosComponent implements OnInit {
   Ubicaciones: any;
   Sedes: any;
   form_salida: FormGroup;
-  proveedorfiltro: string;
-  elementos: any;
-  elementos2: any;
-  UbicacionesFiltradas: any;
+  private Funcionarios: TerceroCriterioContratista[];
+  funcionariosFiltrados: Observable<Partial<TerceroCriterioContratista>[]>;
 
   @Output() DatosEnviados = new EventEmitter();
 
@@ -68,45 +42,40 @@ export class FormElementosSeleccionadosComponent implements OnInit {
     private completerService: CompleterService,
     private store: Store<IAppState>,
     private listService: ListService,
-    private pUpManager: PopUpManager,
-    private sanitization: DomSanitizer,
-    private nuxeoService: NuxeoService,
-    private documentoService: DocumentoService,
-    private terceros: TercerosHelper,
-
-
+    private tercerosHelper: TercerosHelper,
   ) {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
     });
-    this.elementos = [];
     this.listService.findDependencias();
     this.listService.findSedes();
-    this.listService.findProveedores();
     this.loadLists();
   }
 
   ngOnInit() {
     this.form_salida = this.Formulario;
     this.loadLists;
+    this.loadFuncionarios();
   }
+
   public loadLists() {
     this.store.select((state) => state).subscribe(
       (list) => {
         this.Dependencias = list.listDependencias[0];
-        this.Proveedores = list.listProveedores[0];
         this.Sedes = list.listSedes[0];
-        this.dataService2 = this.completerService.local(this.Proveedores, 'compuesto', 'compuesto');
         this.dataService3 = this.completerService.local(this.Dependencias, 'Nombre', 'Nombre');
       },
     );
   }
+
   get Formulario(): FormGroup {
-    return this.fb.group({
-      Proveedor: ['', Validators.required],
+    const form = this.fb.group({
+      Funcionario: ['', [Validators.required, this.validarTercero()]],
       Sede: ['', Validators.required],
       Dependencia: ['', Validators.required],
       Ubicacion: ['', Validators.required],
     });
+    this.funcionariosFiltrados = this.cambiosFuncionario(form.get('Funcionario'));
+    return form;
   }
   Traer_Relacion_Ubicaciones() {
     const sede = this.form_salida.get('Sede').value;
@@ -131,58 +100,57 @@ export class FormElementosSeleccionadosComponent implements OnInit {
   onSubmit() {
     if (this.elementos2) {
       const form = this.form_salida.value;
-      form.Funcionario = this.elementos2;
-      form.Sede = this.Sedes.find(y => y.Id === parseFloat(form.Sede));
-      form.Dependencia = this.Dependencias.find(y => y.Nombre === form.Dependencia);
-      form.Ubicacion = this.UbicacionesFiltradas.find(w => w.Id === parseFloat(form.Ubicacion));
-      this.DatosEnviados.emit(form);
+    form.Funcionario = form.Funcionario.Tercero;
     } else {
       this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.salidas.errorFuncionario'));
     }
 
   }
 
-  // MÉTODO PARA BUSCAR PROVEEDORES EXISTENTES
-  loadProveedoresElementos(): void {
-    if (this.proveedorfiltro.length > 3) {
-      this.terceros.getProveedores(this.proveedorfiltro).subscribe(res => {
-        if (res != null) {
-          while (this.elementos.length > 0) {
-            this.elementos.pop();
-          }
-          if (Object.keys(res).length === 1) {
-            this.elementos2 = res[0];
-            // console.log(res[0]);
-          }
-          for (const index of Object.keys(res)) {
-            if (res[index].NombreCompleto != null) {
-              this.elementos.push(res[index].NombreCompleto);
-            }
-          }
-        }
-      });
-
+  public muestraFuncionario(contr: TerceroCriterioContratista): string {
+    if (contr && contr.Identificacion && contr.Tercero) {
+      return contr.Identificacion.Numero + ' - ' + contr.Tercero.NombreCompleto;
+    } else if (contr && contr.Tercero) {
+      return contr.Tercero.NombreCompleto;
     }
   }
 
-  // MÉTODO PARA FILTRAR PROVEEDORES
-  changeNombreProveedor(event) {
-    this.proveedorfiltro = event.target.value;
-    this.loadProveedoresElementos();
-
-  }
-  // MÉTODO PARA VERIFICAR QUE EL DATO EN EL INPUT CORRESPONDA CON UNO EN LA LISTA
-  verfificarProveedor() {
-    if (this.elementos.length !== 0) {
-
-      if (this.proveedorfiltro !== '') {
-        if (!this.elementos.find(element => element === this.proveedorfiltro)) {
-          this.proveedorfiltro = '';
-          this.pUpManager.showErrorAlert('El contrato seleccionado no existe!');
-        } else {
-          this.onSubmit();
-        }
+  private cambiosFuncionario(control: AbstractControl): Observable<Partial<TerceroCriterioContratista>[]> {
+    return control.valueChanges
+    .pipe(
+        startWith(''),
+        map(val => typeof val === 'string' ? val : this.muestraFuncionario(val)),
+        map(nombre => this.filtroFuncionarios(nombre)),
+        );
       }
-    }
+
+  private filtroFuncionarios(nombre: string): TerceroCriterioContratista[] {
+    if (nombre.length >= 4 && Array.isArray(this.Funcionarios)) {
+      const valorFiltrado = nombre.toLowerCase();
+      return this.Funcionarios.filter(contr => this.muestraFuncionario(contr).toLowerCase().includes(valorFiltrado));
+    } else return [];
+  }
+
+
+
+  private loadFuncionarios(): Promise<void> {
+    return new Promise<void>(resolve => {
+      this.tercerosHelper.getTercerosByCriterio('funcionarios').toPromise().then(res => {
+        this.Funcionarios = res;
+        resolve();
+      });
+    });
+  }
+
+  private validarTercero(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const valor = control.value;
+      const checkStringLength = typeof (valor) === 'string' && valor.length < 4 && valor !== '' ? true : false;
+      const checkInvalidString = typeof (valor) === 'string' && valor !== '' ? true : false;
+      const checkInvalidTercero = typeof (valor) === 'object' && !valor.Tercero ? true : false;
+      return checkStringLength ? { errorLongitudMinima: true } :
+        checkInvalidString || checkInvalidTercero ? { terceroNoValido: true } : null;
+    };
+  }
   }
 }

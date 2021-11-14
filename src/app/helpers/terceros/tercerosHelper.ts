@@ -84,8 +84,8 @@ export class TercerosHelper {
      * @param idTercero De especificarse, adicionalmente filtra por ese ID
      */
     public getTercerosByCriterio(criterio: string, idTercero: number = 0) {
-        this.rqManager.setPath('ARKA_SERVICE');
-        let path = 'terceros/tipo/' + criterio;
+        this.rqManager.setPath('TERCEROS_MID_SERVICE');
+        let path = 'tipo/' + criterio;
         if (idTercero > 0) {
             path += '/' + idTercero;
         }
