@@ -36,4 +36,25 @@ export class OikosHelper {
         );
     }
 
+    /**
+    * Trae la lista de sedes registradas en el api oikos_crud
+    * If the response has errors in the OAS API it should show a popup message with an error.
+    * If the response is successs, it returns the object's data.
+    * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
+    */
+    public getSedes() {
+        this.rqManager.setPath('OIKOS_SERVICE');
+        return this.rqManager.get('espacio_fisico?limit=-1&sortby=Nombre&order=asc&query=TipoEspacioFisicoId__CodigoAbreviacion:Tipo_1').pipe(
+            map(
+                (res) => {
+                    if (res === 'error') {
+                        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.error_dependencias'));
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
+
 }

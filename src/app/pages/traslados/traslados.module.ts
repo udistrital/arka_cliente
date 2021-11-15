@@ -9,11 +9,13 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule, MatSortModule } from '@angular/material';
+import { FormTrasladoComponent } from './form-traslado/form-traslado.component';
 
 
 @NgModule({
   declarations: [
     TrasladosComponent,
+    FormTrasladoComponent,
   ],
   imports: [
     CommonModule,

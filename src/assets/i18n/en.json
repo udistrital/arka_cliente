@@ -220,7 +220,8 @@
       "ErrorDependencia": "Enter a valid agency",
       "ErrorMinLength": "Enter at least {{NUM}} characters",
       "ErrorFecha": "Enter a valid date",
-      "ErrorRequerido": "This is a mandatory field"
+      "ErrorRequerido": "This is a mandatory field",
+      "MismoTercero": "The new civil servant must be different to the current civil servant"
     },
     "Acta_Recibido": {
       "ErrorAnularMsg": "The Act {{ACTA}} cannot be voided by having state \"{{ESTADO}}\"",
@@ -1018,8 +1019,7 @@
     "tercero_administracion": "Third in Administration",
     "error": "Error",
     "mensaje_seleccionar_entrada": "Select the type of entry you want to make",
-    "documento": "Document"
-  },
+    "documento": "Document",
   "ajustes": {
     "movimientos_relacionados": "Related transfers",
     "confirmar_anular_entrada": "The related accounting and inventory entries will be reversed",
@@ -1060,6 +1060,7 @@
      "title_error_desactivacion": "Error when trying to disable the Good Type",
      "error_activacion": "The good type could not be enabled",
      "error_desactivacion": "The good type could not be disabled",
+     "asignable_kardex": "Assignable to Kárdex",
      "registro_succes": "Type of property or service satisfactorily registered",
      "numeroOrden": "Order",
      "actualizacion_succes": "Type of property or service satisfactorily updated",
@@ -1077,9 +1078,14 @@
       "registro_succes": "Type of movement satisfactorily registered",
       "actualizacion_succes": "Type of movement or service satisfactorily updated",
       "subtitle": "Select a movement type to change its state"
-   },
+   }
+  },
    "reportes": {
      "entrada_titulo": "Entry Report"
    }
+  },
+  "traslados": {
+    "funcActual": "Current possessor of the good ",
+    "funcDestino": "New possessor of the good "
   }
 }

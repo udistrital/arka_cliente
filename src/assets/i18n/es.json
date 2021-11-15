@@ -220,7 +220,8 @@
       "ErrorDependencia": "Ingrese una dependencia válida",
       "ErrorMinLength": "Escriba {{NUM}} o más caracteres",
       "ErrorFecha": "Ingrese una fecha válida",
-      "ErrorRequerido": "Este campo es obligatorio"
+      "ErrorRequerido": "Este campo es obligatorio",
+      "MismoTercero": "El funcionario destino deber ser diferente al funcionario que entrega"
     },
     "Acta_Recibido":{
       "ErrorAnularMsg": "No se puede anular el Acta {{ACTA}} por tener estado \"{{ESTADO}}\"",
@@ -1081,6 +1082,10 @@
     },
     "reportes": {
       "entrada_titulo": "Reporte de Entrada"
+    },
+    "traslados": {
+      "funcActual": "Funcionario Responsable del Bien",
+      "funcDestino": "Funcionario Destinatario del Bien"
     }
   }
 }
