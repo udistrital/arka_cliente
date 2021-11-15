@@ -4,7 +4,7 @@
     <div>
       <div class="row">
         <div class="form-group col-sm">
-          <label>{{'GLOBAL.Acta_Recibido.ContratistaAsignado' | translate}}</label>
+          <label>{{'GLOBAL.funcionario' | translate}}</label>
           <input matInput type="text" class="form-control" [matAutocomplete]="autoFuncionario" style="height: auto;"
             placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}" formControlName="Funcionario">
           <mat-autocomplete #autoFuncionario="matAutocomplete" [displayWith]="muestraFuncionario">

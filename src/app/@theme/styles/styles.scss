@@ -94,3 +94,7 @@ $mat-mytheme: mat-light-theme($mat-mytheme-primary, $mat-mytheme-accent);
   text-decoration-color: #a61e1c;
   text-decoration-line: underline;
 }
+
+mat-card {
+  overflow: auto;
+}

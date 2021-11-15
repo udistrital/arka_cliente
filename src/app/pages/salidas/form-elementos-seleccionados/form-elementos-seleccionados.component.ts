@@ -39,7 +39,6 @@ export class FormElementosSeleccionadosComponent implements OnInit {
   ) {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
     });
-    this.listService.findDependencias();
     this.listService.findSedes();
     this.loadLists();
   }
@@ -82,15 +81,17 @@ export class FormElementosSeleccionadosComponent implements OnInit {
     const dependencia = this.form_salida.get('Dependencia').valid ? this.form_salida.get('Dependencia').value : '';
     if (sede && dependencia) {
       this.UbicacionesFiltradas = [];
+      this.form_salida.patchValue({ Ubicacion: '' });
       const transaccion: any = {};
       transaccion.Sede = this.Sedes.find((x) => x.Id === parseFloat(sede));
       transaccion.Dependencia = dependencia;
       if (transaccion.Sede !== undefined && transaccion.Dependencia !== undefined) {
         this.Actas_Recibido.postRelacionSedeDependencia(transaccion).subscribe((res: any) => {
           if (isObject(res[0].Relaciones)) {
-            this.form_salida.patchValue({ Ubicacion: '' });
             this.UbicacionesFiltradas = res[0].Relaciones;
             this.form_salida.get('Ubicacion').enable();
+          } else {
+            this.form_salida.get('Ubicacion').disable();
           }
         });
       }
@@ -138,6 +139,7 @@ export class FormElementosSeleccionadosComponent implements OnInit {
       switchMap((val) => this.loadDependencias(val) ),
     ).subscribe((response: any) => {
       this.dependencias = response.queryOptions[0].Id ? response.queryOptions : [];
+      this.getUbicaciones();
     });
   }
 
