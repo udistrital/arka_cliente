@@ -63,7 +63,7 @@
     "angular-tree-grid": "^2.7.0",
     "angular2-chartjs": "0.4.1",
     "angular2-toaster": "^7.0.0",
-    "axios": "^0.21.1",
+    "axios": "^0.21.2",
     "bootstrap": "4.3.1",
     "chart.js": "^2.9.4",
     "ckeditor": "4.11.0",
