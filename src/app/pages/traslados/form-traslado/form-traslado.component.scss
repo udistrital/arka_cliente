@@ -22,3 +22,14 @@ th,
 td {
   width: 150px;
 }
+
+.tabla-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.botones {
+    display: flex;
+    justify-content: space-between;
+}

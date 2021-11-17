@@ -500,6 +500,8 @@
     "registro_elementos": "Item Registration",
     "registrar_elementos": "Register Items",
     "consultar_catalogo": "Consult Catalog Tree",
+    "error_cargos":"Error getting the positions assigned to the civil servant",
+    "error_correo":"Error getting the emails assigned to the civil servant",
     "cuenta_credito": "Credit",
     "cuenta_debito": "Debit",
     "placeholder_cuenta_credito": "Credit",
@@ -992,6 +994,7 @@
     "supervisor_nombres": "Full Name",
     "nombres": "Full Name",
     "Cargo":"Position",
+    "Correo":"Email",
     "sede": "Headquarters",
     "dependencia": "Dependency",
     "numero_factura": "Bill Number",
@@ -1087,6 +1090,8 @@
   },
   "traslados": {
     "funcActual": "Current possessor of the good ",
-    "funcDestino": "New possessor of the good "
+    "funcDestino": "New possessor of the good ",
+    "noEmail": "There is no email registered",
+    "noCargo": "There is no position registered"
   }
 }

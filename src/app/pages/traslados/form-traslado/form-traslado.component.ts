@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, ViewChild } from '@angular/core';
 import { combineLatest, Observable } from 'rxjs';
 import { FormBuilder, FormGroup, Validators, ValidatorFn, AbstractControl, ValidationErrors, FormArray, Form } from '@angular/forms';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
@@ -8,7 +8,7 @@ import { OikosHelper } from '../../../helpers/oikos/oikosHelper';
 import { isObject } from 'rxjs/internal-compatibility';
 import { TerceroCriterioContratista } from '../../../@core/data/models/terceros_criterio';
 import { debounceTime, distinctUntilChanged, map, startWith, switchMap } from 'rxjs/operators';
-import { MatTableDataSource } from '@angular/material';
+import { MatPaginator, MatTableDataSource } from '@angular/material';
 
 
 @Component({
@@ -27,6 +27,7 @@ export class FormTrasladoComponent implements OnInit {
   displayedColumns: string[] = ['acciones', 'placa', 'nombre'];
   dataSource: MatTableDataSource<any>;
   @Output() DatosEnviados = new EventEmitter();
+  @ViewChild('paginator') paginator: MatPaginator;
 
   constructor(
     private translate: TranslateService,
@@ -64,8 +65,18 @@ export class FormTrasladoComponent implements OnInit {
   get terceroDestino(): FormGroup {
     const form = this.fb.group({
       tercero: ['', [Validators.required, this.validarTercero()]],
-      cargo: [''],
-      email: [''],
+      cargo: [
+        {
+          value: '',
+          disabled: true,
+        },
+      ],
+      email: [
+        {
+          value: '',
+          disabled: true,
+        },
+      ],
     });
     this.tercerosDestino = this.cambiosFuncionario(form.get('tercero'));
     return form;
@@ -90,7 +101,12 @@ export class FormTrasladoComponent implements OnInit {
   get elemento(): FormGroup {
     const form = this.fb.group({
       placa: ['', Validators.required],
-      nombre: [''],
+      nombre: [
+        {
+          value: '',
+          disabled: true,
+        },
+      ],
     });
     return form;
   }
@@ -103,6 +119,7 @@ export class FormTrasladoComponent implements OnInit {
       elementos: this.fb.array([]),
     }, { validators: this.checkValidness });
     this.dataSource = new MatTableDataSource<any>();
+    this.dataSource.paginator = this.paginator;
   }
 
   addElemento() {
@@ -110,7 +127,12 @@ export class FormTrasladoComponent implements OnInit {
     this.dataSource.data = this.dataSource.data.concat(this.elemento.value);
   }
 
+  getActualIndex(index: number)    {
+    return index + this.paginator.pageSize * this.paginator.pageIndex;
+  }
+
   removeElemento(index: number) {
+    index = this.paginator.pageIndex > 0 ? index + (this.paginator.pageIndex * this.paginator.pageSize) : index;
     (this.formTraslado.get('elementos') as FormArray).removeAt(index);
     const data = this.dataSource.data;
     data.splice(index, 1);
@@ -141,6 +163,32 @@ export class FormTrasladoComponent implements OnInit {
       this.formTraslado.get('ubicacion.ubicacion').disable();
       this.ubicacionesFiltradas = [];
     }
+  }
+
+  getInfoTercero(controlName: string) {
+    const terceroId = this.formTraslado.get(controlName + '.tercero').value.Tercero.Id;
+    this.loadCargo(terceroId, controlName);
+    this.loadEmail(terceroId, controlName);
+  }
+
+  private loadCargo(terceroId: number, controlName: string) {
+    this.tercerosHelper.getCargo(terceroId).subscribe(res => {
+      if (res.length) {
+        this.formTraslado.get(controlName).patchValue({ cargo: res[0].Nombre });
+      } else {
+        this.formTraslado.get(controlName).patchValue({ cargo: this.translate.instant('GLOBAL.traslados.noCargo') });
+      }
+    });
+  }
+
+  private loadEmail(terceroId: number, controlName: string) {
+    this.tercerosHelper.getCorreo(terceroId).subscribe(res => {
+      if (res[0].Dato) {
+        this.formTraslado.get(controlName).patchValue({ email: JSON.parse(res[0].Dato).value });
+      } else {
+        this.formTraslado.get(controlName).patchValue({ email: this.translate.instant('GLOBAL.traslados.noEmail') });
+      }
+    });
   }
 
   public muestraDependencia(field) {
