@@ -1,6 +1,6 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { combineLatest, Observable } from 'rxjs';
-import { FormBuilder, FormGroup, Validators, ValidatorFn, AbstractControl, ValidationErrors } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ValidatorFn, AbstractControl, ValidationErrors, FormArray, Form } from '@angular/forms';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
@@ -8,6 +8,7 @@ import { OikosHelper } from '../../../helpers/oikos/oikosHelper';
 import { isObject } from 'rxjs/internal-compatibility';
 import { TerceroCriterioContratista } from '../../../@core/data/models/terceros_criterio';
 import { debounceTime, distinctUntilChanged, map, startWith, switchMap } from 'rxjs/operators';
+import { MatTableDataSource } from '@angular/material';
 
 
 @Component({
@@ -23,7 +24,8 @@ export class FormTrasladoComponent implements OnInit {
   sedes: any;
   formTraslado: FormGroup;
   ubicacionesFiltradas: any = [];
-
+  displayedColumns: string[] = ['acciones', 'placa', 'nombre'];
+  dataSource: MatTableDataSource<any>;
   @Output() DatosEnviados = new EventEmitter();
 
   constructor(
@@ -85,12 +87,34 @@ export class FormTrasladoComponent implements OnInit {
     return form;
   }
 
+  get elemento(): FormGroup {
+    const form = this.fb.group({
+      placa: ['', Validators.required],
+      nombre: [''],
+    });
+    return form;
+  }
+
   private buildForm(): void {
     this.formTraslado = this.fb.group({
       origen: this.terceroOrigen,
       destino: this.terceroDestino,
       ubicacion: this.ubicacionDestino,
+      elementos: this.fb.array([]),
     }, { validators: this.checkValidness });
+    this.dataSource = new MatTableDataSource<any>();
+  }
+
+  addElemento() {
+    (this.formTraslado.get('elementos') as FormArray).push(this.elemento);
+    this.dataSource.data = this.dataSource.data.concat(this.elemento.value);
+  }
+
+  removeElemento(index: number) {
+    (this.formTraslado.get('elementos') as FormArray).removeAt(index);
+    const data = this.dataSource.data;
+    data.splice(index, 1);
+    this.dataSource.data = data;
   }
 
   public getUbicaciones() {
@@ -195,7 +219,7 @@ export class FormTrasladoComponent implements OnInit {
   private checkValidness: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
     const errors = control.get('origen.tercero').value !== '' &&
       control.get('origen.tercero').value === control.get('destino.tercero').value;
-    errors && this.formTraslado ? control.get('destino.tercero').setErrors({'mismoTercero': true}) : null;
+    errors && this.formTraslado ? control.get('destino.tercero').setErrors({ 'mismoTercero': true }) : null;
     return null;
   }
 

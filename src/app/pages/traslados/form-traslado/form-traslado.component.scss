@@ -6,3 +6,19 @@ mat-select {
 label {
     color: black;
 }
+
+.cell {
+    height: 50px;
+    width: 150px;
+    text-align: left;
+}
+
+.acciones {
+    width: 50px;
+    text-align: center;
+}
+
+th,
+td {
+  width: 150px;
+}
