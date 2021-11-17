@@ -140,7 +140,7 @@ export class AperturaKardexComponent implements OnInit {
     this.BodegaConsumo.postMovimientoKardex(AperturaKardex).subscribe((res: any) => {
       const opt: any = {
         title: 'Apertura Realizada',
-        text: 'Se ha registrado la solicitud de los elementos relacionados',
+        text: 'Se ha realizado apertura de tarjeta de Kardex',
         type: 'success',
       };
       (Swal as any).fire(opt);

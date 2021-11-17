@@ -149,7 +149,7 @@ export class FormElementosSeleccionadosComponent implements OnInit {
       // console.log('valor excede limite')
       (Swal as any).fire({
         title: 'Cantidad No Valida',
-        text: 'La cantidad no debe ser nula ni exceder la cantidad maxima disponible',
+        text: 'La cantidad no debe ser nula ni exceder la cantidad máxima disponible',
         type: 'warning',
       });
     } else {
