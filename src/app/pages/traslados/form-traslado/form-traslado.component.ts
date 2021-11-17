@@ -124,10 +124,10 @@ export class FormTrasladoComponent implements OnInit {
   }
 
   public muestraFuncionario(contr: TerceroCriterioContratista): string {
-    if (contr && contr.Identificacion && contr.TerceroPrincipal) {
-      return contr.Identificacion.Numero + ' - ' + contr.TerceroPrincipal.NombreCompleto;
-    } else if (contr && contr.TerceroPrincipal) {
-      return contr.TerceroPrincipal.NombreCompleto;
+    if (contr && contr.Identificacion && contr.Tercero) {
+      return contr.Identificacion.Numero + ' - ' + contr.Tercero.NombreCompleto;
+    } else if (contr && contr.Tercero) {
+      return contr.Tercero.NombreCompleto;
     }
   }
 
@@ -186,7 +186,7 @@ export class FormTrasladoComponent implements OnInit {
       const valor = control.value;
       const checkStringLength = typeof (valor) === 'string' && valor.length < 4 && valor !== '' ? true : false;
       const checkInvalidString = typeof (valor) === 'string' && valor !== '' ? true : false;
-      const checkInvalidTercero = typeof (valor) === 'object' && !valor.TerceroPrincipal ? true : false;
+      const checkInvalidTercero = typeof (valor) === 'object' && !valor.Tercero ? true : false;
       return checkStringLength ? { errorLongitudMinima: true } :
         checkInvalidString || checkInvalidTercero ? { terceroNoValido: true } : null;
     };
