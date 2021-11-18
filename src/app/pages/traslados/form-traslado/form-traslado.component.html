@@ -1,3 +1,4 @@
+<mat-vertical-stepper [linear]="true" #stepper>
   <mat-step [stepControl]="formTraslado.get('origen')" label="{{'GLOBAL.traslados.funcActual' | translate}}" [completed]="true">
     <form [formGroup]="formTraslado.get('origen')">
       <div class="row">
