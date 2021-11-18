@@ -205,4 +205,25 @@
       </div>
     </form>
   </mat-step>
+  <mat-step [stepControl]="formTraslado.get('observaciones')" label="{{'GLOBAL.observaciones' | translate}}">
+    <form [formGroup]="formTraslado.get('observaciones')">
+      <div class="row">
+        <div class="form-group col-sm">
+          <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Observaciones' | translate}}</label>
+          <div class="input-group">
+            <textarea rows="5" placeholder="{{'GLOBAL.Acta_Recibido.RegistroActa.Observaciones2' | translate}}"
+              class="form-control" formControlName="observaciones">
+              </textarea>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="form-group col-sm">
+          <button mat-flat-button color="primary" matStepperPrevious class="float-left text-uppercase">
+            {{'GLOBAL.anterior' | translate}}
+          </button>
+        </div>
+      </div>
+    </form>
+  </mat-step>
 </mat-vertical-stepper>

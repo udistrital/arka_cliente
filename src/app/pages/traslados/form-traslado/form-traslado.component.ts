@@ -9,6 +9,7 @@ import { isObject } from 'rxjs/internal-compatibility';
 import { TerceroCriterioContratista } from '../../../@core/data/models/terceros_criterio';
 import { debounceTime, distinctUntilChanged, map, startWith, switchMap } from 'rxjs/operators';
 import { MatPaginator, MatTableDataSource } from '@angular/material';
+import { TransaccionTraslado } from '../../../@core/data/models/traslados/traslado';
 
 
 @Component({
@@ -26,9 +27,12 @@ export class FormTrasladoComponent implements OnInit {
   ubicacionesFiltradas: any = [];
   displayedColumns: string[] = ['acciones', 'placa', 'nombre'];
   dataSource: MatTableDataSource<any>;
-  @Output() DatosEnviados = new EventEmitter();
   @ViewChild('paginator') paginator: MatPaginator;
   modo = 'registro';
+  @Output() Guardar = new EventEmitter<boolean>();
+  @Input() trasladoInfo: TransaccionTraslado;
+  @Output() trasladoInfoChange: EventEmitter<TransaccionTraslado> = new EventEmitter<TransaccionTraslado>();
+
 
   constructor(
     private translate: TranslateService,
@@ -168,15 +172,32 @@ export class FormTrasladoComponent implements OnInit {
     return form;
   }
 
+  get observaciones(): FormGroup {
+    const disabled = this.modo === 'ver';
+    const form = this.fb.group({
+      observaciones: [
+        {
+          value: '',
+          disabled,
+        },
+      ],
+    });
+    return form;
+  }
+
   private buildForm(): void {
     this.formTraslado = this.fb.group({
       origen: this.terceroOrigen,
       destino: this.terceroDestino,
       ubicacion: this.ubicacionDestino,
       elementos: this.fb.array([]),
+      observaciones: this.observaciones,
     }, { validators: this.checkValidness });
     this.dataSource = new MatTableDataSource<any>();
     this.dataSource.paginator = this.paginator;
+    this.submitForm(this.formTraslado.statusChanges);
+  }
+
   }
 
   addElemento() {
@@ -245,6 +266,17 @@ export class FormTrasladoComponent implements OnInit {
         this.formTraslado.get(controlName).patchValue({ email: this.translate.instant('GLOBAL.traslados.noEmail') });
       }
     });
+  }
+
+  private submitForm(statusChanges: Observable<any>) {
+    statusChanges
+      .debounceTime(250)
+      .subscribe(() => {
+        this.Guardar.emit(this.formTraslado.valid);
+        if (this.formTraslado.valid) {
+          this.trasladoInfoChange.emit(this.formTraslado.value);
+        }
+      });
   }
 
   public muestraDependencia(field) {
