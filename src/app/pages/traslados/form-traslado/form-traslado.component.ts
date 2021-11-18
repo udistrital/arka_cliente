@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter, ViewChild } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, ViewChild, Input } from '@angular/core';
 import { combineLatest, Observable } from 'rxjs';
 import { FormBuilder, FormGroup, Validators, ValidatorFn, AbstractControl, ValidationErrors, FormArray, Form } from '@angular/forms';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
@@ -29,7 +29,7 @@ export class FormTrasladoComponent implements OnInit {
   dataSource: MatTableDataSource<any>;
   @ViewChild('paginator') paginator: MatPaginator;
   modo = 'registro';
-  @Output() Guardar = new EventEmitter<boolean>();
+  @Output() valid = new EventEmitter<boolean>();
   @Input() trasladoInfo: TransaccionTraslado;
   @Output() trasladoInfoChange: EventEmitter<TransaccionTraslado> = new EventEmitter<TransaccionTraslado>();
 
@@ -190,14 +190,12 @@ export class FormTrasladoComponent implements OnInit {
       origen: this.terceroOrigen,
       destino: this.terceroDestino,
       ubicacion: this.ubicacionDestino,
-      elementos: this.fb.array([]),
+      elementos: this.fb.array([], { validators: this.validateElementos() }),
       observaciones: this.observaciones,
     }, { validators: this.checkValidness });
     this.dataSource = new MatTableDataSource<any>();
     this.dataSource.paginator = this.paginator;
     this.submitForm(this.formTraslado.statusChanges);
-  }
-
   }
 
   addElemento() {
@@ -272,7 +270,7 @@ export class FormTrasladoComponent implements OnInit {
     statusChanges
       .debounceTime(250)
       .subscribe(() => {
-        this.Guardar.emit(this.formTraslado.valid);
+        this.valid.emit(this.formTraslado.valid);
         if (this.formTraslado.valid) {
           this.trasladoInfoChange.emit(this.formTraslado.value);
         }
@@ -369,4 +367,12 @@ export class FormTrasladoComponent implements OnInit {
         (checkInvalidString || checkInvalidObject) ? { dependenciaNoValido: true } : null;
     };
   }
+
+  private validateElementos(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const elementos = control.value.length;
+      return !elementos ? { errorNoElementos: true } : null;
+    };
+  }
+
 }
