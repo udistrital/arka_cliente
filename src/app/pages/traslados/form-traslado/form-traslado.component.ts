@@ -28,6 +28,7 @@ export class FormTrasladoComponent implements OnInit {
   dataSource: MatTableDataSource<any>;
   @Output() DatosEnviados = new EventEmitter();
   @ViewChild('paginator') paginator: MatPaginator;
+  modo = 'registro';
 
   constructor(
     private translate: TranslateService,
@@ -53,18 +54,46 @@ export class FormTrasladoComponent implements OnInit {
   }
 
   get terceroOrigen(): FormGroup {
+    const disabled = this.modo === 'ver';
     const form = this.fb.group({
-      tercero: ['', [Validators.required, this.validarTercero()]],
-      cargo: [''],
-      email: [''],
+      tercero: [
+        {
+          value: '',
+          disabled,
+        },
+        {
+          validators: [Validators.required, this.validarTercero()],
+        },
+      ],
+      cargo: [
+        {
+          value: '',
+          disabled: true,
+        },
+      ],
+      email: [
+        {
+          value: '',
+          disabled: true,
+        },
+      ],
     });
     this.funcionariosFiltrados = this.cambiosFuncionario(form.get('tercero'));
     return form;
   }
 
   get terceroDestino(): FormGroup {
+    const disabled = this.modo === 'ver';
     const form = this.fb.group({
-      tercero: ['', [Validators.required, this.validarTercero()]],
+      tercero: [
+        {
+          value: '',
+          disabled,
+        },
+        {
+          validators: [Validators.required, this.validarTercero()],
+        },
+      ],
       cargo: [
         {
           value: '',
@@ -83,15 +112,34 @@ export class FormTrasladoComponent implements OnInit {
   }
 
   get ubicacionDestino(): FormGroup {
+    const disabled = this.modo === 'ver';
     const form = this.fb.group({
-      sede: ['', Validators.required],
-      dependencia: ['', [Validators.required, this.validateObjectCompleter()]],
+      sede: [
+        {
+          value: '',
+          disabled,
+        },
+        {
+          validators: [Validators.required],
+        },
+      ],
+      dependencia: [
+        {
+          value: '',
+          disabled,
+        },
+        {
+          validators: [Validators.required, this.validateObjectCompleter()],
+        },
+      ],
       ubicacion: [
         {
           value: '',
           disabled: true,
         },
-        { validators: [Validators.required] },
+        {
+          validators: [Validators.required],
+        },
       ],
     });
     this.cambiosDependencia(form.get('dependencia').valueChanges);
@@ -99,8 +147,17 @@ export class FormTrasladoComponent implements OnInit {
   }
 
   get elemento(): FormGroup {
+    const disabled = this.modo === 'ver';
     const form = this.fb.group({
-      placa: ['', Validators.required],
+      placa: [
+        {
+          value: '',
+          disabled,
+        },
+        {
+          validators: [Validators.required],
+        },
+      ],
       nombre: [
         {
           value: '',
@@ -127,7 +184,7 @@ export class FormTrasladoComponent implements OnInit {
     this.dataSource.data = this.dataSource.data.concat(this.elemento.value);
   }
 
-  getActualIndex(index: number)    {
+  getActualIndex(index: number) {
     return index + this.paginator.pageSize * this.paginator.pageIndex;
   }
 
