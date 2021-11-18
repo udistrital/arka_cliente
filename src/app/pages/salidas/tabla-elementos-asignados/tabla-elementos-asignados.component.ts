@@ -311,7 +311,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
         const val = currentValue.Funcionario.Id + '-' + currentValue.Ubicacion.Id;
         accumulator[val] = accumulator[val] || {
           Salida: {
-            Observacion: currentValue.Observaciones ? obs + ' // ' + currentValue.Observaciones : obs,
+            Observacion: this.getObservacion(obs, currentValue.Observaciones),
             Detalle: JSON.stringify(detalle),
             Activo: true,
             MovimientoPadreId: {
@@ -353,7 +353,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
           const val = currentValue.Funcionario.Id + '-' + currentValue.Ubicacion.Id;
           accumulator[val] = accumulator[val] || {
             Salida: {
-              Observacion: currentValue.Observaciones ? obs + ' // ' + currentValue.Observaciones : obs,
+              Observacion: this.getObservacion(obs, currentValue.Observaciones),
               Detalle: JSON.stringify(detalle),
               Activo: true,
               MovimientoPadreId: {
@@ -435,6 +435,10 @@ export class TablaElementosAsignadosComponent implements OnInit {
         });
       }
     });
+  }
+
+  private getObservacion(min: string, custom: string) {
+    return custom ? (min + ' // ' + custom) : min;
   }
 
 }

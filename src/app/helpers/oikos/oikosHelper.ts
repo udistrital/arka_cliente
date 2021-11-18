@@ -22,8 +22,9 @@ export class OikosHelper {
       * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
      */
     public getDependencias(text: string) {
+        const query = 'dependencia?limit=-1&sortby=Nombre&order=asc&query=Nombre__icontains:' + text;
         this.rqManager.setPath('OIKOS_SERVICE');
-        return this.rqManager.get('dependencia?limit=-1&sortby=Nombre&order=asc&query=Nombre__icontains:' + text).pipe(
+        return this.rqManager.get(query).pipe(
             map(
                 (res) => {
                     if (res === 'error') {
@@ -43,8 +44,9 @@ export class OikosHelper {
     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
     */
     public getSedes() {
+        const query = 'espacio_fisico?limit=-1&sortby=Nombre&order=asc&query=TipoEspacioFisicoId__CodigoAbreviacion:Tipo_1';
         this.rqManager.setPath('OIKOS_SERVICE');
-        return this.rqManager.get('espacio_fisico?limit=-1&sortby=Nombre&order=asc&query=TipoEspacioFisicoId__CodigoAbreviacion:Tipo_1').pipe(
+        return this.rqManager.get(query).pipe(
             map(
                 (res) => {
                     if (res === 'error') {

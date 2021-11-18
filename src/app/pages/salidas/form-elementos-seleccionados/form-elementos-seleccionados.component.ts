@@ -79,9 +79,9 @@ export class FormElementosSeleccionadosComponent implements OnInit {
   public getUbicaciones() {
     const sede = this.form_salida.get('Sede').valid ? this.form_salida.get('Sede').value : '';
     const dependencia = this.form_salida.get('Dependencia').valid ? this.form_salida.get('Dependencia').value : '';
+    this.form_salida.patchValue({ Ubicacion: '' });
     if (sede && dependencia) {
       this.UbicacionesFiltradas = [];
-      this.form_salida.patchValue({ Ubicacion: '' });
       const transaccion: any = {};
       transaccion.Sede = this.Sedes.find((x) => x.Id === parseFloat(sede));
       transaccion.Dependencia = dependencia;
@@ -96,7 +96,6 @@ export class FormElementosSeleccionadosComponent implements OnInit {
         });
       }
     } else {
-      this.form_salida.patchValue({ Ubicacion: '' });
       this.form_salida.get('Ubicacion').disable();
       this.UbicacionesFiltradas = [];
     }
@@ -105,8 +104,8 @@ export class FormElementosSeleccionadosComponent implements OnInit {
   public onSubmit() {
     const form = this.form_salida.value;
     form.Funcionario = form.Funcionario.Tercero;
-    form.Sede = this.Sedes.find(y => y.Id === parseFloat(form.Sede));
-    form.Ubicacion = this.UbicacionesFiltradas.find(w => w.Id === parseFloat(form.Ubicacion));
+    form.Sede = this.Sedes.find(y => y.Id === parseInt(form.Sede, 10));
+    form.Ubicacion = this.UbicacionesFiltradas.find(w => w.Id === parseInt(form.Ubicacion, 10));
     this.DatosEnviados.emit(form);
   }
 
@@ -126,7 +125,7 @@ export class FormElementosSeleccionadosComponent implements OnInit {
     return control.valueChanges
       .pipe(
         startWith(''),
-        map(val => typeof val === 'string' ? val : this.muestraFuncionario(val)),
+        map(val => (typeof val === 'string') ? val : this.muestraFuncionario(val)),
         map(nombre => this.filtroFuncionarios(nombre)),
       );
   }
@@ -173,20 +172,20 @@ export class FormElementosSeleccionadosComponent implements OnInit {
   private validarTercero(): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
       const valor = control.value;
-      const checkStringLength = typeof (valor) === 'string' && valor.length < 4 && valor !== '' ? true : false;
-      const checkInvalidString = typeof (valor) === 'string' && valor !== '' ? true : false;
-      const checkInvalidTercero = typeof (valor) === 'object' && !valor.Tercero ? true : false;
+      const checkStringLength = typeof (valor) === 'string' && valor.length < 4 && valor !== '';
+      const checkInvalidString = typeof (valor) === 'string' && valor !== '';
+      const checkInvalidTercero = typeof (valor) === 'object' && !valor.Tercero;
       return checkStringLength ? { errorLongitudMinima: true } :
-        checkInvalidString || checkInvalidTercero ? { terceroNoValido: true } : null;
+        (checkInvalidString || checkInvalidTercero) ? { terceroNoValido: true } : null;
     };
   }
 
   private validateObjectCompleter(): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
       const valor = control.value;
-      const checkStringLength = typeof (valor) === 'string' && valor.length < 4 && valor !== '' ? true : false;
-      const checkInvalidString = typeof (valor) === 'string' && valor !== '' ? true : false;
-      const checkInvalidObject = typeof (valor) === 'object' && !valor.Id ? true : false;
+      const checkStringLength = typeof (valor) === 'string' && valor.length < 4 && valor !== '';
+      const checkInvalidString = typeof (valor) === 'string' && valor !== '';
+      const checkInvalidObject = typeof (valor) === 'object' && !valor.Id;
       return checkStringLength ? { errorLongitudMinima: true } :
         checkInvalidString || checkInvalidObject ? { dependenciaNoValido: true } : null;
     };

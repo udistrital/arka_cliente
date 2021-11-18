@@ -142,11 +142,11 @@ export class FormTrasladoComponent implements OnInit {
   public getUbicaciones() {
     const sede = this.formTraslado.get('ubicacion.sede').valid ? this.formTraslado.get('ubicacion.sede').value : '';
     const dependencia = this.formTraslado.get('ubicacion.dependencia').valid ? this.formTraslado.get('ubicacion.dependencia').value : '';
+    this.formTraslado.get('ubicacion').patchValue({ ubicacion: '' });
     if (sede && dependencia) {
       this.ubicacionesFiltradas = [];
-      this.formTraslado.get('ubicacion').patchValue({ ubicacion: '' });
       const transaccion: any = {};
-      transaccion.Sede = this.sedes.find((x) => x.Id === parseFloat(sede));
+      transaccion.Sede = this.sedes.find((x) => x.Id === parseInt(sede, 10));
       transaccion.Dependencia = dependencia;
       if (transaccion.Sede !== undefined && transaccion.Dependencia !== undefined) {
         this.Actas_Recibido.postRelacionSedeDependencia(transaccion).subscribe((res: any) => {
@@ -159,7 +159,6 @@ export class FormTrasladoComponent implements OnInit {
         });
       }
     } else {
-      this.formTraslado.get('ubicacion').patchValue({ ubicacion: '' });
       this.formTraslado.get('ubicacion.ubicacion').disable();
       this.ubicacionesFiltradas = [];
     }
@@ -256,11 +255,11 @@ export class FormTrasladoComponent implements OnInit {
   private validarTercero(): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
       const valor = control.value;
-      const checkStringLength = typeof (valor) === 'string' && valor.length < 4 && valor !== '' ? true : false;
-      const checkInvalidString = typeof (valor) === 'string' && valor !== '' ? true : false;
-      const checkInvalidTercero = typeof (valor) === 'object' && !valor.Tercero ? true : false;
+      const checkStringLength = typeof (valor) === 'string' && valor.length < 4 && valor !== '';
+      const checkInvalidString = typeof (valor) === 'string' && valor !== '';
+      const checkInvalidTercero = typeof (valor) === 'object' && !valor.Tercero;
       return checkStringLength ? { errorLongitudMinima: true } :
-        checkInvalidString || checkInvalidTercero ? { terceroNoValido: true } : null;
+        (checkInvalidString || checkInvalidTercero) ? { terceroNoValido: true } : null;
     };
   }
 
@@ -274,11 +273,11 @@ export class FormTrasladoComponent implements OnInit {
   private validateObjectCompleter(): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
       const valor = control.value;
-      const checkStringLength = typeof (valor) === 'string' && valor.length < 4 && valor !== '' ? true : false;
-      const checkInvalidString = typeof (valor) === 'string' && valor !== '' ? true : false;
-      const checkInvalidObject = typeof (valor) === 'object' && !valor.Id ? true : false;
+      const checkStringLength = typeof (valor) === 'string' && valor.length < 4 && valor !== '';
+      const checkInvalidString = typeof (valor) === 'string' && valor !== '';
+      const checkInvalidObject = typeof (valor) === 'object' && !valor.Id;
       return checkStringLength ? { errorLongitudMinima: true } :
-        checkInvalidString || checkInvalidObject ? { dependenciaNoValido: true } : null;
+        (checkInvalidString || checkInvalidObject) ? { dependenciaNoValido: true } : null;
     };
   }
 }
