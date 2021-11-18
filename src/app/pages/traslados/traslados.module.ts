@@ -11,6 +11,7 @@ import { MatPaginatorModule, MatSortModule } from '@angular/material';
 import { FormTrasladoComponent } from './form-traslado/form-traslado.component';
 import { ConsultaTrasladosComponent } from './consulta-traslados/consulta-traslados.component';
 import { Ng2SmartTableModule } from 'ngx-smart-table';
+import { RegistroTrasladoComponent } from './registro-traslado/registro-traslado.component';
 
 
 @NgModule({
@@ -18,6 +19,7 @@ import { Ng2SmartTableModule } from 'ngx-smart-table';
     TrasladosComponent,
     FormTrasladoComponent,
     ConsultaTrasladosComponent,
+    RegistroTrasladoComponent,
   ],
   imports: [
     CommonModule,
