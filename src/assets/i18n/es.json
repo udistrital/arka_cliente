@@ -1088,10 +1088,17 @@
       "entrada_titulo": "Reporte de Entrada"
     },
     "traslados": {
+      "registro": {
+        "title": "Solicitar Traslado",
+        "subtitle": "Por favor ingrese la información solicitada en el siguiente formulario",
+        "confrmTtl": "Registrar Solicitud",
+        "confrmTxt": "¿Desea registrar la solicitud de traslado con la información suministrada?"
+      },
       "funcActual": "Funcionario Responsable del Bien",
       "funcDestino": "Funcionario Destinatario del Bien",
       "noEmail": "No hay un correo registrado",
-      "noCargo": "No hay un cargo registrado"
+      "noCargo": "No hay un cargo registrado",
+      "enviarSolicitud": "Enviar Solicitud"
     }
   }
 }

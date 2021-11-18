@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { ConsultaTrasladosComponent } from './consulta-traslados/consulta-traslados.component';
 import { FormTrasladoComponent } from './form-traslado/form-traslado.component';
+import { RegistroTrasladoComponent } from './registro-traslado/registro-traslado.component';
 import { TrasladosComponent } from './traslados.component';
 
 const routes: Routes = [{
@@ -11,6 +12,10 @@ const routes: Routes = [{
     {
       path: 'consulta-traslados',
       component: ConsultaTrasladosComponent,
+    },
+    {
+      path: 'registrar-solicitud',
+      component: RegistroTrasladoComponent,
     },
   ],
 }];
