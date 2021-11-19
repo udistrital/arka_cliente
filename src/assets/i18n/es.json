@@ -1092,7 +1092,10 @@
         "title": "Solicitar Traslado",
         "subtitle": "Por favor ingrese la información solicitada en el siguiente formulario",
         "confrmTtl": "Registrar Solicitud",
-        "confrmTxt": "¿Desea registrar la solicitud de traslado con la información suministrada?"
+        "confrmTxt": "¿Desea registrar la solicitud de traslado con la información suministrada?",
+        "successTtl": "Traslado Solicitado",
+        "successTxt": "La solicitud de traslado {{CONSECUTIVO}} se ha registrado de manera exitosa",
+        "errTxt:": "Hubo un error al registrar la solicitud de traslado"
       },
       "funcActual": "Funcionario Responsable del Bien",
       "funcDestino": "Funcionario Destinatario del Bien",

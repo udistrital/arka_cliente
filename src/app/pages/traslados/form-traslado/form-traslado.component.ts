@@ -9,7 +9,7 @@ import { isObject } from 'rxjs/internal-compatibility';
 import { TerceroCriterioContratista } from '../../../@core/data/models/terceros_criterio';
 import { debounceTime, distinctUntilChanged, map, startWith, switchMap } from 'rxjs/operators';
 import { MatPaginator, MatTableDataSource } from '@angular/material';
-import { TransaccionTraslado } from '../../../@core/data/models/traslados/traslado';
+import { DetalleTraslado } from '../../../@core/data/models/movimientos_arka/movimientos_arka';
 
 
 @Component({
@@ -30,8 +30,8 @@ export class FormTrasladoComponent implements OnInit {
   @ViewChild('paginator') paginator: MatPaginator;
   modo = 'registro';
   @Output() valid = new EventEmitter<boolean>();
-  @Input() trasladoInfo: TransaccionTraslado;
-  @Output() trasladoInfoChange: EventEmitter<TransaccionTraslado> = new EventEmitter<TransaccionTraslado>();
+  @Input() trasladoInfo: DetalleTraslado;
+  @Output() trasladoInfoChange: EventEmitter<DetalleTraslado> = new EventEmitter<DetalleTraslado>();
 
 
   constructor(

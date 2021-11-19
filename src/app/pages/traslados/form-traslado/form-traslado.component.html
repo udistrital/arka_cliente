@@ -1,5 +1,5 @@
 <mat-vertical-stepper [linear]="true" #stepper>
-  <mat-step [stepControl]="formTraslado.get('origen')" label="{{'GLOBAL.traslados.funcActual' | translate}}" [completed]="true">
+  <mat-step [stepControl]="formTraslado.get('origen')" label="{{'GLOBAL.traslados.funcActual' | translate}}" >
     <form [formGroup]="formTraslado.get('origen')">
       <div class="row">
         <div class="form-group col-sm">
@@ -43,7 +43,7 @@
       </div>
     </form>
   </mat-step>
-  <mat-step [stepControl]="formTraslado.get('destino')" label="{{'GLOBAL.traslados.funcDestino' | translate}}" [completed]="true">
+  <mat-step [stepControl]="formTraslado.get('destino')" label="{{'GLOBAL.traslados.funcDestino' | translate}}" >
     <form [formGroup]="formTraslado.get('destino')">
       <div class="row">
         <div class="form-group col-sm">

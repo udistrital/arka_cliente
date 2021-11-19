@@ -1086,19 +1086,22 @@
   },
    "reportes": {
      "entrada_titulo": "Entry Report"
-   }
-  },
-  "traslados": {
-    "registro": {
-      "title": "Confirm Transfer Registration",
-      "subtitle": "Enter the requested information in the following form",
-      "confrmTtl": "Register Request",
-      "confrmTxt": "Are you sure to send the request with the provided information?"
-    },
-    "funcActual": "Current possessor of the good ",
-    "funcDestino": "New possessor of the good ",
-    "noEmail": "There is no email registered",
-    "noCargo": "There is no position registered",
-    "enviarSolicitud": "Create Request"
+   },
+   "traslados": {
+     "registro": {
+       "title": "Confirm Transfer Registration",
+       "subtitle": "Enter the requested information in the following form",
+       "confrmTtl": "Register Request",
+       "confrmTxt": "Are you sure to send the request with the provided information?",
+       "successTtl": "Transfer Request Created",
+       "successTxt:": "The transfer request {{CONSECUTIVO}} has been successfully registered",
+       "errTxt:": "There was an error when trying to create the transfer request"
+      },
+      "funcActual": "Current possessor of the good ",
+      "funcDestino": "New possessor of the good ",
+      "noEmail": "There is no email registered",
+      "noCargo": "There is no position registered",
+      "enviarSolicitud": "Create Request"
+    }
   }
 }
