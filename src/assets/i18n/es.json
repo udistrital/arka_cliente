@@ -1097,6 +1097,13 @@
         "successTxt": "La solicitud de traslado {{CONSECUTIVO}} se ha registrado de manera exitosa",
         "errTxt:": "Hubo un error al registrar la solicitud de traslado"
       },
+      "consulta": {
+        "nuevoTraslado": "Registrar nuevo traslado",
+        "noTrasladosView": "No se encontraron traslados",
+        "noTrasladosReview": "No hay traslados pendientes por ser revisados",
+        "accionEdit": "Editar Traslado",
+        "accionRevision": "Revisar Traslado"
+      },
       "funcActual": "Funcionario Responsable del Bien",
       "funcDestino": "Funcionario Destinatario del Bien",
       "noEmail": "No hay un correo registrado",

@@ -1,5 +1,5 @@
-<mat-card>
-    <mat-card-title>
+<mat-card *ngIf="mostrar">
+  <mat-card-title>
       {{'GLOBAL.traslados.consultar_traslados' | translate}}
     </mat-card-title>
 
@@ -7,8 +7,11 @@
       {{'GLOBAL.traslados.consulta_traslados_info' | translate}}
     </mat-card-subtitle>
 
-    <ng2-smart-table [settings]="settings" [source]="source" (create)="onRegister()">
-    </ng2-smart-table>
+    <mat-card-content>
+      <ng2-smart-table *ngIf="!modoCrud" [settings]="settings" [source]="source" (create)="onRegister()">
+      </ng2-smart-table>
+      <!-- <ngx-form-traslado *ngIf="modoCrud" [modo]="modoCrud"></ngx-form-traslado> -->
+    </mat-card-content>
 
     <mat-card-actions>
       <div class="justify-content-center" style="padding-bottom: 3rem;">

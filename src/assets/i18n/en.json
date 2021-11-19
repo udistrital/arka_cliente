@@ -1097,6 +1097,13 @@
        "successTxt:": "The transfer request {{CONSECUTIVO}} has been successfully registered",
        "errTxt:": "There was an error when trying to create the transfer request"
       },
+      "consulta": {
+        "nuevoTraslado": "Register new Transfer Request",
+        "noTrasladosView": "There are no transfers to view",
+        "noTrasladosReview": "There are no transfers to review",
+        "accionEdit": "Edit Transfer Request",
+        "accionRevision": "Review Transfer Request"
+      },
       "funcActual": "Current possessor of the good ",
       "funcDestino": "New possessor of the good ",
       "noEmail": "There is no email registered",

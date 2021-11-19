@@ -36,7 +36,7 @@ export class RegistroTrasladoComponent implements OnInit {
   private getFormatoTraslado() {
     this.movimientosHelper.getFormatoByNombre('Solicitud de Traslado').subscribe(res => {
       if (res !== null) {
-        this.estadoMovimiento = res[0];
+        this.formatoTraslado = res[0];
       }
     });
   }
@@ -44,7 +44,7 @@ export class RegistroTrasladoComponent implements OnInit {
   private getEstadoMovimiento() {
     this.movimientosHelper.getEstadoByNombre('Entrada Rechazada').subscribe(res => {
       if (res !== null) {
-        this.formatoTraslado = res[0];
+        this.estadoMovimiento = res[0];
       }
     });
   }
@@ -101,7 +101,7 @@ export class RegistroTrasladoComponent implements OnInit {
       timer: 5000,
     };
     this.pUpManager.showAlertWithOptions(options);
-    this.router.navigate(['/pages/salidas/consulta_salidas']);
+    this.router.navigate(['/pages/traslados/consulta-traslados']);
     });
   }
 
