@@ -346,7 +346,7 @@ export class FormTrasladoComponent implements OnInit {
       const checkInvalidString = typeof (valor) === 'string' && valor !== '';
       const checkInvalidTercero = typeof (valor) === 'object' && !valor.Tercero;
       return checkStringLength ? { errorLongitudMinima: true } :
-        (checkInvalidString || checkInvalidTercero) ? { terceroNoValido: true } : null;
+        ((checkInvalidString || checkInvalidTercero) ? { terceroNoValido: true } : null);
     };
   }
 
@@ -364,7 +364,7 @@ export class FormTrasladoComponent implements OnInit {
       const checkInvalidString = typeof (valor) === 'string' && valor !== '';
       const checkInvalidObject = typeof (valor) === 'object' && !valor.Id;
       return checkStringLength ? { errorLongitudMinima: true } :
-        (checkInvalidString || checkInvalidObject) ? { dependenciaNoValido: true } : null;
+        ((checkInvalidString || checkInvalidObject) ? { dependenciaNoValido: true } : null);
     };
   }
 

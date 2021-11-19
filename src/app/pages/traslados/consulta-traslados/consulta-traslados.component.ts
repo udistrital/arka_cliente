@@ -4,7 +4,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { LocalDataSource } from 'ngx-smart-table';
 import { EstadoMovimiento } from '../../../@core/data/models/entrada/entrada';
 import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
-import { TrasladosHelper } from '../../../helpers/traslados/trasladosHelper';
+import { TrasladosHelper } from '../../../helpers/movimientos/trasladosHelper';
 
 @Component({
   selector: 'ngx-consulta-traslados',
@@ -86,7 +86,7 @@ export class ConsultaTrasladosComponent implements OnInit {
     const estadoSelect = 'GLOBAL.movimientos.estado';
     const columns = this.modo === 'consulta' ? {
       EstadoMovimientoId: {
-        title: this.translate.instant('GLOBAL.tipo_entrada'),
+        title: this.translate.instant('GLOBAL.traslados.consulta.estadoTraslado'),
         width: '300px',
         // filter: {
         //   type: 'list',
@@ -109,7 +109,7 @@ export class ConsultaTrasladosComponent implements OnInit {
 
     this.settings = {
       hideSubHeader: false,
-      noDataMessage: this.translate.instant('GLOBAL.movimientos.traslados.' +
+      noDataMessage: this.translate.instant('GLOBAL.traslados.consulta.' +
         (this.modo === 'consulta' ? 'noTrasladosView' : 'noTrasladosReview')),
       actions: {
         columnTitle: this.translate.instant('GLOBAL.Acciones'),
@@ -129,10 +129,10 @@ export class ConsultaTrasladosComponent implements OnInit {
       mode: 'external',
       columns: {
         Consecutivo: {
-          title: 'Consecutivo',
+          title: this.translate.instant('GLOBAL.Acciones'),
         },
         FechaCreacion: {
-          title: 'Fecha de Creacion',
+          title: this.translate.instant('GLOBAL.fecha_creacion'),
           width: '70px',
           valuePrepareFunction: (value: any) => {
             const date = value.split('T');
@@ -148,7 +148,7 @@ export class ConsultaTrasladosComponent implements OnInit {
           },
         },
         FuncionarioDestino: {
-          title: 'Funcionario Destino',
+          title: this.translate.instant('GLOBAL.funcionarioDestino'),
           valuePrepareFunction: (value: any) => {
             if (value !== null) {
               return value;
@@ -169,7 +169,7 @@ export class ConsultaTrasladosComponent implements OnInit {
           },
         },
         FuncionarioOrigen: {
-          title: 'Funcionario Origen',
+          title: this.translate.instant('GLOBAL.funcionarioOrigen'),
           valuePrepareFunction: (value: any) => {
             if (value !== null) {
               return value;
@@ -190,7 +190,7 @@ export class ConsultaTrasladosComponent implements OnInit {
           },
         },
         Ubicacion: {
-          title: 'Ubicacion',
+          title: this.translate.instant('GLOBAL.ubicacion'),
           valuePrepareFunction: (value: any) => {
             if (value !== null) {
               return value;

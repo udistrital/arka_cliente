@@ -5,7 +5,7 @@ import Swal from 'sweetalert2';
 import { EstadoMovimiento, FormatoTipoMovimiento, Movimiento } from '../../../@core/data/models/entrada/entrada';
 import { DetalleTraslado } from '../../../@core/data/models/movimientos_arka/movimientos_arka';
 import { MovimientosHelper } from '../../../helpers/movimientos/movimientosHelper';
-import { TrasladosHelper } from '../../../helpers/traslados/trasladosHelper';
+import { TrasladosHelper } from '../../../helpers/movimientos/trasladosHelper';
 import { PopUpManager } from '../../../managers/popUpManager';
 
 @Component({

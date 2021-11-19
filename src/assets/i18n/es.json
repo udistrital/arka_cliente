@@ -816,6 +816,8 @@
     "ubicacion": "Ubicación",
     "observaciones": "Observaciones",
     "placeholder_observaciones": "Observaciones",
+    "funcionarioOrigen": "Funcionario Origen",
+    "funcionarioDestino": "Funcionario Destino",
 
     "movimientos": {
       "estadoTramite": "En Trámite",
@@ -1102,7 +1104,8 @@
         "noTrasladosView": "No se encontraron traslados",
         "noTrasladosReview": "No hay traslados pendientes por ser revisados",
         "accionEdit": "Editar Traslado",
-        "accionRevision": "Revisar Traslado"
+        "accionRevision": "Revisar Traslado",
+        "estadoTraslado": "Estado Traslado"
       },
       "funcActual": "Funcionario Responsable del Bien",
       "funcDestino": "Funcionario Destinatario del Bien",

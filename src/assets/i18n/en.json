@@ -816,6 +816,8 @@
     "ubicacion": "Location",
     "observaciones": "Comments",
     "placeholder_observaciones": "Comments",
+    "funcionarioOrigen": "Current Civil Servant",
+    "funcionarioDestino": "New Civil Servant",
 
     "movimientos": {
       "estadoTramite": "Awaiting review",
@@ -1102,7 +1104,8 @@
         "noTrasladosView": "There are no transfers to view",
         "noTrasladosReview": "There are no transfers to review",
         "accionEdit": "Edit Transfer Request",
-        "accionRevision": "Review Transfer Request"
+        "accionRevision": "Review Transfer Request",
+        "estadoTraslado": "Transfer Request Status"
       },
       "funcActual": "Current possessor of the good ",
       "funcDestino": "New possessor of the good ",

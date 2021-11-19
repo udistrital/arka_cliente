@@ -59,4 +59,27 @@ export class TrasladosHelper {
             ),
         );
     }
+
+    /**
+     * Trae los traslados, según se solicite, en cualquier estado o en trámite
+     * If the response has errors in the OAS API it should show a popup message with an error.
+     * If the response is successs, it returns the object's data.
+     * @param tramiteOnly Indica si se traen únicamente los traslados pendientes por ser revisados
+     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
+     */
+    // Se hace directamente al api crud mientras se genera la funcionalidad para asignar el consecutivo al traslado
+    public getTraslado(movimientoId: number) {
+        this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
+        return this.rqManager.get('movimiento?query=Id:' + movimientoId).pipe(
+            map(
+                (res) => {
+                    if (res['Type'] === 'error') {
+                        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.traslados.registro.errTxt'));
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
 }
