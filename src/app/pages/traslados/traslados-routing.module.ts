@@ -10,6 +10,12 @@ const routes: Routes = [{
     {
       path: 'consulta-traslados',
       component: ConsultaTrasladosComponent,
+      data: { modo: 'consulta' },
+    },
+    {
+      path: 'aprobar-traslados',
+      component: ConsultaTrasladosComponent,
+      data: { modo: 'revision' },
     },
   ],
 }];

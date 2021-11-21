@@ -47,7 +47,7 @@ export class TrasladosHelper {
     // Se hace directamente al api crud mientras se genera la funcionalidad para asignar el consecutivo al traslado
     public getTraslados(tramiteOnly: boolean) {
         this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
-        return this.rqManager.get('movimiento?query=FormatoTipoMovimientoId__Nombre:Solicitud de Traslado').pipe(
+        return this.rqManager.get('movimiento?query=FormatoTipoMovimientoId__Nombre:Traslado').pipe(
             map(
                 (res) => {
                     if (res['Type'] === 'error') {
@@ -67,10 +67,9 @@ export class TrasladosHelper {
      * @param tramiteOnly Indica si se traen únicamente los traslados pendientes por ser revisados
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
      */
-    // Se hace directamente al api crud mientras se genera la funcionalidad para asignar el consecutivo al traslado
     public getTraslado(movimientoId: number) {
-        this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
-        return this.rqManager.get('movimiento?query=Id:' + movimientoId).pipe(
+        this.rqManager.setPath('ARKA_SERVICE');
+        return this.rqManager.get('traslados/' + movimientoId).pipe(
             map(
                 (res) => {
                     if (res['Type'] === 'error') {

@@ -1,6 +1,6 @@
 import { Component, OnInit, Output, EventEmitter, ViewChild, Input } from '@angular/core';
 import { combineLatest, Observable } from 'rxjs';
-import { FormBuilder, FormGroup, Validators, ValidatorFn, AbstractControl, ValidationErrors, FormArray, Form } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ValidatorFn, AbstractControl, ValidationErrors, FormArray } from '@angular/forms';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
@@ -9,7 +9,6 @@ import { isObject } from 'rxjs/internal-compatibility';
 import { TerceroCriterioContratista } from '../../../@core/data/models/terceros_criterio';
 import { debounceTime, distinctUntilChanged, map, startWith, switchMap } from 'rxjs/operators';
 import { MatPaginator, MatTableDataSource } from '@angular/material';
-import { DetalleTraslado } from '../../../@core/data/models/movimientos_arka/movimientos_arka';
 
 
 @Component({
@@ -208,7 +207,7 @@ export class FormTrasladoComponent implements OnInit {
     const emailO = values.origen.Correo.length && values.origen.Correo[0].Dato ?
       JSON.parse(values.origen.Correo[0].Dato).value : this.translate.instant('GLOBAL.traslados.noEmail');
     const cargoO = values.origen.Cargo.length ?
-      values.destino.Cargo[0] : this.translate.instant('GLOBAL.traslados.noCargo');
+      values.origen.Cargo[0].Nombre : this.translate.instant('GLOBAL.traslados.noCargo');
     this.formTraslado.get('origen').patchValue({ tercero: terceroO });
     this.formTraslado.get('origen').patchValue({ email: emailO });
     this.formTraslado.get('origen').patchValue({ cargo: cargoO });
@@ -217,7 +216,7 @@ export class FormTrasladoComponent implements OnInit {
     const emailD = values.destino.Correo.length && values.destino.Correo[0].Dato ?
       JSON.parse(values.destino.Correo[0].Dato).value : this.translate.instant('GLOBAL.traslados.noEmail');
     const cargoD = values.destino.Cargo.length ?
-      values.destino.Cargo[0] : this.translate.instant('GLOBAL.traslados.noCargo');
+      values.destino.Cargo[0].Nombre : this.translate.instant('GLOBAL.traslados.noCargo');
     this.formTraslado.get('destino').patchValue({ tercero: terceroD });
     this.formTraslado.get('destino').patchValue({ email: emailD });
     this.formTraslado.get('destino').patchValue({ cargo: cargoD });
@@ -334,7 +333,7 @@ export class FormTrasladoComponent implements OnInit {
       .subscribe(() => {
         this.valid.emit(this.formTraslado.valid);
         if (this.formTraslado.valid) {
-          this.trasladoInfoChange.emit(this.formTraslado.value);
+          this.trasladoInfoChange.emit(this.formTraslado);
         }
       });
   }

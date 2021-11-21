@@ -1,10 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { LocalDataSource } from 'ngx-smart-table';
 import { EstadoMovimiento } from '../../../@core/data/models/entrada/entrada';
 import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
 import { TrasladosHelper } from '../../../helpers/movimientos/trasladosHelper';
+import { PopUpManager } from '../../../managers/popUpManager';
 
 @Component({
   selector: 'ngx-consulta-traslados',
@@ -15,26 +16,35 @@ export class ConsultaTrasladosComponent implements OnInit {
 
   settings: any;
   modo: string = 'consulta'; // 'revision'
-  modoCrud: string; // 'ver' - 'editar'
+  modoCrud: string; // registrar // editar // ver // revisar // confirmar
   source: LocalDataSource;
   estadosMovimiento: Array<EstadoMovimiento>;
   mostrar: boolean;
   filaSeleccionada: any;
+  trasladoId: number;
 
   constructor(
     private translate: TranslateService,
     private router: Router,
     private entradasHelper: EntradaHelper,
+    private route: ActivatedRoute,
     private trasladosHelper: TrasladosHelper,
+    private pUpManager: PopUpManager,
   ) { }
 
   ngOnInit() {
+    this.route.data.subscribe(data => {
+      if (data && data.modo !== null && data.modo !== undefined) {
+        this.modo = data.modo;
+      }
+    });
     this.source = new LocalDataSource();
     this.loadEstados();
   }
 
   loadTraslados(): void {
     this.trasladosHelper.getTraslados(this.modo === 'revision').subscribe(res => {
+      console.log(res)
       if (res.length) {
         res.forEach(salida => {
           const detalle = JSON.parse(salida.Detalle);
@@ -63,16 +73,36 @@ export class ConsultaTrasladosComponent implements OnInit {
   }
 
   public onRegister() {
-    this.router.navigate(['/pages/traslados/registrar-solicitud']);
+    this.modoCrud = 'registrar';
+    this.trasladoId = 0;
   }
 
   public onEdit(event) {
     this.filaSeleccionada = event.data;
     if (this.modo === 'consulta') {
-      this.modoCrud = 'ver';
-    } else {
-      this.modoCrud = 'editar';
+      if (event.data.EstadoMovimientoId === 'Traslado Aceptado') {
+        this.modoCrud = 'confirmar';
+        this.trasladoId = event.data.Id;
+      } else if (event.data.EstadoMovimientoId === 'Traslado Rechazado') {
+        this.modoCrud = 'editar';
+        this.trasladoId = event.data.Id;
+      } else {
+        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.error_dependencias'));
+      }
+    } else if (this.modo === 'revision') {
+      this.modoCrud = 'revisar';
+      this.trasladoId = event.data.Id;
     }
+  }
+
+  public onDelete(event) {
+    this.filaSeleccionada = event.data;
+    this.modoCrud = 'ver';
+    this.trasladoId = event.data.Id;
+  }
+
+  volver() {
+    this.modoCrud = '';
   }
 
   private loadTablaSettings() {
