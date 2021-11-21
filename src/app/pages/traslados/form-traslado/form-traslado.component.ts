@@ -28,10 +28,12 @@ export class FormTrasladoComponent implements OnInit {
   displayedColumns: string[] = ['acciones', 'placa', 'nombre'];
   dataSource: MatTableDataSource<any>;
   @ViewChild('paginator') paginator: MatPaginator;
-  modo = 'registro';
+  load: boolean = false;
+  trasladoId: number = 0;
   @Output() valid = new EventEmitter<boolean>();
-  @Input() trasladoInfo: DetalleTraslado;
-  @Output() trasladoInfoChange: EventEmitter<DetalleTraslado> = new EventEmitter<DetalleTraslado>();
+  @Input() modo: string = 'create'; // get | update
+  @Input() trasladoInfo: any;
+  @Output() trasladoInfoChange: EventEmitter<any> = new EventEmitter<any>();
 
 
   constructor(
@@ -52,13 +54,14 @@ export class FormTrasladoComponent implements OnInit {
   }
 
   private loadSedes() {
-    this.oikosHelper.getSedes().subscribe(res =>
-      this.sedes = res,
-    );
+    this.oikosHelper.getSedes().subscribe((res: any) => {
+      this.sedes = res;
+      this.modo !== 'create' ? this.loadValues(this.trasladoInfo) : this.load = true;
+    });
   }
 
   get terceroOrigen(): FormGroup {
-    const disabled = this.modo === 'ver';
+    const disabled = this.modo === 'get';
     const form = this.fb.group({
       tercero: [
         {
@@ -87,7 +90,7 @@ export class FormTrasladoComponent implements OnInit {
   }
 
   get terceroDestino(): FormGroup {
-    const disabled = this.modo === 'ver';
+    const disabled = this.modo === 'get';
     const form = this.fb.group({
       tercero: [
         {
@@ -116,7 +119,7 @@ export class FormTrasladoComponent implements OnInit {
   }
 
   get ubicacionDestino(): FormGroup {
-    const disabled = this.modo === 'ver';
+    const disabled = this.modo === 'get';
     const form = this.fb.group({
       sede: [
         {
@@ -151,8 +154,9 @@ export class FormTrasladoComponent implements OnInit {
   }
 
   get elemento(): FormGroup {
-    const disabled = this.modo === 'ver';
+    const disabled = this.modo === 'get';
     const form = this.fb.group({
+      id: [0],
       placa: [
         {
           value: '',
@@ -173,7 +177,7 @@ export class FormTrasladoComponent implements OnInit {
   }
 
   get observaciones(): FormGroup {
-    const disabled = this.modo === 'ver';
+    const disabled = this.modo === 'get';
     const form = this.fb.group({
       observaciones: [
         {
@@ -198,6 +202,60 @@ export class FormTrasladoComponent implements OnInit {
     this.submitForm(this.formTraslado.statusChanges);
   }
 
+  private loadValues(values: any) {
+    const disabled = this.modo === 'get';
+    const terceroO = values.origen.Tercero[0];
+    const emailO = values.origen.Correo.length && values.origen.Correo[0].Dato ?
+      JSON.parse(values.origen.Correo[0].Dato).value : this.translate.instant('GLOBAL.traslados.noEmail');
+    const cargoO = values.origen.Cargo.length ?
+      values.destino.Cargo[0] : this.translate.instant('GLOBAL.traslados.noCargo');
+    this.formTraslado.get('origen').patchValue({ tercero: terceroO });
+    this.formTraslado.get('origen').patchValue({ email: emailO });
+    this.formTraslado.get('origen').patchValue({ cargo: cargoO });
+
+    const terceroD = values.destino.Tercero[0];
+    const emailD = values.destino.Correo.length && values.destino.Correo[0].Dato ?
+      JSON.parse(values.destino.Correo[0].Dato).value : this.translate.instant('GLOBAL.traslados.noEmail');
+    const cargoD = values.destino.Cargo.length ?
+      values.destino.Cargo[0] : this.translate.instant('GLOBAL.traslados.noCargo');
+    this.formTraslado.get('destino').patchValue({ tercero: terceroD });
+    this.formTraslado.get('destino').patchValue({ email: emailD });
+    this.formTraslado.get('destino').patchValue({ cargo: cargoD });
+
+    const sede = values.ubicacion.Sede.Id;
+    const dependencia = values.ubicacion.Dependencia;
+    const ubicacion = values.ubicacion.Ubicacion;
+    this.formTraslado.get('ubicacion').patchValue({ sede, emitEvent: false });
+    this.formTraslado.get('ubicacion').patchValue({ dependencia, emitEvent: false });
+    this.formTraslado.get('ubicacion').patchValue({ ubicacion });
+
+    values.elementos.forEach(element => {
+      const formEl = this.fb.group({
+        id: [element.Id],
+        placa: [
+          {
+            value: element.Placa,
+            disabled,
+          },
+          {
+            validators: [Validators.required],
+          },
+        ],
+        nombre: [
+          {
+            value: element.Nombre,
+            disabled: true,
+          },
+        ],
+      });
+      (this.formTraslado.get('elementos') as FormArray).push(formEl);
+      this.dataSource.data = this.dataSource.data.concat(formEl.value);
+    });
+
+    const observaciones = values.observaciones;
+    this.formTraslado.get('observaciones').patchValue({ observaciones });
+  }
+
   addElemento() {
     (this.formTraslado.get('elementos') as FormArray).push(this.elemento);
     this.dataSource.data = this.dataSource.data.concat(this.elemento.value);
@@ -216,8 +274,8 @@ export class FormTrasladoComponent implements OnInit {
   }
 
   public getUbicaciones() {
-    const sede = this.formTraslado.get('ubicacion.sede').valid ? this.formTraslado.get('ubicacion.sede').value : '';
-    const dependencia = this.formTraslado.get('ubicacion.dependencia').valid ? this.formTraslado.get('ubicacion.dependencia').value : '';
+    const sede = this.formTraslado.get('ubicacion.sede').value ? this.formTraslado.get('ubicacion.sede').value : '';
+    const dependencia = this.formTraslado.get('ubicacion.dependencia').value.Id ? this.formTraslado.get('ubicacion.dependencia').value : '';
     this.formTraslado.get('ubicacion').patchValue({ ubicacion: '' });
     if (sede && dependencia) {
       this.ubicacionesFiltradas = [];
@@ -226,9 +284,13 @@ export class FormTrasladoComponent implements OnInit {
       transaccion.Dependencia = dependencia;
       if (transaccion.Sede !== undefined && transaccion.Dependencia !== undefined) {
         this.Actas_Recibido.postRelacionSedeDependencia(transaccion).subscribe((res: any) => {
+          if (!this.load) {
+            this.formTraslado.get('ubicacion').patchValue({ ubicacion: this.trasladoInfo.ubicacion.Ubicacion });
+            this.load = true;
+          }
           if (isObject(res[0].Relaciones)) {
             this.ubicacionesFiltradas = res[0].Relaciones;
-            this.formTraslado.get('ubicacion.ubicacion').enable();
+            this.modo !== 'get' ? this.formTraslado.get('ubicacion.ubicacion').enable() : null;
           } else {
             this.formTraslado.get('ubicacion.ubicacion').disable();
           }
