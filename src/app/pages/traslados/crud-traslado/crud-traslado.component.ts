@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { TranslateService } from '@ngx-translate/core';
+import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
 import Swal from 'sweetalert2';
 import { EstadoMovimiento, FormatoTipoMovimiento, Movimiento } from '../../../@core/data/models/entrada/entrada';
 import { DetalleTraslado } from '../../../@core/data/models/movimientos_arka/movimientos_arka';
@@ -37,30 +37,29 @@ export class CrudTrasladoComponent implements OnInit {
     private trasladosHelper: TrasladosHelper,
     private tercerosHelper: TercerosHelper,
     private entradasHelper: EntradaHelper,
-  ) { }
+  ) {
+    this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
+    });
+  }
 
   ngOnInit() {
     console.log(this.trasladoId, this.modoCrud);
     this.getFormatoTraslado();
     this.loadEstados();
     if (this.modoCrud === 'registrar') {
-      this.title = 'Registrar Solicitud de Traslado';
-      this.boton = 'Enviar Solicitud';
       this.modoForm = 'create';
       this.showForm = true;
     } else if (this.modoCrud !== 'editar') {
       this.getTraslado(this.trasladoId);
       this.modoForm = 'get';
-      this.title = this.modoCrud === 'ver' ? 'Detalle Solicitud' :
-        this.modoCrud === 'revisar' ? 'Aprobar Solicitud' : 'Confirmar Traslado';
-      this.boton = this.modoCrud === 'ver' ? '' :
-        this.modoCrud === 'revisar' ? 'Aprobar Solicitud' : 'Confirmar Recepción de Traslado';
     } else if (this.trasladoId) {
-      this.title = 'Editar Solicitud de Traslado';
       this.boton = 'Actualizar Solicitud de Traslado';
       this.getTraslado(this.trasladoId);
       this.modoForm = 'put';
     }
+    this.title = this.translate.instant('GLOBAL.traslados.' + this.modoCrud + '.title');
+    this.subtitle = this.translate.instant('GLOBAL.traslados.' + this.modoCrud + '.subtitle');
+    this.boton = this.translate.instant('GLOBAL.traslados.' + this.modoCrud + '.accion');
   }
 
   getTraslado(trasladoId: number) {
@@ -91,9 +90,12 @@ export class CrudTrasladoComponent implements OnInit {
   }
 
   public confirm(rechazar: boolean = false) {
+    const sfx = this.modoCrud !== 'revisar' ? '' : rechazar ? 'R' : 'A';
+    const title = this.translate.instant('GLOBAL.traslados.' + this.modoCrud + '.confrmTtl' + sfx);
+    const text = this.translate.instant('GLOBAL.traslados.' + this.modoCrud + '.confrmTxt' + sfx);
     (Swal as any).fire({
-      title: this.translate.instant('GLOBAL.traslados.registro.confrmTtl'),
-      text: this.translate.instant('GLOBAL.traslados.registro.confrmTxt'),
+      title,
+      text,
       type: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
@@ -139,33 +141,34 @@ export class CrudTrasladoComponent implements OnInit {
     if (this.modoCrud === 'registrar') {
       this.postTraslado(movimiento);
     } else {
-      this.updateTraslado(movimiento);
+      this.updateTraslado(movimiento, rechazar);
     }
   }
 
-  private updateTraslado(movimiento) {
+  private updateTraslado(movimiento, rechazar: boolean) {
     this.entradasHelper.putMovimiento(movimiento).toPromise().then((res: any) => {
-      if (res) {
-        this.alertSuccess(false);
-      }
+        this.alertSuccess(rechazar, 'consec');
     });
   }
 
   private postTraslado(movimiento) {
     this.trasladosHelper.postTraslado(movimiento).subscribe((res: any) => {
-      this.alertSuccess(false);
+      this.alertSuccess(false, 'consec');
     });
   }
 
-  private alertSuccess(aprobar: boolean) {
-    const consecutivo = 'as'; //JSON.parse(this.movimiento.Detalle).consecutivo;
-    (Swal as any).fire({
+  private alertSuccess(rechazar: boolean, consecutivo: string) {
+    const sfx = this.modoCrud !== 'revisar' ? '' : rechazar ? 'R' : 'A';
+    const title = this.translate.instant('GLOBAL.traslados.' + this.modoCrud + '.successTtl' + sfx);
+    const text = this.translate.instant('GLOBAL.traslados.' + this.modoCrud + '.successTxt' + sfx, { CONSECUTIVO: consecutivo });
+    const options = {
       type: 'success',
-      title: this.translate.instant('GLOBAL.movimientos.entradas.' + (aprobar ? 'aprobacion' : 'rechazo') + 'TtlOk'),
-      text: this.translate.instant('GLOBAL.movimientos.entradas.' + (aprobar ? 'aprobacion' : 'rechazo') + 'TxtOk', { CONSECUTIVO: consecutivo }),
+      title,
+      text,
       showConfirmButton: false,
       timer: 3000,
-    });
+    };
+    this.pUpManager.showAlertWithOptions(options);
   }
 
   private loadEstados() {
