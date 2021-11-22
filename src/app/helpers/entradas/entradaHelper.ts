@@ -438,7 +438,6 @@ export class EntradaHelper {
                     } else {
                         this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.entradas.errorRechazoEntrada'));
                         return undefined;
-
                     }
                 },
             ),

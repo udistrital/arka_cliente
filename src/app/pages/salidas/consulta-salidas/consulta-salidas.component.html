@@ -8,13 +8,18 @@
       {{'GLOBAL.salidas.consulta_salida_info' | translate}}
     </mat-card-subtitle>
 
-    <ng2-smart-table [settings]="settings" [source]="source" (custom)="onCustom($event)" (create)="onRegister($event)" *ngIf="!detalle">
+    <ng2-smart-table [settings]="settings" [source]="source" (edit)="onEdit($event)" 
+	     (delete)="onDelete($event)" (create)="onRegister($event)" *ngIf="!detalle && !editaentrada">
     </ng2-smart-table>
 
-    <ngx-consulta-salida-especifica [salida_id]="salidaId" *ngIf="detalle">
+    <ngx-consulta-salida-especifica [salida_id]="salidaId" *ngIf="detalle && !editaentrada">
     </ngx-consulta-salida-especifica>
 
-    <mat-card-actions *ngIf="detalle">
+
+    <ngx-tabla-entrada-aprobada [editar]="editaentrada" [salida_id]="salidaId" [actaParametro]="actaParametro" [idEntradaParametro]="entradaParametro" 
+   	*ngIf="editaentrada && !detalle"></ngx-tabla-entrada-aprobada>
+
+    <mat-card-actions *ngIf="detalle || editaentrada">
       <div *ngIf="modo === 'revision'" class="justify-content-center" style="padding-bottom: 3rem;">
         <button nbButton (click)="confirmSubmit(false)">{{'GLOBAL.Acta_Recibido.VerificacionActa.Rechazar' |
           translate}}</button>
@@ -22,7 +27,7 @@
           class="float-right">{{'GLOBAL.Acta_Recibido.VerificacionActa.Verificar' | translate}}</button>
       </div>
         <button mat-raised-button color="primary" (click)="onVolver()" class="float-left text-uppercase">
-          {{'GLOBAL.volver' | translate}}</button>
+        {{'GLOBAL.volver' | translate}}</button>
     </mat-card-actions>
   </div>
 </mat-card>

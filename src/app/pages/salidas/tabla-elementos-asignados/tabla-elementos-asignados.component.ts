@@ -54,6 +54,8 @@ export class TablaElementosAsignadosComponent implements OnInit {
   set name2(entrada_id: string) {
     this.entradaId = entrada_id;
   }
+  @Input('salida_id') salida_id: number = 0;
+  @Input('edicionSalida') edicionSalida: boolean = false;
   sourceDevolutivo: MatTableDataSource<any>;
   sourceConsumo: MatTableDataSource<any>;
   devolutivoSeleccionados: boolean;
@@ -89,14 +91,25 @@ export class TablaElementosAsignadosComponent implements OnInit {
             el.Combinado = el.SubgrupoCatalogoId.SubgrupoId.Id ?
               el.SubgrupoCatalogoId.SubgrupoId.Codigo + ' - ' + el.SubgrupoCatalogoId.SubgrupoId.Nombre : '';
         });
-        const elementosConsumo = res.filter(el => el.SubgrupoCatalogoId.TipoBienId.Id === 1);
-        const elementosDevolutivo = res.filter(el => el.SubgrupoCatalogoId.TipoBienId.Id !== 1);
-        this.sourceDevolutivo = new MatTableDataSource<ElementoActa>(elementosDevolutivo);
-        this.sourceConsumo = new MatTableDataSource<ElementoActa>(elementosConsumo);
+        if (this.edicionSalida) {
+            this.salidasHelper.getSalida(this.salida_id).subscribe(res1 => {
+                const elementosConsumo = res.filter(el => el.SubgrupoCatalogoId.TipoBienId.Id === 1).filter(el => res1.Elementos.some(sal=>sal.ElementoActaId == el.Id))
+                const elementosDevolutivo = res.filter(el => el.SubgrupoCatalogoId.TipoBienId.Id !== 1).filter(el => res1.Elementos.some(sal=>sal.ElementoActaId == el.Id));
+                this.sourceDevolutivo = new MatTableDataSource<ElementoActa>(elementosDevolutivo);
+                this.sourceConsumo = new MatTableDataSource<ElementoActa>(elementosConsumo);
+            });
+        } else {
+            const elementosConsumo = res.filter(el => el.SubgrupoCatalogoId.TipoBienId.Id === 1);
+            const elementosDevolutivo = res.filter(el => el.SubgrupoCatalogoId.TipoBienId.Id !== 1);
+            this.sourceDevolutivo = new MatTableDataSource<ElementoActa>(elementosDevolutivo);
+            this.sourceConsumo = new MatTableDataSource<ElementoActa>(elementosConsumo);
+	    }
+
         this.sourceDevolutivo.paginator = this.paginatorD;
         this.sourceDevolutivo.sort = this.sortD;
         this.sourceConsumo.paginator = this.paginatorC;
         this.sourceConsumo.sort = this.sortC;
+
       } else {
         this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.salidas.errorElementos'));
       }
@@ -444,7 +457,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
             this.pUpManager.showAlertWithOptions(options);
             this.router.navigate(['/pages/salidas/consulta_salidas']);
           }
-        });
+        }); 
       }
     });
   }

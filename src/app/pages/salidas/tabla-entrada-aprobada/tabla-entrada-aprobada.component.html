@@ -362,6 +362,59 @@
           <mat-icon>cloud_download</mat-icon>
         </button>
       </mat-card-content>
+
+<mat-card *ngIf="edicion">
+
+  <mat-card-subtitle>
+    {{'GLOBAL.salidas.detalle_salida' | translate}}
+  </mat-card-subtitle>
+
+  <mat-card-content>
+    <div class="row">
+      <div class="col">
+        <p class="text-uppercase"><strong>{{'GLOBAL.consecutivo' | translate}}</strong>: {{ salida.Consecutivo }}</p>
+      </div>
+      <div class="col">
+        <p class="text-uppercase"><strong>{{'GLOBAL.fecha_creacion' | translate}}</strong>
+          : {{ salida.FechaCreacion | date }}</p>
+      </div>
+      <div class="col" *ngIf="salida.Funcionario">
+        <p class="text-uppercase"><strong>{{'GLOBAL.funcionario' | translate}}</strong>
+          : {{ salida.Funcionario.NombreCompleto}}</p>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <p class="text-uppercase"><strong>{{'GLOBAL.Acta_Recibido.RegistroActa.Sede' | translate}}</strong>: {{
+          salida.Sede.Nombre }}</p>
+      </div>
+      <div class="col">
+        <p class="text-uppercase"><strong>{{'GLOBAL.Acta_Recibido.RegistroActa.Dependencia' | translate}}</strong>: {{
+          salida.Dependencia.Nombre }}</p>
+      </div>
+      <div class="col">
+        <p class="text-uppercase"><strong>{{'GLOBAL.Acta_Recibido.RegistroActa.Ubicacion' | translate}}</strong>: {{
+          salida.Ubicacion.Nombre }}</p>
+      </div>
+    </div>
+
+    <mat-card-subtitle>
+      {{'GLOBAL.salidas.elementos' | translate}}
+    </mat-card-subtitle>
+
+  </mat-card-content>
+
+</mat-card>
+
+
+
+
+
+
+
+
+
     </mat-expansion-panel>
 
 
@@ -376,12 +429,14 @@
     <mat-expansion-panel [expanded]="true" hideToggle>
       <mat-expansion-panel-header>{{'GLOBAL.salidas.elementos' | translate}}
       </mat-expansion-panel-header>
-      <ngx-tabla-elementos-asignados [entradaId]="consecutivoEntrada" [actaRecibidoId]="actaRecibidoId" *ngIf="detalle">
+      <ngx-tabla-elementos-asignados [entradaId]="consecutivoEntrada"
+        [edicionSalida]="edicion" [salida_id]="salida_id"
+	    [actaRecibidoId]="actaRecibidoId" *ngIf="detalle">
       </ngx-tabla-elementos-asignados>
     </mat-expansion-panel>
   </mat-accordion>
 </mat-card>
 <mat-card-actions>
   <button mat-raised-button color="secondary" (click)="onVolver()" class="float-left text-uppercase"
-    *ngIf="detalle">{{'GLOBAL.volver' | translate}}</button>
+    *ngIf="detalle && !edicion">{{'GLOBAL.volver' | translate}}</button>
 </mat-card-actions>

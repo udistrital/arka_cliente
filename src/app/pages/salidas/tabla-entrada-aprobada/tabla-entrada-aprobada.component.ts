@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input, ComponentFactoryResolver } from '@angular/core';
 import { LocalDataSource } from 'ngx-smart-table';
 import { Router } from '@angular/router';
 import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
@@ -25,6 +25,12 @@ import { Proveedor } from '../../../@core/data/models/acta_recibido/Proveedor';
 })
 export class TablaEntradaAprobadaComponent implements OnInit {
 
+
+  @Input('editar') edicion: boolean = false;
+  @Input('actaParametro') actaParametro: number = 0;
+  @Input('salida_id') salida_id: number = 0;
+  @Input('idEntradaParametro') idEntradaParametro: string = '';
+
   source: LocalDataSource;
   entradas: Array<Entrada>;
   detalle: boolean;
@@ -43,6 +49,7 @@ export class TablaEntradaAprobadaComponent implements OnInit {
   Proveedor: any;
   encargado: any;
   Placa: any;
+  salida: any;
 
   constructor(
     private router: Router,
@@ -171,9 +178,19 @@ export class TablaEntradaAprobadaComponent implements OnInit {
   }
 
   loadEntradaEspecifica(): void {
+
+    if (this.edicion) {
+        this.salidasHelper.getSalida(this.salida_id).subscribe(res1 => {
+          this.salida = res1.Salida;
+        });
+    }
+
+
+
+
     this.entradasHelper.getMovimiento(this.consecutivoEntrada).subscribe(res => {
       if (res !== null) {
-        // console.log(res);
+        console.log(res);
         switch (res[0].FormatoTipoMovimientoId.Nombre) {
           case 'Adquisición': {
             this.loadDetalleAdquisicion(res[0]);
@@ -339,6 +356,7 @@ export class TablaEntradaAprobadaComponent implements OnInit {
 
   loadDetalleSobrante(info) {
     const detalle = JSON.parse(info.Detalle);
+    console.log("hola",info.detalle)
     this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id; // ACTA RECIBIDO
     this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
     this.entradaEspecifica.Vigencia = detalle.vigencia_ordenador; // VIGENCIA ORDENADOR
@@ -509,6 +527,7 @@ export class TablaEntradaAprobadaComponent implements OnInit {
     // console.log(event.data);
     this.actaRecibidoId = +`${event.data.ActaRecibidoId}`;
     // this.consecutivoEntrada = `${event.data.Consecutivo}`;
+    console.log("acta",this.actaRecibidoId)
     this.consecutivoEntrada = `${event.data.Id}`;
     this.detalle = true;
     this.loadEntradaEspecifica();
@@ -534,9 +553,19 @@ export class TablaEntradaAprobadaComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
-      this.loadTablaSettings();
-    });
+
+    if (!this.edicion) {
+    	this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
+    	  this.loadTablaSettings();
+    	})
+	} else {
+    	console.log("llega a la entrada", this.idEntradaParametro,this.actaParametro )
+    	this.consecutivoEntrada = this.idEntradaParametro 
+    	this.actaRecibidoId = this.actaParametro 
+    	this.detalle = true
+    	this.loadEntradaEspecifica();
+	}
+
   }
 
 }
