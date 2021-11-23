@@ -555,12 +555,12 @@ export class TablaEntradaAprobadaComponent implements OnInit {
         this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
         this.loadTablaSettings();
         });
-	} else {
+    } else {
        this.consecutivoEntrada = this.idEntradaParametro;
-       this.actaRecibidoId = this.actaParametro; 
+       this.actaRecibidoId = this.actaParametro;
        this.detalle = true;
        this.loadEntradaEspecifica();
-	}
+    }
 
   }
 

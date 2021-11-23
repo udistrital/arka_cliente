@@ -118,7 +118,6 @@ export class ConsultaSalidasComponent implements OnInit {
         },
       },
     } : [];
-  
     this.settings = {
       hideSubHeader: false,
       noDataMessage: this.translate.instant('GLOBAL.movimientos.salidas.' +
@@ -130,7 +129,7 @@ export class ConsultaSalidasComponent implements OnInit {
         edit: (this.modo === 'consulta' ? true : false),
         add: true,
       },
-	  add: {
+      add: {
         addButtonContent: '<i class="fas fa-plus"></i>',
       },
       edit: {
@@ -288,11 +287,11 @@ export class ConsultaSalidasComponent implements OnInit {
 
   onEdit(event) {
     if (event.data.EstadoMovimientoId === 'Salida Rechazada') {
- 	   this.salidaId = `${event.data.Id}`;
- 	   this.detalle = false;
- 	   this.editaentrada = true;
- 	   this.filaSeleccionada = event.data;
- 	   this.cargarSalida();
+       this.salidaId = `${event.data.Id}`;
+       this.detalle = false;
+       this.editaentrada = true;
+       this.filaSeleccionada = event.data;
+       this.cargarSalida();
 	}
   }
 
