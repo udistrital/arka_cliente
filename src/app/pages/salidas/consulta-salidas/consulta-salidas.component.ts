@@ -130,7 +130,6 @@ export class ConsultaSalidasComponent implements OnInit {
         edit: (this.modo === 'consulta' ? true : false),
         add: true,
       },
-
 	  add: {
         addButtonContent: '<i class="fas fa-plus"></i>',
       },
@@ -289,7 +288,6 @@ export class ConsultaSalidasComponent implements OnInit {
 
   onEdit(event) {
     if (event.data.EstadoMovimientoId === 'Salida Rechazada') {
- 	   console.log(event);
  	   this.salidaId = `${event.data.Id}`;
  	   this.detalle = false;
  	   this.editaentrada = true;
@@ -308,9 +306,8 @@ export class ConsultaSalidasComponent implements OnInit {
 
   private cargarSalida () {
     this.entradasHelper.getMovimiento(this.salidaId).toPromise().then((res: any) => {
-      this.entradaParametro = res[0].MovimientoPadreId.Id
-      this.actaParametro = JSON.parse(res[0].MovimientoPadreId.Detalle).acta_recibido_id
-      console.log("mira",this.entradaParametro, this.actaParametro)
+      this.entradaParametro = res[0].MovimientoPadreId.Id;
+      this.actaParametro = JSON.parse(res[0].MovimientoPadreId.Detalle).acta_recibido_id;
       this.movimiento = res[0];
     });
   }

@@ -190,7 +190,6 @@ export class TablaEntradaAprobadaComponent implements OnInit {
 
     this.entradasHelper.getMovimiento(this.consecutivoEntrada).subscribe(res => {
       if (res !== null) {
-        console.log(res);
         switch (res[0].FormatoTipoMovimientoId.Nombre) {
           case 'Adquisición': {
             this.loadDetalleAdquisicion(res[0]);
@@ -356,7 +355,6 @@ export class TablaEntradaAprobadaComponent implements OnInit {
 
   loadDetalleSobrante(info) {
     const detalle = JSON.parse(info.Detalle);
-    console.log("hola",info.detalle)
     this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id; // ACTA RECIBIDO
     this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
     this.entradaEspecifica.Vigencia = detalle.vigencia_ordenador; // VIGENCIA ORDENADOR
@@ -527,7 +525,6 @@ export class TablaEntradaAprobadaComponent implements OnInit {
     // console.log(event.data);
     this.actaRecibidoId = +`${event.data.ActaRecibidoId}`;
     // this.consecutivoEntrada = `${event.data.Consecutivo}`;
-    console.log("acta",this.actaRecibidoId)
     this.consecutivoEntrada = `${event.data.Id}`;
     this.detalle = true;
     this.loadEntradaEspecifica();
@@ -559,7 +556,6 @@ export class TablaEntradaAprobadaComponent implements OnInit {
     	  this.loadTablaSettings();
     	})
 	} else {
-    	console.log("llega a la entrada", this.idEntradaParametro,this.actaParametro )
     	this.consecutivoEntrada = this.idEntradaParametro 
     	this.actaRecibidoId = this.actaParametro 
     	this.detalle = true
