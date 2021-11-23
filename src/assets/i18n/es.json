@@ -1090,28 +1090,72 @@
       "entrada_titulo": "Reporte de Entrada"
     },
     "traslados": {
-      "registro": {
+      "consulta": {
+        "title": "Consultar Traslados",
+        "subtitle": "Acontinuación se listan los traslados, seleccione una de las opcipones para ver más detalles",
+        "nuevoTraslado": "Registrar nuevo traslado",
+        "noTrasladosView": "No se encontraron traslados",
+        "noTrasladosReview": "No hay traslados pendientes por ser revisados",
+        "accionEdit": "Editar Solicitud",
+        "estadoTraslado": "Estado Traslado",
+        "errorEditar": "No se puede editar este traslado"
+      },
+      "registrar": {
         "title": "Solicitar Traslado",
         "subtitle": "Por favor ingrese la información solicitada en el siguiente formulario",
+        "accion": "Enviar Solicitud",
         "confrmTtl": "Registrar Solicitud",
         "confrmTxt": "¿Desea registrar la solicitud de traslado con la información suministrada?",
         "successTtl": "Traslado Solicitado",
         "successTxt": "La solicitud de traslado {{CONSECUTIVO}} se ha registrado de manera exitosa",
         "errTxt:": "Hubo un error al registrar la solicitud de traslado"
       },
-      "consulta": {
-        "nuevoTraslado": "Registrar nuevo traslado",
-        "noTrasladosView": "No se encontraron traslados",
-        "noTrasladosReview": "No hay traslados pendientes por ser revisados",
-        "accionEdit": "Editar Traslado",
-        "accionRevision": "Revisar Traslado",
-        "estadoTraslado": "Estado Traslado"
+      "revisar": {
+        "title": "Revisar Solicitud de Traslado",
+        "subtitle": "Revise la información de la solicitud y realice la aprobación o rechazo de la misma",
+        "accion": "Aprobar solicitud",
+        "rechazar": "Rechazar solicitud",
+        "confrmTtlA": "Aprobar Solicitud de Traslado",
+        "confrmTxtA": "¿Desea aprobar la solicitud de traslado con la información suministrada?",
+        "confrmTtlR": "Rechazar Solicitud",
+        "confrmTxtR": "¿Desea rechazar la solicitud de traslado con la información suministrada?",
+        "successTtlA": "Solicitud Aprobada",
+        "successTxtA": "La solicitud de traslado {{CONSECUTIVO}} ha sido aprobada",
+        "successTtlR": "Solicitud Rechazada",
+        "successTxtR": "La solicitud de traslado {{CONSECUTIVO}} ha sido rechazada"
+      },
+      "confirmar": {
+        "title": "Confirmar Recepción de Traslado",
+        "subtitle": "Revise la información de la solicitud y confirme que los elementos están en su poder",
+        "accion": "Confirmar Traslado",
+        "confrmTtl": "Confirmar Recepción",
+        "confrmTxt": "¿Desea confirmar que los elementos están en su poder?",
+        "successTtl": "Traslado Confirmado",
+        "successTxt": "La solicitud de traslado {{CONSECUTIVO}} ha sido confirmada"
+      },
+      "editar": {
+        "title": "Editar Solicitud de Traslado",
+        "subtitle": "Revise las razones de rechazo del traslado y haga las respectivas modificaciones",
+        "accion": "Actualizar solicitud",
+        "confrmTtl": "Actualizar Solicitud",
+        "confrmTxt": "¿Desea actualizar la solicitud de traslado?",
+        "successTtl": "Solicitud Actualizada",
+        "successTxt": "La solicitud de traslado {{CONSECUTIVO}} se ha actualizado"
+      },
+      "ver": {
+        "title": "Consultar Solicitud de Traslado",
+        "subtitle": "En el siguiente formulario se muestra el detalle del traslado"
+      },
+      "estados": {
+        "tramite": "En Trámite",
+        "aprobado": "Aprobado",
+        "rechazado": "Rechazado",
+        "confirmado": "Confirmado"
       },
       "funcActual": "Funcionario Responsable del Bien",
       "funcDestino": "Funcionario Destinatario del Bien",
       "noEmail": "No hay un correo registrado",
-      "noCargo": "No hay un cargo registrado",
-      "enviarSolicitud": "Enviar Solicitud"
+      "noCargo": "No hay un cargo registrado"
     }
   }
 }

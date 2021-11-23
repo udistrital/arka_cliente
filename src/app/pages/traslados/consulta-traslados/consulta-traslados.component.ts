@@ -44,7 +44,6 @@ export class ConsultaTrasladosComponent implements OnInit {
 
   loadTraslados(): void {
     this.trasladosHelper.getTraslados(this.modo === 'revision').subscribe(res => {
-      console.log(res)
       if (res.length) {
         res.forEach(salida => {
           const detalle = JSON.parse(salida.Detalle);
@@ -72,6 +71,15 @@ export class ConsultaTrasladosComponent implements OnInit {
     });
   }
 
+  public actualizarVista() {
+    if (this.modo === 'revision') {
+      this.source.remove(this.filaSeleccionada);
+    } else {
+      this.loadTraslados();
+    }
+    this.volver();
+  }
+
   public onRegister() {
     this.modoCrud = 'registrar';
     this.trasladoId = 0;
@@ -80,14 +88,14 @@ export class ConsultaTrasladosComponent implements OnInit {
   public onEdit(event) {
     this.filaSeleccionada = event.data;
     if (this.modo === 'consulta') {
-      if (event.data.EstadoMovimientoId === 'Traslado Aceptado') {
+      if (event.data.EstadoMovimientoId === 'Traslado Aprobado') {
         this.modoCrud = 'confirmar';
         this.trasladoId = event.data.Id;
       } else if (event.data.EstadoMovimientoId === 'Traslado Rechazado') {
         this.modoCrud = 'editar';
         this.trasladoId = event.data.Id;
       } else {
-        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.error_dependencias'));
+        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.traslados.consulta.errorEditar'));
       }
     } else if (this.modo === 'revision') {
       this.modoCrud = 'revisar';
@@ -103,37 +111,45 @@ export class ConsultaTrasladosComponent implements OnInit {
 
   volver() {
     this.modoCrud = '';
+    this.filaSeleccionada = null;
   }
 
   private loadTablaSettings() {
     const t = {
       registrar: this.translate.instant('GLOBAL.traslados.consulta.nuevoTraslado'),
       delete: this.translate.instant('GLOBAL.verDetalle'),
-      edit: this.translate.instant('GLOBAL.traslados.consulta.' +
-        (this.modo === 'consulta' ? 'accionEdit' : 'accionRevision')),
+      edit: this.translate.instant('GLOBAL.traslados.' + (this.modo === 'consulta' ? this.modo : 'revisar') + '.accionEdit'),
       icon: this.modo === 'consulta' ? 'eye' : 'edit',
     };
-    const estadoSelect = 'GLOBAL.movimientos.estado';
+    const estadoSelect = 'GLOBAL.traslados.estados.';
     const columns = this.modo === 'consulta' ? {
       EstadoMovimientoId: {
         title: this.translate.instant('GLOBAL.traslados.consulta.estadoTraslado'),
         width: '300px',
-        // filter: {
-        //   type: 'list',
-        //   config: {
-        //     selectText: this.translate.instant('GLOBAL.seleccionar') + '...',
-        //     list: [
-        //       { value: this.estadosMovimiento.find(status => status.Nombre === 'Traslado En Trámite').Nombre,
-        //         title: this.translate.instant(estadoSelect + 'Tramite') },
-        //       { value: this.estadosMovimiento.find(status => status.Nombre === 'Traslado Aprobado').Nombre,
-        //         title: this.translate.instant(estadoSelect + 'Aprobado') },
-        //       { value: this.estadosMovimiento.find(status => status.Nombre === 'Traslado Rechazado').Nombre,
-        //         title: this.translate.instant(estadoSelect + 'Rechazo') },
-        //       { value: this.estadosMovimiento.find(status => status.Nombre === 'Traslado Confirmado').Nombre,
-        //         title: this.translate.instant(estadoSelect + 'Confirmado') },
-        //     ],
-        //   },
-        // },
+        filter: {
+          type: 'list',
+          config: {
+            selectText: this.translate.instant('GLOBAL.seleccionar') + '...',
+            list: [
+              {
+                value: this.estadosMovimiento.find(status => status.Nombre === 'Traslado En Trámite').Nombre,
+                title: this.translate.instant(estadoSelect + 'tramite'),
+              },
+              {
+                value: this.estadosMovimiento.find(status => status.Nombre === 'Traslado Aprobado').Nombre,
+                title: this.translate.instant(estadoSelect + 'aprobado'),
+              },
+              {
+                value: this.estadosMovimiento.find(status => status.Nombre === 'Traslado Rechazado').Nombre,
+                title: this.translate.instant(estadoSelect + 'rechazado'),
+              },
+              {
+                value: this.estadosMovimiento.find(status => status.Nombre === 'Traslado Confirmado').Nombre,
+                title: this.translate.instant(estadoSelect + 'confirmado'),
+              },
+            ],
+          },
+        },
       },
     } : [];
 

@@ -23,8 +23,8 @@ export class TrasladosHelper {
     */
     // Se hace directamente al api crud mientras se genera la funcionalidad para asignar el consecutivo al traslado
     public postTraslado(movimiento: Movimiento) {
-        this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
-        return this.rqManager.post('movimiento', movimiento).pipe(
+        this.rqManager.setPath('ARKA_SERVICE');
+        return this.rqManager.post('traslados/', movimiento).pipe(
             map(
                 (res) => {
                     if (res['Type'] === 'error') {
@@ -46,8 +46,14 @@ export class TrasladosHelper {
      */
     // Se hace directamente al api crud mientras se genera la funcionalidad para asignar el consecutivo al traslado
     public getTraslados(tramiteOnly: boolean) {
+        let endpoint = 'movimiento?query=Activo:true,EstadoMovimientoId__Nombre';
+        if (tramiteOnly) {
+            endpoint += ':Traslado En Trámite';
+        } else {
+            endpoint += '__startswith:Traslado';
+        }
         this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
-        return this.rqManager.get('movimiento?query=FormatoTipoMovimientoId__Nombre:Traslado').pipe(
+        return this.rqManager.get(endpoint).pipe(
             map(
                 (res) => {
                     if (res['Type'] === 'error') {

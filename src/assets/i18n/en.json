@@ -1090,28 +1090,72 @@
      "entrada_titulo": "Entry Report"
    },
    "traslados": {
+     "consulta": {
+       "title": "Consultar Traslados",
+       "subtitle": "These are the transfer requests, click on the icons to continue",
+       "nuevoTraslado": "Register new Transfer Request",
+       "noTrasladosView": "There are no transfers to view",
+       "noTrasladosReview": "There are no transfers to review",
+       "accionEdit": "Edit Transfer Request",
+       "estadoTraslado": "Transfer Request Status",
+       "errorEditar": "The selected request can not be edited"
+     },
      "registro": {
        "title": "Confirm Transfer Registration",
        "subtitle": "Enter the requested information in the following form",
+       "accion": "Create Request",
        "confrmTtl": "Register Request",
        "confrmTxt": "Are you sure to send the request with the provided information?",
        "successTtl": "Transfer Request Created",
        "successTxt:": "The transfer request {{CONSECUTIVO}} has been successfully registered",
        "errTxt:": "There was an error when trying to create the transfer request"
       },
-      "consulta": {
-        "nuevoTraslado": "Register new Transfer Request",
-        "noTrasladosView": "There are no transfers to view",
-        "noTrasladosReview": "There are no transfers to review",
-        "accionEdit": "Edit Transfer Request",
-        "accionRevision": "Review Transfer Request",
-        "estadoTraslado": "Transfer Request Status"
+      "revisar": {
+        "title": "Review Transfer Request",
+        "subtitle": "Check the information provided in the request form and approve or deny it",
+        "accion": "Approve request",
+        "accionEdit": "Review request",
+        "confrmTtlA": "Approve transfer request",
+        "confrmTxtA": "Are you sure to approve the transfer request?",
+        "confrmTtlR": "Deny request",
+        "confrmTxtR": "Are you sure to deny the request?",
+        "successTtlA": "Transfer Request Approved",
+        "successTxtA": "The request {{CONSECUTIVO}} has been approved",
+        "successTtlR": "Transfer Request Denied",
+        "successTxtR": "The request {{CONSECUTIVO}} has been denied"
+      },
+      "confirmar": {
+        "title": "Confirm transfer completion",
+        "subtitle": "Check the request information and confirm if you already have the elements",
+        "accion": "Confirm Transfer Request",
+        "confrmTtl": "Confirmar Recepción",
+        "confrmTxt": "Are you sure to confirm you already have the elements?",
+        "successTtl": "Transfer completed",
+        "successTxt": "The transfer request {{CONSECUTIVO}} has been completed"
+      },
+      "editar": {
+        "title": "Update transfer request",
+        "subtitle": "Check the denial reasons and update the request",
+        "accion": "Update Transfer Request",
+        "confrmTtl": "Update Request",
+        "confrmTxt": "Are you sure to update the trasfer request?",
+        "successTtl": "Transfer Request Updated",
+        "successTxt": "The transfer request {{CONSECUTIVO}} has been updated"
+      },
+      "ver": {
+        "title": "See Transfer Request details",
+        "subtitle": "This form includes the details of the transfer request"
+      },
+      "estados": {
+        "tramite": "Awaiting review",
+        "aprobado": "Approved",
+        "rechazado": "Denied",
+        "confirmado": "Confirmed"
       },
       "funcActual": "Current possessor of the good ",
       "funcDestino": "New possessor of the good ",
       "noEmail": "There is no email registered",
-      "noCargo": "There is no position registered",
-      "enviarSolicitud": "Create Request"
+      "noCargo": "There is no position registered"
     }
   }
 }

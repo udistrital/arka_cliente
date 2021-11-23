@@ -1,11 +1,9 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
 import Swal from 'sweetalert2';
 import { EstadoMovimiento, FormatoTipoMovimiento, Movimiento } from '../../../@core/data/models/entrada/entrada';
 import { DetalleTraslado } from '../../../@core/data/models/movimientos_arka/movimientos_arka';
 import { MovimientosHelper } from '../../../helpers/movimientos/movimientosHelper';
-import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
 import { TrasladosHelper } from '../../../helpers/movimientos/trasladosHelper';
 import { PopUpManager } from '../../../managers/popUpManager';
 import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
@@ -26,16 +24,16 @@ export class CrudTrasladoComponent implements OnInit {
   title: string;
   subtitle: string;
   boton: string;
+  consecutivo: string = '';
   @Input() modoCrud: string = 'registrar'; // registrar | editar | ver | revisar | confirmar
   @Input() trasladoId: number = 0;
+  @Output() accion: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   constructor(
     private translate: TranslateService,
-    private router: Router,
     private pUpManager: PopUpManager,
     private movimientosHelper: MovimientosHelper,
     private trasladosHelper: TrasladosHelper,
-    private tercerosHelper: TercerosHelper,
     private entradasHelper: EntradaHelper,
   ) {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
@@ -43,7 +41,6 @@ export class CrudTrasladoComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log(this.trasladoId, this.modoCrud);
     this.getFormatoTraslado();
     this.loadEstados();
     if (this.modoCrud === 'registrar') {
@@ -66,11 +63,13 @@ export class CrudTrasladoComponent implements OnInit {
     this.trasladosHelper.getTraslado(trasladoId).subscribe(res => {
       if (res) {
         this.trasladoData = {};
+        const consecutivo = JSON.parse(res.Detalle).Consecutivo;
         this.trasladoData.origen = res.FuncionarioOrigen;
         this.trasladoData.destino = res.FuncionarioDestino;
         this.trasladoData.ubicacion = res.Ubicacion;
         this.trasladoData.elementos = res.Elementos;
         this.trasladoData.observaciones = res.Observaciones;
+        this.consecutivo = consecutivo ? consecutivo : '';
         this.showForm = true;
       }
     });
@@ -86,7 +85,6 @@ export class CrudTrasladoComponent implements OnInit {
 
   public setValidness(event) {
     this.valid = event;
-    console.log(this.trasladoData)
   }
 
   public confirm(rechazar: boolean = false) {
@@ -116,14 +114,15 @@ export class CrudTrasladoComponent implements OnInit {
     const Ubicacion = val.controls.ubicacion.value.ubicacion;
     const Observacion = val.controls.observaciones.value.observaciones;
     const estadoId = this.modoCrud === 'registrar' || this.modoCrud === 'editar' ? 'Traslado En Trámite' :
-      rechazar ? 'Traslado Rechazado' : this.modoCrud === 'revisar' ? 'Traslado Aceptado' : this.modoCrud === 'confirmar' ? 'Traslado Confirmado' : '';
+      rechazar ? 'Traslado Rechazado' : this.modoCrud === 'revisar' ? 'Traslado Aprobado' :
+        this.modoCrud === 'confirmar' ? 'Traslado Confirmado' : '';
 
-      const detalle = <DetalleTraslado>{
+    const detalle = <DetalleTraslado>{
       FuncionarioOrigen,
       FuncionarioDestino,
       Ubicacion,
       Elementos: [969], // Cuando esté, se debe poner el id de cada elemento,
-      Consecutivo: '',
+      Consecutivo: this.consecutivo ? this.consecutivo : '',
     };
 
     const movimiento = <Movimiento>{
@@ -147,13 +146,13 @@ export class CrudTrasladoComponent implements OnInit {
 
   private updateTraslado(movimiento, rechazar: boolean) {
     this.entradasHelper.putMovimiento(movimiento).toPromise().then((res: any) => {
-        this.alertSuccess(rechazar, 'consec');
+      this.alertSuccess(rechazar, JSON.parse(res.Detalle).Consecutivo);
     });
   }
 
   private postTraslado(movimiento) {
     this.trasladosHelper.postTraslado(movimiento).subscribe((res: any) => {
-      this.alertSuccess(false, 'consec');
+      this.alertSuccess(false, JSON.parse(res.Detalle).Consecutivo);
     });
   }
 
@@ -168,6 +167,7 @@ export class CrudTrasladoComponent implements OnInit {
       showConfirmButton: false,
       timer: 3000,
     };
+    this.accion.emit(true);
     this.pUpManager.showAlertWithOptions(options);
   }
 
