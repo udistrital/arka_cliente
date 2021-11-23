@@ -93,8 +93,10 @@ export class TablaElementosAsignadosComponent implements OnInit {
         });
         if (this.edicionSalida) {
             this.salidasHelper.getSalida(this.salida_id).subscribe(res1 => {
-                const elementosConsumo = res.filter(el => el.SubgrupoCatalogoId.TipoBienId.Id === 1).filter(el => res1.Elementos.some(sal=>sal.ElementoActaId == el.Id))
-                const elementosDevolutivo = res.filter(el => el.SubgrupoCatalogoId.TipoBienId.Id !== 1).filter(el => res1.Elementos.some(sal=>sal.ElementoActaId == el.Id));
+                const elementosConsumo = res.filter(el => el.SubgrupoCatalogoId.TipoBienId.Id === 1).
+				filter(el => res1.Elementos.some(sal=>sal.ElementoActaId === el.Id));
+                const elementosDevolutivo = res.filter(el => el.SubgrupoCatalogoId.TipoBienId.Id !== 1).
+				filter(el => res1.Elementos.some(sal=>sal.ElementoActaId === el.Id));
                 this.sourceDevolutivo = new MatTableDataSource<ElementoActa>(elementosDevolutivo);
                 this.sourceConsumo = new MatTableDataSource<ElementoActa>(elementosConsumo);
             });

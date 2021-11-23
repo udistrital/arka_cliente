@@ -552,14 +552,14 @@ export class TablaEntradaAprobadaComponent implements OnInit {
   ngOnInit() {
 
     if (!this.edicion) {
-    	this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
-    	  this.loadTablaSettings();
-    	})
+        this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
+        this.loadTablaSettings();
+        });
 	} else {
-    	this.consecutivoEntrada = this.idEntradaParametro 
-    	this.actaRecibidoId = this.actaParametro 
-    	this.detalle = true
-    	this.loadEntradaEspecifica();
+       this.consecutivoEntrada = this.idEntradaParametro;
+       this.actaRecibidoId = this.actaParametro; 
+       this.detalle = true;
+       this.loadEntradaEspecifica();
 	}
 
   }
