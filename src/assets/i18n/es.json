@@ -141,6 +141,17 @@
               }
             }
           },
+          "traslados": {
+            "name": "Traslados",
+            "children": {
+              "consultarTraslado": {
+                "name": "Consultar Traslados"
+              },
+              "aprobarTraslado": {
+                "name": "Aprobar Traslados"
+              }
+            }
+          },
           "bajas": {
             "name": "Bajas"
           },

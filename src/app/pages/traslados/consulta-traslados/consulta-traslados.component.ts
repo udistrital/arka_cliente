@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { LocalDataSource } from 'ngx-smart-table';
+import { ConfiguracionService } from '../../../@core/data/configuracion.service';
 import { EstadoMovimiento } from '../../../@core/data/models/entrada/entrada';
 import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
 import { TrasladosHelper } from '../../../helpers/movimientos/trasladosHelper';
@@ -30,6 +31,7 @@ export class ConsultaTrasladosComponent implements OnInit {
     private route: ActivatedRoute,
     private trasladosHelper: TrasladosHelper,
     private pUpManager: PopUpManager,
+    private confService: ConfiguracionService,
   ) { }
 
   ngOnInit() {
@@ -162,6 +164,7 @@ export class ConsultaTrasladosComponent implements OnInit {
         position: 'right',
         delete: this.modo === 'consulta',
         edit: true,
+        add: this.confService.getAccion('registrarTraslado') !== undefined,
       },
       add: {
         addButtonContent: '<i class="fas fa-plus" title="' + t.registrar + '" aria-label="' + t.registrar + '"></i>',
