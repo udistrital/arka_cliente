@@ -75,6 +75,39 @@ export class CrudTrasladoComponent implements OnInit {
     });
   }
 
+  public rechazar() {
+    (Swal as any).fire({
+      title: this.translate.instant('GLOBAL.traslados.' + this.modoCrud + '.confrmTtlR'),
+      text: this.translate.instant('GLOBAL.traslados.' + this.modoCrud + '.confrmTxtR'),
+      type: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: this.translate.instant('GLOBAL.si'),
+      cancelButtonText: this.translate.instant('GLOBAL.no'),
+    }).then((result) => {
+      if (result.value) {
+        (Swal as any).mixin({
+          input: 'text',
+          confirmButtonText: this.translate.instant('GLOBAL.Acta_Recibido.VerificacionActa.Rechazar'),
+          showCancelButton: true,
+          progressSteps: ['1'],
+        }).queue([
+          {
+            title: this.translate.instant('GLOBAL.traslados.revisar.confrmRechazoTtl'),
+            text: this.translate.instant('GLOBAL.traslados.revisar.confrmRechazoTtx'),
+          },
+        ]).then((result2) => {
+          if (result2.value) {
+            this.trasladoData.controls.observaciones.value.observaciones += ' // Razón de rechazo: ' + result2.value;
+            this.buildMovimiento(true);
+          }
+        });
+
+      }
+    });
+  }
+
   private getFormatoTraslado() {
     this.movimientosHelper.getFormatoByNombre('Traslado').subscribe(res => {
       if (res.length) {

@@ -332,7 +332,7 @@ export class FormTrasladoComponent implements OnInit {
       .debounceTime(250)
       .subscribe(() => {
         this.valid.emit(this.formTraslado.valid);
-        if (this.formTraslado.valid) {
+        if (this.formTraslado.valid && this.load) {
           this.trasladoInfoChange.emit(this.formTraslado);
         }
       });

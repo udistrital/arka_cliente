@@ -1118,6 +1118,8 @@
         "confrmTtlA": "Approve transfer request",
         "confrmTxtA": "Are you sure to approve the transfer request?",
         "confrmTtlR": "Deny request",
+        "confrmRechazoTtl": "Request denial reason",
+        "confrmRechazoTtx": "Enter the instructions to correct the request",
         "confrmTxtR": "Are you sure to deny the request?",
         "successTtlA": "Transfer Request Approved",
         "successTxtA": "The request {{CONSECUTIVO}} has been approved",
