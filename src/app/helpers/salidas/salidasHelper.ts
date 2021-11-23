@@ -89,6 +89,23 @@ export class SalidaHelper {
         );
     }
 
+    public editarSalida(salidasData, salidaId: number = 0) {
+        this.rqManager.setPath('ARKA_SERVICE');
+        return this.rqManager.put('salida/' + salidaId, salidasData).pipe(
+            map(
+                (res) => {
+                    if (res['Type'] === 'error') {
+                        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.error_salida_no_registrada'));
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
+
+
+
     /**
      * Entradas Get
      * If the response has errors in the OAS API it should show a popup message with an error.
