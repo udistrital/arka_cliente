@@ -292,7 +292,7 @@ export class ConsultaSalidasComponent implements OnInit {
        this.editaentrada = true;
        this.filaSeleccionada = event.data;
        this.cargarSalida();
-	}
+    }
   }
 
   onRegister() {
