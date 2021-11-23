@@ -61,6 +61,10 @@ const routes: Routes = [{
       loadChildren: './parametros/parametros.module#ParametrosModule',
     },
     {
+      path: 'traslados',
+      loadChildren: './traslados/traslados.module#TrasladosModule',
+    },
+    {
       path: '',
       redirectTo: 'dashboard',
       pathMatch: 'full',

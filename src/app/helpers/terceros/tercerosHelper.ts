@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { RequestManager } from '../../managers/requestManager';
 import { PopUpManager } from '../../managers/popUpManager';
 import { map } from 'rxjs/operators';
+import { TranslateService } from '@ngx-translate/core';
 
 @Injectable({
     providedIn: 'root',
@@ -9,7 +10,8 @@ import { map } from 'rxjs/operators';
 export class TercerosHelper {
 
     constructor(private rqManager: RequestManager,
-        private pUpManager: PopUpManager) { }
+        private pUpManager: PopUpManager,
+        private translate: TranslateService) { }
 
     /**
       * Trae la lista de terceros activos
@@ -84,8 +86,8 @@ export class TercerosHelper {
      * @param idTercero De especificarse, adicionalmente filtra por ese ID
      */
     public getTercerosByCriterio(criterio: string, idTercero: number = 0) {
-        this.rqManager.setPath('ARKA_SERVICE');
-        let path = 'terceros/tipo/' + criterio;
+        this.rqManager.setPath('TERCEROS_MID_SERVICE');
+        let path = 'tipo/' + criterio;
         if (idTercero > 0) {
             path += '/' + idTercero;
         }
@@ -94,6 +96,51 @@ export class TercerosHelper {
                 (res) => {
                     if (res === 'error' || !Array.isArray(res)) {
                         this.pUpManager.showErrorAlert('No se encontro ningun tercero que pueda ejercer como supervisor');
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
+
+    /**
+     * getCargo
+     *
+     * Trae todos el cargo de un determinado funcionario
+     * @param idTercero Id del funcionario
+     */
+     public getCargo(idTercero: number) {
+        this.rqManager.setPath('TERCEROS_MID_SERVICE');
+        const path = `propiedad/cargo/${idTercero}`;
+        return this.rqManager.get(path).pipe(
+            map(
+                (res) => {
+                    if (res === 'error' || !Array.isArray(res)) {
+                        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.error_cargos'));
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
+
+    /**
+     * getCorreo
+     *
+     * Trae el correo de un tercero determinado
+     * @param idTercero Id del tercero
+     */
+    public getCorreo(idTercero: number) {
+        this.rqManager.setPath('TERCEROS_SERVICE');
+        let path = 'info_complementaria_tercero?limit=1&fields=Dato&sortby=Id&order=desc';
+        path += '&query=Activo%3Atrue,InfoComplementariaId__Nombre__icontains%3Acorreo,TerceroId__Id%3A' + idTercero;
+        return this.rqManager.get(path).pipe(
+            map(
+                (res) => {
+                    if (res === 'error' || !Array.isArray(res)) {
+                        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.error_correo'));
                         return undefined;
                     }
                     return res;

@@ -157,14 +157,6 @@
 
         <ngx-form-elementos-seleccionados *ngIf="devolutivoSeleccionados" (DatosEnviados)="AjustarDatos2(sourceDevolutivo, $event)">
         </ngx-form-elementos-seleccionados>
-        <div class="form-group  col-lg-12">
-          <label>{{'GLOBAL.Acta_Recibido.EdicionActa.Observaciones' | translate}}</label>
-          <div class="input-group">
-            <textarea rows="5" [(ngModel)]="Observaciones"
-              placeholder="Proporciona datos adicionales que no se pueden expresar en el formulario" class="form-control"
-              required></textarea>
-          </div>
-        </div>
       </mat-card-content>
     </mat-tab>
     <mat-tab label="{{'GLOBAL.movimientos.tab_consumo' | translate}}">
@@ -328,14 +320,6 @@
 
         <ngx-form-elementos-seleccionados *ngIf="consumoSeleccionados" (DatosEnviados)="AjustarDatos2(sourceConsumo, $event)">
         </ngx-form-elementos-seleccionados>
-        <div class="form-group col-lg-12">
-          <label>{{'GLOBAL.Acta_Recibido.EdicionActa.Observaciones' | translate}}</label>
-          <div class="input-group">
-            <textarea rows="5" [(ngModel)]="ObservacionesConsumo"
-              placeholder="Proporciona datos adicionales que no se pueden expresar en el formulario"
-              class="form-control" required></textarea>
-          </div>
-        </div>
       </mat-card-content>
     </mat-tab>
   </mat-tab-group>

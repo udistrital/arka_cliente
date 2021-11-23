@@ -292,7 +292,7 @@ export class VerActaRecibidoComponent implements OnInit {
     return new Promise<void>(resolve => {
       this.Actas_Recibido.getSedeDependencia(ubicacionId).toPromise().then(res => {
 
-        const espacioFisico = res[0].EspacioFisicoId.Codigo.substring(0, 4);
+        const espacioFisico = res[0].EspacioFisicoId.CodigoAbreviacion.replace(/[0-9]/g, '');
         const _dependencia = res[0].DependenciaId.Id;
 
         const sede = (() => {
