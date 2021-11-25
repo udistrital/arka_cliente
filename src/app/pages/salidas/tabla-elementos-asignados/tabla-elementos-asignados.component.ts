@@ -351,7 +351,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
           },
           Elementos: [],
         };
-        const elemento = this.crearElemento(currentValue);
+        const elemento = this.crearElemento(currentValue); //incluir el id del elemento
         accumulator[val].Elementos.push(elemento);
         return accumulator;
       }, {});
