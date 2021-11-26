@@ -380,7 +380,7 @@
         <mat-icon>cloud_download</mat-icon>
       </button>
 
-      <ngx-gestionar-elementos [ActaRecibidoId]="actaRecibidoId" [Modo]="'ver'" *ngIf="detalle && !verComponente"></ngx-gestionar-elementos>
+      <ngx-gestionar-elementos [ActaRecibidoId]="actaRecibidoId" [Modo]="'ver'" *ngIf="detalle"></ngx-gestionar-elementos>
 
 	  <ngx-ver-comprobante [transaccion]="transaccionContable"  *ngIf="verComponente"></ngx-ver-comprobante> 
 

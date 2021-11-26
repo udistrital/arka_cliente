@@ -1,22 +1,91 @@
-<p>
-Despliegue Comprobante:
-</p>
-<p>Activo: {{transaccion.Activo}}</p>
-<p>Consecutivo Id: {{transaccion.ConsecutivoId}}</p>
-<p>Descripcion: {{transaccion.Descripcion}}</p>
-<p>Etiquetas: {{transaccion.Etiquetas}}</p>
-<p>Fecha Transacción: {{transaccion.FechaTransaccion}}</p>
+<nb-card-header>
+<h1>Comprobante Contable</h1>
+</nb-card-header>
+
+
+      <div class="row">
+        <div class="col">
+          <p class="text-uppercase"><strong>Consecutivo</strong>:{{transaccion.ConsecutivoId}}</p>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col">
+          <p class="text-uppercase"><strong>Concepto</strong>
+           : {{transaccion.Descripcion}}</p>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col">
+          <p class="text-uppercase"><strong>Fecha Transacción</strong>
+           : {{transaccion.FechaTransaccion}}</p>
+        </div>
+      </div>
+
+
+      <div class="row">
+        <div class="col">
+          <p class="text-uppercase"><strong>Secuencia</strong></p>
+        </div>
+        <div class="col">
+          <p class="text-uppercase"><strong>Tercero</strong></p>
+        </div>
+        <div class="col">
+          <p class="text-uppercase"><strong>Cuenta</strong></p>
+        </div>
+        <div class="col">
+          <p class="text-uppercase"><strong>Nombre Cuenta</strong></p>
+        </div>
+        <div class="col">
+          <p class="text-uppercase"><strong>Descripcion</strong></p>
+        </div>
+        <div class="col">
+          <p class="text-uppercase"><strong>Débito</strong></p>
+        </div>
+        <div class="col">
+          <p class="text-uppercase"><strong>Crédito</strong></p>
+        </div>
+      </div>
+
+
+      <div class="row" *ngFor="let mvto of transaccion.movimientos">
+        <div class="col">
+           <p class="text-uppercase">0</p>
+        </div>
+        <div class="col">
+           <p class="text-uppercase"></p>
+        </div>
+        <div class="col">
+           <p class="text-uppercase">{{mvto.CuentaId}}</p>
+        </div>
+        <div class="col">
+           <p class="text-uppercase">{{mvto.NombreCuenta}}</p>
+        </div>
+        <div class="col">
+           <p class="text-uppercase">{{mvto.Descripcion}}</p>
+        </div>
+        <div class="col" *ngIf="mvto.TipoMovimientoId==344">
+           <p class="text-uppercase">{{mvto.Valor}}</p>
+        </div>
+        <div class="col" *ngIf="mvto.TipoMovimientoId==345">
+           <p class="text-uppercase">0</p>
+        </div>
+        <div class="col" *ngIf="mvto.TipoMovimientoId==345">
+           <p class="text-uppercase">{{mvto.Valor}}</p>
+        </div>
+        <div class="col" *ngIf="mvto.TipoMovimientoId==344">
+           <p class="text-uppercase">0</p>
+        </div>
+      </div>
+
+
+
+
+<!--
+<table style="width:50%">
+<tr><td>Consecutivo</td><td>{{transaccion.ConsecutivoId}}</td></tr>
+<tr><td>Descripcion</td><td>{{transaccion.Descripcion}}</td></tr>
+<tr><td>Fecha Transacción</td><td>{{transaccion.FechaTransaccion}}</td></tr>
 <table>
-	<th>Tercero Id</th>
-	<th>Cuenta Id</th>
-	<th>Nombre Cuenta</th>
-	<th>Tipo Movimiento</th>
-	<th>Valor</th>
-	<tr *ngFor="let mvto of transaccion.movimientos">
-    <td>{{mvto.TerceroId}}</td>
-    <td>{{mvto.CuentaId}}</td>
-    <td>{{mvto.NombreCuenta}}</td>
-    <td>{{mvto.TipoMovimientoId}}</td>
-    <td>{{mvto.Valor}}</td>
-	</tr> 
-</table>
+-->
