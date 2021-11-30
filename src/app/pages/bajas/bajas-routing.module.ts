@@ -5,6 +5,7 @@ import { SolicitudBajasComponent } from './solicitud-bajas/solicitud-bajas.compo
 import { ConsultaBajasComponent } from './consulta-bajas/consulta-bajas.component';
 import { AprobacionBajasComponent } from './aprobacion-bajas/aprobacion-bajas.component';
 import { ConsultaSolicitudBajasComponent } from './consulta-solicitud-bajas/consulta-solicitud-bajas.component';
+import { FormSolicitudComponent } from './form-solicitud/form-solicitud.component';
 
 const routes: Routes = [{
   path: '',
@@ -12,7 +13,7 @@ const routes: Routes = [{
   children: [
     {
       path: 'solicitud_bajas',
-      component: SolicitudBajasComponent,
+      component: FormSolicitudComponent,
     },
     {
       path: 'consulta_bajas',

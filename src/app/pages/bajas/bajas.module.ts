@@ -18,6 +18,7 @@ import { FormElementosSeleccionadosComponent } from './form-elementos-selecciona
 import { TablaElementosAgregadosComponent } from './tabla-elementos-agregados/tabla-elementos-agregados.component';
 import { FormFuncionarioSolicitudComponent } from './form-funcionario-solicitud/form-funcionario-solicitud.component';
 import { DetalleSolicitudComponent } from './detalle-solicitud/detalle-solicitud.component';
+import { FormSolicitudComponent } from './form-solicitud/form-solicitud.component';
 
 
 @NgModule({
@@ -31,6 +32,7 @@ import { DetalleSolicitudComponent } from './detalle-solicitud/detalle-solicitud
     TablaElementosAgregadosComponent,
     FormFuncionarioSolicitudComponent,
     DetalleSolicitudComponent,
+    FormSolicitudComponent,
   ],
   imports: [
     CommonModule,

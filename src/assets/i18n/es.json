@@ -502,6 +502,8 @@
     "error_dependencias":"Error al consultar las dependencias",
     "error_cargos":"Error al consultar el cargo del tercero",
     "error_correo":"Error al consultar el correo del tercero",
+    "errorPlacas": "Error al consultar las placas disponibles",
+    "errorHistorialElemento": "Error al consultar los detalles del elemento",
     "fecha_inicio":"Fecha de inicio",
     "fecha_fin":"Fecha de finalizacion",
     "fechainicio":"Fecha de inicio",
@@ -1169,6 +1171,9 @@
       "funcDestino": "Funcionario Destinatario del Bien",
       "noEmail": "No hay un correo registrado",
       "noCargo": "No hay un cargo registrado"
+    },
+    "bajas": {
+      "errorPLacas": "Erro"
     }
   }
 }

@@ -4,6 +4,7 @@ import { iif } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 import { PopUpManager } from '../../managers/popUpManager';
 import { DisponibilidadMovimientosService } from '../../@core/data/disponibilidad-movimientos.service';
+import { TranslateService } from '@ngx-translate/core';
 
 @Injectable({
     providedIn: 'root',
@@ -14,6 +15,7 @@ export class BajasHelper {
         private rqManager: RequestManager,
         private pUpManager: PopUpManager,
         private dispMvtos: DisponibilidadMovimientosService,
+        private translate: TranslateService,
     ) { }
 
     /**
@@ -127,5 +129,46 @@ export class BajasHelper {
     }
 
 
+    /**
+     * GetElementos
+     * If the response has errors in the OAS API it should show a popup message with an error.
+     * If the response is successs, it returns the object's data.
+     * @returns  <Observable> Lista de elementos que incluyen el texto indicado en su placa
+     */
+    public getElementos(placa: string) {
+        this.rqManager.setPath('ACTA_RECIBIDO_SERVICE');
+        return this.rqManager.get('elemento?fields=Id,Placa&limit=-1&sortby=Placa&order=desc&query=Placa__icontains:' + placa).pipe(
+            map(
+                (res) => {
+                    if (res === 'error') {
+                        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.errorPlacas'));
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
+
+    /**
+     * GetDetalleElemento
+     * If the response has errors in the OAS API it should show a popup message with an error.
+     * If the response is successs, it returns the object's data.
+     * @returns  <Observable> Detalle requerido para hacer la baja del elemento
+     */
+    public getDetalleElemento(id: number) {
+        this.rqManager.setPath('ARKA_SERVICE');
+        return this.rqManager.get('bajas_elementos/elemento/' + id).pipe(
+            map(
+                (res) => {
+                    if (res === 'error') {
+                        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.errorHistorialElemento'));
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
 
 }
