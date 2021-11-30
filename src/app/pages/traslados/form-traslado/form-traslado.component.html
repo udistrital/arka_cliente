@@ -1,0 +1,229 @@
+<mat-vertical-stepper [nbSpinner]="!load" [linear]="true" #stepper>
+  <mat-step [stepControl]="formTraslado.get('origen')" label="{{'GLOBAL.traslados.funcActual' | translate}}" >
+    <form [formGroup]="formTraslado.get('origen')">
+      <div class="row">
+        <div class="form-group col-sm">
+          <label>{{'GLOBAL.funcionario' | translate}}</label>
+          <input matInput type="text" class="form-control" [matAutocomplete]="autoOrigen"
+            placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}" formControlName="tercero">
+          <mat-autocomplete #autoOrigen="matAutocomplete" [displayWith]="muestraFuncionario"
+            (optionSelected)="getInfoTercero('origen')">
+            <mat-option *ngFor="let func of funcionariosFiltrados | async" [value]="func">
+              {{muestraFuncionario(func)}}
+            </mat-option>
+          </mat-autocomplete>
+          <p class="error-field"
+            *ngIf="formTraslado.get('origen.tercero').errors && formTraslado.get('origen.tercero').errors.required">
+            {{'GLOBAL.placeholder' | translate}}</p>
+          <p class="error-field"
+            *ngIf="formTraslado.get('origen.tercero').errors && formTraslado.get('origen.tercero').errors.errorLongitudMinima">
+            {{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}</p>
+          <p class="error-field"
+            *ngIf="formTraslado.get('origen.tercero').errors && formTraslado.get('origen.tercero').errors.terceroNoValido">
+            {{'GLOBAL.Errores.ErrorTercero' | translate}}</p>
+        </div>
+        <div class="form-group col-sm">
+          <label>{{'GLOBAL.Cargo' | translate}}</label>
+          <input matInput type="text" class="form-control" formControlName="cargo"
+            placeholder="{{'GLOBAL.Cargo' | translate}}">
+        </div>
+        <div class="form-group col-sm">
+          <label>{{'GLOBAL.Correo' | translate}}</label>
+          <input matInput type="text" class="form-control" formControlName="email"
+            placeholder="{{'GLOBAL.Correo' | translate}}">
+        </div>
+      </div>
+      <div class="row">
+        <div class="form-group col-sm">
+          <button mat-flat-button color="primary" matStepperNext class="float-right text-uppercase"
+            [disabled]="formTraslado.get('origen.tercero').invalid">
+            {{'GLOBAL.siguiente' | translate}}
+          </button>
+        </div>
+      </div>
+    </form>
+  </mat-step>
+  <mat-step [stepControl]="formTraslado.get('destino')" label="{{'GLOBAL.traslados.funcDestino' | translate}}" >
+    <form [formGroup]="formTraslado.get('destino')">
+      <div class="row">
+        <div class="form-group col-sm">
+          <label>{{'GLOBAL.funcionario' | translate}}</label>
+          <input matInput type="text" class="form-control" [matAutocomplete]="autoDestino"
+            placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}" formControlName="tercero">
+          <mat-autocomplete #autoDestino="matAutocomplete" [displayWith]="muestraFuncionario"
+          (optionSelected)="getInfoTercero('destino')">
+            <mat-option *ngFor="let func of tercerosDestino | async" [value]="func">
+              {{muestraFuncionario(func)}}
+            </mat-option>
+          </mat-autocomplete>
+          <p class="error-field"
+            *ngIf="formTraslado.get('destino.tercero').errors && formTraslado.get('destino.tercero').errors.required">
+            {{'GLOBAL.placeholder' | translate}}</p>
+          <p class="error-field"
+            *ngIf="formTraslado.get('destino.tercero').errors && formTraslado.get('destino.tercero').errors.errorLongitudMinima">
+            {{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}</p>
+          <p class="error-field"
+            *ngIf="formTraslado.get('destino.tercero').errors && formTraslado.get('destino.tercero').errors.terceroNoValido">
+            {{'GLOBAL.Errores.ErrorTercero' | translate}}</p>
+          <p class="error-field"
+            *ngIf="formTraslado.get('destino.tercero').errors && formTraslado.get('destino.tercero').errors.mismoTercero">
+            {{'GLOBAL.Errores.MismoTercero' | translate}}</p>
+        </div>
+        <div class="form-group col-sm">
+          <label>{{'GLOBAL.Cargo' | translate}}</label>
+          <input matInput type="text" class="form-control" formControlName="cargo"
+            placeholder="{{'GLOBAL.Cargo' | translate : {NUM : 4} }}">
+        </div>
+        <div class="form-group col-sm">
+          <label>{{'GLOBAL.Correo' | translate}}</label>
+          <input matInput type="text" class="form-control" formControlName="email"
+            placeholder="{{'GLOBAL.Correo' | translate : {NUM : 4} }}">
+        </div>
+      </div>
+      <div class="row">
+        <div class="form-group col-sm">
+          <button mat-flat-button color="primary" matStepperPrevious class="float-left text-uppercase">
+            {{'GLOBAL.anterior' | translate}}
+          </button>
+          <button mat-flat-button color="primary" matStepperNext class="float-right text-uppercase"
+            [disabled]="formTraslado.get('destino.tercero').invalid">
+            {{'GLOBAL.siguiente' | translate}}
+          </button>
+        </div>
+      </div>
+    </form>
+  </mat-step>
+  <mat-step [stepControl]="formTraslado.get('ubicacion')" label="Ubicacion Destino">
+    <form [formGroup]="formTraslado.get('ubicacion')">
+      <div class="row">
+        <div class="form-group col-sm">
+          <label class="label">{{'GLOBAL.Acta_Recibido.RegistroActa.Sede' | translate}}</label>
+          <mat-select type="text" class="form-control" formControlName="sede" (selectionChange)="getUbicaciones();">
+            <mat-option value="">--{{ 'GLOBAL.seleccionar' | translate }}--</mat-option>
+            <mat-option *ngFor="let sede of sedes" [(value)]="sede.Id">{{sede.Nombre}}</mat-option>
+          </mat-select>
+          <p class="error-field" *ngIf="formTraslado.get('ubicacion.sede').invalid">
+            {{'GLOBAL.Errores.ErrorRequerido' | translate}}</p>
+        </div>
+        <div class="form-group col-sm">
+          <label class="label">{{'GLOBAL.Acta_Recibido.RegistroActa.Dependencia' | translate}}</label>
+          <input matInput type="text" formControlName="dependencia" class="form-control"
+            placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}" [matAutocomplete]="auto">
+          <mat-autocomplete #auto="matAutocomplete" [displayWith]="muestraDependencia"
+            (optionSelected)="getUbicaciones()">
+            <mat-option *ngFor="let item of dependencias" [value]="item">
+              {{item.Nombre}}
+            </mat-option>
+          </mat-autocomplete>
+          <p class="error-field"
+            *ngIf="formTraslado.get('ubicacion.dependencia').errors && formTraslado.get('ubicacion.dependencia').errors.required">
+            {{'GLOBAL.placeholder' | translate}}</p>
+          <p class="error-field"
+            *ngIf="formTraslado.get('ubicacion.dependencia').errors && formTraslado.get('ubicacion.dependencia').errors.errorLongitudMinima">
+            {{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}</p>
+          <p class="error-field"
+            *ngIf="formTraslado.get('ubicacion.dependencia').errors && formTraslado.get('ubicacion.dependencia').errors.dependenciaNoValido">
+            {{'GLOBAL.Errores.ErrorDependencia' | translate}}</p>
+        </div>
+        <div class="form-group col-sm">
+          <label class="ubicacion">{{'GLOBAL.Acta_Recibido.RegistroActa.Ubicacion' | translate}}</label>
+          <mat-select type="text" class="form-control ubicacion" formControlName="ubicacion">
+            <mat-option value="">--{{ 'GLOBAL.seleccionar' | translate }}--</mat-option>
+            <mat-option *ngFor="let ubicacion of ubicacionesFiltradas" [(value)]="ubicacion.Id">
+              {{ubicacion.Nombre}}
+            </mat-option>
+          </mat-select>
+          <p class="error-field ubicacion" *ngIf="formTraslado.get('ubicacion.ubicacion').invalid">
+            {{'GLOBAL.Errores.ErrorRequerido' | translate}}</p>
+        </div>
+      </div>
+      <div class="row">
+        <div class="form-group col-sm">
+          <button mat-flat-button color="primary" matStepperPrevious class="float-left text-uppercase">
+            {{'GLOBAL.anterior' | translate}}
+          </button>
+          <button mat-flat-button color="primary" matStepperNext class="float-right text-uppercase"
+            [disabled]="formTraslado.get('ubicacion.ubicacion').invalid">
+            {{'GLOBAL.siguiente' | translate}}
+          </button>
+        </div>
+      </div>
+    </form>
+  </mat-step>
+  <mat-step [stepControl]="formTraslado.get('elementos')" label="{{'GLOBAL.elementos' | translate}}">
+    <form [formGroup]="formTraslado">
+      <div class="tabla-container">
+        <mat-table [dataSource]="dataSource" formArrayName="elementos" matSort>
+          <ng-container matColumnDef="acciones">
+            <th id="col-acciones" mat-header-cell *matHeaderCellDef class="acciones">
+              <button mat-icon-button color="primary" [disabled]="modo !== 'create'" (click)="addElemento()"
+                matTooltip="{{'GLOBAL.Acta_Recibido.CapturarElementos.AgregarElemento' | translate }}">
+                <mat-icon>add_box</mat-icon>
+              </button>
+            </th>
+            <td mat-cell *matCellDef="let element; let rowIndex = index" class="acciones">
+              <button mat-icon-button color="secondary" [disabled]="modo !== 'create'" (click)="removeElemento(rowIndex)"
+                matTooltip="{{'GLOBAL.Acta_Recibido.CapturarElementos.EliminarElemento' | translate }}">
+                <mat-icon>delete_outline</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="placa">
+            <th id="placa" mat-header-cell *matHeaderCellDef mat-sort-header>
+              {{ 'GLOBAL.Placa' | translate }}
+            </th>
+            <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="getActualIndex(rowIndex)">
+              <input nbInput type="text" class="cell" fieldSize="tiny" min="0" formControlName="placa"
+                placeholder="{{'GLOBAL.Placa' | translate }}">
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="nombre">
+            <th id="placa" mat-header-cell *matHeaderCellDef mat-sort-header>
+              {{ 'GLOBAL.Nombre' | translate }}
+            </th>
+            <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="getActualIndex(rowIndex)">
+              <input nbInput type="text" class="cell" fieldSize="tiny" min="0" formControlName="nombre"
+                placeholder="{{'GLOBAL.Nombre' | translate }}">
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        </mat-table>
+        <mat-paginator #paginator [pageSizeOptions]="[10, 25, 50]"></mat-paginator>
+      </div>
+      <div class="botones">
+        <button mat-flat-button color="primary" matStepperPrevious class="float-left text-uppercase">
+          {{'GLOBAL.anterior' | translate}}
+        </button>
+        <button mat-flat-button color="primary" matStepperNext class="float-right text-uppercase"
+          [disabled]="formTraslado.get('elementos').invalid">
+          {{'GLOBAL.siguiente' | translate}}
+        </button>
+      </div>
+    </form>
+  </mat-step>
+  <mat-step [stepControl]="formTraslado.get('observaciones')" label="{{'GLOBAL.observaciones' | translate}}">
+    <form [formGroup]="formTraslado.get('observaciones')">
+      <div class="row">
+        <div class="form-group col-sm">
+          <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Observaciones' | translate}}</label>
+          <div class="input-group">
+            <textarea rows="5" placeholder="{{'GLOBAL.Acta_Recibido.RegistroActa.Observaciones2' | translate}}"
+              class="form-control" formControlName="observaciones">
+              </textarea>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="form-group col-sm">
+          <button mat-flat-button color="primary" matStepperPrevious class="float-left text-uppercase">
+            {{'GLOBAL.anterior' | translate}}
+          </button>
+        </div>
+      </div>
+    </form>
+  </mat-step>
+</mat-vertical-stepper>
