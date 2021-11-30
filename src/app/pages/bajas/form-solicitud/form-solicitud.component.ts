@@ -23,9 +23,8 @@ export class FormSolicitudComponent implements OnInit {
   @Input() modo: string = 'create'; // get | update
   @Input() bajaInfo: any;
   @Output() bajaInfoChange: EventEmitter<any> = new EventEmitter<any>();
-  displayedColumns: string[] = ['acciones', 'placa', 'nombre', 'marca', 'subgrupo', 'tipoBien', 'entrada',
-    'salida', 'sede', 'dependencia', 'ubicacion', 'funcionario'];
-
+  displayedColumns: string[] = ['acciones', 'placa', 'nombre', 'subgrupo', 'tipoBien', 'entrada', 'salida',
+    'funcionario', 'marca', 'sede', 'dependencia', 'ubicacion'];
 
   constructor(
     private translate: TranslateService,

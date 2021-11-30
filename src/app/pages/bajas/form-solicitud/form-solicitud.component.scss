@@ -2,9 +2,9 @@ mat-table {
     overflow-x: scroll;
 }
 
-input,
-mat-select {
-    height: auto;
+mat-paginator {
+    display: flex;
+    justify-content: center;
 }
 
 label {
@@ -17,14 +17,10 @@ label {
 }
 
 th,
-td {
-  width: 160px;
-}
-
-.tabla-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+td,
+input {
+    height: 50px;
+    width: 160px;
 }
 
 .botones {
