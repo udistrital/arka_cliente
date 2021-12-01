@@ -49,9 +49,9 @@
       </div>
 
 
-      <div class="row" *ngFor="let mvto of transaccion.movimientos">
+      <div class="row" *ngFor="let mvto of transaccion.movimientos; let i= index;">
         <div class="col">
-           <p class="text-uppercase">0</p>
+           <p class="text-uppercase">{{[i+1]}}</p>
         </div>
         <div class="col">
            <p class="text-uppercase"></p>
@@ -76,6 +76,31 @@
         </div>
         <div class="col" *ngIf="mvto.TipoMovimientoId==344">
            <p class="text-uppercase">0</p>
+        </div>
+      </div>
+
+
+      <div class="row">
+        <div class="col">
+           <p class="text-uppercase"></p>
+        </div>
+        <div class="col">
+           <p class="text-uppercase"></p>
+        </div>
+        <div class="col">
+           <p class="text-uppercase"></p>
+        </div>
+        <div class="col">
+           <p class="text-uppercase"></p>
+        </div>
+        <div class="col">
+           <p class="text-uppercase">Total</p>
+        </div>
+        <div class="col">
+           <p class="text-uppercase">{{totalDebitos}}</p>
+        </div>
+        <div class="col">
+           <p class="text-uppercase">{{totalCreditos}}</p>
         </div>
       </div>
 
