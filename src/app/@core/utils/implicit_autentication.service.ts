@@ -96,6 +96,15 @@ export class ImplicitAutenticationService {
         this.clearUrl();
     }
 
+    public getMail() {
+        const rolePromise = new Promise((resolve, reject) => {
+            this.user$.subscribe((data: any) => {
+                const { userService } = data;
+                resolve(userService.email);
+            });
+        });
+        return rolePromise;
+    }
 
     updateAuth(payload) {
         const user = localStorage.getItem('user');
