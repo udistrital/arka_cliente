@@ -1,0 +1,22 @@
+<mat-card-title>
+  {{ title }} {{ consecutivo }}
+</mat-card-title>
+<mat-card-subtitle>
+  {{ subtitle }}
+</mat-card-subtitle>
+<mat-card-content>
+  <ngx-form-solicitud *ngIf="showForm" (valid)="setValidness($event)" [(bajaInfo)]="bajaData" [modo]="modoForm">
+  </ngx-form-solicitud>
+</mat-card-content>
+<mat-card-actions>
+  <div class="justify-content-center" style="padding-bottom: 3rem;">
+    <button mat-flat-button color="primary" class="float-left text-uppercase" *ngIf="modoCrud === 'revisar'"
+      [disabled]="!valid" (click)="rechazar()">
+      {{'GLOBAL.bajas.revisar.confrmTtlR' | translate}}
+    </button>
+    <button mat-flat-button color="primary" class="float-right text-uppercase" [disabled]="!valid" (click)="confirm(false)"
+      *ngIf="modoCrud !== 'ver'">
+      {{ boton }}
+    </button>
+  </div>
+</mat-card-actions>

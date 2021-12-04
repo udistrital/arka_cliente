@@ -11,12 +11,14 @@ import { StoreModule } from '@ngrx/store';
 import { ListService } from '../../@core/store/services/list.service';
 import { ThemeModule } from '../../@theme/theme.module';
 import { FormSolicitudComponent } from './form-solicitud/form-solicitud.component';
+import { CrudBajasComponent } from './crud-bajas/crud-bajas.component';
 
 
 @NgModule({
   declarations: [
     BajasComponent,
     FormSolicitudComponent,
+    CrudBajasComponent,
   ],
   imports: [
     CommonModule,
