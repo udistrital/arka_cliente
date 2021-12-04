@@ -5,6 +5,7 @@ import { map, switchMap } from 'rxjs/operators';
 import { PopUpManager } from '../../managers/popUpManager';
 import { DisponibilidadMovimientosService } from '../../@core/data/disponibilidad-movimientos.service';
 import { TranslateService } from '@ngx-translate/core';
+import { TrSoporteMovimiento } from '../../@core/data/models/movimientos_arka/movimientos_arka';
 
 @Injectable({
     providedIn: 'root',
@@ -92,13 +93,14 @@ export class BajasHelper {
      * If the response is successs, it returns the object's data.
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
      */
-    public getSolicitudes() {
+    public getSolicitudes(revComite: boolean, revAlmancen: boolean) {
+        const query = '?revComite=' + revComite + '&revAlmacen=' + revAlmancen;
         this.rqManager.setPath('ARKA_SERVICE');
-        return this.rqManager.get('bajas_elementos/solicitud').pipe(
+        return this.rqManager.get('bajas_elementos/solicitud' + query).pipe(
             map(
                 (res) => {
                     if (res === 'error') {
-                        this.pUpManager.showErrorAlert('No se pudo consultar el contrato contratos');
+                        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.bajas.consultar.errTxt'));
                         return undefined;
                     }
                     return res;
@@ -170,5 +172,48 @@ export class BajasHelper {
             ),
         );
     }
+
+    /**
+     * PostBaja
+     * If the response has errors in the OAS API it should show a popup message with an error.
+     * If the response is successs, it returns the object's data.
+     * @returns  <Observable> Consecutivo de la baja generada
+     */
+    public postBaja(movimiento: TrSoporteMovimiento) {
+        this.rqManager.setPath('ARKA_SERVICE');
+        return this.rqManager.post('bajas_elementos/', movimiento).pipe(
+            map(
+                (res) => {
+                    if (res['Type'] === 'error') {
+                        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.bajas.registro.errTxt'));
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
+
+    /**
+     * PutBaja
+     * If the response has errors in the OAS API it should show a popup message with an error.
+     * If the response is successs, it returns the object's data.
+     * @returns  <Observable> Consecutivo de la baja y nuevo SoporteZ
+     */
+    public putBaja(movimiento: TrSoporteMovimiento, movimientoId: number) {
+        this.rqManager.setPath('ARKA_SERVICE');
+        return this.rqManager.put2('bajas_elementos/', movimiento, movimientoId).pipe(
+            map(
+                (res) => {
+                    if (res['Type'] === 'error') {
+                        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.bajas.editar.errTxt'));
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
+
 
 }
