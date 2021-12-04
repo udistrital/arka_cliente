@@ -1,31 +1,26 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { BajasComponent } from './bajas.component';
-import { SolicitudBajasComponent } from './solicitud-bajas/solicitud-bajas.component';
 import { ConsultaBajasComponent } from './consulta-bajas/consulta-bajas.component';
-import { AprobacionBajasComponent } from './aprobacion-bajas/aprobacion-bajas.component';
-import { ConsultaSolicitudBajasComponent } from './consulta-solicitud-bajas/consulta-solicitud-bajas.component';
-import { FormSolicitudComponent } from './form-solicitud/form-solicitud.component';
 
 const routes: Routes = [{
   path: '',
   component: BajasComponent,
   children: [
     {
-      path: 'solicitud_bajas',
-      component: FormSolicitudComponent,
-    },
-    {
       path: 'consulta_bajas',
       component: ConsultaBajasComponent,
+      data: { modo: 'consulta' },
     },
     {
-      path: 'consulta_solicitud_bajas',
-      component: ConsultaSolicitudBajasComponent,
+      path: 'revision_bajas',
+      component: ConsultaBajasComponent,
+      data: { modo: 'revision' },
     },
     {
       path: 'aprobacion_bajas',
-      component: AprobacionBajasComponent,
+      component: ConsultaBajasComponent,
+      data: { modo: 'aprobacion' },
     },
   ],
 }];
