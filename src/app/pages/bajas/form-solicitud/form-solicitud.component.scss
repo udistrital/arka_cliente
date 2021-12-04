@@ -2,6 +2,10 @@ mat-table {
     overflow-x: scroll;
 }
 
+mat-select {
+    height: auto;
+}
+
 mat-paginator {
     display: flex;
     justify-content: center;
@@ -30,4 +34,15 @@ input {
 
 button:focus {
     outline: none;
+}
+
+.soporte {
+    display: flex;
+    justify-content: space-around;
+}
+
+.soporte-nuevo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }

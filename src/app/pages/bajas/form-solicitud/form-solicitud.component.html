@@ -1,4 +1,73 @@
 <mat-vertical-stepper [nbSpinner]="!load" [linear]="true" #stepper>
+  <mat-step [stepControl]="formBaja.get('info')" label="{{'GLOBAL.bajas.informacion' | translate}}">
+    <form [formGroup]="formBaja.get('info')">
+
+      <div class="row" style="padding-bottom: 1rem;" *ngIf="modo !== 'create'">
+        <div class="col-sm" [formGroup]="formBaja.get('info.funcionario')">
+          <label class="label">{{'GLOBAL.solicitante' | translate}}</label>
+          <input type="text" class="form-control" formControlName="info" style="width: 100%;"
+            placeholder="{{'GLOBAL.solicitante' | translate }}">
+        </div>
+        <div class="col-sm" [formGroup]="formBaja.get('info.revisor')">
+          <label class="label">{{'GLOBAL.bajas.consulta.revisor' | translate}}</label>
+          <input type="text" class="form-control" formControlName="info" style="width: 100%;"
+            placeholder="{{'GLOBAL.bajas.consulta.revisor' | translate }}">
+        </div>
+      </div>
+
+      <div class="row" style="padding-bottom: 1rem;">
+        <div class="col-sm">
+          <label class="label">{{'GLOBAL.bajas.consulta.tipoBaja' | translate}}</label>
+          <mat-select type="text" class="form-control" formControlName="tipoBaja">
+            <mat-option value="">--{{ 'GLOBAL.seleccionar' | translate }}--</mat-option>
+            <mat-option *ngFor="let tipo of tiposBaja" [(value)]="tipo.Id">{{tipo.Nombre}}</mat-option>
+          </mat-select>
+          <p class="error-field" *ngIf="formBaja.get('info.tipoBaja').invalid">
+            {{'GLOBAL.Errores.ErrorRequerido' | translate}}</p>
+        </div>
+
+        <div class="col-sm">
+          <mat-card>
+            <label class="label">{{'GLOBAL.soporte' | translate}}</label>
+            <div *ngIf="modo !== 'get' && formBaja.get('info.soporte').value === ''" class="soporte-nuevo">
+              <button nbButton type="button" (click)="fileInputDocumento.click();">
+                <em class="fas fa-file-upload fa-2x"></em>
+                <input #fileInputDocumento type="file" (change)="onInputFileDocumento($event)" style="display:none;"
+                  accept="application/pdf">
+              </button>
+              <p style="text-align: center;" class="error-field">
+                {{'GLOBAL.Acta_Recibido.CapturarElementos.ValidadorPlaceholder' | translate: {EXT: 'pdf'} }} <br>
+                {{'GLOBAL.Acta_Recibido.RegistroActa.SizeSoporte' | translate: {SIZE: sizeSoporte} }} <br>
+                {{'GLOBAL.Errores.ErrorRequerido' | translate}}
+              </p>
+            </div>
+            <div *ngIf="formBaja.get('info.soporte').value !== ''" class="soporte">
+              <div>
+                <button nbButton type="button" *ngIf="true" target="_blank" (click)="download()">
+                  <em class="fas fa-file-download fa-2x"></em>
+                </button>
+                <p *ngIf="formBaja.get('info.soporte').value.file">{{formBaja.get('info.soporte').value.file.name}}</p>
+              </div>
+              <div *ngIf="modo !== 'get'">
+                <button type="button" *ngIf="true" class="btn btn-primary" (click)="clearFile()">
+                  <em class="fas fa-trash-alt fa-2x"></em>
+                </button>
+              </div>
+            </div>
+          </mat-card>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm">
+          <button mat-flat-button color="primary" matStepperNext class="float-right text-uppercase"
+            [disabled]="formBaja.get('info').invalid">
+            {{'GLOBAL.siguiente' | translate}}
+          </button>
+        </div>
+      </div>
+    </form>
+  </mat-step>
   <mat-step [stepControl]="formBaja.get('elementos')" label="{{'GLOBAL.elementos' | translate}}">
     <form [formGroup]="formBaja">
       <mat-table #table [dataSource]="dataSource" formArrayName="elementos" matSort>
@@ -98,8 +167,7 @@
             {{ 'GLOBAL.sede' | translate }}
           </th>
           <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="getActualIndex(rowIndex)">
-            <input type="text" class="form-control" formControlName="sede"
-              placeholder="{{'GLOBAL.sede' | translate }}">
+            <input type="text" class="form-control" formControlName="sede" placeholder="{{'GLOBAL.sede' | translate }}">
           </td>
         </ng-container>
 

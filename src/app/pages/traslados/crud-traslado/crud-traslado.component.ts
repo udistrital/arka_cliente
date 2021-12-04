@@ -25,7 +25,7 @@ export class CrudTrasladoComponent implements OnInit {
   subtitle: string;
   boton: string;
   consecutivo: string = '';
-  @Input() modoCrud: string = 'registrar'; // registrar | editar | ver | revisar | confirmar
+  @Input() modoCrud: string; // registrar | ver | editar | revisar | aprobar
   @Input() trasladoId: number = 0;
   @Output() accion: EventEmitter<boolean> = new EventEmitter<boolean>();
 
