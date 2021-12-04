@@ -71,6 +71,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
   }
 
   ngOnInit() {
+    console.log("el id de la salida", this.salida_id)
     this.loadElementos();
     this.getJefeAlmacen();
     this.setColumnas();
@@ -429,7 +430,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
     }).then((result) => {
         if (result.value) {
           if (this.edicionSalida) {
-            this.salidasHelper.editarSalida(Salidas).subscribe((res: any) => {
+            this.salidasHelper.editarSalida(Salidas, this.salida_id).subscribe((res: any) => {
             if (res) {
                const length = res.trSalida.Salidas.length;
                const s = length > 1 ? 's' : '';

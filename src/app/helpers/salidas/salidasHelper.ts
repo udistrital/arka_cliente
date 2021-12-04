@@ -91,7 +91,8 @@ export class SalidaHelper {
 
     public editarSalida(salidasData, salidaId: number = 0) {
         this.rqManager.setPath('ARKA_SERVICE');
-        return this.rqManager.put('salida/' + salidaId, salidasData).pipe(
+        const url = 'salida'
+        return this.rqManager.put2(url, salidasData, salidaId).pipe(
             map(
                 (res) => {
                     if (res['Type'] === 'error') {
@@ -134,6 +135,7 @@ export class SalidaHelper {
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
      */
     public getElementos() {
+        console.log("es en este");
         this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
         return this.rqManager.get('elementos_movimiento?query=MovimientoId.FormatoTipoMovimientoId.Id:9&limit=-1').pipe(
             map(

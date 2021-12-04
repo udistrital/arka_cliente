@@ -48,6 +48,7 @@ export class ConsultaSalidasComponent implements OnInit {
   estadosMovimiento: Array<EstadoMovimiento>;
   movimiento: Movimiento;
   filaSeleccionada: any;
+  cargaLista: boolean = false;
 
   constructor(
     private router: Router,
@@ -308,6 +309,7 @@ export class ConsultaSalidasComponent implements OnInit {
       this.entradaParametro = res[0].MovimientoPadreId.Id;
       this.actaParametro = JSON.parse(res[0].MovimientoPadreId.Detalle).acta_recibido_id;
       this.movimiento = res[0];
+      this.cargaLista = true;
     });
   }
 

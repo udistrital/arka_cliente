@@ -15,9 +15,8 @@
     <ngx-consulta-salida-especifica [salida_id]="salidaId" *ngIf="detalle && !editaentrada">
     </ngx-consulta-salida-especifica>
 
-
-    <ngx-tabla-entrada-aprobada [editar]="editaentrada" [salida_id]="salidaId" [actaParametro]="actaParametro" [idEntradaParametro]="entradaParametro" 
-   	*ngIf="editaentrada && !detalle"></ngx-tabla-entrada-aprobada>
+    <ngx-tabla-entrada-aprobada  [editar]="editaentrada" [salida_id]="salidaId" [actaParametro]="actaParametro" [idEntradaParametro]="entradaParametro" 
+   	*ngIf="editaentrada && !detalle && cargaLista"></ngx-tabla-entrada-aprobada>
 
     <mat-card-actions *ngIf="detalle || editaentrada">
       <div *ngIf="modo === 'revision'" class="justify-content-center" style="padding-bottom: 3rem;">
