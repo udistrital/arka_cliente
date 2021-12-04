@@ -453,7 +453,7 @@ export class FormSolicitudComponent implements OnInit {
         }
       },
         (error: HttpErrorResponse) => {
-          this.pUpManager.showErrorAlert(error)
+          this.pUpManager.showErrorAlert(error);
         });
   }
 
