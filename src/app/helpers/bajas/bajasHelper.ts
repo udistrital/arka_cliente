@@ -48,7 +48,7 @@ export class BajasHelper {
     */
     public postSolicitud(salidasData) {
         return this.dispMvtos.movimientosPermitidos().pipe(
-            switchMap(disp => iif( () => disp, this.postSolicitudFinal(salidasData) )),
+            switchMap(disp => iif(() => disp, this.postSolicitudFinal(salidasData))),
         );
     }
     private postSolicitudFinal(salidasData) {
@@ -198,7 +198,7 @@ export class BajasHelper {
      * PutBaja
      * If the response has errors in the OAS API it should show a popup message with an error.
      * If the response is successs, it returns the object's data.
-     * @returns  <Observable> Consecutivo de la baja y nuevo SoporteZ
+     * @returns  <Observable> Consecutivo de la baja y nuevo Soporte
      */
     public putBaja(movimiento: TrSoporteMovimiento, movimientoId: number) {
         this.rqManager.setPath('ARKA_SERVICE');
@@ -215,5 +215,34 @@ export class BajasHelper {
         );
     }
 
+    /**
+     * submitRevisionComite
+     * Servicio para registrar la aprobación o rechazo masivo de solicitud de bajas por el comité de almacén
+     * If the response has errors in the OAS API it should show a popup message with an error.
+     * If the response is successs, it returns the object's data.
+     * @returns  <Observable> Consecutivo de la baja y nuevo SoporteZ
+     */
+    public postRevisionComite(revision) {
+        let endpoint = '';
+        if (revision.Aprobacion) {
+            this.rqManager.setPath('ARKA_SERVICE');
+            endpoint = 'bajas_elementos/aprobar';
+        } else {
+            this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
+            endpoint = 'bajas';
+        }
+
+        return this.rqManager.put2(endpoint, revision, '').pipe(
+            map(
+                (res) => {
+                    if (res['Type'] === 'error') {
+                        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.bajas.editar.errTxt'));
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
 
 }

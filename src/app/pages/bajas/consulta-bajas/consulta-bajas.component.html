@@ -1,14 +1,14 @@
 <mat-card *ngIf="mostrar">
   <mat-card-title *ngIf="!modoCrud">
-    {{'GLOBAL.traslados.consulta.title' | translate}}
+    {{'GLOBAL.bajas.consulta.title' | translate}}
   </mat-card-title>
 
   <mat-card-subtitle *ngIf="!modoCrud">
-    {{'GLOBAL.traslados.consulta.subtitle' | translate}}
+    {{'GLOBAL.bajas.consulta.subtitle' | translate}}
   </mat-card-subtitle>
 
   <mat-card-content>
-    <ng2-smart-table *ngIf="!modoCrud" [settings]="settings" [source]="source" (create)="onRegister()"
+    <ng2-smart-table *ngIf="!modoCrud" [settings]="settings" [source]="source" (create)="onRegister()" (userRowSelect)="onUserRowSelect($event)"
       (edit)="onEdit($event)" (delete)="onDelete($event)">
     </ng2-smart-table>
     <ngx-crud-bajas *ngIf="modoCrud" [modoCrud]="modoCrud" [bajaId]="bajaId" (accion)="actualizarVista()"></ngx-crud-bajas>
@@ -18,4 +18,18 @@
     <button mat-raised-button color="primary" class="float-left text-uppercase" (click)="volver()">
       {{'GLOBAL.volver' | translate}}</button>
   </mat-card-actions>
+
+<mat-card-actions *ngIf="modo === 'aprobacion'">
+  <div class="justify-content-center" style="padding-bottom: 3rem;">
+    <button mat-flat-button color="primary" class="float-left text-uppercase"
+      [disabled]="!seleccionados || !seleccionados.length" (click)="rechazar()">
+      {{'GLOBAL.bajas.aprobar.rechazarSel' | translate}}
+    </button>
+    <button mat-flat-button color="primary" class="float-right text-uppercase"
+      [disabled]="!seleccionados || !seleccionados.length" (click)="confirm()">
+      {{'GLOBAL.bajas.aprobar.aprobarSel' | translate}}
+    </button>
+  </div>
+</mat-card-actions>
+
 </mat-card>

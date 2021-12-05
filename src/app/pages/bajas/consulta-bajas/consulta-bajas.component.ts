@@ -7,6 +7,7 @@ import { EstadoMovimiento } from '../../../@core/data/models/entrada/entrada';
 import { BajasHelper } from '../../../helpers/bajas/bajasHelper';
 import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
 import { PopUpManager } from '../../../managers/popUpManager';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'ngx-consulta-bajas',
@@ -23,6 +24,7 @@ export class ConsultaBajasComponent implements OnInit {
   mostrar: boolean;
   filaSeleccionada: any;
   bajaId: number;
+  seleccionados: Array<any>;
 
   constructor(
     private confService: ConfiguracionService,
@@ -110,6 +112,90 @@ export class ConsultaBajasComponent implements OnInit {
     });
   }
 
+  public onUserRowSelect(event) {
+    this.seleccionados = event.selected;
+  }
+
+  public submitComite(aprobar: boolean, Observaciones: string = '') {
+    const ids = this.seleccionados.map(el => el.Id);
+    const data = {
+      Bajas: ids,
+      Aprobacion: aprobar,
+      Observaciones,
+    };
+    this.bajasHelper.postRevisionComite(data).subscribe((res: any) => {
+      this.alertSuccess(aprobar);
+    });
+  }
+
+  private alertSuccess(aprobar: boolean) {
+    const sfx = aprobar ? 'A' : 'R';
+    const title = this.translate.instant('GLOBAL.bajas.aprobar.successTtl' + sfx);
+    const text = this.translate.instant('GLOBAL.bajas.aprobar.successTxt' + sfx);
+    const options = {
+      type: 'success',
+      title,
+      text,
+      showConfirmButton: true,
+    };
+    this.pUpManager.showAlertWithOptions(options);
+    this.seleccionados.forEach(baja => {
+      this.source.remove(baja);
+    });
+    this.seleccionados = [];
+  }
+
+  public rechazar() {
+    (Swal as any).fire({
+      title: this.translate.instant('GLOBAL.bajas.aprobar.confrmTtlR'),
+      text: this.translate.instant('GLOBAL.bajas.aprobar.confrmTxtR'),
+      type: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: this.translate.instant('GLOBAL.si'),
+      cancelButtonText: this.translate.instant('GLOBAL.no'),
+    }).then((result) => {
+      if (result.value) {
+        (Swal as any).mixin({
+          input: 'text',
+          confirmButtonText: this.translate.instant('GLOBAL.Acta_Recibido.VerificacionActa.Rechazar'),
+          showCancelButton: true,
+          progressSteps: ['1'],
+        }).queue([
+          {
+            title: this.translate.instant('GLOBAL.bajas.revisar.confrmRechazoTtl'),
+            text: this.translate.instant('GLOBAL.bajas.revisar.confrmRechazoTtx'),
+          },
+        ]).then((result2) => {
+          if (result2.value) {
+            const observaciones = ' // Razón de rechazo: ' + result2.value;
+            this.submitComite(false, observaciones);
+          }
+        });
+      }
+    });
+  }
+
+  public confirm() {
+    const title = this.translate.instant('GLOBAL.bajas.aprobar.confrmTtlA');
+    const text = this.translate.instant('GLOBAL.bajas.aprobar.confrmTxtA');
+    (Swal as any).fire({
+      title,
+      text,
+      type: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: this.translate.instant('GLOBAL.si'),
+      cancelButtonText: this.translate.instant('GLOBAL.no'),
+    }).then((result) => {
+      if (result.value) {
+        this.submitComite(true);
+      }
+    });
+  }
+
   private loadTablaSettings() {
     const t = {
       registrar: this.translate.instant('GLOBAL.bajas.consulta.nuevo'),
@@ -121,7 +207,7 @@ export class ConsultaBajasComponent implements OnInit {
     const columns = this.modo === 'consulta' ? {
       EstadoMovimientoId: {
         title: this.translate.instant('GLOBAL.bajas.consulta.estadoBaja'),
-        width: '300px',
+        width: '200px',
         filter: {
           type: 'list',
           config: {
@@ -151,13 +237,14 @@ export class ConsultaBajasComponent implements OnInit {
 
     this.settings = {
       hideSubHeader: false,
+      selectMode: this.modo === 'aprobacion' ? 'multi' : false,
       noDataMessage: this.translate.instant('GLOBAL.bajas.consulta.' +
         (this.modo === 'consulta' ? 'noBajasView' : 'noBajasReview')),
       actions: {
         columnTitle: this.translate.instant('GLOBAL.Acciones'),
         position: 'right',
-        delete: this.modo === 'consulta',
-        edit: true,
+        delete: this.modo !== 'revision',
+        edit: this.modo !== 'aprobacion',
         add: this.confService.getAccion('registrarTraslado') !== undefined,
       },
       add: {
@@ -173,6 +260,7 @@ export class ConsultaBajasComponent implements OnInit {
       columns: {
         Consecutivo: {
           title: this.translate.instant('GLOBAL.consecutivo'),
+          width: '100px',
         },
         FechaCreacion: {
           title: this.translate.instant('GLOBAL.fecha_creacion'),
@@ -190,12 +278,13 @@ export class ConsultaBajasComponent implements OnInit {
             },
           },
         },
-        FechaRevisionAlmacen: {
+        FechaRevisionA: {
           title: this.translate.instant('GLOBAL.bajas.consulta.fechaRevA'),
           width: '70px',
           valuePrepareFunction: (value: any) => {
-            const date = value.split('T');
-            return date[0];
+            const date = value ? new Date(Date.parse(value)).toLocaleDateString('es-CO') :
+              this.translate.instant('GLOBAL.bajas.consulta.espera');
+            return date;
           },
           filter: {
             type: 'daterange',
@@ -206,12 +295,13 @@ export class ConsultaBajasComponent implements OnInit {
             },
           },
         },
-        FechaRevisionComite: {
+        FechaRevisionC: {
           title: this.translate.instant('GLOBAL.bajas.consulta.fechaRevC'),
           width: '70px',
           valuePrepareFunction: (value: any) => {
-            const date = value.split('T');
-            return date[0];
+            const date = value ? new Date(Date.parse(value)).toLocaleDateString('es-CO') :
+              this.translate.instant('GLOBAL.bajas.consulta.espera');
+            return date;
           },
           filter: {
             type: 'daterange',
@@ -241,6 +331,10 @@ export class ConsultaBajasComponent implements OnInit {
               return '';
             }
           },
+        },
+        TipoBaja: {
+          title: this.translate.instant('GLOBAL.bajas.consulta.tipoBaja'),
+          width: '100px',
         },
         ...columns,
       },

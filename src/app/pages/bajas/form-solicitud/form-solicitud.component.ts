@@ -228,7 +228,7 @@ export class FormSolicitudComponent implements OnInit {
       revisor,
     });
 
-    if (values.elementos.length) {
+    if (values.elementos && values.elementos.length) {
       values.elementos.forEach(element => {
         const consSalida = JSON.parse(element.Salida.Detalle).consecutivo;
         const consEntrada = JSON.parse(element.Salida.MovimientoPadreId.Detalle).consecutivo;

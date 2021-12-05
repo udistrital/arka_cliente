@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { BajasRoutingModule } from './bajas-routing.module';
+import { ConsultaBajasComponent } from './consulta-bajas/consulta-bajas.component';
 import { BajasComponent } from './bajas.component';
 import { Ng2SmartTableModule } from 'ngx-smart-table';
 import { TranslateModule } from '@ngx-translate/core';
@@ -17,6 +18,7 @@ import { CrudBajasComponent } from './crud-bajas/crud-bajas.component';
 @NgModule({
   declarations: [
     BajasComponent,
+    ConsultaBajasComponent,
     FormSolicitudComponent,
     CrudBajasComponent,
   ],
