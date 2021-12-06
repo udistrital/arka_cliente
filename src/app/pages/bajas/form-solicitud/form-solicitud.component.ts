@@ -27,7 +27,7 @@ export class FormSolicitudComponent implements OnInit {
   ubicacionesFiltradas: any = [];
   dataSource: MatTableDataSource<any>;
   tiposBaja: FormatoTipoMovimiento[];
-  sizeSoporte: number = 5;
+  sizeSoporte: number;
   @ViewChild('paginator') paginator: MatPaginator;
   load: boolean;
   bajaId: number;
