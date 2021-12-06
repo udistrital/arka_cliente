@@ -245,7 +245,7 @@ export class ConsultaBajasComponent implements OnInit {
         position: 'right',
         delete: this.modo !== 'revision',
         edit: this.modo !== 'aprobacion',
-        add: this.confService.getAccion('registrarTraslado') !== undefined,
+        add: this.confService.getAccion('registrarBaja') !== undefined,
       },
       add: {
         addButtonContent: '<em class="fas fa-plus" title="' + t.registrar + '" aria-label="' + t.registrar + '"></em>',

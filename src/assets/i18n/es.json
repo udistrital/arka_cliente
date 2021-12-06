@@ -153,7 +153,18 @@
             }
           },
           "bajas": {
-            "name": "Bajas"
+            "name": "Bajas",
+            "children": {
+              "consultarBajas": {
+                "name": "Consultar Solicitudes"
+              },
+              "revisionAlmacen": {
+                "name": "Revisión de Almacén"
+              },
+              "revisionComite": {
+                "name": "Revisión de Comité"
+              }
+            }
           },
           "tipos_movimiento": {
             "name": "Tipos de movimiento"
@@ -1105,7 +1116,7 @@
     "traslados": {
       "consulta": {
         "title": "Consultar Traslados",
-        "subtitle": "Acontinuación se listan los traslados, seleccione una de las opcipones para ver más detalles",
+        "subtitle": "A continuación se listan los traslados, seleccione una de las opcipones para ver más detalles",
         "nuevoTraslado": "Registrar nuevo traslado",
         "noTrasladosView": "No se encontraron traslados",
         "noTrasladosReview": "No hay traslados pendientes por ser revisados",
@@ -1125,7 +1136,7 @@
       },
       "revisar": {
         "title": "Revisar Solicitud de Traslado",
-        "subtitle": "Revise las observaciones y realice los cambios indicados",
+        "subtitle": "Revise el detalle de la solicitud y realice la aprobación o rechazo de la misma",
         "accion": "Aprobar solicitud",
         "rechazar": "Rechazar solicitud",
         "confrmTtlA": "Aprobar Solicitud de Traslado",
@@ -1173,7 +1184,85 @@
       "noCargo": "No hay un cargo registrado"
     },
     "bajas": {
-      "errorPLacas": "Erro"
+      "consulta": {
+        "title": "Consulta de solicitudes de bajas de bienes",
+        "subtitle": "A continuación se listan las solicitudes, seleccione una de las opciones para ver más detalles",
+        "fechaRevA": "Fecha Revisión Almacén",
+        "fechaRevC": "Fecha de Aprobación",
+        "noBajasReview": "No hay bajas por aprobar",
+        "noBajasView": "No hay bajas por consultar",
+        "solicitante": "Solicitante",
+        "accionEdit": "Editar Solicitud",
+        "revisor": "Revisor",
+        "estadoBaja": "Estado Solicitud",
+        "tipoBaja": "Tipo Baja",
+        "espera": "En Espera"
+      },
+      "registrar": {
+        "title": "Solicitar Baja de Bienes",
+        "subtitle": "Por favor ingrese la información solicitada en el siguiente formulario",
+        "accion": "Enviar Solicitud",
+        "confrmTtl": "Registrar Solicitud",
+        "confrmTxt": "¿Desea registrar la solicitud de baja de bienes con la información suministrada?",
+        "successTtl": "Baja de Bienes Solicitada",
+        "successTxt": "La solicitud de baja de bienes {{CONSECUTIVO}} se ha registrado de manera exitosa",
+        "errTxt:": "Hubo un error al registrar la solicitud de baja de bienes"
+      },
+      "editar": {
+        "title": "Editar Solicitud de Baja de Bienes",
+        "subtitle": "Revise las razones de rechazo de la solicitud y haga las respectivas modificaciones",
+        "accion": "Actualizar solicitud",
+        "confrmTtl": "Actualizar Solicitud",
+        "confrmTxt": "¿Desea actualizar la solicitud de baja de bienes?",
+        "successTtl": "Solicitud Actualizada",
+        "successTxt": "La solicitud de baja de bienes {{CONSECUTIVO}} se ha actualizado"
+      },
+      "revisar": {
+        "title": "Revisar Solicitud de Baja de Bienes",
+        "subtitle": "Revise los dettalles de la solicitud y realice la aprobación o el rechazo de la misma",
+        "accion": "Aprobar solicitud",
+        "accionR": "Rechazar solicitud",
+        "accionEdit": "Realizar Revisión",
+        "confrmTtlA": "Aprobar Solicitud de Baja",
+        "confrmTxtA": "¿Desea aprobar la solicitud de baja con la información suministrada?",
+        "confrmTtlR": "Rechazar Solicitud",
+        "confrmRechazoTtl": "Motivo de rechazo",
+        "confrmRechazoTtx": "Indique la razón por la que esta solicitud será denegada",
+        "confrmTxtR": "¿Desea rechazar la solicitud de baja con la información suministrada?",
+        "successTtlA": "Solicitud Aprobada",
+        "successTxtA": "La solicitud de baja {{CONSECUTIVO}} ha sido aprobada",
+        "successTtlR": "Solicitud Rechazada",
+        "successTxtR": "La solicitud de baja {{CONSECUTIVO}} ha sido rechazada"
+      },
+      "aprobar": {
+        "title": "Aprobar Solicitud de Baja de bienes",
+        "subtitle": "Confirme la información y registre la aprobación o rechazo de la solicitud de acuerdo al comité de almacén",
+        "accion": "Aprobar Solicitud",
+        "rechazarSel": "Rechazar Seleccionados",
+        "aprobarSel": "Aprobar Seleccionados",
+        "confrmTtlA": "Aprobar Solicitudes",
+        "confrmTxtA": "¿Desea confirmar la aprobación de las solicitudes seleccionadas?",
+        "confrmTtlR": "Rechazar Solicitudes",
+        "confrmRechazoTtl": "Motivo de rechazo",
+        "confrmRechazoTtx": "Indique la razón por la que las solicitudes serán denegadas",
+        "confrmTxtR": "¿Desea confirmar el rechazo de las solicitudes seleccionadas?",
+        "successTtlA": "Solicitud Aprobada",
+        "successTxtA": "Se ha registrado la aprobación de las solicitudes por parte del comité de inventarios",
+        "successTtlR": "Solicitud Rechazada",
+        "successTxtR": "Se ha registrado el rechazo de las solicitudes por parte del comité de inventarios"
+      },
+      "ver": {
+        "title": "Detalle de la Solicitud de Baja de bienes",
+        "subtitle": "En el siguiente formulario se muestra el detalle de la solicitud"
+      },
+      "estados": {
+        "tramite": "En Trámite",
+        "comite": "En Comité",
+        "rechazado": "Rechazado",
+        "aprobado": "Aprobado"
+      },
+      "errorPlaca": "El elemento no ha sido asignado a ningún funcionario",
+      "informacion": "Información General de la Solicitud"
     }
   }
 }

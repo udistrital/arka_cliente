@@ -240,8 +240,7 @@ export class CrudBajasComponent implements OnInit {
       type: 'success',
       title,
       text,
-      showConfirmButton: false,
-      timer: 3000,
+      showConfirmButton: true,
     };
     this.accion.emit(true);
     this.pUpManager.showAlertWithOptions(options);

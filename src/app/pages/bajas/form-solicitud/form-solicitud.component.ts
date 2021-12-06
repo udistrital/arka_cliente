@@ -13,6 +13,9 @@ import { UserService } from '../../../@core/data/users.service';
 import { NuxeoService } from '../../../@core/utils/nuxeo.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { DocumentoService } from '../../../@core/data/documento.service';
+
+const SIZE_SOPORTE = 5;
+
 @Component({
   selector: 'ngx-form-solicitud',
   templateUrl: './form-solicitud.component.html',
@@ -26,14 +29,13 @@ export class FormSolicitudComponent implements OnInit {
   tiposBaja: FormatoTipoMovimiento[];
   sizeSoporte: number = 5;
   @ViewChild('paginator') paginator: MatPaginator;
-  load: boolean = false;
-  bajaId: number = 0;
+  load: boolean;
+  bajaId: number;
   @Output() valid = new EventEmitter<boolean>();
   @Input() modo: string = 'create'; // get | update
   @Input() bajaInfo: any;
   @Output() bajaInfoChange: EventEmitter<any> = new EventEmitter<any>();
-  displayedColumns: string[] = ['acciones', 'placa', 'nombre', 'subgrupo', 'tipoBien', 'entrada', 'salida',
-    'funcionario', 'marca', 'sede', 'dependencia', 'ubicacion'];
+  displayedColumns: string[];
 
   constructor(
     private translate: TranslateService,
@@ -46,6 +48,11 @@ export class FormSolicitudComponent implements OnInit {
     private userService: UserService,
     private documentoService: DocumentoService,
   ) {
+    this.load = false;
+    this.bajaId = 0;
+    this.sizeSoporte = SIZE_SOPORTE;
+    this.displayedColumns = ['acciones', 'placa', 'nombre', 'subgrupo', 'tipoBien', 'entrada', 'salida',
+      'funcionario', 'marca', 'sede', 'dependencia', 'ubicacion'];
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
     });
   }

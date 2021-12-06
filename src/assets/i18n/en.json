@@ -153,7 +153,18 @@
             }
           },
           "bajas": {
-            "name": "Deregister"
+            "name": "Removal Requests",
+            "children": {
+              "consultarBajas": {
+                "name": "Browse requests"
+              },
+              "revisionAlmacen": {
+                "name": "Warehouse Review"
+              },
+              "revisionComite": {
+                "name": "Comitee Review"
+              }
+            }
           },
           "tipos_movimiento": {
             "name": "Movements type"
@@ -1171,6 +1182,87 @@
       "funcDestino": "New possessor of the good ",
       "noEmail": "There is no email registered",
       "noCargo": "There is no position registered"
+    },
+    "bajas": {
+      "consulta": {
+        "title": "Browse removal requests",
+        "subtitle": "These are the removal requests, click to see more actions",
+        "fechaRevA": "Warehouse review date",
+        "fechaRevC": "Comitee review date",
+        "noBajasReview": "No removal requests to approve",
+        "noBajasView": "No removal requests to view",
+        "solicitante": "Applicant",
+        "accionEdit": "Edit Request",
+        "revisor": "Reviewer",
+        "estadoBaja": "Request Status",
+        "tipoBaja": "Request reason",
+        "espera": "Pending review"
+      },
+      "registrar": {
+        "title": "Create removal request",
+        "subtitle": "Please fill the form",
+        "accion": "Send request",
+        "confrmTtl": "Create Request",
+        "confrmTxt": "Are you sure to send the request with the information provided?",
+        "successTtl": "Removal request created",
+        "successTxt": "The removal request {{CONSECUTIVO}} has been registered",
+        "errTxt:": "There was en error creating the request"
+      },
+      "editar": {
+        "title": "Edit removal request",
+        "subtitle": "Check the denial reasons and update the request",
+        "accion": "Update Request",
+        "confrmTtl": "Update Removal Request",
+        "confrmTxt": "Are you sure to update the removal request?",
+        "successTtl": "Removal Request Updated",
+        "successTxt": "The removal request {{CONSECUTIVO}} has been updated"
+      },
+      "revisar": {
+        "title": "Review Removal request",
+        "subtitle": "Check the request details and approve or deny it",
+        "accion": "Aprove Request",
+        "accionR": "Deny Request",
+        "accionEdit": "Review Request",
+        "confrmTtlA": "Approve Removal Request",
+        "confrmTxtA": "Are you sure to approve the removal request?",
+        "confrmTtlR": "Deny request",
+        "confrmRechazoTtl": "Request Denial reason",
+        "confrmRechazoTtx": "Enter the reasons why the request will be denied",
+        "confrmTxtR": "Are you sure to deny the request?",
+        "successTtlA": "Request Approved",
+        "successTxtA": "The denial request {{CONSECUTIVO}} has been  approved",
+        "successTtlR": "Request Denied",
+        "successTxtR": "The removal request {{CONSECUTIVO}} has been denied"
+      },
+      "aprobar": {
+        "title": "Appove removal request",
+        "subtitle": "Select the requests and register the approval or denial by the comitee",
+        "accion": "Approve request",
+        "rechazarSel": "Deny selected requests",
+        "aprobarSel": "Approve selected requests",
+        "confrmTtlA": "Approve Requests",
+        "confrmTxtA": "Are you sure to approve the selected requests?",
+        "confrmTtlR": "Deny requests",
+        "confrmRechazoTtl": "Denial reason",
+        "confrmRechazoTtx": "Enter the reasons why the requests will be denied",
+        "confrmTxtR": "Are you sure to deny the selected requests?",
+        "successTtlA": "Request Approved",
+        "successTxtA": "The comitee approval has been registered",
+        "successTtlR": "Request Denied",
+        "successTxtR": "The comitee denial has been registered"
+      },
+      "ver": {
+        "title": "Removal request detail",
+        "subtitle": "The form shows the information of the request"
+      },
+      "estados": {
+        "tramite": "Awaiting warehouse review",
+        "comite": "Awaiting comitee review",
+        "rechazado": "Denied",
+        "aprobado": "Approved"
+      },
+      "errorPlaca": "The good has not been assigned to any civil servant",
+      "informacion": "Request details"
     }
   }
 }
