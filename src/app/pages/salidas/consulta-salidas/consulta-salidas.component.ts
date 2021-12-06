@@ -49,6 +49,7 @@ export class ConsultaSalidasComponent implements OnInit {
   movimiento: Movimiento;
   filaSeleccionada: any;
   cargaLista: boolean = false;
+  verComprobante: boolean = false;
 
   constructor(
     private router: Router,
@@ -280,9 +281,11 @@ export class ConsultaSalidasComponent implements OnInit {
 
   onDelete(event) {
     this.salidaId = `${event.data.Id}`;
+//    this.salidaId = '807';
     this.detalle = true;
     this.editaentrada = false;
     this.filaSeleccionada = event.data;
+    console.log("es aca", this.salidaId);
     this.cargarSalida();
   }
 
@@ -302,10 +305,13 @@ export class ConsultaSalidasComponent implements OnInit {
   onVolver() {
     this.detalle = false;
     this.editaentrada = false;
+    this.verComprobante = false;
   }
 
   private cargarSalida () {
-    this.entradasHelper.getMovimiento(this.salidaId).toPromise().then((res: any) => {
+   this.entradasHelper.getMovimiento(this.salidaId).toPromise().then((res: any) => {
+//   this.entradasHelper.getMovimiento(734).toPromise().then((res: any) => {
+      console.log("captura")
       this.entradaParametro = res[0].MovimientoPadreId.Id;
       this.actaParametro = JSON.parse(res[0].MovimientoPadreId.Detalle).acta_recibido_id;
       this.movimiento = res[0];
@@ -331,14 +337,17 @@ export class ConsultaSalidasComponent implements OnInit {
   }
 
   private onSubmitRevision(aprobar: boolean) {
-    this.mostrar = false;
     if (aprobar) {
+      console.log("mira", this.detalle, this.editaentrada, this.mostrar)
       this.salidasHelper.postSalida(this.movimiento.Id).toPromise().then((res: any) => {
         if (res) {
-          this.alertSuccess(true);
+          console.log("el resultado", res);
+          this.verComprobante = true;
+//          this.alertSuccess(true);
         }
       });
     } else {
+      this.mostrar = false;
       const estado = this.estadosMovimiento.find(estadoMovimiento => estadoMovimiento.Nombre === 'Salida Rechazada').Id;
       this.movimiento.EstadoMovimientoId = <EstadoMovimiento>{ Id: estado };
       this.entradasHelper.putMovimiento(this.movimiento).toPromise().then((res: any) => {

@@ -29,6 +29,8 @@ export class RegistroComponent implements OnInit {
   opcionEntrada: string = '';
   movimientoId: number;
 
+  @Input() ActaParaEditar: any;
+  @Input() entradaId: any;
   @Input() EntradaEdit: any;
 
   private terceros: Partial<Tercero>[];
@@ -49,6 +51,11 @@ export class RegistroComponent implements OnInit {
   }
 
   ngOnInit() {
+    console.log(this.EntradaEdit);
+    if (this.EntradaEdit === true) {
+        console.log("ingresa por aqui")
+		this.cargarTiposDeEntradas();
+	}
     this.loadTablaSettings();
     this.loadActas();
     this.listService.findClases();
@@ -180,6 +187,7 @@ export class RegistroComponent implements OnInit {
   }
 
   onCustom(event) {
+    console.log("El tipo", event.data.Id);
     this.actaRecibidoHelper.getTransaccionActa(event.data.Id, true).subscribe(res => {
       res.ActaRecibido.TipoActaId.Id === 1 ?
         this.entradasHelper.getTiposEntradaByOrden(1).subscribe(res_ => {
@@ -190,5 +198,31 @@ export class RegistroComponent implements OnInit {
       this.actaSeleccionada = `${event.data.Id}`;
     });
   }
+
+  cargarTiposDeEntradas() {
+    this.actaRecibidoHelper.getTransaccionActa(this.ActaParaEditar, true).subscribe(res => {
+      res.ActaRecibido.TipoActaId.Id === 1 ?
+        this.entradasHelper.getTiposEntradaByOrden(1).subscribe(res_ => {
+          this.tiposDeEntradas = res_;
+        }) : this.entradasHelper.getTiposEntradaByOrden(2).subscribe(res__ => {
+          this.tiposDeEntradas = res__;
+        });
+      this.actaSeleccionada = this.ActaParaEditar;
+    });
+  }
+
+/*  (event) {
+    this.actaRecibidoHelper.getTransaccionActa(event.data.Id, true).subscribe(res => {
+      res.ActaRecibido.TipoActaId.Id === 1 ?
+        this.entradasHelper.getTiposEntradaByOrden(1).subscribe(res_ => {
+          this.tiposDeEntradas = res_;
+        }) : this.entradasHelper.getTiposEntradaByOrden(2).subscribe(res__ => {
+          this.tiposDeEntradas = res__;
+        });
+      this.actaSeleccionada = `${event.data.Id}`;
+    });
+  }
+*/
+
 
 }

@@ -451,6 +451,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
             }
             });
         } else {
+           console.log("la salida", Salidas)
            this.salidasHelper.registrarSalida(Salidas).subscribe((res: any) => {
            if (res) {
              const length = res.trSalida.Salidas.length;

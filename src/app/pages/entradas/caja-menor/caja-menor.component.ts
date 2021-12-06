@@ -60,6 +60,8 @@ export class CajaMenorComponent implements OnInit {
   cargando_ordenadores: boolean = true;
 
   @Input() actaRecibidoId: number;
+  @Input() entradaId: any;
+  @Input() EntradaEdit: any;
 
   constructor(
     private router: Router,

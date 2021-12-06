@@ -76,6 +76,7 @@ export class SalidaHelper {
 
     public registrarSalida(salidasData, salidaId: number = 0) {
         this.rqManager.setPath('ARKA_SERVICE');
+        console.log("la salida", salidasData)
         return this.rqManager.post('salida?salidaId=' + salidaId, salidasData).pipe(
             map(
                 (res) => {
