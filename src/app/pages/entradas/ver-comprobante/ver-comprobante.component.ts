@@ -9,6 +9,8 @@ import { Component, Input, OnInit } from '@angular/core';
 
 export class VerComprobanteComponent implements OnInit {
   @Input() transaccion: any;
+  @Input() consecutivo: any;
+  @Input() descripcion: any;
   totalCreditos: any; 
   totalDebitos: any; 
 

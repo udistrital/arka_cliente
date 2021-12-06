@@ -26,7 +26,6 @@ import { VerComprobanteComponent } from './ver-comprobante/ver-comprobante.compo
 
 @NgModule({
   declarations: [
-    ...routedComponents,
     EntradasComponent,
     ReposicionComponent,
     ElaboracionPropiaComponent,

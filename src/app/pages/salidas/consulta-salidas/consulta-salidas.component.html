@@ -8,14 +8,16 @@
       {{'GLOBAL.salidas.consulta_salida_info' | translate}}
     </mat-card-subtitle>
 
-    <ng2-smart-table [settings]="settings" [source]="source" (custom)="onCustom($event)" (create)="onRegister($event)" *ngIf="!detalle">
+    <ng2-smart-table [settings]="settings" [source]="source" (custom)="onCustom($event)" (create)="onRegister($event)" *ngIf="!detalle && !verComprobante">
     </ng2-smart-table>
 
     <ngx-consulta-salida-especifica [salida_id]="salidaId" *ngIf="detalle">
     </ngx-consulta-salida-especifica>
-
+<!--
+	<ngx-ver-comprobante *ngIf="verComprobante" [transaccion]="transaccionContable"></ngx-ver-comprobante> 
+-->
     <mat-card-actions *ngIf="detalle">
-      <div *ngIf="modo === 'revision'" class="justify-content-center" style="padding-bottom: 3rem;">
+      <div *ngIf="modo === 'revision' && !verComprobante" class="justify-content-center" style="padding-bottom: 3rem;">
         <button nbButton (click)="confirmSubmit(false)">{{'GLOBAL.Acta_Recibido.VerificacionActa.Rechazar' |
           translate}}</button>
         <button nbButton (click)="confirmSubmit(true)"
