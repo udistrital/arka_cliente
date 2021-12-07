@@ -53,5 +53,8 @@ import { VerComprobanteComponent } from './ver-comprobante/ver-comprobante.compo
     Ng2SmartTableModule,
     ActaRecibidoModule,
   ],
+  exports: [
+	  VerComprobanteComponent
+  ]
 })
 export class EntradasModule { }

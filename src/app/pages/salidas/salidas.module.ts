@@ -22,6 +22,9 @@ import { rootReducer } from '../../@core/store/rootReducer';
 import { Store, StoreModule } from '@ngrx/store';
 import { ListService } from '../../@core/store/services/list.service';
 import { ConsultaSalidaEspecificaComponent } from './consulta-salida-especifica/consulta-salida-especifica.component';
+import { EntradasModule} from './../entradas/entradas.module'; 
+
+
 
 @NgModule({
   declarations: [
@@ -52,6 +55,7 @@ import { ConsultaSalidaEspecificaComponent } from './consulta-salida-especifica/
     MatTableModule,
     MatPaginatorModule,
     MatSortModule,
+    EntradasModule
   ],
   providers: [
     CurrencyPipe,
