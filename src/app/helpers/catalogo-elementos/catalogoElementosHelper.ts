@@ -457,7 +457,7 @@ export class CatalogoElementosHelper {
      */
     public getMovimiento(id_Subgrupo, idmovimiento) {
         this.rqManager.setPath('CATALOGO_ELEMENTOS_SERVICE');
-        return this.rqManager.get('cuentas_subgrupo?query=SubgrupoId.Id:'
+        return this.rqManager.get('cuentas_subgrupo?sortby=Id&order=desc&query=SubgrupoId__Id:'
             + id_Subgrupo + ',Activo:true,SubtipoMovimientoId:' + idmovimiento + '').pipe(
                 map(
                     (res) => {

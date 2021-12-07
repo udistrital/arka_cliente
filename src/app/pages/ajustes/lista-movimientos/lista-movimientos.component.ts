@@ -481,7 +481,7 @@ export class ListaMovimientosComponent implements OnInit {
   }
 
   private loadBajas() {
-    this.bajasHelper.getSolicitudes().subscribe((res: any) => {
+    this.bajasHelper.getSolicitudes(false, false).subscribe((res: any) => {
       if (res !== '200' && Object.keys(res[0]).length !== 0) {
         this.ListaBajas.load(res);
       }

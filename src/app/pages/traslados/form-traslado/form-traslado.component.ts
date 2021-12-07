@@ -223,7 +223,7 @@ export class FormTrasladoComponent implements OnInit {
 
     const sede = values.ubicacion.Sede.Id;
     const dependencia = values.ubicacion.Dependencia;
-    const ubicacion = values.ubicacion.Ubicacion;
+    const ubicacion = values.ubicacion.Ubicacion.Id;
     this.formTraslado.get('ubicacion').patchValue({ sede, emitEvent: false });
     this.formTraslado.get('ubicacion').patchValue({ dependencia, emitEvent: false });
     this.formTraslado.get('ubicacion').patchValue({ ubicacion });
@@ -284,7 +284,7 @@ export class FormTrasladoComponent implements OnInit {
       if (transaccion.Sede !== undefined && transaccion.Dependencia !== undefined) {
         this.Actas_Recibido.postRelacionSedeDependencia(transaccion).subscribe((res: any) => {
           if (!this.load) {
-            this.formTraslado.get('ubicacion').patchValue({ ubicacion: this.trasladoInfo.ubicacion.Ubicacion });
+            this.formTraslado.get('ubicacion').patchValue({ ubicacion: this.trasladoInfo.ubicacion.Ubicacion.Id });
             this.load = true;
           }
           if (isObject(res[0].Relaciones)) {

@@ -46,7 +46,7 @@ export class TrasladosHelper {
      */
     // Se hace directamente al api crud mientras se genera la funcionalidad para asignar el consecutivo al traslado
     public getTraslados(tramiteOnly: boolean) {
-        let endpoint = 'movimiento?query=Activo:true,EstadoMovimientoId__Nombre';
+        let endpoint = 'movimiento?limit=-1&query=Activo:true,EstadoMovimientoId__Nombre';
         if (tramiteOnly) {
             endpoint += ':Traslado En Trámite';
         } else {
