@@ -285,7 +285,6 @@ export class ConsultaSalidasComponent implements OnInit {
     this.detalle = true;
     this.editaentrada = false;
     this.filaSeleccionada = event.data;
-    console.log("es aca", this.salidaId);
     this.cargarSalida();
   }
 
@@ -311,7 +310,6 @@ export class ConsultaSalidasComponent implements OnInit {
   private cargarSalida () {
    this.entradasHelper.getMovimiento(this.salidaId).toPromise().then((res: any) => {
 //   this.entradasHelper.getMovimiento(734).toPromise().then((res: any) => {
-      console.log("captura")
       this.entradaParametro = res[0].MovimientoPadreId.Id;
       this.actaParametro = JSON.parse(res[0].MovimientoPadreId.Detalle).acta_recibido_id;
       this.movimiento = res[0];
@@ -338,10 +336,8 @@ export class ConsultaSalidasComponent implements OnInit {
 
   private onSubmitRevision(aprobar: boolean) {
     if (aprobar) {
-      console.log("mira", this.detalle, this.editaentrada, this.mostrar)
       this.salidasHelper.postSalida(this.movimiento.Id).toPromise().then((res: any) => {
         if (res) {
-          console.log("el resultado", res);
           this.verComprobante = true;
 //          this.alertSuccess(true);
         }

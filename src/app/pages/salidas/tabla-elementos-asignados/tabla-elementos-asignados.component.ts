@@ -71,7 +71,6 @@ export class TablaElementosAsignadosComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log("el id de la salida", this.salida_id)
     this.loadElementos();
     this.getJefeAlmacen();
     this.setColumnas();
@@ -340,7 +339,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
           },
           Elementos: [],
         };
-        const elemento = this.crearElemento(currentValue); //incluir el id del elemento
+        const elemento = this.crearElemento(currentValue); // incluir el id del elemento
         accumulator[val].Elementos.push(elemento);
         return accumulator;
       }, {});
@@ -451,7 +450,6 @@ export class TablaElementosAsignadosComponent implements OnInit {
             }
             });
         } else {
-           console.log("la salida", Salidas)
            this.salidasHelper.registrarSalida(Salidas).subscribe((res: any) => {
            if (res) {
              const length = res.trSalida.Salidas.length;

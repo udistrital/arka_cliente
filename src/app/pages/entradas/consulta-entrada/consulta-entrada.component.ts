@@ -583,7 +583,6 @@ keyEventUp(event: KeyboardEvent) {
   }
 
   onCustom(event) {
-    console.log(event.data)
     if (!this.key) {
        this.mostrar = false;
        this.actaRecibidoId = +`${event.data.ActaRecibidoId}`;
@@ -591,8 +590,8 @@ keyEventUp(event: KeyboardEvent) {
        this.entradaId = `${event.data.Id}`;
        this.detalle = true;
        this.loadEntradaEspecifica();
-	} else {
-       if (event.data.EstadoMovimientoId === "Entrada Rechazada") {
+    } else {
+       if (event.data.EstadoMovimientoId === 'Entrada Rechazada') {
           this.mostrar = true;
           this.actaRecibidoId = +`${event.data.ActaRecibidoId}`;
           this.filaSeleccionada = event.data;
@@ -601,18 +600,17 @@ keyEventUp(event: KeyboardEvent) {
           this.edit = false;
           this.editarEntrada = true;
           this.loadEntradaEspecifica();
-          console.log("la entrada especifica", this.entradaEspecifica)
 //          this.loadEntradaEspecifica();
-	   }
-	}
+        }
+    }
   }
 
   onVolver() {
     this.detalle = !this.detalle;
     if (this.editarEntrada) {
-		this.detalle = false;
+        this.detalle = false;
         this.editarEntrada = false;
-	}
+    }
     this.iniciarParametros();
     this.mostrar = true;
   }

@@ -51,11 +51,9 @@ export class RegistroComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log(this.EntradaEdit);
     if (this.EntradaEdit === true) {
-        console.log("ingresa por aqui")
-		this.cargarTiposDeEntradas();
-	}
+       this.cargarTiposDeEntradas();
+    }
     this.loadTablaSettings();
     this.loadActas();
     this.listService.findClases();
@@ -187,7 +185,6 @@ export class RegistroComponent implements OnInit {
   }
 
   onCustom(event) {
-    console.log("El tipo", event.data.Id);
     this.actaRecibidoHelper.getTransaccionActa(event.data.Id, true).subscribe(res => {
       res.ActaRecibido.TipoActaId.Id === 1 ?
         this.entradasHelper.getTiposEntradaByOrden(1).subscribe(res_ => {

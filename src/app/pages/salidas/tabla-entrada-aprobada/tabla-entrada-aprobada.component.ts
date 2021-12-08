@@ -531,7 +531,6 @@ export class TablaEntradaAprobadaComponent implements OnInit {
   }
 
   onVolver() {
-    console.log("esta en esta pantalla")
     this.detalle = !this.detalle;
     this.iniciarParametros();
     this.show = false;

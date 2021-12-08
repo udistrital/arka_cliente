@@ -76,7 +76,6 @@ export class SalidaHelper {
 
     public registrarSalida(salidasData, salidaId: number = 0) {
         this.rqManager.setPath('ARKA_SERVICE');
-        console.log("la salida", salidasData)
         return this.rqManager.post('salida?salidaId=' + salidaId, salidasData).pipe(
             map(
                 (res) => {
@@ -92,7 +91,7 @@ export class SalidaHelper {
 
     public editarSalida(salidasData, salidaId: number = 0) {
         this.rqManager.setPath('ARKA_SERVICE');
-        const url = 'salida'
+        const url = 'salida';
         return this.rqManager.put2(url, salidasData, salidaId).pipe(
             map(
                 (res) => {
@@ -136,7 +135,6 @@ export class SalidaHelper {
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
      */
     public getElementos() {
-        console.log("es en este");
         this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
         return this.rqManager.get('elementos_movimiento?query=MovimientoId.FormatoTipoMovimientoId.Id:9&limit=-1').pipe(
             map(
