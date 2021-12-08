@@ -54,7 +54,7 @@ import { VerComprobanteComponent } from './ver-comprobante/ver-comprobante.compo
     ActaRecibidoModule,
   ],
   exports: [
-	  VerComprobanteComponent
-  ]
+    VerComprobanteComponent,
+  ],
 })
 export class EntradasModule { }

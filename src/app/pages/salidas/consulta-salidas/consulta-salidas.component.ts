@@ -47,7 +47,7 @@ export class ConsultaSalidasComponent implements OnInit {
   movimiento: Movimiento;
   filaSeleccionada: any;
   verComprobante: boolean = false;
-  transaccionContable: any; 
+  transaccionContable: any;
 
 
   constructor(
@@ -316,13 +316,11 @@ export class ConsultaSalidasComponent implements OnInit {
 
   private onSubmitRevision(aprobar: boolean) {
     if (aprobar) {
-		console.log("mira", this.detalle, this.mostrar)
 //      this.salidasHelper.postSalida(this.movimiento.Id).toPromise().then((res: any) => {
       this.salidasHelper.postSalida(827).toPromise().then((res: any) => {
         if (res) {
           this.verComprobante = true;
-		  console.log("mira 1", this.detalle, this.mostrar, res)
-          this.transaccionContable = res.transaccionContable; 
+          this.transaccionContable = res.transaccionContable;
         //  this.alertSuccess(true);
         }
       });

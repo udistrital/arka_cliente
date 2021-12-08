@@ -8,7 +8,7 @@ describe('VerComprobanteComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ VerComprobanteComponent ]
+      declarations: [ VerComprobanteComponent ],
     })
     .compileComponents();
   }));
