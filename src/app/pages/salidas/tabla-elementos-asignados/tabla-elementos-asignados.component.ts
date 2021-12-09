@@ -14,6 +14,7 @@ import { isArray } from 'util';
 import { MatCheckbox } from '@angular/material';
 import { ElementoMovimientosArka, EstadoMovimiento, FormatoTipoMovimiento } from '../../../@core/data/models/entrada/entrada';
 import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
+import { MovimientosHelper } from '../../../helpers/movimientos/movimientosHelper';
 
 @Component({
   selector: 'ngx-tabla-elementos-asignados',
@@ -37,6 +38,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
   counter = 0;
   basePaginasD: number = 0;
   basePaginasC: number = 0;
+  elementosActa: any;
 
   @ViewChild('paginatorD') paginatorD: MatPaginator;
   @ViewChild('paginatorC') paginatorC: MatPaginator;
@@ -65,7 +67,8 @@ export class TablaElementosAsignadosComponent implements OnInit {
     private actaRecibidoHelper: ActaRecibidoHelper,
     private salidasHelper: SalidaHelper,
     private pUpManager: PopUpManager,
-    private entradasHelper: EntradaHelper) {
+    private entradasHelper: EntradaHelper,
+    private movimientosHelper: MovimientosHelper) {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
     });
   }
@@ -76,6 +79,12 @@ export class TablaElementosAsignadosComponent implements OnInit {
     this.setColumnas();
     this.getFormatoBodega();
     this.getFormatoFuncionario();
+
+    this.movimientosHelper.getElementosMovimientoById(this.salida_id).subscribe(res => {
+        if (res !== null) {
+            this.elementosActa = res;
+        }
+    });
   }
 
   private loadElementos() {
@@ -258,6 +267,8 @@ export class TablaElementosAsignadosComponent implements OnInit {
     elemento.Unidad = elementoActa.Cantidad;
     elemento.ValorUnitario = elementoActa.ValorTotal / elementoActa.Cantidad;
     elemento.ValorTotal = elementoActa.ValorTotal;
+    const found = this.elementosActa.find(element => element.ElementoActaId === elemento.ElementoActaId);
+    elemento.Id = found.Id;
     return elemento;
   }
 

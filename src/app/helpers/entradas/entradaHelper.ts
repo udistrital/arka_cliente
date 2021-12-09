@@ -93,7 +93,7 @@ export class EntradaHelper {
     public postEntrada(entradaData: Partial<TrMovimiento>, entradaId: number = 0) {
 //          console.log("mira el numero", entradaId);
         return this.dispMvtos.movimientosPermitidos().pipe(
-            switchMap(disp => iif(() => disp, this.postEntradaFinal(entradaData, 734))),
+            switchMap(disp => iif(() => disp, this.postEntradaFinal(entradaData, entradaId))),
         );
     }
 
