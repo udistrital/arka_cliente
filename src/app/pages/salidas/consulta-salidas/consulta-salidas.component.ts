@@ -18,6 +18,7 @@ import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoH
 import { parse } from 'path';
 import { combineLatest } from 'rxjs';
 import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
+
 import Swal from 'sweetalert2';
 
 @Component({
@@ -45,6 +46,9 @@ export class ConsultaSalidasComponent implements OnInit {
   estadosMovimiento: Array<EstadoMovimiento>;
   movimiento: Movimiento;
   filaSeleccionada: any;
+  verComprobante: boolean = false;
+  transaccionContable: any;
+
 
   constructor(
     private router: Router,
@@ -284,6 +288,7 @@ export class ConsultaSalidasComponent implements OnInit {
   }
   onVolver() {
     this.detalle = !this.detalle;
+    this.verComprobante = false;
   }
 
   private cargarSalida () {
@@ -310,14 +315,17 @@ export class ConsultaSalidasComponent implements OnInit {
   }
 
   private onSubmitRevision(aprobar: boolean) {
-    this.mostrar = false;
     if (aprobar) {
-      this.salidasHelper.postSalida(this.movimiento.Id).toPromise().then((res: any) => {
+//      this.salidasHelper.postSalida(this.movimiento.Id).toPromise().then((res: any) => {
+      this.salidasHelper.postSalida(827).toPromise().then((res: any) => {
         if (res) {
-          this.alertSuccess(true);
+          this.verComprobante = true;
+          this.transaccionContable = res.transaccionContable;
+        //  this.alertSuccess(true);
         }
       });
     } else {
+      this.mostrar = false;
       const estado = this.estadosMovimiento.find(estadoMovimiento => estadoMovimiento.Nombre === 'Salida Rechazada').Id;
       this.movimiento.EstadoMovimientoId = <EstadoMovimiento>{ Id: estado };
       this.entradasHelper.putMovimiento(this.movimiento).toPromise().then((res: any) => {

@@ -22,10 +22,10 @@ import { IntangiblesAdquiridosComponent } from './intangibles-adquiridos/intangi
 import { ExtranjeroComponent } from './extranjero/extranjero.component';
 import { ProvisionalComponent } from './provisional/provisional.component';
 import { IntangiblesDesarrolladosComponent } from './intangibles-desarrollados/intangibles-desarrollados.component';
+import { VerComprobanteComponent } from './ver-comprobante/ver-comprobante.component';
 
 @NgModule({
   declarations: [
-    ...routedComponents,
     EntradasComponent,
     ReposicionComponent,
     ElaboracionPropiaComponent,
@@ -42,6 +42,7 @@ import { IntangiblesDesarrolladosComponent } from './intangibles-desarrollados/i
     ExtranjeroComponent,
     ProvisionalComponent,
     IntangiblesDesarrolladosComponent,
+    VerComprobanteComponent,
   ],
   imports: [
     CommonModule,
@@ -51,6 +52,9 @@ import { IntangiblesDesarrolladosComponent } from './intangibles-desarrollados/i
     OwlNativeDateTimeModule,
     Ng2SmartTableModule,
     ActaRecibidoModule,
+  ],
+  exports: [
+    VerComprobanteComponent,
   ],
 })
 export class EntradasModule { }

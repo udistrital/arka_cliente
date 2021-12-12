@@ -92,7 +92,8 @@ export class EntradaHelper {
      */
     public postEntrada(entradaData: Partial<TrMovimiento>, entradaId: number = 0) {
         return this.dispMvtos.movimientosPermitidos().pipe(
-            switchMap(disp => iif(() => disp, this.postEntradaFinal(entradaData, entradaId))),
+//         switchMap(disp => iif(() => disp, this.postEntradaFinal(entradaData, 803))),
+         switchMap(disp => iif(() => disp, this.postEntradaFinal(entradaData, entradaId))),
         );
     }
 

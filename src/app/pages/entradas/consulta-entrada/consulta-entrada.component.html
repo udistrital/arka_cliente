@@ -382,8 +382,10 @@
 
       <ngx-gestionar-elementos [ActaRecibidoId]="actaRecibidoId" [Modo]="'ver'" *ngIf="detalle"></ngx-gestionar-elementos>
 
+	  <ngx-ver-comprobante [consecutivo] = "entradaEspecifica.Consecutivo" [descripcion] = "detalleentrada" [transaccion]="transaccionContable"  *ngIf="verComponente"></ngx-ver-comprobante> 
+
       <nb-card-footer>
-        <div *ngIf="modo === 'revision'" class="justify-content-center" style="padding-bottom: 2rem;">
+        <div *ngIf="modo === 'revision' && !verComponente" class="justify-content-center" style="padding-bottom: 2rem;">
           <button nbButton (click)="confirmSubmit(false)">{{'GLOBAL.Acta_Recibido.VerificacionActa.Rechazar' |
             translate}}</button>
           <button nbButton  (click)="confirmSubmit(true)"
