@@ -1,5 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
 
+export const MVTO_DB = 344;
+export const MVTO_CR = 345;
+
 @Component({
   selector: 'ngx-ver-comprobante',
   templateUrl: './ver-comprobante.component.html',
