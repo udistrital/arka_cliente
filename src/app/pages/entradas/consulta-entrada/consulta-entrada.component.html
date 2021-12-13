@@ -382,7 +382,7 @@
 
       <ngx-gestionar-elementos [ActaRecibidoId]="actaRecibidoId" [Modo]="'ver'" *ngIf="detalle"></ngx-gestionar-elementos>
 
-	  <ngx-ver-comprobante [consecutivo] = "entradaEspecifica.Consecutivo" [descripcion] = "detalleentrada" [transaccion]="transaccionContable"  *ngIf="verComponente"></ngx-ver-comprobante> 
+	  <ngx-ver-comprobante [consecutivo] = "entradaEspecifica.Consecutivo" [descripcion] = "detalleentrada" [transaccion]="transaccionContable" [tercero]="tercero" *ngIf="verComponente"></ngx-ver-comprobante> 
 
       <nb-card-footer>
         <div *ngIf="modo === 'revision' && !verComponente" class="justify-content-center" style="padding-bottom: 2rem;">

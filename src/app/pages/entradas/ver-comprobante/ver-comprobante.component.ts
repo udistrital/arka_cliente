@@ -8,25 +8,25 @@ export const MVTO_CR = 345;
   templateUrl: './ver-comprobante.component.html',
   styleUrls: ['./ver-comprobante.component.scss'],
 })
-
-
 export class VerComprobanteComponent implements OnInit {
   @Input() transaccion: any;
+  @Input() tercero: any;
   @Input() consecutivo: any;
   @Input() descripcion: any;
   totalCreditos: any;
   totalDebitos: any;
-
+  m_db = MVTO_DB;
+  m_cr = MVTO_CR;
   constructor() { }
 
   ngOnInit() {
      this.totalCreditos = 0;
      this.totalDebitos = 0;
      this.transaccion.movimientos.forEach(obj => {
-                                              if (obj.TipoMovimientoId === 344) {
+                                              if (obj.TipoMovimientoId === MVTO_DB) {
                                                  this.totalDebitos += obj.Valor;
                                               }
-                                              if (obj.TipoMovimientoId === 345) {
+                                              if (obj.TipoMovimientoId === MVTO_CR) {
                                                  this.totalCreditos += obj.Valor;
                                               }
   });

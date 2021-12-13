@@ -49,6 +49,7 @@ export class ConsultaEntradaComponent implements OnInit {
   verComponente: boolean;
   transaccionContable: any;
   detalleentrada: String;
+  tercero: String;
   constructor(
     private router: Router,
     private entradasHelper: EntradaHelper,
@@ -210,8 +211,6 @@ export class ConsultaEntradaComponent implements OnInit {
 
   loadEntradaEspecifica(): void {
     this.entradasHelper.getMovimiento(this.entradaId).subscribe(res => {
-      this.detalleentrada = res[0].Detalle;
-      this.detalleentrada = this.detalleentrada.replace('\"', '');
       if (res !== null) {
         this.movimiento = res[0];
         switch (this.movimiento.FormatoTipoMovimientoId.Nombre) {
@@ -327,6 +326,7 @@ export class ConsultaEntradaComponent implements OnInit {
            this.mostrar = true;
            this.verComponente = true;
            this.transaccionContable = res.transaccionContable;
+           this.tercero = res.tercero;
         }
       });
     } else {

@@ -54,7 +54,7 @@
            <p class="text-uppercase">{{[i+1]}}</p>
         </div>
         <div class="col">
-           <p class="text-uppercase">{{mvto.TerceroId}}</p>
+           <p class="text-uppercase">{{tercero.NombreCompleto}}</p>
         </div>
         <div class="col">
            <p class="text-uppercase">{{mvto.CuentaId}}</p>
@@ -65,16 +65,16 @@
         <div class="col">
            <p class="text-uppercase">{{mvto.Descripcion}}</p>
         </div>
-        <div class="col" *ngIf="mvto.TipoMovimientoId==344">
+        <div class="col" *ngIf="mvto.TipoMovimientoId==m_db">
            <p class="text-uppercase">{{mvto.Valor}}</p>
         </div>
-        <div class="col" *ngIf="mvto.TipoMovimientoId==345">
+        <div class="col" *ngIf="mvto.TipoMovimientoId==m_cr">
            <p class="text-uppercase">0</p>
         </div>
-        <div class="col" *ngIf="mvto.TipoMovimientoId==345">
+        <div class="col" *ngIf="mvto.TipoMovimientoId==m_cr">
            <p class="text-uppercase">{{mvto.Valor}}</p>
         </div>
-        <div class="col" *ngIf="mvto.TipoMovimientoId==344">
+        <div class="col" *ngIf="mvto.TipoMovimientoId==m_db">
            <p class="text-uppercase">0</p>
         </div>
       </div>
@@ -103,14 +103,3 @@
            <p class="text-uppercase">{{totalCreditos}}</p>
         </div>
       </div>
-
-
-
-
-<!--
-<table style="width:50%">
-<tr><td>Consecutivo</td><td>{{transaccion.ConsecutivoId}}</td></tr>
-<tr><td>Descripcion</td><td>{{transaccion.Descripcion}}</td></tr>
-<tr><td>Fecha Transacción</td><td>{{transaccion.FechaTransaccion}}</td></tr>
-<table>
--->
