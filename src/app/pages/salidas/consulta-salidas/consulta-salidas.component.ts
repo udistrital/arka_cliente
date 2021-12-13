@@ -42,6 +42,7 @@ export class ConsultaSalidasComponent implements OnInit {
   Dependencias: any;
   Sedes: any;
   mostrar: boolean;
+  consecutivoSalida: string;
   modo: string = 'consulta';
   estadosMovimiento: Array<EstadoMovimiento>;
   movimiento: Movimiento;
@@ -288,7 +289,11 @@ export class ConsultaSalidasComponent implements OnInit {
   }
   onVolver() {
     this.detalle = !this.detalle;
-    this.verComprobante = false;
+    if (this.verComprobante) {
+        this.mostrar = false;
+        this.verComprobante = false;
+    }
+
   }
 
   private cargarSalida () {
@@ -316,12 +321,12 @@ export class ConsultaSalidasComponent implements OnInit {
 
   private onSubmitRevision(aprobar: boolean) {
     if (aprobar) {
-//      this.salidasHelper.postSalida(this.movimiento.Id).toPromise().then((res: any) => {
-      this.salidasHelper.postSalida(827).toPromise().then((res: any) => {
+      this.salidasHelper.postSalida(this.movimiento.Id).toPromise().then((res: any) => {
         if (res) {
-          this.verComprobante = true;
+          const obj = JSON.parse(res.movimientoArka.Detalle);
           this.transaccionContable = res.transaccionContable;
-        //  this.alertSuccess(true);
+          this.consecutivoSalida = obj.consecutivo;
+          this.verComprobante = true;
         }
       });
     } else {
