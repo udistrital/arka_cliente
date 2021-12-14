@@ -245,6 +245,19 @@
       "ErrorRequerido": "This is a mandatory field",
       "MismoTercero": "The new civil servant must be different to the current civil servant"
     },
+    "Comprobante_Contable": {
+      "Consecutivo": "Consecutivo",
+      "Concepto": "Concepto",
+      "FechaTransaccion":"Fecha Transacción",
+      "Secuencia":"Secuencia",
+      "Tercero": "Tercero",
+      "Cuenta": "Cuenta",
+      "NombreCuenta": "Nombre Cuenta",
+      "Descripción": "Descripción",
+      "Debito": "Débito",
+      "Credito": "Crédito",
+      "Total":"Total"
+    },
     "Acta_Recibido": {
       "ErrorAnularMsg": "The Act {{ACTA}} cannot be voided by having state \"{{ESTADO}}\"",
       "Anular": "Void Receipt Certificate",

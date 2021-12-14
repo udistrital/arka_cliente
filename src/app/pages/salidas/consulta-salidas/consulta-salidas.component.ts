@@ -40,11 +40,16 @@ export class ConsultaSalidasComponent implements OnInit {
   Proveedores: any;
   Dependencias: any;
   Sedes: any;
+  tercero: any;
   mostrar: boolean;
+  consecutivoSalida: string;
   modo: string = 'consulta';
   estadosMovimiento: Array<EstadoMovimiento>;
   movimiento: Movimiento;
   filaSeleccionada: any;
+  verComprobante: boolean = false;
+  transaccionContable: any;
+
 
   constructor(
     private router: Router,
@@ -284,10 +289,15 @@ export class ConsultaSalidasComponent implements OnInit {
   }
   onVolver() {
     this.detalle = !this.detalle;
+    if (this.verComprobante) {
+        this.mostrar = false;
+        this.verComprobante = false;
+    }
+
   }
 
   private cargarSalida () {
-    this.entradasHelper.getMovimiento(this.salidaId).toPromise().then((res: any) => {
+   this.entradasHelper.getMovimiento(this.salidaId).toPromise().then((res: any) => {
       this.movimiento = res[0];
     });
   }
@@ -310,14 +320,18 @@ export class ConsultaSalidasComponent implements OnInit {
   }
 
   private onSubmitRevision(aprobar: boolean) {
-    this.mostrar = false;
     if (aprobar) {
       this.salidasHelper.postSalida(this.movimiento.Id).toPromise().then((res: any) => {
         if (res) {
-          this.alertSuccess(true);
+          const obj = JSON.parse(res.movimientoArka.Detalle);
+          this.tercero = res.tercero;
+          this.transaccionContable = res.transaccionContable;
+          this.consecutivoSalida = obj.consecutivo;
+          this.verComprobante = true;
         }
       });
     } else {
+      this.mostrar = false;
       const estado = this.estadosMovimiento.find(estadoMovimiento => estadoMovimiento.Nombre === 'Salida Rechazada').Id;
       this.movimiento.EstadoMovimientoId = <EstadoMovimiento>{ Id: estado };
       this.entradasHelper.putMovimiento(this.movimiento).toPromise().then((res: any) => {

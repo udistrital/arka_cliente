@@ -46,7 +46,10 @@ export class ConsultaEntradaComponent implements OnInit {
   movimiento: Movimiento;
   modo: string = 'consulta';
   filaSeleccionada: any;
-
+  verComponente: boolean;
+  transaccionContable: any;
+  detalleentrada: String;
+  tercero: String;
   constructor(
     private router: Router,
     private entradasHelper: EntradaHelper,
@@ -319,7 +322,10 @@ export class ConsultaEntradaComponent implements OnInit {
     if (aprobar) {
       this.entradasHelper.postEntrada({}, +this.entradaId).toPromise().then((res: any) => {
         if (res) {
-          this.alertSuccess(true);
+           this.mostrar = true;
+           this.verComponente = true;
+           this.transaccionContable = res.transaccionContable;
+           this.tercero = res.tercero;
         }
       });
     } else {
