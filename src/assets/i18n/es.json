@@ -245,6 +245,20 @@
       "ErrorRequerido": "Este campo es obligatorio",
       "MismoTercero": "El funcionario destino deber ser diferente al funcionario que entrega"
     },
+    "Comprobante_Contable": {
+      "Titulo": "Comprobante Contable",
+      "Consecutivo": "Consecutivo",
+      "Concepto": "Concepto",
+      "FechaTransaccion":"Fecha Transacción",
+      "Secuencia":"Secuencia",
+      "Tercero": "Tercero",
+      "Cuenta": "Cuenta",
+      "NombreCuenta": "Nombre Cuenta",
+      "Descripcion": "Descripción",
+      "Debito": "Débito",
+      "Credito": "Crédito",
+      "Total":"Total"
+    },
     "Acta_Recibido":{
       "ErrorAnularMsg": "No se puede anular el Acta {{ACTA}} por tener estado \"{{ESTADO}}\"",
       "Anular": "Anular Acta de Recibido",

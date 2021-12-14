@@ -297,7 +297,7 @@ export class ConsultaSalidasComponent implements OnInit {
   }
 
   private cargarSalida () {
-    this.entradasHelper.getMovimiento(this.salidaId).toPromise().then((res: any) => {
+   this.entradasHelper.getMovimiento(this.salidaId).toPromise().then((res: any) => {
       this.movimiento = res[0];
     });
   }
