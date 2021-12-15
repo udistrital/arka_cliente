@@ -1136,7 +1136,8 @@
         "noTrasladosReview": "No hay traslados pendientes por ser revisados",
         "accionEdit": "Editar Solicitud",
         "estadoTraslado": "Estado Traslado",
-        "errorEditar": "No se puede editar este traslado"
+        "errorEditar": "No se puede editar este traslado",
+        "errorElementos": "Hubo un error consultando los elementos del funcionario"
       },
       "registrar": {
         "title": "Solicitar Traslado",

@@ -1,3 +1,8 @@
+mat-paginator {
+    display: flex;
+    justify-content: center;
+}
+
 input,
 mat-select {
     height: auto;
@@ -23,10 +28,9 @@ td {
   width: 150px;
 }
 
-.tabla-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+.placa {
+    width: 200px;
+    height: 50px;
 }
 
 .botones {
@@ -36,4 +40,12 @@ td {
 
 button:focus {
     outline: none;
+}
+
+.container-tabla {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow-x: scroll;
 }

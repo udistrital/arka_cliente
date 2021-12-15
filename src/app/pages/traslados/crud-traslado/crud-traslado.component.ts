@@ -142,19 +142,20 @@ export class CrudTrasladoComponent implements OnInit {
 
   private buildMovimiento(rechazar: boolean) {
     const val = this.trasladoData;
+    const Elementos = val.controls.elementos.value.map(element => element.id);
     const FuncionarioOrigen = val.controls.origen.value.tercero.Tercero.Id;
     const FuncionarioDestino = val.controls.destino.value.tercero.Tercero.Id;
     const Ubicacion = val.controls.ubicacion.value.ubicacion;
     const Observacion = val.controls.observaciones.value.observaciones;
     const estadoId = this.modoCrud === 'registrar' || this.modoCrud === 'editar' ? 'Traslado En Trámite' :
-      rechazar ? 'Traslado Rechazado' : this.modoCrud === 'revisar' ? 'Traslado Aprobado' :
-        this.modoCrud === 'confirmar' ? 'Traslado Confirmado' : '';
+    rechazar ? 'Traslado Rechazado' : this.modoCrud === 'revisar' ? 'Traslado Aprobado' :
+    this.modoCrud === 'confirmar' ? 'Traslado Confirmado' : '';
 
     const detalle = <DetalleTraslado>{
       FuncionarioOrigen,
       FuncionarioDestino,
       Ubicacion,
-      Elementos: [969], // Cuando esté, se debe poner el id de cada elemento,
+      Elementos,
       Consecutivo: this.consecutivo ? this.consecutivo : '',
     };
 

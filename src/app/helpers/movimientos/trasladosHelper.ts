@@ -87,4 +87,25 @@ export class TrasladosHelper {
             ),
         );
     }
+
+    /**
+     * Trae los elementos disponibles para ser trasladados según un funcionario
+     * If the response has errors in the OAS API it should show a popup message with an error.
+     * If the response is successs, it returns the object's data.
+     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
+     */
+    public getElementosFuncionario(funcionarioId: number) {
+        this.rqManager.setPath('ARKA_SERVICE');
+        return this.rqManager.get('traslados/funcionario/' + funcionarioId).pipe(
+            map(
+                (res) => {
+                    if (res['Type'] === 'error') {
+                        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.traslados.consulta.errorElementos'));
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
 }
