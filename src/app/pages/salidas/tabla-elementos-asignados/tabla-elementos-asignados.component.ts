@@ -14,6 +14,7 @@ import { isArray } from 'util';
 import { MatCheckbox } from '@angular/material';
 import { ElementoMovimientosArka, EstadoMovimiento, FormatoTipoMovimiento } from '../../../@core/data/models/entrada/entrada';
 import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
+import { MovimientosHelper } from '../../../helpers/movimientos/movimientosHelper';
 
 @Component({
   selector: 'ngx-tabla-elementos-asignados',
@@ -37,6 +38,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
   counter = 0;
   basePaginasD: number = 0;
   basePaginasC: number = 0;
+  elementosActa: any;
 
   @ViewChild('paginatorD') paginatorD: MatPaginator;
   @ViewChild('paginatorC') paginatorC: MatPaginator;
@@ -52,6 +54,8 @@ export class TablaElementosAsignadosComponent implements OnInit {
   set name2(entrada_id: string) {
     this.entradaId = entrada_id;
   }
+  @Input('salida_id') salida_id: number = 0;
+  @Input('edicionSalida') edicionSalida: boolean = false;
   sourceDevolutivo: MatTableDataSource<any>;
   sourceConsumo: MatTableDataSource<any>;
   devolutivoSeleccionados: boolean;
@@ -63,7 +67,8 @@ export class TablaElementosAsignadosComponent implements OnInit {
     private actaRecibidoHelper: ActaRecibidoHelper,
     private salidasHelper: SalidaHelper,
     private pUpManager: PopUpManager,
-    private entradasHelper: EntradaHelper) {
+    private entradasHelper: EntradaHelper,
+    private movimientosHelper: MovimientosHelper) {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
     });
   }
@@ -74,6 +79,12 @@ export class TablaElementosAsignadosComponent implements OnInit {
     this.setColumnas();
     this.getFormatoBodega();
     this.getFormatoFuncionario();
+
+    this.movimientosHelper.getElementosMovimientoById(this.salida_id).subscribe(res => {
+        if (res !== null) {
+            this.elementosActa = res;
+        }
+    });
   }
 
   private loadElementos() {
@@ -87,14 +98,27 @@ export class TablaElementosAsignadosComponent implements OnInit {
             el.Combinado = el.SubgrupoCatalogoId.SubgrupoId.Id ?
               el.SubgrupoCatalogoId.SubgrupoId.Codigo + ' - ' + el.SubgrupoCatalogoId.SubgrupoId.Nombre : '';
         });
-        const elementosConsumo = res.filter(el => el.SubgrupoCatalogoId.TipoBienId.Id === 1);
-        const elementosDevolutivo = res.filter(el => el.SubgrupoCatalogoId.TipoBienId.Id !== 1);
-        this.sourceDevolutivo = new MatTableDataSource<ElementoActa>(elementosDevolutivo);
-        this.sourceConsumo = new MatTableDataSource<ElementoActa>(elementosConsumo);
+        if (this.edicionSalida) {
+            this.salidasHelper.getSalida(this.salida_id).subscribe(res1 => {
+                const elementosConsumo = res.filter(el => el.SubgrupoCatalogoId.TipoBienId.Id === 1).
+                filter(el => res1.Elementos.some(sal => sal.ElementoActaId === el.Id));
+                const elementosDevolutivo = res.filter(el => el.SubgrupoCatalogoId.TipoBienId.Id !== 1).
+                filter(el => res1.Elementos.some(sal => sal.ElementoActaId === el.Id));
+                this.sourceDevolutivo = new MatTableDataSource<ElementoActa>(elementosDevolutivo);
+                this.sourceConsumo = new MatTableDataSource<ElementoActa>(elementosConsumo);
+            });
+        } else {
+            const elementosConsumo = res.filter(el => el.SubgrupoCatalogoId.TipoBienId.Id === 1);
+            const elementosDevolutivo = res.filter(el => el.SubgrupoCatalogoId.TipoBienId.Id !== 1);
+            this.sourceDevolutivo = new MatTableDataSource<ElementoActa>(elementosDevolutivo);
+            this.sourceConsumo = new MatTableDataSource<ElementoActa>(elementosConsumo);
+        }
+
         this.sourceDevolutivo.paginator = this.paginatorD;
         this.sourceDevolutivo.sort = this.sortD;
         this.sourceConsumo.paginator = this.paginatorC;
         this.sourceConsumo.sort = this.sortC;
+
       } else {
         this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.salidas.errorElementos'));
       }
@@ -243,6 +267,8 @@ export class TablaElementosAsignadosComponent implements OnInit {
     elemento.Unidad = elementoActa.Cantidad;
     elemento.ValorUnitario = elementoActa.ValorTotal / elementoActa.Cantidad;
     elemento.ValorTotal = elementoActa.ValorTotal;
+    const found = this.elementosActa.find(element => element.ElementoActaId === elemento.ElementoActaId);
+    elemento.Id = found.Id;
     return elemento;
   }
 
@@ -324,7 +350,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
           },
           Elementos: [],
         };
-        const elemento = this.crearElemento(currentValue);
+        const elemento = this.crearElemento(currentValue); // incluir el id del elemento
         accumulator[val].Elementos.push(elemento);
         return accumulator;
       }, {});
@@ -412,28 +438,51 @@ export class TablaElementosAsignadosComponent implements OnInit {
       confirmButtonText: 'Si',
       cancelButtonText: 'No',
     }).then((result) => {
-      if (result.value) {
-        this.salidasHelper.registrarSalida(Salidas).subscribe((res: any) => {
-          if (res) {
-            const length = res.trSalida.Salidas.length;
-            const s = length > 1 ? 's' : '';
-            const consecutivo = JSON.parse(res.trSalida.Salidas[0].Salida.Detalle).consecutivo +
-              (length > 1 ? (' - ' + JSON.parse(res.trSalida.Salidas[length - 1].Salida.Detalle).consecutivo) : '');
-            const title = this.translate.instant('GLOBAL.movimientos.salidas.registroTtlOk', { S: s });
-            const text = this.translate.instant('GLOBAL.movimientos.salidas.registroTxtOk' +
-              (length > 1 ? 'Varios' : ''), { CONSECUTIVO: consecutivo });
-            const options = {
+        if (result.value) {
+          if (this.edicionSalida) {
+            this.salidasHelper.editarSalida(Salidas, this.salida_id).subscribe((res: any) => {
+            if (res) {
+               const length = res.trSalida.Salidas.length;
+               const s = length > 1 ? 's' : '';
+               const consecutivo = JSON.parse(res.trSalida.Salidas[0].Salida.Detalle).consecutivo +
+               (length > 1 ? (' - ' + JSON.parse(res.trSalida.Salidas[length - 1].Salida.Detalle).consecutivo) : '');
+               const title = this.translate.instant('GLOBAL.movimientos.salidas.registroTtlOk', { S: s });
+               const text = this.translate.instant('GLOBAL.movimientos.salidas.registroTxtOk' +
+               (length > 1 ? 'Varios' : ''), { CONSECUTIVO: consecutivo });
+               const options = {
+                  type: 'success',
+                  title,
+                  text,
+                  showConfirmButton: false,
+                  timer: 2000,
+               };
+               this.pUpManager.showAlertWithOptions(options);
+               this.router.navigate(['/pages/salidas/consulta_salidas']);
+            }
+            });
+        } else {
+           this.salidasHelper.registrarSalida(Salidas).subscribe((res: any) => {
+           if (res) {
+             const length = res.trSalida.Salidas.length;
+             const s = length > 1 ? 's' : '';
+             const consecutivo = JSON.parse(res.trSalida.Salidas[0].Salida.Detalle).consecutivo +
+             (length > 1 ? (' - ' + JSON.parse(res.trSalida.Salidas[length - 1].Salida.Detalle).consecutivo) : '');
+             const title = this.translate.instant('GLOBAL.movimientos.salidas.registroTtlOk', { S: s });
+             const text = this.translate.instant('GLOBAL.movimientos.salidas.registroTxtOk' +
+             (length > 1 ? 'Varios' : ''), { CONSECUTIVO: consecutivo });
+             const options = {
               type: 'success',
               title,
               text,
               showConfirmButton: false,
               timer: 2000,
-            };
-            this.pUpManager.showAlertWithOptions(options);
-            this.router.navigate(['/pages/salidas/consulta_salidas']);
-          }
-        });
-      }
+             };
+             this.pUpManager.showAlertWithOptions(options);
+             this.router.navigate(['/pages/salidas/consulta_salidas']);
+           }
+           });
+        }
+    }
     });
   }
 

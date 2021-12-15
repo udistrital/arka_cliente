@@ -56,6 +56,8 @@ export class IntangiblesDesarrolladosComponent implements OnInit {
   cargando_ordenadores: boolean = true;
 
   @Input() actaRecibidoId: Number;
+  @Input() entradaId: any;
+  @Input() EntradaEdit: any;
 
   constructor(
     private router: Router,

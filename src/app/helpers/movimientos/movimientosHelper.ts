@@ -68,8 +68,14 @@ export class MovimientosHelper {
      * @param nombre nombre del formato
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
      */
+/*
     public getFormatoQuery(query: string) {
         query = 'formato_tipo_movimiento?limit=-1&query=' + query;
+     * @param id id del movimiento
+     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
+     */
+    public getElementosMovimientoById(id: number) {
+        const query = 'elementos_movimiento?query=MovimientoId.Id:' + id;
         this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
         return this.rqManager.get(query).pipe(
             map(

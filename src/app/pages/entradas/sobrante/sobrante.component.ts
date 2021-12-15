@@ -37,6 +37,8 @@ export class SobranteComponent implements OnInit {
   formatoTipoMovimiento: any;
 
   @Input() actaRecibidoId: Number;
+  @Input() entradaId: any;
+  @Input() EntradaEdit: any;
 
   constructor(private router: Router, private entradasHelper: EntradaHelper, private pUpManager: PopUpManager, private fb: FormBuilder,
     private nuxeoService: NuxeoService, private sanitization: DomSanitizer, private documentoService: DocumentoService,

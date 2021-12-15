@@ -55,6 +55,8 @@ export class AdicionesMejorasComponent implements OnInit {
   @ViewChild('stepper') stepper: NbStepperComponent;
 
   @Input() actaRecibidoId: Number;
+  @Input() entradaId: any;
+  @Input() EntradaEdit: any;
 
   constructor(private router: Router, private entradasHelper: EntradaHelper, private actaRecibidoHelper: ActaRecibidoHelper,
     private pUpManager: PopUpManager, private fb: FormBuilder, private translate: TranslateService) {

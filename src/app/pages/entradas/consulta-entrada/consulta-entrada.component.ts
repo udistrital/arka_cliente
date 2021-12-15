@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { LocalDataSource } from 'ngx-smart-table';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
@@ -50,6 +50,9 @@ export class ConsultaEntradaComponent implements OnInit {
   transaccionContable: any;
   detalleentrada: String;
   tercero: String;
+  key: boolean = false;
+  editarEntrada: boolean = false;
+
   constructor(
     private router: Router,
     private entradasHelper: EntradaHelper,
@@ -83,6 +86,18 @@ export class ConsultaEntradaComponent implements OnInit {
     );
 
   }
+
+@HostListener('window:keydown', ['$event'])
+keyEventDown(event: KeyboardEvent) {
+   this.key = true;
+}
+
+
+@HostListener('window:keyup', ['$event'])
+keyEventUp(event: KeyboardEvent) {
+   this.key = false;
+}
+
 
 
   onEdit(event) {
@@ -575,17 +590,34 @@ export class ConsultaEntradaComponent implements OnInit {
   }
 
   onCustom(event) {
-    this.mostrar = false;
-    this.actaRecibidoId = +`${event.data.ActaRecibidoId}`;
-    // this.consecutivoEntrada = `${event.data.Consecutivo}`;
-    this.filaSeleccionada = event.data;
-    this.entradaId = `${event.data.Id}`;
-    this.detalle = true;
-    this.loadEntradaEspecifica();
+    if (!this.key) {
+       this.mostrar = false;
+       this.actaRecibidoId = +`${event.data.ActaRecibidoId}`;
+       this.filaSeleccionada = event.data;
+       this.entradaId = `${event.data.Id}`;
+       this.detalle = true;
+       this.loadEntradaEspecifica();
+    } else {
+       if (event.data.EstadoMovimientoId === 'Entrada Rechazada') {
+          this.mostrar = true;
+          this.actaRecibidoId = +`${event.data.ActaRecibidoId}`;
+          this.filaSeleccionada = event.data;
+          this.entradaId = `${event.data.Id}`;
+          this.detalle = false;
+          this.edit = false;
+          this.editarEntrada = true;
+          this.loadEntradaEspecifica();
+//          this.loadEntradaEspecifica();
+        }
+    }
   }
 
   onVolver() {
     this.detalle = !this.detalle;
+    if (this.editarEntrada) {
+        this.detalle = false;
+        this.editarEntrada = false;
+    }
     this.iniciarParametros();
     this.mostrar = true;
   }
