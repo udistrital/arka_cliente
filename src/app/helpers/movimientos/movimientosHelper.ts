@@ -68,12 +68,30 @@ export class MovimientosHelper {
      * @param nombre nombre del formato
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
      */
-/*
-    public getFormatoQuery(query: string) {
-        query = 'formato_tipo_movimiento?limit=-1&query=' + query;
-     * @param id id del movimiento
+
+   /**
+     * Trae el formato movimiento según el nombre
+     * If the response has errors in the OAS API it should show a popup message with an error.
+     * If the response is successs, it returns the object's data.
+     * @param nombre nombre del formato
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
      */
+    public getFormatoQuery(query: string) {
+        query = 'formato_tipo_movimiento?limit=-1&query=' + query;
+        this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
+        return this.rqManager.get(query).pipe(
+            map(
+                (res) => {
+                    if (res === 'error') {
+                        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.error_dependencias'));
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
+
     public getElementosMovimientoById(id: number) {
         const query = 'elementos_movimiento?query=MovimientoId.Id:' + id;
         this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');

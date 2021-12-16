@@ -60,6 +60,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
   sourceConsumo: MatTableDataSource<any>;
   devolutivoSeleccionados: boolean;
   consumoSeleccionados: boolean;
+  salida: any;
   @ViewChild('checkTodoInput') checkDummy: MatCheckbox;
 
   constructor(private translate: TranslateService,
@@ -80,11 +81,20 @@ export class TablaElementosAsignadosComponent implements OnInit {
     this.getFormatoBodega();
     this.getFormatoFuncionario();
 
+    if (this.edicionSalida) {
     this.movimientosHelper.getElementosMovimientoById(this.salida_id).subscribe(res => {
         if (res !== null) {
             this.elementosActa = res;
         }
     });
+
+    this.salidasHelper.getSalida(this.salida_id).subscribe(res => {
+        if (res !== null) {
+            this.salida = res;
+        }
+    });
+}
+
   }
 
   private loadElementos() {
@@ -243,19 +253,15 @@ export class TablaElementosAsignadosComponent implements OnInit {
   checkElementosAsignados() {
     const alertControlado = !this.sourceDevolutivo.data.length ? false :
       this.sourceDevolutivo.data.every(el => el.Funcionario.Id && el.Ubicacion.Id) ? false : true;
-
     const alertConsumo = !this.sourceConsumo.data.length ? false :
       this.sourceConsumo.data.every(el => el.Funcionario.Id && el.Ubicacion.Id) ? false : true;
-
     const alert = (alertControlado && alertConsumo) ? 'GLOBAL.movimientos.alerta_ambos' :
       (alertConsumo ? 'GLOBAL.movimientos.alerta_consumo' : (alertControlado ? 'GLOBAL.movimientos.alerta_controlado' : null));
-
     alert ? (Swal as any).fire({
       title: this.translate.instant('GLOBAL.movimientos.alerta_descargue'),
       text: this.translate.instant(alert),
       type: 'warning',
     }) : this.onSubmit();
-
   }
 
   private crearElemento(elementoActa) {
@@ -268,7 +274,9 @@ export class TablaElementosAsignadosComponent implements OnInit {
     elemento.ValorUnitario = elementoActa.ValorTotal / elementoActa.Cantidad;
     elemento.ValorTotal = elementoActa.ValorTotal;
     const found = this.elementosActa.find(element => element.ElementoActaId === elemento.ElementoActaId);
-    elemento.Id = found.Id;
+    if (found) {
+       elemento.Id = found.Id;
+    }
     return elemento;
   }
 
@@ -340,6 +348,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
             Observacion: this.getObservacion(obs, currentValue.Observaciones),
             Detalle: JSON.stringify(detalle),
             Activo: true,
+            Id: this.salida_id,
             MovimientoPadreId: {
               Id: parseFloat(this.entradaId),
             },
@@ -405,7 +414,6 @@ export class TablaElementosAsignadosComponent implements OnInit {
   }
 
   onSubmit() {
-
     const salidaBodega = this.salidaBodega();
     const salidaFuncionariosC = this.salidaConsumoFuncionario();
     const salidaFuncionariosD = this.salidaFuncionarioDevolutivo();
@@ -428,6 +436,15 @@ export class TablaElementosAsignadosComponent implements OnInit {
       }
     }
 
+    const idsalida = this.salida_id;
+    const consecutivo = this.salida.Salida.Consecutivo;
+    Salidas.Salidas.forEach(function(element) {
+        element.Salida.Id = Number(idsalida);
+        const x = JSON.parse(element.Salida.Detalle);
+        x.consecutivo = consecutivo;
+        element.Salida.Detalle = JSON.stringify(x);
+    });
+
     (Swal as any).fire({
       title: this.translate.instant('GLOBAL.movimientos.salidas.registroConfrmTtl'),
       text: this.translate.instant('GLOBAL.movimientos.salidas.registroConfrmTxt'),
@@ -441,35 +458,45 @@ export class TablaElementosAsignadosComponent implements OnInit {
         if (result.value) {
           if (this.edicionSalida) {
             this.salidasHelper.editarSalida(Salidas, this.salida_id).subscribe((res: any) => {
-            if (res) {
-               const length = res.trSalida.Salidas.length;
-               const s = length > 1 ? 's' : '';
-               const consecutivo = JSON.parse(res.trSalida.Salidas[0].Salida.Detalle).consecutivo +
-               (length > 1 ? (' - ' + JSON.parse(res.trSalida.Salidas[length - 1].Salida.Detalle).consecutivo) : '');
-               const title = this.translate.instant('GLOBAL.movimientos.salidas.registroTtlOk', { S: s });
-               const text = this.translate.instant('GLOBAL.movimientos.salidas.registroTxtOk' +
-               (length > 1 ? 'Varios' : ''), { CONSECUTIVO: consecutivo });
-               const options = {
-                  type: 'success',
-                  title,
-                  text,
-                  showConfirmButton: false,
-                  timer: 2000,
-               };
-               this.pUpManager.showAlertWithOptions(options);
-               this.router.navigate(['/pages/salidas/consulta_salidas']);
-            }
+               if (res) {
+                   let pconsecutivo = '';
+                   let text = '';
+                   let title = '';
+                   if (typeof res.trSalida.Salidas !== 'undefined') {
+                       const length = res.trSalida.Salidas.length;
+                       const s = length > 1 ? 's' : '';
+                       pconsecutivo = JSON.parse(res.trSalida.Salidas[0].Salida.Detalle).consecutivo +
+                       (length > 1 ? (' - ' + JSON.parse(res.trSalida.Salidas[length - 1].Salida.Detalle).consecutivo) : '');
+                       title = this.translate.instant('GLOBAL.movimientos.salidas.registroTtlOk', { S: s });
+                       text = this.translate.instant('GLOBAL.movimientos.salidas.registroTxtOk' +
+                       (length > 1 ? 'Varios' : ''), { CONSECUTIVO: pconsecutivo });
+                    } else {
+                       pconsecutivo = JSON.parse(res.trSalida.Detalle).consecutivo;
+                       text = this.translate.instant('GLOBAL.movimientos.salidas.registroTxtOk' +
+                       { CONSECUTIVO: pconsecutivo });
+                       title = this.translate.instant('GLOBAL.movimientos.salidas.registroTtlOk', { S: '' });
+                    }
+                    const options = {
+                       type: 'success',
+                       title,
+                       text,
+                       showConfirmButton: false,
+                       timer: 2000,
+                    };
+                    this.pUpManager.showAlertWithOptions(options);
+                    this.router.navigate(['/pages/salidas']);
+                }
             });
         } else {
            this.salidasHelper.registrarSalida(Salidas).subscribe((res: any) => {
            if (res) {
              const length = res.trSalida.Salidas.length;
              const s = length > 1 ? 's' : '';
-             const consecutivo = JSON.parse(res.trSalida.Salidas[0].Salida.Detalle).consecutivo +
+             const pconsecutivo = JSON.parse(res.trSalida.Salidas[0].Salida.Detalle).consecutivo +
              (length > 1 ? (' - ' + JSON.parse(res.trSalida.Salidas[length - 1].Salida.Detalle).consecutivo) : '');
              const title = this.translate.instant('GLOBAL.movimientos.salidas.registroTtlOk', { S: s });
              const text = this.translate.instant('GLOBAL.movimientos.salidas.registroTxtOk' +
-             (length > 1 ? 'Varios' : ''), { CONSECUTIVO: consecutivo });
+             (length > 1 ? 'Varios' : ''), { CONSECUTIVO: pconsecutivo });
              const options = {
               type: 'success',
               title,
