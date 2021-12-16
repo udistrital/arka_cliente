@@ -62,6 +62,18 @@ export class FormTrasladoComponent implements OnInit {
     });
   }
 
+  get rechazo(): FormGroup {
+    const form = this.fb.group({
+      razon: [
+        {
+          value: '',
+          disabled: true,
+        },
+      ],
+    });
+    return form;
+  }
+
   get terceroOrigen(): FormGroup {
     const disabled = this.modo === 'get';
     const form = this.fb.group({
@@ -212,6 +224,7 @@ export class FormTrasladoComponent implements OnInit {
 
   private buildForm(): void {
     this.formTraslado = this.fb.group({
+      rechazo: this.rechazo,
       origen: this.terceroOrigen,
       destino: this.terceroDestino,
       ubicacion: this.ubicacionDestino,
@@ -224,6 +237,8 @@ export class FormTrasladoComponent implements OnInit {
   }
 
   private loadValues(values: any) {
+    const razon = values.rechazo ? values.rechazo : '';
+    this.formTraslado.get('rechazo').patchValue({ razon });
     const disabled = this.modo === 'get';
     const terceroO = values.origen.Tercero[0];
     const emailO = values.origen.Correo.length && values.origen.Correo[0].Dato ?

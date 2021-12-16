@@ -1,4 +1,27 @@
 <mat-vertical-stepper [nbSpinner]="!load" [linear]="true" #stepper>
+  <mat-step [stepControl]="formTraslado.get('rechazo')"
+    *ngIf="formTraslado && formTraslado.get('rechazo.razon').value !== ''"
+    label="{{'GLOBAL.razonRechazo' | translate}}">
+    <form [formGroup]="formTraslado.get('rechazo')">
+      <div class="row">
+        <div class="form-group col-sm">
+          <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Observaciones' | translate}}</label>
+          <div class="input-group">
+            <textarea rows="3" placeholder="{{'GLOBAL.razonRechazo' | translate}}"
+              class="form-control" formControlName="razon">
+              </textarea>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="form-group col-sm">
+          <button mat-flat-button color="primary" matStepperNext class="float-right text-uppercase">
+            {{'GLOBAL.siguiente' | translate}}
+          </button>
+        </div>
+      </div>
+    </form>
+  </mat-step>
   <mat-step [stepControl]="formTraslado.get('origen')" label="{{'GLOBAL.traslados.funcActual' | translate}}">
     <form [formGroup]="formTraslado.get('origen')">
       <div class="row">
@@ -35,6 +58,10 @@
       </div>
       <div class="row">
         <div class="form-group col-sm">
+          <button mat-flat-button color="primary" *ngIf="formTraslado && formTraslado.get('rechazo.razon').value !== ''"
+            matStepperPrevious class="float-left text-uppercase">
+            {{'GLOBAL.anterior' | translate}}
+          </button>
           <button mat-flat-button color="primary" matStepperNext class="float-right text-uppercase"
             [disabled]="formTraslado.get('origen.tercero').invalid">
             {{'GLOBAL.siguiente' | translate}}
