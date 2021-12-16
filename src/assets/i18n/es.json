@@ -856,6 +856,7 @@
     "placeholder_observaciones": "Observaciones",
     "funcionarioOrigen": "Funcionario Origen",
     "funcionarioDestino": "Funcionario Destino",
+    "razonRechazo": "Razón de rechazo",
 
     "movimientos": {
       "estadoTramite": "En Trámite",
@@ -1136,7 +1137,9 @@
         "noTrasladosReview": "No hay traslados pendientes por ser revisados",
         "accionEdit": "Editar Solicitud",
         "estadoTraslado": "Estado Traslado",
-        "errorEditar": "No se puede editar este traslado"
+        "errorEditar": "No se puede editar este traslado",
+        "errorElementos": "Hubo un error consultando los elementos del funcionario",
+        "errorConsulta": "Hubo un error consultando la lista de traslados"
       },
       "registrar": {
         "title": "Solicitar Traslado",

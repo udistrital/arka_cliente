@@ -9,7 +9,7 @@ import { isObject } from 'rxjs/internal-compatibility';
 import { TerceroCriterioContratista } from '../../../@core/data/models/terceros_criterio';
 import { debounceTime, distinctUntilChanged, map, startWith, switchMap } from 'rxjs/operators';
 import { MatPaginator, MatTableDataSource } from '@angular/material';
-
+import { TrasladosHelper } from '../../../helpers/movimientos/trasladosHelper';
 
 @Component({
   selector: 'ngx-form-traslado',
@@ -24,11 +24,13 @@ export class FormTrasladoComponent implements OnInit {
   sedes: any;
   formTraslado: FormGroup;
   ubicacionesFiltradas: any = [];
-  displayedColumns: string[] = ['acciones', 'placa', 'nombre'];
+  displayedColumns: string[] = ['acciones', 'placa', 'nombre', 'marca', 'serie', 'valor'];
   dataSource: MatTableDataSource<any>;
   @ViewChild('paginator') paginator: MatPaginator;
   load: boolean = false;
   trasladoId: number = 0;
+  elementos = [];
+  elementosFiltrados: any[];
   @Output() valid = new EventEmitter<boolean>();
   @Input() modo: string = 'create'; // get | update
   @Input() trasladoInfo: any;
@@ -41,6 +43,7 @@ export class FormTrasladoComponent implements OnInit {
     private Actas_Recibido: ActaRecibidoHelper,
     private tercerosHelper: TercerosHelper,
     private oikosHelper: OikosHelper,
+    private trasladosHelper: TrasladosHelper,
   ) {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
     });
@@ -57,6 +60,18 @@ export class FormTrasladoComponent implements OnInit {
       this.sedes = res;
       this.modo !== 'create' ? this.loadValues(this.trasladoInfo) : this.load = true;
     });
+  }
+
+  get rechazo(): FormGroup {
+    const form = this.fb.group({
+      razon: [
+        {
+          value: '',
+          disabled: true,
+        },
+      ],
+    });
+    return form;
   }
 
   get terceroOrigen(): FormGroup {
@@ -162,7 +177,7 @@ export class FormTrasladoComponent implements OnInit {
           disabled,
         },
         {
-          validators: [Validators.required],
+          validators: [Validators.required, this.validateObjectCompleter()],
         },
       ],
       nombre: [
@@ -171,7 +186,26 @@ export class FormTrasladoComponent implements OnInit {
           disabled: true,
         },
       ],
+      marca: [
+        {
+          value: '',
+          disabled: true,
+        },
+      ],
+      serie: [
+        {
+          value: '',
+          disabled: true,
+        },
+      ],
+      valor: [
+        {
+          value: '',
+          disabled: true,
+        },
+      ],
     });
+    this.cambiosPlaca(form.get('placa').valueChanges);
     return form;
   }
 
@@ -190,6 +224,7 @@ export class FormTrasladoComponent implements OnInit {
 
   private buildForm(): void {
     this.formTraslado = this.fb.group({
+      rechazo: this.rechazo,
       origen: this.terceroOrigen,
       destino: this.terceroDestino,
       ubicacion: this.ubicacionDestino,
@@ -202,6 +237,8 @@ export class FormTrasladoComponent implements OnInit {
   }
 
   private loadValues(values: any) {
+    const razon = values.rechazo ? values.rechazo : '';
+    this.formTraslado.get('rechazo').patchValue({ razon });
     const disabled = this.modo === 'get';
     const terceroO = values.origen.Tercero[0];
     const emailO = values.origen.Correo.length && values.origen.Correo[0].Dato ?
@@ -233,7 +270,7 @@ export class FormTrasladoComponent implements OnInit {
         id: [element.Id],
         placa: [
           {
-            value: element.Placa,
+            value: element,
             disabled,
           },
           {
@@ -243,6 +280,24 @@ export class FormTrasladoComponent implements OnInit {
         nombre: [
           {
             value: element.Nombre,
+            disabled: true,
+          },
+        ],
+        marca: [
+          {
+            value: element.Marca,
+            disabled: true,
+          },
+        ],
+        serie: [
+          {
+            value: element.Serie,
+            disabled: true,
+          },
+        ],
+        valor: [
+          {
+            value: element.Valor,
             disabled: true,
           },
         ],
@@ -303,6 +358,14 @@ export class FormTrasladoComponent implements OnInit {
 
   getInfoTercero(controlName: string) {
     const terceroId = this.formTraslado.get(controlName + '.tercero').value.Tercero.Id;
+    if (controlName === 'origen') {
+      (this.formTraslado.get('elementos') as FormArray).reset();
+      this.removeElemento(0);
+      this.dataSource.data = [];
+      this.trasladosHelper.getElementosFuncionario(terceroId).subscribe(res => {
+        this.elementos = res;
+      });
+    }
     this.loadCargo(terceroId, controlName);
     this.loadEmail(terceroId, controlName);
   }
@@ -342,12 +405,38 @@ export class FormTrasladoComponent implements OnInit {
     return field ? field.Nombre : '';
   }
 
+  public muestraPlaca(field): string {
+    return field && field.Placa ? field.Placa : '';
+  }
+
+  public fillElemento(event, index) {
+    const value = event.option.value;
+    (this.formTraslado.get('elementos') as FormArray).at(index).patchValue({
+      id: value.Id,
+      nombre: value.Nombre,
+      marca: value.Marca,
+      serie: value.Serie,
+      valor: value.Valor,
+    });
+  }
+
   public muestraFuncionario(contr: TerceroCriterioContratista): string {
     if (contr && contr.Identificacion && contr.Tercero) {
       return contr.Identificacion.Numero + ' - ' + contr.Tercero.NombreCompleto;
     } else if (contr && contr.Tercero) {
       return contr.Tercero.NombreCompleto;
     }
+  }
+
+  private cambiosPlaca(valueChanges: Observable<any>) {
+    valueChanges.pipe(
+      startWith(''),
+      debounceTime(250),
+      distinctUntilChanged(),
+      map(val => typeof val === 'string' ? val : this.muestraPlaca(val)),
+    ).subscribe((response: any) => {
+      this.elementosFiltrados = this.filtroPlaca(response);
+    });
   }
 
   private cambiosFuncionario(control: AbstractControl): Observable<Partial<TerceroCriterioContratista>[]> {
@@ -371,6 +460,14 @@ export class FormTrasladoComponent implements OnInit {
       this.dependencias = response.queryOptions[0].Id ? response.queryOptions : [];
       this.getUbicaciones();
     });
+  }
+
+  private filtroPlaca(nombre: string): any[] {
+    if (nombre.length >= 4 && this.elementos.length) {
+      return this.elementos.filter(el => el.Placa.includes(nombre));
+    } else {
+      return [];
+    }
   }
 
   private filtroFuncionarios(nombre: string): TerceroCriterioContratista[] {

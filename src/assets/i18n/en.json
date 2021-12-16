@@ -855,6 +855,7 @@
     "placeholder_observaciones": "Comments",
     "funcionarioOrigen": "Current Civil Servant",
     "funcionarioDestino": "New Civil Servant",
+    "razonRechazo": "Denial reason",
 
     "movimientos": {
       "estadoTramite": "Awaiting review",
@@ -1135,7 +1136,9 @@
        "noTrasladosReview": "There are no transfers to review",
        "accionEdit": "Edit Transfer Request",
        "estadoTraslado": "Transfer Request Status",
-       "errorEditar": "The selected request can not be edited"
+       "errorEditar": "The selected request can not be edited",
+       "errorElementos": "There was an error getting the civil servant's elements",
+       "errorConsulta": "There was an error getting the requests list"
      },
      "registro": {
        "title": "Confirm Transfer Registration",

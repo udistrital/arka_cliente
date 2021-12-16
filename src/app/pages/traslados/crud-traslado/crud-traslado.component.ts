@@ -25,6 +25,7 @@ export class CrudTrasladoComponent implements OnInit {
   subtitle: string;
   boton: string;
   consecutivo: string = '';
+  rechazo: string = '';
   @Input() modoCrud: string; // registrar | ver | editar | revisar | aprobar
   @Input() trasladoId: number = 0;
   @Output() accion: EventEmitter<boolean> = new EventEmitter<boolean>();
@@ -64,11 +65,13 @@ export class CrudTrasladoComponent implements OnInit {
       if (res) {
         this.trasladoData = {};
         const consecutivo = JSON.parse(res.Detalle).Consecutivo;
+        const rechazo = JSON.parse(res.Detalle).RazonRechazo;
         this.trasladoData.origen = res.FuncionarioOrigen;
         this.trasladoData.destino = res.FuncionarioDestino;
         this.trasladoData.ubicacion = res.Ubicacion;
         this.trasladoData.elementos = res.Elementos;
         this.trasladoData.observaciones = res.Observaciones;
+        this.trasladoData.rechazo = rechazo;
         this.consecutivo = consecutivo ? consecutivo : '';
         this.showForm = true;
       }
@@ -92,6 +95,15 @@ export class CrudTrasladoComponent implements OnInit {
           confirmButtonText: this.translate.instant('GLOBAL.Acta_Recibido.VerificacionActa.Rechazar'),
           showCancelButton: true,
           progressSteps: ['1'],
+          inputValidator: (value) => {
+            return new Promise<string>((resolve) => {
+              if (!value.length) {
+                resolve(this.translate.instant('GLOBAL.traslados.revisar.confrmRechazoTtx'));
+              } else {
+                resolve('');
+              }
+            });
+          },
         }).queue([
           {
             title: this.translate.instant('GLOBAL.traslados.revisar.confrmRechazoTtl'),
@@ -99,7 +111,7 @@ export class CrudTrasladoComponent implements OnInit {
           },
         ]).then((result2) => {
           if (result2.value) {
-            this.trasladoData.controls.observaciones.value.observaciones += ' // Razón de rechazo: ' + result2.value;
+            this.rechazo = result2.value[0];
             this.buildMovimiento(true);
           }
         });
@@ -142,20 +154,24 @@ export class CrudTrasladoComponent implements OnInit {
 
   private buildMovimiento(rechazar: boolean) {
     const val = this.trasladoData;
+    const Elementos = val.controls.elementos.value.map(element => element.id);
     const FuncionarioOrigen = val.controls.origen.value.tercero.Tercero.Id;
     const FuncionarioDestino = val.controls.destino.value.tercero.Tercero.Id;
     const Ubicacion = val.controls.ubicacion.value.ubicacion;
     const Observacion = val.controls.observaciones.value.observaciones;
-    const estadoId = this.modoCrud === 'registrar' || this.modoCrud === 'editar' ? 'Traslado En Trámite' :
-      rechazar ? 'Traslado Rechazado' : this.modoCrud === 'revisar' ? 'Traslado Aprobado' :
-        this.modoCrud === 'confirmar' ? 'Traslado Confirmado' : '';
+    const estadoId =
+      (this.modoCrud === 'registrar' || this.modoCrud === 'editar') ? 'Traslado En Trámite' :
+        (rechazar) ? 'Traslado Rechazado' :
+          (this.modoCrud === 'revisar') ? 'Traslado Aprobado' :
+            (this.modoCrud === 'confirmar') ? 'Traslado Confirmado' : '';
 
     const detalle = <DetalleTraslado>{
       FuncionarioOrigen,
       FuncionarioDestino,
       Ubicacion,
-      Elementos: [969], // Cuando esté, se debe poner el id de cada elemento,
+      Elementos,
       Consecutivo: this.consecutivo ? this.consecutivo : '',
+      RazonRechazo: this.rechazo,
     };
 
     const movimiento = <Movimiento>{
