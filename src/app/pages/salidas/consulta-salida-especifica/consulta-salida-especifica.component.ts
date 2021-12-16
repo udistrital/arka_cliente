@@ -78,14 +78,12 @@ export class ConsultaSalidaEspecificaComponent implements OnInit {
 
 
   CargarSalida() {
-
     this.salidasHelper.getSalida(this.salida_id).subscribe(res1 => {
       if (Object.keys(res1).length !== 0) {
         res1.Salida.MovimientoPadreId.Detalle =  JSON.parse(res1.Salida.MovimientoPadreId.Detalle).consecutivo;
         this.salida = res1.Salida;
         this.source.load(res1.Elementos);
       }
-
     });
   }
   cargarCampos() {

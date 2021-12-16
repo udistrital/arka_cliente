@@ -54,6 +54,8 @@ export class ElaboracionPropiaComponent implements OnInit {
   formatoTipoMovimiento: any;
 
   @Input() actaRecibidoId: Number;
+  @Input() entradaId: any;
+  @Input() EntradaEdit: any;
 
   constructor(
     private router: Router,

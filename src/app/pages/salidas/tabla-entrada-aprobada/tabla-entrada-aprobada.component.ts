@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input, ComponentFactoryResolver } from '@angular/core';
 import { LocalDataSource } from 'ngx-smart-table';
 import { Router } from '@angular/router';
 import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
@@ -25,6 +25,12 @@ import { Proveedor } from '../../../@core/data/models/acta_recibido/Proveedor';
 })
 export class TablaEntradaAprobadaComponent implements OnInit {
 
+
+  @Input('editar') edicion: boolean = false;
+  @Input('actaParametro') actaParametro: number = 0;
+  @Input('salida_id') salida_id: number = 0;
+  @Input('idEntradaParametro') idEntradaParametro: string = '';
+
   source: LocalDataSource;
   entradas: Array<Entrada>;
   detalle: boolean;
@@ -43,6 +49,7 @@ export class TablaEntradaAprobadaComponent implements OnInit {
   Proveedor: any;
   encargado: any;
   Placa: any;
+  salida: any;
 
   constructor(
     private router: Router,
@@ -76,7 +83,6 @@ export class TablaEntradaAprobadaComponent implements OnInit {
         // console.log(this.Proveedores)
       },
     );
-
   }
 
   loadTablaSettings() {
@@ -171,9 +177,14 @@ export class TablaEntradaAprobadaComponent implements OnInit {
   }
 
   loadEntradaEspecifica(): void {
+
+    if (this.edicion) {
+        this.salidasHelper.getSalida(this.salida_id).subscribe(res1 => {
+          this.salida = res1.Salida;
+        });
+    }
     this.entradasHelper.getMovimiento(this.consecutivoEntrada).subscribe(res => {
       if (res !== null) {
-        // console.log(res);
         switch (res[0].FormatoTipoMovimientoId.Nombre) {
           case 'Adquisición': {
             this.loadDetalleAdquisicion(res[0]);
@@ -534,9 +545,18 @@ export class TablaEntradaAprobadaComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
-      this.loadTablaSettings();
-    });
+
+    if (!this.edicion) {
+        this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
+        this.loadTablaSettings();
+        });
+    } else {
+       this.consecutivoEntrada = this.idEntradaParametro;
+       this.actaRecibidoId = this.actaParametro;
+       this.detalle = true;
+       this.loadEntradaEspecifica();
+    }
+
   }
 
 }

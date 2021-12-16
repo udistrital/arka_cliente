@@ -51,6 +51,8 @@ export class ExtranjeroComponent implements OnInit {
   @ViewChild('stepper') stepper: NbStepperComponent;
 
   @Input() actaRecibidoId: number;
+  @Input() entradaId: any;
+  @Input() EntradaEdit: any;
 
   constructor(
     private router: Router,

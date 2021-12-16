@@ -14,6 +14,7 @@ import { isArray } from 'util';
 import { MatCheckbox } from '@angular/material';
 import { ElementoMovimientosArka, EstadoMovimiento, FormatoTipoMovimiento } from '../../../@core/data/models/entrada/entrada';
 import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
+import { MovimientosHelper } from '../../../helpers/movimientos/movimientosHelper';
 
 @Component({
   selector: 'ngx-tabla-elementos-asignados',
@@ -37,6 +38,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
   counter = 0;
   basePaginasD: number = 0;
   basePaginasC: number = 0;
+  elementosActa: any;
 
   @ViewChild('paginatorD') paginatorD: MatPaginator;
   @ViewChild('paginatorC') paginatorC: MatPaginator;
@@ -52,10 +54,13 @@ export class TablaElementosAsignadosComponent implements OnInit {
   set name2(entrada_id: string) {
     this.entradaId = entrada_id;
   }
+  @Input('salida_id') salida_id: number = 0;
+  @Input('edicionSalida') edicionSalida: boolean = false;
   sourceDevolutivo: MatTableDataSource<any>;
   sourceConsumo: MatTableDataSource<any>;
   devolutivoSeleccionados: boolean;
   consumoSeleccionados: boolean;
+  salida: any;
   @ViewChild('checkTodoInput') checkDummy: MatCheckbox;
 
   constructor(private translate: TranslateService,
@@ -63,7 +68,8 @@ export class TablaElementosAsignadosComponent implements OnInit {
     private actaRecibidoHelper: ActaRecibidoHelper,
     private salidasHelper: SalidaHelper,
     private pUpManager: PopUpManager,
-    private entradasHelper: EntradaHelper) {
+    private entradasHelper: EntradaHelper,
+    private movimientosHelper: MovimientosHelper) {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
     });
   }
@@ -74,6 +80,21 @@ export class TablaElementosAsignadosComponent implements OnInit {
     this.setColumnas();
     this.getFormatoBodega();
     this.getFormatoFuncionario();
+
+    if (this.edicionSalida) {
+    this.movimientosHelper.getElementosMovimientoById(this.salida_id).subscribe(res => {
+        if (res !== null) {
+            this.elementosActa = res;
+        }
+    });
+
+    this.salidasHelper.getSalida(this.salida_id).subscribe(res => {
+        if (res !== null) {
+            this.salida = res;
+        }
+    });
+}
+
   }
 
   private loadElementos() {
@@ -87,14 +108,27 @@ export class TablaElementosAsignadosComponent implements OnInit {
             el.Combinado = el.SubgrupoCatalogoId.SubgrupoId.Id ?
               el.SubgrupoCatalogoId.SubgrupoId.Codigo + ' - ' + el.SubgrupoCatalogoId.SubgrupoId.Nombre : '';
         });
-        const elementosConsumo = res.filter(el => el.SubgrupoCatalogoId.TipoBienId.Id === 1);
-        const elementosDevolutivo = res.filter(el => el.SubgrupoCatalogoId.TipoBienId.Id !== 1);
-        this.sourceDevolutivo = new MatTableDataSource<ElementoActa>(elementosDevolutivo);
-        this.sourceConsumo = new MatTableDataSource<ElementoActa>(elementosConsumo);
+        if (this.edicionSalida) {
+            this.salidasHelper.getSalida(this.salida_id).subscribe(res1 => {
+                const elementosConsumo = res.filter(el => el.SubgrupoCatalogoId.TipoBienId.Id === 1).
+                filter(el => res1.Elementos.some(sal => sal.ElementoActaId === el.Id));
+                const elementosDevolutivo = res.filter(el => el.SubgrupoCatalogoId.TipoBienId.Id !== 1).
+                filter(el => res1.Elementos.some(sal => sal.ElementoActaId === el.Id));
+                this.sourceDevolutivo = new MatTableDataSource<ElementoActa>(elementosDevolutivo);
+                this.sourceConsumo = new MatTableDataSource<ElementoActa>(elementosConsumo);
+            });
+        } else {
+            const elementosConsumo = res.filter(el => el.SubgrupoCatalogoId.TipoBienId.Id === 1);
+            const elementosDevolutivo = res.filter(el => el.SubgrupoCatalogoId.TipoBienId.Id !== 1);
+            this.sourceDevolutivo = new MatTableDataSource<ElementoActa>(elementosDevolutivo);
+            this.sourceConsumo = new MatTableDataSource<ElementoActa>(elementosConsumo);
+        }
+
         this.sourceDevolutivo.paginator = this.paginatorD;
         this.sourceDevolutivo.sort = this.sortD;
         this.sourceConsumo.paginator = this.paginatorC;
         this.sourceConsumo.sort = this.sortC;
+
       } else {
         this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.salidas.errorElementos'));
       }
@@ -219,19 +253,15 @@ export class TablaElementosAsignadosComponent implements OnInit {
   checkElementosAsignados() {
     const alertControlado = !this.sourceDevolutivo.data.length ? false :
       this.sourceDevolutivo.data.every(el => el.Funcionario.Id && el.Ubicacion.Id) ? false : true;
-
     const alertConsumo = !this.sourceConsumo.data.length ? false :
       this.sourceConsumo.data.every(el => el.Funcionario.Id && el.Ubicacion.Id) ? false : true;
-
     const alert = (alertControlado && alertConsumo) ? 'GLOBAL.movimientos.alerta_ambos' :
       (alertConsumo ? 'GLOBAL.movimientos.alerta_consumo' : (alertControlado ? 'GLOBAL.movimientos.alerta_controlado' : null));
-
     alert ? (Swal as any).fire({
       title: this.translate.instant('GLOBAL.movimientos.alerta_descargue'),
       text: this.translate.instant(alert),
       type: 'warning',
     }) : this.onSubmit();
-
   }
 
   private crearElemento(elementoActa) {
@@ -243,6 +273,12 @@ export class TablaElementosAsignadosComponent implements OnInit {
     elemento.Unidad = elementoActa.Cantidad;
     elemento.ValorUnitario = elementoActa.ValorTotal / elementoActa.Cantidad;
     elemento.ValorTotal = elementoActa.ValorTotal;
+    if (this.edicionSalida) {
+        const found = this.elementosActa.find(element => element.ElementoActaId === elemento.ElementoActaId);
+        if (found) {
+           elemento.Id = found.Id;
+        }
+    }
     return elemento;
   }
 
@@ -314,6 +350,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
             Observacion: this.getObservacion(obs, currentValue.Observaciones),
             Detalle: JSON.stringify(detalle),
             Activo: true,
+            Id: this.salida_id,
             MovimientoPadreId: {
               Id: parseFloat(this.entradaId),
             },
@@ -324,7 +361,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
           },
           Elementos: [],
         };
-        const elemento = this.crearElemento(currentValue);
+        const elemento = this.crearElemento(currentValue); // incluir el id del elemento
         accumulator[val].Elementos.push(elemento);
         return accumulator;
       }, {});
@@ -379,7 +416,6 @@ export class TablaElementosAsignadosComponent implements OnInit {
   }
 
   onSubmit() {
-
     const salidaBodega = this.salidaBodega();
     const salidaFuncionariosC = this.salidaConsumoFuncionario();
     const salidaFuncionariosD = this.salidaFuncionarioDevolutivo();
@@ -402,6 +438,17 @@ export class TablaElementosAsignadosComponent implements OnInit {
       }
     }
 
+    const idsalida = this.salida_id;
+    if (this.edicionSalida) {
+       const consecutivo = this.salida.Salida.Consecutivo;
+       Salidas.Salidas.forEach(function(element) {
+          element.Salida.Id = Number(idsalida);
+          const x = JSON.parse(element.Salida.Detalle);
+          x.consecutivo = consecutivo;
+          element.Salida.Detalle = JSON.stringify(x);
+       });
+    }
+
     (Swal as any).fire({
       title: this.translate.instant('GLOBAL.movimientos.salidas.registroConfrmTtl'),
       text: this.translate.instant('GLOBAL.movimientos.salidas.registroConfrmTxt'),
@@ -412,28 +459,61 @@ export class TablaElementosAsignadosComponent implements OnInit {
       confirmButtonText: 'Si',
       cancelButtonText: 'No',
     }).then((result) => {
-      if (result.value) {
-        this.salidasHelper.registrarSalida(Salidas).subscribe((res: any) => {
-          if (res) {
-            const length = res.trSalida.Salidas.length;
-            const s = length > 1 ? 's' : '';
-            const consecutivo = JSON.parse(res.trSalida.Salidas[0].Salida.Detalle).consecutivo +
-              (length > 1 ? (' - ' + JSON.parse(res.trSalida.Salidas[length - 1].Salida.Detalle).consecutivo) : '');
-            const title = this.translate.instant('GLOBAL.movimientos.salidas.registroTtlOk', { S: s });
-            const text = this.translate.instant('GLOBAL.movimientos.salidas.registroTxtOk' +
-              (length > 1 ? 'Varios' : ''), { CONSECUTIVO: consecutivo });
-            const options = {
+        if (result.value) {
+          if (this.edicionSalida) {
+            this.salidasHelper.editarSalida(Salidas, this.salida_id).subscribe((res: any) => {
+               if (res) {
+                   let pconsecutivo = '';
+                   let text = '';
+                   let title = '';
+                   if (typeof res.trSalida.Salidas !== 'undefined') {
+                       const length = res.trSalida.Salidas.length;
+                       const s = length > 1 ? 's' : '';
+                       pconsecutivo = JSON.parse(res.trSalida.Salidas[0].Salida.Detalle).consecutivo +
+                       (length > 1 ? (' - ' + JSON.parse(res.trSalida.Salidas[length - 1].Salida.Detalle).consecutivo) : '');
+                       title = this.translate.instant('GLOBAL.movimientos.salidas.registroTtlOk', { S: s });
+                       text = this.translate.instant('GLOBAL.movimientos.salidas.registroTxtOk' +
+                       (length > 1 ? 'Varios' : ''), { CONSECUTIVO: pconsecutivo });
+                    } else {
+                       pconsecutivo = JSON.parse(res.trSalida.Detalle).consecutivo;
+                       text = this.translate.instant('GLOBAL.movimientos.salidas.registroTxtOk' +
+                       { CONSECUTIVO: pconsecutivo });
+                       title = this.translate.instant('GLOBAL.movimientos.salidas.registroTtlOk', { S: '' });
+                    }
+                    const options = {
+                       type: 'success',
+                       title,
+                       text,
+                       showConfirmButton: false,
+                       timer: 2000,
+                    };
+                    this.pUpManager.showAlertWithOptions(options);
+                    this.router.navigate(['/pages/salidas']);
+                }
+            });
+        } else {
+           this.salidasHelper.registrarSalida(Salidas).subscribe((res: any) => {
+           if (res) {
+             const length = res.trSalida.Salidas.length;
+             const s = length > 1 ? 's' : '';
+             const pconsecutivo = JSON.parse(res.trSalida.Salidas[0].Salida.Detalle).consecutivo +
+             (length > 1 ? (' - ' + JSON.parse(res.trSalida.Salidas[length - 1].Salida.Detalle).consecutivo) : '');
+             const title = this.translate.instant('GLOBAL.movimientos.salidas.registroTtlOk', { S: s });
+             const text = this.translate.instant('GLOBAL.movimientos.salidas.registroTxtOk' +
+             (length > 1 ? 'Varios' : ''), { CONSECUTIVO: pconsecutivo });
+             const options = {
               type: 'success',
               title,
               text,
               showConfirmButton: false,
               timer: 2000,
-            };
-            this.pUpManager.showAlertWithOptions(options);
-            this.router.navigate(['/pages/salidas/consulta_salidas']);
-          }
-        });
-      }
+             };
+             this.pUpManager.showAlertWithOptions(options);
+             this.router.navigate(['/pages/salidas/consulta_salidas']);
+           }
+           });
+        }
+    }
     });
   }
 

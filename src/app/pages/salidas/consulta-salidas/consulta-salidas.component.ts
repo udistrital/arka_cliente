@@ -30,6 +30,9 @@ export class ConsultaSalidasComponent implements OnInit {
   source: LocalDataSource;
   entradas: Array<Entrada>;
   detalle: boolean;
+  editaentrada: boolean;
+  actaParametro: number = 0;
+  entradaParametro: string = '';
   actaRecibidoId: number;
   consecutivoEntrada: string;
   entradaEspecifica: Entrada;
@@ -49,7 +52,7 @@ export class ConsultaSalidasComponent implements OnInit {
   filaSeleccionada: any;
   verComprobante: boolean = false;
   transaccionContable: any;
-
+  cargaLista: boolean = false;
 
   constructor(
     private router: Router,
@@ -120,7 +123,6 @@ export class ConsultaSalidasComponent implements OnInit {
         },
       },
     } : [];
-
     this.settings = {
       hideSubHeader: false,
       noDataMessage: this.translate.instant('GLOBAL.movimientos.salidas.' +
@@ -128,17 +130,18 @@ export class ConsultaSalidasComponent implements OnInit {
       actions: {
         columnTitle: this.translate.instant('GLOBAL.Acciones'),
         position: 'right',
-        delete: false,
-        edit: false,
-        custom: [
-          {
-            name: this.translate.instant('GLOBAL.detalle'),
-            title: '<i class="fas fa-' + t.icon + '" title="' + t.accion + '" aria-label="' + t.accion + '"></i>',
-          },
-        ],
+        delete: true,
+        edit: (this.modo === 'consulta' ? true : false),
+        add: true,
       },
       add: {
-        addButtonContent: '<i class="fas fa-plus" title="' + t.registrar + '" aria-label="' + t.registrar + '"></i>',
+        addButtonContent: '<i class="fas fa-plus"></i>',
+      },
+      edit: {
+        editButtonContent: '<i ng-disabled="true"  class="far fa-edit"></i>',
+      },
+      delete: {
+        deleteButtonContent: '<i class="fas fa-' + t.icon + '"></i>',
       },
       mode: 'external',
       columns: {
@@ -278,27 +281,44 @@ export class ConsultaSalidasComponent implements OnInit {
       this.mostrar = true;
     });
   }
-  onCustom(event) {
+
+  onDelete(event) {
     this.salidaId = `${event.data.Id}`;
     this.detalle = true;
+    this.editaentrada = false;
     this.filaSeleccionada = event.data;
     this.cargarSalida();
   }
+
+  onEdit(event) {
+    if (event.data.EstadoMovimientoId === 'Salida Rechazada') {
+       this.salidaId = `${event.data.Id}`;
+       this.detalle = false;
+       this.editaentrada = true;
+       this.filaSeleccionada = event.data;
+       this.cargarSalida();
+    }
+  }
+
   onRegister() {
     this.router.navigate(['/pages/salidas/registro_salidas']);
   }
   onVolver() {
-    this.detalle = !this.detalle;
+    this.detalle = false;
     if (this.verComprobante) {
         this.mostrar = false;
         this.verComprobante = false;
     }
-
+    this.editaentrada = false;
+    this.verComprobante = false;
   }
 
   private cargarSalida () {
    this.entradasHelper.getMovimiento(this.salidaId).toPromise().then((res: any) => {
+      this.entradaParametro = res[0].MovimientoPadreId.Id;
+      this.actaParametro = JSON.parse(res[0].MovimientoPadreId.Detalle).acta_recibido_id;
       this.movimiento = res[0];
+      this.cargaLista = true;
     });
   }
 

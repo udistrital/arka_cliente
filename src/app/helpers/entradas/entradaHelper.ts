@@ -91,6 +91,7 @@ export class EntradaHelper {
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
      */
     public postEntrada(entradaData: Partial<TrMovimiento>, entradaId: number = 0) {
+//          console.log("mira el numero", entradaId);
         return this.dispMvtos.movimientosPermitidos().pipe(
          switchMap(disp => iif(() => disp, this.postEntradaFinal(entradaData, entradaId))),
         );
@@ -438,7 +439,6 @@ export class EntradaHelper {
                     } else {
                         this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.entradas.errorRechazoEntrada'));
                         return undefined;
-
                     }
                 },
             ),

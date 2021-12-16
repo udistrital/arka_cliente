@@ -29,6 +29,8 @@ export class RegistroComponent implements OnInit {
   opcionEntrada: string = '';
   movimientoId: number;
 
+  @Input() ActaParaEditar: any;
+  @Input() entradaId: any;
   @Input() EntradaEdit: any;
 
   private terceros: Partial<Tercero>[];
@@ -49,6 +51,9 @@ export class RegistroComponent implements OnInit {
   }
 
   ngOnInit() {
+    if (this.EntradaEdit === true) {
+       this.cargarTiposDeEntradas();
+    }
     this.loadTablaSettings();
     this.loadActas();
     this.listService.findClases();
@@ -125,14 +130,6 @@ export class RegistroComponent implements OnInit {
             return value;
           },
         },
-        /*
-        EstadoActaId: {
-          title: this.translate.instant('GLOBAL.estado'),
-          valuePrepareFunction: (value: any) => {
-            return value.CodigoAbreviacion.toUpperCase();
-          },
-        },
-        // */
         Observaciones: {
           title: this.translate.instant('GLOBAL.observaciones'),
           valuePrepareFunction: (value: any) => {
@@ -191,4 +188,15 @@ export class RegistroComponent implements OnInit {
     });
   }
 
+  cargarTiposDeEntradas() {
+    this.actaRecibidoHelper.getTransaccionActa(this.ActaParaEditar, true).subscribe(res => {
+      res.ActaRecibido.TipoActaId.Id === 1 ?
+        this.entradasHelper.getTiposEntradaByOrden(1).subscribe(res_ => {
+          this.tiposDeEntradas = res_;
+        }) : this.entradasHelper.getTiposEntradaByOrden(2).subscribe(res__ => {
+          this.tiposDeEntradas = res__;
+        });
+      this.actaSeleccionada = this.ActaParaEditar;
+    });
+  }
 }
