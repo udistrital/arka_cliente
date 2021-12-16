@@ -273,9 +273,11 @@ export class TablaElementosAsignadosComponent implements OnInit {
     elemento.Unidad = elementoActa.Cantidad;
     elemento.ValorUnitario = elementoActa.ValorTotal / elementoActa.Cantidad;
     elemento.ValorTotal = elementoActa.ValorTotal;
-    const found = this.elementosActa.find(element => element.ElementoActaId === elemento.ElementoActaId);
-    if (found) {
-       elemento.Id = found.Id;
+    if (this.edicionSalida) {
+        const found = this.elementosActa.find(element => element.ElementoActaId === elemento.ElementoActaId);
+        if (found) {
+           elemento.Id = found.Id;
+        }
     }
     return elemento;
   }
@@ -437,13 +439,15 @@ export class TablaElementosAsignadosComponent implements OnInit {
     }
 
     const idsalida = this.salida_id;
-    const consecutivo = this.salida.Salida.Consecutivo;
-    Salidas.Salidas.forEach(function(element) {
-        element.Salida.Id = Number(idsalida);
-        const x = JSON.parse(element.Salida.Detalle);
-        x.consecutivo = consecutivo;
-        element.Salida.Detalle = JSON.stringify(x);
-    });
+    if (this.edicionSalida) {
+       const consecutivo = this.salida.Salida.Consecutivo;
+       Salidas.Salidas.forEach(function(element) {
+          element.Salida.Id = Number(idsalida);
+          const x = JSON.parse(element.Salida.Detalle);
+          x.consecutivo = consecutivo;
+          element.Salida.Detalle = JSON.stringify(x);
+       });
+    }
 
     (Swal as any).fire({
       title: this.translate.instant('GLOBAL.movimientos.salidas.registroConfrmTtl'),

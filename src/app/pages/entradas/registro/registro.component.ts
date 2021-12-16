@@ -130,14 +130,6 @@ export class RegistroComponent implements OnInit {
             return value;
           },
         },
-        /*
-        EstadoActaId: {
-          title: this.translate.instant('GLOBAL.estado'),
-          valuePrepareFunction: (value: any) => {
-            return value.CodigoAbreviacion.toUpperCase();
-          },
-        },
-        // */
         Observaciones: {
           title: this.translate.instant('GLOBAL.observaciones'),
           valuePrepareFunction: (value: any) => {
@@ -207,19 +199,4 @@ export class RegistroComponent implements OnInit {
       this.actaSeleccionada = this.ActaParaEditar;
     });
   }
-
-/*  (event) {
-    this.actaRecibidoHelper.getTransaccionActa(event.data.Id, true).subscribe(res => {
-      res.ActaRecibido.TipoActaId.Id === 1 ?
-        this.entradasHelper.getTiposEntradaByOrden(1).subscribe(res_ => {
-          this.tiposDeEntradas = res_;
-        }) : this.entradasHelper.getTiposEntradaByOrden(2).subscribe(res__ => {
-          this.tiposDeEntradas = res__;
-        });
-      this.actaSeleccionada = `${event.data.Id}`;
-    });
-  }
-*/
-
-
 }

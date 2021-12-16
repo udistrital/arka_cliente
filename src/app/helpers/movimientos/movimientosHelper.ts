@@ -61,19 +61,11 @@ export class MovimientosHelper {
         );
     }
 
-    /**
-     * Trae el formato movimiento según el nombre
-     * If the response has errors in the OAS API it should show a popup message with an error.
-     * If the response is successs, it returns the object's data.
-     * @param nombre nombre del formato
-     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
-     */
-
    /**
      * Trae el formato movimiento según el nombre
      * If the response has errors in the OAS API it should show a popup message with an error.
      * If the response is successs, it returns the object's data.
-     * @param nombre nombre del formato
+     * @param query nombre del formato
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
      */
     public getFormatoQuery(query: string) {

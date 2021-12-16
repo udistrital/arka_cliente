@@ -607,7 +607,6 @@ keyEventUp(event: KeyboardEvent) {
           this.edit = false;
           this.editarEntrada = true;
           this.loadEntradaEspecifica();
-//          this.loadEntradaEspecifica();
         }
     }
   }

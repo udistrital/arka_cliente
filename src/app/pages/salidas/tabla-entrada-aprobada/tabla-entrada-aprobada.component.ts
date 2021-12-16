@@ -83,7 +83,6 @@ export class TablaEntradaAprobadaComponent implements OnInit {
         // console.log(this.Proveedores)
       },
     );
-
   }
 
   loadTablaSettings() {
@@ -184,10 +183,6 @@ export class TablaEntradaAprobadaComponent implements OnInit {
           this.salida = res1.Salida;
         });
     }
-
-
-
-
     this.entradasHelper.getMovimiento(this.consecutivoEntrada).subscribe(res => {
       if (res !== null) {
         switch (res[0].FormatoTipoMovimientoId.Nombre) {

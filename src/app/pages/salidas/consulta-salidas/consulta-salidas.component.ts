@@ -284,7 +284,6 @@ export class ConsultaSalidasComponent implements OnInit {
 
   onDelete(event) {
     this.salidaId = `${event.data.Id}`;
-//    this.salidaId = '807';
     this.detalle = true;
     this.editaentrada = false;
     this.filaSeleccionada = event.data;
@@ -316,7 +315,6 @@ export class ConsultaSalidasComponent implements OnInit {
 
   private cargarSalida () {
    this.entradasHelper.getMovimiento(this.salidaId).toPromise().then((res: any) => {
-//   this.entradasHelper.getMovimiento(734).toPromise().then((res: any) => {
       this.entradaParametro = res[0].MovimientoPadreId.Id;
       this.actaParametro = JSON.parse(res[0].MovimientoPadreId.Detalle).acta_recibido_id;
       this.movimiento = res[0];
