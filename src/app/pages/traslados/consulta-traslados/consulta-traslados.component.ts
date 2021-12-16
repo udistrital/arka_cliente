@@ -48,18 +48,13 @@ export class ConsultaTrasladosComponent implements OnInit {
     this.trasladosHelper.getTraslados(this.modo === 'revision').subscribe(res => {
       if (res.length) {
         res.forEach(salida => {
-          const detalle = JSON.parse(salida.Detalle);
-          salida.FuncionarioOrigen = detalle.FuncionarioOrigen;
-          salida.FuncionarioDestino = detalle.FuncionarioDestino;
-          salida.Consecutivo = detalle.Consecutivo;
-          salida.Ubicacion = detalle.Ubicacion;
           salida.EstadoMovimientoId = this.estadosMovimiento.find(estado =>
-            estado.Id === salida.EstadoMovimientoId.Id).Nombre;
+            estado.Id === salida.EstadoMovimientoId).Nombre;
         });
-        this.source.load(res);
-        this.source.setSort([{ field: 'FechaCreacion', direction: 'desc' }]);
-        this.mostrar = true;
       }
+      this.source.load(res);
+      this.source.setSort([{ field: 'FechaCreacion', direction: 'desc' }]);
+      this.mostrar = true;
     });
   }
 
@@ -178,14 +173,14 @@ export class ConsultaTrasladosComponent implements OnInit {
       mode: 'external',
       columns: {
         Consecutivo: {
-          title: this.translate.instant('GLOBAL.Acciones'),
+          title: this.translate.instant('GLOBAL.consecutivo'),
         },
         FechaCreacion: {
           title: this.translate.instant('GLOBAL.fecha_creacion'),
           width: '70px',
-          valuePrepareFunction: (value: any) => {
-            const date = value.split('T');
-            return date[0];
+          valuePrepareFunction: (value) => {
+            const date = new Date(Date.parse(value)).toLocaleDateString('es-CO');
+            return date;
           },
           filter: {
             type: 'daterange',
@@ -205,17 +200,6 @@ export class ConsultaTrasladosComponent implements OnInit {
               return '';
             }
           },
-          filterFunction: (cell?: any, search?: string): boolean => {
-            if (Object.keys(cell).length !== 0) {
-              if (cell.NombreCompleto.indexOf(search) > -1) {
-                return true;
-              } else {
-                return false;
-              }
-            } else {
-              return false;
-            }
-          },
         },
         FuncionarioOrigen: {
           title: this.translate.instant('GLOBAL.funcionarioOrigen'),
@@ -226,17 +210,6 @@ export class ConsultaTrasladosComponent implements OnInit {
               return '';
             }
           },
-          filterFunction: (cell?: any, search?: string): boolean => {
-            if (Object.keys(cell).length !== 0) {
-              if (cell.NombreCompleto.indexOf(search) > -1) {
-                return true;
-              } else {
-                return false;
-              }
-            } else {
-              return false;
-            }
-          },
         },
         Ubicacion: {
           title: this.translate.instant('GLOBAL.ubicacion'),
@@ -245,17 +218,6 @@ export class ConsultaTrasladosComponent implements OnInit {
               return value;
             } else {
               return '';
-            }
-          },
-          filterFunction: (cell?: any, search?: string): boolean => {
-            if (Object.keys(cell).length !== 0) {
-              if (cell.Nombre.indexOf(search) > -1) {
-                return true;
-              } else {
-                return false;
-              }
-            } else {
-              return false;
             }
           },
         },

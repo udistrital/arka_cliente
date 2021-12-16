@@ -44,15 +44,9 @@ export class TrasladosHelper {
      * @param tramiteOnly Indica si se traen únicamente los traslados pendientes por ser revisados
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
      */
-    // Se hace directamente al api crud mientras se genera la funcionalidad para asignar el consecutivo al traslado
     public getTraslados(tramiteOnly: boolean) {
-        let endpoint = 'movimiento?limit=-1&query=Activo:true,EstadoMovimientoId__Nombre';
-        if (tramiteOnly) {
-            endpoint += ':Traslado En Trámite';
-        } else {
-            endpoint += '__startswith:Traslado';
-        }
-        this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
+        const endpoint = 'traslados/?tramiteOnly=' + tramiteOnly;
+        this.rqManager.setPath('ARKA_SERVICE');
         return this.rqManager.get(endpoint).pipe(
             map(
                 (res) => {
