@@ -1,4 +1,4 @@
-<mat-vertical-stepper [nbSpinner]="!load" [linear]="true" #stepper>
+<mat-vertical-stepper [nbSpinner]="!load" [linear]="false" #stepper>
   <mat-step [stepControl]="formBaja.get('info')" label="{{'GLOBAL.bajas.informacion' | translate}}">
     <form [formGroup]="formBaja.get('info')">
 

@@ -237,8 +237,8 @@ export class FormSolicitudComponent implements OnInit {
 
     if (values.elementos && values.elementos.length) {
       values.elementos.forEach(element => {
-        const consSalida = JSON.parse(element.Salida.Detalle).consecutivo;
-        const consEntrada = JSON.parse(element.Salida.MovimientoPadreId.Detalle).consecutivo;
+        const consSalida = JSON.parse(element.Historial.Salida.Detalle).consecutivo;
+        const consEntrada = JSON.parse(element.Historial.Salida.MovimientoPadreId.Detalle).consecutivo;
         const formEl = this.fb.group({
           id: [element.Id],
           placa: [
@@ -358,9 +358,14 @@ export class FormSolicitudComponent implements OnInit {
   public getDetalleElemento(index: number) {
     const value = this.formBaja.controls.elementos.value[index].placa.Id;
     this.bajasHelper.getDetalleElemento(value).subscribe(res => {
-      if (res.Id) {
-        const consSalida = JSON.parse(res.Salida.Detalle).consecutivo;
-        const consEntrada = JSON.parse(res.Salida.MovimientoPadreId.Detalle).consecutivo;
+      const salidaOk = res.Historial && res.Historial.Salida.EstadoMovimientoId.Nombre === 'Salida Aprobada';
+      const noTraslado = res.Historial &&
+        (!res.Historial.Traslados || res.Historial.Traslados[0].EstadoMovimientoId.Nombre === 'Traslado Confirmado');
+      const noBaja = res.Historial && !res.Historial.Baja;
+      const assignable = res.Id && salidaOk && noTraslado && noBaja;
+      if (assignable) {
+        const consSalida = JSON.parse(res.Historial.Salida.Detalle).consecutivo;
+        const consEntrada = JSON.parse(res.Historial.Salida.MovimientoPadreId.Detalle).consecutivo;
         (this.formBaja.get('elementos') as FormArray).at(index).patchValue({
           id: res.Id,
           nombre: res.Nombre,
@@ -374,8 +379,14 @@ export class FormSolicitudComponent implements OnInit {
           entrada: consEntrada,
           salida: consSalida,
         });
-      } else {
+      } else if (!res.Id || !salidaOk) {
         this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.bajas.errorPlaca'));
+      } else if (!noTraslado) {
+        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.bajas.errorTr'));
+      } else if (!noBaja) {
+        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.bajas.errorBj'));
+      } else {
+        console.log(res);
       }
     });
   }

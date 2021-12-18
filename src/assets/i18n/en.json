@@ -1278,6 +1278,8 @@
         "aprobado": "Approved"
       },
       "errorPlaca": "The good has not been assigned to any civil servant",
+      "errorTr": "The good has a transfer request",
+      "errorBj": "The good already has a request",
       "informacion": "Request details"
     }
   }
