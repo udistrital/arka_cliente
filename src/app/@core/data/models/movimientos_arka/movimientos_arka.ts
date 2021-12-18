@@ -7,6 +7,7 @@ export class DetalleTraslado {
     Elementos: Array<number>;
     Ubicacion: string;
     Consecutivo: string;
+    RazonRechazo: string;
 }
 
 export class SoporteMovimiento {
@@ -23,6 +24,8 @@ export class DetalleBaja {
     FechaRevisionA: string;
     Revisor: number;
     FechaRevisionC: string;
+    RazonRechazo: string;
+    Resolucion: string;
 }
 
 export class TrSoporteMovimiento {

@@ -69,6 +69,17 @@ export class FormSolicitudComponent implements OnInit {
       this.formBaja.get('info.funcionario').patchValue({ id });
     }
   }
+  get rechazo(): FormGroup {
+    const form = this.fb.group({
+      razon: [
+        {
+          value: '',
+          disabled: true,
+        },
+      ],
+    });
+    return form;
+  }
 
   get elemento(): FormGroup {
     const disabled = this.modo === 'get';
@@ -208,6 +219,7 @@ export class FormSolicitudComponent implements OnInit {
 
   private buildForm(): void {
     this.formBaja = this.fb.group({
+      rechazo: this.rechazo,
       info: this.info,
       elementos: this.fb.array([], { validators: this.validateElementos() }),
       observaciones: this.observaciones,
@@ -218,6 +230,8 @@ export class FormSolicitudComponent implements OnInit {
   }
 
   private loadValues(values: any) {
+    const razon = values.rechazo ? values.rechazo : '';
+    this.formBaja.get('rechazo').patchValue({ razon });
     const disabled = this.modo === 'get';
     const soporte = { Id: values.soporte };
     const revisor = {
@@ -385,8 +399,6 @@ export class FormSolicitudComponent implements OnInit {
         this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.bajas.errorTr'));
       } else if (!noBaja) {
         this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.bajas.errorBj'));
-      } else {
-        console.log(res);
       }
     });
   }

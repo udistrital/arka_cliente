@@ -27,6 +27,7 @@ export class CrudBajasComponent implements OnInit {
   subtitle: string;
   boton: string;
   consecutivo: string = '';
+  rechazo: string = '';
   @Input() modoCrud: string = 'registrar'; // registrar | ver | editar | revisar | aprobar
   @Input() bajaId: number = 0;
   @Output() accion: EventEmitter<boolean> = new EventEmitter<boolean>();
@@ -74,6 +75,7 @@ export class CrudBajasComponent implements OnInit {
         this.bajaData.observaciones = res.Observaciones;
         this.bajaData.funcionario = res.Funcionario;
         this.bajaData.revisor = res.Revisor;
+        this.bajaData.rechazo = res.RazonRechazo;
         this.showForm = true;
       }
     });
@@ -96,6 +98,15 @@ export class CrudBajasComponent implements OnInit {
           confirmButtonText: this.translate.instant('GLOBAL.Acta_Recibido.VerificacionActa.Rechazar'),
           showCancelButton: true,
           progressSteps: ['1'],
+          inputValidator: (value) => {
+            return new Promise<string>((resolve) => {
+              if (!value.length) {
+                resolve(this.translate.instant('GLOBAL.traslados.revisar.confrmRechazoTtx'));
+              } else {
+                resolve('');
+              }
+            });
+          },
         }).queue([
           {
             title: this.translate.instant('GLOBAL.bajas.revisar.confrmRechazoTtl'),
@@ -103,7 +114,7 @@ export class CrudBajasComponent implements OnInit {
           },
         ]).then((result2) => {
           if (result2.value) {
-            this.bajaData.controls.observaciones.value.observaciones += ' // Razón de rechazo: ' + result2.value;
+            this.rechazo = result2.value[0];
             this.buildMovimiento(true);
           }
         });
@@ -141,9 +152,10 @@ export class CrudBajasComponent implements OnInit {
     const Funcionario = this.bajaData.controls.info.controls.funcionario.value.id;
     const Elementos = this.bajaData.controls.elementos.controls.map(control => control.value.id);
     const tipoBaja = this.bajaData.controls.info.controls.tipoBaja.value;
-    const estadoId = this.modoCrud === 'registrar' || this.modoCrud === 'editar' ? 'Baja En Trámite' :
-      rechazar ? 'Baja Rechazada' : this.modoCrud === 'revisar' ? 'Baja En Comité' :
-        this.modoCrud === 'aprobar' ? 'Baja Aprobada' : '';
+    const estadoId = (this.modoCrud === 'registrar' || this.modoCrud === 'editar') ? 'Baja En Trámite' :
+      (rechazar) ? 'Baja Rechazada' :
+        (this.modoCrud === 'revisar') ? 'Baja En Comité' :
+          (this.modoCrud === 'aprobar') ? 'Baja Aprobada' : '';
     const FechaRevisionA = this.modoCrud === 'revisar' ? new Date() :
       this.bajaData.controls.info.value.fechaRevision;
     const FechaRevisionC = this.modoCrud === 'aprobar' ? new Date() :
@@ -157,6 +169,7 @@ export class CrudBajasComponent implements OnInit {
       FechaRevisionA,
       FechaRevisionC,
       Consecutivo: this.consecutivo ? this.consecutivo : '',
+      RazonRechazo: this.rechazo,
     };
 
     const movimiento = <Movimiento>{
