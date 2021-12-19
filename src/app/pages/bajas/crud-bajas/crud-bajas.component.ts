@@ -28,6 +28,7 @@ export class CrudBajasComponent implements OnInit {
   boton: string;
   consecutivo: string = '';
   rechazo: string = '';
+  loading: boolean;
   @Input() modoCrud: string = 'registrar'; // registrar | ver | editar | revisar | aprobar
   @Input() bajaId: number = 0;
   @Output() accion: EventEmitter<boolean> = new EventEmitter<boolean>();
@@ -151,6 +152,7 @@ export class CrudBajasComponent implements OnInit {
 
   private async buildMovimiento(rechazar: boolean) {
 
+    this.loading = true;
     const Funcionario = this.bajaData.controls.info.controls.funcionario.value.id;
     const Elementos = this.bajaData.controls.elementos.controls.map(control => control.value.id);
     const tipoBaja = this.bajaData.controls.info.controls.tipoBaja.value;
@@ -257,6 +259,7 @@ export class CrudBajasComponent implements OnInit {
       text,
       showConfirmButton: true,
     };
+    this.loading = false;
     this.accion.emit(true);
     this.pUpManager.showAlertWithOptions(options);
   }

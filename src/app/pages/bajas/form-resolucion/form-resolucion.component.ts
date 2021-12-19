@@ -11,11 +11,15 @@ import { Observable } from 'rxjs';
 export class FormResolucionComponent implements OnInit {
 
   formResolucion: FormGroup;
+  maxDate: Date;
   @Output() resolucionData = new EventEmitter<any>();
+
   constructor(
     private translate: TranslateService,
     private fb: FormBuilder,
-  ) { }
+  ) {
+    this.maxDate = new Date();
+  }
 
   ngOnInit() {
     this.buildForm();

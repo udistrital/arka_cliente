@@ -19,7 +19,7 @@
         <div class="form-group col-sm">
           <mat-form-field appearance="outline">
             <mat-label>{{'GLOBAL.bajas.consulta.fechaRevC' | translate}}</mat-label>
-            <input matInput [matDatepicker]="fecha" readonly formControlName="fecha">
+            <input matInput [matDatepicker]="fecha" readonly [max]="maxDate" formControlName="fecha">
             <mat-datepicker-toggle matSuffix [for]="fecha"></mat-datepicker-toggle>
             <mat-datepicker #fecha></mat-datepicker>
           </mat-form-field>

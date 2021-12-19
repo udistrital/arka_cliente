@@ -209,9 +209,8 @@ export class ConsultaBajasComponent implements OnInit {
   }
 
   submitAprobacion(event) {
-    if (event === true) {
-      this.resolucion = false;
-    } else {
+    this.resolucion = false;
+    if (event.fecha && event.numero) {
       this.submitComite(true, event);
     }
   }
