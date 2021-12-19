@@ -1,0 +1,40 @@
+<mat-card>
+
+  <mat-card-title>
+    {{'GLOBAL.bajas.aprobar.title' | translate}}
+  </mat-card-title>
+
+  <mat-card-subtitle>
+    {{'GLOBAL.bajas.aprobar.subtitle' | translate}}
+  </mat-card-subtitle>
+  <mat-card-content>
+    <form [formGroup]="formResolucion">
+      <div class="row" style="width: 60%">
+        <div class="form-group col-sm">
+          <mat-form-field appearance="outline">
+            <mat-label>{{'GLOBAL.resolucion' | translate}}</mat-label>
+            <input matInput formControlName="numero">
+          </mat-form-field>
+        </div>
+        <div class="form-group col-sm">
+          <mat-form-field appearance="outline">
+            <mat-label>{{'GLOBAL.bajas.consulta.fechaRevC' | translate}}</mat-label>
+            <input matInput [matDatepicker]="fecha" readonly formControlName="fecha">
+            <mat-datepicker-toggle matSuffix [for]="fecha"></mat-datepicker-toggle>
+            <mat-datepicker #fecha></mat-datepicker>
+          </mat-form-field>
+        </div>
+      </div>
+    </form>
+  </mat-card-content>
+  <mat-card-actions>
+    <button mat-flat-button color="primary" class="float-left text-uppercase"
+       (click)="submitForm(true)">
+      {{'GLOBAL.volver' | translate}}
+    </button>
+    <button mat-flat-button color="primary" class="float-right text-uppercase" [disabled]="!formResolucion.valid"
+      (click)="submitForm(false)">
+      {{'GLOBAL.bajas.aprobar.confDatos' | translate}}
+    </button>
+  </mat-card-actions>
+</mat-card>

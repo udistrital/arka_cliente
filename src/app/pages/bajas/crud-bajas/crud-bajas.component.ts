@@ -76,6 +76,8 @@ export class CrudBajasComponent implements OnInit {
         this.bajaData.funcionario = res.Funcionario;
         this.bajaData.revisor = res.Revisor;
         this.bajaData.rechazo = res.RazonRechazo;
+        this.bajaData.numero = res.Resolucion;
+        this.bajaData.fechaRevisionC = res.FechaRevisionC;
         this.showForm = true;
       }
     });

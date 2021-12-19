@@ -1,6 +1,5 @@
 <mat-vertical-stepper [nbSpinner]="!load" [linear]="true" #stepper>
-  <mat-step [stepControl]="formBaja.get('rechazo')"
-    *ngIf="formBaja && formBaja.get('rechazo.razon').value !== ''"
+  <mat-step [stepControl]="formBaja.get('rechazo')" *ngIf="formBaja && formBaja.get('rechazo.razon').value !== ''"
     label="{{'GLOBAL.razonRechazo' | translate}}">
     <form [formGroup]="formBaja.get('rechazo')">
       <div class="row">
@@ -239,6 +238,33 @@
           [disabled]="formBaja.get('elementos').invalid">
           {{'GLOBAL.siguiente' | translate}}
         </button>
+      </div>
+    </form>
+  </mat-step>
+  <mat-step [stepControl]="formBaja.get('resolucion')" *ngIf="formBaja && formBaja.get('resolucion.fecha').value !== ''"
+    label="{{'GLOBAL.bajas.infoComite' | translate}}">
+    <form [formGroup]="formBaja.get('resolucion')">
+      <div class="row">
+        <div class="form-group col-sm">
+          <label class="label">{{'GLOBAL.resolucion' | translate}}</label>
+          <input type="text" class="form-control" formControlName="numero" style="width: 100%;"
+            placeholder="{{'GLOBAL.resolucion' | translate }}">
+        </div>
+        <div class="form-group col-sm">
+          <label class="label">{{'GLOBAL.bajas.consulta.fechaRevC' | translate}}</label>
+          <input type="text" class="form-control" formControlName="fecha" style="width: 100%;"
+            placeholder="{{'GLOBAL.bajas.consulta.fechaRevC' | translate }}">
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm">
+          <button mat-flat-button color="primary" matStepperPrevious class="float-left text-uppercase">
+            {{'GLOBAL.anterior' | translate}}
+          </button>
+          <button mat-flat-button color="primary" matStepperNext class="float-right text-uppercase">
+            {{'GLOBAL.siguiente' | translate}}
+          </button>
+        </div>
       </div>
     </form>
   </mat-step>

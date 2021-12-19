@@ -246,6 +246,7 @@
       "MismoTercero": "The new civil servant must be different to the current civil servant"
     },
     "Comprobante_Contable": {
+      "Titulo": "Comprobante Contable",
       "Consecutivo": "Consecutivo",
       "Concepto": "Concepto",
       "FechaTransaccion":"Fecha Transacción",
@@ -856,6 +857,7 @@
     "funcionarioOrigen": "Current Civil Servant",
     "funcionarioDestino": "New Civil Servant",
     "razonRechazo": "Denial reason",
+    "resolucion": "Resolution number",
 
     "movimientos": {
       "estadoTramite": "Awaiting review",
@@ -1212,7 +1214,8 @@
         "revisor": "Reviewer",
         "estadoBaja": "Request Status",
         "tipoBaja": "Request reason",
-        "espera": "Pending review"
+        "espera": "Pending review",
+        "errorEditar": "The request can not be edited"
       },
       "registrar": {
         "title": "Create removal request",
@@ -1251,8 +1254,8 @@
         "successTxtR": "The removal request {{CONSECUTIVO}} has been denied"
       },
       "aprobar": {
-        "title": "Appove removal request",
-        "subtitle": "Select the requests and register the approval or denial by the comitee",
+        "title": "Comitee information",
+        "subtitle": "Enter the information related to the comitee that approved the selected requests",
         "accion": "Approve request",
         "rechazarSel": "Deny selected requests",
         "aprobarSel": "Approve selected requests",
@@ -1265,7 +1268,12 @@
         "successTtlA": "Request Approved",
         "successTxtA": "The comitee approval has been registered",
         "successTtlR": "Request Denied",
-        "successTxtR": "The comitee denial has been registered"
+        "successTxtR": "The comitee denial has been registered",
+        "confDatos": "Confirm Comitee Data"
+      },
+      "aprobacion": {
+        "title": "Register comitee review",
+        "subtitle": "Select the requests and approve or deny them according to the comitee criteria"
       },
       "ver": {
         "title": "Removal request detail",
@@ -1280,7 +1288,8 @@
       "errorPlaca": "The good has not been assigned to any civil servant",
       "errorTr": "The good has a transfer request",
       "errorBj": "The good already has a request",
-      "informacion": "Request details"
+      "informacion": "Request details",
+      "infoComite": "Comitee Approval information"
     }
   }
 }

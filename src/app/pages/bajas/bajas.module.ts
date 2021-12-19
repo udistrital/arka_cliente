@@ -13,6 +13,7 @@ import { ListService } from '../../@core/store/services/list.service';
 import { ThemeModule } from '../../@theme/theme.module';
 import { FormSolicitudComponent } from './form-solicitud/form-solicitud.component';
 import { CrudBajasComponent } from './crud-bajas/crud-bajas.component';
+import { FormResolucionComponent } from './form-resolucion/form-resolucion.component';
 
 
 @NgModule({
@@ -21,6 +22,7 @@ import { CrudBajasComponent } from './crud-bajas/crud-bajas.component';
     ConsultaBajasComponent,
     FormSolicitudComponent,
     CrudBajasComponent,
+    FormResolucionComponent,
   ],
   imports: [
     CommonModule,

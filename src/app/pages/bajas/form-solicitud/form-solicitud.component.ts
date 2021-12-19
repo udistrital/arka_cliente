@@ -69,6 +69,7 @@ export class FormSolicitudComponent implements OnInit {
       this.formBaja.get('info.funcionario').patchValue({ id });
     }
   }
+
   get rechazo(): FormGroup {
     const form = this.fb.group({
       razon: [
@@ -217,12 +218,31 @@ export class FormSolicitudComponent implements OnInit {
     return form;
   }
 
+  get resolucion(): FormGroup {
+    const form = this.fb.group({
+      fecha: [
+        {
+          value: '',
+          disabled: true,
+        },
+      ],
+      numero: [
+        {
+          value: '',
+          disabled: true,
+        },
+      ],
+    });
+    return form;
+  }
+
   private buildForm(): void {
     this.formBaja = this.fb.group({
       rechazo: this.rechazo,
       info: this.info,
       elementos: this.fb.array([], { validators: this.validateElementos() }),
       observaciones: this.observaciones,
+      resolucion: this.resolucion,
     });
     this.dataSource = new MatTableDataSource<any>();
     this.dataSource.paginator = this.paginator;
@@ -230,9 +250,13 @@ export class FormSolicitudComponent implements OnInit {
   }
 
   private loadValues(values: any) {
-    const razon = values.rechazo ? values.rechazo : '';
-    this.formBaja.get('rechazo').patchValue({ razon });
     const disabled = this.modo === 'get';
+    const razon = values.rechazo ? values.rechazo : '';
+    const numero = values.numero ? values.numero : '';
+    const fecha = values.fechaRevisionC ? values.fechaRevisionC : '';
+    this.formBaja.get('rechazo').patchValue({ razon });
+    this.formBaja.get('resolucion').patchValue({ numero });
+    this.formBaja.get('resolucion').patchValue({ fecha });
     const soporte = { Id: values.soporte };
     const revisor = {
       id: values.revisor ? values.revisor.Tercero.Id : 0,
