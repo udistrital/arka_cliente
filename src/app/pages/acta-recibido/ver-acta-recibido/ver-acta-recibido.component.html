@@ -81,9 +81,12 @@
                           <div class="form-group col-sm">
                             <label>{{'GLOBAL.Acta_Recibido.DetalleActa.FechaSoporte' | translate}}</label>
                             <div class="input-group">
-                              <input nbInput class="form-control" placeholder="{{'GLOBAL.Acta_Recibido.VerificacionActa.FechaSoporte' | translate }}"
-                                [nbDatepicker]="formpicker" formControlName="Fecha_Factura">
-                              <nb-datepicker #formpicker></nb-datepicker>
+                              <mat-form-field appearance="outline">
+                                <mat-label></mat-label>
+                                <input matInput [matDatepicker]="fecha" formControlName="Fecha_Factura">
+                                <mat-datepicker-toggle matSuffix [for]="fecha"></mat-datepicker-toggle>
+                                <mat-datepicker #fecha></mat-datepicker>
+                              </mat-form-field>
                             </div>
                           </div>
                         </div>

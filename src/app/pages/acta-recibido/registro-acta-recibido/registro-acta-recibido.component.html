@@ -122,11 +122,13 @@
                             <div class="form-group col-sm">
                               <label>{{'GLOBAL.Acta_Recibido.RegistroActa.FechaSoporte' | translate}}</label>
                               <div class="input-group">
-                                <input nbInput placeholder="{{'GLOBAL.Acta_Recibido.RegistroActa.FechaFiltro' | translate}}"
-                                  class="form-control" [nbDatepicker]="formpicker" formControlName="FechaSoporte"
-                                  (keyup.Backspace)="clear()">
-                                <nb-datepicker #formpicker [max]="TodaysDate" (dateChange)="usarLocalStorage($event)">
-                                </nb-datepicker>
+                                <mat-form-field appearance="outline">
+                                  <mat-label></mat-label>
+                                  <input matInput [matDatepicker]="fecha" [min]="minDate" [max]="maxDate"
+                                    formControlName="FechaSoporte" (dateChange)="usarLocalStorage($event)">
+                                  <mat-datepicker-toggle matSuffix [for]="fecha"></mat-datepicker-toggle>
+                                  <mat-datepicker #fecha></mat-datepicker>
+                                </mat-form-field>
                               </div>
                               <p class="campo" *ngIf="soporte.get('FechaSoporte').invalid">
                                 {{'GLOBAL.Errores.ErrorFecha' | translate}}</p>

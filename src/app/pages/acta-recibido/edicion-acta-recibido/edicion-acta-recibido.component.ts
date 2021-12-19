@@ -87,7 +87,8 @@ export class EdicionActaRecibidoComponent implements OnInit {
   // Modelos
 
   DatosElementos: Array<any>;
-  TodaysDate: any;
+  maxDate: Date;
+  minDate: Date;
   UbicacionesFiltradas: any;
   Sedes: any;
   Dependencias: any;
@@ -143,6 +144,8 @@ export class EdicionActaRecibidoComponent implements OnInit {
     private documentoService: DocumentoService,
     private userService: UserService,
   ) {
+    this.maxDate = new Date();
+    this.minDate = new Date(-1);
     this.Contratistas = [];
     this.Proveedores = [];
     this.errores = new Map<string, boolean>();
@@ -150,7 +153,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
     this.idDocumento = [];
     this.searchStr2 = new Array<string>();
     this.DatosElementos = new Array<any>();
-    this.TodaysDate = new Date();
   }
 
   ngOnInit() {
@@ -844,7 +846,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
     for (const datos of this.DatosElementos) {
 
       const elemento = new Elemento;
-      const valorTotal = parseFloat(datos.Subtotal) - parseFloat(datos.Descuento);
       const subgrupo = datos.SubgrupoCatalogoId.SubgrupoId.Id;
 
       elemento.Id = datos.Id;
@@ -856,7 +857,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
       elemento.ValorUnitario = parseFloat(datos.ValorUnitario);
       elemento.Subtotal = parseFloat(datos.Subtotal);
       elemento.Descuento = parseFloat(datos.Descuento);
-      elemento.ValorTotal = valorTotal;
+      elemento.ValorTotal = parseFloat(datos.ValorTotal);
       elemento.PorcentajeIvaId = parseInt(datos.PorcentajeIvaId, 10);
       elemento.ValorIva = parseFloat(datos.ValorIva);
       elemento.ValorFinal = parseFloat(datos.ValorTotal);
@@ -954,12 +955,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
 
   eventoTotales(event) {
     this.totales = event;
-  }
-
-  clear() {
-    this.firstForm.get('Formulario2')['controls'][0].get('Fecha_Factura').patchValue('');
-    this.firstForm.get('Formulario2')['controls'][0].get('Fecha_Factura').setValidators(this.checkDate());
-    this.firstForm.get('Formulario2')['controls'][0].get('Fecha_Factura').updateValueAndValidity();
   }
 
   private validarTercero(): ValidatorFn {

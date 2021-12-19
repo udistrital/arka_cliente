@@ -120,7 +120,7 @@
           {{'GLOBAL.Acta_Recibido.CapturarElementos.CantidadHeader' | translate }} </th>
         <td mat-cell *matCellDef="let element; let rowIndex = index">
           <input nbInput type="number" fieldSize="tiny" min="0"
-            class="cell-2"  [disabled]="Modo === 'verificar'" placeholder="{{'GLOBAL.Acta_Recibido.CapturarElementos.CantidadHeader' | translate }}"
+            class="cell-2"  [disabled]="Modo !== 'agregar'" placeholder="{{'GLOBAL.Acta_Recibido.CapturarElementos.CantidadHeader' | translate }}"
             [(ngModel)]="element.Cantidad" (ngModelChange)="calcularValores(rowIndex)">
         </td>
         <td mat-footer-cell *matFooterCellDef></td>
