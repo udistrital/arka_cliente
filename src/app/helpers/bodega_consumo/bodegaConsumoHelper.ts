@@ -109,7 +109,7 @@ export class BodegaConsumoHelper {
      */
     public getEstadosMovimiento() {
         this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
-        return this.rqManager.get('estado_movimiento').pipe(
+        return this.rqManager.get('estado_movimiento?limit=-1').pipe(
             map(
                 (res) => {
                     if (res === 'error') {
@@ -220,7 +220,7 @@ export class BodegaConsumoHelper {
      */
     public getSolicitudesBodega() {
         this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
-        return this.rqManager.get('movimiento/?query=FormatoTipoMovimientoId__Id:8,Activo:true').pipe(
+        return this.rqManager.get('movimiento/?query=FormatoTipoMovimientoId__Id:8,Activo:true&limit=-1').pipe(
             map(
                 (res) => {
                     if (res === 'error') {
@@ -241,7 +241,7 @@ export class BodegaConsumoHelper {
      */
     public getSolicitudesBodegaPendiente() {
         this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
-        return this.rqManager.get('movimiento/?query=FormatoTipoMovimientoId__Id:8,EstadoMovimientoId.Id:5,Activo:true').pipe(
+        return this.rqManager.get('movimiento/?query=FormatoTipoMovimientoId__Id:8,EstadoMovimientoId.Id:5,Activo:true&limit=-1').pipe(
             map(
                 (res) => {
                     if (res === 'error') {

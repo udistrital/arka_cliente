@@ -79,7 +79,8 @@ export class RegistroActaRecibidoComponent implements OnInit {
   fileDocumento: any[];
   idDocumento: number[];
   Nombre: any;
-  TodaysDate: any;
+  maxDate: Date;
+  minDate: Date;
   Registrando: Boolean;
   cargarTab: boolean;
   DatosElementos: Array<any>;
@@ -105,7 +106,8 @@ export class RegistroActaRecibidoComponent implements OnInit {
     private userService: UserService,
     private route: ActivatedRoute,
   ) {
-    this.TodaysDate = new Date();
+    this.maxDate = new Date();
+    this.minDate = new Date(-1);
     this.fileDocumento = [];
     this.idDocumento = [];
     this.errores = new Map<string, boolean>();
@@ -521,7 +523,6 @@ export class RegistroActaRecibidoComponent implements OnInit {
       for (const datos of this.DatosElementos) {
 
         const elemento = new Elemento;
-        const valorTotal = parseFloat(datos.Subtotal) - parseFloat(datos.Descuento);
 
         elemento.Id = null;
         elemento.Nombre = datos.Nombre;
@@ -532,7 +533,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
         elemento.ValorUnitario = parseFloat(datos.ValorUnitario);
         elemento.Subtotal = parseFloat(datos.Subtotal);
         elemento.Descuento = parseFloat(datos.Descuento);
-        elemento.ValorTotal = valorTotal;
+        elemento.ValorTotal = parseFloat(datos.ValorTotal);
         elemento.PorcentajeIvaId = parseInt(datos.PorcentajeIvaId, 10);
         elemento.ValorIva = parseFloat(datos.ValorIva);
         elemento.ValorFinal = parseFloat(datos.ValorTotal);
@@ -609,11 +610,6 @@ export class RegistroActaRecibidoComponent implements OnInit {
         });
       }
     }
-  }
-
-  clear() {
-    this.firstForm.get('Formulario2')['controls'][0].get('FechaSoporte').patchValue('');
-    this.firstForm.get('Formulario2')['controls'][0].get('FechaSoporte').setErrors(null);
   }
 
   private validarTercero(): ValidatorFn {

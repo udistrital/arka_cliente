@@ -7,7 +7,7 @@
         </div>
         <div class="col">
             <p class="text-uppercase"><strong>{{'GLOBAL.fecha_creacion' | translate}}:</strong>
-                {{Solicitud.FechaCreacion}}
+                {{Solicitud.FechaCreacion | date: 'dd/MM/yyyy'}}
             </p>
         </div>
     </div>

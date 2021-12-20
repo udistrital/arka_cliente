@@ -473,7 +473,6 @@ export class VerActaRecibidoComponent implements OnInit {
     for (const datos of this.elementos) {
 
       const elemento = new Elemento;
-      const valorTotal = parseFloat(datos.Subtotal) - parseFloat(datos.Descuento);
       const subgrupo = datos.SubgrupoCatalogoId.SubgrupoId.Id;
 
       elemento.Id = datos.Id;
@@ -485,7 +484,7 @@ export class VerActaRecibidoComponent implements OnInit {
       elemento.ValorUnitario = parseFloat(datos.ValorUnitario);
       elemento.Subtotal = parseFloat(datos.Subtotal);
       elemento.Descuento = parseFloat(datos.Descuento);
-      elemento.ValorTotal = valorTotal;
+      elemento.ValorTotal = parseFloat(datos.ValorTotal);
       elemento.PorcentajeIvaId = parseInt(datos.PorcentajeIvaId, 10);
       elemento.ValorIva = parseFloat(datos.ValorIva);
       elemento.ValorFinal = parseFloat(datos.ValorTotal);

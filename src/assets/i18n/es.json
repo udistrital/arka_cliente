@@ -709,7 +709,7 @@
         "ListaPendientes": "Lista de Solicitudes de Elementos a la Bodega de Consumo, Pendientes por Resolver",
         "ListaTodas": "Lista de Todas las Solicitudes de Elementos a la Bodega de Consumo",
         "Titulo": "Solicitud de Elementos de Bodega de Consumo",
-        "ColumnaElementoCatalogo": "Catalogo: Codigo/Clase/Elemento",
+        "ColumnaElementoCatalogo": "Clase/Elemento",
         "Ayuda": "Para iniciar la solicitud de elementos, por favor seleccione cualquier elemento. Los elementos solicitados serán listados conforme se van seleccionando."
       }
     },
@@ -1132,7 +1132,7 @@
     "traslados": {
       "consulta": {
         "title": "Consultar Traslados",
-        "subtitle": "A continuación se listan los traslados, seleccione una de las opcipones para ver más detalles",
+        "subtitle": "A continuación se listan los traslados, seleccione una de las opciones para ver más detalles",
         "nuevoTraslado": "Registrar nuevo traslado",
         "noTrasladosView": "No se encontraron traslados",
         "noTrasladosReview": "No hay traslados pendientes por ser revisados",
@@ -1176,6 +1176,10 @@
         "confrmTxt": "¿Desea confirmar que los elementos están en su poder?",
         "successTtl": "Traslado Confirmado",
         "successTxt": "La solicitud de traslado {{CONSECUTIVO}} ha sido confirmada"
+      },
+      "revision": {
+        "title": "Aprobar Solicitudes de Traslados de bienes",
+        "subtitle": "Seleccione una solicitud para realizar la revisión correspondiente"
       },
       "editar": {
         "title": "Editar Solicitud de Traslado",
@@ -1238,7 +1242,7 @@
       },
       "revisar": {
         "title": "Revisar Solicitud de Baja de Bienes",
-        "subtitle": "Revise los dettalles de la solicitud y realice la aprobación o el rechazo de la misma",
+        "subtitle": "Revise los detalles de la solicitud y realice la aprobación o el rechazo de la misma",
         "accion": "Aprobar solicitud",
         "accionR": "Rechazar solicitud",
         "accionEdit": "Realizar Revisión",
@@ -1270,6 +1274,10 @@
         "successTtlR": "Solicitud Rechazada",
         "successTxtR": "Se ha registrado el rechazo de las solicitudes por parte del comité de inventarios",
         "confDatos": "Confirmar datos del comité"
+      },
+      "revision": {
+        "title": "Registrar Revisión de Almacén",
+        "subtitle": "Seleccione las bajas correspondientes y realice la respectiva aprobación o rechazo, según el criterio del almacén."
       },
       "aprobacion": {
         "title": "Registrar Revisión de Comité de Almacén",

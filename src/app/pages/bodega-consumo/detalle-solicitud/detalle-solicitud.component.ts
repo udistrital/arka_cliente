@@ -114,11 +114,8 @@ export class DetalleSolicitudComponent implements OnInit {
           type: 'text',
           valuePrepareFunction: (value: any) => {
             if (value !== null && value.SubgrupoId !== null) {
-              return [
-                value.SubgrupoId.Codigo,
-                value.SubgrupoId.Nombre,
-                value.Descripcion,
-              ].join('/');
+              return value.SubgrupoId.Codigo + ' - ' + value.SubgrupoId.Nombre + '/\n' +
+                value.Codigo + ' - ' + value.Nombre;
             } else {
               return '';
             }
@@ -298,7 +295,7 @@ export class DetalleSolicitudComponent implements OnInit {
     Movimiento.Activo = true;
     Movimiento.Detalle = JSON.stringify({});
     Movimiento.FormatoTipoMovimientoId = this.FormatosKardex.find(x => x.CodigoAbreviacion === 'SAL_KDX');
-    Movimiento.EstadoMovimientoId = this.EstadosMovimiento.find(x => x.Id === 3);
+    Movimiento.EstadoMovimientoId = this.Solicitud.EstadoMovimientoId;
     Movimiento.MovimientoPadreId = this.Solicitud;
     SalidaKardex.Movimiento.push(
       {
@@ -318,6 +315,7 @@ export class DetalleSolicitudComponent implements OnInit {
         elemento.Activo = true;
         elemento.ElementoCatalogoId = element.ElementoCatalogoId.Id;
         elemento.Unidad = element.CantidadAprobada;
+        elemento.ValorTotal = element.CantidadAprobada * valor_promedio;
         elemento.ValorUnitario = valor_promedio;
         elemento.SaldoCantidad = element.SaldoCantidad - element.CantidadAprobada;
         elemento.SaldoValor = element.SaldoValor - (valor_promedio * element.CantidadAprobada);

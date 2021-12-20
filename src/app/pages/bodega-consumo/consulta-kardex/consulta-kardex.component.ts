@@ -104,17 +104,13 @@ export class ConsultaKardexComponent implements OnInit {
         ],
       },
       columns: {
-        Id: {
-          title: this.translate.instant('GLOBAL.consecutivo'),
-        },
-        Observaciones: {
-          title: this.translate.instant('GLOBAL.observaciones'),
-        },
         ElementoCatalogoId: {
           title: this.translate.instant('GLOBAL.Elemento.Uno'),
           valuePrepareFunction: (value: any) => {
             if (value !== null) {
-              return value.Descripcion;
+              let elem = value.Codigo ? value.Codigo + ' - ' : '';
+              elem += value.Nombre ? value.Nombre : '';
+              return elem;
             } else {
               return '';
             }
@@ -132,6 +128,9 @@ export class ConsultaKardexComponent implements OnInit {
               return false;
             }
           },
+        },
+        Observaciones: {
+          title: this.translate.instant('GLOBAL.observaciones'),
         },
         FechaCreacion: {
           title: this.translate.instant('GLOBAL.fecha_creacion'),

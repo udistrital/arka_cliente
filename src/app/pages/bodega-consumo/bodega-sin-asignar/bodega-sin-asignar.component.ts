@@ -77,24 +77,6 @@ export class BodegaSinAsignarComponent implements OnInit {
         ],
       },
       columns: {
-        Nombre: {
-          title: this.translate.instant('GLOBAL.Elemento.Uno'),
-          valuePrepareFunction: (value: any) => {
-            return value;
-          },
-        },
-        Marca: {
-          title: this.translate.instant('GLOBAL.marca'),
-          valuePrepareFunction: (value: any) => {
-            return value;
-          },
-        },
-        Serie: {
-          title: this.translate.instant('GLOBAL.serie'),
-          valuePrepareFunction: (value: any) => {
-            return value;
-          },
-        },
         SubgrupoCatalogoId: {
           title: this.translate.instant('GLOBAL.subgrupo.clase.nombre'),
           valuePrepareFunction: (value: any) => {
@@ -112,6 +94,24 @@ export class BodegaSinAsignarComponent implements OnInit {
             } else {
               return false;
             }
+          },
+        },
+        Nombre: {
+          title: this.translate.instant('GLOBAL.Elemento.Uno'),
+          valuePrepareFunction: (value: any) => {
+            return value;
+          },
+        },
+        Marca: {
+          title: this.translate.instant('GLOBAL.marca'),
+          valuePrepareFunction: (value: any) => {
+            return value;
+          },
+        },
+        Serie: {
+          title: this.translate.instant('GLOBAL.serie'),
+          valuePrepareFunction: (value: any) => {
+            return value;
           },
         },
         SaldoCantidad: {

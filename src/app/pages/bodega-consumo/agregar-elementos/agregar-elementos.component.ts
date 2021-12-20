@@ -75,14 +75,13 @@ export class AgregarElementosComponent implements OnInit {
         ],
       },
       columns: {
-        Nombre: {
-          title: this.translate.instant('GLOBAL.Elemento.Uno'),
-        },
         ElementoCatalogoId: {
-          title: this.translate.instant('GLOBAL.Descripcion'),
+          title: this.translate.instant('GLOBAL.Elemento.Uno'),
           valuePrepareFunction: (value: any) => {
             if (value !== null) {
-              return value.Descripcion;
+              let elem = value.Codigo ? value.Codigo + ' - ' : '';
+              elem += value.Nombre ? value.Nombre : '';
+              return elem;
             } else {
               return '';
             }
@@ -101,6 +100,9 @@ export class AgregarElementosComponent implements OnInit {
             }
           },
         },
+        Descripcion: {
+          title: this.translate.instant('GLOBAL.Descripcion'),
+        },
         SaldoCantidad: {
           title: this.translate.instant('GLOBAL.Existencias'),
         },
@@ -111,6 +113,11 @@ export class AgregarElementosComponent implements OnInit {
 
   loadEntradas(): void {
     this.bodegaConsumo.getExistenciasKardex().subscribe((res: any) => {
+      if (res.length) {
+        res.forEach(el => {
+          el.Descripcion = el.ElementoCatalogoId.Descripcion;
+        });
+      }
       this.source.load(res);
       this.mostrar = true;
     });

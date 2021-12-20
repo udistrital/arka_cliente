@@ -164,6 +164,8 @@ export class CrudTrasladoComponent implements OnInit {
         (rechazar) ? 'Traslado Rechazado' :
           (this.modoCrud === 'revisar') ? 'Traslado Aprobado' :
             (this.modoCrud === 'confirmar') ? 'Traslado Confirmado' : '';
+    const RazonRechazo = (this.rechazo) ? this.rechazo :
+      estadoId === 'Traslado En Trámite' ? val.controls.rechazo.value.razon : '';
 
     const detalle = <DetalleTraslado>{
       FuncionarioOrigen,
@@ -171,7 +173,7 @@ export class CrudTrasladoComponent implements OnInit {
       Ubicacion,
       Elementos,
       Consecutivo: this.consecutivo ? this.consecutivo : '',
-      RazonRechazo: this.rechazo,
+      RazonRechazo,
     };
 
     const movimiento = <Movimiento>{

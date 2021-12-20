@@ -116,7 +116,7 @@ export class AperturaKardexComponent implements OnInit {
     this.Movimiento.Activo = true;
     this.Movimiento.Detalle = JSON.stringify(detalle);
     this.Movimiento.FormatoTipoMovimientoId = this.FormatosKardex.find(x => x.CodigoAbreviacion === 'AP_KDX');
-    this.Movimiento.EstadoMovimientoId = this.EstadosMovimiento.find(x => x.Id === 4);
+    this.Movimiento.EstadoMovimientoId = this.EstadosMovimiento.find(x => x.Nombre === 'Registro Kardex');
     this.Movimiento.MovimientoPadreId = this.elemento_bodega.MovimientoId;
     // console.log(this.Movimiento);
 

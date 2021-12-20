@@ -463,10 +463,10 @@ export class FormTrasladoComponent implements OnInit {
   }
 
   private filtroPlaca(nombre: string): any[] {
-    if (nombre.length >= 4 && this.elementos.length) {
+    if (this.elementos.length && nombre.length > 0) {
       return this.elementos.filter(el => el.Placa.includes(nombre));
     } else {
-      return [];
+      return this.elementos;
     }
   }
 

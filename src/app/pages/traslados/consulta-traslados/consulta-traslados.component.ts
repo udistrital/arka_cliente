@@ -23,6 +23,8 @@ export class ConsultaTrasladosComponent implements OnInit {
   mostrar: boolean;
   filaSeleccionada: any;
   trasladoId: number;
+  title: string;
+  subtitle: string;
 
   constructor(
     private translate: TranslateService,
@@ -42,6 +44,8 @@ export class ConsultaTrasladosComponent implements OnInit {
     });
     this.source = new LocalDataSource();
     this.loadEstados();
+    this.title = this.translate.instant('GLOBAL.traslados.' + this.modo + '.title');
+    this.subtitle = this.translate.instant('GLOBAL.traslados.' + this.modo + '.subtitle');
   }
 
   loadTraslados(): void {
