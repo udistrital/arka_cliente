@@ -70,6 +70,18 @@ export class FormSolicitudComponent implements OnInit {
     }
   }
 
+  get rechazo(): FormGroup {
+    const form = this.fb.group({
+      razon: [
+        {
+          value: '',
+          disabled: true,
+        },
+      ],
+    });
+    return form;
+  }
+
   get elemento(): FormGroup {
     const disabled = this.modo === 'get';
     const form = this.fb.group({
@@ -206,11 +218,31 @@ export class FormSolicitudComponent implements OnInit {
     return form;
   }
 
+  get resolucion(): FormGroup {
+    const form = this.fb.group({
+      fecha: [
+        {
+          value: '',
+          disabled: true,
+        },
+      ],
+      numero: [
+        {
+          value: '',
+          disabled: true,
+        },
+      ],
+    });
+    return form;
+  }
+
   private buildForm(): void {
     this.formBaja = this.fb.group({
+      rechazo: this.rechazo,
       info: this.info,
       elementos: this.fb.array([], { validators: this.validateElementos() }),
       observaciones: this.observaciones,
+      resolucion: this.resolucion,
     });
     this.dataSource = new MatTableDataSource<any>();
     this.dataSource.paginator = this.paginator;
@@ -219,6 +251,12 @@ export class FormSolicitudComponent implements OnInit {
 
   private loadValues(values: any) {
     const disabled = this.modo === 'get';
+    const razon = values.rechazo ? values.rechazo : '';
+    const numero = values.numero ? values.numero : '';
+    const fecha = values.fechaRevisionC ? values.fechaRevisionC : '';
+    this.formBaja.get('rechazo').patchValue({ razon });
+    this.formBaja.get('resolucion').patchValue({ numero });
+    this.formBaja.get('resolucion').patchValue({ fecha });
     const soporte = { Id: values.soporte };
     const revisor = {
       id: values.revisor ? values.revisor.Tercero.Id : 0,
@@ -237,8 +275,8 @@ export class FormSolicitudComponent implements OnInit {
 
     if (values.elementos && values.elementos.length) {
       values.elementos.forEach(element => {
-        const consSalida = JSON.parse(element.Salida.Detalle).consecutivo;
-        const consEntrada = JSON.parse(element.Salida.MovimientoPadreId.Detalle).consecutivo;
+        const consSalida = JSON.parse(element.Historial.Salida.Detalle).consecutivo;
+        const consEntrada = JSON.parse(element.Historial.Salida.MovimientoPadreId.Detalle).consecutivo;
         const formEl = this.fb.group({
           id: [element.Id],
           placa: [
@@ -358,9 +396,14 @@ export class FormSolicitudComponent implements OnInit {
   public getDetalleElemento(index: number) {
     const value = this.formBaja.controls.elementos.value[index].placa.Id;
     this.bajasHelper.getDetalleElemento(value).subscribe(res => {
-      if (res.Id) {
-        const consSalida = JSON.parse(res.Salida.Detalle).consecutivo;
-        const consEntrada = JSON.parse(res.Salida.MovimientoPadreId.Detalle).consecutivo;
+      const salidaOk = res.Historial && res.Historial.Salida.EstadoMovimientoId.Nombre === 'Salida Aprobada';
+      const noTraslado = res.Historial &&
+        (!res.Historial.Traslados || res.Historial.Traslados[0].EstadoMovimientoId.Nombre === 'Traslado Confirmado');
+      const noBaja = res.Historial && !res.Historial.Baja;
+      const assignable = res.Id && salidaOk && noTraslado && noBaja;
+      if (assignable) {
+        const consSalida = JSON.parse(res.Historial.Salida.Detalle).consecutivo;
+        const consEntrada = JSON.parse(res.Historial.Salida.MovimientoPadreId.Detalle).consecutivo;
         (this.formBaja.get('elementos') as FormArray).at(index).patchValue({
           id: res.Id,
           nombre: res.Nombre,
@@ -374,8 +417,12 @@ export class FormSolicitudComponent implements OnInit {
           entrada: consEntrada,
           salida: consSalida,
         });
-      } else {
+      } else if (!res.Id || !salidaOk) {
         this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.bajas.errorPlaca'));
+      } else if (!noTraslado) {
+        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.bajas.errorTr'));
+      } else if (!noBaja) {
+        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.bajas.errorBj'));
       }
     });
   }

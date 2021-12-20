@@ -857,6 +857,7 @@
     "funcionarioOrigen": "Funcionario Origen",
     "funcionarioDestino": "Funcionario Destino",
     "razonRechazo": "Razón de rechazo",
+    "resolucion": "Número de resolución",
 
     "movimientos": {
       "estadoTramite": "En Trámite",
@@ -1213,7 +1214,8 @@
         "revisor": "Revisor",
         "estadoBaja": "Estado Solicitud",
         "tipoBaja": "Tipo Baja",
-        "espera": "En Espera"
+        "espera": "En Espera",
+        "errorEditar": "No se puede editar esta solicitud"
       },
       "registrar": {
         "title": "Solicitar Baja de Bienes",
@@ -1252,8 +1254,8 @@
         "successTxtR": "La solicitud de baja {{CONSECUTIVO}} ha sido rechazada"
       },
       "aprobar": {
-        "title": "Aprobar Solicitud de Baja de bienes",
-        "subtitle": "Confirme la información y registre la aprobación o rechazo de la solicitud de acuerdo al comité de almacén",
+        "title": "Información Comité Aprobación",
+        "subtitle": "Ingrese la siguiente información relacionada al comité en que fueron aprobadas las bajas seleccionadas",
         "accion": "Aprobar Solicitud",
         "rechazarSel": "Rechazar Seleccionados",
         "aprobarSel": "Aprobar Seleccionados",
@@ -1266,7 +1268,12 @@
         "successTtlA": "Solicitud Aprobada",
         "successTxtA": "Se ha registrado la aprobación de las solicitudes por parte del comité de inventarios",
         "successTtlR": "Solicitud Rechazada",
-        "successTxtR": "Se ha registrado el rechazo de las solicitudes por parte del comité de inventarios"
+        "successTxtR": "Se ha registrado el rechazo de las solicitudes por parte del comité de inventarios",
+        "confDatos": "Confirmar datos del comité"
+      },
+      "aprobacion": {
+        "title": "Registrar Revisión de Comité de Almacén",
+        "subtitle": "Seleccione las bajas correspondientes y realice la respectiva aprobación o rechazo según se haya hecho en el comité de almacén"
       },
       "ver": {
         "title": "Detalle de la Solicitud de Baja de bienes",
@@ -1279,7 +1286,10 @@
         "aprobado": "Aprobado"
       },
       "errorPlaca": "El elemento no ha sido asignado a ningún funcionario",
-      "informacion": "Información General de la Solicitud"
+      "errorTr": "El elemento tiene una solicitud de traslado vigente",
+      "errorBj": "El elemento ya tiene una solicitud de baja vigente",
+      "informacion": "Información General de la Solicitud",
+      "infoComite": "Aprobación Comité"
     }
   }
 }

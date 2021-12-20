@@ -1,17 +1,19 @@
 <mat-card *ngIf="mostrar">
-  <mat-card-title *ngIf="!modoCrud">
-    {{'GLOBAL.bajas.consulta.title' | translate}}
+  <mat-card-title *ngIf="!modoCrud && !resolucion">
+    {{ title}}
   </mat-card-title>
 
-  <mat-card-subtitle *ngIf="!modoCrud">
-    {{'GLOBAL.bajas.consulta.subtitle' | translate}}
+  <mat-card-subtitle *ngIf="!modoCrud && !resolucion">
+    {{ subtitle }}
   </mat-card-subtitle>
 
   <mat-card-content>
-    <ng2-smart-table *ngIf="!modoCrud" [settings]="settings" [source]="source" (create)="onRegister()" (userRowSelect)="onUserRowSelect($event)"
-      (edit)="onEdit($event)" (delete)="onDelete($event)">
+    <ng2-smart-table *ngIf="!modoCrud && !resolucion" [settings]="settings" [source]="source" (create)="onRegister()"
+      (userRowSelect)="onUserRowSelect($event)" (edit)="onEdit($event)" (delete)="onDelete($event)">
     </ng2-smart-table>
-    <ngx-crud-bajas *ngIf="modoCrud" [modoCrud]="modoCrud" [bajaId]="bajaId" (accion)="actualizarVista()"></ngx-crud-bajas>
+    <ngx-crud-bajas *ngIf="modoCrud" [modoCrud]="modoCrud" [bajaId]="bajaId" (accion)="actualizarVista()">
+    </ngx-crud-bajas>
+    <ngx-form-resolucion *ngIf="resolucion" (resolucionData)="submitAprobacion($event)"></ngx-form-resolucion>
   </mat-card-content>
 
   <mat-card-actions *ngIf="modoCrud">
@@ -19,17 +21,16 @@
       {{'GLOBAL.volver' | translate}}</button>
   </mat-card-actions>
 
-<mat-card-actions *ngIf="modo === 'aprobacion'">
-  <div class="justify-content-center" style="padding-bottom: 3rem;">
-    <button mat-flat-button color="primary" class="float-left text-uppercase"
-      [disabled]="!seleccionados || !seleccionados.length" (click)="rechazar()">
-      {{'GLOBAL.bajas.aprobar.rechazarSel' | translate}}
-    </button>
-    <button mat-flat-button color="primary" class="float-right text-uppercase"
-      [disabled]="!seleccionados || !seleccionados.length" (click)="confirm()">
-      {{'GLOBAL.bajas.aprobar.aprobarSel' | translate}}
-    </button>
-  </div>
-</mat-card-actions>
-
+  <mat-card-actions *ngIf="modo === 'aprobacion' && !resolucion && !filaSeleccionada">
+    <div class="justify-content-center" style="padding-bottom: 3rem;">
+      <button mat-flat-button color="primary" class="float-left text-uppercase"
+        [disabled]="!seleccionados || !seleccionados.length" (click)="rechazar()">
+        {{'GLOBAL.bajas.aprobar.rechazarSel' | translate}}
+      </button>
+      <button mat-flat-button color="primary" class="float-right text-uppercase"
+        [disabled]="!seleccionados || !seleccionados.length" (click)="confirm()">
+        {{'GLOBAL.bajas.aprobar.aprobarSel' | translate}}
+      </button>
+    </div>
+  </mat-card-actions>
 </mat-card>

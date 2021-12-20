@@ -4,7 +4,7 @@
 <mat-card-subtitle>
   {{ subtitle }}
 </mat-card-subtitle>
-<mat-card-content>
+<mat-card-content [nbSpinner]="loading">
   <ngx-form-solicitud *ngIf="showForm" (valid)="setValidness($event)" [(bajaInfo)]="bajaData" [modo]="modoForm">
   </ngx-form-solicitud>
 </mat-card-content>

@@ -38,7 +38,7 @@ export class NotificacionesService {
         this.connect();
         if (this.autenticacion.live()) {
             this.payload = this.autenticacion.getPayload();
-            this.queryNotification();
+            // this.queryNotification();
         }
     }
 
@@ -100,7 +100,7 @@ export class NotificacionesService {
             this.confService.post('notificacion_estado_usuario/changeStateNoView/' + user, {})
                 .subscribe(res => {
                     this.listMessage = [];
-                    this.queryNotification();
+                    // this.queryNotification();
                 });
         }
     }
@@ -119,7 +119,7 @@ export class NotificacionesService {
         this.confService.post('notificacion_estado_usuario', notificacion[0])
                 .subscribe(res => {
                     this.listMessage = [];
-                    this.queryNotification();
+                    // this.queryNotification();
         });
     }
 

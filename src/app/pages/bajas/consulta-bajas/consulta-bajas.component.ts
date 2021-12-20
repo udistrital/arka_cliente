@@ -25,6 +25,9 @@ export class ConsultaBajasComponent implements OnInit {
   filaSeleccionada: any;
   bajaId: number;
   seleccionados: Array<any>;
+  title: string;
+  subtitle: string;
+  resolucion: boolean;
 
   constructor(
     private confService: ConfiguracionService,
@@ -43,6 +46,8 @@ export class ConsultaBajasComponent implements OnInit {
     });
     this.source = new LocalDataSource();
     this.loadEstados();
+    this.title = this.translate.instant('GLOBAL.bajas.' + this.modo + '.title');
+    this.subtitle = this.translate.instant('GLOBAL.bajas.' + this.modo + '.subtitle');
   }
 
   public onRegister() {
@@ -116,12 +121,17 @@ export class ConsultaBajasComponent implements OnInit {
     this.seleccionados = event.selected;
   }
 
-  public submitComite(aprobar: boolean, Observaciones: string = '') {
+  public submitComite(aprobar: boolean, info: any) {
+    const RazonRechazo = !aprobar ? info.RazonRechazo : '';
+    const FechaRevisionC = aprobar ? new Date(Date.parse(info.fecha)).toLocaleDateString('es-CO') : '';
+    const Resolucion = aprobar ? info.numero : '';
     const ids = this.seleccionados.map(el => el.Id);
     const data = {
       Bajas: ids,
       Aprobacion: aprobar,
-      Observaciones,
+      RazonRechazo,
+      FechaRevisionC,
+      Resolucion,
     };
     this.bajasHelper.postRevisionComite(data).subscribe((res: any) => {
       this.alertSuccess(aprobar);
@@ -169,8 +179,10 @@ export class ConsultaBajasComponent implements OnInit {
           },
         ]).then((result2) => {
           if (result2.value) {
-            const observaciones = ' // Razón de rechazo: ' + result2.value;
-            this.submitComite(false, observaciones);
+            const info = {
+              RazonRechazo: result2.value[0],
+            };
+            this.submitComite(false, info);
           }
         });
       }
@@ -191,9 +203,16 @@ export class ConsultaBajasComponent implements OnInit {
       cancelButtonText: this.translate.instant('GLOBAL.no'),
     }).then((result) => {
       if (result.value) {
-        this.submitComite(true);
+        this.resolucion = true;
       }
     });
+  }
+
+  submitAprobacion(event) {
+    this.resolucion = false;
+    if (event.fecha && event.numero) {
+      this.submitComite(true, event);
+    }
   }
 
   private loadTablaSettings() {
