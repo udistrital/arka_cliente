@@ -619,6 +619,7 @@ keyEventUp(event: KeyboardEvent) {
     }
     this.iniciarParametros();
     this.mostrar = true;
+    this.router.navigate(['/pages/entradas']);
   }
 
   iniciarParametros() {

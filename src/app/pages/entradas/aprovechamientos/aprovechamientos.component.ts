@@ -243,7 +243,8 @@ export class AprovechamientosComponent implements OnInit {
             timer: 2000,
           });
           const navigationExtras: NavigationExtras = { state: { consecutivo: res.Consecutivo } };
-          this.router.navigate(['/pages/reportes/registro-entradas'], navigationExtras);
+        //  this.router.navigate(['/pages/reportes/registro-entradas'], navigationExtras);
+          this.router.navigate(['/pages/entradas']);
         } else {
           this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.entradas.registroFail'));
         }
