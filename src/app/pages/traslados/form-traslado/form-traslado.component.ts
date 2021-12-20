@@ -362,6 +362,8 @@ export class FormTrasladoComponent implements OnInit {
       (this.formTraslado.get('elementos') as FormArray).reset();
       this.removeElemento(0);
       this.dataSource.data = [];
+      this.elementos = [];
+      this.elementosFiltrados = [];
       this.trasladosHelper.getElementosFuncionario(terceroId).subscribe(res => {
         this.elementos = res;
       });
@@ -520,7 +522,7 @@ export class FormTrasladoComponent implements OnInit {
       const valor = control.value;
       const checkStringLength = typeof (valor) === 'string' && valor.length < 4 && valor !== '';
       const checkInvalidString = typeof (valor) === 'string' && valor !== '';
-      const checkInvalidObject = typeof (valor) === 'object' && !valor.Id;
+      const checkInvalidObject = typeof (valor) === 'object' && valor && !valor.Id;
       return checkStringLength ? { errorLongitudMinima: true } :
         ((checkInvalidString || checkInvalidObject) ? { dependenciaNoValido: true } : null);
     };
