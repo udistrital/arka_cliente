@@ -84,7 +84,7 @@ export class KardexComponent implements OnInit {
           kardex_.Unidad_E = elemento_.Unidad;
           kardex_.ValorUnitario_E = elemento_.ValorUnitario;
           kardex_.ValorTotal_E = elemento_.ValorTotal;
-          kardex_.SaldoValorUnitario = elemento_.SaldoValor / elemento_.SaldoCantidad;
+          kardex_.SaldoValorUnitario = elemento_.SaldoCantidad ? elemento_.SaldoValor / elemento_.SaldoCantidad : 0;
           Kardexx.push(kardex_);
 
           break;
@@ -93,7 +93,7 @@ export class KardexComponent implements OnInit {
           kardex_2.Unidad_E = elemento_.Unidad;
           kardex_2.ValorUnitario_E = elemento_.ValorUnitario;
           kardex_2.ValorTotal_E = elemento_.ValorTotal;
-          kardex_2.SaldoValorUnitario = elemento_.SaldoValor / elemento_.SaldoCantidad;
+          kardex_2.SaldoValorUnitario = elemento_.SaldoCantidad ? elemento_.SaldoValor / elemento_.SaldoCantidad : 0;
           Kardexx.push(kardex_2);
           break;
         case 'SAL_KDX':
@@ -101,7 +101,7 @@ export class KardexComponent implements OnInit {
           kardex_3.Unidad_S = elemento_.Unidad;
           kardex_3.ValorUnitario_S = elemento_.ValorUnitario;
           kardex_3.ValorTotal_S = elemento_.ValorTotal;
-          kardex_3.SaldoValorUnitario = elemento_.SaldoValor / elemento_.SaldoCantidad;
+          kardex_3.SaldoValorUnitario = elemento_.SaldoCantidad ? elemento_.SaldoValor / elemento_.SaldoCantidad : 0;
           Kardexx.push(kardex_3);
           break;
         default:

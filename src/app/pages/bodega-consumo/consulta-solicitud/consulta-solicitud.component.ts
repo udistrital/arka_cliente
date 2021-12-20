@@ -48,9 +48,6 @@ export class ConsultaSolicitudComponent implements OnInit {
 
   loadTablaSettings() {
     this.listColumns = {
-      Id: {
-        title: this.translate.instant('GLOBAL.consecutivo'),
-      },
       FechaRegistro: {
         title: this.translate.instant('GLOBAL.fecha_creacion'),
         // width: '70px',
