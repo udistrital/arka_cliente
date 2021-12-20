@@ -1177,6 +1177,10 @@
         "successTtl": "Transfer completed",
         "successTxt": "The transfer request {{CONSECUTIVO}} has been completed"
       },
+      "revision": {
+        "title": "Approve tranfer requests",
+        "subtitle": "Select any request to submit the review"
+      },
       "editar": {
         "title": "Update transfer request",
         "subtitle": "Check the denial reasons and update the request",
@@ -1270,6 +1274,10 @@
         "successTtlR": "Request Denied",
         "successTxtR": "The comitee denial has been registered",
         "confDatos": "Confirm Comitee Data"
+      },
+      "revision": {
+        "title": "Register Warehouse Review",
+        "subtitle": "Select the requests and approve or deny them according to the warehouse criteria"
       },
       "aprobacion": {
         "title": "Register comitee review",

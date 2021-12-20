@@ -320,7 +320,7 @@ export class ConsultaBajasComponent implements OnInit {
           valuePrepareFunction: (value: any) => {
             const date = value ? new Date(Date.parse(value)).toLocaleDateString('es-CO') :
               this.translate.instant('GLOBAL.bajas.consulta.espera');
-            return date;
+            return date === 'Invalid Date' ? value : date;
           },
           filter: {
             type: 'daterange',

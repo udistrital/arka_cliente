@@ -166,6 +166,8 @@ export class CrudBajasComponent implements OnInit {
       this.bajaData.controls.info.value.fechaAprobacion;
     const Revisor = this.modoCrud === 'revisar' ? this.userService.getPersonaId() :
       this.bajaData.controls.info.value.revisor.id;
+    const RazonRechazo = (this.rechazo) ? this.rechazo :
+      estadoId === 'Baja En Trámite' ? this.bajaData.controls.rechazo.controls.razon.value : '';
     const detalle = <DetalleBaja>{
       Elementos,
       Funcionario,
@@ -173,7 +175,7 @@ export class CrudBajasComponent implements OnInit {
       FechaRevisionA,
       FechaRevisionC,
       Consecutivo: this.consecutivo ? this.consecutivo : '',
-      RazonRechazo: this.rechazo,
+      RazonRechazo,
     };
 
     const movimiento = <Movimiento>{

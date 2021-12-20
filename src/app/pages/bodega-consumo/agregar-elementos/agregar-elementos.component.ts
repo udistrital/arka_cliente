@@ -113,7 +113,7 @@ export class AgregarElementosComponent implements OnInit {
 
   loadEntradas(): void {
     this.bodegaConsumo.getExistenciasKardex().subscribe((res: any) => {
-      if (res.lenth) {
+      if (res.length) {
         res.forEach(el => {
           el.Descripcion = el.ElementoCatalogoId.Descripcion;
         });
