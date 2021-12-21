@@ -422,7 +422,8 @@ export class EdicionActaRecibidoComponent implements OnInit {
               new Date(Soporte.FechaSoporte.toString().split('Z')[0]) : '',
             disabled: !this.getPermisoEditar(this.permisos.Acta),
           },
-          { validators:  !ar ? [] : this.checkDate() }],
+          { validators: !ar || this.actaRegistrada ? [] : [Validators.required] },
+        ],
         Soporte: [Soporte.DocumentoId ? Soporte.DocumentoId : '', Validators.required],
       });
       this.fileDocumento.push(undefined);
@@ -977,11 +978,4 @@ export class EdicionActaRecibidoComponent implements OnInit {
     return errors ? { formularios: true } : null;
   }
 
-  private checkDate(): ValidatorFn {
-    return (control: AbstractControl): ValidationErrors | null => {
-      const invalid = control.value === null;
-      const empty = control.value === '';
-      return invalid ? { fecha : true } : !this.actaRegistrada && empty ? { required : true} : null;
-    };
-  }
 }

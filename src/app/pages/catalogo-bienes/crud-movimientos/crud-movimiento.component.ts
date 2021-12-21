@@ -261,7 +261,7 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
           const cuentaCredito = new Cuenta();
           const cuentaDebito = new Cuenta();
 
-          if (Object.keys(res[0]).length !== 0) {
+          if (res.length) {
             this.respuesta = <CuentaGrupo>res[0];
             cuentaCredito.Id = this.respuesta.CuentaCreditoId;
             cuentaDebito.Id = this.respuesta.CuentaDebitoId;
