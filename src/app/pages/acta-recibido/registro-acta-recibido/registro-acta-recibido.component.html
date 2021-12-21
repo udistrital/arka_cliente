@@ -128,10 +128,9 @@
                                     formControlName="FechaSoporte" (dateChange)="usarLocalStorage($event)">
                                   <mat-datepicker-toggle matSuffix [for]="fecha"></mat-datepicker-toggle>
                                   <mat-datepicker #fecha></mat-datepicker>
+                                  <mat-error>* {{'GLOBAL.Errores.ErrorFecha' | translate}}</mat-error>
                                 </mat-form-field>
                               </div>
-                              <p class="campo" *ngIf="soporte.get('FechaSoporte').invalid">
-                                {{'GLOBAL.Errores.ErrorFecha' | translate}}</p>
                             </div>
 
                           </div>
