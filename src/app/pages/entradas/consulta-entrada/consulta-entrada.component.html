@@ -46,7 +46,8 @@
           <p class="text-uppercase"><strong>{{'GLOBAL.numero_contrato' | translate }}</strong>: {{ entradaEspecifica.ContratoId }}</p>
         </div>
         <div class="col">
-          <p class="text-uppercase"><strong>{{'GLOBAL.tipo_contrato' | translate }}</strong>: {{ contrato.TipoContrato }}</p>
+          <p *ngIf="contrato.TipoContrato === ORDEN_SERVICIO" class="text-uppercase"><strong>{{'GLOBAL.tipo_contrato' | translate }}</strong>: {{ORDEN_DE_SERVICIO}}</p>
+          <p *ngIf="contrato.TipoContrato === ORDEN_COMPRA" class="text-uppercase"><strong>{{'GLOBAL.tipo_contrato' | translate }}</strong>: {{ORDEN_DE_COMPRA}}</p>
         </div>
       </div>
 
