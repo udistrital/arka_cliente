@@ -137,7 +137,7 @@ export class ConsultaSalidasComponent implements OnInit {
         add: true,
       },
       add: {
-        addButtonContent: '<i class="fas fa-plus"></i>',
+        addButtonContent: '<i class="fas">' + this.translate.instant('GLOBAL.crear_nuevo') + '</i>',
       },
       edit: {
         editButtonContent: '<i ng-disabled="true"  class="far fa-edit"></i>',

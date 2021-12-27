@@ -77,7 +77,8 @@ export class TiposBienComponent implements OnInit {
         editButtonContent: '<i class="far fa-edit" title="' + f.editar + '" aria-label="' + f.editar + '"></i>',
       },
       add: {
-        addButtonContent: '<i class="fas fa-plus" title="' + f.registrar + '" aria-label="' + f.registrar + '"></i>',
+        addButtonContent: '<i class="fas" title="' + f.registrar + '" aria-label="' + f.registrar + '">'
+        + this.translate.instant('GLOBAL.crear_nuevo') + '</i>',
       },
       mode: 'external',
       columns: {

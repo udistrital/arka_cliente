@@ -131,7 +131,8 @@ export class ConsultaActaRecibidoComponent implements OnInit {
         add: !!this.confService.getAccion('crearActaRecibido'),
       },
       add: {
-        addButtonContent: '<i class="fas fa-plus" title="' + f.registrar + '" aria-label="' + f.registrar + '"></i>',
+        addButtonContent: '<i class="fas" title="' + f.registrar + '" aria-label="' + f.registrar + '">' +
+        this.translate.instant('GLOBAL.crear_nuevo') + '</i>',
       },
       edit: {
         editButtonContent: '<i class="far fa-edit" title="' + f.editar + '" aria-label="' + f.editar + '"></i>',

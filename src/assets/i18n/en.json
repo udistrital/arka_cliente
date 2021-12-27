@@ -520,6 +520,7 @@
         "RechazadaNO": "The Certificate hasn't been succesfully rejected, try again later"
       }
     },
+    "crear_nuevo": "Crear",
     "errorPermisosTtl": "Error loading user permissions",
     "errorPermisosTxt": "The permissions were not loaded properly. Try later.",
     "Error_soporte_title":"Error when trying to get the support document",
