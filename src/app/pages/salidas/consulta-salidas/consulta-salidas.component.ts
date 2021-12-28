@@ -19,6 +19,7 @@ import { parse } from 'path';
 import { combineLatest } from 'rxjs';
 import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
 import Swal from 'sweetalert2';
+import { PopUpManager } from '../../../managers/popUpManager';
 
 @Component({
   selector: 'ngx-consulta-salidas',
@@ -55,6 +56,7 @@ export class ConsultaSalidasComponent implements OnInit {
   cargaLista: boolean = false;
 
   constructor(
+    private pUpManager: PopUpManager,
     private router: Router,
     private salidasHelper: SalidaHelper,
     private translate: TranslateService,
@@ -135,7 +137,7 @@ export class ConsultaSalidasComponent implements OnInit {
         add: true,
       },
       add: {
-        addButtonContent: '<i class="fas fa-plus"></i>',
+        addButtonContent: '<i class="fas">' + this.translate.instant('GLOBAL.crear_nuevo') + '</i>',
       },
       edit: {
         editButtonContent: '<i ng-disabled="true"  class="far fa-edit"></i>',
@@ -342,12 +344,18 @@ export class ConsultaSalidasComponent implements OnInit {
   private onSubmitRevision(aprobar: boolean) {
     if (aprobar) {
       this.salidasHelper.postSalida(this.movimiento.Id).toPromise().then((res: any) => {
-        if (res) {
+        if (res && res.errorTransaccion === '') {
           const obj = JSON.parse(res.movimientoArka.Detalle);
           this.tercero = res.tercero;
           this.transaccionContable = res.transaccionContable;
           this.consecutivoSalida = obj.consecutivo;
           this.verComprobante = true;
+        } else {
+          if (res.errorTransaccion !== '') {
+              this.mostrar = true;
+              this.pUpManager.showErrorAlert(res.errorTransaccion);
+              this.onVolver();
+          }
         }
       });
     } else {

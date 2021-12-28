@@ -15,6 +15,7 @@ import { Store } from '@ngrx/store';
 import { IAppState } from '../../../@core/store/app.state';
 import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
 import Swal from 'sweetalert2';
+import { PopUpManager } from '../../../managers/popUpManager';
 
 @Component({
   selector: 'ngx-consulta-entrada',
@@ -23,7 +24,10 @@ import Swal from 'sweetalert2';
 })
 
 export class ConsultaEntradaComponent implements OnInit {
-
+  ORDEN_SERVICIO: string = '14';
+  ORDEN_COMPRA: string = '15';
+  ORDEN_DE_SERVICIO: string = 'ORDEN DE SERVICIO';
+  ORDEN_DE_COMPRA: string = 'ORDEN DE COMPRA';
   source: LocalDataSource;
   entradas: Array<Entrada>;
   detalle: boolean;
@@ -54,6 +58,7 @@ export class ConsultaEntradaComponent implements OnInit {
   editarEntrada: boolean = false;
 
   constructor(
+    private pUpManager: PopUpManager,
     private router: Router,
     private entradasHelper: EntradaHelper,
     private translate: TranslateService,
@@ -149,7 +154,8 @@ keyEventUp(event: KeyboardEvent) {
         ],
       },
       add: {
-        addButtonContent: '<i class="fas fa-plus" title="' + t.registrar + '" aria-label="' + t.registrar + '"></i>',
+        addButtonContent: '<i class="fas" title="' + t.registrar + '" aria-label="' + t.registrar + '">'
+        + this.translate.instant('GLOBAL.crear_nuevo') + '</i>',
       },
       mode: 'external',
       columns: {
@@ -336,11 +342,20 @@ keyEventUp(event: KeyboardEvent) {
     this.mostrar = false;
     if (aprobar) {
       this.entradasHelper.postEntrada({}, +this.entradaId).toPromise().then((res: any) => {
-        if (res) {
+        if (res && res.errorTransaccion === '') {
            this.mostrar = true;
            this.verComponente = true;
            this.transaccionContable = res.transaccionContable;
            this.tercero = res.tercero;
+        } else {
+          if (!res) {
+              this.alertSuccess(false);
+          } else {
+              this.mostrar = true;
+              this.verComponente = false;
+              this.pUpManager.showErrorAlert(res.errorTransaccion);
+              this.onVolver();
+          }
         }
       });
     } else {

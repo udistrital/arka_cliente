@@ -267,7 +267,8 @@ export class ConsultaBajasComponent implements OnInit {
         add: this.confService.getAccion('registrarBaja') !== undefined,
       },
       add: {
-        addButtonContent: '<em class="fas fa-plus" title="' + t.registrar + '" aria-label="' + t.registrar + '"></em>',
+        addButtonContent: '<em class="fas" title="' + t.registrar + '" aria-label="' + t.registrar + '">'
+        + this.translate.instant('GLOBAL.crear_nuevo') + '</em>',
       },
       edit: {
         editButtonContent: '<em class="fas fa-edit" title="' + t.edit + '" aria-label="' + t.edit + '"></em>',

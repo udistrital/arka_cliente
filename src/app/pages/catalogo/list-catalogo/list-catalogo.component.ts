@@ -51,7 +51,8 @@ export class ListCatalogoComponent implements OnInit {
         columnTitle: this.translate.instant('GLOBAL.Acciones'),
       },
       add: {
-        addButtonContent: '<i class="fas fa-plus" title="' + t.crear + '" aria-label="' + t.crear + '"></i>',
+        addButtonContent: '<i class="fas" title="' + t.crear + '" aria-label="' + t.crear + '">'
+        + this.translate.instant('GLOBAL.crear_nuevo') + '</i>',
       },
       edit: {
         editButtonContent: '<i class="far fa-edit" title="' + t.editar + '" aria-label="' + t.editar + '"></i>',
