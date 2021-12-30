@@ -57,7 +57,6 @@ export const FORM_SUBGRUPO = {
     ],
 };
 
-
 export const FORM_SUBGRUPO_DETALLE = {
     titulo: 'Subgrupo',
     tipo_formulario: 'mini',
@@ -115,6 +114,28 @@ export const FORM_SUBGRUPO_DETALLE = {
             tipo: 'TipoBien',
             key: 'Nombre',
             opciones: [],
+        },
+        {
+            etiqueta: 'input',
+            claseGrid: 'col-lg-12 col-md-12 col-sm-12 col-xs-12',
+            nombre: 'VidaUtil',
+            label_i18n: 'vidaUtilSug',
+            placeholder_i18n: 'vidaUtil',
+            minimo: 0.00,
+            max: 100.00,
+            requerido: true,
+            tipo: 'number',
+        },
+        {
+            etiqueta: 'input',
+            claseGrid: 'col-lg-12 col-md-12 col-sm-12 col-xs-12',
+            nombre: 'ValorResidual',
+            label_i18n: 'valorResidualSug',
+            placeholder_i18n: 'valorResidual',
+            minimo: 0.00,
+            max: 100.00,
+            requerido: true,
+            tipo: 'number',
         },
         {
             etiqueta: 'checkbox',

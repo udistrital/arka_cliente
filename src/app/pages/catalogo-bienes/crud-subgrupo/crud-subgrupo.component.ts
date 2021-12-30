@@ -82,7 +82,6 @@ export class CrudSubgrupoComponent implements OnInit, OnChanges {
       this.cargando = false;
 
     } else if (this.subgrupo.TipoNivelId.Id < Nivel_t.Clase) {
-
       const subgrupo = new Subgrupo;
       subgrupo.Id = this.subgrupo.Id;
       subgrupo.Activo = this.subgrupo.Activo;
@@ -111,12 +110,16 @@ export class CrudSubgrupoComponent implements OnInit, OnChanges {
           clase.TipoBienId = detalleSubgrupo.TipoBienId;
           clase.Depreciacion = detalleSubgrupo.Depreciacion;
           clase.Valorizacion = detalleSubgrupo.Valorizacion;
+          clase.ValorResidual = detalleSubgrupo.ValorResidual * 100.00;
+          clase.VidaUtil = detalleSubgrupo.VidaUtil;
 
         } else {
           clase.DetalleId = 0;
           clase.TipoBienId = { Id: 0 };
           clase.Depreciacion = false;
           clase.Valorizacion = false;
+          clase.ValorResidual = 0;
+          clase.VidaUtil = 0;
         }
         this.cargando = false;
         this.infoSubgrupo = clase;
@@ -138,6 +141,8 @@ export class CrudSubgrupoComponent implements OnInit, OnChanges {
       detalle.Activo = true;
       detalle.Depreciacion = formData.Depreciacion;
       detalle.Valorizacion = formData.Valorizacion;
+      detalle.ValorResidual = formData.ValorResidual / 100;
+      detalle.VidaUtil = formData.VidaUtil;
       detalle.TipoBienId = <TipoBien>{ Id: tipoBien };
       detalle.SubgrupoId = <SubgrupoComun>{Id: this.subgrupo.Id};
       trSubrupo.DetalleSubgrupo = detalle;
@@ -172,6 +177,8 @@ export class CrudSubgrupoComponent implements OnInit, OnChanges {
       detalle.Depreciacion = formData.Depreciacion;
       detalle.Valorizacion = formData.Valorizacion;
       detalle.TipoBienId = <TipoBien>{ Id: tipoBien };
+      detalle.ValorResidual = formData.ValorResidual / 100;
+      detalle.VidaUtil = formData.VidaUtil;
       trSubrupo.DetalleSubgrupo = detalle;
     }
 

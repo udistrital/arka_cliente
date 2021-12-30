@@ -202,10 +202,18 @@ export class DinamicformComponent implements OnInit, OnChanges, OnDestroy {
       return false;
     }
     if (c.etiqueta === 'input' && c.tipo === 'number') {
-      c.valor = parseInt(c.valor, 10);
+      c.valor = parseFloat(c.valor);
       if (c.valor < c.minimo) {
         c.clase = 'form-control form-control-danger';
         c.alerta = 'El valor no puede ser menor que ' + c.minimo;
+        return false;
+      }
+    }
+    if (c.etiqueta === 'input' && c.tipo === 'number') {
+      c.valor = parseFloat(c.valor);
+      if (c.valor > c.max) {
+        c.clase = 'form-control form-control-danger';
+        c.alerta = 'El valor no puede ser mayor que ' + c.max;
         return false;
       }
     }
@@ -293,10 +301,18 @@ export class DinamicformComponent implements OnInit, OnChanges, OnDestroy {
       return false;
     }
     if (c.etiqueta === 'input' && c.tipo === 'number') {
-      c.valor = parseInt(c.valor, 10);
+      c.valor = parseFloat(c.valor);
       if (c.valor < c.minimo) {
         c.clase = 'form-control form-control-danger';
         c.alerta = 'El valor no puede ser menor que ' + c.minimo;
+        return false;
+      }
+    }
+    if (c.etiqueta === 'input' && c.tipo === 'number') {
+      c.valor = parseFloat(c.valor);
+      if (c.valor > c.max) {
+        c.clase = 'form-control form-control-danger';
+        c.alerta = 'El valor no puede ser mayor que ' + c.max;
         return false;
       }
     }

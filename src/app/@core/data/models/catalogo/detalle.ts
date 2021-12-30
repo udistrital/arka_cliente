@@ -12,6 +12,8 @@ export class Detalle extends DetalleID {
   Activo: boolean;
   SubgrupoId: SubgrupoComun;
   TipoBienId: TipoBien;
+  VidaUtil: number;
+  ValorResidual: number;
   FechaCreacion: Date;
   FechaModificacion: Date;
 }

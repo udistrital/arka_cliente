@@ -520,7 +520,6 @@
         "RechazadaNO": "The Certificate hasn't been succesfully rejected, try again later"
       }
     },
-    "crear_nuevo": "Crear",
     "errorPermisosTtl": "Error loading user permissions",
     "errorPermisosTxt": "The permissions were not loaded properly. Try later.",
     "Error_soporte_title":"Error when trying to get the support document",
@@ -664,7 +663,9 @@
         "textPostElementoOk": "El elemento {{NOM}} ha sido registrado correctamente",
         "textPutElementoOk": "The element {{NOM}} was successfully updated",
         "textPostElementoErr": "It was not possible to update the element",
-        "textPutElementoErr": "It was not possible to create the element"
+        "textPutElementoErr": "It was not possible to create the element",
+        "errorDetalleTtl": "Class not configured",
+        "errorDetalleTxt": "Go to the section Catalog -> Catalog Building and assign the good type for the selected class"
       },
       "uno": "Catalogue",
       "crear": "Create Catalogue",
@@ -983,7 +984,9 @@
       "alerta_descargue": "Unassgined elements",
       "alerta_consumo": "Unassgined elements",
       "alerta_controlado": "Unassgined elements",
-      "alerta_ambos": "Unassgined elements"
+      "alerta_ambos": "Unassgined elements",
+      "alertaResidual": "The residual value should be in between 0 and 100 %",
+      "alertaVida": "Enter a valid product lifetime"
     },
 
     "cuentas": {
@@ -1067,6 +1070,12 @@
     "mensaje_seleccionar_entrada": "Select the type of entry you want to make",
     "documento": "Document",
     "elementos": "Elements",
+    "vidaUtil": "Product Lifetime",
+    "vidaUtilSug": "Product Lifetime (year)",
+    "valorResidual": "Residual Value",
+    "valorResidualSug": "Residual Value (%)",
+    "placeholder_vidaUtilSug": "Enter the suggested product lifetime given in years",
+    "placeholder_valorResidualSug": "Enter the suggested residual value percentage",
   "ajustes": {
     "movimientos_relacionados": "Related transfers",
     "confirmar_anular_entrada": "The related accounting and inventory entries will be reversed",

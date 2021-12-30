@@ -65,6 +65,7 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
   texto_estado: string;
   modificando_cuentas: boolean;
   cuentaGlobalEntradas: any;
+  claseOk: boolean;
 
   private estadoAsignacionContable: Parametro;
 
@@ -237,19 +238,17 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
   onChange(catalogo) {
     this.uid_1 = undefined;
     this.catalogoId = catalogo;
+    this.claseOk = false;
   }
 
-  QuitarVista() {
-    this.uid_1 = undefined;
-  }
   receiveMessage(event) {
 
     if (event.TipoNivelId.Id === Nivel_t.Clase) {
       if (this.uid_1 === undefined || this.uid_1.Id !== event.Id) {
         this.uid_1 = event;
         const opt: any = {
-          title: this.translate.instant('No hay detalle asociado'),
-          text: this.translate.instant('Revisar las caracteristicas del catalogo'),
+          title: this.translate.instant('GLOBAL.catalogo.errorDetalleTtl'),
+          text: this.translate.instant('GLOBAL.catalogo.errorDetalleTxt'),
           type: 'warning',
         };
         this.catalogoElementosService.getDetalleSubgrupo(event.Id).subscribe(res2 => {
@@ -259,10 +258,9 @@ export class RegistroCuentasCatalogoComponent implements OnInit {
             this.depreciacion_ok = res2[0].Depreciacion;
             this.valorizacion_ok = res2[0].Valorizacion;
             this.Total_Movimientos();
+            this.claseOk = true;
           } else {
-            this.depreciacion_ok = false;
-            this.valorizacion_ok = false;
-            this.Total_Movimientos();
+            this.claseOk = false;
             (Swal as any).fire(opt);
           }
         });

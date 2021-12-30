@@ -211,7 +211,7 @@
           {{'GLOBAL.Acta_Recibido.CapturarElementos.IVAHeader' | translate }}
         </th>
         <td mat-cell *matCellDef="let element; let rowIndex = index">
-          <select nbInput [disabled]="Modo !== 'agregar'"type="text" class="cell form-control"
+          <select nbInput [disabled]="Modo !== 'agregar'" type="text" class="cell form-control"
             [(ngModel)]="element.PorcentajeIvaId" (ngModelChange)="calcularValores(rowIndex)">
             <option *ngFor="let tarifas of Tarifas_Iva" [(value)]="tarifas.Tarifa">{{tarifas.Nombre}}</option>
           </select>

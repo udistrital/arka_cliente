@@ -520,7 +520,6 @@
         "RechazadaNO":"El Acta no ha podido ser Devuelta de forma exitosa, intente más tarde"
       }
     },
-    "crear_nuevo": "Crear",
     "errorPermisosTtl": "Error cargando permisos de usuario",
     "errorPermisosTxt": "No se pudieron obtener los permisos correctamente, intente más tarde",
     "error_soporte_title":"Error al obtener el soporte",
@@ -677,7 +676,9 @@
       "elementosInfo2": "Editar elemento: Seleccione un elemento",
       "desactivar": "Desactivar Catálogo",
       "validacion_desactivar" :"¿Está seguro que desea desactivar el catálogo?",
-      "lista": "Lista de Catálogos"
+      "lista": "Lista de Catálogos",
+      "errorDetalleTtl": "Clase sin parametrizar",
+      "errorDetalleTxt": "Vaya a la sección Catálogo > Construcción de Catálogo y asigne el tipo de bien a la clase seleccionada"
     },
 
     "BodegaConsumo": {
@@ -983,7 +984,9 @@
       "alerta_descargue": "Elementos sin descargar",
       "alerta_consumo": "Elementos de consumo sin asignar",
       "alerta_controlado": "Elementos de consumo controlado sin asignar",
-      "alerta_ambos": "Elementos de consumo y consumo controlado sin asignar"
+      "alerta_ambos": "Elementos de consumo y consumo controlado sin asignar",
+      "alertaResidual": "El valor residual debe estar entre 0 y 100 %",
+      "alertaVida": "Ingrese una vida útil válida"
     },
 
     "cuentas": {
@@ -1067,6 +1070,12 @@
     "mensaje_seleccionar_entrada": "Seleccione el tipo de entrada que desea realizar",
     "elementos": "Elementos",
     "documento": "Documento",
+    "vidaUtil": "Vida Útil",
+    "vidaUtilSug": "Vida Útil (años)",
+    "valorResidual": "Valor Residual",
+    "valorResidualSug": "Valor Residual (%)",
+    "placeholder_vidaUtilSug": "Ingrese la vida útil sugerida en años",
+    "placeholder_valorResidualSug": "Ingrese el porcentaje correspondiente al valor residual",
     "ajustes": {
       "movimientos_relacionados": "Movimientos relacionados",
       "confirmar_anular_entrada": "Los movimientos de inventario y contables asociados a esta entrada serán anulados",
