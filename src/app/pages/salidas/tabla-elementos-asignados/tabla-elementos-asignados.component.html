@@ -184,7 +184,7 @@
             </td>
           </ng-container>
 
-          <tr mat-header-row *matHeaderRowDef="displayedColumns;"></tr>
+          <tr mat-header-row *matHeaderRowDef="displayedColumnsDev;"></tr>
           <tr mat-row *matRowDef="let row; columns: displayedColumnsDev;"></tr>
         </mat-table>
 
@@ -374,3 +374,4 @@
     <button mat-raised-button color="primary" (click)="checkElementosAsignados()"
       class="float-right">{{'GLOBAL.movimientos.asignar' | translate}}</button>
   </mat-card-actions>
+</mat-card-content>

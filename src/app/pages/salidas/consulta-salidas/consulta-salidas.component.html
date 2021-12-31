@@ -8,16 +8,16 @@
       {{'GLOBAL.salidas.consulta_salida_info' | translate}}
     </mat-card-subtitle>
 
-    <ng2-smart-table [settings]="settings" [source]="source" (edit)="onEdit($event)" 
+    <ng2-smart-table [settings]="settings" [source]="source" (edit)="onEdit($event)"
 	     (delete)="onDelete($event)" (create)="onRegister($event)" *ngIf="!detalle && !editaentrada && !verComprobante">
     </ng2-smart-table>
 
     <ngx-consulta-salida-especifica [salida_id]="salidaId" *ngIf="detalle && !editaentrada">
     </ngx-consulta-salida-especifica>
-	<ngx-ver-comprobante [consecutivo] = "consecutivoSalida" [tercero] = "tercero" [descripcion] = "detalleentrada"  *ngIf="verComprobante" [transaccion]="transaccionContable"></ngx-ver-comprobante> 
+	<ngx-ver-comprobante [consecutivo] = "consecutivoSalida" [tercero] = "tercero" [descripcion] = "'detalleentrada'"  *ngIf="verComprobante" [transaccion]="transaccionContable"></ngx-ver-comprobante>
 
     <mat-card-actions *ngIf="detalle || editaentrada">
-    <ngx-tabla-entrada-aprobada  [editar]="editaentrada" [salida_id]="salidaId" [actaParametro]="actaParametro" [idEntradaParametro]="entradaParametro" 
+    <ngx-tabla-entrada-aprobada  [editar]="editaentrada" [salida_id]="salidaId" [actaParametro]="actaParametro" [idEntradaParametro]="entradaParametro"
    	*ngIf="editaentrada && !detalle && cargaLista"></ngx-tabla-entrada-aprobada>
 
       <div *ngIf="modo === 'revision' && !verComprobante" class="justify-content-center" style="padding-bottom: 3rem;">
