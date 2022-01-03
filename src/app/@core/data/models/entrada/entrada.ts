@@ -62,6 +62,8 @@ export class ElementoMovimientosArka {
     Unidad: number;
     ValorUnitario: number;
     ValorTotal: number;
+    VidaUtil: number;
+    ValorResidual: number;
 }
 
 export class TrSalida {

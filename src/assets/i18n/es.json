@@ -571,7 +571,7 @@
     "editar": "Editar",
     "cerrar": "Cerrar",
     "enviarSolicitud": "Enviar Solicitud",
-
+    "fechaAprobacion": "Fecha de Aprobación",
     "nivel_jerarquico": "Nivel Jerárquico",
 
     "subgrupo": {
@@ -677,7 +677,9 @@
       "elementosInfo2": "Editar elemento: Seleccione un elemento",
       "desactivar": "Desactivar Catálogo",
       "validacion_desactivar" :"¿Está seguro que desea desactivar el catálogo?",
-      "lista": "Lista de Catálogos"
+      "lista": "Lista de Catálogos",
+      "errorDetalleTtl": "Clase sin parametrizar",
+      "errorDetalleTxt": "Vaya a la sección Catálogo > Construcción de Catálogo y asigne el tipo de bien a la clase seleccionada"
     },
 
     "BodegaConsumo": {
@@ -973,7 +975,7 @@
         }
       },
       "tab_consumo": "Elementos de Consumo",
-      "tab_consumo_controlado": "Elementos Devolutivos y de Consumo Controlado",
+      "tab_consumo_controlado": "Elementos Devolutivos",
       "asignar": "REGISTRAR SALIDA",
       "asignar_funcionario": "ASIGNAR A FUNCIONARIO",
       "error_entrada_no_registrada": "No se pudo registrar la entrada solicitada",
@@ -983,7 +985,9 @@
       "alerta_descargue": "Elementos sin descargar",
       "alerta_consumo": "Elementos de consumo sin asignar",
       "alerta_controlado": "Elementos de consumo controlado sin asignar",
-      "alerta_ambos": "Elementos de consumo y consumo controlado sin asignar"
+      "alerta_ambos": "Elementos de consumo y devolutivos sin asignar",
+      "alertaResidual": "El valor residual debe estar entre 0 y 100 %",
+      "alertaVida": "Ingrese una vida útil válida"
     },
 
     "cuentas": {
@@ -1067,6 +1071,14 @@
     "mensaje_seleccionar_entrada": "Seleccione el tipo de entrada que desea realizar",
     "elementos": "Elementos",
     "documento": "Documento",
+    "vidaUtil": "Vida Útil",
+    "vidaUtilSug": "Vida Útil (años)",
+    "valorResidual": "Valor Residual",
+    "valorResidualSug": "Valor Residual (%)",
+    "placeholder_vidaUtilSug": "Ingrese la vida útil sugerida en años",
+    "placeholder_valorResidualSug": "Ingrese el porcentaje correspondiente al valor residual",
+    "fechaCorte": "Fecha de Corte",
+    "trContable": "Transacción Contable",
     "ajustes": {
       "movimientos_relacionados": "Movimientos relacionados",
       "confirmar_anular_entrada": "Los movimientos de inventario y contables asociados a esta entrada serán anulados",
@@ -1299,6 +1311,73 @@
       "errorBj": "El elemento ya tiene una solicitud de baja vigente",
       "informacion": "Información General de la Solicitud",
       "infoComite": "Aprobación Comité"
+    },
+    "depreciacion": {
+      "consulta": {
+        "title": "Consulta de liquidación de depreciación",
+        "subtitle": "A continuación se listan las depreciaciones liquidadas, seleccione una de las opciones para ver más detalles",
+        "noReview": "No hay depreciaciones por aprobar",
+        "noView": "No hay depreciaciones por consultar",
+        "solicitante": "Solicitante",
+        "accionEdit": "Editar Solicitud",
+        "estado": "Estado",
+        "espera": "En Espera",
+        "errorEditar": "No se puede editar esta depreciación"
+      },
+      "revision": {
+        "title": "Registrar Revisión de Contabilidad",
+        "subtitle": "Seleccione una depreciación para ver los detalles y registrar la revisión"
+      },
+      "create": {
+        "title": "Generar liquidación de depreciación",
+        "subtitle": "Por favor ingrese la información solicitada en el siguiente formulario",
+        "accion": "Generar Depreciación",
+        "confrmTtl": "Registrar Depreciación",
+        "confrmTxt": "¿Desea registrar la liquidación de depreciación a la fecha de corte suministrada?",
+        "successTtl": "Depreciación Generada",
+        "successTxt": "La liquidación de la depreciación ha sido generada correctamente",
+        "errTxt:": "Hubo un error al registrar la solicitud de baja de bienes"
+      },
+      "update": {
+        "title": "Editar Liquidación de Depreciación",
+        "subtitle": "Revise las razones de rechazo de la solicitud y haga las respectivas modificaciones",
+        "accion": "Actualizar depreciación",
+        "confrmTtl": "Actualizar depreciación",
+        "confrmTxt": "¿Desea actualizar la liquidación de depreciación?",
+        "successTtl": "Depreciación Actualizada",
+        "successTxt": "La depreciación se ha actualizado"
+      },
+      "review": {
+        "title": "Revisar Liquidación de Depreciación",
+        "subtitle": "Revise los detalles de la liquidación y realice la aprobación o el rechazo de la misma",
+        "accion": "Aprobar Depreciación",
+        "accionR": "Rechazar Depreciación",
+        "accionEdit": "Realizar Revisión",
+        "confrmTtlA": "Aprobar Liquidación de Depreciación",
+        "confrmTxtA": "¿Desea aprobar la depreciación con la información suministrada?",
+        "confrmTtlR": "Rechazar Depreciación",
+        "confrmRechazoTtl": "Motivo de rechazo",
+        "confrmRechazoTtx": "Indique la razón por la que esta liquidación será rechazada",
+        "confrmTxtR": "¿Desea rechazar la depreciación?",
+        "successTtlA": "Depreciación Aprobada",
+        "successTxtA": "La depreciación ha sido aprobada",
+        "successTtlR": "Depreciación Rechazada",
+        "successTxtR": "La depreciación ha sido rechazada"
+      },
+      "get": {
+        "title": "Detalle Liquidación de Depreciación",
+        "subtitle": "En el siguiente formulario se muestra el detalle de la asociado a la depreciación"
+      },
+      "estados": {
+        "tramite": "Generada",
+        "rechazado": "Rechazada",
+        "aprobado": "Aprobada"
+      },
+      "errorVacio": "No hay elementos a depreciar a la fecha de corte indicada",
+      "errorEnCurso": "Existe una depreciación pendiente por ser aprobada",
+      "errorBj": "El elemento ya tiene una solicitud de baja vigente",
+      "informacion": "Información General",
+      "infoFechaCorte": "Fecha hasta la que se liquidará la depreciación"
     }
   }
 }

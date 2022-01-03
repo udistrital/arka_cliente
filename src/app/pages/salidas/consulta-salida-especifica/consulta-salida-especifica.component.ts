@@ -167,6 +167,15 @@ export class ConsultaSalidaEspecificaComponent implements OnInit {
             return value;
           },
         },
+        ValorTotal: {
+          title: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.ValorTotalHeader'),
+        },
+        VidaUtil: {
+          title: this.translate.instant('GLOBAL.vidaUtilSug'),
+        },
+        ValorResidual: {
+          title: this.translate.instant('GLOBAL.valorResidual'),
+        },
       },
     };
   }

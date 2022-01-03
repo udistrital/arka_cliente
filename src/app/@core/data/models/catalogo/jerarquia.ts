@@ -36,6 +36,8 @@ export class Grupo2 extends Grupo {
   Valorizacion: boolean;
   Deterioro: boolean;
   TipoBienId: TipoBienID;
+  VidaUtil: number;
+  ValorResidual: number;
 }
 
 // A eliminar ?

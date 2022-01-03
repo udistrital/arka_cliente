@@ -1,6 +1,6 @@
-<nb-card-header>
-<h1>{{'GLOBAL.Comprobante_Contable.Titulo' | translate}}</h1>
-</nb-card-header>
+<mat-card-title>
+   {{'GLOBAL.Comprobante_Contable.Titulo' | translate}}
+</mat-card-title>
       <div class="row">
         <div class="col">
           <p class="text-uppercase"><strong>{{'GLOBAL.Comprobante_Contable.Consecutivo' | translate}}</strong>:{{consecutivo}}</p>
@@ -17,7 +17,7 @@
       <div class="row">
         <div class="col">
           <p class="text-uppercase"><strong>{{'GLOBAL.Comprobante_Contable.FechaTransaccion' | translate}}</strong>
-           : {{transaccion.FechaTransaccion}}</p>
+           : {{transaccion.FechaTransaccion | date: 'dd/MM/yyyy'}}</p>
         </div>
       </div>
       <div class="row">
@@ -62,13 +62,13 @@
            <p class="text-uppercase">{{mvto.Descripcion}}</p>
         </div>
         <div class="col" *ngIf="mvto.TipoMovimientoId==m_db">
-           <p class="text-uppercase">{{mvto.Valor}}</p>
+           <p class="text-uppercase">{{mvto.Valor | currency}}</p>
         </div>
         <div class="col" *ngIf="mvto.TipoMovimientoId==m_cr">
            <p class="text-uppercase">0</p>
         </div>
         <div class="col" *ngIf="mvto.TipoMovimientoId==m_cr">
-           <p class="text-uppercase">{{mvto.Valor}}</p>
+           <p class="text-uppercase">{{mvto.Valor | currency}}</p>
         </div>
         <div class="col" *ngIf="mvto.TipoMovimientoId==m_db">
            <p class="text-uppercase">0</p>
@@ -93,9 +93,9 @@
            <p class="text-uppercase">{{'GLOBAL.Comprobante_Contable.Total' | translate}}</p>
         </div>
         <div class="col">
-           <p class="text-uppercase">{{totalDebitos}}</p>
+           <p class="text-uppercase">{{totalDebitos | currency}}</p>
         </div>
         <div class="col">
-           <p class="text-uppercase">{{totalCreditos}}</p>
+           <p class="text-uppercase">{{totalCreditos | currency}}</p>
         </div>
       </div>

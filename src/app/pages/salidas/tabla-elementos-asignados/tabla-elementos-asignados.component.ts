@@ -34,6 +34,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
   checkTodos: boolean = false;
   checkParcial: boolean = false;
   displayedColumns: string[];
+  displayedColumnsDev: string[];
   private checkAnterior: number = undefined;
   counter = 0;
   basePaginasD: number = 0;
@@ -105,9 +106,11 @@ export class TablaElementosAsignadosComponent implements OnInit {
             el.Sede = '',
             el.Dependencia = '',
             el.Ubicacion = '',
+            el.SubgrupoCatalogoId.ValorResidual = el.SubgrupoCatalogoId.ValorResidual * 100,
             el.Combinado = el.SubgrupoCatalogoId.SubgrupoId.Id ?
               el.SubgrupoCatalogoId.SubgrupoId.Codigo + ' - ' + el.SubgrupoCatalogoId.SubgrupoId.Nombre : '';
         });
+
         if (this.edicionSalida) {
             this.salidasHelper.getSalida(this.salida_id).subscribe(res1 => {
                 const elementosConsumo = res.filter(el => el.SubgrupoCatalogoId.TipoBienId.Id === 1).
@@ -217,7 +220,12 @@ export class TablaElementosAsignadosComponent implements OnInit {
       'Sede',
       'Dependencia',
       'Ubicacion',
+      'ValorTotal',
     ];
+    this.displayedColumnsDev = this.displayedColumns.concat(
+      'VidaUtil',
+      'ValorResidual',
+    );
   }
 
   cambioPagina(base, eventoPagina) {
@@ -255,8 +263,14 @@ export class TablaElementosAsignadosComponent implements OnInit {
       this.sourceDevolutivo.data.every(el => el.Funcionario.Id && el.Ubicacion.Id) ? false : true;
     const alertConsumo = !this.sourceConsumo.data.length ? false :
       this.sourceConsumo.data.every(el => el.Funcionario.Id && el.Ubicacion.Id) ? false : true;
+    const elementos = this.sourceConsumo.data.concat(this.sourceDevolutivo.data);
+    const alertResidual = elementos.some(el => (el.SubgrupoCatalogoId.ValorResidual > 100 || el.SubgrupoCatalogoId.ValorResidual < 0));
+    const alertVidaUtil = elementos.some(el => (el.SubgrupoCatalogoId.VidaUtil > 100 || el.SubgrupoCatalogoId.VidaUtil < 0));
     const alert = (alertControlado && alertConsumo) ? 'GLOBAL.movimientos.alerta_ambos' :
-      (alertConsumo ? 'GLOBAL.movimientos.alerta_consumo' : (alertControlado ? 'GLOBAL.movimientos.alerta_controlado' : null));
+      (alertConsumo) ? 'GLOBAL.movimientos.alerta_consumo' :
+        (alertControlado) ? 'GLOBAL.movimientos.alerta_controlado' :
+          (alertResidual) ? 'GLOBAL.movimientos.alertaResidual' :
+            (alertVidaUtil) ? 'GLOBAL.movimientos.alertaVida' : null;
     alert ? (Swal as any).fire({
       title: this.translate.instant('GLOBAL.movimientos.alerta_descargue'),
       text: this.translate.instant(alert),
@@ -273,6 +287,8 @@ export class TablaElementosAsignadosComponent implements OnInit {
     elemento.Unidad = elementoActa.Cantidad;
     elemento.ValorUnitario = elementoActa.ValorTotal / elementoActa.Cantidad;
     elemento.ValorTotal = elementoActa.ValorTotal;
+    elemento.VidaUtil = elementoActa.SubgrupoCatalogoId.VidaUtil;
+    elemento.ValorResidual = elementoActa.ValorTotal * elementoActa.SubgrupoCatalogoId.ValorResidual / 100;
     if (this.edicionSalida) {
         const found = this.elementosActa.find(element => element.ElementoActaId === elemento.ElementoActaId);
         if (found) {
@@ -484,8 +500,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
                        type: 'success',
                        title,
                        text,
-                       showConfirmButton: false,
-                       timer: 2000,
+                       showConfirmButton: true,
                     };
                     this.pUpManager.showAlertWithOptions(options);
                     this.router.navigate(['/pages/salidas']);
@@ -505,8 +520,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
               type: 'success',
               title,
               text,
-              showConfirmButton: false,
-              timer: 2000,
+              showConfirmButton: true,
              };
              this.pUpManager.showAlertWithOptions(options);
              this.router.navigate(['/pages/salidas/consulta_salidas']);

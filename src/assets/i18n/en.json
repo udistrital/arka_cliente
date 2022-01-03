@@ -520,7 +520,7 @@
         "RechazadaNO": "The Certificate hasn't been succesfully rejected, try again later"
       }
     },
-    "crear_nuevo": "Crear",
+    "crear_nuevo": "Create",
     "errorPermisosTtl": "Error loading user permissions",
     "errorPermisosTxt": "The permissions were not loaded properly. Try later.",
     "Error_soporte_title":"Error when trying to get the support document",
@@ -571,7 +571,7 @@
     "editar": "Edit",
     "cerrar": "Close",
     "enviarSolicitud": "Send Request",
-
+    "fechaAprobacion": "Fecha de Aprobación",
     "nivel_jerarquico": "Hierarchical Level",
 
     "subgrupo": {
@@ -664,7 +664,9 @@
         "textPostElementoOk": "El elemento {{NOM}} ha sido registrado correctamente",
         "textPutElementoOk": "The element {{NOM}} was successfully updated",
         "textPostElementoErr": "It was not possible to update the element",
-        "textPutElementoErr": "It was not possible to create the element"
+        "textPutElementoErr": "It was not possible to create the element",
+        "errorDetalleTtl": "Class not configured",
+        "errorDetalleTxt": "Go to the section Catalog -> Catalog Building and assign the good type for the selected class"
       },
       "uno": "Catalogue",
       "crear": "Create Catalogue",
@@ -983,7 +985,9 @@
       "alerta_descargue": "Unassgined elements",
       "alerta_consumo": "Unassgined elements",
       "alerta_controlado": "Unassgined elements",
-      "alerta_ambos": "Unassgined elements"
+      "alerta_ambos": "Unassgined elements",
+      "alertaResidual": "The residual value should be in between 0 and 100 %",
+      "alertaVida": "Enter a valid product lifetime"
     },
 
     "cuentas": {
@@ -1067,6 +1071,14 @@
     "mensaje_seleccionar_entrada": "Select the type of entry you want to make",
     "documento": "Document",
     "elementos": "Elements",
+    "vidaUtil": "Product Lifetime",
+    "vidaUtilSug": "Product Lifetime (year)",
+    "valorResidual": "Residual Value",
+    "valorResidualSug": "Residual Value (%)",
+    "placeholder_vidaUtilSug": "Enter the suggested product lifetime given in years",
+    "placeholder_valorResidualSug": "Enter the suggested residual value percentage",
+    "fechaCorte": "Fecha de Corte",
+    "trContable": "Transacción Contable",
   "ajustes": {
     "movimientos_relacionados": "Related transfers",
     "confirmar_anular_entrada": "The related accounting and inventory entries will be reversed",
@@ -1299,6 +1311,73 @@
       "errorBj": "The good already has a request",
       "informacion": "Request details",
       "infoComite": "Comitee Approval information"
+    },
+    "depreciacion": {
+      "consulta": {
+        "title": "Consulta de liquidación de depreciación",
+        "subtitle": "A continuación se listan las depreciaciones liquidadas, seleccione una de las opciones para ver más detalles",
+        "noReview": "No hay depreciaciones por aprobar",
+        "noView": "No hay depreciaciones por consultar",
+        "solicitante": "Solicitante",
+        "accionEdit": "Editar Solicitud",
+        "estado": "Estado",
+        "espera": "En Espera",
+        "errorEditar": "No se puede editar esta depreciación"
+      },
+      "revision": {
+        "title": "Registrar Revisión de Contabilidad",
+        "subtitle": "Seleccione una depreciación para ver los detalles y registrar la revisión"
+      },
+      "create": {
+        "title": "Generar liquidación de depreciación",
+        "subtitle": "Por favor ingrese la información solicitada en el siguiente formulario",
+        "accion": "Generar Depreciación",
+        "confrmTtl": "Registrar Depreciación",
+        "confrmTxt": "¿Desea registrar la liquidación de depreciación a la fecha de corte suministrada?",
+        "successTtl": "Depreciación Generada",
+        "successTxt": "La liquidación de la depreciación ha sido generada correctamente",
+        "errTxt:": "Hubo un error al registrar la solicitud de baja de bienes"
+      },
+      "update": {
+        "title": "Editar Liquidación de Depreciación",
+        "subtitle": "Revise las razones de rechazo de la solicitud y haga las respectivas modificaciones",
+        "accion": "Actualizar depreciación",
+        "confrmTtl": "Actualizar depreciación",
+        "confrmTxt": "¿Desea actualizar la liquidación de depreciación?",
+        "successTtl": "Depreciación Actualizada",
+        "successTxt": "La depreciación se ha actualizado"
+      },
+      "review": {
+        "title": "Revisar Liquidación de Depreciación",
+        "subtitle": "Revise los detalles de la liquidación y realice la aprobación o el rechazo de la misma",
+        "accion": "Aprobar Depreciación",
+        "accionR": "Rechazar Depreciación",
+        "accionEdit": "Realizar Revisión",
+        "confrmTtlA": "Aprobar Liquidación de Depreciación",
+        "confrmTxtA": "¿Desea aprobar la depreciación con la información suministrada?",
+        "confrmTtlR": "Rechazar Depreciación",
+        "confrmRechazoTtl": "Motivo de rechazo",
+        "confrmRechazoTtx": "Indique la razón por la que esta liquidación será rechazada",
+        "confrmTxtR": "¿Desea rechazar la depreciación?",
+        "successTtlA": "Depreciación Aprobada",
+        "successTxtA": "La depreciación ha sido aprobada",
+        "successTtlR": "Depreciación Rechazada",
+        "successTxtR": "La depreciación ha sido rechazada"
+      },
+      "get": {
+        "title": "Detalle Liquidación de Depreciación",
+        "subtitle": "En el siguiente formulario se muestra el detalle de la asociado a la depreciación"
+      },
+      "estados": {
+        "tramite": "Generada",
+        "rechazado": "Rechazada",
+        "aprobado": "Aprobada"
+      },
+      "errorVacio": "No hay elementos a depreciar a la fecha de corte indicada",
+      "errorEnCurso": "Existe una depreciación pendiente por ser aprobada",
+      "errorBj": "El elemento ya tiene una solicitud de baja vigente",
+      "informacion": "Información General",
+      "infoFechaCorte": "Fecha hasta la que se liquidará la depreciación"
     }
   }
 }

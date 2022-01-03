@@ -65,6 +65,10 @@ const routes: Routes = [{
       loadChildren: './traslados/traslados.module#TrasladosModule',
     },
     {
+      path: 'depreciacion',
+      loadChildren: './depreciacion/depreciacion.module#DepreciacionModule',
+    },
+    {
       path: '',
       redirectTo: 'dashboard',
       pathMatch: 'full',
