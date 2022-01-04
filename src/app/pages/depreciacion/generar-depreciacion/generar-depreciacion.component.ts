@@ -44,8 +44,8 @@ export class GenerarDepreciacionComponent implements OnInit {
 
   ngOnInit() {
     if (this.modoCrud === 'create' || this.modoCrud === 'update') {
-      this.refDate = new Date(this.refDate.toString());
-      this.refDate.setDate(this.refDate.getDate() + 2);
+      this.refDate.setUTCMinutes(this.refDate.getTimezoneOffset());
+      this.refDate.setDate(this.refDate.getDate() + 1);
     }
     this.buildForm();
     this.loadEstados();
@@ -80,8 +80,8 @@ export class GenerarDepreciacionComponent implements OnInit {
   private fillForm(data: any) {
     const detalle = JSON.parse(data.Detalle);
     const observaciones = data.Observacion;
-    const fecha = new Date(new Date(detalle.FechaCorte.toString()));
-    fecha.setDate(fecha.getDate() + 1);
+    const fecha = new Date(detalle.FechaCorte);
+    fecha.setUTCMinutes(fecha.getTimezoneOffset());
     const razon = detalle.RazonRechazo;
 
     this.formDepreciacion.patchValue({ fecha });
@@ -160,7 +160,7 @@ export class GenerarDepreciacionComponent implements OnInit {
       this.loading = false;
       this.submitted = true;
       this.accion.emit(true);
-      this.alertSuccess(null, true);
+      this.alertSuccess(this.trContable, true);
     });
   }
 
