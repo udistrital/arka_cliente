@@ -62,12 +62,13 @@ export class ConsultaDepreciacionComponent implements OnInit {
         });
       }
       this.source.load(res);
-      this.source.setSort([{ field: 'FechaCreacion', direction: 'desc' }]);
       this.mostrar = true;
       this.depreciaciones = res;
-      const aprobadas = this.depreciaciones.filter(dp => dp.EstadoMovimientoId === 'Depr Aprobada');
-      const max = aprobadas.length ? aprobadas.reduce((prev, current) => (prev.Id > current.Id) ? prev : current).FechaCorte : -1;
-      this.fechaMin = new Date(max);
+      const pendiente = this.depreciaciones.some(dp => dp.EstadoMovimientoId !== 'Depr Aprobada');
+      const aprobada = this.depreciaciones.some(dp => dp.EstadoMovimientoId === 'Depr Aprobada');
+      const date = (!this.depreciaciones.length || !aprobada) ? -1 :
+        (!pendiente) ? this.depreciaciones[0].FechaCorte : this.depreciaciones[1].FechaCorte;
+      this.fechaMin = new Date(date);
     });
   }
 
@@ -194,8 +195,7 @@ export class ConsultaDepreciacionComponent implements OnInit {
           title: this.translate.instant('GLOBAL.fecha_creacion'),
           width: '15%',
           valuePrepareFunction: (value) => {
-            const date = new Date(Date.parse(value)).toLocaleDateString('es-CO');
-            return date;
+            return this.formatDate(value);
           },
           filter: {
             type: 'daterange',
@@ -210,7 +210,7 @@ export class ConsultaDepreciacionComponent implements OnInit {
           title: this.translate.instant('GLOBAL.fechaAprobacion'),
           width: '20%',
           valuePrepareFunction: (value) => {
-            const date = value ? new Date(Date.parse(value)).toLocaleDateString('es-CO') :
+            const date = value ? this.formatDate(value) :
               this.translate.instant('GLOBAL.bajas.consulta.espera');
             return date;
           },
@@ -226,6 +226,9 @@ export class ConsultaDepreciacionComponent implements OnInit {
         FechaCorte: {
           title: this.translate.instant('GLOBAL.fechaCorte'),
           width: '15%',
+          valuePrepareFunction: (value) => {
+            return this.formatDate(value);
+          },
           filter: {
             type: 'daterange',
             config: {
@@ -242,6 +245,12 @@ export class ConsultaDepreciacionComponent implements OnInit {
         ...columns,
       },
     };
+  }
+
+  private formatDate(value) {
+    const date = new Date(value);
+    date.setUTCMinutes(date.getTimezoneOffset());
+    return new Date(Date.parse(date.toString())).toLocaleDateString('es-CO');
   }
 
 }

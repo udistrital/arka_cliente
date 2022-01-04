@@ -45,7 +45,7 @@ export class DepreciacionHelper {
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
      */
     public getDepreciaciones(tramiteOnly: boolean) {
-        let endpoint = 'movimiento?query=FormatoTipoMovimientoId__Nombre:Depreciación';
+        let endpoint = 'movimiento?limit=-1&sortby=FechaCreacion&order=desc&query=FormatoTipoMovimientoId__Nombre:Depreciación';
         endpoint += tramiteOnly ? ',EstadoMovimientoId__Nombre:Depr Generada' : '';
         this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
         return this.rqManager.get(endpoint).pipe(
