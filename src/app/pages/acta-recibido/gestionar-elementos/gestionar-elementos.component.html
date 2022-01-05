@@ -1,14 +1,15 @@
 <div class="card-2" *ngIf="Modo === 'agregar'">
   <form [formGroup]="form" (ngSubmit)="onSubmit()">
-    <nb-card>
-      <nb-card-header>{{'GLOBAL.Acta_Recibido.CapturarElementos.CargaMasivaTitle' | translate }}</nb-card-header>
-      <nb-card-body class="row soporte">
-        <div class="form-group col-sm soporte">
-          <p>Archivo Carga Masiva</p>
-          <button nbButton type="button" (click)="fileInputDocumento.click()">
+    <mat-card>
+      <mat-card-title>{{'GLOBAL.Acta_Recibido.CapturarElementos.CargaMasivaTitle' | translate }}</mat-card-title>
+      <mat-card-content>
+        <div class="row">
+          <div class="form-group col-sm soporte">
+            <p>Archivo Carga Masiva</p>
+            <button nbButton type="button" (click)="fileInputDocumento.click()">
             <em class="fas fa-file-upload fa-2x"></em>
             <input formControlname="archivo" id="archivo_icfes" #fileInputDocumento type="file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-              (change)="onFileChange($event)" style="display:none;" />
+              (change)="onFileChange($event)" style="display:none;">
           </button>
           <p></p>
           <p *ngIf="Validador">{{nombreArchivo}}</p>
@@ -17,28 +18,25 @@
             {{'GLOBAL.Acta_Recibido.CapturarElementos.LimpiarEspacioButton' | translate }}
           </button>
         </div>
-        <p></p>
-        <div class="col-sm soporte">
+        <div class="form-group col-sm soporte">
           <p>Descargar Plantilla</p>
           <button nbButton type="button" (click)="TraerPlantilla()">
-            <em class="fas fa-file-excel fa-2x"></em>
+            <em class="fas fa-file-download fa-2x"></em>
           </button>
-
         </div>
-      </nb-card-body>
-      <nb-card-footer class="soporte">
+      </div>
+      </mat-card-content>
+      <mat-card-actions class="soporte">
         <button type="submit" [disabled]="!form.valid && !Validador" class="btn btn-success">
           {{'GLOBAL.Acta_Recibido.CapturarElementos.CargarElementosButton' | translate }} <em
             class="fa fa-spinner fa-spin fa-fw" *ngIf="loading"></em></button>
-      </nb-card-footer>
-    </nb-card>
+      </mat-card-actions>
+    </mat-card>
   </form>
 </div>
 
-<nb-card [nbSpinner]="cargando">
-  <nb-card-header>{{'GLOBAL.Acta_Recibido.CapturarElementos.ArticulosRelacionadosTitle' | translate }}</nb-card-header>
-  <nb-card-body>
-
+<mat-card [nbSpinner]="cargando">
+  <mat-card-content>
     <div class="row" *ngIf="Modo === 'agregar'">
       <button nbButton [disabled]="!checkParcial && !checkTodos"  (click)="borraSeleccionados()" style="margin-left: 10px;height: 45px;">Borrar
         Seleccionados</button>
@@ -99,8 +97,6 @@
         </td>
         <td mat-footer-cell *matFooterCellDef>Totales</td>
       </ng-container>
-
-
 
       <!-- Nombre Catalogo -->
       <ng-container matColumnDef="Nombre">
@@ -200,9 +196,7 @@
             placeholder="{{'GLOBAL.Acta_Recibido.CapturarElementos.DescuentoHeader' | translate }}"
             [(ngModel)]="element.Descuento" (ngModelChange)="calcularValores(rowIndex)">
         </td>
-        <td mat-footer-cell *matFooterCellDef>
-          <p *ngIf="respuesta">{{ getDescuentos() | currency }}</p>
-        </td>
+        <td mat-footer-cell *matFooterCellDef></td>
       </ng-container>
 
       <!-- PorcentajeIvaId Column -->
@@ -270,5 +264,5 @@
     </mat-table>
 
     <mat-paginator [pageSizeOptions]="[10, 20, 30, 40, 50]" (page)="cambioPagina($event)"></mat-paginator>
-  </nb-card-body>
-</nb-card>
+  </mat-card-content>
+</mat-card>
