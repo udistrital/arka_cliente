@@ -152,6 +152,9 @@ export class ConsultaActaRecibidoComponent implements OnInit {
         FechaCreacion: {
           title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.FechaCreacionHeader'),
           width: '70px',
+          valuePrepareFunction: (value: any) => {
+            return this.formatDate(value);
+          },
           filter: {
             type: 'daterange',
             config: {
@@ -164,6 +167,9 @@ export class ConsultaActaRecibidoComponent implements OnInit {
         FechaModificacion: {
           title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.FechaModificacionHeader'),
           width: '70px',
+          valuePrepareFunction: (value: any) => {
+            return this.formatDate(value);
+          },
           filter: {
             type: 'daterange',
             config: {
@@ -182,6 +188,11 @@ export class ConsultaActaRecibidoComponent implements OnInit {
         FechaVistoBueno: {
           title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.FechaVistoBuenoHeader'),
           width: '70px',
+          valuePrepareFunction: (value: any) => {
+            const date = value ? this.formatDate(value) :
+              this.translate.instant('GLOBAL.bajas.consulta.espera');
+              return date;
+          },
           filter: {
             type: 'daterange',
             config: {
@@ -391,6 +402,12 @@ export class ConsultaActaRecibidoComponent implements OnInit {
     this.verActa = false;
     this.validarActa = false;
     // console.log('1')
+  }
+
+  private formatDate(value) {
+    const date = new Date(value);
+    date.setUTCMinutes(date.getTimezoneOffset());
+    return new Date(Date.parse(date.toString())).toLocaleDateString('es-CO');
   }
 
 }

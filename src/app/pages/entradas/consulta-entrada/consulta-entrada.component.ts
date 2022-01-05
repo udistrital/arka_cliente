@@ -171,8 +171,9 @@ keyEventUp(event: KeyboardEvent) {
           title: this.translate.instant('GLOBAL.fecha_entrada'),
           width: '70px',
           valuePrepareFunction: (value: any) => {
-            const date = value.split('T');
-            return date[0];
+            const date = new Date(value);
+            date.setUTCMinutes(date.getTimezoneOffset());
+            return new Date(Date.parse(date.toString())).toLocaleDateString('es-CO');
           },
           filter: {
             type: 'daterange',

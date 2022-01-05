@@ -268,7 +268,7 @@ export class ConsultaBajasComponent implements OnInit {
       },
       add: {
         addButtonContent: '<em class="fas" title="' + t.registrar + '" aria-label="' + t.registrar + '">'
-        + this.translate.instant('GLOBAL.crear_nuevo') + '</em>',
+          + this.translate.instant('GLOBAL.crear_nuevo') + '</em>',
       },
       edit: {
         editButtonContent: '<em class="fas fa-edit" title="' + t.edit + '" aria-label="' + t.edit + '"></em>',
@@ -285,9 +285,10 @@ export class ConsultaBajasComponent implements OnInit {
         FechaCreacion: {
           title: this.translate.instant('GLOBAL.fecha_creacion'),
           width: '70px',
-          valuePrepareFunction: (value) => {
-            const date = new Date(Date.parse(value)).toLocaleDateString('es-CO');
-            return date;
+          valuePrepareFunction: (value: any) => {
+            const date = new Date(value);
+            date.setUTCMinutes(date.getTimezoneOffset());
+            return new Date(Date.parse(date.toString())).toLocaleDateString('es-CO');
           },
           filter: {
             type: 'daterange',
