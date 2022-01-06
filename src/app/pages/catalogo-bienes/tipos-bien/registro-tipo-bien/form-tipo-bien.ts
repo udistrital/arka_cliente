@@ -78,5 +78,15 @@ export const FORM_TIPO_BIEN = {
             requerido: false,
             tipo: 'boolean',
         },
+        {
+            label: 'Requiere póliza',
+            etiqueta: 'checkbox',
+            claseGrid: 'col-4',
+            nombre: 'NecesitaPoliza',
+            label_i18n: 'necesita_poliza',
+            placeholder_i18n: 'necesita_poliza',
+            requerido: false,
+            tipo: 'boolean',
+        },
     ],
 };
