@@ -115,7 +115,7 @@ export class TiposBienComponent implements OnInit {
           title: this.translate.instant('GLOBAL.parametros.tiposBien.necesita_poliza'),
           valuePrepareFunction: (value: any) => {
             return value ? this.translate.instant('GLOBAL.si') : this.translate.instant('GLOBAL.no');
-          },  
+          },
         },
         FechaCreacion: {
           title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.FechaCreacionHeader'),
