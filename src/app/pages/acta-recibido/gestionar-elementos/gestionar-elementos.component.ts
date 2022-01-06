@@ -18,9 +18,10 @@ import { isNumeric } from 'rxjs/internal-compatibility';
 import { isArray } from 'util';
 import { MatCheckbox } from '@angular/material';
 import { CompleterData, CompleterService, CompleterItem } from 'ng2-completer';
-import { RolUsuario_t as Rol, PermisoUsuario_t as Permiso } from '../../../@core/data/models/roles/rol_usuario';
 import { Subgrupo } from '../../../@core/data/models/catalogo/jerarquia';
 import { Detalle } from '../../../@core/data/models/catalogo/detalle';
+
+const SIZE_SOPORTE = 1;
 
 @Component({
   selector: 'ngx-gestionar-elementos',
@@ -29,9 +30,7 @@ import { Detalle } from '../../../@core/data/models/catalogo/detalle';
 })
 export class GestionarElementosComponent implements OnInit {
   form: FormGroup;
-  Validador: boolean = false;
   Totales: DatosLocales;
-  loading: boolean = false;
   protected dataService: CompleterData;
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -51,7 +50,6 @@ export class GestionarElementosComponent implements OnInit {
   respuesta: any;
   Unidades: any;
   Tarifas_Iva: any;
-  nombreArchivo: any;
   Clases: any;
   displayedColumns: any[];
   checkTodos: boolean = false;
@@ -60,6 +58,9 @@ export class GestionarElementosComponent implements OnInit {
   ErroresCarga: string = '';
   cargando: boolean = true;
   elementos: Array<ElementoActaTabla>;
+  file: any;
+  submitted: boolean;
+  sizeSoporte: number;
 
   constructor(
     private fb: FormBuilder,
@@ -71,6 +72,7 @@ export class GestionarElementosComponent implements OnInit {
     private completerService: CompleterService,
   ) {
     this.Totales = new DatosLocales();
+    this.sizeSoporte = SIZE_SOPORTE;
   }
 
   ngOnInit() {
@@ -279,39 +281,27 @@ export class GestionarElementosComponent implements OnInit {
       archivo: ['', Validators.required],
     });
   }
-  onFileChange(event) {
 
-
-    // console.log(event.target.files);
-    const max_size = 1;
-
-    let nombre = '';
+  public onFileChange(event) {
     if (event.target.files.length > 0) {
-      nombre = event.target.files[0].name;
-      this.nombreArchivo = event.target.files[0].name;
+      this.submitted = false;
+      const nombre = event.target.files[0].name;
       const extension = nombre.split('.').pop();
       const file = event.target.files[0];
-      if (extension !== 'xlsx') {
-        this.Validador = false;
-      } else {
-        if (file.size < max_size * 1024000) {
+      if (extension === 'xlsx') {
+        if (file.size < this.sizeSoporte * 1024000) {
           this.form.get('archivo').setValue(file);
-          this.Validador = true;
         } else {
           (Swal as any).fire({
             title: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.Tamaño_title'),
             text: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.Tamaño_placeholder'),
             type: 'warning',
           });
-          this.Validador = false;
         }
-        //  console.log(this.form)
       }
-
-    } else {
-      this.Validador = false;
     }
   }
+
   private prepareSave(): any {
     const input = new FormData();
     input.append('archivo', this.form.get('archivo').value);
@@ -336,6 +326,8 @@ export class GestionarElementosComponent implements OnInit {
           this.dataSource.data = this.respuesta[0].Elementos;
           this.dataSource.paginator = this.paginator;
           this.dataSource.sort = this.sort;
+          this.form.reset();
+          this.submitted = true;
           const validacion = this.validarCargaMasiva();
           if (validacion.valid) {
             (Swal as any).fire({
@@ -422,8 +414,7 @@ export class GestionarElementosComponent implements OnInit {
   }
 
   clearFile() {
-    this.Validador = true;
- //   this.form.get('archivo').setValue('');
+    this.form.get('archivo').setValue('');
   }
 
   onSubmit() {

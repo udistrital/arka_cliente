@@ -6,36 +6,16 @@
   width: 100%;
 }
 
-:host /deep/ ng2-st-tbody-edit-delete {
-  display: flex !important;
-  height: 0 !important;
-}
-
-:host /deep/ ng2-st-tbody-custom a.ng2-smart-action.ng2-smart-action-custom-custom {
-  display: inline-block;
-  width: 30px;
-  text-align: center;
-  font-size: 1.1em;
-}
-
-:host /deep/ ng2-st-tbody-custom a.ng2-smart-action.ng2-smart-action-custom-custom:hover {
-  color: #5dcfe3;
-}
 :host /deep/ .material-icons {
   font-family: "Material Icons" !important;
 }
-.example-container {
-  height: 400px;
-  overflow: auto;
-}
+
 .cell {
   height: 50px;
   width: 150px;
   text-align: left;
 }
-.bla {
-  scrollbar-width: 1rem;
-}
+
 .cell-2 {
   height: 50px;
   width: 150px;
@@ -63,8 +43,8 @@ tr.mat-footer-row {
   justify-content: center;
   align-items: center;
 }
+
 .soporte {
-  float: none;
   text-align: center;
 }
 
@@ -87,8 +67,6 @@ tr.mat-footer-row {
   width: 250px !important;
 }
 
-.plus {
-  color: #991c1a;
-  cursor: pointer;
-  padding: 0 1rem;
- }
+p {
+  margin: 0.5rem 0;
+}
