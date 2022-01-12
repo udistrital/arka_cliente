@@ -131,7 +131,7 @@
          </th>
          <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="getActualIndex(rowIndex)">
             <mat-form-field appearance="outline" style="width: 400px;">
-               <input matInput [errorStateMatcher]="matcher" type="text" formControlName="cuenta"
+               <input matInput type="text" formControlName="cuenta"
                   placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}"
                   [matAutocomplete]="autoElementos">
                <mat-autocomplete #autoElementos="matAutocomplete" [displayWith]="muestraCuenta"
@@ -140,7 +140,7 @@
                      {{muestraCuenta(cta)}}
                   </mat-option>
                </mat-autocomplete>
-               <mat-error *ngIf="getMovimientos(getActualIndex(rowIndex), 'cuenta')">* {{'GLOBAL.Errores.ErrorRequerido' | translate}}</mat-error>
+               <mat-error>* {{'GLOBAL.Errores.ErrorRequerido' | translate}}</mat-error>
             </mat-form-field>
          </td>
       </ng-container>
@@ -162,8 +162,8 @@
          </th>
          <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="getActualIndex(rowIndex)">
             <mat-form-field appearance="outline" style="width: 150px;">
-               <input matInput [errorStateMatcher]="matcher" currencyMask [options]="{allowNegative: false}" type="text" formControlName="debito">
-               <mat-error *ngIf="getMovimientos(getActualIndex(rowIndex), 'debito')">* {{'GLOBAL.Errores.NoNulo' | translate}}</mat-error>
+               <input matInput currencyMask [options]="{allowNegative: false}" type="text" formControlName="debito">
+               <mat-error>* {{'GLOBAL.Errores.NoNulo' | translate}}</mat-error>
             </mat-form-field>
          </td>
       </ng-container>
@@ -175,7 +175,7 @@
          <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="getActualIndex(rowIndex)">
             <mat-form-field appearance="outline" style="width: 150px;">
                <input matInput currencyMask [options]="{allowNegative: false}" type="text" formControlName="credito">
-               <mat-error *ngIf="getMovimientos(getActualIndex(rowIndex), 'credito')">* {{'GLOBAL.Errores.NoNulo' | translate}}</mat-error>
+               <mat-error>* {{'GLOBAL.Errores.NoNulo' | translate}}</mat-error>
             </mat-form-field>
          </td>
       </ng-container>

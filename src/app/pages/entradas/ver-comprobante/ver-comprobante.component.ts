@@ -1,23 +1,15 @@
 import { Component, Input, OnInit, ViewChild } from '@angular/core';
-import { AbstractControl, FormArray, FormBuilder, FormControl, FormGroup,
-   FormGroupDirective, NgForm, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { AbstractControl, FormArray, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { MatPaginator, MatTableDataSource } from '@angular/material';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map, startWith } from 'rxjs/operators';
 import { IAppState } from '../../../@core/store/app.state';
 import { ListService } from '../../../@core/store/services/list.service';
-import { ErrorStateMatcher } from '@angular/material/core';
 
 export const MVTO_DB = 344;
 export const MVTO_CR = 345;
 
-export class MyErrorStateMatcher implements ErrorStateMatcher {
-   isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
-      const isSubmitted = form && form.submitted;
-      return (control && control.invalid);
-   }
-}
 
 @Component({
    selector: 'ngx-ver-comprobante',
@@ -39,7 +31,6 @@ export class VerComprobanteComponent implements OnInit {
    totalCreditos: any;
    totalDebitos: any;
    m_db = MVTO_DB;
-   matcher = new MyErrorStateMatcher();
    m_cr = MVTO_CR;
    constructor(
       private fb: FormBuilder,
@@ -246,10 +237,6 @@ export class VerComprobanteComponent implements OnInit {
          (this.formComprobante.get('elementos') as FormArray).push(formEl);
       });
 
-   }
-
-   public getMovimientos(index, control: string) {
-      return (this.formComprobante.get('elementos') as FormArray).at(index).get(control).errors;
    }
 
    public muestraCuenta(contr): string {
