@@ -1,0 +1,20 @@
+<mat-card *ngIf="mostrar">
+  <mat-card-title *ngIf="!modoCrud">
+    {{ title }}
+  </mat-card-title>
+
+  <mat-card-subtitle *ngIf="!modoCrud">
+    {{ subtitle }}
+  </mat-card-subtitle>
+
+  <mat-card-content>
+    <ng2-smart-table *ngIf="!modoCrud" [settings]="settings" [source]="source" (create)="onRegister()"
+      (edit)="onEdit($event)" (delete)="onDelete($event)">
+    </ng2-smart-table>
+  </mat-card-content>
+
+  <mat-card-actions *ngIf="modoCrud">
+    <button mat-raised-button color="primary" class="float-left text-uppercase" (click)="volver()">
+      {{'GLOBAL.volver' | translate}}</button>
+  </mat-card-actions>
+</mat-card>

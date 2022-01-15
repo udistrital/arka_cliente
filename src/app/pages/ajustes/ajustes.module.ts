@@ -18,11 +18,13 @@ import { rootReducer } from '../../@core/store/rootReducer';
 import { Store, StoreModule } from '@ngrx/store';
 import { ListService } from '../../@core/store/services/list.service';
 import { ThemeModule } from '../../@theme/theme.module';
+import { ConsultaAjusteComponent } from './consulta-ajuste/consulta-ajuste.component';
 
 @NgModule({
   declarations: [
     AjustesComponent,
     ListaMovimientosComponent,
+    ConsultaAjusteComponent,
   ],
   imports: [
     CommonModule,
