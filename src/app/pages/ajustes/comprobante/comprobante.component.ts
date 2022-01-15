@@ -92,6 +92,12 @@ export class ComprobanteComponent implements OnInit {
     this.formComprobante = this.fb.group({
       _: [],
       elementos: this.fb.array([], [this.sumasIguales()]),
+      razon: [
+        {
+          value: '',
+          disabled: true,
+        },
+      ],
     });
     this.dataSource = new MatTableDataSource<any>();
     this.dataSource.paginator = this.paginator;
@@ -230,6 +236,8 @@ export class ComprobanteComponent implements OnInit {
 
   private loadValues() {
     const disabled = this.modo === 'get';
+    this.formComprobante.patchValue({ razon: this.ajusteInfo.rechazo });
+
     this.ajusteInfo.movimientos.forEach(mov => {
       const formEl = this.fb.group({
         cuenta: [

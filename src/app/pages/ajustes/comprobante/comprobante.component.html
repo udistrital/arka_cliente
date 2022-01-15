@@ -1,4 +1,20 @@
 <mat-vertical-stepper #stepper>
+  <mat-step label="{{'GLOBAL.razonRechazo' | translate}}"
+  *ngIf="formComprobante && formComprobante.get('razon').value !== ''">
+  <form [formGroup]="formComprobante">
+    <div class="row">
+      <div class="col">
+        <mat-form-field appearance="outline" style="width: 90%;">
+          <mat-label>{{'GLOBAL.observaciones' | translate}}</mat-label>
+          <textarea matInput rows="5"
+            placeholder="{{'GLOBAL.Acta_Recibido.RegistroActa.Observaciones2' | translate}}"
+            formControlName="razon">
+          </textarea>
+        </mat-form-field>
+      </div>
+    </div>
+  </form>
+</mat-step>
   <mat-step label="{{'GLOBAL.Comprobante_Contable.Titulo' | translate}}">
     <form [formGroup]="formComprobante">
       <mat-table [dataSource]="dataSource" formArrayName="elementos" matSort>

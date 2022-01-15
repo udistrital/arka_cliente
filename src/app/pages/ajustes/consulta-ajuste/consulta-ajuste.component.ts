@@ -56,6 +56,8 @@ export class ConsultaAjusteComponent implements OnInit {
           mov.Detalle = JSON.parse((mov.Detalle));
           mov.Consecutivo = mov.Detalle.Consecutivo;
           mov.EstadoMovimientoId = mov.EstadoMovimientoId.Nombre;
+          mov.FechaAprobacion = mov.EstadoMovimientoId === 'Ajuste Aprobado' ?
+            mov.FechaModificacion : '';
         });
       }
       this.source.load(res);
@@ -122,40 +124,6 @@ export class ConsultaAjusteComponent implements OnInit {
       icon: this.modo === 'consulta' ? 'eye' : 'edit',
     };
     const estadoSelect = 'GLOBAL.ajustes.estados.';
-    const columns = this.modo === 'consulta' ? {
-      EstadoMovimientoId: {
-        title: this.translate.instant('GLOBAL.ajustes.consulta.estadoAjuste'),
-        width: '300px',
-        filter: {
-          type: 'list',
-          config: {
-            selectText: this.translate.instant('GLOBAL.seleccionar') + '...',
-            list: [
-              {
-                value: this.estadosMovimiento.find(status => status.Nombre === 'Ajuste En Trámite').Nombre,
-                title: this.translate.instant(estadoSelect + 'tramite'),
-              },
-              {
-                value: this.estadosMovimiento.find(status => status.Nombre === 'Ajuste Aprobado por Contabilidad').Nombre,
-                title: this.translate.instant(estadoSelect + 'contabilidad'),
-              },
-              {
-                value: this.estadosMovimiento.find(status => status.Nombre === 'Ajuste Aprobado por Almacén').Nombre,
-                title: this.translate.instant(estadoSelect + 'almacen'),
-              },
-              {
-                value: this.estadosMovimiento.find(status => status.Nombre === 'Ajuste Aprobado').Nombre,
-                title: this.translate.instant(estadoSelect + 'aprobado'),
-              },
-              {
-                value: this.estadosMovimiento.find(status => status.Nombre === 'Ajuste Rechazado').Nombre,
-                title: this.translate.instant(estadoSelect + 'rechazado'),
-              },
-            ],
-          },
-        },
-      },
-    } : [];
 
     this.settings = {
       hideSubHeader: false,
@@ -182,12 +150,29 @@ export class ConsultaAjusteComponent implements OnInit {
       columns: {
         Consecutivo: {
           title: this.translate.instant('GLOBAL.consecutivo'),
+          width: '150px',
         },
         FechaCreacion: {
           title: this.translate.instant('GLOBAL.fecha_creacion'),
-          width: '70px',
+          width: '15%',
           valuePrepareFunction: (value) => {
-            const date = new Date(Date.parse(value)).toLocaleDateString('es-CO');
+            return this.formatDate(value);
+          },
+          filter: {
+            type: 'daterange',
+            config: {
+              daterange: {
+                format: 'yyyy/mm/dd',
+              },
+            },
+          },
+        },
+        FechaAprobacion: {
+          title: this.translate.instant('GLOBAL.fechaAprobacion'),
+          width: '15%',
+          valuePrepareFunction: (value) => {
+            const date = value ? this.formatDate(value) :
+              this.translate.instant('GLOBAL.bajas.consulta.espera');
             return date;
           },
           filter: {
@@ -199,38 +184,45 @@ export class ConsultaAjusteComponent implements OnInit {
             },
           },
         },
-        FuncionarioDestino: {
-          title: this.translate.instant('GLOBAL.funcionarioDestino'),
-          valuePrepareFunction: (value: any) => {
-            if (value !== null) {
-              return value;
-            } else {
-              return '';
-            }
+        EstadoMovimientoId: {
+          title: this.translate.instant('GLOBAL.ajustes.consulta.estadoAjuste'),
+          width: '300px',
+          filter: {
+            type: 'list',
+            config: {
+              selectText: this.translate.instant('GLOBAL.seleccionar') + '...',
+              list: [
+                {
+                  value: this.estadosMovimiento.find(status => status.Nombre === 'Ajuste En Trámite').Nombre,
+                  title: this.translate.instant(estadoSelect + 'tramite'),
+                },
+                {
+                  value: this.estadosMovimiento.find(status => status.Nombre === 'Ajuste Aprobado por Contabilidad').Nombre,
+                  title: this.translate.instant(estadoSelect + 'contabilidad'),
+                },
+                {
+                  value: this.estadosMovimiento.find(status => status.Nombre === 'Ajuste Aprobado por Almacén').Nombre,
+                  title: this.translate.instant(estadoSelect + 'almacen'),
+                },
+                {
+                  value: this.estadosMovimiento.find(status => status.Nombre === 'Ajuste Aprobado').Nombre,
+                  title: this.translate.instant(estadoSelect + 'aprobado'),
+                },
+                {
+                  value: this.estadosMovimiento.find(status => status.Nombre === 'Ajuste Rechazado').Nombre,
+                  title: this.translate.instant(estadoSelect + 'rechazado'),
+                },
+              ],
+            },
           },
         },
-        FuncionarioOrigen: {
-          title: this.translate.instant('GLOBAL.funcionarioOrigen'),
-          valuePrepareFunction: (value: any) => {
-            if (value !== null) {
-              return value;
-            } else {
-              return '';
-            }
-          },
-        },
-        Ubicacion: {
-          title: this.translate.instant('GLOBAL.ubicacion'),
-          valuePrepareFunction: (value: any) => {
-            if (value !== null) {
-              return value;
-            } else {
-              return '';
-            }
-          },
-        },
-        ...columns,
       },
     };
+  }
+
+  private formatDate(value) {
+    const date = new Date(value);
+    date.setUTCMinutes(date.getTimezoneOffset());
+    return new Date(Date.parse(date.toString())).toLocaleDateString('es-CO');
   }
 }

@@ -62,12 +62,11 @@ export class CrudAjusteComponent implements OnInit {
     this.ajustesHelper.getOne(ajusteId).subscribe(res => {
       if (res) {
         this.ajuste = res.Movimiento;
-        const consecutivo = JSON.parse(res.Movimiento.Detalle).Consecutivo;
+        const detalle = JSON.parse(res.Movimiento.Detalle);
         this.ajusteData = {};
         this.ajusteData.movimientos = res.TrContable;
-        // this.ajusteData.observaciones = res.Observaciones;
-        // this.ajusteData.rechazo = rechazo;
-        this.consecutivo = consecutivo;
+        this.ajusteData.rechazo = detalle.RazonRechazo;
+        this.consecutivo = detalle.Consecutivo;
         this.showForm = true;
       }
     });
