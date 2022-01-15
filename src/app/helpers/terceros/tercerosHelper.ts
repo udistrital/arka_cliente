@@ -41,6 +41,34 @@ export class TercerosHelper {
         );
     }
 
+        /**
+      * Consulta endpoint tercero api terceros_crud
+      * If the response has errors in the OAS API it should show a popup message with an error.
+      * If the response is successs, it returns the object's data.
+      * @param query to Terceros CRUD API
+      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
+     */
+         public getAllTerceros(query: string = '') {
+            this.rqManager.setPath('TERCEROS_SERVICE');
+            let endpoint = 'tercero?limit=-1';
+            endpoint += '&fields=Id,NombreCompleto';
+            endpoint += '&query=Activo:true';
+            if (query) {
+                endpoint += ',' + query;
+            }
+            return this.rqManager.get(endpoint).pipe(
+                map(
+                    (res) => {
+                        if (res === 'error') {
+                            this.pUpManager.showErrorAlert('GLOBAL.errTerceros');
+                            return undefined;
+                        }
+                        return res;
+                    },
+                ),
+            );
+        }
+
     /**
        * Elementos get
        * Conversion Archivo Post

@@ -10,6 +10,13 @@ export class DetalleTraslado {
     RazonRechazo: string;
 }
 
+export class FormatoAjuste {
+    RazonRechazo: string;
+    TrContable: any;
+    TrContableId: Number;
+    Consecutivo: string;
+}
+
 export class SoporteMovimiento {
     Id: number;
     DocumentoId: number;
