@@ -439,11 +439,12 @@ export class GestionarElementosComponent implements OnInit {
     }
   }
 
-
-
   getDescuentos() {
     if (this.dataSource.data.length) {
-      const descuento = this.dataSource.data.map(t => t.Descuento * t.Cantidad).reduce((acc, value) => acc + value).toString();
+      const descuento = this.dataSource.data
+        .map(t => t.Descuento * t.Cantidad)
+        .reduce((acc, value) => acc + value)
+        .toString();
       this.Totales.Descuento = descuento;
       return descuento;
     } else {
@@ -455,7 +456,9 @@ export class GestionarElementosComponent implements OnInit {
 
   getSubtotales() {
     if (this.dataSource.data.length) {
-      const subtotal = this.dataSource.data.map(t => t.Subtotal).reduce((acc, value) => parseFloat(acc) + parseFloat(value));
+      const subtotal = this.dataSource.data
+        .map(t => t.Subtotal)
+        .reduce((acc, value) => parseFloat(acc) + parseFloat(value));
       this.Totales.Subtotal = subtotal;
       return subtotal;
     } else {
@@ -467,7 +470,9 @@ export class GestionarElementosComponent implements OnInit {
 
   getIVA() {
     if (this.dataSource.data.length !== 0) {
-      const iva = this.dataSource.data.map(t => t.ValorIva).reduce((acc, value) => parseFloat(acc) + parseFloat(value));
+      const iva = this.dataSource.data
+        .map(t => t.ValorIva)
+        .reduce((acc, value) => parseFloat(acc) + parseFloat(value));
       this.Totales.ValorIva = iva;
       return iva;
     } else {
@@ -479,7 +484,9 @@ export class GestionarElementosComponent implements OnInit {
 
   getTotales() {
     if (this.dataSource.data.length !== 0) {
-      const total = this.dataSource.data.map(t => t.ValorTotal).reduce((acc, value) => parseFloat(acc) + parseFloat(value));
+      const total = this.dataSource.data
+        .map(t => t.ValorTotal)
+        .reduce((acc, value) => parseFloat(acc) + parseFloat(value));
       this.Totales.ValorTotal = total;
       return total;
     } else {

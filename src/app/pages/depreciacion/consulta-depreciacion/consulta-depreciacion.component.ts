@@ -109,7 +109,7 @@ export class ConsultaDepreciacionComponent implements OnInit {
         this.continuar = true;
         this.depreciacionId = event.data.Id;
       } else {
-        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.traslados.consulta.errorEditar'));
+        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.depreciacion.consulta.errorEditar'));
       }
     } else if (this.modo === 'revision') {
       this.modoCrud = 'review';
@@ -132,7 +132,7 @@ export class ConsultaDepreciacionComponent implements OnInit {
 
   private loadTablaSettings() {
     const t = {
-      registrar: this.translate.instant('GLOBAL.traslados.consulta.nuevoTraslado'),
+      registrar: this.translate.instant('GLOBAL.depreciacion.consulta.nuevo'),
       delete: this.translate.instant('GLOBAL.verDetalle'),
       edit: this.translate.instant('GLOBAL.traslados.' + (this.modo === 'consulta' ? this.modo : 'revisar') + '.accionEdit'),
       icon: this.modo === 'consulta' ? 'eye' : 'edit',

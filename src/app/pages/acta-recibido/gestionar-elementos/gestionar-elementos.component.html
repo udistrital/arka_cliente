@@ -34,8 +34,8 @@
           </div>
         </div>
       </mat-card-content>
-      <mat-card-actions style="text-align: center; padding-top: 0;">
-        <button mat-flat-button color="primary" [disabled]="!form.valid" (click)="onSubmit()" class="text-uppercase">
+      <mat-card-actions>
+        <button mat-flat-button color="primary" [disabled]="!form.valid" (click)="onSubmit()">
           {{'GLOBAL.Acta_Recibido.CapturarElementos.CargarElementosButton' | translate }}
         </button>
       </mat-card-actions>
@@ -46,7 +46,7 @@
 <mat-card [nbSpinner]="cargando">
   <mat-card-content>
     <div class="row" *ngIf="Modo === 'agregar'">
-      <button nbButton [disabled]="!checkParcial && !checkTodos"  (click)="borraSeleccionados()" style="margin-left: 10px;height: 45px;">
+      <button mat-flat-button color="primary" class="seleccionados" [disabled]="!checkParcial && !checkTodos"  (click)="borraSeleccionados()">
         {{'GLOBAL.borrarSel' | translate }}
       </button>
       <div class="col">

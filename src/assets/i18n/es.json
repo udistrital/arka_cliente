@@ -1325,6 +1325,7 @@
         "accionEdit": "Editar Solicitud",
         "estado": "Estado",
         "espera": "En Espera",
+        "nuevo": "Generar nueva depreciación",
         "errorEditar": "No se puede editar esta depreciación"
       },
       "revision": {
