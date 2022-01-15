@@ -19,12 +19,14 @@ import { Store, StoreModule } from '@ngrx/store';
 import { ListService } from '../../@core/store/services/list.service';
 import { ThemeModule } from '../../@theme/theme.module';
 import { ConsultaAjusteComponent } from './consulta-ajuste/consulta-ajuste.component';
+import { CrudAjusteComponent } from './crud-ajuste/crud-ajuste.component';
 
 @NgModule({
   declarations: [
     AjustesComponent,
     ListaMovimientosComponent,
     ConsultaAjusteComponent,
+    CrudAjusteComponent,
   ],
   imports: [
     CommonModule,
