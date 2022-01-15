@@ -5,6 +5,8 @@
   {{ subtitle }}
 </mat-card-subtitle>
 <mat-card-content>
+  <ngx-comprobante *ngIf="showForm" (valid)="setValidness($event)" [(ajusteInfo)]="ajusteData" [modo]="modoForm">
+  </ngx-comprobante>
 </mat-card-content>
 <mat-card-actions>
   <div class="justify-content-center" style="padding-bottom: 3rem;">

@@ -136,11 +136,11 @@ export class ConsultaAjusteComponent implements OnInit {
                 title: this.translate.instant(estadoSelect + 'tramite'),
               },
               {
-                value: this.estadosMovimiento.find(status => status.Nombre === 'Ajuste Aprobado Por Contabilidad').Nombre,
+                value: this.estadosMovimiento.find(status => status.Nombre === 'Ajuste Aprobado por Contabilidad').Nombre,
                 title: this.translate.instant(estadoSelect + 'contabilidad'),
               },
               {
-                value: this.estadosMovimiento.find(status => status.Nombre === 'Ajuste Aprobado Por Almacén').Nombre,
+                value: this.estadosMovimiento.find(status => status.Nombre === 'Ajuste Aprobado por Almacén').Nombre,
                 title: this.translate.instant(estadoSelect + 'almacen'),
               },
               {

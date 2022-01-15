@@ -1,0 +1,14 @@
+tr.mat-footer-row {
+    font-weight: bold;
+    margin-top: 1rem;
+}
+
+.mat-input-element:disabled,
+.mat-form-field-type-mat-native-select.mat-form-field-disabled.mat-form-field-infix::after {
+    color: rgba(0, 0, 0, 0.9);
+}
+
+mat-table {
+    padding: 1rem 0;
+    overflow-x: scroll;
+}
