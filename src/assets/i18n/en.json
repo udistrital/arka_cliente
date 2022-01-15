@@ -1079,6 +1079,9 @@
     "placeholder_valorResidualSug": "Enter the suggested residual value percentage",
     "fechaCorte": "Fecha de Corte",
     "trContable": "Transacción Contable",
+    "descargarP": "Descargar Plantilla",
+    "seleccionarArch": "Seleccionar archivo",
+    "borrarSel": "Eliminar seleccionados",
   "ajustes": {
     "movimientos_relacionados": "Related transfers",
     "confirmar_anular_entrada": "The related accounting and inventory entries will be reversed",

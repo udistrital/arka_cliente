@@ -1,47 +1,54 @@
 <div class="card-2" *ngIf="Modo === 'agregar'">
-  <form [formGroup]="form" (ngSubmit)="onSubmit()">
-    <nb-card>
-      <nb-card-header>{{'GLOBAL.Acta_Recibido.CapturarElementos.CargaMasivaTitle' | translate }}</nb-card-header>
-      <nb-card-body class="row soporte">
-        <div class="form-group col-sm soporte">
-          <p>Archivo Carga Masiva</p>
-          <button nbButton type="button" (click)="fileInputDocumento.click()">
-            <em class="fas fa-file-upload fa-2x"></em>
-            <input formControlname="archivo" id="archivo_icfes" #fileInputDocumento type="file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-              (change)="onFileChange($event)" style="display:none;" />
-          </button>
-          <p></p>
-          <p *ngIf="Validador">{{nombreArchivo}}</p>
-          <p *ngIf="!Validador">{{'GLOBAL.Acta_Recibido.CapturarElementos.ValidadorPlaceholder' | translate: {EXT: 'xlsx'} }}</p>
-          <button type="button" class="btn btn-primary" (click)="clearFile()" *ngIf="Validador">
-            {{'GLOBAL.Acta_Recibido.CapturarElementos.LimpiarEspacioButton' | translate }}
-          </button>
+  <form [formGroup]="form">
+    <mat-card>
+      <mat-card-title>{{'GLOBAL.Acta_Recibido.CapturarElementos.CargaMasivaTitle' | translate }}</mat-card-title>
+      <mat-card-content>
+        <div class="row">
+          <div class="form-group col-sm soporte">
+            <p>{{'GLOBAL.descargarP' | translate }}</p>
+            <button mat-flat-button color="primary" (click)="TraerPlantilla()" style="padding: 1rem 0;">
+              <em class="fas fa-file-download fa-2x"></em>
+            </button>
+          </div>
         </div>
-        <p></p>
-        <div class="col-sm soporte">
-          <p>Descargar Plantilla</p>
-          <button nbButton type="button" (click)="TraerPlantilla()">
-            <em class="fas fa-file-excel fa-2x"></em>
-          </button>
-
+        <div class="row">
+          <div class="col-sm soporte">
+            <p>{{'GLOBAL.seleccionarArch' | translate }}</p>
+            <button mat-flat-button color="primary" (click)="fileInputDocumento.click()" style="padding: 1rem 0;"
+              [disabled]="form.valid">
+              <em class="fas fa-file-upload fa-2x"></em>
+              <input type="file" formControlname="archivo" id="archivo" #fileInputDocumento style="display: none;"
+                accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                (change)="onFileChange($event)" (click)="$event.target.value=null">
+            </button>
+            <p *ngIf="form.valid">{{form.value.archivo.name}}</p>
+            <p *ngIf="!form.valid">{{'GLOBAL.Acta_Recibido.CapturarElementos.ValidadorPlaceholder' | translate:
+              {EXT:'xlsx'} }}</p>
+          </div>
+          <div class="col-sm soporte">
+            <p>{{'GLOBAL.Acta_Recibido.CapturarElementos.LimpiarEspacioButton' | translate }}</p>
+            <button mat-flat-button color="primary" (click)="clearFile()" style="padding: 1rem 0;"
+              [disabled]="!form.valid">
+              <em class="fas fa-trash-alt fa-2x"></em>
+            </button>
+          </div>
         </div>
-      </nb-card-body>
-      <nb-card-footer class="soporte">
-        <button type="submit" [disabled]="!form.valid && !Validador" class="btn btn-success">
-          {{'GLOBAL.Acta_Recibido.CapturarElementos.CargarElementosButton' | translate }} <em
-            class="fa fa-spinner fa-spin fa-fw" *ngIf="loading"></em></button>
-      </nb-card-footer>
-    </nb-card>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-flat-button color="primary" [disabled]="!form.valid" (click)="onSubmit()">
+          {{'GLOBAL.Acta_Recibido.CapturarElementos.CargarElementosButton' | translate }}
+        </button>
+      </mat-card-actions>
+    </mat-card>
   </form>
 </div>
 
-<nb-card [nbSpinner]="cargando">
-  <nb-card-header>{{'GLOBAL.Acta_Recibido.CapturarElementos.ArticulosRelacionadosTitle' | translate }}</nb-card-header>
-  <nb-card-body>
-
+<mat-card [nbSpinner]="cargando">
+  <mat-card-content>
     <div class="row" *ngIf="Modo === 'agregar'">
-      <button nbButton [disabled]="!checkParcial && !checkTodos"  (click)="borraSeleccionados()" style="margin-left: 10px;height: 45px;">Borrar
-        Seleccionados</button>
+      <button mat-flat-button color="primary" class="seleccionados" [disabled]="!checkParcial && !checkTodos"  (click)="borraSeleccionados()">
+        {{'GLOBAL.borrarSel' | translate }}
+      </button>
       <div class="col">
         <ng2-completer *ngIf="!ocultarAsignacionCatalogo" type="text" inputClass="cell form-control" style="height: 8px;" placeholder="Asignar clase"
           [datasource]="dataService" [minSearchLength]="4" (selected)="onClaseMultiple($event)"
@@ -68,7 +75,9 @@
           <nb-checkbox (change)="setCasilla(rowIndex, $event.srcElement.checked)"
             [(ngModel)]="element.seleccionado"></nb-checkbox>
         </td>
-        <td mat-footer-cell *matFooterCellDef>Totales</td>
+        <td mat-footer-cell *matFooterCellDef>
+          {{'GLOBAL.Acta_Recibido.CapturarElementos.TotalesFooter' | translate }}
+        </td>
       </ng-container>
 
       <!-- Subgrupo Catalogo -->
@@ -97,10 +106,8 @@
               readonly>
           </div>
         </td>
-        <td mat-footer-cell *matFooterCellDef>Totales</td>
+        <td mat-footer-cell *matFooterCellDef></td>
       </ng-container>
-
-
 
       <!-- Nombre Catalogo -->
       <ng-container matColumnDef="Nombre">
@@ -200,9 +207,7 @@
             placeholder="{{'GLOBAL.Acta_Recibido.CapturarElementos.DescuentoHeader' | translate }}"
             [(ngModel)]="element.Descuento" (ngModelChange)="calcularValores(rowIndex)">
         </td>
-        <td mat-footer-cell *matFooterCellDef>
-          <p *ngIf="respuesta">{{ getDescuentos() | currency }}</p>
-        </td>
+        <td mat-footer-cell *matFooterCellDef></td>
       </ng-container>
 
       <!-- PorcentajeIvaId Column -->
@@ -270,5 +275,5 @@
     </mat-table>
 
     <mat-paginator [pageSizeOptions]="[10, 20, 30, 40, 50]" (page)="cambioPagina($event)"></mat-paginator>
-  </nb-card-body>
-</nb-card>
+  </mat-card-content>
+</mat-card>

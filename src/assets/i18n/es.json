@@ -984,7 +984,7 @@
       "SalidaRechazadaText": "Se ha rechazado la solicitud",
       "alerta_descargue": "Elementos sin descargar",
       "alerta_consumo": "Elementos de consumo sin asignar",
-      "alerta_controlado": "Elementos de consumo controlado sin asignar",
+      "alerta_controlado": "Elementos devolutivos sin asignar",
       "alerta_ambos": "Elementos de consumo y devolutivos sin asignar",
       "alertaResidual": "El valor residual debe estar entre 0 y 100 %",
       "alertaVida": "Ingrese una vida útil válida"
@@ -1079,6 +1079,9 @@
     "placeholder_valorResidualSug": "Ingrese el porcentaje correspondiente al valor residual",
     "fechaCorte": "Fecha de Corte",
     "trContable": "Transacción Contable",
+    "descargarP": "Descargar Plantilla",
+    "seleccionarArch": "Seleccionar archivo",
+    "borrarSel": "Eliminar seleccionados",
     "ajustes": {
       "movimientos_relacionados": "Movimientos relacionados",
       "confirmar_anular_entrada": "Los movimientos de inventario y contables asociados a esta entrada serán anulados",
@@ -1322,6 +1325,7 @@
         "accionEdit": "Editar Solicitud",
         "estado": "Estado",
         "espera": "En Espera",
+        "nuevo": "Generar nueva depreciación",
         "errorEditar": "No se puede editar esta depreciación"
       },
       "revision": {

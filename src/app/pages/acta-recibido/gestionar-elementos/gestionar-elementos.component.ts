@@ -18,9 +18,10 @@ import { isNumeric } from 'rxjs/internal-compatibility';
 import { isArray } from 'util';
 import { MatCheckbox } from '@angular/material';
 import { CompleterData, CompleterService, CompleterItem } from 'ng2-completer';
-import { RolUsuario_t as Rol, PermisoUsuario_t as Permiso } from '../../../@core/data/models/roles/rol_usuario';
 import { Subgrupo } from '../../../@core/data/models/catalogo/jerarquia';
 import { Detalle } from '../../../@core/data/models/catalogo/detalle';
+
+const SIZE_SOPORTE = 1;
 
 @Component({
   selector: 'ngx-gestionar-elementos',
@@ -29,9 +30,7 @@ import { Detalle } from '../../../@core/data/models/catalogo/detalle';
 })
 export class GestionarElementosComponent implements OnInit {
   form: FormGroup;
-  Validador: boolean = false;
   Totales: DatosLocales;
-  loading: boolean = false;
   protected dataService: CompleterData;
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -51,7 +50,6 @@ export class GestionarElementosComponent implements OnInit {
   respuesta: any;
   Unidades: any;
   Tarifas_Iva: any;
-  nombreArchivo: any;
   Clases: any;
   displayedColumns: any[];
   checkTodos: boolean = false;
@@ -60,6 +58,9 @@ export class GestionarElementosComponent implements OnInit {
   ErroresCarga: string = '';
   cargando: boolean = true;
   elementos: Array<ElementoActaTabla>;
+  file: any;
+  submitted: boolean;
+  sizeSoporte: number;
 
   constructor(
     private fb: FormBuilder,
@@ -71,6 +72,7 @@ export class GestionarElementosComponent implements OnInit {
     private completerService: CompleterService,
   ) {
     this.Totales = new DatosLocales();
+    this.sizeSoporte = SIZE_SOPORTE;
   }
 
   ngOnInit() {
@@ -157,8 +159,8 @@ export class GestionarElementosComponent implements OnInit {
         'Serie',
         'UnidadMedida',
         'ValorUnitario',
-        'Subtotal',
         'Descuento',
+        'Subtotal',
         'PorcentajeIvaId',
         'ValorIva',
         'ValorTotal',
@@ -173,8 +175,8 @@ export class GestionarElementosComponent implements OnInit {
         'Serie',
         'UnidadMedida',
         'ValorUnitario',
-        'Subtotal',
         'Descuento',
+        'Subtotal',
         'PorcentajeIvaId',
         'ValorIva',
         'ValorTotal',
@@ -219,8 +221,8 @@ export class GestionarElementosComponent implements OnInit {
       this.dataSource && Array.isArray(this.dataSource.data) &&
         this.dataSource.data.length &&
         !this.dataSource.data.some(x =>
-          (x.SubgrupoCatalogoId.SubgrupoId.Id === 0 || x.ValorTotal === 0),
-        ) ? true : false
+          (x.SubgrupoCatalogoId.SubgrupoId.Id === 0 || x.ValorTotal === 0 || x.Nombre === ''),
+        )
     );
   }
 
@@ -279,39 +281,27 @@ export class GestionarElementosComponent implements OnInit {
       archivo: ['', Validators.required],
     });
   }
-  onFileChange(event) {
 
-
-    // console.log(event.target.files);
-    const max_size = 1;
-
-    let nombre = '';
+  public onFileChange(event) {
     if (event.target.files.length > 0) {
-      nombre = event.target.files[0].name;
-      this.nombreArchivo = event.target.files[0].name;
+      this.submitted = false;
+      const nombre = event.target.files[0].name;
       const extension = nombre.split('.').pop();
       const file = event.target.files[0];
-      if (extension !== 'xlsx') {
-        this.Validador = false;
-      } else {
-        if (file.size < max_size * 1024000) {
+      if (extension === 'xlsx') {
+        if (file.size < this.sizeSoporte * 1024000) {
           this.form.get('archivo').setValue(file);
-          this.Validador = true;
         } else {
           (Swal as any).fire({
             title: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.Tamaño_title'),
             text: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.Tamaño_placeholder'),
             type: 'warning',
           });
-          this.Validador = false;
         }
-        //  console.log(this.form)
       }
-
-    } else {
-      this.Validador = false;
     }
   }
+
   private prepareSave(): any {
     const input = new FormData();
     input.append('archivo', this.form.get('archivo').value);
@@ -336,6 +326,8 @@ export class GestionarElementosComponent implements OnInit {
           this.dataSource.data = this.respuesta[0].Elementos;
           this.dataSource.paginator = this.paginator;
           this.dataSource.sort = this.sort;
+          this.form.reset();
+          this.submitted = true;
           const validacion = this.validarCargaMasiva();
           if (validacion.valid) {
             (Swal as any).fire({
@@ -422,8 +414,7 @@ export class GestionarElementosComponent implements OnInit {
   }
 
   clearFile() {
-    this.Validador = true;
- //   this.form.get('archivo').setValue('');
+    this.form.get('archivo').setValue('');
   }
 
   onSubmit() {
@@ -448,61 +439,60 @@ export class GestionarElementosComponent implements OnInit {
     }
   }
 
-
-
   getDescuentos() {
-    if (this.dataSource.data.length !== 0) {
-      this.Totales.Descuento = this.dataSource.data.map(t => t.Descuento).reduce((acc, value) => parseFloat(acc) + parseFloat(value));
-      const total = this.dataSource.data.map(t => t.Descuento).reduce((acc, value) => parseFloat(acc) + parseFloat(value));
-      if (total >= 0.00) {
-        return total;
-      } else {
-        return '0';
-      }
+    if (this.dataSource.data.length) {
+      const descuento = this.dataSource.data
+        .map(t => t.Descuento * t.Cantidad)
+        .reduce((acc, value) => acc + value)
+        .toString();
+      this.Totales.Descuento = descuento;
+      return descuento;
     } else {
-      return '0';
+      const descuento = '0';
+      this.Totales.Descuento = descuento;
+      return descuento;
     }
   }
 
   getSubtotales() {
-    if (this.dataSource.data.length !== 0) {
-      this.Totales.Subtotal = this.dataSource.data.map(t => t.Subtotal).reduce((acc, value) => parseFloat(acc) + parseFloat(value));
-      const total = this.dataSource.data.map(t => t.Subtotal).reduce((acc, value) => parseFloat(acc) + parseFloat(value));
-      if (total >> 0.00) {
-        return total;
-      } else {
-        return '0';
-      }
+    if (this.dataSource.data.length) {
+      const subtotal = this.dataSource.data
+        .map(t => t.Subtotal)
+        .reduce((acc, value) => parseFloat(acc) + parseFloat(value));
+      this.Totales.Subtotal = subtotal;
+      return subtotal;
     } else {
-      return '0';
+      const subtotal = '0';
+      this.Totales.Subtotal = subtotal;
+      return subtotal;
     }
   }
 
   getIVA() {
     if (this.dataSource.data.length !== 0) {
-      this.Totales.ValorIva = this.dataSource.data.map(t => t.ValorIva).reduce((acc, value) => parseFloat(acc) + parseFloat(value));
-      const total = this.dataSource.data.map(t => t.ValorIva).reduce((acc, value) => parseFloat(acc) + parseFloat(value));
-      if (total >= 0.00) {
-        return total;
-      } else {
-        return '0';
-      }
+      const iva = this.dataSource.data
+        .map(t => t.ValorIva)
+        .reduce((acc, value) => parseFloat(acc) + parseFloat(value));
+      this.Totales.ValorIva = iva;
+      return iva;
     } else {
-      return '0';
+      const iva = '0';
+      this.Totales.ValorIva = iva;
+      return iva;
     }
   }
 
   getTotales() {
     if (this.dataSource.data.length !== 0) {
-      this.Totales.ValorTotal = this.dataSource.data.map(t => t.ValorTotal).reduce((acc, value) => parseFloat(acc) + parseFloat(value));
-      const total = this.dataSource.data.map(t => t.ValorTotal).reduce((acc, value) => parseFloat(acc) + parseFloat(value));
-      if (total >= 0.00) {
-        return total;
-      } else {
-        return '0';
-      }
+      const total = this.dataSource.data
+        .map(t => t.ValorTotal)
+        .reduce((acc, value) => parseFloat(acc) + parseFloat(value));
+      this.Totales.ValorTotal = total;
+      return total;
     } else {
-      return '0';
+      const total = '0';
+      this.Totales.ValorTotal = total;
+      return total;
     }
   }
 
@@ -713,22 +703,21 @@ export class GestionarElementosComponent implements OnInit {
 
   private getIva(index: number) {
     const tarifa = +this.dataSource.data[index].PorcentajeIvaId;
-    const impuesto = +this.Tarifas_Iva.find(tarifa_ => tarifa_.Tarifa === tarifa).Tarifa;
-    const total = ((parseFloat(this.dataSource.data[index].Subtotal) -
-      parseFloat(this.dataSource.data[index].Descuento)) * impuesto / 100);
+    const impuesto = this.Tarifas_Iva.find(tarifa_ => tarifa_.Tarifa === tarifa).Tarifa / 100;
+    const total = parseFloat(this.dataSource.data[index].Subtotal) * impuesto;
     return total > 0 ? total : 0;
   }
 
   private getSubtotal(index: number) {
-    const total = (parseFloat(this.dataSource.data[index].ValorUnitario) *
-      parseFloat(this.dataSource.data[index].Cantidad));
+    const total = (parseFloat(this.dataSource.data[index].ValorUnitario) -
+      parseFloat(this.dataSource.data[index].Descuento)) *
+      parseInt(this.dataSource.data[index].Cantidad, 10);
     return total > 0 ? total : 0;
   }
 
   private getTotal(index: number) {
-    const total = (parseFloat(this.dataSource.data[index].Subtotal) -
-      parseFloat(this.dataSource.data[index].Descuento) +
-      parseFloat(this.dataSource.data[index].ValorIva));
+    const total = parseFloat(this.dataSource.data[index].Subtotal) +
+      parseFloat(this.dataSource.data[index].ValorIva);
     return total > 0 ? total : 0;
   }
 
