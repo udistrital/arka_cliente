@@ -22,7 +22,7 @@ export class VerComprobanteComponent implements OnInit {
    ngOnInit() {
       this.totalCreditos = 0;
       this.totalDebitos = 0;
-      this.transaccion.movimientos.forEach(obj => {
+      this.transaccion.Movimientos.forEach(obj => {
          if (obj.TipoMovimientoId === MVTO_DB) {
             this.totalDebitos += obj.Valor;
          }

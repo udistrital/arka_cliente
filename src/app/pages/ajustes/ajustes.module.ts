@@ -18,11 +18,17 @@ import { rootReducer } from '../../@core/store/rootReducer';
 import { Store, StoreModule } from '@ngrx/store';
 import { ListService } from '../../@core/store/services/list.service';
 import { ThemeModule } from '../../@theme/theme.module';
+import { ComprobanteComponent } from './comprobante/comprobante.component';
+import { ConsultaAjusteComponent } from './consulta-ajuste/consulta-ajuste.component';
+import { CrudAjusteComponent } from './crud-ajuste/crud-ajuste.component';
 
 @NgModule({
   declarations: [
     AjustesComponent,
     ListaMovimientosComponent,
+    ComprobanteComponent,
+    ConsultaAjusteComponent,
+    CrudAjusteComponent,
   ],
   imports: [
     CommonModule,
