@@ -12,3 +12,23 @@ mat-table {
     padding: 1rem 0;
     overflow-x: scroll;
 }
+
+.acciones {
+    padding: 0 1rem;
+}
+
+button:focus {
+    outline: none;
+}
+
+.sm-col {
+    width: 150px;
+}
+
+.md-col {
+    width: 350px;
+}
+
+.lg-col {
+    width: 350px;
+}

@@ -11,7 +11,8 @@
     <ng2-smart-table *ngIf="!modoCrud" [settings]="settings" [source]="source" (create)="onRegister()"
       (edit)="onEdit($event)" (delete)="onDelete($event)">
     </ng2-smart-table>
-    <ngx-crud-ajuste *ngIf="modoCrud" [modoCrud]="modoCrud" [ajusteId]="ajusteId" (accion)="actualizarVista()"></ngx-crud-ajuste>
+    <ngx-crud-ajuste *ngIf="modoCrud" [modoCrud]="modoCrud" [ajusteId]="ajusteId" (accion)="actualizarVista($event)">
+    </ngx-crud-ajuste>
   </mat-card-content>
 
   <mat-card-actions *ngIf="modoCrud">

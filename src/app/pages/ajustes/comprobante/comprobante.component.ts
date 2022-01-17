@@ -165,7 +165,7 @@ export class ComprobanteComponent implements OnInit {
       tercero: [
         {
           value: '',
-          disabled,
+          disabled: true,
         },
       ],
       descripcion: [

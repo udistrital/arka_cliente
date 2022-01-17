@@ -47,11 +47,11 @@
         </ng-container>
 
         <ng-container matColumnDef="cuenta">
-          <th id="cuenta" mat-header-cell *matHeaderCellDef mat-sort-header>
+          <th id="cuenta" mat-header-cell *matHeaderCellDef mat-sort-header class="lg-col">
             {{ 'GLOBAL.Comprobante_Contable.Cuenta' | translate }}
           </th>
           <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="getActualIndex(rowIndex)">
-            <mat-form-field appearance="outline" style="width: 350px;">
+            <mat-form-field appearance="outline" class="lg-col">
               <input matInput type="text" formControlName="cuenta"
                 placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}"
                 [matAutocomplete]="autoElementos">
@@ -73,11 +73,11 @@
         </ng-container>
 
         <ng-container matColumnDef="tercero">
-          <th id="cuenta" mat-header-cell *matHeaderCellDef mat-sort-header>
+          <th id="cuenta" mat-header-cell *matHeaderCellDef mat-sort-header class="md-col">
             {{ 'GLOBAL.Comprobante_Contable.Tercero' | translate }}
           </th>
           <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="getActualIndex(rowIndex)">
-            <mat-form-field appearance="outline" style="width: 250px;">
+            <mat-form-field appearance="outline" class="md-col">
               <input matInput type="text" formControlName="tercero"
                 placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}"
                 [matAutocomplete]="autoTerceros">
@@ -98,11 +98,11 @@
         </ng-container>
 
         <ng-container matColumnDef="descripcion">
-          <th id="debito" mat-header-cell *matHeaderCellDef mat-sort-header>
+          <th id="debito" mat-header-cell *matHeaderCellDef mat-sort-header class="md-col">
             {{ 'GLOBAL.Comprobante_Contable.Descripcion' | translate }}
           </th>
           <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="getActualIndex(rowIndex)">
-            <mat-form-field appearance="outline" style="width: 250px;">
+            <mat-form-field appearance="outline" class="md-col">
               <input matInput type="text" formControlName="descripcion">
             </mat-form-field>
           </td>
@@ -110,11 +110,11 @@
         </ng-container>
 
         <ng-container matColumnDef="debito">
-          <th id="debito" mat-header-cell *matHeaderCellDef mat-sort-header>
+          <th id="debito" mat-header-cell *matHeaderCellDef mat-sort-header class="sm-col">
             {{ 'GLOBAL.Comprobante_Contable.Debito' | translate }}
           </th>
           <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="getActualIndex(rowIndex)">
-            <mat-form-field appearance="outline" style="width: 150px;">
+            <mat-form-field appearance="outline" class="sm-col">
               <input matInput currencyMask [options]="{allowNegative: false}" type="text" formControlName="debito">
               <mat-error *ngIf="getErrors(getActualIndex(rowIndex),'debito', 'errNone')">
                 * {{'GLOBAL.ajustes.errNone' | translate : {NUM : 4} }}</mat-error>
@@ -126,11 +126,11 @@
         </ng-container>
 
         <ng-container matColumnDef="credito">
-          <th id="credito" mat-header-cell *matHeaderCellDef mat-sort-header>
+          <th id="credito" mat-header-cell *matHeaderCellDef mat-sort-header class="sm-col">
             {{ 'GLOBAL.Comprobante_Contable.Credito' | translate }}
           </th>
           <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="getActualIndex(rowIndex)">
-            <mat-form-field appearance="outline" style="width: 150px;">
+            <mat-form-field appearance="outline" class="sm-col">
               <input matInput currencyMask [options]="{allowNegative: false}" type="text" formControlName="credito">
               <mat-error *ngIf="getErrors(getActualIndex(rowIndex),'credito', 'errNone')">
                 * {{'GLOBAL.ajustes.errNone' | translate : {NUM : 4} }}</mat-error>

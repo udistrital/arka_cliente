@@ -4,17 +4,18 @@
 <mat-card-subtitle>
   {{ subtitle }}
 </mat-card-subtitle>
-<mat-card-content>
+<mat-card-content [nbSpinner]="loading">
   <ngx-comprobante *ngIf="showForm" (valid)="setValidness($event)" [(ajusteInfo)]="ajusteData" [modo]="modoForm">
   </ngx-comprobante>
 </mat-card-content>
 <mat-card-actions *ngIf="modoCrud !== 'ver'">
   <div class="justify-content-center" style="padding-bottom: 3rem;">
     <button mat-flat-button color="primary" class="float-left text-uppercase" *ngIf="modoCrud === 'revisar'"
-      [disabled]="!valid" (click)="confRechazo()">
+      [disabled]="!valid || submitted" (click)="confRechazo()">
       {{'GLOBAL.ajustes.revisar.accionR' | translate}}
     </button>
-    <button mat-flat-button color="primary" class="float-right text-uppercase" [disabled]="!valid" (click)="confirm(false)">
+    <button mat-flat-button color="primary" class="float-right text-uppercase" [disabled]="!valid || submitted"
+      (click)="confirm(false)">
       {{ boton }}
     </button>
   </div>

@@ -76,13 +76,12 @@ export class ConsultaAjusteComponent implements OnInit {
     });
   }
 
-  public actualizarVista() {
-    if (this.modo === 'revision') {
+  public actualizarVista(event) {
+    if (this.modo === 'revision' && event === true) {
       this.source.remove(this.filaSeleccionada);
     } else {
       this.loadAjustes();
     }
-    this.volver();
   }
 
   public onRegister() {
