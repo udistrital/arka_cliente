@@ -1105,7 +1105,8 @@
       "estado": "Estado",
       "espera": "En Espera",
       "nuevo": "Generar nuevo ajuste contable",
-      "errorEditar": "No se puede editar este ajuste contable"
+      "errorEditar": "No se puede editar este ajuste contable",
+      "errTxt:": "Hubo un error al consultar los ajustes contables"
     },
     "revision": {
       "title": "Revisar Ajustes Contables",
@@ -1118,7 +1119,7 @@
       "confrmTtl": "Registrar Ajuse Contable",
       "confrmTxt": "¿Desea registrar el ajuste contable con la información suministrada?",
       "successTtl": "Ajuste Contable Generado",
-      "successTxt": "El Ajuste Contable ha sido generado correctamente",
+      "successTxt": "El Ajuste contable {{CONSECUTIVO}} ha sido generado correctamente",
       "errTxt:": "Hubo un error al registrar el ajuste contable"
     },
     "editar": {
@@ -1128,7 +1129,7 @@
       "confrmTtl": "Actualizar Ajuste Contable",
       "confrmTxt": "¿Desea actualizar el ajuste contable?",
       "successTtl": "Ajuste Contable Actualizado",
-      "successTxt": "El ajuste contable se ha actualizado"
+      "successTxt": "El ajuste contable {{CONSECUTIVO}} se ha actualizado"
     },
     "revisar": {
       "title": "Revisar Ajuste Contable",
@@ -1143,13 +1144,15 @@
       "confrmRechazoTtx": "Indique la razón por la que el ajuste contable será rechazado",
       "confrmTxtR": "¿Desea rechazar el ajuste contable?",
       "successTtlA": "Ajuste Contable Aprobado",
-      "successTxtA": "El ajuste Contable ha sido aprobado",
+      "successTxtA": "El ajuste contable {{CONSECUTIVO}} ha sido aprobado",
       "successTtlR": "Ajuste Contable Rechazado",
-      "successTxtR": "El ajuste contable ha sido rechazado"
+      "successTxtR": "El ajuste contable {{CONSECUTIVO}}  ha sido rechazado",
+      "errTxt": "Hubo un error al aprobar el ajuste contable"
     },
     "ver": {
       "title": "Detalle Ajuste Contable",
-      "subtitle": "En el siguiente formulario se muestra el detalle de la asociado al ajuste contable"
+      "subtitle": "En el siguiente formulario se muestra el detalle de la asociado al ajuste contable",
+      "errTxt": "Hubo un error al consultar el detalle del ajuste contable"
     },
     "estados": {
       "tramite": "En Trámite",

@@ -27,7 +27,7 @@ export class AjustesHelper {
             map(
                 (res) => {
                     if (res['Type'] === 'error') {
-                        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.ajustes.create.errTxt'));
+                        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.ajustes.registrar.errTxt'));
                         return undefined;
                     }
                     return res;
@@ -74,7 +74,7 @@ export class AjustesHelper {
             map(
                 (res) => {
                     if (res['Type'] === 'error') {
-                        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.ajustes.consulta.errTxt'));
+                        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.ajustes.ver.errTxt'));
                         return undefined;
                     }
                     return res;
@@ -95,7 +95,7 @@ export class AjustesHelper {
             map(
                 (res) => {
                     if (res['Type'] === 'error') {
-                        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.ajustes.revision.errorAprobar'));
+                        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.ajustes.revisar.errTxt'));
                         return undefined;
                     }
                     return res;
