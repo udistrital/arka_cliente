@@ -9,9 +9,6 @@ import { IAppState } from '../../../@core/store/app.state';
 import { ListService } from '../../../@core/store/services/list.service';
 import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
 
-export const MVTO_DB = 344;
-export const MVTO_CR = 345;
-
 @Component({
   selector: 'ngx-comprobante',
   templateUrl: './comprobante.component.html',
@@ -23,17 +20,16 @@ export class ComprobanteComponent implements OnInit {
   dataSource: MatTableDataSource<any>;
   cuentas: any[];
   cuentasFiltradas: any[];
-  @Input() modo: string; // create | get | update
-  @ViewChild('paginator') paginator: MatPaginator;
   terceros: any[];
   totalCreditos: any;
   totalDebitos: any;
-  @Output() valid = new EventEmitter<boolean>();
+  @ViewChild('paginator') paginator: MatPaginator;
+  @Input() modo: string; // create | get | update
   @Input() ajusteInfo: any;
+  @Output() valid = new EventEmitter<boolean>();
   @Output() ajusteInfoChange: EventEmitter<any> = new EventEmitter<any>();
 
-  m_db = MVTO_DB;
-  m_cr = MVTO_CR;
+
   constructor(
     private fb: FormBuilder,
     private store: Store<IAppState>,
@@ -194,22 +190,23 @@ export class ComprobanteComponent implements OnInit {
       ],
     });
     this.cambiosCuenta(form.get('cuenta'));
-    this.cambiosPlaca(form.get('tercero').valueChanges);
+    this.cambiosTercero(form.get('tercero'));
     return form;
   }
 
-  private cambiosPlaca(valueChanges: Observable<any>) {
-    valueChanges.pipe(
-      startWith(''),
-      debounceTime(250),
-      distinctUntilChanged(),
-      switchMap((val) => this.loadTerceros(val)),
-    ).subscribe((response: any) => {
-      this.terceros = response.queryOptions[0].Id ? response.queryOptions : [];
-    });
+  private cambiosTercero(control: AbstractControl) {
+    control.valueChanges
+      .pipe(
+        startWith(''),
+        debounceTime(250),
+        distinctUntilChanged(),
+        switchMap((val) => this.loadTerceros(val)),
+      ).subscribe((response: any) => {
+        this.terceros = response.queryOptions[0].Id ? response.queryOptions : [];
+      });
   }
 
-  private cambiosCuenta(control: AbstractControl): Observable<any[]> {
+  private cambiosCuenta(control: AbstractControl) {
     control.valueChanges
       .pipe(
         startWith(''),
@@ -219,7 +216,6 @@ export class ComprobanteComponent implements OnInit {
       ).subscribe((response: any) => {
         this.cuentasFiltradas = this.filtroCuentas(response);
       });
-    return;
   }
 
   private loadTerceros(text: string) {
@@ -288,7 +284,7 @@ export class ComprobanteComponent implements OnInit {
       formEl.get('credito').markAsTouched();
       formEl.get('tercero').markAsTouched();
       this.cambiosCuenta(formEl.get('cuenta'));
-      this.cambiosPlaca(formEl.get('tercero').valueChanges);
+      this.cambiosTercero(formEl.get('tercero'));
       this.dataSource.data = this.dataSource.data.concat(formEl.value);
       (this.formComprobante.get('elementos') as FormArray).push(formEl);
     });
