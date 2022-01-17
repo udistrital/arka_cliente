@@ -43,8 +43,8 @@ export class ConsultaAjusteComponent implements OnInit {
     });
     this.source = new LocalDataSource();
     this.loadEstados();
-    this.title = this.translate.instant('GLOBAL.ajuste.' + this.modo + '.title');
-    this.subtitle = this.translate.instant('GLOBAL.ajuste.' + this.modo + '.subtitle');
+    this.title = this.translate.instant('GLOBAL.ajustes.' + this.modo + '.title');
+    this.subtitle = this.translate.instant('GLOBAL.ajustes.' + this.modo + '.subtitle');
   }
 
   loadAjustes(): void {
@@ -185,7 +185,7 @@ export class ConsultaAjusteComponent implements OnInit {
           },
         },
         EstadoMovimientoId: {
-          title: this.translate.instant('GLOBAL.ajustes.consulta.estadoAjuste'),
+          title: this.translate.instant('GLOBAL.ajustes.consulta.estado'),
           width: '300px',
           filter: {
             type: 'list',

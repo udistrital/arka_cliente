@@ -196,6 +196,12 @@
         "children": {
           "registrarAjuste": {
             "name": "Register reversal"
+          },
+          "consultarAjustes": {
+            "name": "Consultar Ajuste"
+          },
+          "aprobarAjustes": {
+            "name": "Aprobar Ajuste"
           }
         }
       },
@@ -240,6 +246,7 @@
     "Errores": {
       "ErrorTercero": "Enter a valid third-party",
       "ErrorDependencia": "Enter a valid agency",
+      "ErrorCuenta": "Ingrese una cuenta válida",
       "ErrorMinLength": "Enter at least {{NUM}} characters",
       "ErrorFecha": "Enter a valid date",
       "ErrorRequerido": "This is a mandatory field",
@@ -1088,7 +1095,71 @@
     "success_anular_entrada_title": "Reversed Input",
     "success_anular_entrada": "The related entries were successfully reversed",
     "error_anular_entrada_title": "Input not reversed",
-    "error_anular_entrada": "The related entries could not be reversed"
+    "error_anular_entrada": "The related entries could not be reversed",
+    "consulta": {
+      "title": "Consulta de ajustes contables",
+      "subtitle": "A continuación se listan las los ajustes contables generados, seleccione una de las opciones para ver más detalles",
+      "noReview": "No hay ajustes contables por aprobar",
+      "noView": "No hay ajustes contables por consultar",
+      "accionEdit": "Editar Ajuste Contable",
+      "estado": "Estado",
+      "espera": "En Espera",
+      "nuevo": "Generar nuevo ajuste contable",
+      "errorEditar": "No se puede editar este ajuste contable"
+    },
+    "revision": {
+      "title": "Revisar Ajustes Contables",
+      "subtitle": "Seleccione un ajuste contable para ver los detalles y registrar la revisión"
+    },
+    "registrar": {
+      "title": "Generar Ajuste Contable",
+      "subtitle": "Por favor ingrese la información solicitada en el siguiente formulario",
+      "accion": "Generar Ajuste",
+      "confrmTtl": "Registrar Ajuse Contable",
+      "confrmTxt": "¿Desea registrar el ajuste contable con la información suministrada?",
+      "successTtl": "Ajuste Contable Generado",
+      "successTxt": "El Ajuste Contable ha sido generado correctamente",
+      "errTxt:": "Hubo un error al registrar el ajuste contable"
+    },
+    "editar": {
+      "title": "Editar Ajuste Contable",
+      "subtitle": "Revise las razones de rechazo del ajuste y haga las respectivas modificaciones",
+      "accion": "Actualizar Ajuste",
+      "confrmTtl": "Actualizar Ajuste Contable",
+      "confrmTxt": "¿Desea actualizar el ajuste contable?",
+      "successTtl": "Ajuste Contable Actualizado",
+      "successTxt": "El ajuste contable se ha actualizado"
+    },
+    "revisar": {
+      "title": "Revisar Ajuste Contable",
+      "subtitle": "Revise los detalles de el ajuste contable y realice la aprobación o el rechazo del mismo",
+      "accion": "Aprobar Ajuste Contable",
+      "accionR": "Rechazar Ajuste Contable",
+      "accionEdit": "Registrar Revisión",
+      "confrmTtlA": "Aprobar Ajuste Contable",
+      "confrmTxtA": "¿Desea aprobar el ajuste contable con la información suministrada?",
+      "confrmTtlR": "Rechazar Ajuste Contable",
+      "confrmRechazoTtl": "Motivo de rechazo",
+      "confrmRechazoTtx": "Indique la razón por la que el ajuste contable será rechazado",
+      "confrmTxtR": "¿Desea rechazar el ajuste contable?",
+      "successTtlA": "Ajuste Contable Aprobado",
+      "successTxtA": "El ajuste Contable ha sido aprobado",
+      "successTtlR": "Ajuste Contable Rechazado",
+      "successTxtR": "El ajuste contable ha sido rechazado"
+    },
+    "ver": {
+      "title": "Detalle Ajuste Contable",
+      "subtitle": "En el siguiente formulario se muestra el detalle de la asociado al ajuste contable"
+    },
+    "estados": {
+      "tramite": "En Trámite",
+      "contabilidad": "Aprobado Contabilidad",
+      "almacen": "Aprobado Almacén",
+      "rechazado": "Rechazado",
+      "aprobado": "Aprobado"
+    },
+    "errNone": "Debe ingresar un valor",
+    "errBoth": "Ingrese un sólo valor"
   },
   "parametros": {
     "tiposEntradas": {
@@ -1325,6 +1396,7 @@
         "accionEdit": "Editar Solicitud",
         "estado": "Estado",
         "espera": "En Espera",
+        "nuevo": "Generar nueva depreciación",
         "errorEditar": "No se puede editar esta depreciación"
       },
       "revision": {

@@ -72,7 +72,7 @@ export class CrudAjusteComponent implements OnInit {
     });
   }
 
-  public rechazar() {
+  public confRechazo() {
     (Swal as any).fire({
       title: this.translate.instant('GLOBAL.ajustes.' + this.modoCrud + '.confrmTtlR'),
       text: this.translate.instant('GLOBAL.ajustes.' + this.modoCrud + '.confrmTxtR'),
@@ -106,7 +106,7 @@ export class CrudAjusteComponent implements OnInit {
         ]).then((result2) => {
           if (result2.value) {
             this.rechazo = result2.value[0];
-            this.buildMovimiento();
+            this.rechazar();
           }
         });
 
@@ -157,12 +157,12 @@ export class CrudAjusteComponent implements OnInit {
     }
   }
 
-  private buildMovimiento() {
+  private rechazar() {
     const detalle = JSON.parse(this.ajuste.Detalle);
     detalle.RazonRechazo = this.rechazo;
     this.ajuste.Detalle = JSON.stringify(detalle);
     this.ajuste.EstadoMovimientoId = this.estadosMovimiento.find(st => st.Nombre === 'Ajuste Rechazado');
-    this.put();
+    this.put(true);
   }
 
   private update() {
@@ -189,9 +189,9 @@ export class CrudAjusteComponent implements OnInit {
     });
   }
 
-  private put() {
+  private put(rechazar: boolean = false) {
     this.entradasHelper.putMovimiento(this.ajuste).toPromise().then((res: any) => {
-      this.alertSuccess(this.ajuste, JSON.parse(res.Detalle).Consecutivo);
+      this.alertSuccess(rechazar, JSON.parse(res.Detalle).Consecutivo);
     });
   }
 
