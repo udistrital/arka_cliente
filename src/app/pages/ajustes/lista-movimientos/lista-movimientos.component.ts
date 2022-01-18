@@ -133,7 +133,7 @@ export class ListaMovimientosComponent implements OnInit {
         UbicacionId: {
           title: this.translate.instant('GLOBAL.ubicacion'),
           valuePrepareFunction: (value: any) => {
-            return value.EspacioFisicoId.Nombre.toUpperCase();
+            return value;
           },
         },
         Observaciones: {
