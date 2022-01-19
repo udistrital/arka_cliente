@@ -3,12 +3,12 @@
     <nb-card-header>
       Registrar Ajuste
     </nb-card-header>
-    <nb-card-body [nbSpinner]="!mostrar">
+    <nb-card-body>
       <p class="h4 pb-4" *ngIf="actaSeleccionada === ''">{{'GLOBAL.mensaje_registrar_entrada' | translate}}</p>
 
       <ng2-smart-table [settings]="settingsListaActas" [source]="ActasAsociadas"
         (custom)="CargarMovimientosAsociados($event)" *ngIf="actaSeleccionada === ''"></ng2-smart-table>
-      <nb-card *ngIf="actaSeleccionada !== ''" [nbSpinner]="!mostrarActa || !mostrarMovimientos || anulando">
+      <nb-card *ngIf="actaSeleccionada !== ''">
         <nb-card-body>
 
           <ngx-ver-acta-recibido [Modo]="'ver'" [Id_Acta]="actaSeleccionada"></ngx-ver-acta-recibido>
