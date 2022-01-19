@@ -11,8 +11,8 @@ import { Subgrupo } from '../data/models/catalogo/jerarquia';
 
 export interface IAppState {
   listProveedores: Proveedor[];
-  listPlanCuentasCredito: Cuenta[];
-  listPlanCuentasDebito: Cuenta[];
+  listPlanCuentasCredito: Cuenta[][];
+  listPlanCuentasDebito: Cuenta[][];
   listSedes: Ubicacion[];
   listDependencias: Dependencia[];
   listUbicaciones: Ubicacion[];

@@ -24,19 +24,18 @@ import { GlobalPositionStrategy } from '@angular/cdk/overlay';
  * movimientos (_kronos) / tipo_movimiento / campo "Nombre", con Acronimo:e_arka
  */
 const MOVIMIENTOS_KRONOS_ARKA = [
-  { arka: 'EA', kronos: 'Adquisición' },
-  { arka: 'EBEMP', kronos: 'Provisional' },
-  { arka: 'ECE', kronos: 'Compras extranjeras' },
-  { arka: 'ECM', kronos: 'Caja menor' },
-  { arka: 'ED', kronos: 'Donación' },
-  { arka: 'EEP', kronos: 'Elaboración Propia' },
-  { arka: 'EIA', kronos: 'Intangibles' },
-  { arka: 'EID', kronos: 'Desarrollo interior' },
-  { arka: 'EPPA', kronos: 'Aprovechamientos' },
-  { arka: 'EAMA', kronos: 'Entrada Anulada' },
-  { arka: 'EPR', kronos: 'Reposición' },
-  { arka: 'ESI', kronos: 'Sobrante' },
-  { arka: 'ET', kronos: 'Terceros' },
+  { arka: 'ENT_ADQ', kronos: 'Adquisición' },
+  { arka: 'ENT_BEP', kronos: 'Provisional' },
+  { arka: 'ENT_CE', kronos: 'Compras extranjeras' },
+  { arka: 'ENT_CM', kronos: 'Caja menor' },
+  { arka: 'ENT_DN', kronos: 'Donación' },
+  { arka: 'ENT_EP', kronos: 'Elaboración Propia' },
+  { arka: 'ENT_IA', kronos: 'Intangibles' },
+  { arka: 'ENT_ID', kronos: 'Desarrollo interior' },
+  { arka: 'ENT_PPA', kronos: 'Aprovechamientos' },
+  { arka: 'ENT_RP', kronos: 'Reposición' },
+  { arka: 'ENT_SI', kronos: 'Sobrante' },
+  { arka: 'ENT_TR', kronos: 'Terceros' },
   { arka: 'SOL_BAJA', kronos: 'Baja' },
   { arka: 'SOL_TRD', kronos: 'Traslado' },
   // { arka: '', kronos: '' }, // PLANTILLA
@@ -173,35 +172,25 @@ export class CrudMovimientoComponent implements OnInit, OnChanges {
   public loadLists() {
     this.store.select((stte) => stte).subscribe(
       (list) => {
-        if (list.listPlanCuentasCredito !== undefined || list.listPlanCuentasDebito !== undefined) {
-        let arreglo;
-        const arreglo2 = new Array();
-        const arreglo3 = new Array();
-        arreglo = list.listPlanCuentasCredito[0];
-        arreglo.forEach((elemento) => {
-           const found = arreglo.find(element => elemento.Codigo !== element.Codigo && element.Codigo.indexOf(elemento.Codigo) === 0);
-           if (!found) {
-              arreglo2.push(elemento);
-           }
-        });
-      //  console.log("El resultado final", arreglo2)
-        const a = arreglo2.map(x => ({Codigo: x.Codigo + ' ' + x.Nombre,
-        Nombre: x.Nombre, DetalleCuentaID: x.DetalleCuentaID, Naturaleza: x.Naturaleza}));
-        let arreglo1;
-        arreglo1 = list.listPlanCuentasDebito[0];
-        arreglo1.forEach((elemento) => {
-           const found = arreglo1.find(element => elemento.Codigo !== element.Codigo &&
-            element.Codigo.indexOf(elemento.Codigo) === 0);
-           if (!found) {
-              arreglo3.push(elemento);
-           }
-        });
-        const b = arreglo3.map(x => ({Codigo: x.Codigo + ' ' + x.Nombre,
-        Nombre: x.Nombre, DetalleCuentaID: x.DetalleCuentaID, Naturaleza: x.Naturaleza}));
-          this.formMovimiento.campos[this.getIndexForm('CuentaDebitoId')].opciones = b;
-          this.formMovimiento.campos[this.getIndexForm('CuentaCreditoId')].opciones = a;
+        if (list.listPlanCuentasCredito.length && list.listPlanCuentasCredito[0].length &&
+          list.listPlanCuentasDebito[0].length && list.listPlanCuentasDebito.length) {
+
+          const credito_ = list.listPlanCuentasCredito[0];
+          const credito = credito_.map((x: any) => ({
+            Codigo: x.Codigo + ' ' + x.Nombre,
+            Nombre: x.Nombre, DetalleCuentaID: x.DetalleCuentaID, Naturaleza: x.Naturaleza,
+          }));
+
+          const debito_ = list.listPlanCuentasDebito[0];
+          const debito = debito_.map((x: any) => ({
+            Codigo: x.Codigo + ' ' + x.Nombre,
+            Nombre: x.Nombre, DetalleCuentaID: x.DetalleCuentaID, Naturaleza: x.Naturaleza,
+          }));
+
+          this.formMovimiento.campos[this.getIndexForm('CuentaDebitoId')].opciones = debito;
+          this.formMovimiento.campos[this.getIndexForm('CuentaCreditoId')].opciones = credito;
           if (this.formMovimiento.titulo === 'Salida')
-            this.formMovimiento.campos[this.getIndexForm('CuentaCreditoId')].opciones = b;
+            this.formMovimiento.campos[this.getIndexForm('CuentaCreditoId')].opciones = debito;
         }
       },
     );

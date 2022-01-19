@@ -916,55 +916,55 @@
         "errorElementos": "The entry has no elements to issue"
       },
       "tipo": {
-        "EA": {
+        "ENT_ADQ": {
           "nombre": "Acquisition",
           "descripcion": "Acquisition Input"
         },
-        "EEP": {
+        "ENT_EP": {
           "nombre": "Own Elaboration",
           "descripcion": "Own Elaboration Input"
         },
-        "ED": {
+        "ENT_DN": {
           "nombre": "Donation",
           "descripcion": "Donation Input"
         },
-        "ESI": {
+        "ENT_SI": {
           "nombre": "Surplus",
           "descripcion": "Surplus Input"
         },
-        "ET": {
+        "ENT_TR": {
           "nombre": "Third party",
           "descripcion": "Third Party Input"
         },
-        "EPR": {
+        "ENT_RP": {
           "nombre": "Replacement",
           "descripcion": "Replacement Input"
         },
-        "ECM": {
+        "ENT_CM": {
           "nombre": "Petty Cash",
           "descripcion": "Petty Cash Input"
         },
-        "EAM": {
+        "ENT_AM": {
           "nombre": "Additions and improvements",
           "descripcion": "Additions and improvements Input"
         },
-        "EIA": {
+        "ENT_IA": {
           "nombre": "Intangibles acquired",
           "descripcion": "Intangibles acquired Input"
         },
-        "ECE": {
+        "ENT_CE": {
           "nombre": "Foreign Purchase",
           "descripcion": "Foreign Purchase Input"
         },
-        "EPPA": {
+        "ENT_PPA": {
           "nombre": "Use of Parts",
           "descripcion": "Input by Use of Parts"
         },
-        "EID": {
+        "ENT_ID": {
           "nombre": "Developed Intangibles",
           "descripcion": "Input of Developed Intangibles"
         },
-        "EBEMP": {
+        "ENT_BEP": {
           "nombre": "Delivered Goods on a provisional basis",
           "descripcion": "Input of Delivered Goods on a provisional basis"
         },
