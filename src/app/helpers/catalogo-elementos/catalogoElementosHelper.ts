@@ -415,7 +415,7 @@ export class CatalogoElementosHelper {
      */
     public getPlanCuentas(naturaleza) {
         this.rqManager.setPath('CUENTAS_CONTABLES_SERVICE');
-        return this.rqManager.get('nodo_cuenta_contable/getNodosCuentasArka/' + naturaleza).pipe(
+        return this.rqManager.get('nodo_cuenta_contable/getCuentas/' + naturaleza).pipe(
             map(
                 (res) => {
                     if (res === 'error') {
@@ -601,8 +601,9 @@ export class CatalogoElementosHelper {
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
      */
     public getTiposMovimientoKronos() {
-        this.rqManager.setPath('ARKA_SERVICE');
-        return this.rqManager.get('catalogo_elementos/movimientos_kronos').pipe(
+        this.rqManager.setPath('MOVIMIENTOS_KRONOS_SERVICE');
+        const query = '?query=Activo:true&limit=-1';
+        return this.rqManager.get('tipo_movimiento' + query).pipe(
             map(
                 (res) => {
                     if (res === 'error') {

@@ -46,38 +46,11 @@ export class ComprobanteComponent implements OnInit {
   public loadLists() {
     this.store.select((stte) => stte).subscribe(
       (list) => {
-        if (list.listPlanCuentasCredito.length && list.listPlanCuentasDebito.length) {
-          let arreglo;
-          const arreglo2 = new Array();
-          const arreglo3 = new Array();
-          arreglo = list.listPlanCuentasCredito[0];
-
-          arreglo.forEach((elemento) => {
-            const found = arreglo.find(cta => elemento.Codigo !== cta.Codigo && cta.Codigo.indexOf(elemento.Codigo) === 0);
-            if (!found) {
-              arreglo2.push(elemento);
-            }
-          });
-
-          const a = arreglo2.map(x => ({
-            Codigo: x.Codigo + ' ' + x.Nombre,
-            Nombre: x.Nombre, DetalleCuentaID: x.DetalleCuentaID, Naturaleza: x.Naturaleza,
-          }));
-          let arreglo1;
-          arreglo1 = list.listPlanCuentasDebito[0];
-          arreglo1.forEach((elemento) => {
-            const found = arreglo1.find(element_ => elemento.Codigo !== element_.Codigo &&
-              element_.Codigo.indexOf(elemento.Codigo) === 0);
-            if (!found) {
-              arreglo3.push(elemento);
-            }
-          });
-          const b = arreglo3.map(x => ({
-            Codigo: x.Codigo + ' ' + x.Nombre,
-            Nombre: x.Nombre, DetalleCuentaID: x.DetalleCuentaID, Naturaleza: x.Naturaleza,
-          }));
-
-          this.cuentas = arreglo2.concat(arreglo3);
+        if (list.listPlanCuentasCredito.length && list.listPlanCuentasCredito[0].length &&
+          list.listPlanCuentasDebito[0].length && list.listPlanCuentasDebito.length) {
+          const credito = list.listPlanCuentasCredito[0];
+          const debito = list.listPlanCuentasDebito[0];
+          this.cuentas = debito.concat(credito);
         }
       },
     );
