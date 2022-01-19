@@ -916,51 +916,51 @@
         "errorElementos": "La entrada no tiene elementos asociados para ser asignados"
       },
       "tipo": {
-        "EA": {
+        "ENT_ADQ": {
           "nombre": "Adquisición",
           "descripcion": "Entrada por Adquisición"
         },
-        "EEP": {
+        "ENT_EP": {
           "nombre": "Elaboración Propia",
           "descripcion": "Entrada por Elaboración Propia"
         },
-        "ED": {
+        "ENT_DN": {
           "nombre": "Donación",
           "descripcion": "Entrada por Donación"
         },
-        "ESI": {
+        "ENT_SI": {
           "nombre": "Sobrante",
           "descripcion": "Entrada por Sobrante de Inventario"
         },
-        "ET": {
+        "ENT_TR": {
           "nombre": "Terceros",
           "descripcion": "Entrada de Bienes de Terceros"
         },
-        "EPR": {
+        "ENT_RP": {
           "nombre": "Reposición",
           "descripcion": "Entrada por Reposición"
         },
-        "ECM": {
+        "ENT_CM": {
           "nombre": "Caja menor",
           "descripcion": "Entrada por Adquisición por Caja Menor"
         },
-        "EAM": {
+        "ENT_AM": {
           "nombre": "Adiciones y mejoras",
           "descripcion": "Entrada por Adiciones y mejoras"
         },
-        "EIA": {
+        "ENT_IA": {
           "nombre": "Intangibles adquiridos",
           "descripcion": "Entrada por Intangibles adquiridos "
         },
-        "ECE": {
+        "ENT_CE": {
           "nombre": "Compras extranjeras",
           "descripcion": "Entrada por Compra en el Extranjero"
         },
-        "EPPA": {
+        "ENT_PPA": {
           "nombre": "Aprovechamiento de Partes",
           "descripcion": "Entrada de partes por aprovechamiento"
         },
-        "EID": {
+        "ENT_ID": {
           "nombre": "Intangibles desarrollados",
           "descripcion": "Entrada por Intangibles desarrollados al Interior de los Entes y Entidades"
         },
@@ -968,7 +968,7 @@
           "nombre": "Entrada Anulada",
           "descripcion": "Entrada anulada por medio del módulo de ajustes"
         },
-        "EBEMP": {
+        "ENT_BEP": {
           "nombre": "Entregados de manera Provisional",
           "descripcion": "Entrada Entregados al Ente o Entidad de manera provisional"
         },
