@@ -9,11 +9,11 @@ import { debounceTime, distinctUntilChanged, map, startWith } from 'rxjs/operato
 import { Observable } from 'rxjs';
 
 @Component({
-  selector: 'ngx-crud-movimiento',
-  templateUrl: './crud-movimiento.component.html',
-  styleUrls: ['./crud-movimiento.component.scss'],
+  selector: 'ngx-form-cuentas',
+  templateUrl: './form-cuentas.component.html',
+  styleUrls: ['./form-cuentas.component.scss'],
 })
-export class CrudMovimientoComponent implements OnInit, OnChanges {
+export class FormCuentasComponent implements OnInit, OnChanges {
 
   @Input() escritura: boolean;
   @Input() cuentasInfo: any[];

@@ -32,13 +32,12 @@
         {{'GLOBAL.catalogo.noCuenta' | translate}}
       </mat-card-subtitle>
       <mat-card-content>
-        <ngx-crud-movimiento [escritura]="modificando_cuentas && puede_editar" [cuentasInfo]="infoCuentas"
-          [cuentasNuevas]="cuentasNuevas" (cuentasPendientes)="setPendientes($event)" (valid)="setValidness($event)"></ngx-crud-movimiento>
+        <ngx-form-cuentas [escritura]="modificando_cuentas && puede_editar" [cuentasInfo]="infoCuentas"
+          [cuentasNuevas]="cuentasNuevas" (cuentasPendientes)="setPendientes($event)" (valid)="setValidness($event)"></ngx-form-cuentas>
       </mat-card-content>
       <mat-card-actions>
         <button mat-flat-button color="primary" class="float-right text-uppercase" (click)="onSubmit()"
           [disabled]="!valid || !cuentasPendientes?.length" *ngIf="modificando_cuentas && puede_editar">
-          {{cuentasPendientes?.length}}
           {{'GLOBAL.Acta_Recibido.RegistroActa.GuardarCambiosButton' | translate}}
         </button>
       </mat-card-actions>

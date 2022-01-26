@@ -10,11 +10,11 @@ import { ConfiguracionService } from '../../../@core/data/configuracion.service'
 import { PopUpManager } from '../../../managers/popUpManager';
 
 @Component({
-  selector: 'ngx-registro-cuentas-catalogo',
-  templateUrl: './registro-cuentas-catalogo.component.html',
-  styleUrls: ['./registro-cuentas-catalogo.component.scss'],
+  selector: 'ngx-crud-cuentas',
+  templateUrl: './crud-cuentas.component.html',
+  styleUrls: ['./crud-cuentas.component.scss'],
 })
-export class RegistroCuentasCatalogoComponent implements OnInit {
+export class CrudCuentasComponent implements OnInit {
   catalogos: Array<Catalogo>;
   catalogoId: number;
   uid_1: Subgrupo;
