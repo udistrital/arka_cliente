@@ -68,8 +68,8 @@ export class MovimientosHelper {
      * @param query nombre del formato
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
      */
-    public getFormatoQuery(query: string) {
-        query = 'formato_tipo_movimiento?limit=-1&query=' + query;
+    public getAllFormatoMovimiento(query: string) {
+        query = 'formato_tipo_movimiento?' + query;
         this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
         return this.rqManager.get(query).pipe(
             map(

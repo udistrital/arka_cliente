@@ -46,8 +46,8 @@ export class ComprobanteComponent implements OnInit {
   public loadLists() {
     this.store.select((stte) => stte).subscribe(
       (list) => {
-        if (list.listPlanCuentasCredito.length && list.listPlanCuentasCredito[0].length &&
-          list.listPlanCuentasDebito[0].length && list.listPlanCuentasDebito.length) {
+        if (list.listPlanCuentasCredito.length && list.listPlanCuentasDebito.length &&
+          list.listPlanCuentasCredito[0].length && list.listPlanCuentasDebito[0].length) {
           const credito = list.listPlanCuentasCredito[0];
           const debito = list.listPlanCuentasDebito[0];
           this.cuentas = debito.concat(credito);
