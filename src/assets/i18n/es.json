@@ -245,7 +245,7 @@
   "GLOBAL": {
     "Errores": {
       "ErrorTercero": "Ingrese un tercero válido",
-      "ErrorCuenta": "Ingrese una cuenta válida",
+      "ErrorCuenta": "Cuenta no encontrada.",
       "ErrorDependencia": "Ingrese una dependencia válida",
       "ErrorMinLength": "Escriba {{NUM}} o más caracteres",
       "ErrorFecha": "Ingrese una fecha válida",

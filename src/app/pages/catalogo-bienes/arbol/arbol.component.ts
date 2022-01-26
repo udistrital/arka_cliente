@@ -310,7 +310,6 @@ export class ArbolComponent implements OnInit, OnChanges {
     this.detalle = false;
     this.dialogService.open(dialog);
 
-    // console.log(selectedRow);
     this.grupoSeleccionado = selectedRow;
     const observable = combineLatest([
       this.catalogoHelper.getCuentasContables(selectedRow.Id),
@@ -320,25 +319,15 @@ export class ArbolComponent implements OnInit, OnChanges {
     this.nivelSeleccionado = this.translate.instant('GLOBAL.subgrupo.' + nh.Texto(selectedRow.TipoNivelId.Id) + '.nombre');
 
     observable.subscribe(([cuentas, detalle, elementos]: any[]) => {
-      // console.log([cuentas, detalle, elementos]);
-      // console.log(cuentas);
-      // console.log(Object.keys(elementos).length);
-      // console.log(Object.keys(cuentas).length);
-      if (Object.keys(cuentas[0]).length !== 0) {
-        // console.log(this.Movimientos)
-        for (const cuenta in cuentas) {
-          if (true) {
-            cuentas[cuenta].SubtipoMovimientoId = this.Movimientos.find(x => x.Id === parseFloat(cuentas[cuenta].SubtipoMovimientoId));
-          }
-        }
+      if (cuentas.length) {
         this.cuentasContables = <Array<CuentasGrupoTransaccion>>cuentas;
       }
-      if (detalle.length !== 0) {
+      if (detalle.length) {
         this.tipos_de_bien = <TipoBien>detalle[0].TipoBienId;
       } else {
         this.tipos_de_bien = undefined;
       }
-      if (Object.keys(elementos[0]).length !== 0) {
+      if (elementos.length) {
         this.elementosSubgrupo = elementos;
       } else {
         this.elementosSubgrupo = undefined;
