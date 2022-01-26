@@ -1,45 +1,13 @@
-import { Grupo, Subgrupo } from '../../../@core/data/models/catalogo/jerarquia';
-import { Component, OnInit, Input, Output, EventEmitter, ElementRef, ViewChildren, AfterViewInit, OnChanges } from '@angular/core';
-import { FORM_MOVIMIENTO } from './form-movimiento';
-import { ToasterService, ToasterConfig, Toast, BodyOutputType } from 'angular2-toaster';
+import { Component, OnInit, Input, Output, EventEmitter, OnChanges } from '@angular/core';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import 'style-loader!angular2-toaster/toaster.css';
-import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/catalogoElementosHelper';
-import { CuentaGrupo, CuentasFormulario } from '../../../@core/data/models/catalogo/cuentas_grupo';
-import { Cuenta } from '../../../@core/data/models/catalogo/cuenta_contable';
-import { TipoMovimientoKronos } from '../../../@core/data/models/movimientos';
 import { Store } from '@ngrx/store';
 import { IAppState } from '../../../@core/store/app.state';
 import { ListService } from '../../../@core/store/services/list.service';
-import {
-  NbSortDirection,
-  NbTreeGridRowComponent,
-} from '@nebular/theme';
-import { GlobalPositionStrategy } from '@angular/cdk/overlay';
+import { AbstractControl, FormArray, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { debounceTime, distinctUntilChanged, map, startWith } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 
-/**
- * Mapeo entre:
- *
- * movimientos_arka / formato_tipo_movimiento / campo "CodigoAbreviacion"
- * movimientos (_kronos) / tipo_movimiento / campo "Nombre", con Acronimo:e_arka
- */
-const MOVIMIENTOS_KRONOS_ARKA = [
-  { arka: 'ENT_ADQ', kronos: 'Adquisición' },
-  { arka: 'ENT_BEP', kronos: 'Provisional' },
-  { arka: 'ENT_CE', kronos: 'Compras extranjeras' },
-  { arka: 'ENT_CM', kronos: 'Caja menor' },
-  { arka: 'ENT_DN', kronos: 'Donación' },
-  { arka: 'ENT_EP', kronos: 'Elaboración Propia' },
-  { arka: 'ENT_IA', kronos: 'Intangibles' },
-  { arka: 'ENT_ID', kronos: 'Desarrollo interior' },
-  { arka: 'ENT_PPA', kronos: 'Aprovechamientos' },
-  { arka: 'ENT_RP', kronos: 'Reposición' },
-  { arka: 'ENT_SI', kronos: 'Sobrante' },
-  { arka: 'ENT_TR', kronos: 'Terceros' },
-  { arka: 'SOL_BAJA', kronos: 'Baja' },
-  { arka: 'SOL_TRD', kronos: 'Traslado' },
-  // { arka: '', kronos: '' }, // PLANTILLA
-];
 @Component({
   selector: 'ngx-crud-movimiento',
   templateUrl: './crud-movimiento.component.html',
@@ -47,275 +15,244 @@ const MOVIMIENTOS_KRONOS_ARKA = [
 })
 export class CrudMovimientoComponent implements OnInit, OnChanges {
 
-  config: ToasterConfig;
-  subgrupo_id: Subgrupo;
-  movimiento_id: any;
-  respuesta: CuentaGrupo;
-  Subgrupo: Subgrupo;
-  tipo_movimiento: string;
-  indice: number;
-  deshabilitar: boolean;
-  cuentaGlobal: any;
-
-  @Input('subgrupo_id')
-  set name(subgrupo_id: Subgrupo) {
-    this.subgrupo_id = subgrupo_id;
-    if (this.movimiento_id !== undefined) {
-      this.loadCuentaGrupo();
-    }
-  }
-
-  @Input('movimiento_id')
-  set name2(movimiento_id: any) {
-    this.movimiento_id = movimiento_id;
-  }
-
   @Input() escritura: boolean;
+  @Input() cuentasInfo: any[];
+  @Input() cuentasNuevas: any[];
+  @Output() cuentasPendientes: EventEmitter<any> = new EventEmitter<any>();
+  @Output() valid = new EventEmitter<boolean>();
 
-  @Input('tipo_movimiento')
-  set name3(tipo_movimiento: string) {
-    this.tipo_movimiento = tipo_movimiento;
-  }
-
-  @Input('indice')
-  set name4(indice: number) {
-    this.indice = indice;
-  }
-  @Input('cuentaEntradas')
-  set name5(cuenta: any) {
-    this.cuentaGlobal = cuenta;
-  }
-
-  @Output() eventChange = new EventEmitter();
-  @Output() formulario = new EventEmitter();
-  @Output() setCuentasEntradas = new EventEmitter();
-
-  @Output() columns: any;
-
-  @ViewChildren(NbTreeGridRowComponent, { read: ElementRef }) treeNodes: ElementRef[];
-
-  info_movimiento: CuentasFormulario;
-  formMovimiento: any;
-  regMovimiento: any;
-  clean: boolean;
-  cargando: boolean = true;
-  init: boolean;
-
-  stateHighlight: string = 'initial';
-  animationCuenta: string;
-  searchValue: string;
-  sortDirection: NbSortDirection = NbSortDirection.NONE;
-  private data: [];
+  formCuentas: FormGroup;
+  ctas: any[];
+  ctasFiltradas: any[];
 
   constructor(
     private translate: TranslateService,
-    private catalogoElementosService: CatalogoElementosHelper,
     private store: Store<IAppState>,
     private listService: ListService,
+    private fb: FormBuilder,
   ) {
     this.escritura = false;
+    this.translate.onLangChange.subscribe((event: LangChangeEvent) => { });
   }
 
   ngOnInit() {
-    this.init = true;
-  //  console.log("entra al init 1")
     this.listService.findPlanCuentasDebito();
     this.listService.findPlanCuentasCredito();
-  //  console.log("entra al init")
-    this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
-      this.construirForm();
-      this.loadLists();
+  }
+
+  ngOnChanges(changes) {
+    if (changes.cuentasInfo && changes.cuentasInfo.currentValue) {
+      this.initForms();
+    } else if (changes.cuentasNuevas && changes.cuentasNuevas.currentValue) {
+      this.updateForm();
+    }
+  }
+
+  private async initForms() {
+    const form = this.builForm();
+    await form;
+    const ctas = this.loadLists();
+    await ctas;
+    this.submitForm(this.formCuentas.valueChanges);
+    this.valid.emit(this.formCuentas.valid);
+  }
+
+  private builForm(): Promise<void> {
+    return new Promise<void>(resolve => {
+      const ent = this.cuentasInfo.filter(cf => (cf.SubtipoMovimientoId.CodigoAbreviacion.includes('ENT_') &&
+        cf.SubtipoMovimientoId.CodigoAbreviacion !== 'ENT_KDX'))
+        .map((elem) => (elem = this.cuentasMov(elem.Id, elem.SubtipoMovimientoId, elem.CuentaDebitoId, elem.CuentaCreditoId)));
+
+      const sal = this.cuentasInfo.filter(cf => cf.SubtipoMovimientoId.CodigoAbreviacion === 'SAL')
+        .map((elem) => (elem = this.cuentasMov(elem.Id, elem.SubtipoMovimientoId, elem.CuentaDebitoId, elem.CuentaCreditoId)));
+
+      const bj = this.cuentasInfo.filter(cf => cf.SubtipoMovimientoId.CodigoAbreviacion === 'BJ_HT')
+        .map((elem) => (elem = this.cuentasMov(elem.Id, elem.SubtipoMovimientoId, elem.CuentaDebitoId, elem.CuentaCreditoId)));
+
+      const depr = this.cuentasInfo.filter(cf => cf.SubtipoMovimientoId.CodigoAbreviacion === 'DEP')
+        .map((elem) => (elem = this.cuentasMov(elem.Id, elem.SubtipoMovimientoId, elem.CuentaDebitoId, elem.CuentaCreditoId)));
+      this.formCuentas = this.fb.group({
+        entradas: this.fb.array(ent),
+        salida: sal[0],
+        baja: bj[0],
+        depreciacion: depr.length ? depr[0] : [],
+      });
+      resolve();
     });
   }
 
-  ngOnChanges() {
-    if (!this.init) {
-      this.construirForm();
-      this.loadLists();
-      this.loadCuentaGrupo();
-    } else if (this.cuentaGlobal) {
-      const cuentaAsociada = new CuentasFormulario();
-      const cuenta = new Cuenta;
-      cuenta.Id = this.cuentaGlobal.substring(0, this.cuentaGlobal.indexOf(' '));
-      if (this.movimiento_id.Acronimo === 'e_arka') {
-        cuentaAsociada.CuentaDebitoId = cuenta;
-        this.info_movimiento = cuentaAsociada;
-      } else if (this.movimiento_id.Acronimo === 's_arka') {
-        cuentaAsociada.CuentaCreditoId = cuenta;
-        this.info_movimiento = cuentaAsociada;
-      }
-    }
+  private cuentasMov(id: number, movId: any, db: any, cr: any): FormGroup {
+    const disabled = !this.escritura;
+    const form = this.fb.group({
+      id: [id],
+      tipoMovimientoId: [movId],
+      debito: [
+        {
+          value: db,
+          disabled,
+        },
+        {
+          validators: [Validators.required, this.validarCompleter('Id')],
+        },
+      ],
+      credito: [
+        {
+          value: cr,
+          disabled,
+        },
+        {
+          validators: [Validators.required, this.validarCompleter('Id')],
+        },
+      ],
+    });
+    // form.get('credito').markAsTouched();
+    // form.get('debito').markAsTouched();
+    this.cambiosCuenta(form.get('debito'));
+    this.cambiosCuenta(form.get('credito'));
+    return form;
   }
 
-  clone(Obj) {
-    let buf; // the cloned object
-    if (Obj instanceof Array) {
-      buf = []; // create an empty array
-      let i = Obj.length;
-      while (i--) {
-        buf[i] = this.clone(Obj[i]); // recursively clone the elements
-      }
-      return buf;
-    } else if (Obj instanceof Object) {
-      buf = {}; // create an empty object
-      for (const k in Obj) {
-        if (Obj.hasOwnProperty(k)) { // filter out another array's index
-          buf[k] = this.clone(Obj[k]); // recursively clone the value
-        }
-      }
-      return buf;
-    } else {
-      return Obj;
-    }
-  }
-
-  public loadLists() {
-    this.store.select((stte) => stte).subscribe(
-      (list) => {
-        if (list.listPlanCuentasCredito.length && list.listPlanCuentasCredito[0].length &&
-          list.listPlanCuentasDebito[0].length && list.listPlanCuentasDebito.length) {
-
-          const credito_ = list.listPlanCuentasCredito[0];
-          const credito = credito_.map((x: any) => ({
-            Codigo: x.Codigo + ' ' + x.Nombre,
-            Nombre: x.Nombre, DetalleCuentaID: x.DetalleCuentaID, Naturaleza: x.Naturaleza,
-          }));
-
-          const debito_ = list.listPlanCuentasDebito[0];
-          const debito = debito_.map((x: any) => ({
-            Codigo: x.Codigo + ' ' + x.Nombre,
-            Nombre: x.Nombre, DetalleCuentaID: x.DetalleCuentaID, Naturaleza: x.Naturaleza,
-          }));
-
-          this.formMovimiento.campos[this.getIndexForm('CuentaDebitoId')].opciones = debito;
-          this.formMovimiento.campos[this.getIndexForm('CuentaCreditoId')].opciones = credito;
-          if (this.formMovimiento.titulo === 'Salida')
-            this.formMovimiento.campos[this.getIndexForm('CuentaCreditoId')].opciones = debito;
-        }
-      },
-    );
-  }
-
-  private codigo_movimiento_i18n(mov: TipoMovimientoKronos): string {
-    if (MOVIMIENTOS_KRONOS_ARKA.some(m => mov.Nombre === m.kronos)) {
-      return 'movimientos.tipo.' + MOVIMIENTOS_KRONOS_ARKA.find(m => mov.Nombre === m.kronos).arka + '.nombre';
-    }
-    return mov.Nombre;
-  }
-
-  construirForm() {
-    const form = this.clone(FORM_MOVIMIENTO);
-    if (this.escritura) {
-      form.campos = form.campos.map(campo => {
-        campo.deshabilitar = false;
-        return campo;
-      });
-    }
-    this.formMovimiento = form;
-    this.deshabilitar = !this.escritura;
-
-    if (this.movimiento_id !== undefined) {
-      // this.formulario.normalform = {...this.formulario.normalform, ...{ titulo: this.translate.instant('GLOBAL.' + this.movimiento_id)}} ;
-      this.formMovimiento.titulo = this.translate.instant('GLOBAL.' + this.codigo_movimiento_i18n(this.movimiento_id));
-      // this.formMovimiento.btn = this.translate.instant('GLOBAL.guardar');
-      for (let i = 0; i < this.formMovimiento.campos.length; i++) {
-        this.formMovimiento.campos[i].label = this.translate.instant('GLOBAL.' + this.formMovimiento.campos[i].label_i18n);
-        this.formMovimiento.campos[i].placeholder = this.translate.instant('GLOBAL.placeholder_' + this.formMovimiento.campos[i].label_i18n);
-        this.formMovimiento.campos[i].deshabilitar =  (this.tipo_movimiento === 'GLOBAL.Salidas' && i === 1);
-/*        this.formMovimiento.campos[i].requerido = !(this.tipo_movimiento === 'GLOBAL.Entradas' && i === 0 &&
-          this.indice !== 0 || this.tipo_movimiento === 'GLOBAL.Salidas' && i === 1);*/
-        this.formMovimiento.campos[i].requerido = !(this.tipo_movimiento === 'GLOBAL.Entradas' && i === 0 &&
-          this.indice !== 0 || this.tipo_movimiento === 'GLOBAL.Salidas' && i === 1);
-      }
-    }
-  }
-
-  getIndexForm(nombre: String): number {
-    for (let index = 0; index < this.formMovimiento.campos.length; index++) {
-      const element = this.formMovimiento.campos[index];
-      if (element.nombre === nombre) {
-        return index;
-      }
-    }
-    return 0;
-  }
-  public loadCuentaGrupo(): void {
-    if (this.subgrupo_id.Id !== undefined && this.subgrupo_id.Id !== 0) {
-      this.cargando = true;
-      this.clean = !this.clean;
-
-      this.catalogoElementosService.getMovimiento(this.subgrupo_id.Id, this.movimiento_id.Id)
-        .subscribe(res => {
-          const cuentasAsociadas = new CuentasFormulario();
-          const cuentaCredito = new Cuenta();
-          const cuentaDebito = new Cuenta();
-
-          if (res.length) {
-            this.respuesta = <CuentaGrupo>res[0];
-            cuentaCredito.Id = this.respuesta.CuentaCreditoId;
-            cuentaDebito.Id = this.respuesta.CuentaDebitoId;
-            cuentasAsociadas.CuentaCreditoId = cuentaCredito;
-            cuentasAsociadas.CuentaDebitoId = cuentaDebito;
-            this.info_movimiento = cuentasAsociadas;
-            this.formulario.emit(this.respuesta);
-
-          } else {
-            cuentaCredito.Id = null;
-            cuentaDebito.Id = null;
-            cuentasAsociadas.CuentaCreditoId = cuentaCredito;
-            cuentasAsociadas.CuentaDebitoId = cuentaDebito;
-            this.info_movimiento = cuentasAsociadas;
-            this.respuesta = new CuentaGrupo;
-            this.respuesta.SubgrupoId = this.subgrupo_id;
-            this.respuesta.CuentaCreditoId = 0;
-            this.respuesta.CuentaDebitoId = 0;
-            this.respuesta.SubtipoMovimientoId = this.movimiento_id.Id;
-            this.respuesta.Tipo_Texto = this.tipo_movimiento;
-            this.respuesta.orden = this.indice;
-            this.formulario.emit(this.respuesta);
+  public loadLists(): Promise<void> {
+    return new Promise<void>(async (resolve) => {
+      this.store.select((state) => state).subscribe(
+        list => {
+          if (list.listPlanCuentasCredito.length && list.listPlanCuentasDebito.length &&
+            list.listPlanCuentasCredito[0].length && list.listPlanCuentasDebito[0].length) {
+            this.ctas = list.listPlanCuentasCredito[0].concat(list.listPlanCuentasDebito[0]);
+            resolve();
           }
-          this.cargando = false;
         });
-    } else {
-         //   console.log("entra 3")
-      const cuentasAsociadas = new CuentasFormulario();
-      const cuentaCredito = new Cuenta();
-      const cuentaDebito = new Cuenta();
-      cuentaCredito.Id = null;
-      cuentaDebito.Id = null;
-      cuentasAsociadas.CuentaCreditoId = cuentaCredito;
-      cuentasAsociadas.CuentaDebitoId = cuentaDebito;
-      this.info_movimiento = cuentasAsociadas;
-//      this.clean = !this.clean;
-      this.cargando = false;
+    });
+  }
+
+  private submitForm(valueChanges: Observable<any>) {
+    valueChanges
+      .debounceTime(250)
+      .subscribe(() => {
+        this.valid.emit(this.formCuentas.valid);
+        if (this.formCuentas.valid) {
+          this.cuentasPendientes.emit(this.generarTr());
+        }
+      });
+  }
+
+  public setGeneral(index: number, salida: boolean) {
+    if (index !== null && !salida) {
+      const global = (this.formCuentas.get('entradas') as FormArray).at(index).value.debito;
+      (this.formCuentas.get('entradas') as FormArray).controls
+        .forEach(ctr => {
+          ctr.patchValue({ debito: global });
+          ctr.markAsDirty();
+        });
+      this.formCuentas.get('salida').patchValue({ credito: global });
+      this.formCuentas.get('salida').markAsDirty();
+    } else if (salida && index === null) {
+      const global = this.formCuentas.get('salida').value.credito;
+      (this.formCuentas.get('entradas') as FormArray).controls
+        .forEach(ctr => {
+          ctr.patchValue({ debito: global });
+          ctr.markAsDirty();
+        });
     }
   }
 
-  validarForm(event) {
-    if (event.CuentaDebitoId) {
-      this.movimiento_id.Acronimo === 'e_arka' ? this.setCuentasEntradas.emit(event) : null;
-    } else if (event.valid && event.data.CuentasFormulario &&
-      event.data.CuentasFormulario.CuentaDebitoId && event.data.CuentasFormulario.CuentaCreditoId) {
-      let vdebito = event.data.CuentasFormulario.CuentaDebitoId;
-      let vcredito = event.data.CuentasFormulario.CuentaCreditoId;
-      vdebito = vdebito.substring(0, vdebito.indexOf(' '));
-      vcredito = vcredito.substring(0, vcredito.indexOf(' '));
+  private generarTr() {
+    const changed = (this.formCuentas.get('entradas') as FormArray).controls
+      .filter((elem) => !elem.pristine)
+      .map((elem) => ({
+        CuentaDebitoId: elem.value.debito.Id,
+        CuentaCreditoId: elem.value.credito.Id,
+        SubtipoMovimientoId: elem.value.tipoMovimientoId.Id,
+        Id: elem.value.id,
+      }));
 
-      this.respuesta.CuentaCreditoId = vcredito;
-      this.respuesta.CuentaDebitoId = vdebito;
-      this.respuesta.Tipo_Texto = this.tipo_movimiento;
-      this.respuesta.orden = this.indice;
-      this.formulario.emit(this.respuesta);
-    } else {
-      this.respuesta = new CuentaGrupo;
-      this.respuesta.SubgrupoId = this.subgrupo_id;
-      this.respuesta.CuentaCreditoId = 0;
-      this.respuesta.CuentaDebitoId = 0;
-      this.respuesta.SubtipoMovimientoId = this.movimiento_id.Id;
-      this.respuesta.Tipo_Texto = this.tipo_movimiento;
-      this.respuesta.orden = this.indice;
-      this.formulario.emit(this.respuesta);
+    if (!this.formCuentas.get('salida').pristine) {
+      const value = {
+        CuentaDebitoId: this.formCuentas.get('salida').value.debito.Id,
+        CuentaCreditoId: this.formCuentas.get('salida').value.credito.Id,
+        SubtipoMovimientoId: this.formCuentas.get('salida').value.tipoMovimientoId.Id,
+        Id: this.formCuentas.get('salida').value.id,
+      };
+      changed.push(value);
     }
 
+    if (!this.formCuentas.get('baja').pristine) {
+      const value = {
+        CuentaDebitoId: this.formCuentas.get('baja').value.debito.Id,
+        CuentaCreditoId: this.formCuentas.get('baja').value.credito.Id,
+        SubtipoMovimientoId: this.formCuentas.get('baja').value.tipoMovimientoId.Id,
+        Id: this.formCuentas.get('baja').value.id,
+      };
+      changed.push(value);
+    }
+
+    if (!this.formCuentas.get('depreciacion').pristine) {
+      const value = {
+        CuentaDebitoId: this.formCuentas.get('depreciacion').value.debito.Id,
+        CuentaCreditoId: this.formCuentas.get('depreciacion').value.credito.Id,
+        SubtipoMovimientoId: this.formCuentas.get('depreciacion').value.tipoMovimientoId.Id,
+        Id: this.formCuentas.get('depreciacion').value.id,
+      };
+      changed.push(value);
+    }
+
+    return changed;
   }
+
+  private updateForm() {
+    this.cuentasNuevas.forEach(cta => {
+      const index = (this.formCuentas.get('entradas') as FormArray).controls
+        .map((elem) => ({ SubtipoMovimientoId: elem.value.tipoMovimientoId.Id }))
+        .findIndex(ct => ct.SubtipoMovimientoId === cta.SubtipoMovimientoId);
+      if (index > -1) {
+        (this.formCuentas.get('entradas') as FormArray).at(index).patchValue({ id: cta.Id });
+        (this.formCuentas.get('entradas') as FormArray).at(index).markAsPristine();
+      } else if (this.formCuentas.get('depreciacion').value &&
+        this.formCuentas.get('depreciacion').value.tipoMovimientoId.Id === cta.SubtipoMovimientoId) {
+        this.formCuentas.get('depreciacion').patchValue({ id: cta.Id });
+        this.formCuentas.get('depreciacion').markAsPristine();
+      } else if (this.formCuentas.get('salida').value.tipoMovimientoId.Id === cta.SubtipoMovimientoId) {
+        this.formCuentas.get('salida').patchValue({ id: cta.Id });
+        this.formCuentas.get('salida').markAsPristine();
+      } else if (this.formCuentas.get('baja').value.tipoMovimientoId.Id === cta.SubtipoMovimientoId) {
+        this.formCuentas.get('baja').patchValue({ id: cta.Id });
+        this.formCuentas.get('baja').markAsPristine();
+      }
+    });
+  }
+
+  private cambiosCuenta(control: AbstractControl) {
+    control.valueChanges
+      .pipe(
+        startWith(''),
+        debounceTime(250),
+        distinctUntilChanged(),
+        map(val => typeof val === 'string' ? val : this.muestraCuenta(val)),
+      ).subscribe((response: any) => {
+        this.ctasFiltradas = this.filtroCuentas(response);
+      });
+  }
+
+  public muestraCuenta(contr): string {
+    return contr && contr.Codigo ? contr.Codigo + ' - ' + contr.Nombre : '';
+  }
+
+  private filtroCuentas(nombre): any[] {
+    if (this.ctas && nombre.length > 3) {
+      return this.ctas.filter(contr => this.muestraCuenta(contr).toLowerCase().includes(nombre.toLowerCase()));
+    } else {
+      return [];
+    }
+  }
+
+  private validarCompleter(key: string): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const valor = control.value;
+      const checkMinLength = typeof (valor) === 'string' && valor.length && valor.length < 4;
+      const checkInvalidTercero = (typeof (valor) === 'object' && valor && !valor[key]) ||
+        (typeof (valor) === 'string' && valor.length >= 4);
+      return checkMinLength ? { errMinLength: true } : checkInvalidTercero ? { errSelected: true } : null;
+    };
+  }
+
 }

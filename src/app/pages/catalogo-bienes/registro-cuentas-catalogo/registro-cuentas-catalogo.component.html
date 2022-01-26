@@ -1,67 +1,47 @@
-<div class="row">
+<div class="row" [nbSpinner]="cargando">
 
-  <nb-card class="col">
-    <nb-card-header>
-      <h2>{{'GLOBAL.catalogo.cuentas' | translate}}</h2>
-    </nb-card-header>
-    <nb-card-body [nbSpinner]="cargando_catalogos">
-      <header [nbSpinner]="!this.estado_cargado"><strong>{{'GLOBAL.estado' | translate}}:</strong>
+  <mat-card class="col">
+    <mat-card-title>
+      {{'GLOBAL.catalogo.cuentas' | translate}}
+    </mat-card-title>
+    <mat-card-content>
+      <header [nbSpinner]="!this.estado_cargado">
+        <strong>{{'GLOBAL.estado' | translate}}:</strong>
         {{ texto_estado }}
-        <button type="button" mat-stroked-button class="float-right"
-        *ngIf="puede_editar" [disabled]="!this.estado_cargado"
-        (click)="preguntaSesionAsignacionContable()">
+        <button type="button" mat-stroked-button class="float-right" *ngIf="puede_editar"
+          [disabled]="!this.estado_cargado" (click)="preguntaSesionAsignacionContable()">
           {{ texto_sesion_contable }}
         </button>
         <p *ngIf="modificando_cuentas && puede_editar"><em>{{'GLOBAL.instr_asig_cuentas' | translate}}</em></p>
       </header>
-        <select class="form-control mb-4" (change)="onChange($event.target.value)">
-          <option disabled selected>{{'GLOBAL.seleccionar' | translate}}...</option>
-          <option *ngFor="let item of catalogos" value="{{ item.Id }}">{{ item.Nombre }}</option>
-        </select>
-        <ngx-arbol *ngIf="catalogoId !== 0" [catalogoId]="catalogoId" (fila)="receiveMessage($event)">
-          <p>
-            <span class="fas fa-info-circle"></span>&nbsp;
-            <em>{{'GLOBAL.catalogo.claseInfo' | translate}}</em>
-          </p>
-        </ngx-arbol>
-    </nb-card-body>
-  </nb-card>
+      <mat-select class="form-control mb-4" style="height: auto;" [(ngModel)]="catalogoId">
+        <mat-option [value]="0">--{{ 'GLOBAL.seleccionar' | translate }}--</mat-option>
+        <mat-option *ngFor="let sede of catalogos" [(value)]="sede.Id">{{sede.Nombre}}</mat-option>
+      </mat-select>
+      <ngx-arbol *ngIf="catalogoId > 0" [catalogoId]="catalogoId" (fila)="receiveMessage($event)">
+      </ngx-arbol>
+    </mat-card-content>
+  </mat-card>
 
   <div class="col" *ngIf="uid_1 && claseOk">
-    <nb-card>
-      <nb-card-header>
-          <p class="font-weight-bold text-uppercase">{{'GLOBAL.subgrupo.clase.seleccionado' | translate}}:</p>
-          <span class="font-weight-normal">{{ uid_1.Nombre }}</span>
-      </nb-card-header>
-      <nb-card-body [nbSpinner]="guardando">
-        <mat-vertical-stepper #stepper>
-
-          <ng-template #tipoMovimientoTemplate let-lbl="label" let-movs="mvtos">
-          <mat-step>
-            <ng-template matStepLabel>{{lbl | translate}}</ng-template>
-            <ngx-crud-movimiento *ngFor="let tab of movs; let i = index" [escritura]="modificando_cuentas && puede_editar"
-              [subgrupo_id]="uid_1" [movimiento_id]="tab" [tipo_movimiento]="lbl"  [indice] = "i" (formulario)="ver3($event)"
-              (setCuentasEntradas)="actualizarCuentaEntradas($event)" [cuentaEntradas]="cuentaGlobalEntradas" ></ngx-crud-movimiento>
-            <div class="justify-content-center">
-              <button nbButton
-                matStepperPrevious>{{'GLOBAL.Acta_Recibido.RegistroActa.AnteriorButton' | translate}}</button>
-              <button nbButton matStepperNext
-                class="float-right">{{'GLOBAL.Acta_Recibido.RegistroActa.SiguienteButton' | translate}}</button>
-            </div>
-          </mat-step>
-          </ng-template>
-
-          <ng-container *ngFor="let categoria of TiposMovimientos">
-            <ng-container *ngIf="categoria.mostrar()">
-              <ng-container *ngTemplateOutlet="tipoMovimientoTemplate;
-              context: {label: categoria.i18n, mvtos: categoria.data}"></ng-container>
-            </ng-container>
-          </ng-container>
-
-        </mat-vertical-stepper>
-        <button nbButton (click)="onSubmit()" [disabled]="!all_mov_ok" *ngIf="modificando_cuentas && puede_editar"
-          class="float-right">{{'GLOBAL.Acta_Recibido.RegistroActa.GuardarCambiosButton' | translate}}</button>
-      </nb-card-body>
-    </nb-card>
+    <mat-card>
+      <mat-card-title>
+        {{'GLOBAL.subgrupo.clase.seleccionado' | translate}}: {{ uid_1.Nombre }}
+      </mat-card-title>
+      <mat-card-subtitle>
+        {{'GLOBAL.catalogo.noCuenta' | translate}}
+      </mat-card-subtitle>
+      <mat-card-content>
+        <ngx-crud-movimiento [escritura]="modificando_cuentas && puede_editar" [cuentasInfo]="infoCuentas"
+          [cuentasNuevas]="cuentasNuevas" (cuentasPendientes)="setPendientes($event)" (valid)="setValidness($event)"></ngx-crud-movimiento>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-flat-button color="primary" class="float-right text-uppercase" (click)="onSubmit()"
+          [disabled]="!valid || !cuentasPendientes?.length" *ngIf="modificando_cuentas && puede_editar">
+          {{cuentasPendientes?.length}}
+          {{'GLOBAL.Acta_Recibido.RegistroActa.GuardarCambiosButton' | translate}}
+        </button>
+      </mat-card-actions>
+    </mat-card>
   </div>
 </div>
