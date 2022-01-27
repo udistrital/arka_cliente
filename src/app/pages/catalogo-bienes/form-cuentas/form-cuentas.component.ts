@@ -45,6 +45,12 @@ export class FormCuentasComponent implements OnInit, OnChanges {
       this.initForms();
     } else if (changes.cuentasNuevas && changes.cuentasNuevas.currentValue) {
       this.updateForm();
+    } else if (changes.escritura) {
+      if (changes.escritura.currentValue) {
+        this.formCuentas.enable();
+      } else {
+        this.formCuentas.disable();
+      }
     }
   }
 
