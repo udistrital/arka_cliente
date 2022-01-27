@@ -445,8 +445,8 @@ export class FormSolicitudComponent implements OnInit {
   }
 
   private getTiposBaja() {
-    const query = 'CodigoAbreviacion__istartswith:BJ_';
-    this.movimientosHelper.getFormatoQuery(query).subscribe((res: any) => {
+    const query = 'limit=-1&query=CodigoAbreviacion__istartswith:BJ_';
+    this.movimientosHelper.getAllFormatoMovimiento(query).subscribe((res: any) => {
       this.tiposBaja = res;
       this.modo !== 'create' ? this.loadValues(this.bajaInfo) : this.load = true;
     });

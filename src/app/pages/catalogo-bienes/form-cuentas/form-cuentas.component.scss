@@ -1,0 +1,20 @@
+mat-form-field {
+    min-width: 300px;
+    padding-right: 1rem;
+}
+
+fieldset {
+    display: flow-root;
+    width: 100%;
+    border-radius: 0.4rem;
+    border: 2px groove #a61e1c;
+    padding: 0.35em 0.75em 0.625em;
+}
+
+legend {
+    padding: 0.75rem;
+}
+
+.botones {
+    padding-top: 1rem;
+}

@@ -245,7 +245,7 @@
   "GLOBAL": {
     "Errores": {
       "ErrorTercero": "Ingrese un tercero válido",
-      "ErrorCuenta": "Ingrese una cuenta válida",
+      "ErrorCuenta": "Cuenta no encontrada.",
       "ErrorDependencia": "Ingrese una dependencia válida",
       "ErrorMinLength": "Escriba {{NUM}} o más caracteres",
       "ErrorFecha": "Ingrese una fecha válida",
@@ -559,6 +559,7 @@
     "Depreciacion":"Depreciación",
     "Valorizacion":"Valorización",
     "Salida":"Salida",
+    "Baja": "Baja",
     "Depreciacion Almacen":"Depreciación",
     "Valorizacion Almacen":"Valorización",
     "Adiciones y mejoras": "Adiciones y mejoras",
@@ -686,6 +687,7 @@
       "validacion_desactivar" :"¿Está seguro que desea desactivar el catálogo?",
       "lista": "Lista de Catálogos",
       "errorDetalleTtl": "Clase sin parametrizar",
+      "noCuenta": "Si la cuenta ingresada no existe, verifique que exista y esté activa en el sistema kronos",
       "errorDetalleTxt": "Vaya a la sección Catálogo > Construcción de Catálogo y asigne el tipo de bien a la clase seleccionada"
     },
 
@@ -979,6 +981,10 @@
         "SOL_TRD": {
           "nombre": "Traslado",
           "descripcion": "Solicitud de Traslado"
+        },
+        "DEP": {
+          "nombre": "Depreciación",
+          "descripcion": "Depreciación de bienes"
         }
       },
       "tab_consumo": "Elementos de Consumo",
