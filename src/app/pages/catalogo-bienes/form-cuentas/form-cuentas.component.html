@@ -1,4 +1,4 @@
-<mat-vertical-stepper *ngIf="formCuentas" [nbSpinner]="false" [linear]="this.escritura" #stepper>
+<mat-vertical-stepper *ngIf="formCuentas" [linear]="this.escritura" #stepper>
 	<mat-step [stepControl]="formCuentas.get('entradas')" label="{{'GLOBAL.Entradas' | translate}}">
 		<form [formGroup]="formCuentas.get('entradas')">
 			<div class="row" *ngFor="let entr of formCuentas.get('entradas')['controls']; let i = index" [formGroupName]="i">
@@ -62,8 +62,7 @@
 			<div class="row">
 				<fieldset>
 					<legend>
-						{{ 'GLOBAL.movimientos.tipo.' + formCuentas.get('salida.tipoMovimientoId')?.value.CodigoAbreviacion +
-						'.nombre' | translate }}
+						{{'GLOBAL.Salidas' | translate}}
 					</legend>
 					<mat-form-field appearance="outline" class="form-group">
 						<mat-label>{{'GLOBAL.Comprobante_Contable.Debito' | translate}}</mat-label>
@@ -185,8 +184,7 @@
 			<div class="row">
 				<fieldset>
 					<legend>
-						{{ 'GLOBAL.movimientos.tipo.' + formCuentas.get('baja.tipoMovimientoId')?.value.CodigoAbreviacion +
-						'.nombre' | translate }}
+						{{'GLOBAL.Baja' | translate}}
 					</legend>
 					<mat-form-field appearance="outline" class="full-width">
 						<mat-label>{{'GLOBAL.Comprobante_Contable.Debito' | translate}}</mat-label>

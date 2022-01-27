@@ -56,8 +56,7 @@ export class CrudCuentasComponent implements OnInit {
   }
 
   private cargaPermisoEdicionCuentas() {
-    const accion = this.confService.getAccion('puedeAsignarCuentas');
-    this.puede_editar = accion ? true : false;
+    this.puede_editar = !!this.confService.getAccion('puedeAsignarCuentas');
   }
 
   private cargaEstadoSesionContable() {
@@ -122,10 +121,12 @@ export class CrudCuentasComponent implements OnInit {
     });
   }
 
-  onChange(catalogo) {
-    this.uid_1 = undefined;
-    this.catalogoId = catalogo;
+  public onChange(catalogo: any = null) {
+    if (catalogo) {
+      this.catalogoId = catalogo;
+    }
     this.claseOk = false;
+    this.uid_1 = undefined;
     this.infoCuentas = undefined;
     this.cuentasNuevas = undefined;
     this.cuentasPendientes = undefined;
@@ -155,22 +156,19 @@ export class CrudCuentasComponent implements OnInit {
         });
       }
     } else {
-      this.uid_1 = undefined;
-      this.infoCuentas = undefined;
-      this.cuentasNuevas = undefined;
-      this.cuentasPendientes = undefined;
+      this.onChange();
     }
   }
 
-  onSubmit() {
+  public onSubmit() {
     if (this.valid && this.cuentasPendientes.length) {
       this.updateMovimientos();
     }
   }
 
-  updateMovimientos(): void {
+  private updateMovimientos(): void {
     const opt: any = {
-      title: this.translate.instant('GLOBAL.Actualizado'),
+      title: this.translate.instant('GLOBAL.Actualizar'),
       text: this.translate.instant('GLOBAL.Actualizar_Movimientos_placeholder'),
       type: 'warning',
       showCancelButton: true,
@@ -185,17 +183,17 @@ export class CrudCuentasComponent implements OnInit {
         if (willDelete.value) {
           this.cargando = true;
           this.catalogoElementosService.putTransaccionCuentasSubgrupo(this.cuentasPendientes, this.uid_1.Id)
-          .subscribe((res: any) => {
+            .subscribe((res: any) => {
               if (res.length) {
                 this.cargando = false;
-                (Swal as any).fire({
+                this.cuentasNuevas = res;
+                const opt_: any = {
                   title: this.translate.instant('GLOBAL.Actualizado'),
                   text: this.translate.instant('GLOBAL.Actualizado_Movimientos_placeholder'),
                   type: 'success',
-                  showConfirmButton: true,
-                });
+                };
+                this.pUpManager.showAlertWithOptions(opt_);
               }
-              this.cuentasNuevas = res;
             });
         }
       });

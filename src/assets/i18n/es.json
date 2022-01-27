@@ -687,7 +687,7 @@
       "validacion_desactivar" :"¿Está seguro que desea desactivar el catálogo?",
       "lista": "Lista de Catálogos",
       "errorDetalleTtl": "Clase sin parametrizar",
-      "noCuenta": "Si la cuenta no se encuentra, verifique que esté activa en el sistema kronos",
+      "noCuenta": "Si la cuenta ingresada no existe, verifique que exista y esté activa en el sistema kronos",
       "errorDetalleTxt": "Vaya a la sección Catálogo > Construcción de Catálogo y asigne el tipo de bien a la clase seleccionada"
     },
 

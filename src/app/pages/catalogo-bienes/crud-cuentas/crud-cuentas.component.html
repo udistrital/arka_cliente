@@ -8,7 +8,7 @@
       <header [nbSpinner]="!this.estado_cargado">
         <strong>{{'GLOBAL.estado' | translate}}:</strong>
         {{ texto_estado }}
-        <button type="button" mat-stroked-button class="float-right" *ngIf="puede_editar"
+        <button mat-stroked-button class="float-right" *ngIf="puede_editar"
           [disabled]="!this.estado_cargado" (click)="preguntaSesionAsignacionContable()">
           {{ texto_sesion_contable }}
         </button>
