@@ -172,7 +172,7 @@ export class CrudAjusteComponent implements OnInit {
   private update() {
     const TrContable = {
       Movimientos: this.ajusteData.controls.elementos.controls.map(fg => ({
-        Cuenta: fg.controls.cuenta.value.Codigo,
+        Cuenta: fg.controls.cuenta.value.Id,
         Debito: fg.controls.debito.value,
         Credito: fg.controls.credito.value,
         TerceroId: fg.controls.tercero.value.Id,
@@ -209,7 +209,7 @@ export class CrudAjusteComponent implements OnInit {
     this.loading = true;
     const TrContable = {
       Movimientos: this.ajusteData.controls.elementos.controls.map(fg => ({
-        Cuenta: fg.controls.cuenta.value.Codigo,
+        Cuenta: fg.controls.cuenta.value.Id,
         Debito: fg.controls.debito.value,
         Credito: fg.controls.credito.value,
         TerceroId: fg.controls.tercero.value.Id,
