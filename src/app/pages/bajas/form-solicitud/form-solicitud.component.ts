@@ -435,7 +435,7 @@ export class FormSolicitudComponent implements OnInit {
 
   private submitForm(statusChanges: Observable<any>) {
     statusChanges
-      .debounceTime(250)
+      .pipe(debounceTime(250))
       .subscribe(() => {
         this.valid.emit(this.formBaja.valid);
         if (this.formBaja.valid && this.load) {
