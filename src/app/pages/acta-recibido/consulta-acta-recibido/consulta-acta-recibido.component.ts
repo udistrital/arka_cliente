@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
-import { LocalDataSource } from 'ngx-smart-table';
+import { LocalDataSource } from 'ng2-smart-table';
 import { NavigationEnd, Router } from '@angular/router';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
 import { PopUpManager } from '../../../managers/popUpManager';

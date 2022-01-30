@@ -17,7 +17,7 @@ import { CrudCuentasComponent } from './crud-cuentas/crud-cuentas.component';
 import { FormCuentasComponent } from './form-cuentas/form-cuentas.component';
 import { MatTreeModule } from '@angular/material';
 import { TiposBienComponent } from './tipos-bien/tipos-bien.component';
-import { Ng2SmartTableModule } from 'ngx-smart-table';
+import { Ng2SmartTableModule } from 'ng2-smart-table';
 import { RegistroTipoBienComponent } from './tipos-bien/registro-tipo-bien/registro-tipo-bien.component';
 
 @NgModule({

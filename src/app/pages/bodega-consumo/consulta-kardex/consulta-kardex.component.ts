@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { LocalDataSource } from 'ngx-smart-table';
+import { LocalDataSource } from 'ng2-smart-table';
 import { Router } from '@angular/router';
 import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
 import { Entrada } from '../../../@core/data/models/entrada/entrada';

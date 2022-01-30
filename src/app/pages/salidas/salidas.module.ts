@@ -8,7 +8,7 @@ import { RegistroSalidasComponent } from './registro-salidas/registro-salidas.co
 import { TablaEntradaAprobadaComponent } from './tabla-entrada-aprobada/tabla-entrada-aprobada.component';
 import { FormElementosSeleccionadosComponent } from './form-elementos-seleccionados/form-elementos-seleccionados.component';
 import { TablaElementosAsignadosComponent } from './tabla-elementos-asignados/tabla-elementos-asignados.component';
-import { Ng2SmartTableModule } from 'ngx-smart-table';
+import { Ng2SmartTableModule } from 'ng2-smart-table';
 import { OwlNativeDateTimeModule, OwlDateTimeModule } from 'ng-pick-datetime';
 import { TranslateModule } from '@ngx-translate/core';
 import { NbStepperModule } from '@nebular/theme';

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Catalogo } from '../../../@core/data/models/catalogo/catalogo';
-import { LocalDataSource } from 'ngx-smart-table';
+import { LocalDataSource } from 'ng2-smart-table';
 import { ToasterService, ToasterConfig, Toast, BodyOutputType } from 'angular2-toaster';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import Swal from 'sweetalert2';
