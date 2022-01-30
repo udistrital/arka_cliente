@@ -221,7 +221,7 @@ export class ComprobanteComponent implements OnInit {
         tercero: [
           {
             value: mov.TerceroId ? mov.TerceroId : '',
-            disabled,
+            disabled: disabled || !mov.Cuenta.RequiereTercero,
           },
           {
             validators: mov.Cuenta.RequiereTercero ? [Validators.required, this.validarCompleter('Id')] : [],

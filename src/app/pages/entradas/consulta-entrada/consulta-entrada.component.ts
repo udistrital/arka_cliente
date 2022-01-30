@@ -343,20 +343,16 @@ keyEventUp(event: KeyboardEvent) {
     this.mostrar = false;
     if (aprobar) {
       this.entradasHelper.postEntrada({}, +this.entradaId).toPromise().then((res: any) => {
+        this.mostrar = true;
         if (res && res.errorTransaccion === '') {
-           this.mostrar = true;
-           this.verComponente = true;
-           this.transaccionContable = res.transaccionContable;
-           this.tercero = res.tercero;
-        } else {
-          if (!res) {
-              this.alertSuccess(false);
-          } else {
-              this.mostrar = true;
-              this.verComponente = false;
-              this.pUpManager.showErrorAlert(res.errorTransaccion);
-              this.onVolver();
-          }
+          this.verComponente = true;
+          this.transaccionContable = res.transaccionContable;
+          this.tercero = res.tercero;
+          this.source.remove(this.filaSeleccionada);
+        } else if (res && res.errorTransaccion !== '') {
+          this.verComponente = false;
+          this.pUpManager.showErrorAlert(res.errorTransaccion);
+          this.onVolver();
         }
       });
     } else {
