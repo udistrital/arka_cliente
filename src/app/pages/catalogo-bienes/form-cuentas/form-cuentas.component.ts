@@ -133,7 +133,7 @@ export class FormCuentasComponent implements OnInit, OnChanges {
 
   private submitForm(valueChanges: Observable<any>) {
     valueChanges
-      .debounceTime(250)
+      .pipe(debounceTime(250))
       .subscribe(() => {
         this.valid.emit(this.formCuentas.valid);
         if (this.formCuentas.valid) {

@@ -5,7 +5,7 @@ import { ThemeModule } from '../../@theme/theme.module';
 import { BienesInmueblesRoutingModule } from './bienes-inmuebles-routing.module';
 import { ListaBienesComponent } from './lista-bienes/lista-bienes.component';
 import { BienesInmueblesComponent } from './bienes-inmuebles.component';
-import { Ng2SmartTableModule } from 'ngx-smart-table';
+import { Ng2SmartTableModule } from 'ng2-smart-table';
 import { AvaluoComponent } from './avaluo/avaluo.component';
 import { RegistroInmueblesComponent } from './registro-inmuebles/registro-inmuebles.component';
 

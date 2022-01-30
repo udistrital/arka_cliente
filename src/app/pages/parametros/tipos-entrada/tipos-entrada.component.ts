@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { LocalDataSource } from 'ngx-smart-table';
+import { LocalDataSource } from 'ng2-smart-table';
 import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
 import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
 import Swal from 'sweetalert2';

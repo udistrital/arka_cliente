@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { Router } from '@angular/router';
 import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
-import { LocalDataSource } from 'ngx-smart-table';
+import { LocalDataSource } from 'ng2-smart-table';
 import { PopUpManager } from '../../../managers/popUpManager';
 import Swal from 'sweetalert2';
 import { TipoBien } from '../../../@core/data/models/acta_recibido/tipo_bien';

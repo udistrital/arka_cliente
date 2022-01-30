@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { BajasRoutingModule } from './bajas-routing.module';
 import { ConsultaBajasComponent } from './consulta-bajas/consulta-bajas.component';
 import { BajasComponent } from './bajas.component';
-import { Ng2SmartTableModule } from 'ngx-smart-table';
+import { Ng2SmartTableModule } from 'ng2-smart-table';
 import { TranslateModule } from '@ngx-translate/core';
 import { Ng2CompleterModule } from 'ng2-completer';
 import { rootReducer } from '../../@core/store/rootReducer';

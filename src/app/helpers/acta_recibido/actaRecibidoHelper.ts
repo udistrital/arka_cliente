@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
+import { Observable, of } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { RequestManager } from '../../managers/requestManager';
 import { PopUpManager } from '../../managers/popUpManager';
-import { map } from 'rxjs/operators';
-import { Observable } from 'rxjs/Observable';
 import { EspacioFisico } from '../../@core/data/models/ubicacion/espacio_fisico';
 
 @Injectable({
@@ -522,7 +522,7 @@ export class ActaRecibidoHelper {
             );
 
         } else {
-            return Observable.of(new EspacioFisico()).map(o => JSON.stringify(o));
+            return of(new EspacioFisico()).pipe(map(o => JSON.stringify(o)));
         }
     }
     /**

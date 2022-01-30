@@ -3,7 +3,7 @@ import { element } from '@angular/core/src/render3';
 import { AbstractControl, FormArray, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { MatPaginator, MatTableDataSource } from '@angular/material';
 import { Store } from '@ngrx/store';
-import { combineLatest, Observable } from 'rxjs';
+import { combineLatest, fromEvent, Observable } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map, startWith, switchMap } from 'rxjs/operators';
 import { IAppState } from '../../../@core/store/app.state';
 import { ListService } from '../../../@core/store/services/list.service';
@@ -80,7 +80,7 @@ export class ComprobanteComponent implements OnInit {
 
   private submitForm(statusChanges: Observable<any>) {
     statusChanges
-      .debounceTime(250)
+      .pipe(debounceTime(250))
       .subscribe(() => {
         this.valid.emit(this.formComprobante.valid);
         if (this.formComprobante.valid) {
