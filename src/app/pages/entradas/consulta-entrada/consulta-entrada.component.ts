@@ -53,7 +53,6 @@ export class ConsultaEntradaComponent implements OnInit {
   verComponente: boolean;
   transaccionContable: any;
   detalleentrada: String;
-  tercero: String;
   key: boolean = false;
   editarEntrada: boolean = false;
 
@@ -347,7 +346,6 @@ keyEventUp(event: KeyboardEvent) {
         if (res && res.errorTransaccion === '') {
           this.verComponente = true;
           this.transaccionContable = res.transaccionContable;
-          this.tercero = res.tercero;
           this.source.remove(this.filaSeleccionada);
         } else if (res && res.errorTransaccion !== '') {
           this.verComponente = false;

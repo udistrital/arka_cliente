@@ -1111,7 +1111,7 @@
         "estado": "Estado",
         "espera": "En Espera",
         "nuevo": "Generar nuevo ajuste contable",
-        "errorEditar": "No se puede editar este ajuste contable",
+        "errorEditar": "Los ajustes contables deben ser rechazados para luego ser editados",
         "errTxt:": "Hubo un error al consultar los ajustes contables"
       },
       "revision": {
