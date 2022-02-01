@@ -44,7 +44,6 @@ export class ConsultaSalidasComponent implements OnInit {
   Proveedores: any;
   Dependencias: any;
   Sedes: any;
-  tercero: any;
   mostrar: boolean;
   consecutivoSalida: string;
   modo: string = 'consulta';
@@ -347,7 +346,6 @@ export class ConsultaSalidasComponent implements OnInit {
       this.salidasHelper.postSalida(this.movimiento.Id).toPromise().then((res: any) => {
         if (res && res.errorTransaccion === '') {
           const obj = JSON.parse(res.movimientoArka.Detalle);
-          this.tercero = res.tercero;
           this.transaccionContable = res.transaccionContable;
           this.consecutivoSalida = obj.consecutivo;
           this.verComprobante = true;

@@ -65,7 +65,6 @@ export class GenerarDepreciacionComponent implements OnInit {
         this.movimiento = res.Movimiento;
         this.fillForm(res.Movimiento);
         this.trContable = res.TrContable.simulacro;
-        this.trContable.tercero = res.TrContable.tercero;
       }
     });
   }
@@ -213,7 +212,6 @@ export class GenerarDepreciacionComponent implements OnInit {
           this.formDepreciacion.disable();
           this.submitted = true;
           this.accion.emit(true);
-          res.trContable.simulacro.tercero = res.trContable.tercero;
           this.alertSuccess(res.trContable.simulacro, false);
         }
       });
@@ -229,7 +227,6 @@ export class GenerarDepreciacionComponent implements OnInit {
         } else {
           this.submitted = true;
           this.accion.emit(true);
-          res.trContable.resultadoTransaccion.tercero = res.trContable.tercero;
           this.alertSuccess(res.trContable.resultadoTransaccion, false);
         }
       });

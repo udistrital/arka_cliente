@@ -10,9 +10,7 @@ export const MVTO_CR = 345;
 })
 export class VerComprobanteComponent implements OnInit {
    @Input() transaccion: any;
-   @Input() tercero: any;
    @Input() consecutivo: any;
-   @Input() descripcion: any;
    totalCreditos: any;
    totalDebitos: any;
    m_db = MVTO_DB;
