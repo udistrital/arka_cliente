@@ -1,26 +1,12 @@
-:host /deep/ ng2-smart-table thead th {
+:host ::ng-deep ng2-smart-table thead th {
   text-align: center;
 }
 
-:host /deep/ ng2-st-tbody-custom a.ng2-smart-action.ng2-smart-action-custom-custom:hover {
+:host ::ng-deep ng2-st-tbody-custom a.ng2-smart-action.ng2-smart-action-custom-custom:hover {
   color: #5dcfe3;
 }
 
-:host /deep/ ng2-st-tbody-edit-delete {
+:host ::ng-deep ng2-st-tbody-edit-delete {
   display: block !important;
   height: 0 !important;
 }
-
-// :host /deep/ ng2-smart-table .ng2-smart-filter .form-control {
-//   height: calc(2rem + 4px) !important;
-//   padding: 0 10px !important;
-// }
-
-// :host /deep/ ng2-smart-table .ng2-smart-filter .selectiongroup  {
-//   height: 25px !important;
-//   padding: 0 10px !important;
-// }
-
-// :host /deep/ ng2-smart-table .ng-star-inserted{
-//   // padding: 0 10px !important;
-// }

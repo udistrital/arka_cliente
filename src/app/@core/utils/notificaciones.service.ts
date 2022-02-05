@@ -1,12 +1,10 @@
 import { Injectable } from '@angular/core';
-import { Subject } from 'rxjs/Rx';
+import { Subject, from, interval } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { webSocket } from 'rxjs/webSocket';
 import { environment } from './../../../environments/environment';
 import { ConfiguracionService } from './../data/configuracion.service';
-import { from, interval } from 'rxjs';
-import { webSocket } from 'rxjs/webSocket';
-import { map } from 'rxjs-compat/operators/map';
 import { ImplicitAutenticationService } from './implicit_autentication.service';
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 const { NOTIFICACION_SERVICE, production } = environment;
 

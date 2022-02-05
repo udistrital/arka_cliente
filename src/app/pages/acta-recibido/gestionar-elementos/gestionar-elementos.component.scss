@@ -6,7 +6,7 @@
   width: 100%;
 }
 
-:host /deep/ .material-icons {
+:host ::ng-deep .material-icons {
   font-family: "Material Icons" !important;
 }
 
@@ -82,4 +82,8 @@ mat-card-actions {
 
 button {
   text-transform: uppercase;
+}
+
+mat-table {
+  overflow-x: scroll;
 }

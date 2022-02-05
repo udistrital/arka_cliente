@@ -41,29 +41,13 @@ button[nbTreeGridRowToggle] {
   }
 }
 
-:host /deep/ table thead th {
+:host ::ng-deep table thead th {
   text-align: center;
-  // border: hidden !important;
 }
 
-:host /deep/ table tr:hover td {
+:host ::ng-deep table tr:hover td {
   background: #e6e6e6;
 }
-
-/* :host /deep/ table tr td {
-  // padding: -0.125rem 1.25rem !important;
-  // font-size: 12px !important;
-  // height: 50% !important;
-  // width: 100% !important;
-  border: hidden !important;
-}
-:host /deep/ table {
-  // padding: -0.125rem 1.25rem !important;
-  // font-size: 12px !important;
-  // height: 50% !important;
-  // width: 100% !important;
-  border: hidden;
-} */
 
 .dialogo {
   min-width: 55vw;

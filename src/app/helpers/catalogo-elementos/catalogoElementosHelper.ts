@@ -428,28 +428,6 @@ export class CatalogoElementosHelper {
         );
     }
 
-    /**
-     * Tipo de Bien Acta Get
-     * If the response has errors in the OAS API it should show a popup message with an error.
-     * If the response is successs, it returns the object's data.
-     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
-     */
-    public getMovimiento(id_Subgrupo, idmovimiento) {
-        this.rqManager.setPath('CATALOGO_ELEMENTOS_SERVICE');
-        return this.rqManager.get('cuentas_subgrupo?sortby=Id&order=desc&query=SubgrupoId__Id:'
-            + id_Subgrupo + ',Activo:true,SubtipoMovimientoId:' + idmovimiento + '').pipe(
-                map(
-                    (res) => {
-                        if (res === 'error') {
-                            this.pUpManager.showErrorAlert('No se pudo consultar los tipos de bien');
-                            return undefined;
-                        }
-                        return res;
-                    },
-                ),
-            );
-    }
-
     public getMovimientosSubgrupo(subgrupoId) {
         this.rqManager.setPath('CATALOGO_ELEMENTOS_SERVICE');
         return this.rqManager.get('cuentas_subgrupo?query=Activo:true,SubgrupoId__Id:'
@@ -630,27 +608,6 @@ export class CatalogoElementosHelper {
                 (res) => {
                     if (res === 'error') {
                         this.pUpManager.showErrorAlert('No se pudo consultar el catálogo de bienes');
-                        return undefined;
-                    }
-                    return res;
-                },
-            ),
-        );
-    }
-
-    /**
-     * Transaccion Acta Post
-     * If the response has errors in the OAS API it should show a popup message with an error.
-     * If the response is successs, it returns the object's data.
-     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
-     */
-    public postTransaccionCuentasSubgrupo(Transaccion) {
-        this.rqManager.setPath('CATALOGO_ELEMENTOS_SERVICE');
-        return this.rqManager.post('tr_cuentas_subgrupo', Transaccion).pipe(
-            map(
-                (res) => {
-                    if (res['Type'] === 'error') {
-                        this.pUpManager.showErrorAlert('No se pudo consultar el acta solicitada');
                         return undefined;
                     }
                     return res;

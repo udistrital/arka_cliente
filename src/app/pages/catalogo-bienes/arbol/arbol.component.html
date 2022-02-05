@@ -74,8 +74,10 @@
         <div *ngFor="let cuenta of cuentasContables" class="row">
             <div class="col">
                 <p class="font-weight-bold text-uppercase">{{ 'GLOBAL.tipo_movimiento' | translate }}:
-                    <span *ngIf="cuenta.SubtipoMovimientoId" class="font-weight-normal">{{ cuenta.SubtipoMovimientoId.Nombre }}</span></p>
-
+                    <span *ngIf="cuenta.SubtipoMovimientoId" class="font-weight-normal">
+                        {{ 'GLOBAL.movimientos.tipo.' + cuenta.SubtipoMovimientoId.CodigoAbreviacion + '.nombre' | translate }}
+                    </span>
+                </p>
             </div>
             <div class="col">
                 <p class="font-weight-bold text-uppercase">Cuenta Crédito:
@@ -109,7 +111,7 @@
 
 </ng-template>
 
-<div [nbSpinner]="!mostrar">
+<div [nbSpinner]="!mostrar" style="min-width: 600px;">
     <table class="mat-table">
         <thead class="mat-header-row fila">
             <th id="col-codigo" class="mat-header-cell">

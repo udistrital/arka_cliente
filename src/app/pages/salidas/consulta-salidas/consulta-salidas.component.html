@@ -14,7 +14,7 @@
 
     <ngx-consulta-salida-especifica [salida_id]="salidaId" *ngIf="detalle && !editaentrada">
     </ngx-consulta-salida-especifica>
-	<ngx-ver-comprobante [consecutivo] = "consecutivoSalida" [tercero] = "tercero" [descripcion] = "'detalleentrada'"  *ngIf="verComprobante" [transaccion]="transaccionContable"></ngx-ver-comprobante>
+	<ngx-ver-comprobante [consecutivo] = "consecutivoSalida" *ngIf="verComprobante" [transaccion]="transaccionContable"></ngx-ver-comprobante>
 
     <mat-card-actions *ngIf="detalle || editaentrada">
     <ngx-tabla-entrada-aprobada  [editar]="editaentrada" [salida_id]="salidaId" [actaParametro]="actaParametro" [idEntradaParametro]="entradaParametro"

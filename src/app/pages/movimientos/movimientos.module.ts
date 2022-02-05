@@ -9,7 +9,7 @@ import { AprobacionBajaBienComponent } from './aprobacion-baja-bien/aprobacion-b
 import { ConsultaBajaBienComponent } from './consulta-baja-bien/consulta-baja-bien.component';
 import { TiposMovimientoComponent } from './tipos-movimiento/tipos-movimiento.component';
 import { RegistroTipoMovimientoComponent } from './tipos-movimiento/registro-tipo-movimiento/registro-tipo-movimiento.component';
-import { Ng2SmartTableModule } from 'ngx-smart-table';
+import { Ng2SmartTableModule } from 'ng2-smart-table';
 
 @NgModule({
   declarations: [

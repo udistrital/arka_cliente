@@ -1,5 +1,5 @@
 import { Component, HostListener, OnInit } from '@angular/core';
-import { LocalDataSource } from 'ngx-smart-table';
+import { LocalDataSource } from 'ng2-smart-table';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
 import { Entrada, EstadoMovimiento, Movimiento } from '../../../@core/data/models/entrada/entrada';
@@ -53,7 +53,6 @@ export class ConsultaEntradaComponent implements OnInit {
   verComponente: boolean;
   transaccionContable: any;
   detalleentrada: String;
-  tercero: String;
   key: boolean = false;
   editarEntrada: boolean = false;
 
@@ -343,20 +342,15 @@ keyEventUp(event: KeyboardEvent) {
     this.mostrar = false;
     if (aprobar) {
       this.entradasHelper.postEntrada({}, +this.entradaId).toPromise().then((res: any) => {
+        this.mostrar = true;
         if (res && res.errorTransaccion === '') {
-           this.mostrar = true;
-           this.verComponente = true;
-           this.transaccionContable = res.transaccionContable;
-           this.tercero = res.tercero;
-        } else {
-          if (!res) {
-              this.alertSuccess(false);
-          } else {
-              this.mostrar = true;
-              this.verComponente = false;
-              this.pUpManager.showErrorAlert(res.errorTransaccion);
-              this.onVolver();
-          }
+          this.verComponente = true;
+          this.transaccionContable = res.transaccionContable;
+          this.source.remove(this.filaSeleccionada);
+        } else if (res && res.errorTransaccion !== '') {
+          this.verComponente = false;
+          this.pUpManager.showErrorAlert(res.errorTransaccion);
+          this.onVolver();
         }
       });
     } else {

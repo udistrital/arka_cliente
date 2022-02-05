@@ -394,7 +394,7 @@ export class FormTrasladoComponent implements OnInit {
 
   private submitForm(statusChanges: Observable<any>) {
     statusChanges
-      .debounceTime(250)
+      .pipe(debounceTime(250))
       .subscribe(() => {
         this.valid.emit(this.formTraslado.valid);
         if (this.formTraslado.valid && this.load) {

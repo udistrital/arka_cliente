@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, ViewChild, ɵConsole } from '@angular/core';
 import { Validators, FormBuilder, FormGroup, AbstractControl, ValidatorFn } from '@angular/forms';
-import { LocalDataSource } from 'ngx-smart-table';
+import { LocalDataSource } from 'ng2-smart-table';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { PopUpManager } from '../../../managers/popUpManager';
 import { TipoEntrada } from '../../../@core/data/models/entrada/tipo_entrada';

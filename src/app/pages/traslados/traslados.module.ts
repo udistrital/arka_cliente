@@ -10,7 +10,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule, MatSortModule } from '@angular/material';
 import { FormTrasladoComponent } from './form-traslado/form-traslado.component';
 import { ConsultaTrasladosComponent } from './consulta-traslados/consulta-traslados.component';
-import { Ng2SmartTableModule } from 'ngx-smart-table';
+import { Ng2SmartTableModule } from 'ng2-smart-table';
 import { CrudTrasladoComponent } from './crud-traslado/crud-traslado.component';
 
 

@@ -1,4 +1,4 @@
-import { TipoMovimientoKronos } from '../movimientos';
+import { FormatoTipoMovimiento } from '../entrada/entrada';
 import { CuentaContable } from './cuenta_contable';
 
 import { Subgrupo } from './jerarquia';
@@ -7,7 +7,7 @@ export class CuentasGrupoTransaccion {
     Id: number;
     CuentaCreditoId: CuentaContable;
     CuentaDebitoId: CuentaContable;
-    SubtipoMovimientoId: TipoMovimientoKronos;
+    SubtipoMovimientoId: FormatoTipoMovimiento;
     FechaCreacion: Date;
     FechaModificacion: Date;
     Activo: boolean;
