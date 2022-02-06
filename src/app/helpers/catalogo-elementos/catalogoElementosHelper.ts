@@ -428,27 +428,6 @@ export class CatalogoElementosHelper {
         );
     }
 
-    /**
-     * Tipo de Bien Acta Get
-     * If the response has errors in the OAS API it should show a popup message with an error.
-     * If the response is successs, it returns the object's data.
-     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
-     */
-    public getPlanCuentas2() {
-        this.rqManager.setPath('FINANCIERA_SERVICE');
-        return this.rqManager.get('cuenta_contable?fields=Id,Nombre,Naturaleza,Descripcion,Codigo&limit=-1').pipe(
-            map(
-                (res) => {
-                    if (res === 'error') {
-                        this.pUpManager.showErrorAlert('No se pudo consultar los tipos de bien');
-                        return undefined;
-                    }
-                    return res;
-                },
-            ),
-        );
-    }
-
     public getMovimientosSubgrupo(subgrupoId) {
         this.rqManager.setPath('CATALOGO_ELEMENTOS_SERVICE');
         return this.rqManager.get('cuentas_subgrupo?query=Activo:true,SubgrupoId__Id:'
