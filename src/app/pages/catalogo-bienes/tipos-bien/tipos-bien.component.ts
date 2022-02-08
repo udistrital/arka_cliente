@@ -98,7 +98,7 @@ export class TiposBienComponent implements OnInit {
         },
         Tipo_bien_padre: {
           title: this.translate.instant('GLOBAL.parametros.tiposBien.bien_padre'),
-          width: '170px',
+          width: '120px',
           valuePrepareFunction: (value: any) => {
             return value ? value.Nombre : this.translate.instant('GLOBAL.n/a');
           },
@@ -106,6 +106,13 @@ export class TiposBienComponent implements OnInit {
         NecesitaPlaca: {
           width: '100px',
           title: this.translate.instant('GLOBAL.parametros.tiposBien.necesita_placa'),
+          valuePrepareFunction: (value: any) => {
+            return value ? this.translate.instant('GLOBAL.si') : this.translate.instant('GLOBAL.no');
+          },
+        },
+        NecesitaPoliza: {
+          width: '100px',
+          title: this.translate.instant('GLOBAL.parametros.tiposBien.necesita_poliza'),
           valuePrepareFunction: (value: any) => {
             return value ? this.translate.instant('GLOBAL.si') : this.translate.instant('GLOBAL.no');
           },
