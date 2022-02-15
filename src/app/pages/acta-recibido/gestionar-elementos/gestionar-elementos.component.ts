@@ -1,6 +1,6 @@
-import { Component, OnInit, ViewChild, ElementRef, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, Input, Output, EventEmitter, HostListener } from '@angular/core';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { AbstractControl, FormArray, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
 import Swal from 'sweetalert2';
 import { MatPaginator } from '@angular/material/paginator';
@@ -8,18 +8,17 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource, MatTable } from '@angular/material/table';
 import { TipoBien } from '../../../@core/data/models/acta_recibido/tipo_bien';
 import { DatosLocales } from './datos_locales';
-import { ElementoActa, ElementoActaTabla } from '../../../@core/data/models/acta_recibido/elemento';
+import { ElementoActa } from '../../../@core/data/models/acta_recibido/elemento';
 import { Store } from '@ngrx/store';
 import { IAppState } from '../../../@core/store/app.state';
 import { ConfiguracionService } from '../../../@core/data/configuracion.service';
 import { ListService } from '../../../@core/store/services/list.service';
 import { NuxeoService } from '../../../@core/utils/nuxeo.service';
-import { isNumeric } from 'rxjs/internal-compatibility';
-import { isArray } from 'util';
-import { MatCheckbox } from '@angular/material';
-import { CompleterData, CompleterService, CompleterItem } from 'ng2-completer';
 import { Subgrupo } from '../../../@core/data/models/catalogo/jerarquia';
 import { Detalle } from '../../../@core/data/models/catalogo/detalle';
+import { debounceTime, distinctUntilChanged, map, startWith } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { ParametrosGobierno } from '../../../@core/data/models/parametros_gobierno/parametros_gobierno';
 
 const SIZE_SOPORTE = 1;
 
@@ -29,38 +28,39 @@ const SIZE_SOPORTE = 1;
   styleUrls: ['./gestionar-elementos.component.scss'],
 })
 export class GestionarElementosComponent implements OnInit {
+  formElementos: FormGroup;
   form: FormGroup;
   Totales: DatosLocales;
-  protected dataService: CompleterData;
 
-  @ViewChild(MatPaginator) paginator: MatPaginator;
+  @ViewChild('paginator') paginator: MatPaginator;
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatTable) table: MatTable<any>;
   @ViewChild('fileInput') fileInput: ElementRef;
-  @ViewChild('checkTodoInput') checkDummy: MatCheckbox;
   dataSource: MatTableDataSource<any>;
-  dataSource2: MatTableDataSource<any>;
 
   @Input() ActaRecibidoId: number;
-  @Input() Modo: string = 'agregar';
+  @Input() Modo: string = 'agregar'; // verificar | ver
   @Output() DatosEnviados = new EventEmitter();
   @Output() DatosTotales = new EventEmitter();
   @Output() ElementosValidos = new EventEmitter<boolean>();
 
-  respuesta: any;
-  Unidades: any;
+  unidades: any;
   Tarifas_Iva: any;
-  Clases: any;
   displayedColumns: any[];
   checkTodos: boolean = false;
   checkParcial: boolean = false;
-  ocultarAsignacionCatalogo: boolean;
+  mostrarClase: boolean;
   ErroresCarga: string = '';
   cargando: boolean = true;
-  elementos: Array<ElementoActaTabla>;
   file: any;
-  submitted: boolean;
+  submitted: boolean = true;
   sizeSoporte: number;
+
+  private checkAnterior: number = undefined;
+  private estadoShift: boolean = false;
+  private basePaginas: number = 0;
+  clases: any;
+  clasesFiltradas: any[];
 
   constructor(
     private fb: FormBuilder,
@@ -69,7 +69,6 @@ export class GestionarElementosComponent implements OnInit {
     private store: Store<IAppState>,
     private listService: ListService,
     private confService: ConfiguracionService,
-    private completerService: CompleterService,
   ) {
     this.Totales = new DatosLocales();
     this.sizeSoporte = SIZE_SOPORTE;
@@ -84,158 +83,375 @@ export class GestionarElementosComponent implements OnInit {
     this.createForm();
     this.ReglasColumnas();
     this.initForms();
+    this.builForm();
   }
 
+  @HostListener('window:keydown', ['$event'])
+  handleKeyDown(event: KeyboardEvent) {
+    if (event.shiftKey) {
+      this.estadoShift = true;
+    }
+  }
+  @HostListener('window:keyup', ['$event'])
+  handleKeyUp() {
+    this.estadoShift = false;
+  }
 
   private async initForms() {
+    await this.loadElementos();
     await this.loadLists();
-    this.cargarForms(await this.loadElementos());
-    const clases = this.Clases.map(v => {
-      v.mostrar = v.SubgrupoId.Codigo + ' - ' + v.SubgrupoId.Nombre;
-      return v;
+    this.submitForm(this.formElementos.get('elementos').valueChanges);
+    this.emit();
+  }
+
+  private builForm() {
+    this.dataSource = new MatTableDataSource([]);
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+    this.formElementos = this.fb.group({
+      archivo: ['', Validators.required],
+      clase: this.clase,
+      elementos: this.fb.array([]),
     });
-    this.dataService = this.completerService.local(clases, 'mostrar', 'mostrar');
+  }
+
+  private cuentasMov(elementos: ElementoActa[]) {
+    elementos.forEach((element, idx) => {
+      (this.formElementos.get('elementos') as FormArray).push(this.fillElemento(element));
+      this.dataSource.data = this.dataSource.data.concat({});
+      if (idx === elementos.length - 1) {
+        this.cargando = false;
+      }
+    });
+  }
+
+  private fillElemento(el: ElementoActa) {
+    const disabled = this.Modo !== 'agregar';
+    const placa = el.SubgrupoCatalogoId.TipoBienId.Id && el.SubgrupoCatalogoId.TipoBienId.NecesitaPlaca;
+    const min = el.Descuento > 0 && el.Descuento > el.ValorUnitario;
+    const formEl = this.fb.group({
+      Id: [el.Id],
+      Seleccionado: [
+        {
+          value: false,
+          disabled: this.Modo === 'ver',
+        },
+      ],
+      Placa: [el.Placa],
+      Nombre: [
+        {
+          value: el.Nombre,
+          disabled,
+        },
+        {
+          validators: [Validators.required],
+        },
+      ],
+      Cantidad: [
+        {
+          value: el.Cantidad,
+          disabled: disabled || (placa && el.Cantidad === 1),
+        },
+        {
+          validators: placa ? [Validators.required, Validators.min(1), Validators.max(1)] : [Validators.required, Validators.min(1)],
+        },
+      ],
+      Marca: [
+        {
+          value: el.Marca,
+          disabled,
+        },
+      ],
+      Serie: [
+        {
+          value: el.Serie,
+          disabled,
+        },
+      ],
+      UnidadMedida: [
+        {
+          value: parseInt(el.UnidadMedida.toString(), 10),
+          disabled,
+        },
+        {
+          validators: [Validators.required],
+        },
+      ],
+      ValorUnitario: [
+        {
+          value: el.ValorUnitario,
+          disabled,
+        },
+        {
+          validators: [Validators.required, Validators.min(0.01)],
+        },
+      ],
+      Descuento: [
+        {
+          value: el.Descuento,
+          disabled,
+        },
+        {
+          validators: [Validators.min( min ? el.Descuento + 1 : 0.00)],
+        },
+      ],
+      Subtotal: [
+        {
+          value: el.Subtotal,
+          disabled: true,
+        },
+      ],
+      PorcentajeIvaId: [
+        {
+          value: el.PorcentajeIvaId,
+          disabled,
+        },
+        {
+          validators: [Validators.required],
+        },
+      ],
+      ValorIva: [
+        {
+          value: el.ValorIva,
+          disabled: true,
+        },
+      ],
+      ValorTotal: [
+        {
+          value: el.ValorTotal,
+          disabled: true,
+        },
+      ],
+      SubgrupoCatalogoId: [
+        {
+          value: el.SubgrupoCatalogoId,
+          disabled: disabled || !this.mostrarClase,
+        },
+        {
+          validators: [Validators.required, this.validarCompleter('Id')],
+        },
+      ],
+      TipoBienId: [
+        {
+          value: el.SubgrupoCatalogoId.TipoBienId.Nombre,
+          disabled: true,
+        },
+      ],
+    });
+
+    this.cambiosClase(formEl.get('SubgrupoCatalogoId'));
+    this.cambiosValores(formEl.get('Cantidad'));
+    this.cambiosValores(formEl.get('ValorUnitario'));
+    this.cambiosValores(formEl.get('Descuento'));
+    this.cambiosValores(formEl.get('PorcentajeIvaId'));
+    this.setValidation(formEl);
+
+    return formEl;
+  }
+
+  private setValidation(form: FormGroup) {
+    form.get('SubgrupoCatalogoId').markAsTouched();
+    form.get('Nombre').markAsTouched();
+    form.get('Cantidad').markAsTouched();
+    form.get('UnidadMedida').markAsTouched();
+    form.get('ValorUnitario').markAsTouched();
+    form.get('Descuento').markAsTouched();
+    form.get('PorcentajeIvaId').markAsTouched();
+  }
+
+  private submitForm(statusChanges: Observable<any>) {
+    statusChanges
+      .pipe(debounceTime(250))
+      .subscribe(() => {
+        this.emit();
+      });
+  }
+
+  get elementos_() {
+    return (this.formElementos.get('elementos') as FormArray).controls
+      .map(el => ({
+        Id: el.get('Id').value,
+        Nombre: el.get('Nombre').value,
+        Cantidad: el.get('Cantidad').value,
+        Marca: el.get('Marca').value,
+        Serie: el.get('Serie').value,
+        UnidadMedida: el.get('UnidadMedida').value,
+        ValorUnitario: el.get('ValorUnitario').value,
+        Subtotal: el.get('Subtotal').value,
+        Descuento: el.get('Descuento').value,
+        ValorTotal: el.get('ValorTotal').value,
+        PorcentajeIvaId: el.get('PorcentajeIvaId').value,
+        ValorIva: el.get('ValorIva').value,
+        SubgrupoCatalogoId: el.get('SubgrupoCatalogoId').value,
+        Placa: el.get('Placa').value,
+      }));
+  }
+
+  public fillClase(index) {
+    const clase = (this.formElementos.get('elementos') as FormArray).at(index).get('SubgrupoCatalogoId').value;
+    (this.formElementos.get('elementos') as FormArray).at(index).patchValue({ TipoBienId: clase.TipoBienId.Nombre });
+    this.setCantidad(index, clase.TipoBienId.NecesitaPlaca);
+  }
+
+  private setCantidad(index: number, placa: boolean) {
+    if (placa) {
+      (this.formElementos.get('elementos') as FormArray).at(index).patchValue({ Cantidad: 1 });
+      (this.formElementos.get('elementos') as FormArray).at(index).get('Cantidad').disable();
+      (this.formElementos.get('elementos') as FormArray).at(index).get('Cantidad')
+        .setValidators([Validators.required, Validators.min(1), Validators.max(1)]);
+    } else {
+      (this.formElementos.get('elementos') as FormArray).at(index).get('Cantidad').enable();
+      (this.formElementos.get('elementos') as FormArray).at(index).get('Cantidad').setValidators([Validators.required, Validators.min(1)]);
+      (this.formElementos.get('elementos') as FormArray).at(index).get('Cantidad').updateValueAndValidity();
+    }
+  }
+
+  private cambiosClase(control: AbstractControl) {
+    control.valueChanges
+      .pipe(
+        startWith(''),
+        debounceTime(250),
+        distinctUntilChanged(),
+        map(val => typeof val === 'string' ? val : this.muestraClase(val)),
+      ).subscribe((response: any) => {
+        this.clasesFiltradas = this.filtroCuentas(response);
+      });
+  }
+
+  private cambiosValores(control: AbstractControl) {
+    control.valueChanges
+      .pipe(
+        debounceTime(100),
+        distinctUntilChanged(),
+      ).subscribe(() => {
+
+        const cant = control.parent.get('Cantidad').value;
+        const unit = control.parent.get('ValorUnitario').value;
+        const dsc = control.parent.get('Descuento').value;
+        const iva = control.parent.get('PorcentajeIvaId').value;
+
+        const subt = this.getSubtotal(cant, unit, dsc);
+        const vIva = this.getIva(subt, iva);
+        const total = this.getTotal(subt, vIva);
+
+        control.parent.get('Subtotal').patchValue(subt);
+        control.parent.get('ValorIva').patchValue(vIva);
+        control.parent.get('ValorTotal').patchValue(total);
+
+        if (dsc > 0 && dsc > unit) {
+          control.parent.get('Descuento').setErrors({ errMin: true });
+        } else {
+          control.parent.get('Descuento').clearValidators();
+          control.parent.get('Descuento').updateValueAndValidity();
+        }
+      });
+  }
+
+  private getIva(tarifa: number, subtotal: number) {
+    const iva = tarifa * subtotal / 100;
+    return iva > 0 ? iva : 0;
+  }
+
+  private getSubtotal(cant: number, unit: number, dsc: number) {
+    const subtotal = cant * (unit - dsc);
+    return subtotal > 0 ? subtotal : 0;
+  }
+
+  private getTotal(subt: number, iva: number) {
+    const total = subt + iva;
+    return total > 0 ? total : 0;
+  }
+
+  private filtroCuentas(nombre): any[] {
+    if (this.clases && nombre.length > 3) {
+      return this.clases.filter(contr => this.muestraClase(contr).toLowerCase().includes(nombre.toLowerCase()));
+    } else {
+      return [];
+    }
+  }
+
+  public muestraClase(clase): string {
+    return clase && clase.SubgrupoId.Id ? clase.SubgrupoId.Codigo + ' - ' + clase.SubgrupoId.Nombre : '';
   }
 
   private loadLists(): Promise<void> {
     return new Promise<void>(async (resolve) => {
       this.store.select((state) => state).subscribe(list => {
-        this.Unidades = list.listUnidades[0],
+        this.unidades = list.listUnidades[0],
           this.Tarifas_Iva = list.listIVA[0],
-          this.Clases = list.listClases[0],
+          this.clases = list.listClases[0],
 
-
-          (this.Unidades && this.Unidades.length > 0 &&
+          (this.unidades && this.unidades.length > 0 &&
             this.Tarifas_Iva && this.Tarifas_Iva.length > 0 &&
-            this.Clases && this.Clases.length > 0) ? resolve() : null;
+            this.clases && this.clases.length > 0) ? resolve() : null;
       });
     });
   }
 
-  private loadElementos(): Promise<boolean> {
-    return new Promise<boolean>(resolve => {
+  getActualIndex(index: number) {
+    return index + this.paginator.pageSize * this.paginator.pageIndex;
+  }
+
+  private loadElementos(): Promise<void> {
+    return new Promise<void>(resolve => {
       this.ActaRecibidoId ? this.actaRecibidoHelper.getElementosActa(this.ActaRecibidoId).toPromise().then(res => {
-        if (res && res.length > 0) {
-          this.elementos = res;
-          resolve(true);
+        if (res && res.length) {
+          this.cuentasMov(res);
+          if (!this.cargando) {
+            resolve();
+          }
         } else {
-          resolve(false);
+          this.cargando = false;
+          resolve();
         }
-      }) : resolve(false);
+      }) : resolve();
     });
   }
 
-  private cargarForms(cargarElementos: boolean) {
-    if (cargarElementos) {
-      this.elementos.forEach(el => el.Combinado = el.SubgrupoCatalogoId.SubgrupoId.Id ?
-        el.SubgrupoCatalogoId.SubgrupoId.Codigo + ' - ' + el.SubgrupoCatalogoId.SubgrupoId.Nombre : '');
-      this.dataSource = new MatTableDataSource<ElementoActa>(this.elementos);
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
-      this.respuesta = this.elementos;
-      this.getDescuentos();
-      this.getSubtotales();
-      this.getIVA();
-      this.getTotales();
-    } else {
-      this.elementos = new Array<ElementoActaTabla>();
-      this.dataSource = new MatTableDataSource<ElementoActa>();
+  private ReglasColumnas() {
+    this.mostrarClase = !!this.confService.getAccion('mostrarAsignacionCatalogo');
+    const cols = ['Acciones'];
+    if (this.mostrarClase) {
+      cols.push('SubgrupoCatalogoId', 'TipoBienId');
     }
-    this.DatosEnviados.emit(this.elementos);
-    this.DatosTotales.emit(this.Totales);
-    this.ver();
-    this.cargando = false;
+    cols.push('Nombre', 'Cantidad', 'Marca', 'Serie', 'UnidadMedida', 'ValorUnitario',
+      'Descuento', 'Subtotal', 'PorcentajeIvaId', 'ValorIva', 'ValorTotal');
+    this.displayedColumns = cols;
   }
 
-  ReglasColumnas() {
-    const check = this.Modo === 'ver' ? [] : ['AccionesMacro'];
-    this.Modo === 'agregar' ? check.push('Acciones') : null;
-    this.ocultarAsignacionCatalogo = !this.confService.getAccion('mostrarAsignacionCatalogo');
-    if (this.ocultarAsignacionCatalogo) {
-      this.displayedColumns = check.concat([
-        'Nombre',
-        'Cantidad',
-        'Marca',
-        'Serie',
-        'UnidadMedida',
-        'ValorUnitario',
-        'Descuento',
-        'Subtotal',
-        'PorcentajeIvaId',
-        'ValorIva',
-        'ValorTotal',
-      ]);
-    } else {
-      this.displayedColumns = check.concat([
-        'SubgrupoCatalogoId',
-        'TipoBienId',
-        'Nombre',
-        'Cantidad',
-        'Marca',
-        'Serie',
-        'UnidadMedida',
-        'ValorUnitario',
-        'Descuento',
-        'Subtotal',
-        'PorcentajeIvaId',
-        'ValorIva',
-        'ValorTotal',
-      ]);
-    }
+  public setClase() {
+    const clase = this.formElementos.get('clase.clase').value;
+    this.selected.forEach((idx) => {
+      (this.formElementos.get('elementos') as FormArray).at(idx).patchValue(
+        {
+          SubgrupoCatalogoId: clase,
+          TipoBienId: clase.TipoBienId.Nombre,
+        },
+        {
+          emitEvent: false,
+        },
+      );
+      this.setCantidad(idx, clase.TipoBienId.NecesitaPlaca);
+    });
+
   }
 
-  onSelectedClase(selected: CompleterItem, fila: number) {
-    if (selected && selected.originalObject) {
-      this.updateClase(selected, fila);
-    }
+  get selected() {
+    const idxs = (this.formElementos.get('elementos') as FormArray).controls
+      .reduce(function (acc, curr, index) {
+        if (curr.get('Seleccionado').value) {
+          acc.push(index);
+        }
+        return acc;
+      }, []);
+
+    return idxs;
   }
 
-  updateClase(selected: CompleterItem, fila: number) {
-    if (selected && selected.originalObject) {
-      const subgrupo = new Detalle;
-      subgrupo.SubgrupoId = new Subgrupo;
-      subgrupo.SubgrupoId = selected.originalObject.SubgrupoId;
-      subgrupo.TipoBienId = selected.originalObject.TipoBienId;
-
-      this.dataSource.data[fila].Combinado = selected.originalObject.mostrar;
-      this.dataSource.data[fila].SubgrupoCatalogoId = subgrupo;
-    }
-    this.ver();
-  }
-
-  onBlurClase(idx: number) {
-    if (!this.dataSource.data[idx].Combinado) {
-      const subgrupo = new Detalle;
-      subgrupo.SubgrupoId = <Subgrupo>{ Id: 0 };
-      subgrupo.TipoBienId = new TipoBien;
-
-      this.dataSource.data[idx].SubgrupoCatalogoId = subgrupo;
-    }
-    this.ver();
-  }
-
-  // TODO: De ser necesario, agregar otras validaciones asociadas
-  // a cada elemento
-  private validarElementos(): boolean {
-    return (
-      this.dataSource && Array.isArray(this.dataSource.data) &&
-        this.dataSource.data.length &&
-        !this.dataSource.data.some(x =>
-          (x.SubgrupoCatalogoId.SubgrupoId.Id === 0 || x.ValorTotal === 0 || x.Nombre === ''),
-        )
-    );
-  }
-
-  ver() {
-    if (this.ocultarAsignacionCatalogo && this.dataSource && this.dataSource.data && this.dataSource.data.length) {
-      this.ElementosValidos.emit(true);
-      this.DatosEnviados.emit(this.dataSource.data);
-    } else if (this.dataSource && this.dataSource.data) {
-      this.refrescaCheckTotal();
-      this.Modo === 'agregar' ? this.ElementosValidos.emit(this.validarElementos()) : null;
-      this.Modo === 'agregar' ? this.DatosEnviados.emit(this.dataSource.data) : null;
-    } else {
-      this.ElementosValidos.emit(false);
+  public onBlurClase(index: number) {
+    const clase = (this.formElementos.get('elementos') as FormArray).at(index).get('SubgrupoCatalogoId').value;
+    if (!clase.SubgrupoId) {
+      (this.formElementos.get('elementos') as FormArray).at(index).patchValue({ TipoBienId: '' });
     }
   }
 
@@ -290,7 +506,7 @@ export class GestionarElementosComponent implements OnInit {
       const file = event.target.files[0];
       if (extension === 'xlsx') {
         if (file.size < this.sizeSoporte * 1024000) {
-          this.form.get('archivo').setValue(file);
+          this.formElementos.get('archivo').setValue(file);
         } else {
           (Swal as any).fire({
             title: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.Tamaño_title'),
@@ -304,7 +520,7 @@ export class GestionarElementosComponent implements OnInit {
 
   private prepareSave(): any {
     const input = new FormData();
-    input.append('archivo', this.form.get('archivo').value);
+    input.append('archivo', this.formElementos.get('archivo').value);
     return input;
   }
 
@@ -312,7 +528,9 @@ export class GestionarElementosComponent implements OnInit {
 
     this.cargando = true;
     const formModel: FormData = this.prepareSave();
-    this.actaRecibidoHelper.postArchivo(formModel).subscribe(res => {
+    (this.formElementos.get('elementos') as FormArray).controls = [];
+    this.dataSource.data = [];
+    this.actaRecibidoHelper.postArchivo(formModel).subscribe((res: any) => {
       if (res !== null) {
         if (res[0].Mensaje !== undefined) {
           (Swal as any).fire({
@@ -322,11 +540,8 @@ export class GestionarElementosComponent implements OnInit {
           });
           this.clearFile();
         } else {
-          this.respuesta = res;
-          this.dataSource.data = this.respuesta[0].Elementos;
-          this.dataSource.paginator = this.paginator;
-          this.dataSource.sort = this.sort;
-          this.form.reset();
+          this.cuentasMov(res[0].Elementos);
+          this.formElementos.get('archivo').reset();
           this.submitted = true;
           const validacion = this.validarCargaMasiva();
           if (validacion.valid) {
@@ -340,12 +555,11 @@ export class GestionarElementosComponent implements OnInit {
             (Swal as any).fire({
               type: 'warning',
               title: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.ValidacionCargaMasivaTitle'),
-              text: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.ValidacionCargaMasivaText', {cantidad: validacion.cont_err}),
+              text: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.ValidacionCargaMasivaText', { cantidad: validacion.cont_err }),
             });
             this.ErroresCarga = '';
           }
           this.clearFile();
-          this.ver();
         }
 
       } else {
@@ -360,7 +574,7 @@ export class GestionarElementosComponent implements OnInit {
     });
   }
 
-  validarCargaMasiva(): {valid: boolean, errores: any[], cont_err: number} {
+  validarCargaMasiva(): { valid: boolean, errores: any[], cont_err: number } {
     let valido = true;
     let conteo = 0;
     const error = [];
@@ -372,49 +586,49 @@ export class GestionarElementosComponent implements OnInit {
         this.dataSource.data[i].TipoBienNombre = '';
         this.dataSource.data[i].NombreClase = '';
       }
-      if ( this.Tarifas_Iva.some((tarifa) => +tarifa.Tarifa === +this.dataSource.data[i].PorcentajeIvaId) !== true) {
+      if (this.Tarifas_Iva.some((tarifa) => +tarifa.Tarifa === +this.dataSource.data[i].PorcentajeIvaId) !== true) {
         this.dataSource.data[i].PorcentajeIvaId = this.Tarifas_Iva.find((x) => x.Nombre === '0% Excluido').Id;
         valido = false;
-        conteo ++;
+        conteo++;
         errorfila = errorfila + i + 'PorcentajeIVA,';
       }
-      if (this.Unidades.some((unidad) => unidad.Id.toString() === this.dataSource.data[i].UnidadMedida ) !== true) {
-        this.dataSource.data[i].UnidadMedida = this.Unidades.find((x) => x.Unidad === 'UNIDAD').Id;
+      if (this.unidades.some((unidad) => unidad.Id.toString() === this.dataSource.data[i].UnidadMedida) !== true) {
+        this.dataSource.data[i].UnidadMedida = this.unidades.find((x) => x.Unidad === 'UNIDAD').Id;
         valido = false;
-        conteo ++;
+        conteo++;
         errorfila = errorfila + 'UnidadMedida,';
       }
       if (this.dataSource.data[i].Nombre === '') {
         this.dataSource.data[i].Nombre = 'N/A';
         valido = false;
-        conteo ++;
+        conteo++;
         errorfila = errorfila + 'Nombre,';
       }
       if (this.dataSource.data[i].Marca === '') {
         this.dataSource.data[i].Marca = 'N/A';
         valido = false;
-        conteo ++;
+        conteo++;
         errorfila = errorfila + 'Marca,';
       }
       if (this.dataSource.data[i].Serie === '') {
         this.dataSource.data[i].Serie = 'N/A';
         valido = false;
-        conteo ++;
+        conteo++;
         errorfila = errorfila + 'Serie,';
       }
       if (this.dataSource.data[i].Cantidad === '') {
         this.dataSource.data[i].Cantidad = '1';
         valido = false;
-        conteo ++;
+        conteo++;
         errorfila = errorfila + 'Cantidad,';
       }
       error[i] = errorfila;
     }
-    return{ valid: valido, errores: error, cont_err: conteo };
+    return { valid: valido, errores: error, cont_err: conteo };
   }
 
   clearFile() {
-    this.form.get('archivo').setValue('');
+    this.formElementos.get('archivo').setValue('');
   }
 
   onSubmit() {
@@ -426,10 +640,10 @@ export class GestionarElementosComponent implements OnInit {
     if (this.dataSource.data.length) {
       (Swal as any).fire({
         title: this.translate.instant('GLOBAL.Advertencia'),
-        text: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.AvisoSobreescritura', {CANT: this.dataSource.data.length}),
+        text: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.AvisoSobreescritura', { CANT: this.dataSource.data.length }),
         type: 'warning',
         showCancelButton: true,
-      }).then( res => {
+      }).then(res => {
         if (res.value) {
           cargar();
         }
@@ -439,96 +653,54 @@ export class GestionarElementosComponent implements OnInit {
     }
   }
 
-  getDescuentos() {
-    if (this.dataSource.data.length) {
-      const descuento = this.dataSource.data
-        .map(t => t.Descuento * t.Cantidad)
-        .reduce((acc, value) => acc + value)
-        .toString();
-      this.Totales.Descuento = descuento;
-      return descuento;
-    } else {
-      const descuento = '0';
-      this.Totales.Descuento = descuento;
-      return descuento;
-    }
+  private emit() {
+    this.ElementosValidos.emit(this.Modo === 'verificar' ? this.checkTodos : this.formElementos.get('elementos').valid);
+    this.DatosEnviados.emit(this.elementos_);
+    this.getTotales();
   }
 
-  getSubtotales() {
-    if (this.dataSource.data.length) {
-      const subtotal = this.dataSource.data
-        .map(t => t.Subtotal)
-        .reduce((acc, value) => parseFloat(acc) + parseFloat(value));
-      this.Totales.Subtotal = subtotal;
-      return subtotal;
-    } else {
-      const subtotal = '0';
-      this.Totales.Subtotal = subtotal;
-      return subtotal;
-    }
+  private getTotales() {
+    this.Totales.Subtotal = this.getTotales_('Subtotal');
+    this.Totales.ValorIva = this.getTotales_('ValorIva');
+    this.Totales.ValorTotal = this.getTotales_('ValorTotal');
+    this.DatosTotales.emit(this.Totales);
   }
 
-  getIVA() {
-    if (this.dataSource.data.length !== 0) {
-      const iva = this.dataSource.data
-        .map(t => t.ValorIva)
-        .reduce((acc, value) => parseFloat(acc) + parseFloat(value));
-      this.Totales.ValorIva = iva;
-      return iva;
-    } else {
-      const iva = '0';
-      this.Totales.ValorIva = iva;
-      return iva;
-    }
-  }
-
-  getTotales() {
-    if (this.dataSource.data.length !== 0) {
-      const total = this.dataSource.data
-        .map(t => t.ValorTotal)
-        .reduce((acc, value) => parseFloat(acc) + parseFloat(value));
-      this.Totales.ValorTotal = total;
-      return total;
-    } else {
-      const total = '0';
-      this.Totales.ValorTotal = total;
-      return total;
-    }
+  private getTotales_(control: string) {
+    const total = (this.formElementos.get('elementos') as FormArray).controls
+      .map((elem) => (elem = elem.get(control).value))
+      .reduce((acc, value) => (acc + value), 0);
+    return total;
   }
 
   addElemento() {
     const subgrupo = new Detalle;
+    const data = new ElementoActa;
     subgrupo.SubgrupoId = <Subgrupo>{ Id: 0 };
     subgrupo.TipoBienId = new TipoBien;
-    const data = this.dataSource.data;
-    data.unshift({
-      Cantidad: 0,
-      Nombre: '',
-      Descuento: 0,
-      Marca: '',
-      PorcentajeIvaId: 0,
-      Serie: '',
-      SubgrupoCatalogoId: subgrupo,
-      Subtotal: 0,
-      UnidadMedida: 13,
-      ValorIva: 0,
-      ValorTotal: 0,
-      ValorUnitario: 0,
-    },
-    );
-    this.respuesta = data;
-    this.dataSource.data = data;
-    this.ver();
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
+
+    data.Cantidad = 0;
+    data.Nombre = '';
+    data.Descuento = 0;
+    data.Marca = '';
+    data.PorcentajeIvaId = <ParametrosGobierno>{ Id: 0 };
+    data.Serie = '';
+    data.SubgrupoCatalogoId = subgrupo;
+    data.Subtotal = 0;
+    data.UnidadMedida = 13;
+    data.ValorIva = 0;
+    data.ValorTotal = 0;
+    data.ValorUnitario = 0;
+
+    (this.formElementos.get('elementos') as FormArray).push(this.fillElemento(data));
+    this.dataSource.data = this.dataSource.data.concat({});
   }
 
   borraSeleccionados() {
-    const seleccionados = this.getSeleccionados();
-    if (seleccionados.length) {
+    if (this.selected.length) {
       (Swal as any).fire({
-        title: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.EliminarVariosElementosTitle', { cantidad: seleccionados.length }),
-        text: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.EliminarVariosElementosText', { cantidad: seleccionados.length }),
+        title: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.EliminarVariosElementosTitle', { cantidad: this.selected.length }),
+        text: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.EliminarVariosElementosText', { cantidad: this.selected.length }),
         type: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
@@ -537,38 +709,10 @@ export class GestionarElementosComponent implements OnInit {
         cancelButtonText: 'No',
       }).then((result) => {
         if (result.value) {
-          this._deleteElemento(seleccionados);
-          this.ver();
+          this._deleteElemento(null, true);
         }
       });
     }
-  }
-
-  aplicarClase() {
-    const seleccionados = this.getSeleccionados();
-    if (seleccionados.length) {
-      (Swal as any).fire({
-        title: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.EliminarVariosElementosTitle', { cantidad: seleccionados.length }),
-        text: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.EliminarVariosElementosText', { cantidad: seleccionados.length }),
-        type: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Si',
-        cancelButtonText: 'No',
-      }).then((result) => {
-        if (result.value) {
-          this._deleteElemento(seleccionados);
-          this.ver();
-        }
-      });
-    }
-  }
-
-  getSeleccionados() {
-    return this.dataSource.data.map((elem, idx) => ({ 'idx_data': idx, elem }))
-      .filter(elem => elem.elem.seleccionado)
-      .map(elem => elem.idx_data);
   }
 
   deleteElemento(index: number) {
@@ -583,88 +727,91 @@ export class GestionarElementosComponent implements OnInit {
       cancelButtonText: 'No',
     }).then((result) => {
       if (result.value) {
-        this._deleteElemento(index);
-        this.ver();
+        this._deleteElemento(index, false);
       }
     });
   }
 
-  private _deleteElemento(index: any) {
-    // console.log({index});
-    const indices = isNumeric(index) ? [index] : (isArray(index) ? index : undefined);
-    if (indices) {
+  private _deleteElemento(index: number, selected: boolean) {
+
+    if (index >= 0 && !selected) {
+      (this.formElementos.get('elementos') as FormArray).removeAt(index);
       const data = this.dataSource.data;
-      indices.sort((a, b) => b - a);
-      for (let i = 0; i < indices.length; i++) {
-        data.splice((this.paginator.pageIndex * this.paginator.pageSize) + indices[i], 1);
-      }
+      data.splice(index, 1);
       this.dataSource.data = data;
+    } else {
+      this.selected.reverse().forEach((idx) => {
+        (this.formElementos.get('elementos') as FormArray).removeAt(idx);
+        const data = this.dataSource.data;
+        data.splice(idx, 1);
+        this.dataSource.data = data;
+      });
     }
-  }
 
-  onClaseMultiple(selected: CompleterItem) {
-    if (selected && selected.originalObject) {
-      const subgrupo = new Detalle;
-      const seleccionados = this.getSeleccionados();
-
-      subgrupo.SubgrupoId = selected.originalObject.SubgrupoId;
-      subgrupo.TipoBienId = selected.originalObject.TipoBienId;
-      seleccionados.forEach((index) => { this.updateClase(selected, index); });
-    }
-    this.ver();
   }
 
   refrescaCheckTotal() {
-    let checkTodos = false;
-    let checkParcial = false;
-    if (this.dataSource && isArray(this.dataSource.data) && this.dataSource.data.length) {
-      if (this.dataSource.data.every(elem => elem.seleccionado)) {
-        // console.log('todos');
-        checkTodos = true;
-      } else if (this.dataSource.data.some(elem => elem.seleccionado)) {
-        // console.log('algunos');
-        checkParcial = true;
-      } // "else" ninguno
+
+    if ((this.formElementos.get('elementos') as FormArray).controls
+      .every((el) => (el.get('Seleccionado').value))) {
+      this.checkTodos = true;
+      this.checkParcial = false;
+    } else if ((this.formElementos.get('elementos') as FormArray).controls
+      .some((el) => (el.get('Seleccionado').value))) {
+      this.checkTodos = false;
+      this.checkParcial = true;
+    } else {
+      this.checkTodos = false;
+      this.checkParcial = false;
     }
-    this.checkTodos = checkTodos;
-    this.checkParcial = checkParcial;
-    this.enviarSeleccionados();
+
   }
 
-  cambioCheckTodos(marcar: boolean) {
-    this.dataSource.data.forEach(elem => {
-      elem.seleccionado = marcar;
-    });
+  public cambioCheckTodos() {
+    if (!this.checkTodos) {
+      (this.formElementos.get('elementos') as FormArray).controls
+        .filter((el) => (!el.get('Seleccionado').value))
+        .forEach((el) => {
+          el.patchValue(
+            {
+              Seleccionado: true,
+            },
+          );
+        });
+      this.checkTodos = true;
+      this.checkParcial = false;
+      this.formElementos.get('clase.clase').enable();
+    } else {
+      (this.formElementos.get('elementos') as FormArray).controls
+        .filter((el) => (el.get('Seleccionado').value))
+        .forEach((el) => {
+          el.patchValue(
+            {
+              Seleccionado: false,
+            },
+          );
+        });
+      this.checkTodos = false;
+      this.checkParcial = false;
+      this.formElementos.get('clase.clase').disable();
+    }
+
     this.checkAnterior = undefined;
-    this.refrescaCheckTotal();
   }
 
   cambioPagina(eventoPagina) {
     this.basePaginas = eventoPagina.pageIndex * eventoPagina.pageSize;
-    if (this.Modo !== 'ver') {
-      this.checkDummy.focus();
-    }
   }
 
-  private checkAnterior: number = undefined;
-  private estadoShift: boolean = false;
-  private basePaginas: number = 0;
-
-  enviarSeleccionados() {
-    this.Modo === 'verificar' ? this.ElementosValidos.emit(this.elementosSeleccionados()) : null;
-  }
-
-  setCasilla(fila: number, checked: boolean) {
-    this.enviarSeleccionados();
+  setCasilla(fila: number, checked: any) {
+    this.enableGlobal(checked.checked);
     fila += this.basePaginas;
-    // console.log({fila, checked, 'shift': this.estadoShift, 'anterior': this.checkAnterior});
     if (this.estadoShift && this.checkAnterior !== undefined) { // Shift presionado
       const menor = Math.min(this.checkAnterior, fila);
       const mayor = Math.max(this.checkAnterior, fila);
-      this.dataSource.data
-        .map((elem, idx) => elem.seleccionado = (idx >= menor && idx <= mayor));
+      this.setRange(menor, mayor);
     } else { // Shift suelto
-      if (checked) {
+      if (checked.checked) {
         this.checkAnterior = fila;
       } else {
         if (fila === this.checkAnterior)
@@ -674,51 +821,48 @@ export class GestionarElementosComponent implements OnInit {
     this.refrescaCheckTotal();
   }
 
-  private elementosSeleccionados(): boolean {
-    return (
-      this.dataSource && Array.isArray(this.dataSource.data) &&
-        this.dataSource.data.length &&
-        this.dataSource.data.every(x => x.seleccionado) ? true : false
-    );
+  private enableGlobal(value) {
+    if (value) {
+      this.formElementos.get('clase.clase').enable();
+    } else if (!this.selected.length) {
+      this.formElementos.get('clase.clase').disable();
+    }
   }
 
-  keyDownTablaShift() {
-    // console.log('shiftDown');
-    this.refrescaCheckTotal();
-    this.estadoShift = true;
-  }
-  keyUpTabla(evento: KeyboardEvent) {
-    // console.log({'keyUpTabla': evento});
-    this.estadoShift = evento.shiftKey;
-    this.ver();
-  }
-
-  calcularValores(index) {
-    index = (this.paginator.pageIndex * this.paginator.pageSize) + index;
-    this.dataSource.data[index].Subtotal = this.getSubtotal(index);
-    this.dataSource.data[index].ValorIva = this.getIva(index);
-    this.dataSource.data[index].ValorTotal = this.getTotal(index);
-    this.ElementosValidos.emit(this.validarElementos());
+  private setRange(menor: number, mayor: number) {
+    (this.formElementos.get('elementos') as FormArray).controls
+      .filter((_, idx) => (idx >= menor && idx <= mayor))
+      .forEach((el) => {
+        el.patchValue(
+          {
+            Seleccionado: true,
+          },
+        );
+      });
   }
 
-  private getIva(index: number) {
-    const tarifa = +this.dataSource.data[index].PorcentajeIvaId;
-    const impuesto = this.Tarifas_Iva.find(tarifa_ => tarifa_.Tarifa === tarifa).Tarifa / 100;
-    const total = parseFloat(this.dataSource.data[index].Subtotal) * impuesto;
-    return total > 0 ? total : 0;
+  get clase(): FormGroup {
+    const form = this.fb.group({
+      clase: [
+        {
+          value: '',
+          disabled: true,
+        },
+      ],
+    });
+
+    this.cambiosClase(form.get('clase'));
+    return form;
   }
 
-  private getSubtotal(index: number) {
-    const total = (parseFloat(this.dataSource.data[index].ValorUnitario) -
-      parseFloat(this.dataSource.data[index].Descuento)) *
-      parseInt(this.dataSource.data[index].Cantidad, 10);
-    return total > 0 ? total : 0;
-  }
-
-  private getTotal(index: number) {
-    const total = parseFloat(this.dataSource.data[index].Subtotal) +
-      parseFloat(this.dataSource.data[index].ValorIva);
-    return total > 0 ? total : 0;
+  private validarCompleter(key: string): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const valor = control.value;
+      const checkMinLength = typeof (valor) === 'string' && valor.length && valor.length < 4;
+      const checkInvalidTercero = (valor && typeof (valor) === 'object' && valor.SubgrupoId && valor.SubgrupoId[key] === 0) ||
+        (typeof (valor) === 'string' && valor.length >= 4);
+      return checkMinLength ? { errMinLength: true } : checkInvalidTercero ? { errSelected: true } : null;
+    };
   }
 
 }
