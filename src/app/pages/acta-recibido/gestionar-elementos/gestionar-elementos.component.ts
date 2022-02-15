@@ -683,7 +683,6 @@ export class GestionarElementosComponent implements OnInit {
     data.Nombre = '';
     data.Descuento = 0;
     data.Marca = '';
-    data.PorcentajeIvaId = <ParametrosGobierno>{ Id: 0 };
     data.Serie = '';
     data.SubgrupoCatalogoId = subgrupo;
     data.Subtotal = 0;
