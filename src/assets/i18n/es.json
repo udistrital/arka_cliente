@@ -1379,8 +1379,8 @@
         "subtitle": "Seleccione las bajas correspondientes y realice la respectiva aprobación o rechazo, según el criterio del almacén."
       },
       "aprobacion": {
-        "title": "Registrar Revisión de Comité de Almacén",
-        "subtitle": "Seleccione las bajas correspondientes y realice la respectiva aprobación o rechazo según se haya hecho en el comité de almacén"
+        "title": "Registrar Revisión de Comité de Inventarios",
+        "subtitle": "Seleccione las bajas correspondientes y realice la respectiva aprobación o rechazo según se haya hecho en el comité de inventarios"
       },
       "ver": {
         "title": "Detalle de la Solicitud de Baja de bienes",
