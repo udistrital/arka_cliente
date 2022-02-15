@@ -71,9 +71,9 @@ npm run test:ui
 
 ## Estado CI
 
-| Develop | Release 0.17.3 | Master |
+| Develop | Release 0.17.4 | Master |
 | -- | -- | -- |
-| [![Build Status](https://hubci.portaloas.udistrital.edu.co/api/badges/udistrital/arka_cliente/status.svg?ref=refs/heads/develop)](https://hubci.portaloas.udistrital.edu.co/udistrital/arka_cliente) | [![Build Status](https://hubci.portaloas.udistrital.edu.co/api/badges/udistrital/arka_cliente/status.svg?ref=refs/heads/release/0.17.3)](https://hubci.portaloas.udistrital.edu.co/udistrital/arka_cliente) | [![Build Status](https://hubci.portaloas.udistrital.edu.co/api/badges/udistrital/arka_cliente/status.svg?ref=refs/heads/master)](https://hubci.portaloas.udistrital.edu.co/udistrital/arka_cliente) |
+| [![Build Status](https://hubci.portaloas.udistrital.edu.co/api/badges/udistrital/arka_cliente/status.svg?ref=refs/heads/develop)](https://hubci.portaloas.udistrital.edu.co/udistrital/arka_cliente) | [![Build Status](https://hubci.portaloas.udistrital.edu.co/api/badges/udistrital/arka_cliente/status.svg?ref=refs/heads/release/0.17.4)](https://hubci.portaloas.udistrital.edu.co/udistrital/arka_cliente) | [![Build Status](https://hubci.portaloas.udistrital.edu.co/api/badges/udistrital/arka_cliente/status.svg?ref=refs/heads/master)](https://hubci.portaloas.udistrital.edu.co/udistrital/arka_cliente) |
 
 ## Licencia
 
