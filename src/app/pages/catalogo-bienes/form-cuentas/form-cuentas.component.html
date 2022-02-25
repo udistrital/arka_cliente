@@ -117,13 +117,13 @@
 			</div>
 		</form>
 	</mat-step>
-	<mat-step [stepControl]="formCuentas.get('depreciacion')" label="{{'GLOBAL.Depreciacion' | translate}}"
-		*ngIf="formCuentas.get('depreciacion').value">
-		<form [formGroup]="formCuentas.get('depreciacion')">
+	<mat-step [stepControl]="formCuentas.get('mediciones')" label="{{'GLOBAL.MedicionesPosteriores' | translate}}"
+		*ngIf="formCuentas.get('mediciones').value">
+		<form [formGroup]="formCuentas.get('mediciones')">
 			<div class="row">
 				<fieldset>
 					<legend>
-						{{ 'GLOBAL.movimientos.tipo.' + formCuentas.get('depreciacion.tipoMovimientoId')?.value.CodigoAbreviacion +
+						{{ 'GLOBAL.movimientos.tipo.' + formCuentas.get('mediciones.tipoMovimientoId')?.value.CodigoAbreviacion +
 						'.nombre' | translate }}
 					</legend>
 					<mat-form-field appearance="outline" class="form-group">
@@ -136,13 +136,13 @@
 								{{muestraCuenta(cta)}}
 							</mat-option>
 						</mat-autocomplete>
-						<mat-error *ngIf="formCuentas.get('depreciacion.debito')?.errors?.required">
+						<mat-error *ngIf="formCuentas.get('mediciones.debito')?.errors?.required">
 							* {{'GLOBAL.Errores.ErrorRequerido' | translate}}
 						</mat-error>
-						<mat-error *ngIf="formCuentas.get('depreciacion.debito')?.errors?.errSelected">
+						<mat-error *ngIf="formCuentas.get('mediciones.debito')?.errors?.errSelected">
 							* {{'GLOBAL.Errores.ErrorCuenta' | translate}}
 						</mat-error>
-						<mat-error *ngIf="formCuentas.get('depreciacion.debito')?.errors?.errMinLength">
+						<mat-error *ngIf="formCuentas.get('mediciones.debito')?.errors?.errMinLength">
 							* {{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}
 						</mat-error>
 					</mat-form-field>
@@ -155,13 +155,13 @@
 								{{muestraCuenta(cta)}}
 							</mat-option>
 						</mat-autocomplete>
-						<mat-error *ngIf="formCuentas.get('depreciacion.credito')?.errors?.required">
+						<mat-error *ngIf="formCuentas.get('mediciones.credito')?.errors?.required">
 							* {{'GLOBAL.Errores.ErrorRequerido' | translate}}
 						</mat-error>
-						<mat-error *ngIf="formCuentas.get('depreciacion.credito')?.errors?.errSelected">
+						<mat-error *ngIf="formCuentas.get('mediciones.credito')?.errors?.errSelected">
 							* {{'GLOBAL.Errores.ErrorCuenta' | translate}}
 						</mat-error>
-						<mat-error *ngIf="formCuentas.get('depreciacion.credito')?.errors?.errMinLength">
+						<mat-error *ngIf="formCuentas.get('mediciones.credito')?.errors?.errMinLength">
 							* {{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}
 						</mat-error>
 					</mat-form-field>
@@ -173,7 +173,7 @@
 						{{'GLOBAL.anterior' | translate}}
 					</button>
 					<button mat-flat-button color="primary" matStepperNext class="float-right text-uppercase"
-						[disabled]="formCuentas.get('depreciacion').invalid">{{'GLOBAL.siguiente' | translate}}
+						[disabled]="formCuentas.get('mediciones').invalid">{{'GLOBAL.siguiente' | translate}}
 					</button>
 				</div>
 			</div>
