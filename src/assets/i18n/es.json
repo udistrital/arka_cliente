@@ -514,13 +514,13 @@
         "Rechazar":"Rechazar",
         "Volver":"Volver",
         "DatosVeridicosTitle":"Está Seguro?",
-        "VerificadaPre":"Está seguro de que desea verificar el acta?",
+        "VerificadaPre":"¿Está seguro de que desea aprobar el acta?",
         "RechazadaPre":"Está seguro de que desea rechazar el acta?",
         "RechazadaRazon": "Inserte la razón de rechazo",
-        "VerificadaTitle":"Acta N° {{ID}} Verificada",
-        "Verificada":"El Acta N° {{ID}} ha sido verificada de forma exitosa",
-        "VerificadaTitleNO":"Acta No Verificada",
-        "VerificadaNO":"El Acta no ha podido ser verificada de forma exitosa, intente más tarde",
+        "VerificadaTitle":"Acta N° {{ID}} Aprobada",
+        "Verificada":"El Acta N° {{ID}} ha sido aprobada de forma exitosa",
+        "VerificadaTitleNO":"Acta No Aprobada",
+        "VerificadaNO":"El Acta no pudo ser aprobada de forma exitosa, intente más tarde",
         "RechazadaTitle":"Acta N° {{ID}} Devuelta",
         "Rechazada":"El Acta N° {{ID}} ha sido Devuelta de forma exitosa",
         "RechazadaTitleNO":"Acta No Devuelta",
@@ -558,6 +558,7 @@
     "Saldo": "Saldo",
     "Depreciacion":"Depreciación",
     "Valorizacion":"Valorización",
+    "Amortizacion":"Amortización",
     "Salida":"Salida",
     "Baja": "Baja",
     "Depreciacion Almacen":"Depreciación",
@@ -987,6 +988,14 @@
         "DEP": {
           "nombre": "Depreciación",
           "descripcion": "Depreciación de bienes"
+        },
+        "BJ_HT": {
+          "nombre": "Baja",
+          "descripcion": "Baja por hurto"
+        },
+        "SAL": {
+          "nombre": "Salidas",
+          "descripcion": "Salida"
         }
       },
       "tab_consumo": "Elementos de Consumo",

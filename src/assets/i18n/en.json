@@ -558,6 +558,7 @@
     "Saldo": "Balance",
     "Depreciacion": "Depreciation",
     "Valorización": "Valorization",
+    "Amortizacion":"Amortización",
     "Salida": "Output",
     "Baja": "Baja",
     "Depreciacion Almacen": "Depreciation",
@@ -987,6 +988,14 @@
         "DEP": {
           "nombre": "Depreciación",
           "descripcion": "Depreciación de bienes"
+        },
+        "BJ_HT": {
+          "nombre": "Baja",
+          "descripcion": "Baja por hurto"
+        },
+        "SAL": {
+          "nombre": "Salidas",
+          "descripcion": "Salida"
         }
       },
       "tab_consumo": "Elementos de Consumo",

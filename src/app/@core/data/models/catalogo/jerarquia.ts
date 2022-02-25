@@ -34,7 +34,7 @@ export class Grupo2 extends Grupo {
   DetalleId: number;
   Depreciacion: boolean;
   Valorizacion: boolean;
-  Deterioro: boolean;
+  Amortizacion: boolean;
   TipoBienId: TipoBienID;
   VidaUtil: number;
   ValorResidual: number;
