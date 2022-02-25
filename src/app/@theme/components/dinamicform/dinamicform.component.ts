@@ -450,7 +450,7 @@ export class DinamicformComponent implements OnInit, OnChanges, OnDestroy {
 
     const exclusive = this.normalform.campos.filter(d => (d.exclusive && d.valor));
     if (exclusive.length > 1) {
-      exclusive.forEach(e => e.alerta = 'No puede seleccionar depreciación y amortización')
+      exclusive.forEach(e => e.alerta = 'No puede seleccionar depreciación y amortización');
       this.data.valid = false;
     }
     this.result.emit(this.data);
