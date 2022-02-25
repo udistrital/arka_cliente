@@ -44,8 +44,8 @@ export class DepreciacionHelper {
      * @param tramiteOnly Indica si se traen únicamente los traslados pendientes por ser revisados
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
      */
-    public getDepreciaciones(tramiteOnly: boolean) {
-        let endpoint = 'movimiento?limit=-1&sortby=FechaCreacion&order=desc&query=FormatoTipoMovimientoId__Nombre:Depreciación';
+    public getDepreciaciones(tipoMedicion: string, tramiteOnly: boolean) {
+        let endpoint = 'movimiento?limit=-1&sortby=FechaCreacion&order=desc&query=FormatoTipoMovimientoId__Nombre:' + tipoMedicion;
         endpoint += tramiteOnly ? ',EstadoMovimientoId__Nombre:Depr Generada' : '';
         this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
         return this.rqManager.get(endpoint).pipe(

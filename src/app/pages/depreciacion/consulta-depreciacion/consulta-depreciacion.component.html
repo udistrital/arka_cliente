@@ -12,7 +12,7 @@
       (edit)="onEdit($event)" (delete)="onView($event)">
     </ng2-smart-table>
     <ngx-generar-depreciacion *ngIf="continuar" [modoCrud]="modoCrud" [depreciacionId]="depreciacionId"
-      [refDate]="fechaMin" (accion)="actualizarVista($event)"></ngx-generar-depreciacion>
+      [refDate]="fechaMin" [tipo]="tipo" (accion)="actualizarVista($event)"></ngx-generar-depreciacion>
   </mat-card-content>
 
   <mat-card-actions *ngIf="continuar">

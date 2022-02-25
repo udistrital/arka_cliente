@@ -65,7 +65,7 @@ const routes: Routes = [{
       loadChildren: './traslados/traslados.module#TrasladosModule',
     },
     {
-      path: 'depreciacion',
+      path: 'mediciones_posteriores',
       loadChildren: './depreciacion/depreciacion.module#DepreciacionModule',
     },
     {

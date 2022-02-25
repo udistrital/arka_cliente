@@ -220,6 +220,33 @@
             "name": "Tipos de Entrada"
           }
         }
+      },
+      "medicionesPosteriores": {
+        "name": "Mediciones Posteriores",
+        "children": {
+          "depreciacion": {
+            "name": "Depreciación",
+            "children": {
+              "consultarDepreciacion": {
+                "name": "Consultar Depreciación"
+              },
+              "aprobarDepreciacion": {
+                "name": "Aprobar Depreciación"
+              }
+            }
+          },
+          "amortizacion": {
+            "name": "Amortización",
+            "children": {
+              "consultarAmortizacion": {
+                "name": "Consultar Amortización"
+              },
+              "aprobarAmortizacion": {
+                "name": "Aprobar Amortización"
+              }
+            }
+          }
+        }
       }
     },
     "aplicaciones": "Aplicaciones",

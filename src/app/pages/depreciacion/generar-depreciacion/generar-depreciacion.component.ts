@@ -30,6 +30,7 @@ export class GenerarDepreciacionComponent implements OnInit {
   @Input() modoCrud: string; // create | get | review | update
   @Input() depreciacionId: number = 0;
   @Input() refDate: Date;
+  @Input() tipo: string;
 
   constructor(
     private pUpManager: PopUpManager,
@@ -197,6 +198,7 @@ export class GenerarDepreciacionComponent implements OnInit {
       FechaCorte,
       Observaciones: obs,
       RazonRechazo: this.formDepreciacion.controls.razon.value,
+      Tipo: this.tipo === 'depreciacion' ? 'Depreciación' : this.tipo === 'amortizacion' ? 'Amortizacion' : '',
     };
 
     if (this.modoCrud === 'create' || this.modoCrud === 'update') {

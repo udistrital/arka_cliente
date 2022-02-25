@@ -28,6 +28,7 @@ export class ConsultaDepreciacionComponent implements OnInit {
   depreciaciones: Array<any>;
   continuar: boolean;
   fechaMin: Date;
+  tipo: string;
 
   constructor(
     private translate: TranslateService,
@@ -40,8 +41,9 @@ export class ConsultaDepreciacionComponent implements OnInit {
 
   ngOnInit() {
     this.route.data.subscribe(data => {
-      if (data && data.modo !== null && data.modo !== undefined) {
+      if (data && data.modo !== null && data.modo !== undefined && data.tipo !== null && data.tipo !== undefined) {
         this.modo = data.modo;
+        this.tipo = data.tipo;
       }
     });
     this.source = new LocalDataSource();
@@ -50,8 +52,9 @@ export class ConsultaDepreciacionComponent implements OnInit {
     this.subtitle = this.translate.instant('GLOBAL.depreciacion.' + this.modo + '.subtitle');
   }
 
-  loadTraslados(): void {
-    this.depreciacionHelper.getDepreciaciones(this.modo === 'revision').subscribe(res => {
+  loadMediciones(): void {
+    const tipo = this.tipo === 'depreciacion' ? 'Depreciación' : this.tipo === 'amortizacion' ? 'Amortizacion' : '';
+    this.depreciacionHelper.getDepreciaciones(tipo, this.modo === 'revision').subscribe(res => {
       if (res.length) {
         res.forEach(dep => {
           const detalle = JSON.parse(dep.Detalle);
@@ -77,7 +80,7 @@ export class ConsultaDepreciacionComponent implements OnInit {
       if (res.length > 0) {
         this.estadosMovimiento = res;
         this.loadTablaSettings();
-        this.loadTraslados();
+        this.loadMediciones();
       }
     });
   }
@@ -86,7 +89,7 @@ export class ConsultaDepreciacionComponent implements OnInit {
     if (this.modo === 'revision' && event === true) {
       this.source.remove(this.filaSeleccionada);
     } else if (this.modo === 'consulta' && event === true) {
-      this.loadTraslados();
+      this.loadMediciones();
     }
   }
 
@@ -177,7 +180,7 @@ export class ConsultaDepreciacionComponent implements OnInit {
         position: 'right',
         delete: this.modo === 'consulta',
         edit: true,
-        add: this.modo === 'consulta', // this.confService.getAccion('registrarTraslado') !== undefined,
+        add: this.modo === this.confService.getAccion('registrarMedicionPosterior') !== undefined,
       },
       add: {
         addButtonContent: '<i class="fas" title="' + t.registrar + '" aria-label="' + t.registrar + '">'
