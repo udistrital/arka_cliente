@@ -169,6 +169,23 @@ export class ConsultaSalidasComponent implements OnInit {
             },
           },
         },
+        FechaModificacion: {
+          title: this.translate.instant('GLOBAL.fechaAprobacion'),
+          width: '70px%',
+          valuePrepareFunction: (value) => {
+            const date = value ? this.formatDate(value) :
+              this.translate.instant('GLOBAL.bajas.consulta.espera');
+            return date;
+          },
+          filter: {
+            type: 'daterange',
+            config: {
+              daterange: {
+                format: 'yyyy/mm/dd',
+              },
+            },
+          },
+        },
         MovimientoPadreId: {
           title: 'Entrada Asociada',
         },
@@ -276,6 +293,7 @@ export class ConsultaSalidasComponent implements OnInit {
           salida.MovimientoPadreId = movimientoPadre ? JSON.parse(movimientoPadre.Detalle).consecutivo : '';
           salida.EstadoMovimientoId = this.estadosMovimiento.find(estado =>
             estado.Id === salida.EstadoMovimientoId).Nombre;
+          salida.FechaModificacion = salida.EstadoMovimientoId === 'Salida Aprobada' ? salida.FechaModificacion : '';
         });
         this.source.load(res);
         this.source.setSort([{ field: 'FechaCreacion', direction: 'desc' }]);
@@ -381,5 +399,11 @@ export class ConsultaSalidasComponent implements OnInit {
     this.source.remove(this.filaSeleccionada);
     this.onVolver();
     this.mostrar = true;
+  }
+
+  private formatDate(value) {
+    const date = new Date(value);
+    date.setUTCMinutes(date.getTimezoneOffset());
+    return new Date(Date.parse(date.toString())).toLocaleDateString('es-CO');
   }
 }
