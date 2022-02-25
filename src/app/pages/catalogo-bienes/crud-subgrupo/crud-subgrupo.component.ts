@@ -109,7 +109,7 @@ export class CrudSubgrupoComponent implements OnInit, OnChanges {
           clase.DetalleId = detalleSubgrupo.Id;
           clase.TipoBienId = detalleSubgrupo.TipoBienId;
           clase.Depreciacion = detalleSubgrupo.Depreciacion;
-          clase.Valorizacion = detalleSubgrupo.Valorizacion;
+          clase.Amortizacion = detalleSubgrupo.Amortizacion;
           clase.ValorResidual = detalleSubgrupo.ValorResidual * 100.00;
           clase.VidaUtil = detalleSubgrupo.VidaUtil;
 
@@ -117,7 +117,7 @@ export class CrudSubgrupoComponent implements OnInit, OnChanges {
           clase.DetalleId = 0;
           clase.TipoBienId = { Id: 0 };
           clase.Depreciacion = false;
-          clase.Valorizacion = false;
+          clase.Amortizacion = false;
           clase.ValorResidual = 0;
           clase.VidaUtil = 0;
         }
@@ -140,7 +140,7 @@ export class CrudSubgrupoComponent implements OnInit, OnChanges {
       detalle.Id = formData.DetalleId;
       detalle.Activo = true;
       detalle.Depreciacion = formData.Depreciacion;
-      detalle.Valorizacion = formData.Valorizacion;
+      detalle.Amortizacion = formData.Amortizacion;
       detalle.ValorResidual = formData.ValorResidual / 100;
       detalle.VidaUtil = formData.VidaUtil;
       detalle.TipoBienId = <TipoBien>{ Id: tipoBien };
@@ -175,7 +175,7 @@ export class CrudSubgrupoComponent implements OnInit, OnChanges {
       const tipoBien = formData.TipoBienId && formData.TipoBienId.Id ? formData.TipoBienId.Id : formData.TipoBienId;
       detalle.Id = formData.DetalleId;
       detalle.Depreciacion = formData.Depreciacion;
-      detalle.Valorizacion = formData.Valorizacion;
+      detalle.Amortizacion = formData.Amortizacion;
       detalle.TipoBienId = <TipoBien>{ Id: tipoBien };
       detalle.ValorResidual = formData.ValorResidual / 100;
       detalle.VidaUtil = formData.VidaUtil;

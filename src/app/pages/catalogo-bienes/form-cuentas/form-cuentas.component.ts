@@ -77,11 +77,15 @@ export class FormCuentasComponent implements OnInit, OnChanges {
 
       const depr = this.cuentasInfo.filter(cf => cf.SubtipoMovimientoId.CodigoAbreviacion === 'DEP')
         .map((elem) => (elem = this.cuentasMov(elem.Id, elem.SubtipoMovimientoId, elem.CuentaDebitoId, elem.CuentaCreditoId)));
+
+      const amt = this.cuentasInfo.filter(cf => cf.SubtipoMovimientoId.CodigoAbreviacion === 'AMT')
+      .map((elem) => (elem = this.cuentasMov(elem.Id, elem.SubtipoMovimientoId, elem.CuentaDebitoId, elem.CuentaCreditoId)));
+
       this.formCuentas = this.fb.group({
         entradas: this.fb.array(ent),
         salida: sal[0],
         baja: bj[0],
-        depreciacion: depr.length ? depr[0] : [],
+        mediciones: depr.length ? depr[0] : amt.length ? amt[0] : [],
       });
       resolve();
     });
@@ -192,12 +196,12 @@ export class FormCuentasComponent implements OnInit, OnChanges {
       changed.push(value);
     }
 
-    if (!this.formCuentas.get('depreciacion').pristine) {
+    if (!this.formCuentas.get('mediciones').pristine) {
       const value = {
-        CuentaDebitoId: this.formCuentas.get('depreciacion').value.debito.Id,
-        CuentaCreditoId: this.formCuentas.get('depreciacion').value.credito.Id,
-        SubtipoMovimientoId: this.formCuentas.get('depreciacion').value.tipoMovimientoId.Id,
-        Id: this.formCuentas.get('depreciacion').value.id,
+        CuentaDebitoId: this.formCuentas.get('mediciones').value.debito.Id,
+        CuentaCreditoId: this.formCuentas.get('mediciones').value.credito.Id,
+        SubtipoMovimientoId: this.formCuentas.get('mediciones').value.tipoMovimientoId.Id,
+        Id: this.formCuentas.get('mediciones').value.id,
       };
       changed.push(value);
     }
@@ -213,10 +217,10 @@ export class FormCuentasComponent implements OnInit, OnChanges {
       if (index > -1) {
         (this.formCuentas.get('entradas') as FormArray).at(index).patchValue({ id: cta.Id });
         (this.formCuentas.get('entradas') as FormArray).at(index).markAsPristine();
-      } else if (this.formCuentas.get('depreciacion').value &&
-        this.formCuentas.get('depreciacion').value.tipoMovimientoId.Id === cta.SubtipoMovimientoId) {
-        this.formCuentas.get('depreciacion').patchValue({ id: cta.Id });
-        this.formCuentas.get('depreciacion').markAsPristine();
+      } else if (this.formCuentas.get('mediciones').value &&
+        this.formCuentas.get('mediciones').value.tipoMovimientoId.Id === cta.SubtipoMovimientoId) {
+        this.formCuentas.get('mediciones').patchValue({ id: cta.Id });
+        this.formCuentas.get('mediciones').markAsPristine();
       } else if (this.formCuentas.get('salida').value.tipoMovimientoId.Id === cta.SubtipoMovimientoId) {
         this.formCuentas.get('salida').patchValue({ id: cta.Id });
         this.formCuentas.get('salida').markAsPristine();

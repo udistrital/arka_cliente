@@ -28,6 +28,7 @@ export class ConsultaDepreciacionComponent implements OnInit {
   depreciaciones: Array<any>;
   continuar: boolean;
   fechaMin: Date;
+  tipo: string;
 
   constructor(
     private translate: TranslateService,
@@ -40,18 +41,20 @@ export class ConsultaDepreciacionComponent implements OnInit {
 
   ngOnInit() {
     this.route.data.subscribe(data => {
-      if (data && data.modo !== null && data.modo !== undefined) {
+      if (data && data.modo !== null && data.modo !== undefined && data.tipo !== null && data.tipo !== undefined) {
         this.modo = data.modo;
+        this.tipo = data.tipo;
       }
     });
     this.source = new LocalDataSource();
     this.loadEstados();
-    this.title = this.translate.instant('GLOBAL.depreciacion.' + this.modo + '.title');
-    this.subtitle = this.translate.instant('GLOBAL.depreciacion.' + this.modo + '.subtitle');
+    this.title = this.translate.instant('GLOBAL.' + this.tipo + '.' + this.modo + '.title');
+    this.subtitle = this.translate.instant('GLOBAL.' + this.tipo + '.' + this.modo + '.subtitle');
   }
 
-  loadTraslados(): void {
-    this.depreciacionHelper.getDepreciaciones(this.modo === 'revision').subscribe(res => {
+  loadMediciones(): void {
+    const tipo = this.tipo === 'depreciacion' ? 'Depreciación' : this.tipo === 'amortizacion' ? 'Amortizacion' : '';
+    this.depreciacionHelper.getDepreciaciones(tipo, this.modo === 'revision').subscribe(res => {
       if (res.length) {
         res.forEach(dep => {
           const detalle = JSON.parse(dep.Detalle);
@@ -77,7 +80,7 @@ export class ConsultaDepreciacionComponent implements OnInit {
       if (res.length > 0) {
         this.estadosMovimiento = res;
         this.loadTablaSettings();
-        this.loadTraslados();
+        this.loadMediciones();
       }
     });
   }
@@ -86,7 +89,7 @@ export class ConsultaDepreciacionComponent implements OnInit {
     if (this.modo === 'revision' && event === true) {
       this.source.remove(this.filaSeleccionada);
     } else if (this.modo === 'consulta' && event === true) {
-      this.loadTraslados();
+      this.loadMediciones();
     }
   }
 
@@ -97,7 +100,7 @@ export class ConsultaDepreciacionComponent implements OnInit {
       this.continuar = true;
       this.modoCrud = 'create';
     } else {
-      this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.depreciacion.errorEnCurso'));
+      this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.' + this.tipo + '.errorEnCurso'));
     }
   }
 
@@ -109,7 +112,7 @@ export class ConsultaDepreciacionComponent implements OnInit {
         this.continuar = true;
         this.depreciacionId = event.data.Id;
       } else {
-        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.depreciacion.consulta.errorEditar'));
+        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.' + this.tipo + '.consulta.errorEditar'));
       }
     } else if (this.modo === 'revision') {
       this.modoCrud = 'review';
@@ -132,7 +135,7 @@ export class ConsultaDepreciacionComponent implements OnInit {
 
   private loadTablaSettings() {
     const t = {
-      registrar: this.translate.instant('GLOBAL.depreciacion.consulta.nuevo'),
+      registrar: this.translate.instant('GLOBAL.' + this.tipo + '.consulta.nuevo'),
       delete: this.translate.instant('GLOBAL.verDetalle'),
       edit: this.translate.instant('GLOBAL.traslados.' + (this.modo === 'consulta' ? this.modo : 'revisar') + '.accionEdit'),
       icon: this.modo === 'consulta' ? 'eye' : 'edit',
@@ -170,14 +173,14 @@ export class ConsultaDepreciacionComponent implements OnInit {
 
     this.settings = {
       hideSubHeader: false,
-      noDataMessage: this.translate.instant('GLOBAL.depreciacion.consulta.' +
+      noDataMessage: this.translate.instant('GLOBAL.' + this.tipo + '.consulta.' +
         (this.modo === 'consulta' ? 'noView' : 'noReview')),
       actions: {
         columnTitle: this.translate.instant('GLOBAL.Acciones'),
         position: 'right',
         delete: this.modo === 'consulta',
         edit: true,
-        add: this.modo === 'consulta', // this.confService.getAccion('registrarTraslado') !== undefined,
+        add: this.modo === this.confService.getAccion('registrarMedicionPosterior') !== undefined,
       },
       add: {
         addButtonContent: '<i class="fas" title="' + t.registrar + '" aria-label="' + t.registrar + '">'

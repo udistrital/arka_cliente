@@ -106,8 +106,10 @@ export class TablaElementosAsignadosComponent implements OnInit {
             el.Sede = '',
             el.Dependencia = '',
             el.Ubicacion = '',
-            el.SubgrupoCatalogoId.ValorResidual = el.SubgrupoCatalogoId.Depreciacion ? el.SubgrupoCatalogoId.ValorResidual * 100 : 0,
-            el.SubgrupoCatalogoId.VidaUtil = el.SubgrupoCatalogoId.Depreciacion ? el.SubgrupoCatalogoId.VidaUtil : 0,
+            el.SubgrupoCatalogoId.ValorResidual =
+              (el.SubgrupoCatalogoId.Depreciacion || el.SubgrupoCatalogoId.Amortizacion) ? el.SubgrupoCatalogoId.ValorResidual * 100 : 0,
+            el.SubgrupoCatalogoId.VidaUtil =
+              (el.SubgrupoCatalogoId.Depreciacion || el.SubgrupoCatalogoId.Amortizacion) ? el.SubgrupoCatalogoId.VidaUtil : 0,
             el.Combinado = el.SubgrupoCatalogoId.SubgrupoId.Id ?
               el.SubgrupoCatalogoId.SubgrupoId.Codigo + ' - ' + el.SubgrupoCatalogoId.SubgrupoId.Nombre : '';
         });

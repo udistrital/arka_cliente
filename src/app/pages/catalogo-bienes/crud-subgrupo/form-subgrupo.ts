@@ -143,14 +143,16 @@ export const FORM_SUBGRUPO_DETALLE = {
             nombre: 'Depreciacion',
             label_i18n: 'Depreciacion',
             requerido: false,
+            exclusive: true,
             tipo: 'boolean',
         },
         {
             etiqueta: 'checkbox',
             claseGrid: 'col-lg-12 col-md-12 col-sm-12 col-xs-12',
-            nombre: 'Valorizacion',
-            label_i18n: 'Valorizacion',
+            nombre: 'Amortizacion',
+            label_i18n: 'Amortizacion',
             requerido: false,
+            exclusive: true,
             tipo: 'boolean',
         },
         {

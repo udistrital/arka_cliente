@@ -30,6 +30,7 @@ export class GenerarDepreciacionComponent implements OnInit {
   @Input() modoCrud: string; // create | get | review | update
   @Input() depreciacionId: number = 0;
   @Input() refDate: Date;
+  @Input() tipo: string;
 
   constructor(
     private pUpManager: PopUpManager,
@@ -49,9 +50,9 @@ export class GenerarDepreciacionComponent implements OnInit {
     }
     this.buildForm();
     this.loadEstados();
-    this.title = this.translate.instant('GLOBAL.depreciacion.' + this.modoCrud + '.title');
-    this.subtitle = this.translate.instant('GLOBAL.depreciacion.' + this.modoCrud + '.subtitle');
-    this.action = this.translate.instant('GLOBAL.depreciacion.' + this.modoCrud + '.accion');
+    this.title = this.translate.instant('GLOBAL.' + this.tipo + '.' + this.modoCrud + '.title');
+    this.subtitle = this.translate.instant('GLOBAL.' + this.tipo + '.' + this.modoCrud + '.subtitle');
+    this.action = this.translate.instant('GLOBAL.' + this.tipo + '.' + this.modoCrud + '.accion');
     if (this.modoCrud === 'create') {
       this.showForm = true;
     } else {
@@ -109,8 +110,8 @@ export class GenerarDepreciacionComponent implements OnInit {
 
   public rechazar() {
     (Swal as any).fire({
-      title: this.translate.instant('GLOBAL.depreciacion.' + this.modoCrud + '.confrmTtlR'),
-      text: this.translate.instant('GLOBAL.depreciacion.' + this.modoCrud + '.confrmTxtR'),
+      title: this.translate.instant('GLOBAL.' + this.tipo + '.' + this.modoCrud + '.confrmTtlR'),
+      text: this.translate.instant('GLOBAL.' + this.tipo + '.' + this.modoCrud + '.confrmTxtR'),
       type: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
@@ -127,7 +128,7 @@ export class GenerarDepreciacionComponent implements OnInit {
           inputValidator: (value) => {
             return new Promise<string>((resolve) => {
               if (!value.length) {
-                resolve(this.translate.instant('GLOBAL.depreciacion.review.confrmRechazoTtx'));
+                resolve(this.translate.instant('GLOBAL.' + this.tipo + '.review.confrmRechazoTtx'));
               } else {
                 resolve('');
               }
@@ -135,8 +136,8 @@ export class GenerarDepreciacionComponent implements OnInit {
           },
         }).queue([
           {
-            title: this.translate.instant('GLOBAL.depreciacion.review.confrmRechazoTtl'),
-            text: this.translate.instant('GLOBAL.depreciacion.review.confrmRechazoTtx'),
+            title: this.translate.instant('GLOBAL.' + this.tipo + '.review.confrmRechazoTtl'),
+            text: this.translate.instant('GLOBAL.' + this.tipo + '.review.confrmRechazoTtx'),
           },
         ]).then((result2) => {
           if (result2.value) {
@@ -166,8 +167,8 @@ export class GenerarDepreciacionComponent implements OnInit {
 
   public confirm(rechazar: boolean = false) {
     const sfx = this.modoCrud !== 'review' ? '' : rechazar ? 'R' : 'A';
-    const title = this.translate.instant('GLOBAL.depreciacion.' + this.modoCrud + '.confrmTtl' + sfx);
-    const text = this.translate.instant('GLOBAL.depreciacion.' + this.modoCrud + '.confrmTxt' + sfx);
+    const title = this.translate.instant('GLOBAL.' + this.tipo + '.' + this.modoCrud + '.confrmTtl' + sfx);
+    const text = this.translate.instant('GLOBAL.' + this.tipo + '.' + this.modoCrud + '.confrmTxt' + sfx);
     (Swal as any).fire({
       title,
       text,
@@ -197,13 +198,14 @@ export class GenerarDepreciacionComponent implements OnInit {
       FechaCorte,
       Observaciones: obs,
       RazonRechazo: this.formDepreciacion.controls.razon.value,
+      Tipo: this.tipo === 'depreciacion' ? 'Depreciación' : this.tipo === 'amortizacion' ? 'Amortizacion' : '',
     };
 
     if (this.modoCrud === 'create' || this.modoCrud === 'update') {
       this.depreciacionHelper.postSolicitud(data).subscribe((res: any) => {
         this.loading = false;
         if (!res.trContable) {
-          this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.depreciacion.errorVacio'));
+          this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.' + this.tipo + '.errorVacio'));
         } else if (res.trContable.errorTransaccion !== '') {
           this.submitted = true;
           this.showForm = false;
@@ -219,7 +221,7 @@ export class GenerarDepreciacionComponent implements OnInit {
       this.depreciacionHelper.putAprobacion(this.depreciacionId).subscribe((res: any) => {
         this.loading = false;
         if (!res.trContable) {
-          this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.depreciacion.errorVacio'));
+          this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.' + this.tipo + '.errorVacio'));
         } else if (res.trContable.errorTransaccion !== '') {
           this.submitted = true;
           this.showForm = false;
@@ -235,8 +237,8 @@ export class GenerarDepreciacionComponent implements OnInit {
 
   private alertSuccess(trContable, rechazar) {
     const sfx = this.modoCrud !== 'review' ? '' : rechazar ? 'R' : 'A';
-    const title = this.translate.instant('GLOBAL.depreciacion.' + this.modoCrud + '.successTtl' + sfx);
-    const text = this.translate.instant('GLOBAL.depreciacion.' + this.modoCrud + '.successTxt' + sfx);
+    const title = this.translate.instant('GLOBAL.' + this.tipo + '.' + this.modoCrud + '.successTtl' + sfx);
+    const text = this.translate.instant('GLOBAL.' + this.tipo + '.' + this.modoCrud + '.successTxt' + sfx);
     const options = {
       type: 'success',
       title,

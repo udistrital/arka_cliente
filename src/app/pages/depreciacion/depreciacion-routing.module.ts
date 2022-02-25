@@ -8,14 +8,24 @@ const routes: Routes = [{
   component: DepreciacionComponent,
   children: [
     {
-      path: 'consulta',
+      path: 'depreciacion/consulta',
       component: ConsultaDepreciacionComponent,
-      data: { modo: 'consulta' },
+      data: { modo: 'consulta', tipo: 'depreciacion' },
     },
     {
-      path: 'revision',
+      path: 'depreciacion/revision',
       component: ConsultaDepreciacionComponent,
-      data: { modo: 'revision' },
+      data: { modo: 'revision', tipo: 'depreciacion' },
+    },
+    {
+      path: 'amortizacion/consulta',
+      component: ConsultaDepreciacionComponent,
+      data: { modo: 'consulta', tipo: 'amortizacion'  },
+    },
+    {
+      path: 'amortizacion/revision',
+      component: ConsultaDepreciacionComponent,
+      data: { modo: 'revision', tipo: 'amortizacion' },
     },
   ],
 }];

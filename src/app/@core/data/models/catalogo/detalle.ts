@@ -8,7 +8,7 @@ export class DetalleID {
 export class Detalle extends DetalleID {
   Depreciacion: boolean;
   Valorizacion: boolean;
-  Deterioro: boolean;
+  Amortizacion: boolean;
   Activo: boolean;
   SubgrupoId: SubgrupoComun;
   TipoBienId: TipoBien;
