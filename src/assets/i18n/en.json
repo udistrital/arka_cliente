@@ -192,16 +192,26 @@
         }
       },
       "ajustes": {
-        "name": "Adjustments",
+        "name": "Ajustes",
         "children": {
-          "registrarAjuste": {
-            "name": "Register reversal"
+          "manual": {
+            "name": "Manual",
+            "children": {
+              "consultarAjustes": {
+                "name": "Consultar Ajuste"
+              },
+              "aprobarAjustes": {
+                "name": "Aprobar Ajuste"
+              }
+            }
           },
-          "consultarAjustes": {
-            "name": "Consultar Ajuste"
-          },
-          "aprobarAjustes": {
-            "name": "Aprobar Ajuste"
+          "ajuste-auto": {
+            "name": "Automático",
+            "children": {
+              "consultaAjusteAuto": {
+                "name": "Consultar Ajustes"
+              }
+            }
           }
         }
       },

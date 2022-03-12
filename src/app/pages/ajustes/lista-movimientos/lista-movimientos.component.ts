@@ -5,6 +5,7 @@ import { SalidaHelper } from '../../../helpers/salidas/salidasHelper';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
 import { ActaRecibido } from '../../../@core/data/models/acta_recibido/acta_recibido';
 import { PopUpManager } from '../../../managers/popUpManager';
+import { ConfiguracionService } from '../../../@core/data/configuracion.service';
 
 @Component({
   selector: 'ngx-lista-movimientos',
@@ -32,6 +33,7 @@ export class ListaMovimientosComponent implements OnInit {
     private translate: TranslateService,
     private salidasHelper: SalidaHelper,
     private pUpManager: PopUpManager,
+    private confService: ConfiguracionService,
   ) {
     this.ajustes = new LocalDataSource();
     this.actas = new LocalDataSource();
@@ -268,7 +270,7 @@ export class ListaMovimientosComponent implements OnInit {
           },
         },
       },
-    }
+    };
 
     return settings;
   }
@@ -281,7 +283,7 @@ export class ListaMovimientosComponent implements OnInit {
       actions: {
         columnTitle: this.translate.instant('GLOBAL.Acciones'),
         position: 'right',
-        add: true,
+        add: !!this.confService.getAccion('crearAjusteAuto'),
         edit: false,
         delete: false,
         custom: [
@@ -318,7 +320,7 @@ export class ListaMovimientosComponent implements OnInit {
           title: this.translate.instant('GLOBAL.revisor'),
         },
       },
-    }
+    };
 
     return settings;
 
