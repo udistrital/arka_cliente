@@ -195,6 +195,50 @@ export class ActaRecibidoHelper {
     }
 
     /**
+     * Elementos Acta Get
+     * If the response has errors in the OAS API it should show a popup message with an error.
+     * If the response is successs, it returns the object's data.
+     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
+     */
+     public getElementosActaMov(actaId) {
+        this.rqManager.setPath('ARKA_SERVICE');
+        return this.rqManager.get(
+            'ajustes/automatico/elementos/' + actaId).pipe(
+                map(
+                    (res) => {
+                        if (res === 'error') {
+                            this.pUpManager.showErrorAlert('No se pudo consultar los elementos');
+                            return undefined;
+                        }
+                        return res;
+                    },
+                ),
+            );
+    }
+
+    /**
+     * Elementos Acta Get
+     * If the response has errors in the OAS API it should show a popup message with an error.
+     * If the response is successs, it returns the object's data.
+     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
+     */
+    public postAjusteAutomatico(elementos: any) {
+        this.rqManager.setPath('ARKA_SERVICE');
+        return this.rqManager.post('ajustes/automatico/', elementos).pipe(
+            map(
+                (res) => {
+                    if (res['Type'] === 'error') {
+                        this.pUpManager.showErrorAlert('No se pudo consultar el acta solicitada');
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
+
+
+    /**
      * Soportes Acta Get
      * If the response has errors in the OAS API it should show a popup message with an error.
      * If the response is successs, it returns the object's data.

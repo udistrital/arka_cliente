@@ -39,7 +39,8 @@ export class GestionarElementosComponent implements OnInit {
   dataSource: MatTableDataSource<any>;
 
   @Input() ActaRecibidoId: number;
-  @Input() Modo: string = 'agregar'; // verificar | ver
+  @Input() Modo: string = 'agregar'; // verificar | ver | ajustar
+  @Input() ajustes: any[];
   @Output() DatosEnviados = new EventEmitter();
   @Output() DatosTotales = new EventEmitter();
   @Output() ElementosValidos = new EventEmitter<boolean>();
@@ -101,7 +102,11 @@ export class GestionarElementosComponent implements OnInit {
     await this.loadElementos();
     await this.loadLists();
     this.submitForm(this.formElementos.get('elementos').valueChanges);
-    this.emit();
+    if (this.ajustes) {
+      this.cuentasMov(this.ajustes);
+    } else {
+      this.emit();
+    }
   }
 
   private builForm() {
@@ -126,7 +131,7 @@ export class GestionarElementosComponent implements OnInit {
   }
 
   private fillElemento(el: ElementoActa) {
-    const disabled = this.Modo !== 'agregar';
+    const disabled = this.Modo === 'verificar' || this.Modo === 'ver';
     const placa = el.SubgrupoCatalogoId.TipoBienId.Id && el.SubgrupoCatalogoId.TipoBienId.NecesitaPlaca;
     const min = el.Descuento > 0 && el.Descuento > el.ValorUnitario;
     const formEl = this.fb.group({
@@ -134,7 +139,7 @@ export class GestionarElementosComponent implements OnInit {
       Seleccionado: [
         {
           value: false,
-          disabled: this.Modo === 'ver',
+          disabled,
         },
       ],
       Placa: [el.Placa],
@@ -237,6 +242,24 @@ export class GestionarElementosComponent implements OnInit {
           disabled: true,
         },
       ],
+      ValorResidual: [
+        {
+          value: el.ValorResidual * 100 / el.ValorTotal,
+          disabled: (!el.SubgrupoCatalogoId.Amortizacion && !el.SubgrupoCatalogoId.Depreciacion) || disabled,
+        },
+        {
+          validators: this.Modo === 'ajustar' ? [Validators.required, Validators.min(0), Validators.max(100)] : [],
+        },
+      ],
+      VidaUtil: [
+        {
+          value: el.VidaUtil,
+          disabled: (!el.SubgrupoCatalogoId.Amortizacion && !el.SubgrupoCatalogoId.Depreciacion) || disabled,
+        },
+        {
+          validators: this.Modo === 'ajustar' ? [Validators.required, Validators.min(0), Validators.max(100)] : [],
+        },
+      ],
     });
 
     this.cambiosClase(formEl.get('SubgrupoCatalogoId'));
@@ -268,7 +291,7 @@ export class GestionarElementosComponent implements OnInit {
   }
 
   get elementos_() {
-    return (this.formElementos.get('elementos') as FormArray).controls
+    return this.elementosF_
       .map(el => ({
         Id: el.get('Id').value,
         Nombre: el.get('Nombre').value,
@@ -284,7 +307,18 @@ export class GestionarElementosComponent implements OnInit {
         ValorIva: el.get('ValorIva').value,
         SubgrupoCatalogoId: el.get('SubgrupoCatalogoId').value,
         Placa: el.get('Placa').value,
+        ValorResidual: el.get('ValorResidual').value,
+        VidaUtil: el.get('VidaUtil').value,
       }));
+  }
+
+  get elementosF_() {
+    if (this.Modo === 'ajustar') {
+      return (this.formElementos.get('elementos') as FormArray).controls
+        .filter(el_ => el_.dirty);
+    } else {
+      return (this.formElementos.get('elementos') as FormArray).controls;
+    }
   }
 
   public fillClase(index) {
@@ -394,17 +428,33 @@ export class GestionarElementosComponent implements OnInit {
 
   private loadElementos(): Promise<void> {
     return new Promise<void>(resolve => {
-      this.ActaRecibidoId ? this.actaRecibidoHelper.getElementosActa(this.ActaRecibidoId).toPromise().then(res => {
-        if (res && res.length) {
-          this.cuentasMov(res);
-          if (!this.cargando) {
+      if (!this.ActaRecibidoId) {
+        resolve();
+      } else if (this.Modo !== 'ajustar') {
+        this.actaRecibidoHelper.getElementosActa(this.ActaRecibidoId).toPromise().then(res => {
+          if (res && res.length) {
+            this.cuentasMov(res);
+            if (!this.cargando) {
+              resolve();
+            }
+          } else {
+            this.cargando = false;
             resolve();
           }
-        } else {
-          this.cargando = false;
-          resolve();
-        }
-      }) : resolve();
+        });
+      } else {
+        this.actaRecibidoHelper.getElementosActaMov(this.ActaRecibidoId).toPromise().then(res => {
+          if (res && res.length) {
+            this.cuentasMov(res);
+            if (!this.cargando) {
+              resolve();
+            }
+          } else {
+            this.cargando = false;
+            resolve();
+          }
+        });
+      }
     });
   }
 
@@ -416,6 +466,9 @@ export class GestionarElementosComponent implements OnInit {
     }
     cols.push('Nombre', 'Cantidad', 'Marca', 'Serie', 'UnidadMedida', 'ValorUnitario',
       'Descuento', 'Subtotal', 'PorcentajeIvaId', 'ValorIva', 'ValorTotal');
+    if (this.Modo === 'ajustar' || this.ajustes) {
+      cols.push('ValorResidual', 'VidaUtil');
+    }
     this.displayedColumns = cols;
   }
 
