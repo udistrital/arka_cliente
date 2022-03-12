@@ -232,7 +232,8 @@ export class SalidaHelper {
      */
     public getAjustes() {
         this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
-        return this.rqManager.get('movimiento?query=FormatoTipoMovimientoId__Nombre:Ajuste Automático,Activo:true&limit=-1&sortby=Id&order=desc').pipe(
+        const query = 'movimiento?query=FormatoTipoMovimientoId__Nombre:Ajuste Automático,Activo:true&limit=-1&sortby=Id&order=desc';
+        return this.rqManager.get(query).pipe(
             map(
                 (res) => {
                     if (res === 'error') {
