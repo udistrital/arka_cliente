@@ -1,28 +1,30 @@
 <div class="col-lg-12">
-  <mat-card [nbSpinner]="!mostrar" [nbSpinnerMessage]="textoCargando">
+  <mat-card [nbSpinner]="spinner" [nbSpinnerMessage]="spinner">
 
-    <mat-card-title *ngIf="!ajuste && !crear">
-      {{'GLOBAL.ajustes.registrar.accion' | translate}}
+    <mat-card-title>
+      {{title}}
     </mat-card-title>
-    <mat-card-title *ngIf="ajuste">
-      {{'GLOBAL.ajuste-auto.registroTtlS' | translate: {CONSECUTIVO: consecutivo} }}
-    </mat-card-title>
-
-    <mat-card-subtitle *ngIf="!ajuste && !crear">
-      {{'GLOBAL.ajuste-auto.sugActa' | translate}}
-    </mat-card-subtitle>
-    <mat-card-subtitle *ngIf="ajuste">
-      {{'GLOBAL.ajuste-auto.sbtttlInfo' | translate}}
+    <mat-card-subtitle>
+      {{subtitle}}
     </mat-card-subtitle>
 
-    <mat-card-content *ngIf="!ajuste">
-      <ng2-smart-table [settings]="settingsListaActas" *ngIf="!crear" [source]="ajustes"
-        (custom)="CargarMovimientosAsociados($event)" (create)="onCreate()">
+    <mat-card-content *ngIf="!ajuste && !actaSeleccionada">
+
+      <ng2-smart-table [settings]="settingsAjustes" *ngIf="!crear" [source]="ajustes" (custom)="loadAjuste($event)"
+        (create)="loadActas()">
       </ng2-smart-table>
+      <ng2-smart-table [settings]="settingsActas" [source]="actas" *ngIf="crear" (custom)="loadElementos($event)">
+      </ng2-smart-table>
+
     </mat-card-content>
 
-    <ngx-crear-auto *ngIf="crear">
-    </ngx-crear-auto>
+    <mat-card-content *ngIf="crear && actaSeleccionada && !ajuste">
+
+      <ngx-gestionar-elementos [ActaRecibidoId]="actaSeleccionada" [Modo]="'ajustar'"
+        (DatosEnviados)="eventoListaElementos($event)" (ElementosValidos)="setElementosValidos($event)">
+      </ngx-gestionar-elementos>
+
+    </mat-card-content>
 
     <mat-card-content *ngIf="ajuste">
       <mat-vertical-stepper [linear]="false" #stepper>
@@ -38,8 +40,11 @@
     </mat-card-content>
 
     <mat-card-actions *ngIf="ajuste || crear">
-      <button mat-raised-button color="primary" style="margin-top: 1rem;" class="float-left text-uppercase" (click)="onVolver()">
-        {{'GLOBAL.ajuste-auto.volver' | translate}}</button>
+      <button mat-raised-button color="primary" class="float-left text-uppercase" (click)="onVolver()">
+        {{'GLOBAL.atras' | translate}}</button>
+      <button mat-raised-button color="primary" class="float-right text-uppercase" *ngIf="crear && actaSeleccionada"
+        [disabled]="!valid || !DatosElementos.length || ajuste" (click)="generarAjuste()">
+        {{'GLOBAL.ajustes.registrar.accion' | translate}}</button>
     </mat-card-actions>
 
   </mat-card>
