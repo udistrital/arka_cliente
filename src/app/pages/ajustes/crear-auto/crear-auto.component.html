@@ -11,6 +11,9 @@
   <mat-card-subtitle *ngIf="actaSeleccionada === ''">
     {{'GLOBAL.ajuste-auto.sugActa' | translate}}
   </mat-card-subtitle>
+  <mat-card-subtitle *ngIf="submited">
+    {{'GLOBAL.ajuste-auto.sbtttlInfo' | translate}}
+  </mat-card-subtitle>
   <mat-card-content>
 
     <ng2-smart-table [settings]="settingsListaActas" [source]="ActasAsociadas"
@@ -29,7 +32,6 @@
     </ngx-gestionar-elementos>
   </mat-card-content>
   <mat-card-content *ngIf="actaSeleccionada !== '' && submited">
-
     <mat-vertical-stepper [linear]="false" #stepper *ngIf="submited">
       <mat-step label="Elementos Modificados">
         <ngx-gestionar-elementos [Modo]="'ver'" [ajustes]="resultado.Elementos">
@@ -40,15 +42,14 @@
     <ngx-comprobante *ngIf="submited && resultado.TrContable?.movimientos?.length" [ajusteInfo]="resultado.TrContable"
       [modo]="'get'">
     </ngx-comprobante>
-
   </mat-card-content>
 
   <mat-card-actions *ngIf="actaSeleccionada !== ''">
     <button mat-raised-button color="primary" class="float-left text-uppercase" (click)="onVolver()">
-      {{'GLOBAL.volver' | translate}}</button>
-
+      {{'GLOBAL.atras' | translate}}</button>
     <button mat-raised-button color="primary" class="float-right text-uppercase" *ngIf="!submited"
       [disabled]="!valid || !DatosElementos.length" (click)="generarAjuste()">
       {{'GLOBAL.ajustes.registrar.accion' | translate}}</button>
   </mat-card-actions>
+
 </div>
