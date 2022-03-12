@@ -21,6 +21,7 @@ import { ThemeModule } from '../../@theme/theme.module';
 import { ComprobanteComponent } from './comprobante/comprobante.component';
 import { ConsultaAjusteComponent } from './consulta-ajuste/consulta-ajuste.component';
 import { CrudAjusteComponent } from './crud-ajuste/crud-ajuste.component';
+import { CrearAutoComponent } from './crear-auto/crear-auto.component';
 
 @NgModule({
   declarations: [
@@ -29,6 +30,7 @@ import { CrudAjusteComponent } from './crud-ajuste/crud-ajuste.component';
     ComprobanteComponent,
     ConsultaAjusteComponent,
     CrudAjusteComponent,
+    CrearAutoComponent,
   ],
   imports: [
     CommonModule,

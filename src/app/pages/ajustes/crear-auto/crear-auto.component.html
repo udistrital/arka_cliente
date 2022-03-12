@@ -1,0 +1,54 @@
+<div [nbSpinner]="!mostrar" [nbSpinnerMessage]="textoCargando">
+  <mat-card-title *ngIf="!submited">
+    {{'GLOBAL.ajustes.registrar.accion' | translate}}
+  </mat-card-title>
+  <mat-card-title *ngIf="actaSeleccionada !== '' && !submited">
+    {{'GLOBAL.Acta_Recibido.actaSeleccionada' | translate: {ACTA: actaSeleccionada} }}
+  </mat-card-title>
+  <mat-card-title *ngIf="submited">
+    {{'GLOBAL.ajuste-auto.registroTtlS' | translate: {CONSECUTIVO: consecutivo} }}
+  </mat-card-title>
+  <mat-card-subtitle *ngIf="actaSeleccionada === ''">
+    {{'GLOBAL.ajuste-auto.sugActa' | translate}}
+  </mat-card-subtitle>
+  <mat-card-content>
+
+    <ng2-smart-table [settings]="settingsListaActas" [source]="ActasAsociadas"
+      (custom)="CargarMovimientosAsociados($event)" *ngIf="actaSeleccionada === ''"></ng2-smart-table>
+
+  </mat-card-content>
+
+  <mat-card-content *ngIf="actaSeleccionada !== '' && !submited">
+    <mat-card-subtitle>
+      {{'GLOBAL.ajuste-auto.subttlActa1' | translate}} <br>
+      {{'GLOBAL.ajuste-auto.subttlActa2' | translate}}
+    </mat-card-subtitle>
+
+    <ngx-gestionar-elementos *ngIf="!submited" [ActaRecibidoId]="actaSeleccionada" [Modo]="'ajustar'"
+      (DatosEnviados)="eventoListaElementos($event)" (ElementosValidos)="setElementosValidos($event)">
+    </ngx-gestionar-elementos>
+  </mat-card-content>
+  <mat-card-content *ngIf="actaSeleccionada !== '' && submited">
+
+    <mat-vertical-stepper [linear]="false" #stepper *ngIf="submited">
+      <mat-step label="Elementos Modificados">
+        <ngx-gestionar-elementos [Modo]="'ver'" [ajustes]="resultado.Elementos">
+        </ngx-gestionar-elementos>
+      </mat-step>
+    </mat-vertical-stepper>
+
+    <ngx-comprobante *ngIf="submited && resultado.TrContable?.movimientos?.length" [ajusteInfo]="resultado.TrContable"
+      [modo]="'get'">
+    </ngx-comprobante>
+
+  </mat-card-content>
+
+  <mat-card-actions *ngIf="actaSeleccionada !== ''">
+    <button mat-raised-button color="primary" class="float-left text-uppercase" (click)="onVolver()">
+      {{'GLOBAL.volver' | translate}}</button>
+
+    <button mat-raised-button color="primary" class="float-right text-uppercase" *ngIf="!submited"
+      [disabled]="!valid || !DatosElementos.length" (click)="generarAjuste()">
+      {{'GLOBAL.ajustes.registrar.accion' | translate}}</button>
+  </mat-card-actions>
+</div>

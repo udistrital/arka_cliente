@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { AjustesComponent } from './ajustes.component';
 import { ConsultaAjusteComponent } from './consulta-ajuste/consulta-ajuste.component';
-import { ListaMovimientosComponent } from './lista-movimientos/lista-movimientos.component';
+import { CrearAutoComponent } from './crear-auto/crear-auto.component';
 
 const routes: Routes = [{
   path: '',
@@ -10,7 +10,7 @@ const routes: Routes = [{
   children: [
     {
       path: 'lista-movimientos',
-      component: ListaMovimientosComponent,
+      component: CrearAutoComponent,
     },
     {
       path: 'consulta_ajustes',
