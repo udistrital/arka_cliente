@@ -44,7 +44,7 @@ export class ListaMovimientosComponent implements OnInit {
     this.title = this.translate.instant('GLOBAL.ajuste-auto.consultaTtl');
     this.subtitle = this.translate.instant('GLOBAL.ajuste-auto.consultaSbttl');
     this.loadTablasSettings();
-    this.loadAjustes();
+    this.loadAjustes(true);
   }
 
   private loadTablasSettings() {
@@ -65,14 +65,17 @@ export class ListaMovimientosComponent implements OnInit {
     });
   }
 
-  private loadAjustes(): void {
-    this.spinner = 'Cargando ajustes';
+  private loadAjustes(spinner: boolean): void {
+    if (spinner) {
+      this.spinner = 'Cargando ajustes';
+    }
     this.salidasHelper.getAjustes().subscribe(res => {
       if (res.length) {
         res.forEach(ajuste => {
           const detalle = JSON.parse(ajuste.Detalle);
           ajuste.Consecutivo = detalle.Consecutivo;
           ajuste.Numero = detalle.Elementos.length;
+          ajuste.TrContable = detalle.TrContable;
         });
       }
       this.ajustes.load(res);
@@ -90,7 +93,8 @@ export class ListaMovimientosComponent implements OnInit {
           rechazo: '',
         };
 
-        this.title = this.translate.instant('GLOBAL.ajuste-auto.registroTtlS', { CONSECUTIVO: JSON.parse(res.Movimiento.Detalle).Consecutivo });
+        this.title = this.translate.instant('GLOBAL.ajuste-auto.registroTtlS',
+          { CONSECUTIVO: JSON.parse(res.Movimiento.Detalle).Consecutivo });
         this.subtitle = this.translate.instant('GLOBAL.ajuste-auto.sbtttlInfo');
       }
       this.spinner = '';
@@ -147,9 +151,10 @@ export class ListaMovimientosComponent implements OnInit {
           rechazo: '',
         };
 
-        this.title = this.translate.instant('GLOBAL.ajuste-auto.registroTtlS', { CONSECUTIVO: JSON.parse(res.Movimiento.Detalle).Consecutivo });
+        this.title = this.translate.instant('GLOBAL.ajuste-auto.registroTtlS',
+          { CONSECUTIVO: JSON.parse(res.Movimiento.Detalle).Consecutivo });
         this.subtitle = this.translate.instant('GLOBAL.ajuste-auto.sbtttlInfo');
-
+        this.loadAjustes(false);
       } else {
         this.valid = false;
         const alert = this.alerta;
@@ -301,9 +306,11 @@ export class ListaMovimientosComponent implements OnInit {
       columns: {
         Consecutivo: {
           title: this.translate.instant('GLOBAL.consecutivo'),
+          width: '30%',
         },
         FechaCreacion: {
           title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.FechaCreacionHeader'),
+          width: '30%',
           valuePrepareFunction: (value: any) => {
             return this.formatDate(value);
           },
@@ -316,8 +323,16 @@ export class ListaMovimientosComponent implements OnInit {
             },
           },
         },
+        TrContable: {
+          title: this.translate.instant('GLOBAL.ajuste-auto.afectacionContable'),
+          width: '15%',
+          valuePrepareFunction: (value: any) => {
+            return value ? this.translate.instant('GLOBAL.si') : this.translate.instant('GLOBAL.no');
+          },
+        },
         Numero: {
-          title: this.translate.instant('GLOBAL.revisor'),
+          title: this.translate.instant('GLOBAL.ajuste-auto.numeroElementos'),
+          width: '15%',
         },
       },
     };

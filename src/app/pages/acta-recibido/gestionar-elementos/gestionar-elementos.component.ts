@@ -39,8 +39,9 @@ export class GestionarElementosComponent implements OnInit {
   dataSource: MatTableDataSource<any>;
 
   @Input() ActaRecibidoId: number;
-  @Input() Modo: string = 'agregar'; // verificar | ver | ajustar
+  @Input() Modo: string = 'agregar' || 'verificar' || 'ver' || 'ajustar';
   @Input() ajustes: any[];
+  @Input() placa: boolean;
   @Output() DatosEnviados = new EventEmitter();
   @Output() DatosTotales = new EventEmitter();
   @Output() ElementosValidos = new EventEmitter<boolean>();
@@ -142,7 +143,12 @@ export class GestionarElementosComponent implements OnInit {
           disabled,
         },
       ],
-      Placa: [el.Placa],
+      Placa: [
+        {
+          value: el.Placa,
+          disabled: true,
+        },
+      ],
       Nombre: [
         {
           value: el.Nombre,
@@ -248,7 +254,7 @@ export class GestionarElementosComponent implements OnInit {
           disabled: (!el.SubgrupoCatalogoId.Amortizacion && !el.SubgrupoCatalogoId.Depreciacion) || disabled,
         },
         {
-          validators: this.Modo === 'ajustar' ? [Validators.required, Validators.min(0), Validators.max(100)] : [],
+          validators: this.Modo === 'ajustar' ? [Validators.required, Validators.min(0), Validators.max(100.01)] : [],
         },
       ],
       VidaUtil: [
@@ -463,6 +469,9 @@ export class GestionarElementosComponent implements OnInit {
     const cols = ['Acciones'];
     if (this.mostrarClase) {
       cols.push('SubgrupoCatalogoId', 'TipoBienId');
+    }
+    if (this.placa) {
+      cols.push('Placa');
     }
     cols.push('Nombre', 'Cantidad', 'Marca', 'Serie', 'UnidadMedida', 'ValorUnitario',
       'Descuento', 'Subtotal', 'PorcentajeIvaId', 'ValorIva', 'ValorTotal');

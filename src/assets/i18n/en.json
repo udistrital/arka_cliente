@@ -1601,7 +1601,9 @@
       "no-necesario-txt": "No se realizaron cambios para generar el ajuste.",
       "alerta-success-ttl": "Ajuste Realizado",
       "alerta-success-inv-txt": "Los elementos fueron actualizados correctamente sin afectaciones contables.",
-      "alerta-success-cont-txt": "Los elementos fueron actualizados correctamente y se generaron transacciones contables."
+      "alerta-success-cont-txt": "Los elementos fueron actualizados correctamente y se generaron transacciones contables.",
+      "numeroElementos": "Cantidad de elementos modificados",
+      "afectacionContable": "Afectación Contable"
     }
   }
 }

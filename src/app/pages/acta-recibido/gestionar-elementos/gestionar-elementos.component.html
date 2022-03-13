@@ -132,6 +132,18 @@
         <td mat-footer-cell *matFooterCellDef></td>
       </ng-container>
 
+      <!-- Placa -->
+      <ng-container matColumnDef="Placa">
+        <th id="col-placa" mat-header-cell *matHeaderCellDef mat-sort-header>
+          {{'GLOBAL.Placa' | translate }} </th>
+        <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="getActualIndex(rowIndex)">
+          <mat-form-field appearance="outline" class="valores">
+            <input matInput type="text" formControlName="Placa">
+          </mat-form-field>
+        </td>
+        <td mat-footer-cell *matFooterCellDef></td>
+      </ng-container>
+
       <!-- Nombre Catalogo -->
       <ng-container matColumnDef="Nombre">
         <th id="col-nombre" mat-header-cell *matHeaderCellDef mat-sort-header>

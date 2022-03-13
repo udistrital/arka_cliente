@@ -15,6 +15,7 @@ import { MatCheckbox } from '@angular/material';
 import { ElementoMovimientosArka, EstadoMovimiento, FormatoTipoMovimiento } from '../../../@core/data/models/entrada/entrada';
 import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
 import { MovimientosHelper } from '../../../helpers/movimientos/movimientosHelper';
+export const CONSUMO = 'Consumo';
 
 @Component({
   selector: 'ngx-tabla-elementos-asignados',
@@ -116,16 +117,16 @@ export class TablaElementosAsignadosComponent implements OnInit {
 
         if (this.edicionSalida) {
             this.salidasHelper.getSalida(this.salida_id).subscribe(res1 => {
-                const elementosConsumo = res.filter(el => el.SubgrupoCatalogoId.TipoBienId.Nombre === 'Consumo').
+                const elementosConsumo = res.filter(el => el.SubgrupoCatalogoId.TipoBienId.Nombre === CONSUMO).
                 filter(el => res1.Elementos.some(sal => sal.ElementoActaId === el.Id));
-                const elementosDevolutivo = res.filter(el => el.SubgrupoCatalogoId.TipoBienId.Nombre !== 'Consumo').
+                const elementosDevolutivo = res.filter(el => el.SubgrupoCatalogoId.TipoBienId.Nombre !== CONSUMO).
                 filter(el => res1.Elementos.some(sal => sal.ElementoActaId === el.Id));
                 this.sourceDevolutivo = new MatTableDataSource<ElementoActa>(elementosDevolutivo);
                 this.sourceConsumo = new MatTableDataSource<ElementoActa>(elementosConsumo);
             });
         } else {
-            const elementosConsumo = res.filter(el => el.SubgrupoCatalogoId.TipoBienId.Id === 1);
-            const elementosDevolutivo = res.filter(el => el.SubgrupoCatalogoId.TipoBienId.Id !== 1);
+            const elementosConsumo = res.filter(el => el.SubgrupoCatalogoId.TipoBienId.Nombre === CONSUMO);
+            const elementosDevolutivo = res.filter(el => el.SubgrupoCatalogoId.TipoBienId.Nombre !== CONSUMO);
             this.sourceDevolutivo = new MatTableDataSource<ElementoActa>(elementosDevolutivo);
             this.sourceConsumo = new MatTableDataSource<ElementoActa>(elementosConsumo);
         }
