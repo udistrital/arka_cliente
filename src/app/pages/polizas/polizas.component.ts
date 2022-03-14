@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'polizas',
+  selector: 'ngx-polizas',
   template: `<router-outlet></router-outlet>`,
-  styleUrls: []
+  styleUrls: [],
 })
 export class PolizasComponent implements OnInit {
 

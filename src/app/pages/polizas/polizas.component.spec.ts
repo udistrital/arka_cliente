@@ -8,7 +8,7 @@ describe('PolizasComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ PolizasComponent ]
+      declarations: [ PolizasComponent ],
     })
     .compileComponents();
   }));

@@ -22,6 +22,6 @@ import { OwlDateTimeModule, OwlNativeDateTimeModule } from 'ng-pick-datetime';
     OwlDateTimeModule,
     OwlNativeDateTimeModule,
     Ng2SmartTableModule,
-  ]
+  ],
 })
 export class PolizasModule { }
