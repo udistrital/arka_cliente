@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { PagesComponent } from './pages.component';
 import { NotFoundComponent } from './miscellaneous/not-found/not-found.component';
+import { PolizasComponent } from './polizas/polizas.component';
 
 const routes: Routes = [{
   path: '',
@@ -67,6 +68,10 @@ const routes: Routes = [{
     {
       path: 'depreciacion',
       loadChildren: './depreciacion/depreciacion.module#DepreciacionModule',
+    },
+    {
+      path: 'polizas',
+      loadChildren: './polizas/polizas.module#PolizasModule',
     },
     {
       path: '',
