@@ -68,6 +68,8 @@ export class ElementoActa {
     Activo: boolean;
     FechaCreacion: Date;
     FechaModificacion: Date;
+    VidaUtil: number;
+    ValorResidual: number;
 }
 
 export class ElementoActaTabla extends ElementoActa {

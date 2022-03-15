@@ -17,6 +17,7 @@
 </mat-step>
   <mat-step label="{{'GLOBAL.Comprobante_Contable.Titulo' | translate}}">
     <form [formGroup]="formComprobante">
+      <mat-card>
       <mat-table [dataSource]="dataSource" formArrayName="elementos" matSort>
         <ng-container matColumnDef="acciones">
           <th id="col-acciones" mat-header-cell *matHeaderCellDef class="acciones">
@@ -146,6 +147,7 @@
         <tr mat-footer-row *matFooterRowDef="displayedColumns; sticky: true"></tr>
       </mat-table>
       <mat-paginator #paginator [pageSizeOptions]="[10, 25, 50]"></mat-paginator>
+    </mat-card>
     </form>
   </mat-step>
 </mat-vertical-stepper>

@@ -178,7 +178,7 @@
               {{'GLOBAL.vidaUtilSug' | translate }}
             </th>
             <td mat-cell *matCellDef="let element; let rowIndex = index">
-              <input nbInput type="number" fieldSize="tiny" min="0" max="1000" step="1" class="cell" style="width: 80px;"
+              <input nbInput type="number" fieldSize="tiny" min="0" max="100" step="1" class="cell" style="width: 80px;"
                 placeholder="{{'GLOBAL.vidaUtil' | translate }}" [(ngModel)]="element.SubgrupoCatalogoId.VidaUtil"
                 [disabled]="!element.SubgrupoCatalogoId.Depreciacion">
             </td>

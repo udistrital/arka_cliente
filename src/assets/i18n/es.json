@@ -194,14 +194,24 @@
       "ajustes": {
         "name": "Ajustes",
         "children": {
-          "registrarAjuste": {
-            "name": "Registrar Ajuste"
+          "manual": {
+            "name": "Manual",
+            "children": {
+              "consultarAjustes": {
+                "name": "Consultar Ajuste"
+              },
+              "aprobarAjustes": {
+                "name": "Aprobar Ajuste"
+              }
+            }
           },
-          "consultarAjustes": {
-            "name": "Consultar Ajuste"
-          },
-          "aprobarAjustes": {
-            "name": "Aprobar Ajuste"
+          "ajuste-auto": {
+            "name": "Automático",
+            "children": {
+              "consultaAjusteAuto": {
+                "name": "Consultar Ajustes"
+              }
+            }
           }
         }
       },
@@ -297,6 +307,7 @@
       "ErrorAnularMsg": "No se puede anular el Acta {{ACTA}} por tener estado \"{{ESTADO}}\"",
       "Anular": "Anular Acta de Recibido",
       "AnuladaOkTitulo":"Acta {{ACTA}} Anulada",
+      "actaSeleccionada": "Acta Seleccionada: {{ACTA}}",
       "AnuladaOkMsg":"El Acta {{ACTA}} fue Anulada exitosamente",
       "una": "Acta Recibido",
       "varias": "Actas de Recibido",
@@ -610,6 +621,7 @@
     "enviarSolicitud": "Enviar Solicitud",
     "fechaAprobacion": "Fecha de Aprobación",
     "nivel_jerarquico": "Nivel Jerárquico",
+    "atras": "Atrás",
 
     "subgrupo": {
       "grupo": {
@@ -1574,6 +1586,24 @@
       "errorBj": "El elemento ya tiene una solicitud de baja vigente",
       "informacion": "Información General",
       "infoFechaCorte": "Fecha hasta la que se liquidará la amortización"
+    },
+    "ajuste-auto": {
+      "consultaTtl": "Ajustes automáticos",
+      "consultaSbttl": "A continuación se listan los ajustes generados, seleccione un ajuste para ver el detalle.",
+      "registroTtlS": "Resultado Ajuste {{CONSECUTIVO}}",
+      "sbtttlInfo": "A continuación se muestran los elementos ajustados y la respectiva transacción contable correspondiente a este ajuste (si aplica).",
+      "sugActa": "Seleccione el acta a la que corresponden los elementos que deben ser ajustados",
+      "subttlActa1": "Haga click sobre un campo para editarlo.",
+      "subttlActa2": "El ajuste se realizará con base en los elementos modificados.",
+      "alerta-pre-txt": "¿Generar Ajuste?",
+      "alerta-pre-ttl": "Tenga en cuenta que se realizarán movimientos contables de ajuste en caso de ser necesario, ¿Desea continuar?",
+      "no-necesario-ttl": "Ajuste no generado",
+      "no-necesario-txt": "No se realizaron cambios para generar el ajuste.",
+      "alerta-success-ttl": "Ajuste Realizado",
+      "alerta-success-inv-txt": "Los elementos fueron actualizados correctamente sin afectaciones contables.",
+      "alerta-success-cont-txt": "Los elementos fueron actualizados correctamente y se generaron transacciones contables.",
+      "numeroElementos": "Número de Elementos",
+      "afectacionContable": "Afectación Contable"
     }
   }
 }

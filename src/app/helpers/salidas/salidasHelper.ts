@@ -224,4 +224,47 @@ export class SalidaHelper {
         );
     }
 
+    /**
+     * Entradas Get
+     * If the response has errors in the OAS API it should show a popup message with an error.
+     * If the response is successs, it returns the object's data.
+     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
+     */
+    public getAjustes() {
+        this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
+        const query = 'movimiento?query=FormatoTipoMovimientoId__Nombre:Ajuste Automático,Activo:true&limit=-1&sortby=Id&order=desc';
+        return this.rqManager.get(query).pipe(
+            map(
+                (res) => {
+                    if (res === 'error') {
+                        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.entradas.errorListaEntradas'));
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
+
+    /**
+     * Entradas Get
+     * If the response has errors in the OAS API it should show a popup message with an error.
+     * If the response is successs, it returns the object's data.
+     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
+     */
+    public getDetalleAjuste(id: number) {
+        this.rqManager.setPath('ARKA_SERVICE');
+        return this.rqManager.get('ajustes/automatico/' + id).pipe(
+            map(
+                (res) => {
+                    if (res === 'error') {
+                        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.entradas.errorListaEntradas'));
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
+
 }

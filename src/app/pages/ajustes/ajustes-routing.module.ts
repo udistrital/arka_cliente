@@ -9,7 +9,7 @@ const routes: Routes = [{
   component: AjustesComponent,
   children: [
     {
-      path: 'lista-movimientos',
+      path: 'automatico',
       component: ListaMovimientosComponent,
     },
     {
