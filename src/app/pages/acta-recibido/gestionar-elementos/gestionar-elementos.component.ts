@@ -140,7 +140,7 @@ export class GestionarElementosComponent implements OnInit {
       Seleccionado: [
         {
           value: false,
-          disabled,
+          disabled: this.Modo === 'ver',
         },
       ],
       Placa: [
@@ -181,7 +181,7 @@ export class GestionarElementosComponent implements OnInit {
       ],
       UnidadMedida: [
         {
-          value: parseInt(el.UnidadMedida.toString(), 10),
+          value: el.UnidadMedida,
           disabled,
         },
         {
@@ -214,7 +214,7 @@ export class GestionarElementosComponent implements OnInit {
       ],
       PorcentajeIvaId: [
         {
-          value: el.PorcentajeIvaId,
+          value: el.PorcentajeIvaId !== null ? el.PorcentajeIvaId : '',
           disabled,
         },
         {
@@ -594,25 +594,25 @@ export class GestionarElementosComponent implements OnInit {
     this.dataSource.data = [];
     this.actaRecibidoHelper.postArchivo(formModel).subscribe((res: any) => {
       if (res !== null) {
-        if (res[0].Mensaje !== undefined) {
+        if (res.Mensaje !== undefined) {
           (Swal as any).fire({
             type: 'success',
-            title: res[0].Mensaje,
-            text: res[0].Mensaje,
+            title: this.translate.instant('GLOBAL.error'),
+            text: this.translate.instant('GLOBAL.Errores.' + res.Mensaje),
           });
           this.clearFile();
         } else {
-          this.cuentasMov(res[0].Elementos);
+          this.cuentasMov(res.Elementos);
           this.formElementos.get('archivo').reset();
           this.submitted = true;
-          const validacion = this.validarCargaMasiva();
+          const validacion = this.validarCargaMasiva(res.Elementos);
           if (validacion.valid) {
             (Swal as any).fire({
               type: 'success',
               title: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.ElementosCargadosTitleOK'),
               text: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.ElementosCargadosTextOK'),
             });
-            this.ErroresCarga = validacion.errores[4];
+            this.ErroresCarga = validacion.cont_err.toString();
           } else {
             (Swal as any).fire({
               type: 'warning',
@@ -636,57 +636,40 @@ export class GestionarElementosComponent implements OnInit {
     });
   }
 
-  validarCargaMasiva(): { valid: boolean, errores: any[], cont_err: number } {
+  validarCargaMasiva(elementos: any[]): { valid: boolean, cont_err: number } {
     let valido = true;
     let conteo = 0;
-    const error = [];
-    const validar_iva = true;
-    for (let i = 0; i < this.dataSource.data.length; i++) {
+
+    for (const elemento of elementos) {
       let errorfila = '';
-      if (this.dataSource.data[i].CodigoSubgrupo === undefined) {
-        this.dataSource.data[i].CodigoSubgrupo = '';
-        this.dataSource.data[i].TipoBienNombre = '';
-        this.dataSource.data[i].NombreClase = '';
-      }
-      if (this.Tarifas_Iva.some((tarifa) => +tarifa.Tarifa === +this.dataSource.data[i].PorcentajeIvaId) !== true) {
-        this.dataSource.data[i].PorcentajeIvaId = this.Tarifas_Iva.find((x) => x.Nombre === '0% Excluido').Id;
+      if (!this.Tarifas_Iva.some((tarifa) => +tarifa.Tarifa === elemento.PorcentajeIvaId)) {
         valido = false;
         conteo++;
-        errorfila = errorfila + i + 'PorcentajeIVA,';
       }
-      if (this.unidades.some((unidad) => unidad.Id.toString() === this.dataSource.data[i].UnidadMedida) !== true) {
-        this.dataSource.data[i].UnidadMedida = this.unidades.find((x) => x.Unidad === 'UNIDAD').Id;
+      if (!this.unidades.some((unidad) => +unidad.Id === elemento.UnidadMedida)) {
         valido = false;
         conteo++;
         errorfila = errorfila + 'UnidadMedida,';
       }
-      if (this.dataSource.data[i].Nombre === '') {
-        this.dataSource.data[i].Nombre = 'N/A';
+      if (!elemento.Nombre) {
         valido = false;
         conteo++;
         errorfila = errorfila + 'Nombre,';
       }
-      if (this.dataSource.data[i].Marca === '') {
-        this.dataSource.data[i].Marca = 'N/A';
+      if (!elemento.Marca) {
         valido = false;
         conteo++;
-        errorfila = errorfila + 'Marca,';
       }
-      if (this.dataSource.data[i].Serie === '') {
-        this.dataSource.data[i].Serie = 'N/A';
+      if (!elemento.Serie) {
         valido = false;
         conteo++;
-        errorfila = errorfila + 'Serie,';
       }
-      if (this.dataSource.data[i].Cantidad === '') {
-        this.dataSource.data[i].Cantidad = '1';
+      if (!elemento.Cantidad) {
         valido = false;
         conteo++;
-        errorfila = errorfila + 'Cantidad,';
       }
-      error[i] = errorfila;
     }
-    return { valid: valido, errores: error, cont_err: conteo };
+    return { valid: valido, cont_err: conteo };
   }
 
   clearFile() {

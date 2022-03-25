@@ -287,7 +287,8 @@
       "ErrorMinLength": "Escriba {{NUM}} o más caracteres",
       "ErrorFecha": "Ingrese una fecha válida",
       "ErrorRequerido": "Este campo es obligatorio",
-      "MismoTercero": "El funcionario destino deber ser diferente al funcionario que entrega"
+      "MismoTercero": "El funcionario destino deber ser diferente al funcionario que entrega",
+      "errorPlantillaActa":"Las columnas de la plantilla no corresponden a las requeridas."
     },
     "Comprobante_Contable": {
       "Titulo": "Comprobante Contable",

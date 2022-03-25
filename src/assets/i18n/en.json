@@ -287,7 +287,8 @@
       "ErrorMinLength": "Enter at least {{NUM}} characters",
       "ErrorFecha": "Enter a valid date",
       "ErrorRequerido": "This is a mandatory field",
-      "MismoTercero": "The new civil servant must be different to the current civil servant"
+      "MismoTercero": "The new civil servant must be different to the current civil servant",
+      "errorPlantillaActa":"Las columnas de la plantilla no corresponden a las requeridas."
     },
     "Comprobante_Contable": {
       "Titulo": "Comprobante Contable",

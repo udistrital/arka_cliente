@@ -123,7 +123,7 @@
                 * {{'GLOBAL.ajustes.errBoth' | translate}}</mat-error>
             </mat-form-field>
           </td>
-          <td mat-footer-cell *matFooterCellDef>{{ totalDebitos | currency }}</td>
+          <td mat-footer-cell style="text-align: right;" *matFooterCellDef>{{ totalDebitos | currency }}</td>
         </ng-container>
 
         <ng-container matColumnDef="credito">
@@ -139,7 +139,7 @@
                 * {{'GLOBAL.ajustes.errBoth' | translate}}</mat-error>
             </mat-form-field>
           </td>
-          <td mat-footer-cell *matFooterCellDef>{{ totalCreditos | currency }}</td>
+          <td mat-footer-cell style="text-align: right;" *matFooterCellDef>{{ totalCreditos | currency }}</td>
         </ng-container>
 
         <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
