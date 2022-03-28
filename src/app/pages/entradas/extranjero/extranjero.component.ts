@@ -34,6 +34,7 @@ export class ExtranjeroComponent implements OnInit {
   vigenciaSelect: boolean;
 
   vigencia: number; // Año Actual
+  tipos: Array<any>;
   contratos: Array<Contrato>;
   contratoEspecifico: Contrato; // Contrato Seleccionado
   private contratoInput: string; // Número de Contrato
@@ -126,6 +127,7 @@ export class ExtranjeroComponent implements OnInit {
    */
   private getVigencia() {
     this.vigencia = new Date().getFullYear();
+    this.tipos = this.entradasHelper.getTiposContrato();
   }
 
   private loadContratos(): void {

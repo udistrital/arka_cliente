@@ -61,16 +61,16 @@
            <p class="text-uppercase">{{mvto.Descripcion}}</p>
         </div>
         <div class="col" *ngIf="mvto.TipoMovimientoId==m_db">
-           <p class="text-uppercase">{{mvto.Valor | currency}}</p>
+           <p class="text-uppercase pesos">{{mvto.Valor | currency}}</p>
         </div>
         <div class="col" *ngIf="mvto.TipoMovimientoId==m_cr">
-           <p class="text-uppercase">0</p>
+         <p class="text-uppercase pesos">{{0 | currency}}</p>
         </div>
         <div class="col" *ngIf="mvto.TipoMovimientoId==m_cr">
-           <p class="text-uppercase">{{mvto.Valor | currency}}</p>
+           <p class="text-uppercase pesos">{{mvto.Valor | currency}}</p>
         </div>
         <div class="col" *ngIf="mvto.TipoMovimientoId==m_db">
-           <p class="text-uppercase">0</p>
+           <p class="text-uppercase pesos">{{0 | currency}}</p>
         </div>
       </div>
 
@@ -92,9 +92,9 @@
            <p class="text-uppercase">{{'GLOBAL.Comprobante_Contable.Total' | translate}}</p>
         </div>
         <div class="col">
-           <p class="text-uppercase">{{totalDebitos | currency}}</p>
+           <p class="text-uppercase pesos">{{totalDebitos | currency}}</p>
         </div>
         <div class="col">
-           <p class="text-uppercase">{{totalCreditos | currency}}</p>
+           <p class="text-uppercase pesos">{{totalCreditos | currency}}</p>
         </div>
       </div>

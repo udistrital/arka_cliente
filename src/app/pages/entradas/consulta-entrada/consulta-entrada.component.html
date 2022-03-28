@@ -46,8 +46,7 @@
           <p class="text-uppercase"><strong>{{'GLOBAL.numero_contrato' | translate }}</strong>: {{ entradaEspecifica.ContratoId }}</p>
         </div>
         <div class="col">
-          <p *ngIf="contrato.TipoContrato === ORDEN_SERVICIO" class="text-uppercase"><strong>{{'GLOBAL.tipo_contrato' | translate }}</strong>: {{ORDEN_DE_SERVICIO}}</p>
-          <p *ngIf="contrato.TipoContrato === ORDEN_COMPRA" class="text-uppercase"><strong>{{'GLOBAL.tipo_contrato' | translate }}</strong>: {{ORDEN_DE_COMPRA}}</p>
+          <p class="text-uppercase"><strong>{{'GLOBAL.tipo_contrato' | translate }}</strong>: {{ contrato.TipoContrato }}</p>
         </div>
       </div>
 
@@ -348,20 +347,14 @@
 
       <!-- APROVECHAMIENTOS -->
 
-      <div *ngIf="((detalle && !edit) || editarEntrada) && entradaEspecifica.TipoEntradaId.Nombre === 'Aprovechamientos'" class="row">
+      <div *ngIf="((detalle && !edit) || editarEntrada) && entradaEspecifica.TipoEntradaId.Nombre === 'Partes por Aprovechamientos'" class="row">
         <div *ngIf="Supervisor!=undefined" class="col">
           <p class="text-uppercase"><strong>{{'GLOBAL.supervisor' | translate }}</strong>: {{ Supervisor.TerceroPrincipal.NombreCompleto }}</p>
         </div>
-        <div *ngIf="Supervisor!=undefined" class="col">
+        <div *ngIf="Supervisor?.Dependencia" class="col">
           <p class="text-uppercase"><strong>{{'GLOBAL.dependencia' | translate }}</strong>: {{ Supervisor.Dependencia.Nombre}}</p>
         </div>
-      </div>  
-
-      <div *ngIf="((detalle && !edit) || editarEntrada) && entradaEspecifica.TipoEntradaId.Nombre === 'Aprovechamientos'" class="row">
-        <div *ngIf="Proveedor!=undefined" class="col">
-          <p class="text-uppercase"><strong>{{'GLOBAL.proveedor' | translate }}</strong>: {{ Proveedor }}</p>
-        </div>
-      </div>  
+      </div>
 
       <!-- OBSERVACIONES -->
       <div *ngIf="((detalle && !edit) || editarEntrada)" class=" row">

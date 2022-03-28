@@ -445,4 +445,18 @@ export class EntradaHelper {
         );
     }
 
+    public getTiposContrato() {
+        const tipos = [
+            {
+                Nombre: 'Orden de servicios',
+                Id: 14,
+            },
+            {
+                Nombre: 'Orden de compra',
+                Id: 15,
+            },
+        ];
+        return tipos;
+    }
+
 }

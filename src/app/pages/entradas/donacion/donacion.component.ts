@@ -49,6 +49,7 @@ export class DonacionComponent implements OnInit {
   ordenadorId: number;
   cargoOrdenador: string;
   // Selects
+  tipos: Array<any>;
   opcionTipoContrato: string;
   opcionvigencia: string;
   opcionSolicitante: string;
@@ -262,6 +263,7 @@ export class DonacionComponent implements OnInit {
    */
   getVigencia() {
     this.vigencia = new Date().getFullYear();
+    this.tipos = this.entradasHelper.getTiposContrato();
   }
 
   getFormatoEntrada() {

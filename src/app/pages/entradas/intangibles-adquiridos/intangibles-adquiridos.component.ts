@@ -36,6 +36,7 @@ export class IntangiblesAdquiridosComponent implements OnInit {
   // Año Actual
   vigencia: number;
   // Contratos
+  tipos: Array<any>;
   contratos: Array<Contrato>;
   // Contrato Seleccionado
   contratoEspecifico: Contrato;
@@ -230,6 +231,7 @@ export class IntangiblesAdquiridosComponent implements OnInit {
    */
   getVigencia() {
     this.vigencia = new Date().getFullYear();
+    this.tipos = this.entradasHelper.getTiposContrato();
   }
 
   /**

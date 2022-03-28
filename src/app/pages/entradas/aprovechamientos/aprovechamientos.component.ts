@@ -96,7 +96,6 @@ export class AprovechamientosComponent implements OnInit {
       supervisorCtrl: ['', Validators.required],
     });
     this.getVigencia();
-    this.listService.findProveedores();
     this.loadLists();
     this.loadSupervisores();
   }

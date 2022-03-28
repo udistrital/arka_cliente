@@ -34,6 +34,7 @@ export class ConsultaEntradaComponent implements OnInit {
   actaRecibidoId: number;
   entradaId: string;
   entradaEspecifica: Entrada;
+  tipos: Array<any>;
   contrato: Contrato;
   settings: any;
   documentoId: boolean;
@@ -77,7 +78,6 @@ export class ConsultaEntradaComponent implements OnInit {
     this.iniciarParametros();
     this.listService.findClases();
     this.listService.findImpuestoIVA();
-    this.listService.findProveedores();
     this.loadLists();
 
   }
@@ -312,7 +312,7 @@ keyEventUp(event: KeyboardEvent) {
           supervisorAux.DocumentoIdentificacion = res.contrato.supervisor.documento_identificacion;
           this.contrato.OrdenadorGasto = ordenadorAux;
           this.contrato.NumeroContratoSuscrito = res.contrato.numero_contrato_suscrito;
-          this.contrato.TipoContrato = res.contrato.tipo_contrato;
+          this.contrato.TipoContrato = res.contrato.tipo_contrato ? this.tipos.find(ct => ct.Id == res.contrato.tipo_contrato).Nombre : '';
           this.contrato.FechaSuscripcion = res.contrato.fecha_suscripcion;
           this.contrato.Supervisor = supervisorAux;
           this.mostrar = true;
@@ -633,6 +633,7 @@ keyEventUp(event: KeyboardEvent) {
   }
 
   iniciarParametros() {
+    this.tipos = this.entradasHelper.getTiposContrato();
     const tipoEntrada = new TipoEntrada;
     const supervisor = new Supervisor;
     const ordenadorGasto = new OrdenadorGasto;
@@ -668,7 +669,9 @@ keyEventUp(event: KeyboardEvent) {
     this.mostrar = true;
   }
   loadProveedor(Compuesto: string) {
-    this.Proveedor = this.Proveedores.find((prov) => prov.compuesto === Compuesto).NomProveedor;
+    if (this.Proveedores) {
+      this.Proveedor = this.Proveedores.find((prov) => prov.compuesto === Compuesto).NomProveedor;
+    }
   }
 
   onRegister() {
