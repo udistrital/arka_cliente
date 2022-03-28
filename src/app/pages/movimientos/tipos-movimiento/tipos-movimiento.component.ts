@@ -120,10 +120,10 @@ export class TiposMovimientoComponent implements OnInit {
             return value.toUpperCase();
           },
         },
-        NumeroOrden: {
-          title: this.translate.instant('GLOBAL.parametros.tiposBien.numeroOrden'),
-          width: '170px',
-        },
+        // NumeroOrden: {
+        //   title: this.translate.instant('GLOBAL.parametros.tiposBien.numeroOrden'),
+        //   width: '170px',
+        // },
         Activo: {
           width: '100px',
           title: this.translate.instant('GLOBAL.activo'),

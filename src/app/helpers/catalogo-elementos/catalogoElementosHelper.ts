@@ -708,7 +708,7 @@ export class CatalogoElementosHelper {
  */
     public getAllTiposBien() {
         this.rqManager.setPath('CATALOGO_ELEMENTOS_SERVICE');
-        return this.rqManager.get('tipo_bien?limit=-1').pipe(
+        return this.rqManager.get('tipo_bien?limit=-1&sortby=Activo,Orden&order=desc,asc').pipe(
             map(
                 (res) => {
                     if (res === 'error') {
