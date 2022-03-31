@@ -1,22 +1,22 @@
-import { CatalogoRoutingModule, routedComponents } from './catalogo-routing.module';
 import { NgModule } from '@angular/core';
-import { ThemeModule } from '../../@theme/theme.module';
-import { Ng2SmartTableModule } from 'ng2-smart-table';
-import { ToasterModule } from 'angular2-toaster';
-import { CrudCatalogoComponent } from './crud-catalogo/crud-catalogo.component';
-import { ToasterService} from 'angular2-toaster';
-import { CatalogoElementosHelper } from '../../helpers/catalogo-elementos/catalogoElementosHelper';
 import { MatDatepickerModule } from '@angular/material';
+import { ToasterModule, ToasterService } from 'angular2-toaster';
+import { Ng2SmartTableModule } from 'ng2-smart-table';
+
+import { ThemeModule } from '../../@theme/theme.module';
+import { CatalogoElementosHelper } from '../../helpers/catalogo-elementos/catalogoElementosHelper';
 import { CatalogoBienesModule } from '../catalogo-bienes/catalogo-bienes.module';
+import { CatalogoRoutingModule, routedComponents } from './catalogo-routing.module';
+import { CrudCatalogoComponent } from './crud-catalogo/crud-catalogo.component';
 
 @NgModule({
   imports: [
-    ThemeModule,
-    CatalogoRoutingModule,
-    Ng2SmartTableModule,
-    MatDatepickerModule,
-    ToasterModule,
     CatalogoBienesModule,
+    CatalogoRoutingModule,
+    MatDatepickerModule,
+    Ng2SmartTableModule,
+    ThemeModule,
+    ToasterModule,
   ],
   declarations: [
     ...routedComponents,

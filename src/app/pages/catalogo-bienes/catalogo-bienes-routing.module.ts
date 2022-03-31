@@ -1,10 +1,11 @@
 import { NgModule } from '@angular/core';
+import { Routes, RouterModule } from '@angular/router';
+
 import { CatalogoBienesComponent } from './catalogo-bienes.component';
 import { ConsultaCatalogoComponent } from './consulta-catalogo/consulta-catalogo.component';
-import { Routes, RouterModule } from '@angular/router';
+import { CrudCuentasComponent } from './crud-cuentas/crud-cuentas.component';
 import { RegistroCatalogoComponent } from './registro-catalogo/registro-catalogo.component';
 import { RegistroElementosComponent } from './registro-elementos/registro-elementos.component';
-import { CrudCuentasComponent } from './crud-cuentas/crud-cuentas.component';
 import { TiposBienComponent } from './tipos-bien/tipos-bien.component';
 
 
