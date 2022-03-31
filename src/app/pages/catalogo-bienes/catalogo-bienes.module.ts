@@ -21,6 +21,15 @@ import { TiposBienComponent } from './tipos-bien/tipos-bien.component';
 import { RegistroTipoBienComponent } from './tipos-bien/registro-tipo-bien/registro-tipo-bien.component';
 
 @NgModule({
+  imports: [
+    CommonModule,
+    CatalogoBienesRoutingModule,
+    ToasterModule,
+    ThemeModule,
+    MatTreeModule,
+    Ng2SmartTableModule,
+    NbTreeGridModule,
+  ],
   declarations: [
     ArbolComponent,
     CatalogoBienesComponent,
@@ -33,15 +42,6 @@ import { RegistroTipoBienComponent } from './tipos-bien/registro-tipo-bien/regis
     RegistroElementosComponent,
     RegistroTipoBienComponent,
     TiposBienComponent,
-  ],
-  imports: [
-    CommonModule,
-    CatalogoBienesRoutingModule,
-    ToasterModule,
-    ThemeModule,
-    MatTreeModule,
-    Ng2SmartTableModule,
-    NbTreeGridModule,
   ],
   exports: [
     ConsultaCatalogoComponent,

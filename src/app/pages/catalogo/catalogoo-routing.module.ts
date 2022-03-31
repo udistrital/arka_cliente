@@ -9,13 +9,16 @@ import { CrudCatalogoComponent } from './crud-catalogo/crud-catalogo.component';
 const routes: Routes = [{
   path: '',
   component: CatalogoComponent,
-  children: [{
-    path: 'list-catalogo',
-    component: ListCatalogoComponent,
-  }, {
-    path: 'crud-catalogo',
-    component: CrudCatalogoComponent,
-  }],
+  children: [
+    {
+      path: 'list-catalogo',
+      component: ListCatalogoComponent,
+    },
+    {
+      path: 'crud-catalogo',
+      component: CrudCatalogoComponent,
+    },
+  ],
 }];
 
 @NgModule({
