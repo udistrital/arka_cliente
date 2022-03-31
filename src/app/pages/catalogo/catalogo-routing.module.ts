@@ -3,7 +3,6 @@ import { Routes, RouterModule } from '@angular/router';
 
 import { CatalogoComponent } from './catalogo.component';
 import { CrudCatalogoComponent } from './crud-catalogo/crud-catalogo.component';
-import { CatalogoBienesComponent } from './catalogo-bienes.component';
 import { ConsultaCatalogoComponent } from './consulta-catalogo/consulta-catalogo.component';
 import { CrudCuentasComponent } from './crud-cuentas/crud-cuentas.component';
 import { ListCatalogoComponent } from './list-catalogo/list-catalogo.component';

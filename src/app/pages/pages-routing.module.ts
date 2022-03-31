@@ -37,10 +37,6 @@ const routes: Routes = [{
       loadChildren: './reportes/reportes.module#ReportesModule',
     },
     {
-      path: 'catalogo_bienes',
-      loadChildren: './catalogo-bienes/catalogo-bienes.module#CatalogoBienesModule',
-    },
-    {
       path: 'bodega_consumo',
       loadChildren: './bodega-consumo/bodega-consumo.module#BodegaConsumoModule',
     },
