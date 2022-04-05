@@ -435,6 +435,7 @@ export class GestionarElementosComponent implements OnInit {
   private loadElementos(): Promise<void> {
     return new Promise<void>(resolve => {
       if (!this.ActaRecibidoId) {
+        this.cargando = false;
         resolve();
       } else if (this.Modo !== 'ajustar') {
         this.actaRecibidoHelper.getElementosActa(this.ActaRecibidoId).toPromise().then(res => {
