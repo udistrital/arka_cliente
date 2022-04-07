@@ -2,7 +2,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ThemeModule } from '../../@theme/theme.module';
 import { ActaRecibidoModule } from '../acta-recibido/acta-recibido.module';
-
+import { AjustesModule } from '../ajustes/ajustes.module';
 import { EntradasRoutingModule, routedComponents } from './entradas-routing.module';
 import { EntradasComponent } from './entradas.component';
 import { ReposicionComponent } from './reposicion/reposicion.component';
@@ -52,6 +52,7 @@ import { VerComprobanteComponent } from './ver-comprobante/ver-comprobante.compo
     OwlNativeDateTimeModule,
     Ng2SmartTableModule,
     ActaRecibidoModule,
+    AjustesModule,
   ],
   exports: [
     VerComprobanteComponent,

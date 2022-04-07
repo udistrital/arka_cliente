@@ -49,5 +49,8 @@ import { CrudAjusteComponent } from './crud-ajuste/crud-ajuste.component';
     MatSortModule,
     ActaRecibidoModule,
   ],
+  exports: [
+    ComprobanteComponent,
+  ],
 })
 export class AjustesModule { }
