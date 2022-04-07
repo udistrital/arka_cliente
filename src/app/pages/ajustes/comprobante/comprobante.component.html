@@ -18,6 +18,15 @@
   <mat-step label="{{'GLOBAL.Comprobante_Contable.Titulo' | translate}}">
     <form [formGroup]="formComprobante">
       <mat-card>
+        <p *ngIf="consecutivo" class="text-uppercase">
+          <strong>{{'GLOBAL.consecutivo' | translate }}</strong>: {{consecutivo}}
+        </p>
+        <p *ngIf="fecha" class="text-uppercase">
+          <strong>{{'GLOBAL.Comprobante_Contable.FechaTransaccion' | translate }}</strong>: {{fecha}}
+        </p>
+        <p *ngIf="concepto" class="text-uppercase">
+          <strong>{{'GLOBAL.Comprobante_Contable.Concepto' | translate }}</strong>: {{concepto}}
+        </p>
       <mat-table [dataSource]="dataSource" formArrayName="elementos" matSort>
         <ng-container matColumnDef="acciones">
           <th id="col-acciones" mat-header-cell *matHeaderCellDef class="acciones">

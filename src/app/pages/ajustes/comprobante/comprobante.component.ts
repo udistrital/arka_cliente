@@ -26,6 +26,9 @@ export class ComprobanteComponent implements OnInit {
   @ViewChild('paginator') paginator: MatPaginator;
   @Input() modo: string; // create | get | update
   @Input() ajusteInfo: any;
+  @Input() consecutivo: string;
+  @Input() fecha: Date;
+  @Input() concepto: string;
   @Output() valid = new EventEmitter<boolean>();
   @Output() ajusteInfoChange: EventEmitter<any> = new EventEmitter<any>();
 

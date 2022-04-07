@@ -1,11 +1,17 @@
-<nb-card>
-  <nb-card-header>
-    <h1>{{'GLOBAL.consultar_entrada' | translate}}</h1>
-  </nb-card-header>
-  <nb-card-body [nbSpinner]="!mostrar">
+<mat-card>
+  <mat-card-title *ngIf="!detalle && !edit && !editarEntrada">
+    {{'GLOBAL.consultar_entrada' | translate}}
+  </mat-card-title>
+  <mat-card-title *ngIf="(detalle && !edit) || editarEntrada">
+    {{'GLOBAL.detalle_entrada' | translate}} {{ entradaEspecifica?.Consecutivo }}
+  </mat-card-title>
+  <mat-card-subtitle *ngIf="!detalle && !edit && !editarEntrada">
+    {{'GLOBAL.mensaje_consulta_entrada' | translate}}
+  </mat-card-subtitle>
+
+  <mat-card-content [nbSpinner]="!mostrar">
 
     <!-- CARD PARA MOSTRAR LAS SOLICITUDES *ngIf="!detalle" -->
-    <p class="h4 pb-4" *ngIf="!detalle && !edit && !editarEntrada">{{'GLOBAL.mensaje_consulta_entrada' | translate}}</p>
 
     <div class="container-tabla" *ngIf="!editarEntrada">
       <ng2-smart-table [settings]="settings" [source]="source" (custom)="onCustom($event)" (create)="onRegister($event)"
@@ -16,14 +22,18 @@
     <ngx-registro *ngIf="edit && entradaEdit" [EntradaEdit]="entradaEdit"></ngx-registro>
 
     <!-- CARD PARA MOSTRAR LOS DETALLES DE LAS SOLICITUDES -->
-    <h5 *ngIf="(detalle && !edit) || editarEntrada" class="pb-4">{{'GLOBAL.detalle_entrada' | translate}}</h5>
 
     <div *ngIf="(detalle && !edit) || editarEntrada">
+
+      <ngx-registro *ngIf="editarEntrada" [entradaId]="entradaId" [EntradaEdit]="editarEntrada" [ActaParaEditar]="actaRecibidoId"></ngx-registro>
+
+      <mat-vertical-stepper #stepper>
+        <mat-step label="{{'GLOBAL.info' | translate}}">
 
       <!-- ENTRADA -->
       <div class="row">
         <div class="col">
-          <p class="text-uppercase"><strong>{{'GLOBAL.Entradas' | translate }}</strong>: {{ entradaEspecifica.Consecutivo }}</p>
+          <p class="text-uppercase"><strong>{{'GLOBAL.consecutivo' | translate }}</strong>: {{ entradaEspecifica.Consecutivo }}</p>
         </div>
         <div class="col">
           <p class="text-uppercase"><strong>{{'GLOBAL.tipo_entrada' | translate }}</strong>
@@ -373,25 +383,33 @@
       <button *ngIf="documentoId" mat-button type="button" (click)="loadSoporte()">
         <mat-icon>cloud_download</mat-icon>
       </button>
+    </mat-step>
+  </mat-vertical-stepper>
 
-    <ngx-registro *ngIf="editarEntrada" [entradaId]="entradaId" [EntradaEdit]="editarEntrada" [ActaParaEditar]="actaRecibidoId"></ngx-registro>
+    <mat-vertical-stepper #stepper>
+      <mat-step label="{{'GLOBAL.elementos_entrada' | translate}}">
+        <ngx-gestionar-elementos [ActaRecibidoId]="actaRecibidoId" [Modo]="'ver'" *ngIf="detalle"></ngx-gestionar-elementos>
+      </mat-step>
+    </mat-vertical-stepper>
+    <ngx-comprobante *ngIf="trContable" [ajusteInfo]="trContable" [modo]="'get'"
+      [consecutivo]="entradaEspecifica?.Consecutivo" [fecha]="trContable.fecha" [concepto]="trContable.concepto">
+    </ngx-comprobante>
 
+  <ngx-ver-comprobante [consecutivo] = "entradaEspecifica.Consecutivo" [transaccion]="transaccionContable" *ngIf="verComponente"></ngx-ver-comprobante>
 
-      <ngx-gestionar-elementos [ActaRecibidoId]="actaRecibidoId" [Modo]="'ver'" *ngIf="detalle"></ngx-gestionar-elementos>
-
-	  <ngx-ver-comprobante [consecutivo] = "entradaEspecifica.Consecutivo" [transaccion]="transaccionContable" *ngIf="verComponente"></ngx-ver-comprobante> 
-
-      <nb-card-footer>
+      <mat-card-actions>
         <div *ngIf="modo === 'revision' && !verComponente" class="justify-content-center" style="padding-bottom: 2rem;">
-          <button nbButton (click)="confirmSubmit(false)">{{'GLOBAL.Acta_Recibido.VerificacionActa.Rechazar' |
-            translate}}</button>
-          <button nbButton  (click)="confirmSubmit(true)"
-            class="float-right">{{'GLOBAL.Acta_Recibido.VerificacionActa.Verificar' | translate}}</button>
-        </div>
-          <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="onVolver()"
-            *ngIf="(detalle && !edit) || editarEntrada">{{'GLOBAL.volver' | translate}}
+          <button mat-flat-button color="primary" class="float-left text-uppercase" (click)="confirmSubmit(false)">
+            {{'GLOBAL.Acta_Recibido.VerificacionActa.Rechazar' | translate}}
           </button>
-      </nb-card-footer>
+          <button mat-flat-button color="primary" class="float-right text-uppercase" (click)="confirmSubmit(true)">
+            {{'GLOBAL.Acta_Recibido.VerificacionActa.Verificar' | translate}}
+          </button>
+        </div>
+        <button mat-flat-button color="primary" class="float-left text-uppercase" (click)="onVolver()"
+          *ngIf="(detalle && !edit) || editarEntrada">{{'GLOBAL.volver' | translate}}
+        </button>
+      </mat-card-actions>
     </div>
-  </nb-card-body>
-</nb-card>
+  </mat-card-content>
+</mat-card>

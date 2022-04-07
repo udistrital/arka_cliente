@@ -16,18 +16,21 @@ import { IAppState } from '../../../@core/store/app.state';
 import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
 import Swal from 'sweetalert2';
 import { PopUpManager } from '../../../managers/popUpManager';
+import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
 
 @Component({
   selector: 'ngx-consulta-entrada',
   templateUrl: './consulta-entrada.component.html',
   styleUrls: ['./consulta-entrada.component.scss'],
+  providers: [
+    {
+      provide: STEPPER_GLOBAL_OPTIONS,
+      useValue: { displayDefaultIndicatorType: false },
+    },
+  ],
 })
 
 export class ConsultaEntradaComponent implements OnInit {
-  ORDEN_SERVICIO: string = '14';
-  ORDEN_COMPRA: string = '15';
-  ORDEN_DE_SERVICIO: string = 'ORDEN DE SERVICIO';
-  ORDEN_DE_COMPRA: string = 'ORDEN DE COMPRA';
   source: LocalDataSource;
   entradas: Array<Entrada>;
   detalle: boolean;
@@ -56,6 +59,9 @@ export class ConsultaEntradaComponent implements OnInit {
   detalleentrada: String;
   key: boolean = false;
   editarEntrada: boolean = false;
+  trContable: any;
+  fecha: Date;
+  concepto: string;
 
   constructor(
     private pUpManager: PopUpManager,
@@ -231,60 +237,69 @@ keyEventUp(event: KeyboardEvent) {
   }
 
   loadEntradaEspecifica(): void {
-    this.entradasHelper.getMovimiento(this.entradaId).subscribe(res => {
+    this.entradasHelper.getEntrada(this.entradaId).subscribe(res => {
       if (res !== null) {
-        this.movimiento = res[0];
+        this.movimiento = res.movimiento;
+        if (res.trContable) {
+          const fecha = new Date(res.trContable.fecha).toLocaleString();
+          this.trContable = {
+            rechazo: '',
+            movimientos: res.trContable.movimientos,
+            concepto: res.trContable.concepto,
+            fecha,
+          };
+        }
         switch (this.movimiento.FormatoTipoMovimientoId.Nombre) {
           case 'Adquisición': {
-            this.loadDetalleAdquisicion(res[0]);
+            this.loadDetalleAdquisicion(res);
             break;
           }
           case 'Elaboración Propia': {
-            this.loadDetalleElaboracion(res[0]);
+            this.loadDetalleElaboracion(res);
             break;
           }
           case 'Donación': {
-            this.loadDetalleDonacion(res[0]);
+            this.loadDetalleDonacion(res);
             break;
           }
           case 'Sobrante': {
-            this.loadDetalleSobrante(res[0]);
+            this.loadDetalleSobrante(res);
             break;
           }
           case 'Terceros': {
-            this.loadDetalleTerceros(res[0]);
+            this.loadDetalleTerceros(res);
             break;
           }
           case 'Caja menor': {
-            this.loadDetalleCajaMenor(res[0]);
+            this.loadDetalleCajaMenor(res);
             break;
           }
           case 'Adiciones y mejoras': {
-            this.loadDetalleAdicionesMejoras(res[0]);
+            this.loadDetalleAdicionesMejoras(res);
             break;
           }
           case 'Intangibles adquiridos': {
-            this.loadDetalleIntangiblesAdquiridos(res[0]);
+            this.loadDetalleIntangiblesAdquiridos(res);
             break;
           }
           case 'Provisional': {
-            this.loadDetalleProvisional(res[0]);
+            this.loadDetalleProvisional(res);
             break;
           }
           case 'Compra en el Extranjero': {
-            this.loadDetalleComprasExtranjeras(res[0]);
+            this.loadDetalleComprasExtranjeras(res);
             break;
           }
           case 'Intangibles desarrollados': {
-            this.loadDetalleIntangiblesDesarrollados(res[0]);
+            this.loadDetalleIntangiblesDesarrollados(res);
             break;
           }
           case 'Partes por Aprovechamientos': {
-            this.loadDetalleAprovechamientos(res[0]);
+            this.loadDetalleAprovechamientos(res);
             break;
           }
           case 'Reposición': {
-            this.loadDetalleReposicion(res[0]);
+            this.loadDetalleReposicion(res);
             break;
           }
           default: {
@@ -295,29 +310,25 @@ keyEventUp(event: KeyboardEvent) {
     });
   }
 
-  loadContrato(): void {
-    if (this.entradaEspecifica.ContratoId && this.entradaEspecifica.Vigencia) {
-      this.entradasHelper.getContrato(this.entradaEspecifica.ContratoId, this.entradaEspecifica.Vigencia).subscribe(res => {
-        if (res !== null) {
-          const ordenadorAux = new OrdenadorGasto;
-          const supervisorAux = new Supervisor;
-          ordenadorAux.Id = res.contrato.ordenador_gasto.id;
-          ordenadorAux.NombreOrdenador = res.contrato.ordenador_gasto.nombre_ordenador;
-          ordenadorAux.RolOrdenadorGasto = res.contrato.ordenador_gasto.rol_ordenador;
-          supervisorAux.Id = res.contrato.supervisor.id;
-          supervisorAux.Nombre = res.contrato.supervisor.nombre;
-          supervisorAux.Cargo = res.contrato.supervisor.cargo;
-          supervisorAux.Dependencia = res.contrato.supervisor.dependencia_supervisor;
-          supervisorAux.Sede = res.contrato.supervisor.sede_supervisor;
-          supervisorAux.DocumentoIdentificacion = res.contrato.supervisor.documento_identificacion;
-          this.contrato.OrdenadorGasto = ordenadorAux;
-          this.contrato.NumeroContratoSuscrito = res.contrato.numero_contrato_suscrito;
-          this.contrato.TipoContrato = res.contrato.tipo_contrato ? this.tipos.find(ct => +ct.Id === +res.contrato.tipo_contrato).Nombre : '';
-          this.contrato.FechaSuscripcion = res.contrato.fecha_suscripcion;
-          this.contrato.Supervisor = supervisorAux;
-          this.mostrar = true;
-        }
-      });
+  loadContrato(info: any): void {
+    if (info) {
+      const ordenadorAux = new OrdenadorGasto;
+      const supervisorAux = new Supervisor;
+      ordenadorAux.Id = info.ordenador_gasto.id;
+      ordenadorAux.NombreOrdenador = info.ordenador_gasto.nombre_ordenador;
+      ordenadorAux.RolOrdenadorGasto = info.ordenador_gasto.rol_ordenador;
+      supervisorAux.Id = info.supervisor.id;
+      supervisorAux.Nombre = info.supervisor.nombre;
+      supervisorAux.Cargo = info.supervisor.cargo;
+      supervisorAux.Dependencia = info.supervisor.dependencia_supervisor;
+      supervisorAux.Sede = info.supervisor.sede_supervisor;
+      supervisorAux.DocumentoIdentificacion = info.supervisor.documento_identificacion;
+      this.contrato.OrdenadorGasto = ordenadorAux;
+      this.contrato.NumeroContratoSuscrito = info.numero_contrato_suscrito;
+      this.contrato.TipoContrato = info.tipo_contrato ? this.tipos.find(ct => +ct.Id === +info.tipo_contrato).Nombre : '';
+      this.contrato.FechaSuscripcion = info.fecha_suscripcion;
+      this.contrato.Supervisor = supervisorAux;
+      this.mostrar = true;
     } else this.mostrar = true;
   }
 
@@ -422,177 +433,176 @@ keyEventUp(event: KeyboardEvent) {
 
   // CARGAR DETALLES DE ENTRADA
   loadDetalleAdquisicion(info) {
-    const detalle = JSON.parse(info.Detalle);
+    const detalle = JSON.parse(info.movimiento.Detalle);
     this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id; // ACTA RECIBIDO
     this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
     this.entradaEspecifica.ContratoId = detalle.contrato_id; // CONTRATO
     this.entradaEspecifica.Vigencia = detalle.vigencia_contrato; // VIGENCIA CONTRATO
     this.entradaEspecifica.Importacion = detalle.importacion; // IMPORTACIÓN
-    this.entradaEspecifica.TipoEntradaId.Nombre = info.FormatoTipoMovimientoId.Nombre; // TIPO ENTRADA
-    this.entradaEspecifica.Observacion = info.Observacion; // OBSERVACIÓN
+    this.entradaEspecifica.TipoEntradaId.Nombre = info.movimiento.FormatoTipoMovimientoId.Nombre; // TIPO ENTRADA
+    this.entradaEspecifica.Observacion = info.movimiento.Observacion; // OBSERVACIÓN
     this.documentoId = false; // SOPORTE
-    this.loadContrato(); // CONTRATO
+    this.loadContrato(info.contrato); // CONTRATO
   }
 
   loadDetalleElaboracion(info) {
-    const detalle = JSON.parse(info.Detalle);
+    const detalle = JSON.parse(info.movimiento.Detalle);
     this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id; // ACTA RECIBIDO
     this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
     this.entradaEspecifica.Vigencia = detalle.vigencia_ordenador; // VIGENCIA ORDENADOR
     this.entradaEspecifica.OrdenadorId = detalle.ordenador_gasto_id; // ORDENADOR DE GASTO
     this.entradaEspecifica.Solicitante = detalle.solicitante_id; // SOLICITANTE
-    this.entradaEspecifica.TipoEntradaId.Nombre = info.FormatoTipoMovimientoId.Nombre; // TIPO ENTRADA
-    this.entradaEspecifica.Observacion = info.Observacion; // OBSERVACIÓN
+    this.entradaEspecifica.TipoEntradaId.Nombre = info.movimiento.FormatoTipoMovimientoId.Nombre; // TIPO ENTRADA
+    this.entradaEspecifica.Observacion = info.movimiento.Observacion; // OBSERVACIÓN
     this.documentoId = false; // SOPORTE
     this.mostrar = true;
   }
 
   loadDetalleDonacion(info) {
-    const detalle = JSON.parse(info.Detalle);
+    const detalle = JSON.parse(info.movimiento.Detalle);
     this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id; // ACTA RECIBIDO
     this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
     this.entradaEspecifica.ContratoId = detalle.contrato_id; // CONTRATO
     this.entradaEspecifica.Vigencia = detalle.vigencia_contrato; // VIGENCIA CONTRATO
     this.entradaEspecifica.Vigencia = detalle.vigencia_solicitante; // VIGENCIA SOLICITANTE
     this.entradaEspecifica.OrdenadorId = detalle.ordenador_gasto_id; // ORDENADOR DE GASTO
-    this.entradaEspecifica.TipoEntradaId.Nombre = info.FormatoTipoMovimientoId.Nombre; // TIPO ENTRADA
-    this.entradaEspecifica.Observacion = info.Observacion; // OBSERVACIÓN
+    this.entradaEspecifica.TipoEntradaId.Nombre = info.movimiento.FormatoTipoMovimientoId.Nombre; // TIPO ENTRADA
+    this.entradaEspecifica.Observacion = info.movimiento.Observacion; // OBSERVACIÓN
     this.documentoId = false; // SOPORTE
-    this.loadContrato(); // CONTRATO
+    this.loadContrato(info.contrato); // CONTRATO
   }
 
   loadDetalleSobrante(info) {
-    const detalle = JSON.parse(info.Detalle);
+    const detalle = JSON.parse(info.movimiento.Detalle);
     this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id; // ACTA RECIBIDO
     this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
     this.entradaEspecifica.Vigencia = detalle.vigencia_ordenador; // VIGENCIA ORDENADOR
-    this.entradaEspecifica.TipoEntradaId.Nombre = info.FormatoTipoMovimientoId.Nombre; // TIPO ENTRADA
-    this.entradaEspecifica.Observacion = info.Observacion; // OBSERVACIÓN
+    this.entradaEspecifica.TipoEntradaId.Nombre = info.movimiento.FormatoTipoMovimientoId.Nombre; // TIPO ENTRADA
+    this.entradaEspecifica.Observacion = info.movimiento.Observacion; // OBSERVACIÓN
     this.documentoId = false;
     this.mostrar = true;
   }
 
   loadDetalleTerceros(info) {
-    const detalle = JSON.parse(info.Detalle);
+    const detalle = JSON.parse(info.movimiento.Detalle);
     this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id; // ACTA RECIBIDO
     this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
     this.entradaEspecifica.ContratoId = detalle.contrato_id; // CONTRATO
     this.entradaEspecifica.Vigencia = detalle.vigencia_contrato; // VIGENCIA CONTRATO
-    this.entradaEspecifica.TipoEntradaId.Nombre = info.FormatoTipoMovimientoId.Nombre; // TIPO ENTRADA
-    this.entradaEspecifica.Observacion = info.Observacion; // OBSERVACIÓN
+    this.entradaEspecifica.TipoEntradaId.Nombre = info.movimiento.FormatoTipoMovimientoId.Nombre; // TIPO ENTRADA
+    this.entradaEspecifica.Observacion = info.movimiento.Observacion; // OBSERVACIÓN
     this.documentoId = false; // SOPORTE
-    this.loadContrato(); // CONTRATO
+    this.loadContrato(info.contrato); // CONTRATO
   }
 
   loadDetalleCajaMenor(info) {
-    const detalle = JSON.parse(info.Detalle);
+    const detalle = JSON.parse(info.movimiento.Detalle);
     this.loadSupervisorById(detalle.supervisor);
     this.loadOrdenadorById(detalle.ordenador_gasto_id);
     this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id; // ACTA RECIBIDO
     this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
     this.entradaEspecifica.Vigencia = detalle.vigencia; // VIGENCIA ORDENADOR
     this.entradaEspecifica.Solicitante = detalle.solicitante_id; // SOLICITANTE
-    this.entradaEspecifica.TipoEntradaId.Nombre = info.FormatoTipoMovimientoId.Nombre; // TIPO ENTRADA
-    this.entradaEspecifica.Observacion = info.Observacion; // OBSERVACIÓN
+    this.entradaEspecifica.TipoEntradaId.Nombre = info.movimiento.FormatoTipoMovimientoId.Nombre; // TIPO ENTRADA
+    this.entradaEspecifica.Observacion = info.movimiento.Observacion; // OBSERVACIÓN
     this.documentoId = false; // SOPORTE
     this.mostrar = true;
   }
 
   loadDetalleAdicionesMejoras(info) {
-    const detalle = JSON.parse(info.Detalle);
+    const detalle = JSON.parse(info.movimiento.Detalle);
     this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id; // ACTA RECIBIDO
     this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
     this.entradaEspecifica.ContratoId = detalle.contrato_id; // CONTRATO
     this.entradaEspecifica.Vigencia = detalle.vigencia_contrato; // VIGENCIA CONTRATO
-    this.entradaEspecifica.TipoEntradaId.Nombre = info.FormatoTipoMovimientoId.Nombre; // TIPO ENTRADA
-    this.entradaEspecifica.Observacion = info.Observacion; // OBSERVACIÓN
+    this.entradaEspecifica.TipoEntradaId.Nombre = info.movimiento.FormatoTipoMovimientoId.Nombre; // TIPO ENTRADA
+    this.entradaEspecifica.Observacion = info.movimiento.Observacion; // OBSERVACIÓN
     this.documentoId = false; // SOPORTE
-    this.loadContrato(); // CONTRATO
+    this.loadContrato(info.contrato); // CONTRATO
   }
 
   loadDetalleIntangiblesAdquiridos(info) {
-    const detalle = JSON.parse(info.Detalle);
+    const detalle = JSON.parse(info.movimiento.Detalle);
     this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id; // ACTA RECIBIDO
     this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
     this.entradaEspecifica.ContratoId = detalle.contrato_id; // CONTRATO
     this.entradaEspecifica.Vigencia = detalle.vigencia_contrato; // VIGENCIA CONTRATO
-    this.entradaEspecifica.TipoEntradaId.Nombre = info.FormatoTipoMovimientoId.Nombre; // TIPO ENTRADA
-    this.entradaEspecifica.Observacion = info.Observacion; // OBSERVACIÓN
+    this.entradaEspecifica.TipoEntradaId.Nombre = info.movimiento.FormatoTipoMovimientoId.Nombre; // TIPO ENTRADA
+    this.entradaEspecifica.Observacion = info.movimiento.Observacion; // OBSERVACIÓN
     this.documentoId = false; // SOPORTE
-    this.loadContrato(); // CONTRATO
+    this.loadContrato(info.contrato); // CONTRATO
     // this.mostrar=true;
   }
   loadDetalleProvisional(info) {
-    const detalle = JSON.parse(info.Detalle);
+    const detalle = JSON.parse(info.movimiento.Detalle);
     this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id; // ACTA RECIBIDO
     this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
     this.entradaEspecifica.ContratoId = detalle.contrato_id; // CONTRATO
     this.entradaEspecifica.Vigencia = detalle.vigencia_contrato; // VIGENCIA CONTRATO
-    this.entradaEspecifica.TipoEntradaId.Nombre = info.FormatoTipoMovimientoId.Nombre; // TIPO ENTRADA
-    this.entradaEspecifica.Observacion = info.Observacion; // OBSERVACIÓN
+    this.entradaEspecifica.TipoEntradaId.Nombre = info.movimiento.FormatoTipoMovimientoId.Nombre; // TIPO ENTRADA
+    this.entradaEspecifica.Observacion = info.movimiento.Observacion; // OBSERVACIÓN
     this.documentoId = false; // SOPORTE
-    this.loadContrato(); // CONTRATO
+    this.loadContrato(info.contrato); // CONTRATO
     // this.mostrar=true;
   }
   loadDetalleComprasExtranjeras(info) {
-    const detalle = JSON.parse(info.Detalle);
+    const detalle = JSON.parse(info.movimiento.Detalle);
     this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id; // ACTA RECIBIDO
     this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
     this.entradaEspecifica.ContratoId = detalle.contrato_id; // CONTRATO
     this.entradaEspecifica.Vigencia = detalle.vigencia_contrato; // VIGENCIA CONTRATO
-    this.entradaEspecifica.TipoEntradaId.Nombre = info.FormatoTipoMovimientoId.Nombre; // TIPO ENTRADA
-    this.entradaEspecifica.Observacion = info.Observacion; // OBSERVACIÓN
+    this.entradaEspecifica.TipoEntradaId.Nombre = info.movimiento.FormatoTipoMovimientoId.Nombre; // TIPO ENTRADA
+    this.entradaEspecifica.Observacion = info.movimiento.Observacion; // OBSERVACIÓN
     this.entradaEspecifica.RegistroImportacion = detalle.num_reg_importacion; // NUMERO DE IMPORTACION
     this.entradaEspecifica.TasaRepresentativaMercado = detalle.TRM; // TASA REPRESENTATIVA DEL MERCADO
     this.entradaEspecifica.Divisa = detalle.divisa;
     this.documentoId = false; // SOPORTE
-    this.loadContrato(); // CONTRATO
+    this.loadContrato(info.contrato); // CONTRATO
     // this.mostrar=true;
   }
   loadAprovechamientos(info) {
-    const detalle = JSON.parse(info.Detalle);
+    const detalle = JSON.parse(info.movimiento.Detalle);
     this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id; // ACTA RECIBIDO
     this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
     this.entradaEspecifica.Vigencia = detalle.vigencia_ordenador; // VIGENCIA ORDENADOR
     this.entradaEspecifica.OrdenadorId = detalle.ordenador_gasto_id; // ORDENADOR DE GASTO
-    this.entradaEspecifica.TipoEntradaId.Nombre = info.FormatoTipoMovimientoId.Nombre; // TIPO ENTRADA
-    this.entradaEspecifica.Observacion = info.Observacion; // OBSERVACIÓN
+    this.entradaEspecifica.TipoEntradaId.Nombre = info.movimiento.FormatoTipoMovimientoId.Nombre; // TIPO ENTRADA
+    this.entradaEspecifica.Observacion = info.movimiento.Observacion; // OBSERVACIÓN
     this.documentoId = false;
     this.mostrar = true;
   }
   loadDetalleIntangiblesDesarrollados(info) {
-    const detalle = JSON.parse(info.Detalle);
+    const detalle = JSON.parse(info.movimiento.Detalle);
     this.loadSupervisorById(detalle.supervisor);
     this.loadOrdenadorById(detalle.ordenador_gasto_id);
     this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id; // ACTA RECIBIDO
     this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
     this.entradaEspecifica.Vigencia = detalle.vigencia_ordenador; // VIGENCIA ORDENADOR
     this.entradaEspecifica.OrdenadorId = detalle.ordenador_gasto_id; // ORDENADOR DE GASTO
-    this.entradaEspecifica.TipoEntradaId.Nombre = info.FormatoTipoMovimientoId.Nombre; // TIPO ENTRADA
-    this.entradaEspecifica.Observacion = info.Observacion; // OBSERVACIÓN
+    this.entradaEspecifica.TipoEntradaId.Nombre = info.movimiento.FormatoTipoMovimientoId.Nombre; // TIPO ENTRADA
+    this.entradaEspecifica.Observacion = info.movimiento.Observacion; // OBSERVACIÓN
     this.documentoId = false;
     this.mostrar = true;
   }
   loadDetalleAprovechamientos(info) {
-    const detalle = JSON.parse(info.Detalle);
+    const detalle = JSON.parse(info.movimiento.Detalle);
     // console.log(detalle.supervisor)
     this.loadSupervisorById(detalle.supervisor); // DATOS GENERALES DEL SUPERVISOR
-    this.loadProveedor(detalle.proveedor);
     this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id; // ACTA RECIBIDO
     this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
     this.entradaEspecifica.Vigencia = detalle.vigencia; // VIGENCIA CONTRATO
-    this.entradaEspecifica.TipoEntradaId.Nombre = info.FormatoTipoMovimientoId.Nombre; // TIPO ENTRADA
-    this.entradaEspecifica.Observacion = info.Observacion; // OBSERVACIÓN
+    this.entradaEspecifica.TipoEntradaId.Nombre = info.movimiento.FormatoTipoMovimientoId.Nombre; // TIPO ENTRADA
+    this.entradaEspecifica.Observacion = info.movimiento.Observacion; // OBSERVACIÓN
     this.documentoId = false;
     // console.log(this.Proveedor)
   }
   loadDetalleReposicion(info) {
-    const detalle = JSON.parse(info.Detalle);
+    const detalle = JSON.parse(info.movimiento.Detalle);
     this.loadEncargadoByPlaca(detalle.placa_id);
     this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id; // ACTA RECIBIDO
     this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
-    this.entradaEspecifica.TipoEntradaId.Nombre = info.FormatoTipoMovimientoId.Nombre; // TIPO ENTRADA
-    this.entradaEspecifica.Observacion = info.Observacion; // OBSERVACIÓN
+    this.entradaEspecifica.TipoEntradaId.Nombre = info.movimiento.FormatoTipoMovimientoId.Nombre; // TIPO ENTRADA
+    this.entradaEspecifica.Observacion = info.movimiento.Observacion; // OBSERVACIÓN
     this.Placa = detalle.placa_id;
     this.documentoId = false;
     this.mostrar = true;
@@ -692,6 +702,12 @@ keyEventUp(event: KeyboardEvent) {
     this.loadLists();
     this.loadTablaSettings();
 
+  }
+
+  private formatDate(value) {
+    const date = new Date(value);
+    date.setUTCMinutes(date.getTimezoneOffset());
+    return new Date(Date.parse(date.toString())).toLocaleDateString('es-CO');
   }
 
 }
