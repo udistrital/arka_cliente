@@ -355,6 +355,7 @@ export class FormSolicitudComponent implements OnInit {
             },
           ],
         });
+        this.cambiosPlaca(formEl.get('placa').valueChanges);
         (this.formBaja.get('elementos') as FormArray).push(formEl);
         this.dataSource.data = this.dataSource.data.concat(formEl.value);
       });
@@ -389,7 +390,7 @@ export class FormSolicitudComponent implements OnInit {
       distinctUntilChanged(),
       switchMap((val) => this.loadPlacas(val)),
     ).subscribe((response: any) => {
-      this.dependencias = response.queryOptions[0].Id ? response.queryOptions : [];
+      this.dependencias = response.queryOptions && response.queryOptions.length && response.queryOptions[0].Id ? response.queryOptions : [];
     });
   }
 

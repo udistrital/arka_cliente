@@ -325,7 +325,8 @@ keyEventUp(event: KeyboardEvent) {
       supervisorAux.DocumentoIdentificacion = info.supervisor.documento_identificacion;
       this.contrato.OrdenadorGasto = ordenadorAux;
       this.contrato.NumeroContratoSuscrito = info.numero_contrato_suscrito;
-      this.contrato.TipoContrato = info.tipo_contrato ? this.tipos.find(ct => +ct.Id === +info.tipo_contrato).Nombre : '';
+      this.contrato.TipoContrato = info.tipo_contrato &&
+        this.tipos.find(ct => +ct.Id === +info.tipo_contrato) ? this.tipos.find(ct => +ct.Id === +info.tipo_contrato).Nombre : '';
       this.contrato.FechaSuscripcion = info.fecha_suscripcion;
       this.contrato.Supervisor = supervisorAux;
       this.mostrar = true;
