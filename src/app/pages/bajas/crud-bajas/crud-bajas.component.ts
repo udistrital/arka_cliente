@@ -27,6 +27,8 @@ export class CrudBajasComponent implements OnInit {
   subtitle: string;
   boton: string;
   consecutivo: string = '';
+  movimiento: Movimiento;
+  trContable: any;
   rechazo: string = '';
   loading: boolean;
   @Input() modoCrud: string = 'registrar'; // registrar | ver | editar | revisar | aprobar
@@ -67,7 +69,10 @@ export class CrudBajasComponent implements OnInit {
   private getBaja(bajaId: number) {
     this.bajasHelper.getSolicitud(bajaId).subscribe(res => {
       if (res) {
-        this.consecutivo = res.Consecutivo ? res.Consecutivo : '';
+        const detalle = res.Movimiento && res.Movimiento.Detalle ? JSON.parse(res.Movimiento.Detalle) : '';
+        this.consecutivo = detalle ? detalle.Consecutivo : '';
+        this.movimiento = res.Movimiento;
+        this.trContable = res.TrContable;
         this.bajaData = {};
         this.bajaData.elementos = res.Elementos;
         this.bajaData.soporte = res.Soporte;
@@ -153,28 +158,30 @@ export class CrudBajasComponent implements OnInit {
   private async buildMovimiento(rechazar: boolean) {
 
     this.loading = true;
+    const detalle_ = this.movimiento ? <DetalleBaja>JSON.parse(this.movimiento.Detalle) : new(DetalleBaja);
+    const ConsecutivoId = detalle_ ? detalle_.ConsecutivoId : 0;
+    const Consecutivo = detalle_ ? detalle_.Consecutivo : '';
     const Funcionario = this.bajaData.controls.info.controls.funcionario.value.id;
     const Elementos = this.bajaData.controls.elementos.controls.map(control => control.value.id);
     const tipoBaja = this.bajaData.controls.info.controls.tipoBaja.value;
+    const FechaRevisionA = this.modoCrud === 'revisar' ? new Date() : detalle_ ? detalle_.FechaRevisionA : '';
+    const FechaRevisionC = this.modoCrud === 'aprobar' ? new Date() : detalle_ ? detalle_.FechaRevisionC : '';
+    const Revisor = this.modoCrud === 'revisar' ? this.userService.getPersonaId() : detalle_.Revisor;
     const estadoId = (this.modoCrud === 'registrar' || this.modoCrud === 'editar') ? 'Baja En Trámite' :
       (rechazar) ? 'Baja Rechazada' :
         (this.modoCrud === 'revisar') ? 'Baja En Comité' :
           (this.modoCrud === 'aprobar') ? 'Baja Aprobada' : '';
-    const FechaRevisionA = this.modoCrud === 'revisar' ? new Date() :
-      this.bajaData.controls.info.value.fechaRevision;
-    const FechaRevisionC = this.modoCrud === 'aprobar' ? new Date() :
-      this.bajaData.controls.info.value.fechaAprobacion;
-    const Revisor = this.modoCrud === 'revisar' ? this.userService.getPersonaId() :
-      this.bajaData.controls.info.value.revisor.id;
     const RazonRechazo = (this.rechazo) ? this.rechazo :
       estadoId === 'Baja En Trámite' ? this.bajaData.controls.rechazo.controls.razon.value : '';
+
     const detalle = <DetalleBaja>{
       Elementos,
       Funcionario,
       Revisor,
       FechaRevisionA,
       FechaRevisionC,
-      Consecutivo: this.consecutivo ? this.consecutivo : '',
+      Consecutivo,
+      ConsecutivoId,
       RazonRechazo,
     };
 

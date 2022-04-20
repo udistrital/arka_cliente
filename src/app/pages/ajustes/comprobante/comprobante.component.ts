@@ -208,7 +208,9 @@ export class ComprobanteComponent implements OnInit {
 
   private loadValues() {
     const disabled = this.modo === 'get';
-    this.formComprobante.patchValue({ razon: this.ajusteInfo.rechazo });
+    this.formComprobante.patchValue({
+      razon: this.ajusteInfo.rechazo ?  this.ajusteInfo.rechazo : '',
+    });
 
     this.ajusteInfo.movimientos.forEach(mov => {
       const formEl = this.fb.group({

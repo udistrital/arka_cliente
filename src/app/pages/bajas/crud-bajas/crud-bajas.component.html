@@ -8,6 +8,9 @@
   <ngx-form-solicitud *ngIf="showForm" (valid)="setValidness($event)" [(bajaInfo)]="bajaData" [modo]="modoForm">
   </ngx-form-solicitud>
 </mat-card-content>
+<ngx-comprobante *ngIf="trContable" [ajusteInfo]="trContable" [modo]="'get'" [consecutivo]="consecutivo"
+  [fecha]="trContable.fecha" [concepto]="trContable.concepto">
+</ngx-comprobante>
 <mat-card-actions>
   <div class="justify-content-center" style="padding-bottom: 3rem;">
     <button mat-flat-button color="primary" class="float-left text-uppercase" *ngIf="modoCrud === 'revisar'"
