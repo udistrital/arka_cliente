@@ -12,6 +12,7 @@ import { FormTrasladoComponent } from './form-traslado/form-traslado.component';
 import { ConsultaTrasladosComponent } from './consulta-traslados/consulta-traslados.component';
 import { Ng2SmartTableModule } from 'ng2-smart-table';
 import { CrudTrasladoComponent } from './crud-traslado/crud-traslado.component';
+import { AjustesModule } from '../ajustes/ajustes.module';
 
 
 @NgModule({
@@ -31,6 +32,7 @@ import { CrudTrasladoComponent } from './crud-traslado/crud-traslado.component';
     MatPaginatorModule,
     MatSortModule,
     Ng2SmartTableModule,
+    AjustesModule,
   ],
 })
 export class TrasladosModule { }

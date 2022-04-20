@@ -7,6 +7,7 @@ export class DetalleTraslado {
     Elementos: Array<number>;
     Ubicacion: string;
     Consecutivo: string;
+    ConsecutivoId: number;
     RazonRechazo: string;
 }
 

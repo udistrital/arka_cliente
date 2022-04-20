@@ -4,17 +4,20 @@
 <mat-card-subtitle>
   {{ subtitle }}
 </mat-card-subtitle>
-<mat-card-content>
+<mat-card-content [nbSpinner]="loading">
   <ngx-form-traslado *ngIf="showForm" (valid)="setValidness($event)" [(trasladoInfo)]="trasladoData" [modo]="modoForm">
   </ngx-form-traslado>
 </mat-card-content>
+<ngx-comprobante *ngIf="trContable" [ajusteInfo]="trContable" [modo]="'get'" [consecutivo]="consecutivo"
+  [fecha]="trContable.Fecha" [concepto]="trContable.Concepto">
+</ngx-comprobante>
 <mat-card-actions>
   <div class="justify-content-center" style="padding-bottom: 3rem;">
     <button mat-flat-button color="primary" class="float-left text-uppercase" *ngIf="modoCrud === 'revisar'"
-      [disabled]="!valid" (click)="rechazar()">
+      [disabled]="!valid || submitted" (click)="rechazar()">
       {{'GLOBAL.traslados.revisar.confrmTtlR' | translate}}
     </button>
-    <button mat-flat-button color="primary" class="float-right text-uppercase" [disabled]="!valid" (click)="confirm(false)"
+    <button mat-flat-button color="primary" class="float-right text-uppercase" [disabled]="!valid || submitted" (click)="confirm(false)"
       *ngIf="modoCrud !== 'ver'">
       {{ boton }}
     </button>

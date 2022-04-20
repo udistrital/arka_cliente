@@ -78,7 +78,7 @@ export class ConsultaTrasladosComponent implements OnInit {
     } else {
       this.loadTraslados();
     }
-    this.volver();
+    // this.volver();
   }
 
   public onRegister() {
