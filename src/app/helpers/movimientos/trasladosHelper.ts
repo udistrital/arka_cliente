@@ -114,7 +114,7 @@ export class TrasladosHelper {
     // Se hace directamente al api crud mientras se genera la funcionalidad para asignar el consecutivo al traslado
     public aprobarTraslado(movimiento: Movimiento) {
         this.rqManager.setPath('ARKA_SERVICE');
-        return this.rqManager.put2('traslados/', {}, movimiento.Id).pipe(
+        return this.rqManager.put2('traslados', {}, movimiento.Id).pipe(
             map(
                 (res) => {
                     if (res['Type'] === 'error') {
