@@ -6,8 +6,6 @@ services:
       context: ./client_build
     image: ${SERVICE_NAME}
     container_name: ${SERVICE_NAME} 
-    env_file:
-      - .env
     command: sh -c 'npm install; npm install node-sass --save; ng serve  --host ${HOST} --port ${PORT}'  
     ports:
       - '${PORT}:${PORT}'
