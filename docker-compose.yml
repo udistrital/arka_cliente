@@ -9,4 +9,4 @@ services:
     ports:
       - '${PORT-4200}:${PORT-4200}'
     volumes:
-      - './:/app/src'
+      - './src:/app/src/src'
