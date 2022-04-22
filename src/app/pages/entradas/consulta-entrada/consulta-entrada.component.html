@@ -47,6 +47,10 @@
           <p class="text-uppercase"><strong>{{'GLOBAL.Acta_Recibido.ActaNo' | translate }}</strong>
            : {{ entradaEspecifica.ActaRecibidoId }}</p>
         </div>
+        <div class="col" *ngIf="Proveedor">
+          <p class="text-uppercase"><strong>{{'GLOBAL.proveedor' | translate }}</strong>
+           : {{ Proveedor.NombreCompleto }}</p>
+        </div>
       </div>
 
       <!-- ADQUISICIÓN -->

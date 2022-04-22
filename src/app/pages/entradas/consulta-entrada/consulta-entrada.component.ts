@@ -84,16 +84,6 @@ export class ConsultaEntradaComponent implements OnInit {
     this.iniciarParametros();
     this.listService.findClases();
     this.listService.findImpuestoIVA();
-    this.loadLists();
-
-  }
-  private loadLists() {
-    this.store.select((state) => state).subscribe(
-      (list) => {
-        this.Proveedores = list.listProveedores[0];
-        // console.log(this.Proveedores)
-      },
-    );
 
   }
 
@@ -249,6 +239,11 @@ keyEventUp(event: KeyboardEvent) {
             fecha,
           };
         }
+
+        if (res.proveedor) {
+          this.Proveedor = res.proveedor;
+        }
+
         switch (this.movimiento.FormatoTipoMovimientoId.Nombre) {
           case 'Adquisición': {
             this.loadDetalleAdquisicion(res);
@@ -679,11 +674,6 @@ keyEventUp(event: KeyboardEvent) {
     });
     this.mostrar = true;
   }
-  loadProveedor(Compuesto: string) {
-    if (this.Proveedores) {
-      this.Proveedor = this.Proveedores.find((prov) => prov.compuesto === Compuesto).NomProveedor;
-    }
-  }
 
   onRegister() {
     this.router.navigate(['/pages/entradas/registro']);
@@ -700,7 +690,6 @@ keyEventUp(event: KeyboardEvent) {
     });
     this.loadEstados();
     this.loadEntradas();
-    this.loadLists();
     this.loadTablaSettings();
 
   }
