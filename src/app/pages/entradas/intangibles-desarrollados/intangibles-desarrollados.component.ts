@@ -14,7 +14,7 @@ import { TerceroCriterioJefe, TerceroCriterioPlanta } from '../../../@core/data/
 import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
 import {Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
-import { EstadoMovimiento, TrMovimiento } from '../../../@core/data/models/entrada/entrada';
+import { TransaccionEntrada } from '../../../@core/data/models/entrada/entrada';
 import { TipoEntrada } from '../../../@core/data/models/entrada/tipo_entrada';
 import Swal from 'sweetalert2';
 
@@ -95,7 +95,6 @@ export class IntangiblesDesarrolladosComponent implements OnInit {
       supervisorCtrl: ['', Validators.required],
     });
     this.getVigencia();
-    this.getFormatoEntrada();
     this.loadSupervisores();
     this.loadOrdenadores();
   }
@@ -234,14 +233,6 @@ changeSolicitante(event) {
   getVigencia() {
     this.vigencia = new Date().getFullYear();
   }
-
-  getFormatoEntrada() {
-    this.entradasHelper.getFormatoEntradaByName('Intangibles desarrollados').subscribe(res => {
-      if (res !== null) {
-        this.formatoTipoMovimiento = res;
-      }
-    });
-  }
   /**
    * Método para enviar registro
    */
@@ -250,35 +241,28 @@ changeSolicitante(event) {
       this.registrando = true;
       const detalle = {
         acta_recibido_id: +this.actaRecibidoId,
-        consecutivo: 'P8',
         vigencia: this.ordenadorForm.value.vigenciaCtrl,
         supervisor: this.supervisorForm.value.supervisorCtrl.TerceroPrincipal.Id,
         ordenador_gasto_id: this.ordenadorForm.value.ordenadorCtrl.TerceroPrincipal.Id,
       };
-      const movimientoAdquisicion = <TrMovimiento>{
+
+      const transaccion = <TransaccionEntrada>{
         Observacion: this.observacionForm.value.observacionCtrl,
         Detalle: JSON.stringify(detalle),
-        Activo: true,
-        FormatoTipoMovimientoId: {
-          Id: this.formatoTipoMovimiento[0].Id,
-        },
+        FormatoTipoMovimientoId: 'ENT_ID',
         SoporteMovimientoId: this.idDocumento,
-        EstadoMovimientoId: new EstadoMovimiento,
       };
 
-      this.entradasHelper.postEntrada(movimientoAdquisicion).subscribe((res: any) => {
+      this.entradasHelper.postEntrada(transaccion).subscribe((res: any) => {
         if (res !== null) {
           this.registrando = false;
           (Swal as any).fire({
             type: 'success',
             title: this.translate.instant('GLOBAL.movimientos.entradas.registroTtlOk', { CONSECUTIVO: res.Consecutivo }),
             text: this.translate.instant('GLOBAL.movimientos.entradas.registroTxtOk', { CONSECUTIVO: res.Consecutivo }),
-            showConfirmButton: false,
-            timer: 2000,
+            showConfirmButton: true,
           });
-          const navigationExtras: NavigationExtras = { state: { consecutivo: res.Consecutivo } };
-        //  this.router.navigate(['/pages/reportes/registro-entradas'], navigationExtras);
-          this.router.navigate(['/pages/entradas'], navigationExtras);
+          this.router.navigate(['/pages/entradas']);
         } else {
           this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.entradas.registroFail'));
         }

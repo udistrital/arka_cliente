@@ -12,7 +12,7 @@ import { Supervisor } from '../../../@core/data/models/entrada/supervisor';
 import Swal from 'sweetalert2';
 import { isObject } from 'rxjs/internal-compatibility';
 import { Soporte } from '../soporteHelper';
-import { EstadoMovimiento, TrMovimiento } from '../../../@core/data/models/entrada/entrada';
+import { TransaccionEntrada } from '../../../@core/data/models/entrada/entrada';
 import { TranslateService } from '@ngx-translate/core';
 
 @Component({
@@ -248,39 +248,31 @@ export class ExtranjeroComponent implements OnInit {
       this.registrando = true;
       const detalle = {
         acta_recibido_id: +this.actaRecibidoId,
-        consecutivo: 'P8',
         contrato_id: +this.contratoEspecifico.NumeroContratoSuscrito,
         vigencia_contrato: this.contratoForm.value.vigenciaCtrl,
-        importacion: true,
         tipo_contrato: this.opcionTipoContrato === '14' ? 'Orden de Servicios' :
         this.opcionTipoContrato === '15' ? 'Orden de Compra' : '',
         num_reg_importacion: this.facturaForm.value.regImportCtrl,
         divisa: this.facturaForm.value.divisaCtrl,
         TRM: this.facturaForm.value.trmCtrl,
       };
-      const movimientoAdquisicion = <TrMovimiento>{
+
+      const transaccion = <TransaccionEntrada>{
         Observacion: this.observacionForm.value.observacionCtrl,
         Detalle: JSON.stringify(detalle),
-        Activo: true,
-        FormatoTipoMovimientoId: {
-          Id: this.formatoTipoMovimiento[0].Id,
-        },
+        FormatoTipoMovimientoId: 'ENT_CE',
         SoporteMovimientoId: 0,
-        EstadoMovimientoId: new EstadoMovimiento,
       };
-      // console.log({movimientoAdquisicion});
-      this.entradasHelper.postEntrada(movimientoAdquisicion).subscribe((res: any) => {
+
+      this.entradasHelper.postEntrada(transaccion).subscribe((res: any) => {
         if (res !== null) {
           this.registrando = false;
           (Swal as any).fire({
             type: 'success',
             title: this.translate.instant('GLOBAL.movimientos.entradas.registroTtlOk', { CONSECUTIVO: res.Consecutivo }),
             text: this.translate.instant('GLOBAL.movimientos.entradas.registroTxtOk', { CONSECUTIVO: res.Consecutivo }),
-            showConfirmButton: false,
-            timer: 2000,
+            showConfirmButton: true,
           });
-          const navigationExtras: NavigationExtras = { state: { consecutivo: res.Consecutivo } };
-        //  this.router.navigate(['/pages/reportes/registro-entradas'], navigationExtras);
           this.router.navigate(['/pages/entradas']);
         } else {
           this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.entradas.registroFail'));

@@ -7,7 +7,7 @@ import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoH
 import { PopUpManager } from '../../../managers/popUpManager';
 import { OrdenadorGasto } from '../../../@core/data/models/entrada/ordenador_gasto';
 import { Supervisor } from '../../../@core/data/models/entrada/supervisor';
-import { EstadoMovimiento, TrMovimiento } from '../../../@core/data/models/entrada/entrada';
+import { TransaccionEntrada } from '../../../@core/data/models/entrada/entrada';
 import { TipoEntrada } from '../../../@core/data/models/entrada/tipo_entrada';
 import { NavigationExtras, Router } from '@angular/router';
 import { NbStepperComponent } from '@nebular/theme';
@@ -78,7 +78,6 @@ export class DonacionComponent implements OnInit {
     this.validar = false;
     this.ordenadorId = 0;
     this.iniciarContrato();
-    this.getFormatoEntrada();
   }
 
   ngOnInit() {
@@ -266,14 +265,6 @@ export class DonacionComponent implements OnInit {
     this.tipos = this.entradasHelper.getTiposContrato();
   }
 
-  getFormatoEntrada() {
-    this.entradasHelper.getFormatoEntradaByName('Donación').subscribe(res => {
-      if (res !== null) {
-        this.formatoTipoMovimiento = res;
-      }
-    });
-  }
-
   /**
    * Método para enviar registro
    */
@@ -282,7 +273,6 @@ export class DonacionComponent implements OnInit {
       this.registrando = true;
       const detalle = {
         acta_recibido_id: +this.actaRecibidoId,
-        consecutivo: 'P8',
         contrato_id: +this.contratoEspecifico.NumeroContratoSuscrito,
         vigencia_contrato: this.contratoForm.value.vigenciaCtrl,
         vigencia_solicitante: this.solicitanteForm.value.fechaCtrl,
@@ -290,29 +280,23 @@ export class DonacionComponent implements OnInit {
         tipo_contrato: this.opcionTipoContrato === '14' ? 'Orden de Servicios' :
           this.opcionTipoContrato === '15' ? 'Orden de Compra' : '',
       };
-      const movimientoAdquisicion = <TrMovimiento>{
+
+      const transaccion = <TransaccionEntrada>{
         Observacion: this.observacionForm.value.observacionCtrl,
         Detalle: JSON.stringify(detalle),
-        Activo: true,
-        FormatoTipoMovimientoId: {
-          Id: this.formatoTipoMovimiento[0].Id,
-        },
+        FormatoTipoMovimientoId: 'ENT_DN',
         SoporteMovimientoId: 0,
-        EstadoMovimientoId: new EstadoMovimiento,
       };
 
-      this.entradasHelper.postEntrada(movimientoAdquisicion).subscribe((res: any) => {
+      this.entradasHelper.postEntrada(transaccion).subscribe((res: any) => {
         if (res !== null) {
           this.registrando = false;
           (Swal as any).fire({
             type: 'success',
             title: this.translate.instant('GLOBAL.movimientos.entradas.registroTtlOk', { CONSECUTIVO: res.Consecutivo }),
             text: this.translate.instant('GLOBAL.movimientos.entradas.registroTxtOk', { CONSECUTIVO: res.Consecutivo }),
-            showConfirmButton: false,
-            timer: 2000,
+            showConfirmButton: true,
           });
-          const navigationExtras: NavigationExtras = { state: { consecutivo: res.Consecutivo } };
-//          this.router.navigate(['/pages/reportes/registro-entradas'], navigationExtras);
           this.router.navigate(['/pages/entradas']);
         } else {
           this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.entradas.registroFail'));

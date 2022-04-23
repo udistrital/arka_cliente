@@ -3,7 +3,7 @@ import { Validators, FormBuilder, FormGroup, AbstractControl, ValidatorFn } from
 import { PopUpManager } from '../../../managers/popUpManager';
 import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
 import { Contrato } from '../../../@core/data/models/entrada/contrato';
-import { EstadoMovimiento, TrMovimiento } from '../../../@core/data/models/entrada/entrada';
+import { TransaccionEntrada } from '../../../@core/data/models/entrada/entrada';
 import { OrdenadorGasto } from '../../../@core/data/models/entrada/ordenador_gasto';
 import { Supervisor } from '../../../@core/data/models/entrada/supervisor';
 import { SoporteActaProveedor } from '../../../@core/data/models/acta_recibido/soporte_acta';
@@ -74,7 +74,6 @@ export class AdquisicionComponent implements OnInit {
     this.fechaFactura = '';
     this.validar = false;
     this.iniciarContrato();
-    this.getFormatoEntrada();
   }
 
   ngOnInit() {
@@ -234,14 +233,6 @@ export class AdquisicionComponent implements OnInit {
     this.contratoEspecifico.Supervisor = supervisorAux;
   }
 
-  getFormatoEntrada() {
-    this.entradasHelper.getFormatoEntradaByName('Adquisición').subscribe(res => {
-      if (res !== null) {
-        this.formatoTipoMovimiento = res;
-      }
-    });
-  }
-
   /**
    * Método para obtener el año en curso
    */
@@ -258,35 +249,29 @@ export class AdquisicionComponent implements OnInit {
       this.registrando = true;
       const detalle = {
         acta_recibido_id: +this.actaRecibidoId,
-        consecutivo: 'P8',
         contrato_id: +this.contratoEspecifico.NumeroContratoSuscrito,
         vigencia_contrato: this.contratoForm.value.vigenciaCtrl,
         tipo_contrato: this.opcionTipoContrato === '14' ? 'Orden de Servicios' :
           this.opcionTipoContrato === '15' ? 'Orden de Compra' : '',
       };
-      const movimientoAdquisicion = <TrMovimiento>{
+
+      const transaccion = <TransaccionEntrada>{
         Observacion: this.observacionForm.value.observacionCtrl,
         Detalle: JSON.stringify(detalle),
-        Activo: true,
-        FormatoTipoMovimientoId: {
-          Id: this.formatoTipoMovimiento[0].Id,
-        },
+        FormatoTipoMovimientoId: 'ENT_ADQ',
         SoporteMovimientoId: 0,
-        EstadoMovimientoId: new EstadoMovimiento,
       };
-      this.entradasHelper.postEntrada(movimientoAdquisicion).subscribe((res: any) => {
+
+      this.entradasHelper.postEntrada(transaccion).subscribe((res: any) => {
         if (res !== null) {
           this.registrando = false;
           (Swal as any).fire({
             type: 'success',
             title: this.translate.instant('GLOBAL.movimientos.entradas.registroTtlOk', { CONSECUTIVO: res.Consecutivo }),
             text: this.translate.instant('GLOBAL.movimientos.entradas.registroTxtOk', { CONSECUTIVO: res.Consecutivo }),
-            showConfirmButton: false,
-            timer: 2000,
+            showConfirmButton: true,
           });
-          const navigationExtras: NavigationExtras = { state: { consecutivo: res.Consecutivo } };
-         // this.router.navigate(['/pages/reportes/registro-entradas'], navigationExtras);
-          this.router.navigate(['/pages/entradas'], navigationExtras);
+          this.router.navigate(['/pages/entradas']);
         } else {
           this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.entradas.registroFail'));
         }

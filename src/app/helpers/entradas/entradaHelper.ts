@@ -5,7 +5,7 @@ import { iif } from 'rxjs';
 import { PopUpManager } from '../../managers/popUpManager';
 import { TranslateService } from '@ngx-translate/core';
 import { DisponibilidadMovimientosService } from '../../@core/data/disponibilidad-movimientos.service';
-import { TrMovimiento } from '../../@core/data/models/entrada/entrada';
+import { TransaccionEntrada } from '../../@core/data/models/entrada/entrada';
 
 @Injectable({
     providedIn: 'root',
@@ -90,14 +90,14 @@ export class EntradaHelper {
      * @param entradaData object to save in the DB
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
      */
-    public postEntrada(entradaData: Partial<TrMovimiento>, entradaId: number = 0) {
+    public postEntrada(entradaData: Partial<TransaccionEntrada>, entradaId: number = 0) {
 //          console.log("mira el numero", entradaId);
         return this.dispMvtos.movimientosPermitidos().pipe(
          switchMap(disp => iif(() => disp, this.postEntradaFinal(entradaData, entradaId))),
         );
     }
 
-    private postEntradaFinal(entradaData: Partial<TrMovimiento>, entradaId: number) {
+    private postEntradaFinal(entradaData: Partial<TransaccionEntrada>, entradaId: number) {
         this.rqManager.setPath('ARKA_SERVICE');
         return this.rqManager.post('entrada?entradaId=' + entradaId, entradaData).pipe(
             map(

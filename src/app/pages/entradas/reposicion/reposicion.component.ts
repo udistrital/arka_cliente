@@ -11,7 +11,7 @@ import { SafeResourceUrl, DomSanitizer } from '@angular/platform-browser';
 import { SoporteActaProveedor } from '../../../@core/data/models/acta_recibido/soporte_acta';
 import { Router, NavigationExtras } from '@angular/router';
 import Swal from 'sweetalert2';
-import { EstadoMovimiento, TrMovimiento } from '../../../@core/data/models/entrada/entrada';
+import { TransaccionEntrada } from '../../../@core/data/models/entrada/entrada';
 
 @Component({
   selector: 'ngx-reposicion',
@@ -65,7 +65,6 @@ export class ReposicionComponent implements OnInit {
     this.observacionForm = this.fb.group({
       observacionCtrl: ['', Validators.nullValidator],
     });
-    this.getFormatoEntrada();
     this.loadSoporte();
   }
 
@@ -139,14 +138,6 @@ export class ReposicionComponent implements OnInit {
     });
   }
 
-  getFormatoEntrada() {
-    this.entradasHelper.getFormatoEntradaByName('Reposición').subscribe(res => {
-      if (res !== null) {
-        this.formatoTipoMovimiento = res;
-      }
-    });
-  }
-
   onObservacionSubmit() {
     this.validar = true;
   }
@@ -158,34 +149,27 @@ export class ReposicionComponent implements OnInit {
       this.registrando = true;
       const detalle = {
         acta_recibido_id: +this.actaRecibidoId,
-        consecutivo: 'P8',
         placa_id: this.placa,
         encargado_id: this.encargadoId,
       };
-      const movimientoReposicion = <TrMovimiento>{
+
+      const transaccion = <TransaccionEntrada>{
         Observacion: this.observacionForm.value.observacionCtrl,
         Detalle: JSON.stringify(detalle),
-        Activo: true,
-        FormatoTipoMovimientoId: {
-          Id: this.formatoTipoMovimiento[0].Id,
-        },
+        FormatoTipoMovimientoId: 'ENT_RP',
         SoporteMovimientoId: this.idDocumento,
-        EstadoMovimientoId: new EstadoMovimiento,
       };
-      // console.log(movimientoReposicion);
 
-      this.entradasHelper.postEntrada(movimientoReposicion).subscribe((res: any) => {
+      this.entradasHelper.postEntrada(transaccion).subscribe((res: any) => {
         if (res !== null) {
           this.registrando = false;
           (Swal as any).fire({
             type: 'success',
             title: this.translate.instant('GLOBAL.movimientos.entradas.registroTtlOk', { CONSECUTIVO: res.Consecutivo }),
             text: this.translate.instant('GLOBAL.movimientos.entradas.registroTxtOk', { CONSECUTIVO: res.Consecutivo }),
-            showConfirmButton: false,
-            timer: 2000,
+            showConfirmButton: true,
           });
-          const navigationExtras: NavigationExtras = { state: { consecutivo: res.Consecutivo } };
-          this.router.navigate(['/pages/reportes/registro-entradas'], navigationExtras);
+          this.router.navigate(['/pages/entradas']);
         } else {
           this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.entradas.registroFail'));
         }

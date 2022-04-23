@@ -156,7 +156,7 @@
             "name": "Bajas",
             "children": {
               "consultarBajas": {
-                "name": "Consultar Solicitudes"
+                "name": "Consultar Bajas"
               },
               "revisionAlmacen": {
                 "name": "Revisión de Almacén"
@@ -1361,8 +1361,8 @@
     },
     "bajas": {
       "consulta": {
-        "title": "Consulta de solicitudes de bajas de bienes",
-        "subtitle": "A continuación se listan las solicitudes, seleccione una de las opciones para ver más detalles",
+        "title": "Consulta de bajas de bienes",
+        "subtitle": "A continuación se listan las basjas registradas, seleccione una de las opciones para ver más detalles",
         "fechaRevA": "Fecha Revisión Almacén",
         "fechaRevC": "Fecha de Aprobación",
         "noBajasReview": "No hay bajas por aprobar",

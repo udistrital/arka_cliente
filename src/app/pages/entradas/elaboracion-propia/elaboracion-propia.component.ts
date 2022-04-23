@@ -8,7 +8,7 @@ import { NuxeoService } from '../../../@core/utils/nuxeo.service';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { DocumentoService } from '../../../@core/data/documento.service';
 import { TranslateService } from '@ngx-translate/core';
-import { EstadoMovimiento, TrMovimiento } from '../../../@core/data/models/entrada/entrada';
+import { TransaccionEntrada } from '../../../@core/data/models/entrada/entrada';
 import { TipoEntrada } from '../../../@core/data/models/entrada/tipo_entrada';
 import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
 import { TerceroCriterioJefe, TerceroCriterioPlanta } from '../../../@core/data/models/terceros_criterio';
@@ -90,7 +90,6 @@ export class ElaboracionPropiaComponent implements OnInit {
       supervisorCtrl: ['', Validators.required],
     });
     this.getVigencia();
-    this.getFormatoEntrada();
     this.loadSupervisores();
     this.loadOrdenadores();
   }
@@ -280,14 +279,6 @@ export class ElaboracionPropiaComponent implements OnInit {
     this.vigencia = new Date().getFullYear();
   }
 
-  getFormatoEntrada() {
-    this.entradasHelper.getFormatoEntradaByName('Elaboración Propia').subscribe(res => {
-      if (res !== null) {
-        this.formatoTipoMovimiento = res;
-      }
-    });
-  }
-
   /**
    * Método para enviar registro
    */
@@ -298,24 +289,20 @@ export class ElaboracionPropiaComponent implements OnInit {
 
       const detalle = {
         acta_recibido_id: +this.actaRecibidoId,
-        consecutivo: 'P8',
         supervisor: this.supervisorForm.value.supervisorCtrl.TerceroPrincipal.Id,
         vigencia_ordenador: this.ordenadorForm.value.vigenciaCtrl,
         ordenador_gasto_id: this.ordenadorForm.value.ordenadorCtrl.TerceroPrincipal.Id,
         // solicitante_id: +this.supervisorId,
       };
-      const movimientoAdquisicion = <TrMovimiento>{
+
+      const transaccion = <TransaccionEntrada>{
         Observacion: this.observacionForm.value.observacionCtrl,
         Detalle: JSON.stringify(detalle),
-        Activo: true,
-        FormatoTipoMovimientoId: {
-          Id: this.formatoTipoMovimiento[0].Id,
-        },
+        FormatoTipoMovimientoId: 'ENT_EP',
         SoporteMovimientoId: this.idDocumento,
-        EstadoMovimientoId: new EstadoMovimiento,
       };
 
-      this.entradasHelper.postEntrada(movimientoAdquisicion).subscribe((res: any) => {
+      this.entradasHelper.postEntrada(transaccion).subscribe((res: any) => {
         if (res !== null) {
           this.registrando = false;
           (Swal as any).fire({
@@ -325,8 +312,6 @@ export class ElaboracionPropiaComponent implements OnInit {
             showConfirmButton: false,
             timer: 2000,
           });
-          const navigationExtras: NavigationExtras = { state: { consecutivo: res.Consecutivo } };
-        //  this.router.navigate(['/pages/reportes/registro-entradas'], navigationExtras);
           this.router.navigate(['/pages/entradas']);
         } else {
           this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.entradas.registroFail'));
