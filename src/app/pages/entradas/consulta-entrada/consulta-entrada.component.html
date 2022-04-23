@@ -53,6 +53,13 @@
         </div>
       </div>
 
+      <div *ngIf="(detalle && !edit) || editarEntrada || factura" class="row">
+        <div class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.factura' | translate }}</strong>:
+            {{ factura.Consecutivo }}</p>
+        </div>
+      </div>
+
       <!-- ADQUISICIÓN -->
 
       <div *ngIf="((detalle && !edit) || editarEntrada)  && entradaEspecifica.TipoEntradaId.Nombre === 'Adquisición'" class="row">

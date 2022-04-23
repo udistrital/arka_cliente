@@ -6,7 +6,7 @@ import { Contrato } from '../../../@core/data/models/entrada/contrato';
 import { TransaccionEntrada } from '../../../@core/data/models/entrada/entrada';
 import { OrdenadorGasto } from '../../../@core/data/models/entrada/ordenador_gasto';
 import { Supervisor } from '../../../@core/data/models/entrada/supervisor';
-import { SoporteActaProveedor } from '../../../@core/data/models/acta_recibido/soporte_acta';
+import { SoporteActa } from '../../../@core/data/models/acta_recibido/soporte_acta';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
 import { TipoEntrada } from '../../../@core/data/models/entrada/tipo_entrada';
 import { Router, NavigationExtras } from '@angular/router';
@@ -44,9 +44,8 @@ export class AdquisicionComponent implements OnInit {
   // Número de Contrato
   contratoInput: string;
   // Soportes
-  soportes: Array<SoporteActaProveedor>;
-  proveedor: string;
-  fechaFactura: string;
+  soportes: Array<SoporteActa>;
+  factura: SoporteActa;
   observaciones: string;
   validar: boolean;
   // Selects
@@ -69,9 +68,7 @@ export class AdquisicionComponent implements OnInit {
     this.vigenciaSelect = false;
     this.contratos = new Array<Contrato>();
     this.contratoEspecifico = new Contrato;
-    this.soportes = new Array<SoporteActaProveedor>();
-    this.proveedor = '';
-    this.fechaFactura = '';
+    this.soportes = new Array<SoporteActa>();
     this.validar = false;
     this.iniciarContrato();
   }
@@ -141,23 +138,6 @@ export class AdquisicionComponent implements OnInit {
     });
   }
 
-  loadSoporte(): void {
-    this.actaRecibidoHelper.getTransaccionActa(this.actaRecibidoId, false).subscribe(res => {
-      if (res !== null) {
-          res.SoportesActa.forEach(soporte => {
-            const soporteActa = new SoporteActaProveedor;
-            soporteActa.Id = soporte.Id;
-            soporteActa.Consecutivo = soporte.Consecutivo;
-            soporteActa.FechaSoporte = soporte.FechaSoporte;
-            this.soportes.push(soporteActa);
-          });
-        }
-      this.proveedor = res.UltimoEstado.ProveedorId;
-      const date = this.soportes[0].FechaSoporte.toString().split('T');
-      this.fechaFactura = date[0];
-    });
-  }
-
   /**
    * Métodos para validar campos requeridos en el formulario.
    */
@@ -175,9 +155,8 @@ export class AdquisicionComponent implements OnInit {
         if (existe) {
           this.loadContratoEspecifico();
           this.soporteHelper.cargarSoporte(this.actaRecibidoId).then(info => {
-            this.fechaFactura = info.fecha,
-            this.soportes = info.soportes,
-            this.proveedor = info.proveedor;
+            this.factura = info.soportes[0];
+            this.soportes = info.soportes;
           });
         } else {
           this.stepper.previous();
@@ -212,14 +191,8 @@ export class AdquisicionComponent implements OnInit {
   }
 
   changeSelectSoporte(event) {
-    const soporteId: string = event.target.options[event.target.options.selectedIndex].value;
-    for (const i in this.soportes) {
-      if (this.soportes[i].Id.toString() === soporteId) {
-        this.proveedor = this.soportes[i].Proveedor.NomProveedor;
-        const date = this.soportes[i].FechaSoporte.toString().split('T');
-        this.fechaFactura = date[0];
-      }
-    }
+    const index = event.target.options && event.target.options.selectedIndex ? event.target.options.selectedIndex : -1;
+    this.factura = index > -1 ? this.soportes[index - 1] : undefined;
   }
 
 
@@ -253,6 +226,7 @@ export class AdquisicionComponent implements OnInit {
         vigencia_contrato: this.contratoForm.value.vigenciaCtrl,
         tipo_contrato: this.opcionTipoContrato === '14' ? 'Orden de Servicios' :
           this.opcionTipoContrato === '15' ? 'Orden de Compra' : '',
+        factura: this.factura ? this.factura.Id : 0,
       };
 
       const transaccion = <TransaccionEntrada>{

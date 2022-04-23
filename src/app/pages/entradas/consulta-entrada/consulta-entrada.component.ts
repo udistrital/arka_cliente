@@ -17,6 +17,7 @@ import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
 import Swal from 'sweetalert2';
 import { PopUpManager } from '../../../managers/popUpManager';
 import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
+import { SoporteActa } from '../../../@core/data/models/acta_recibido/soporte_acta';
 
 @Component({
   selector: 'ngx-consulta-entrada',
@@ -62,6 +63,7 @@ export class ConsultaEntradaComponent implements OnInit {
   trContable: any;
   fecha: Date;
   concepto: string;
+  factura: SoporteActa;
 
   constructor(
     private pUpManager: PopUpManager,
@@ -242,6 +244,10 @@ keyEventUp(event: KeyboardEvent) {
 
         if (res.proveedor) {
           this.Proveedor = res.proveedor;
+        }
+
+        if (res.factura) {
+          this.factura = res.factura;
         }
 
         switch (this.movimiento.FormatoTipoMovimientoId.Nombre) {
