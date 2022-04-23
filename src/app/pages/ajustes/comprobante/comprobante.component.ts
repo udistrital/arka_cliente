@@ -100,7 +100,7 @@ export class ComprobanteComponent implements OnInit {
   public fillElemento(index) {
     const tercero = (this.formComprobante.get('elementos') as FormArray).at(index).get('cuenta').value.RequiereTercero;
     if (tercero) {
-      (this.formComprobante.get('elementos') as FormArray).at(index).get('tercero').setValidators([Validators.required, this.validarCompleter('Id')]);
+      (this.formComprobante.get('elementos') as FormArray).at(index).get('tercero').setValidators([Validators.required, this.validarCompleter('TerceroId')]);
       (this.formComprobante.get('elementos') as FormArray).at(index).get('tercero').enable();
     } else {
       (this.formComprobante.get('elementos') as FormArray).at(index).patchValue({ tercero: '' });
@@ -178,7 +178,9 @@ export class ComprobanteComponent implements OnInit {
         distinctUntilChanged(),
         switchMap((val) => this.loadTerceros(val)),
       ).subscribe((response: any) => {
-        this.terceros = response.queryOptions[0].Id ? response.queryOptions : [];
+        this.terceros = response.queryOptions &&
+          response.queryOptions.length &&
+          response.queryOptions[0].Numero ? response.queryOptions : [];
       });
   }
 
@@ -195,9 +197,10 @@ export class ComprobanteComponent implements OnInit {
   }
 
   private loadTerceros(text: string) {
-    const query = 'NombreCompleto__icontains:';
-    const queryOptions$ = text.length > 4 ?
-      this.tercerosHelper.getAllTerceros(query + text) :
+    const query = 'limit=-1&fields=Numero,TerceroId&sortby=Numero&order=desc' +
+      '&query=Activo%3Atrue,Numero__icontains:';
+    const queryOptions$ = text.length > 3 ?
+      this.tercerosHelper.getAllDatosIdentificacion(query + text) :
       new Observable((obs) => { obs.next([{}]); });
     return combineLatest([queryOptions$]).pipe(
       map(([queryOptions_$]) => ({
@@ -274,7 +277,7 @@ export class ComprobanteComponent implements OnInit {
   }
 
   public muestraTercero(contr): string {
-    return contr.NombreCompleto ? contr.NombreCompleto : '';
+    return contr.Numero ? contr.Numero : '';
   }
 
   private filtroCuentas(nombre): any[] {

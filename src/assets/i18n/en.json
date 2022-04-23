@@ -587,6 +587,7 @@
     "consultar_catalogo": "Consult Catalog Tree",
     "error_cargos":"Error getting the positions assigned to the civil servant",
     "error_correo":"Error getting the emails assigned to the civil servant",
+    "errorDatosIdentificacion":"Error al consultar los documentos de identificación",
     "cuenta_credito": "Credit",
     "cuenta_debito": "Debit",
     "placeholder_cuenta_credito": "Credit",
@@ -613,6 +614,7 @@
     "Descripcion": "Description",
     "Acciones": "Actions",
     "verDetalle" : "Ver Detalle",
+    "NA": "N/A",
 
     "Deshacer": "Undo",
     "colapsar": "Collapse",

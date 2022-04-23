@@ -83,13 +83,13 @@
         </ng-container>
 
         <ng-container matColumnDef="tercero">
-          <th id="cuenta" mat-header-cell *matHeaderCellDef mat-sort-header class="md-col">
+          <th id="cuenta" mat-header-cell *matHeaderCellDef mat-sort-header class="sm-col">
             {{ 'GLOBAL.Comprobante_Contable.Tercero' | translate }}
           </th>
           <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="getActualIndex(rowIndex)">
-            <mat-form-field appearance="outline" class="md-col">
+            <mat-form-field appearance="outline" class="sm-col">
               <input matInput type="text" formControlName="tercero"
-                placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}"
+                placeholder="{{ (modo ==='get' ? 'GLOBAL.NA' : 'GLOBAL.Errores.ErrorMinLength') | translate : {NUM : 4} }}"
                 [matAutocomplete]="autoTerceros">
               <mat-autocomplete #autoTerceros="matAutocomplete" [displayWith]="muestraTercero">
                 <mat-option *ngFor="let tro of terceros" [value]="tro">

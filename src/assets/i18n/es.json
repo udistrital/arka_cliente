@@ -574,6 +574,7 @@
     "error_dependencias":"Error al consultar las dependencias",
     "error_cargos":"Error al consultar el cargo del tercero",
     "error_correo":"Error al consultar el correo del tercero",
+    "errorDatosIdentificacion":"Error al consultar los documentos de identificación",
     "errorPlacas": "Error al consultar las placas disponibles",
     "errorHistorialElemento": "Error al consultar los detalles del elemento",
     "fecha_inicio":"Fecha de inicio",
@@ -613,6 +614,7 @@
     "Descripcion":"Descripción",
     "Acciones":"Acciones",
     "verDetalle" : "Ver Detalle",
+    "NA": "N/A",
 
     "Deshacer":"Deshacer",
     "colapsar": "Colapsar",
