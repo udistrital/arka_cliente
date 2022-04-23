@@ -1,4 +1,4 @@
-<mat-vertical-stepper [nbSpinner]="!load" [linear]="true" #stepper>
+<mat-vertical-stepper [nbSpinner]="!load" [linear]="modo !== 'get'" #stepper>
   <mat-step [stepControl]="formTraslado.get('rechazo')"
     *ngIf="formTraslado && formTraslado.get('rechazo.razon').value !== ''"
     label="{{'GLOBAL.razonRechazo' | translate}}">

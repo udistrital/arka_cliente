@@ -1,4 +1,4 @@
-<mat-vertical-stepper [nbSpinner]="!load" [linear]="true" #stepper>
+<mat-vertical-stepper [nbSpinner]="!load" [linear]="modo !== 'get'" #stepper>
   <mat-step [stepControl]="formBaja.get('rechazo')" *ngIf="formBaja && formBaja.get('rechazo.razon').value !== ''"
     label="{{'GLOBAL.razonRechazo' | translate}}">
     <form [formGroup]="formBaja.get('rechazo')">

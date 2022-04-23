@@ -175,7 +175,7 @@ export class CrudAjusteComponent implements OnInit {
         Cuenta: fg.controls.cuenta.value.Id,
         Debito: fg.controls.debito.value,
         Credito: fg.controls.credito.value,
-        TerceroId: fg.controls.tercero.value.TerceroId ? fg.controls.tercero.value.TerceroId.Id: 0,
+        TerceroId: fg.controls.tercero.value.TerceroId ? fg.controls.tercero.value.TerceroId.Id : 0,
         Descripcion: fg.controls.descripcion.value,
       })),
     };
@@ -212,7 +212,7 @@ export class CrudAjusteComponent implements OnInit {
         Cuenta: fg.controls.cuenta.value.Id,
         Debito: fg.controls.debito.value,
         Credito: fg.controls.credito.value,
-        TerceroId: fg.controls.tercero.value.TerceroId ? fg.controls.tercero.value.TerceroId.Id: 0,
+        TerceroId: fg.controls.tercero.value.TerceroId ? fg.controls.tercero.value.TerceroId.Id : 0,
         Descripcion: fg.controls.descripcion.value,
       })),
     };

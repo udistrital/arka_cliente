@@ -183,9 +183,9 @@ export class TercerosHelper {
      * @param query payload
      */
     public getAllDatosIdentificacion(query: string) {
+        const path = 'datos_identificacion?';
         this.rqManager.setPath('TERCEROS_SERVICE');
-        let path = 'datos_identificacion?';
-        return this.rqManager.get(path+query).pipe(
+        return this.rqManager.get(path + query).pipe(
             map(
                 (res) => {
                     if (res === 'error' || !Array.isArray(res)) {

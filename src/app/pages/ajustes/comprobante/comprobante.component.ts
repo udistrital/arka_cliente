@@ -100,7 +100,8 @@ export class ComprobanteComponent implements OnInit {
   public fillElemento(index) {
     const tercero = (this.formComprobante.get('elementos') as FormArray).at(index).get('cuenta').value.RequiereTercero;
     if (tercero) {
-      (this.formComprobante.get('elementos') as FormArray).at(index).get('tercero').setValidators([Validators.required, this.validarCompleter('TerceroId')]);
+      (this.formComprobante.get('elementos') as FormArray).at(index).get('tercero')
+        .setValidators([Validators.required, this.validarCompleter('TerceroId')]);
       (this.formComprobante.get('elementos') as FormArray).at(index).get('tercero').enable();
     } else {
       (this.formComprobante.get('elementos') as FormArray).at(index).patchValue({ tercero: '' });
