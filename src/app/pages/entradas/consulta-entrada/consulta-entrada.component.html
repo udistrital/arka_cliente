@@ -53,7 +53,7 @@
         </div>
       </div>
 
-      <div *ngIf="(detalle && !edit) || editarEntrada || factura" class="row">
+      <div *ngIf="((detalle && !edit) || editarEntrada) && factura" class="row">
         <div class="col">
           <p class="text-uppercase"><strong>{{'GLOBAL.factura' | translate }}</strong>:
             {{ factura.Consecutivo }}</p>
