@@ -3,10 +3,7 @@ import { IAppState } from '../app.state';
 import { Store } from '@ngrx/store';
 import { REDUCER_LIST } from '../reducer.constants';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
-import { Proveedor } from '../../../@core/data/models/acta_recibido/Proveedor';
-import { Observable } from 'rxjs';
 import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/catalogoElementosHelper';
-import { Impuesto } from '../../data/models/acta_recibido/elemento';
 import { BodegaConsumoHelper } from '../../../helpers/bodega_consumo/bodegaConsumoHelper';
 import { BajasHelper } from '../../../helpers/bajas/bajasHelper';
 @Injectable()
@@ -20,31 +17,6 @@ export class ListService {
     private store: Store<IAppState>) {
   }
 
-  public findProveedores() {
-
-    this.store.select(REDUCER_LIST.Proveedores).subscribe(
-      (list: any) => {
-        if (!list || list.length === 0) {
-          this.ActaRecibido.getProveedores()
-            .subscribe(
-              (res: any[]) => {
-
-                for (const index in res) {
-                  if (res.hasOwnProperty(index)) {
-                    res[index].compuesto = res[index].NumDocumento + ' - ' + res[index].NomProveedor;
-                  }
-                }
-                this.addList(REDUCER_LIST.Proveedores, res);
-
-              },
-              error => {
-                this.addList(REDUCER_LIST.Proveedores, []);
-              },
-            );
-        }
-      },
-    );
-  }
   public findPlanCuentasCredito() {
 
     this.store.select(REDUCER_LIST.PlanCuentasCredito).subscribe(
@@ -64,6 +36,7 @@ export class ListService {
       },
     );
   }
+
   public findPlanCuentasDebito() {
 
     this.store.select(REDUCER_LIST.PlanCuentasDebito).subscribe(
@@ -72,7 +45,6 @@ export class ListService {
           this.CatalogoElementos.getPlanCuentas('debito') // tema de base financiera desplegada debito
             .subscribe(
               (res: any[]) => {
-
                 this.addList(REDUCER_LIST.PlanCuentasDebito, res);
               },
               error => {
@@ -83,6 +55,7 @@ export class ListService {
       },
     );
   }
+
   public findSedes() {
 
     this.store.select(REDUCER_LIST.Sedes).subscribe(
@@ -102,6 +75,7 @@ export class ListService {
       },
     );
   }
+
   public findDependencias() {
 
     this.store.select(REDUCER_LIST.Dependencias).subscribe(
@@ -121,6 +95,7 @@ export class ListService {
       },
     );
   }
+
   public findUbicaciones() {
 
     this.store.select(REDUCER_LIST.Ubicaciones).subscribe(
@@ -186,11 +161,10 @@ export class ListService {
     this.store.select(REDUCER_LIST.TipoBien).subscribe(
       (list: any) => {
         if (!list || list.length === 0) {
-          this.ActaRecibido.getParametros()
+          this.CatalogoElementos.getTipoBien()
             .subscribe(
               (res: any[]) => {
-
-                this.addList(REDUCER_LIST.TipoBien, res[0].TipoBien);
+                this.addList(REDUCER_LIST.TipoBien, res);
               },
               error => {
                 this.addList(REDUCER_LIST.TipoBien, []);
@@ -252,7 +226,6 @@ export class ListService {
     );
   }
 
-
   public findSubgruposConsumo() {
 
     this.store.select(REDUCER_LIST.Consumo).subscribe(
@@ -272,6 +245,7 @@ export class ListService {
       },
     );
   }
+
   public findSubgruposConsumoControlado() {
 
     this.store.select(REDUCER_LIST.ConsumoControlado).subscribe(
@@ -291,6 +265,7 @@ export class ListService {
       },
     );
   }
+
   public findSubgruposDevolutivo() {
 
     this.store.select(REDUCER_LIST.Devolutivo).subscribe(
@@ -332,6 +307,7 @@ export class ListService {
       },
     );
   }
+
   public findEstadosMovimiento() {
 
     this.store.select(REDUCER_LIST.EstadosMovimiento).subscribe(
@@ -393,7 +369,6 @@ export class ListService {
       },
     );
   }
-
 
   private addList(type: string, object: Array<any>) {
     this.store.dispatch({

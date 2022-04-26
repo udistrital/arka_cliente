@@ -1,0 +1,292 @@
+<mat-vertical-stepper [nbSpinner]="!load" [linear]="modo !== 'get'" #stepper>
+  <mat-step [stepControl]="formBaja.get('rechazo')" *ngIf="formBaja && formBaja.get('rechazo.razon').value !== ''"
+    label="{{'GLOBAL.razonRechazo' | translate}}">
+    <form [formGroup]="formBaja.get('rechazo')">
+      <div class="row">
+        <div class="form-group col-sm">
+          <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Observaciones' | translate}}</label>
+          <div class="input-group">
+            <textarea rows="3" placeholder="{{'GLOBAL.razonRechazo' | translate}}" class="form-control"
+              formControlName="razon">
+            </textarea>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="form-group col-sm">
+          <button mat-flat-button color="primary" matStepperNext class="float-right text-uppercase">
+            {{'GLOBAL.siguiente' | translate}}
+          </button>
+        </div>
+      </div>
+    </form>
+  </mat-step>
+  <mat-step [stepControl]="formBaja.get('info')" label="{{'GLOBAL.bajas.informacion' | translate}}">
+    <form [formGroup]="formBaja.get('info')">
+
+      <div class="row" style="padding-bottom: 1rem;" *ngIf="modo !== 'create'">
+        <div class="col-sm" [formGroup]="formBaja.get('info.funcionario')">
+          <label class="label">{{'GLOBAL.solicitante' | translate}}</label>
+          <input type="text" class="form-control" formControlName="info" style="width: 100%;"
+            placeholder="{{'GLOBAL.solicitante' | translate }}">
+        </div>
+        <div class="col-sm" [formGroup]="formBaja.get('info.revisor')">
+          <label class="label">{{'GLOBAL.bajas.consulta.revisor' | translate}}</label>
+          <input type="text" class="form-control" formControlName="info" style="width: 100%;"
+            placeholder="{{'GLOBAL.bajas.consulta.revisor' | translate }}">
+        </div>
+      </div>
+
+      <div class="row" style="padding-bottom: 1rem;">
+        <div class="col-sm">
+          <label class="label">{{'GLOBAL.bajas.consulta.tipoBaja' | translate}}</label>
+          <mat-select type="text" class="form-control" formControlName="tipoBaja">
+            <mat-option value="">--{{ 'GLOBAL.seleccionar' | translate }}--</mat-option>
+            <mat-option *ngFor="let tipo of tiposBaja" [(value)]="tipo.Id">{{tipo.Nombre}}</mat-option>
+          </mat-select>
+          <p class="error-field" *ngIf="formBaja.get('info.tipoBaja').invalid">
+            {{'GLOBAL.Errores.ErrorRequerido' | translate}}</p>
+        </div>
+
+        <div class="col-sm">
+          <mat-card>
+            <label class="label">{{'GLOBAL.soporte' | translate}}</label>
+            <div *ngIf="modo !== 'get' && formBaja.get('info.soporte').value === ''" class="soporte-nuevo">
+              <button nbButton type="button" (click)="fileInputDocumento.click();">
+                <em class="fas fa-file-upload fa-2x"></em>
+                <input #fileInputDocumento type="file" (change)="onInputFileDocumento($event)" style="display:none;"
+                  accept="application/pdf">
+              </button>
+              <p style="text-align: center;" class="error-field">
+                {{'GLOBAL.Acta_Recibido.CapturarElementos.ValidadorPlaceholder' | translate: {EXT: 'pdf'} }} <br>
+                {{'GLOBAL.Acta_Recibido.RegistroActa.SizeSoporte' | translate: {SIZE: sizeSoporte} }} <br>
+                {{'GLOBAL.Errores.ErrorRequerido' | translate}}
+              </p>
+            </div>
+            <div *ngIf="formBaja.get('info.soporte').value !== ''" class="soporte">
+              <div>
+                <button nbButton type="button" *ngIf="true" target="_blank" (click)="download()">
+                  <em class="fas fa-file-download fa-2x"></em>
+                </button>
+                <p *ngIf="formBaja.get('info.soporte').value.file">{{formBaja.get('info.soporte').value.file.name}}</p>
+              </div>
+              <div *ngIf="modo !== 'get'">
+                <button type="button" *ngIf="true" class="btn btn-primary" (click)="clearFile()">
+                  <em class="fas fa-trash-alt fa-2x"></em>
+                </button>
+              </div>
+            </div>
+          </mat-card>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-sm">
+          <button mat-flat-button color="primary" *ngIf="formBaja && formBaja.get('rechazo.razon').value !== ''"
+            matStepperPrevious class="float-left text-uppercase">
+            {{'GLOBAL.anterior' | translate}}
+          </button>
+          <button mat-flat-button color="primary" matStepperNext class="float-right text-uppercase"
+            [disabled]="formBaja.get('info').invalid">
+            {{'GLOBAL.siguiente' | translate}}
+          </button>
+        </div>
+      </div>
+    </form>
+  </mat-step>
+  <mat-step [stepControl]="formBaja.get('elementos')" label="{{'GLOBAL.elementos' | translate}}">
+    <form [formGroup]="formBaja">
+      <mat-table #table [dataSource]="dataSource" formArrayName="elementos" matSort>
+        <ng-container matColumnDef="acciones">
+          <th id="col-acciones" mat-header-cell *matHeaderCellDef class="acciones">
+            <button mat-icon-button color="primary" [disabled]="modo === 'get'" (click)="addElemento()"
+              matTooltip="{{'GLOBAL.Acta_Recibido.CapturarElementos.AgregarElemento' | translate }}">
+              <mat-icon>add_box</mat-icon>
+            </button>
+          </th>
+          <td mat-cell *matCellDef="let element; let rowIndex = index" class="acciones">
+            <button mat-icon-button color="secondary" [disabled]="modo === 'get'" (click)="removeElemento(rowIndex)"
+              matTooltip="{{'GLOBAL.Acta_Recibido.CapturarElementos.EliminarElemento' | translate }}">
+              <mat-icon>delete_outline</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="placa">
+          <th id="placa" mat-header-cell *matHeaderCellDef mat-sort-header>
+            {{ 'GLOBAL.Placa' | translate }}
+          </th>
+          <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="getActualIndex(rowIndex)">
+            <input type="text" formControlName="placa" class="form-control"
+              placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 5} }}" [matAutocomplete]="auto">
+            <mat-autocomplete #auto="matAutocomplete" [displayWith]="muestraDependencia"
+              (optionSelected)="getDetalleElemento(getActualIndex(rowIndex))">
+              <mat-option *ngFor="let item of dependencias" [value]="item">
+                {{item.Placa}}
+              </mat-option>
+            </mat-autocomplete>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="nombre">
+          <th id="nombre" mat-header-cell *matHeaderCellDef mat-sort-header>
+            {{ 'GLOBAL.Descripcion' | translate }}
+          </th>
+          <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="getActualIndex(rowIndex)">
+            <input type="text" class="form-control" formControlName="nombre"
+              placeholder="{{'GLOBAL.Descripcion' | translate }}">
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="marca">
+          <th id="marca" mat-header-cell *matHeaderCellDef mat-sort-header>
+            {{ 'GLOBAL.marca' | translate }}
+          </th>
+          <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="getActualIndex(rowIndex)">
+            <input type="text" class="form-control" formControlName="marca"
+              placeholder="{{'GLOBAL.marca' | translate }}">
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="subgrupo">
+          <th id="subgrupo" mat-header-cell *matHeaderCellDef mat-sort-header>
+            {{ 'GLOBAL.subgrupo.clase.nombre' | translate }}
+          </th>
+          <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="getActualIndex(rowIndex)">
+            <input type="text" class="form-control" formControlName="subgrupo"
+              placeholder="{{'GLOBAL.subgrupo.clase.nombre' | translate }}">
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="tipoBien">
+          <th id="tipoBien" mat-header-cell *matHeaderCellDef mat-sort-header>
+            {{ 'GLOBAL.tipo_bien' | translate }}
+          </th>
+          <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="getActualIndex(rowIndex)">
+            <input type="text" class="form-control" formControlName="tipoBien"
+              placeholder="{{'GLOBAL.tipo_bien' | translate }}">
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="entrada">
+          <th id="entrada" mat-header-cell *matHeaderCellDef mat-sort-header>
+            {{ 'GLOBAL.Entrada' | translate }}
+          </th>
+          <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="getActualIndex(rowIndex)">
+            <input type="text" class="form-control" formControlName="entrada"
+              placeholder="{{'GLOBAL.Entrada' | translate }}">
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="salida">
+          <th id="salida" mat-header-cell *matHeaderCellDef mat-sort-header>
+            {{ 'GLOBAL.Salida' | translate }}
+          </th>
+          <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="getActualIndex(rowIndex)">
+            <input type="text" class="form-control" formControlName="salida"
+              placeholder="{{'GLOBAL.Salida' | translate }}">
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="sede">
+          <th id="sede" mat-header-cell *matHeaderCellDef mat-sort-header>
+            {{ 'GLOBAL.sede' | translate }}
+          </th>
+          <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="getActualIndex(rowIndex)">
+            <input type="text" class="form-control" formControlName="sede" placeholder="{{'GLOBAL.sede' | translate }}">
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="dependencia">
+          <th id="dependencia" mat-header-cell *matHeaderCellDef mat-sort-header>
+            {{ 'GLOBAL.dependencia' | translate }}
+          </th>
+          <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="getActualIndex(rowIndex)">
+            <input type="text" class="form-control" formControlName="dependencia"
+              placeholder="{{'GLOBAL.dependencia' | translate }}">
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="ubicacion">
+          <th id="ubicacion" mat-header-cell *matHeaderCellDef mat-sort-header>
+            {{ 'GLOBAL.ubicacion' | translate }}
+          </th>
+          <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="getActualIndex(rowIndex)">
+            <input type="text" class="form-control" formControlName="ubicacion"
+              placeholder="{{'GLOBAL.ubicacion' | translate }}">
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="funcionario">
+          <th id="funcionario" mat-header-cell *matHeaderCellDef mat-sort-header>
+            {{ 'GLOBAL.funcionario' | translate }}
+          </th>
+          <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="getActualIndex(rowIndex)">
+            <input type="text" class="form-control" formControlName="funcionario"
+              placeholder="{{'GLOBAL.funcionario' | translate }}">
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </mat-table>
+      <mat-paginator #paginator [pageSizeOptions]="[10, 25, 50]"></mat-paginator>
+
+      <div class="botones">
+        <button mat-flat-button color="primary" matStepperPrevious class="float-left text-uppercase">
+          {{'GLOBAL.anterior' | translate}}
+        </button>
+        <button mat-flat-button color="primary" matStepperNext class="float-right text-uppercase"
+          [disabled]="formBaja.get('elementos').invalid">
+          {{'GLOBAL.siguiente' | translate}}
+        </button>
+      </div>
+    </form>
+  </mat-step>
+  <mat-step [stepControl]="formBaja.get('resolucion')" *ngIf="formBaja && formBaja.get('resolucion.fecha').value !== ''"
+    label="{{'GLOBAL.bajas.infoComite' | translate}}">
+    <form [formGroup]="formBaja.get('resolucion')">
+      <div class="row">
+        <div class="form-group col-sm">
+          <label class="label">{{'GLOBAL.resolucion' | translate}}</label>
+          <input type="text" class="form-control" formControlName="numero" style="width: 100%;"
+            placeholder="{{'GLOBAL.resolucion' | translate }}">
+        </div>
+        <div class="form-group col-sm">
+          <label class="label">{{'GLOBAL.bajas.consulta.fechaRevC' | translate}}</label>
+          <input type="text" class="form-control" formControlName="fecha" style="width: 100%;"
+            placeholder="{{'GLOBAL.bajas.consulta.fechaRevC' | translate }}">
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm">
+          <button mat-flat-button color="primary" matStepperPrevious class="float-left text-uppercase">
+            {{'GLOBAL.anterior' | translate}}
+          </button>
+          <button mat-flat-button color="primary" matStepperNext class="float-right text-uppercase">
+            {{'GLOBAL.siguiente' | translate}}
+          </button>
+        </div>
+      </div>
+    </form>
+  </mat-step>
+  <mat-step [stepControl]="formBaja.get('observaciones')" label="{{'GLOBAL.observaciones' | translate}}">
+    <form [formGroup]="formBaja.get('observaciones')">
+      <div class="row">
+        <div class="form-group col-sm">
+          <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Observaciones' | translate}}</label>
+          <div class="input-group">
+            <textarea rows="5" placeholder="{{'GLOBAL.Acta_Recibido.RegistroActa.Observaciones2' | translate}}"
+              class="form-control" formControlName="observaciones">
+              </textarea>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="form-group col-sm">
+          <button mat-flat-button color="primary" matStepperPrevious class="float-left text-uppercase">
+            {{'GLOBAL.anterior' | translate}}
+          </button>
+        </div>
+      </div>
+    </form>
+  </mat-step>
+</mat-vertical-stepper>

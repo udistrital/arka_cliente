@@ -1,7 +1,4 @@
-<code *ngIf="subgrupoPadre">
-    
-</code>
-<toaster-container [toasterconfig]="config"></toaster-container>
-<ngx-dinamicform [normalform]="formSubgrupo" [modeloData]="info_subgrupo" (result)="validarForm($event)" [clean]="clean">
-</ngx-dinamicform>
-
+<div [nbSpinner]="cargando">
+    <ngx-dinamicform *ngIf="formSubgrupo" [normalform]="formSubgrupo" [modeloData]="infoSubgrupo" (result)="validarForm($event)" [clean]="clean">
+    </ngx-dinamicform>
+</div>

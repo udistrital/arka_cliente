@@ -38,6 +38,7 @@ export class RequestManager {
    */
   setPath(service: string) {
     this.path = environment[service];
+    // console.log({resPath: this.path});
   }
 
   /**
@@ -58,7 +59,7 @@ export class RequestManager {
     return this.http.get<any>(`${this.path}${endpoint}`, this.httpOptions).pipe(
       map(
         (res) => {
-          if (res.hasOwnProperty('Body')) {
+          if (res !== null && res.hasOwnProperty('Body')) {
             return res['Body'];
           } else {
             return res;

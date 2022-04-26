@@ -11,7 +11,6 @@ function authenticate(config) {
 }
 
 function getDocumentHtml(config) {
-    config.documentLabel = SPAGOBI.DOCUMENTLABEL;
     var html = Sbi.sdk.api.getDocumentHtml(config);
     return html;
 }
@@ -38,6 +37,14 @@ function getReport(scope, callbackFunction) {
     authenticate(authConf);
 }
 
+function buildUrl(documentLabel, parameters) {
+    const label = environment.SPAGOBI[documentLabel];
+    const url = environment.SPAGOBI.PROTOCOL + '://' + environment.SPAGOBI.HOST + '/' + environment.SPAGOBI.CONTEXTPATH +
+        '/servlet/AdapterHTTP?ACTION_NAME=EXECUTE_DOCUMENT_ACTION&NEW_SESSION=TRUE&IGNORE_SUBOBJECTS_VIEWPOINTS_SNAPSHOTS=true&flag=0&TOOLBAR_VISIBLE=true&OBJECT_LABEL=' +
+        label + (parameters ? '&PARAMETERS=' + parameters : '');
+    return url;
+}
+
 var spagoBIService = {};
 
 /*
@@ -48,5 +55,6 @@ spagoBIService.authenticate = authenticate;
 
 spagoBIService.getReport = getReport;
 spagoBIService.getDocumentHtml = getDocumentHtml;
+spagoBIService.buildUrl = buildUrl;
 
 export { spagoBIService };

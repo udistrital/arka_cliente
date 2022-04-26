@@ -1,10 +1,9 @@
 import * as Nuxeo from 'nuxeo';
 import { Injectable } from '@angular/core';
+import { Observable, Subject } from 'rxjs';
 import { environment } from './../../../environments/environment';
-import { Observable } from 'rxjs/Observable';
 import { Documento } from './../data/models/documento/documento';
 import { TipoDocumento } from './../data/models/documento/tipo_documento';
-import { Subject } from 'rxjs/Subject';
 
 @Injectable()
 export class NuxeoService {
@@ -23,8 +22,8 @@ export class NuxeoService {
         this.documentos = {};
         this.blobDocument = {};
         this.updateDoc = {};
-        console.info(this.blobDocument);
-        console.info(this.updateDoc);
+        // console.log(this.blobDocument);
+        // console.log(this.updateDoc);
 
         NuxeoService.nuxeo = new Nuxeo({
             baseURL: environment.NUXEO.PATH,

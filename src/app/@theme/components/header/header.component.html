@@ -1,24 +1,23 @@
 <div class="header-container" [class.left]="position === 'normal'" [class.right]="position === 'inverse'">
   <div class="logo-containter">
-   
+
     <a (click)="toggleSidebar()" href="#" class="navigation" >
-        <img class="logo-kronos" src="../../../../assets/images/isotipo arkaII.svg">
+        <img alt="Oficina Asesora de Sistemas" class="logo-kronos" src="../../../../assets/images/isotipo arkaII.svg">
     </a>
-    <a href="#" class="navigation">
-        <img class="logo-kronos_2" src="../../../../assets/images/Arka II Isotipo 2tipo.svg">
+    <a class="navigation" (click)="goToHome()">
+        <img alt="Arka II" class="logo-kronos_2" src="../../../../assets/images/Arka II Isotipo 2tipo.svg">
     </a>
   </div>
-  
+
   <!-- <ngx-theme-switcher></ngx-theme-switcher> -->
 </div>
 
 <div class="header-container">
-  <!-- <ngx-layout-direction-switcher></ngx-layout-direction-switcher> -->
   <nb-actions size="medium" [class.right]="position === 'normal'" [class.left]="position === 'inverse'">
     <nb-action [hidden]="!liveTokenValue">
       <div class="dropdown ghost-dropdown" ngbDropdown>
         <button type="button" class="btn btn-success user" type="button" ngbDropdownToggle>
-          <i class="nb-person"></i> {{username}}
+          <em class="nb-person"></em> {{username}}
         </button>
         <ul class="dropdown-menu" ngbDropdownMenu>
           <li class="dropdown-item" (click)="logout()">{{ 'HOME.LOGOUT' | translate }}</li>
@@ -30,16 +29,17 @@
     <nb-action [hidden]="liveTokenValue">
       <div class="dropdown ghost-dropdown">
         <div class="btn-with-icon-example">
-          <button type="button" nbButton status="primary" (click)="login()">
-            <i class="nb-user"></i>
+          <button type="button" nbButton status="primary">
+            <em class="nb-user"></em>
+
             <span>{{ 'HOME.LOGIN' | translate }}</span>
           </button>
         </div>
       </div>
     </nb-action>
     <nb-action class="control-item idioma">
-      <i class="control-icon ion-earth" nbPopoverTrigger="click" [nbPopover]="templateRef"
-        nbPopoverPlacement="bottom"></i>
+      <em class="control-icon ion-earth" nbPopoverTrigger="click" [nbPopover]="templateRef"
+        nbPopoverPlacement="bottom"></em>
       <ng-template #templateRef>
         <div *ngFor="let lang of translate.getLangs()">
           <button nbButton status="primary" [value]="lang" (click)="useLanguage(lang)">{{ lang }}</button>

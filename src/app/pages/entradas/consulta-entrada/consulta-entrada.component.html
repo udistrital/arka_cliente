@@ -1,218 +1,426 @@
-<div class="col-lg-12">
-  <nb-card>
-    <nb-card-header>
-      <h1>{{'GLOBAL.consultar_entrada' | translate}}</h1>
-    </nb-card-header>
-    <nb-card-body class="row d-flex justify-content-center">
+<mat-card>
+  <mat-card-title *ngIf="!detalle && !edit && !editarEntrada">
+    {{'GLOBAL.consultar_entrada' | translate}}
+  </mat-card-title>
+  <mat-card-title *ngIf="(detalle && !edit) || editarEntrada">
+    {{'GLOBAL.detalle_entrada' | translate}} {{ entradaEspecifica?.Consecutivo }}
+  </mat-card-title>
+  <mat-card-subtitle *ngIf="!detalle && !edit && !editarEntrada">
+    {{'GLOBAL.mensaje_consulta_entrada' | translate}}
+  </mat-card-subtitle>
 
-      <!-- CARD PARA MOSTRAR LAS SOLICITUDES *ngIf="!detalle" -->
-      <p class="h4 pb-4" *ngIf="!detalle">{{'GLOBAL.mensaje_consulta_entrada' | translate}}</p>
+  <mat-card-content [nbSpinner]="!mostrar">
 
-      <ng2-smart-table [settings]="settings" [source]="source" (custom)="onCustom($event)" *ngIf="!detalle">
+    <!-- CARD PARA MOSTRAR LAS SOLICITUDES *ngIf="!detalle" -->
+
+    <div class="container-tabla" *ngIf="!editarEntrada">
+      <ng2-smart-table [settings]="settings" [source]="source" (custom)="onCustom($event)" (create)="onRegister($event)"
+        *ngIf="!detalle && !edit">
       </ng2-smart-table>
+    </div>
 
-      <div class="justify-content-center float-right pt-4" *ngIf="!detalle">
-        <button type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off"
-          (click)="onRegister()">
-          {{'GLOBAL.registrar_nueva_entrada' | translate}}
-        </button>
+    <ngx-registro *ngIf="edit && entradaEdit" [EntradaEdit]="entradaEdit"></ngx-registro>
+
+    <!-- CARD PARA MOSTRAR LOS DETALLES DE LAS SOLICITUDES -->
+
+    <div *ngIf="(detalle && !edit) || editarEntrada">
+
+      <ngx-registro *ngIf="editarEntrada" [entradaId]="entradaId" [EntradaEdit]="editarEntrada" [ActaParaEditar]="actaRecibidoId"></ngx-registro>
+
+      <mat-vertical-stepper #stepper>
+        <mat-step label="{{'GLOBAL.info' | translate}}">
+
+      <!-- ENTRADA -->
+      <div class="row">
+        <div class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.consecutivo' | translate }}</strong>: {{ entradaEspecifica.Consecutivo }}</p>
+        </div>
+        <div class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.tipo_entrada' | translate }}</strong>
+           : {{ entradaEspecifica.TipoEntradaId.Nombre }}</p>
+        </div>
       </div>
 
-      <!-- CARD PARA MOSTRAR LOS DETALLES DE LAS SOLICITUDES -->
-      <h5 *ngIf="detalle" class="pb-4">{{'GLOBAL.detalle_entrada' | translate}}</h5>
-
-      <div *ngIf="detalle" class="container">
-
-        <!-- ENTRADA -->
-        <div class="row">
-          <div class="col">
-            <p class="text-uppercase"><strong>Entrada</strong>: {{ entradaEspecifica.Consecutivo }}</p>
-          </div>
-          <div class="col">
-            <p class="text-uppercase"><strong>Tipo de Entrada:</strong>
-              {{ entradaEspecifica.TipoEntradaId.Nombre }}</p>
-          </div>
+      <!-- ACTA RECIBIDO -->
+      <div *ngIf="(detalle && !edit) || editarEntrada" class="row">
+        <div class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.Acta_Recibido.ActaNo' | translate }}</strong>
+           : {{ entradaEspecifica.ActaRecibidoId }}</p>
         </div>
-
-        <!-- ACTA RECIBIDO -->
-        <div *ngIf="detalle" class="row">
-          <div class="col">
-            <p class="text-uppercase"><strong>Acta de Recibido N°:</strong>
-              {{ entradaEspecifica.ActaRecibidoId }}</p>
-          </div>
+        <div class="col" *ngIf="Proveedor">
+          <p class="text-uppercase"><strong>{{'GLOBAL.proveedor' | translate }}</strong>
+           : {{ (Proveedor.Numero ? Proveedor.Numero + " - " : "") + Proveedor.NombreCompleto }}</p>
         </div>
-
-        <!-- ADQUISICIÓN -->
-        <div *ngIf="detalle && entradaEspecifica.TipoEntradaId.Nombre === 'Adquisición'" class="row">
-          <div class="col">
-            <p *ngIf="entradaEspecifica.Importacion" class="text-uppercase">
-              <strong>Entrada por Importación:</strong> Si</p>
-            <p *ngIf="!entradaEspecifica.Importacion" class="text-uppercase">
-              <strong>Entrada por Importación:</strong> No</p>
-          </div>
-        </div>
-
-        <div *ngIf="detalle && entradaEspecifica.TipoEntradaId.Nombre === 'Adquisición'" class="row">
-          <div class="col">
-            <p class="text-uppercase"><strong>Contrato N°:</strong> {{ entradaEspecifica.ContratoId }}</p>
-          </div>
-          <div class="col">
-            <p class="text-uppercase"><strong>Tipo Contrato:</strong> {{ contrato.TipoContrato }}</p>
-          </div>
-        </div>
-
-        <div *ngIf="detalle && entradaEspecifica.TipoEntradaId.Nombre === 'Adquisición'" class="row">
-          <div class="col">
-            <p class="text-uppercase"><strong>Ordenador de Gasto:</strong>
-              {{ contrato.OrdenadorGasto.NombreOrdenador }}
-            </p>
-          </div>
-          <div class="col">
-            <p class="text-uppercase"><strong>Cargo:</strong> {{ contrato.OrdenadorGasto.RolOrdenadorGasto }}</p>
-          </div>
-        </div>
-
-        <div *ngIf="detalle && entradaEspecifica.TipoEntradaId.Nombre === 'Adquisición'" class="row">
-          <div class="col">
-            <p class="text-uppercase"><strong>Supervisor:</strong> {{ contrato.Supervisor.Nombre }}</p>
-          </div>
-          <div class="col">
-            <p class="text-uppercase"><strong>Cargo:</strong> {{ contrato.Supervisor.Cargo }}</p>
-          </div>
-        </div>
-
-        <!-- ELABORACIÓN PROPIA -->
-        <div *ngIf="detalle && entradaEspecifica.TipoEntradaId.Nombre === 'Elaboración Propia'" class="row">
-          <div class="col">
-            <p class="text-uppercase"><strong>Ordenador de Gasto:</strong>
-              capturar
-            </p>
-          </div>
-          <div class="col">
-            <p class="text-uppercase"><strong>Cargo:</strong>capturar</p>
-          </div>
-        </div>
-
-        <div *ngIf="detalle && entradaEspecifica.TipoEntradaId.Nombre === 'Elaboración Propia'" class="row">
-          <div class="col">
-            <p class="text-uppercase"><strong>Solicitante:</strong> capturar </p>
-          </div>
-          <div class="col">
-            <p class="text-uppercase"><strong>Cargo:</strong> capturar</p>
-          </div>
-        </div>
-
-        <!-- DONACIÓN -->
-        <div *ngIf="detalle && entradaEspecifica.TipoEntradaId.Nombre === 'Donación'" class="row">
-          <div class="col">
-            <p class="text-uppercase"><strong>Contrato N°:</strong> {{ entradaEspecifica.ContratoId }}</p>
-          </div>
-          <div class="col">
-            <p class="text-uppercase"><strong>Tipo Contrato:</strong> {{ contrato.TipoContrato }}</p>
-          </div>
-        </div>
-
-        <div *ngIf="detalle && entradaEspecifica.TipoEntradaId.Nombre === 'Donación'" class="row">
-          <div class="col">
-            <p class="text-uppercase"><strong>Ordenador de Gasto:</strong>
-              {{ contrato.OrdenadorGasto.NombreOrdenador }}
-            </p>
-          </div>
-          <div class="col">
-            <p class="text-uppercase"><strong>Cargo:</strong> {{ contrato.OrdenadorGasto.RolOrdenadorGasto }}</p>
-          </div>
-        </div>
-
-        <div *ngIf="detalle && entradaEspecifica.TipoEntradaId.Nombre === 'Donación'" class="row">
-          <div class="col">
-            <p class="text-uppercase"><strong>Supervisor:</strong> {{ contrato.Supervisor.Nombre }}</p>
-          </div>
-          <div class="col">
-            <p class="text-uppercase"><strong>Cargo:</strong> {{ contrato.Supervisor.Cargo }}</p>
-          </div>
-        </div>
-        <div *ngIf="detalle && entradaEspecifica.TipoEntradaId.Nombre === 'Donación'" class="row">
-          <div class="col">
-            <p class="text-uppercase"><strong>Solicitante:</strong> capturar </p>
-          </div>
-          <div class="col">
-            <p class="text-uppercase"><strong>Cargo:</strong> capturar</p>
-          </div>
-        </div>
-
-        <!-- REPOSICIÓN -->
-        <!-- HACER CUANDO ESTE LISTO -->
-
-        <!-- SOBRANTE -->
-        <div *ngIf="detalle && entradaEspecifica.TipoEntradaId.Nombre === 'Sobrante'" class="row">
-          <div class="col">
-            <p class="text-uppercase"><strong>Ordenador de Gasto:</strong>
-              capturar
-            </p>
-          </div>
-          <div class="col">
-            <p class="text-uppercase"><strong>Cargo:</strong>capturar</p>
-          </div>
-        </div>
-
-        <!-- TERCEROS -->
-        <div *ngIf="detalle && entradaEspecifica.TipoEntradaId.Nombre === 'Terceros'" class="row">
-          <div class="col">
-            <p class="text-uppercase"><strong>Contrato N°:</strong> {{ entradaEspecifica.ContratoId }}</p>
-          </div>
-          <div class="col">
-            <p class="text-uppercase"><strong>Tipo Contrato:</strong> {{ contrato.TipoContrato }}</p>
-          </div>
-        </div>
-
-        <div *ngIf="detalle && entradaEspecifica.TipoEntradaId.Nombre === 'Terceros'" class="row">
-          <div class="col">
-            <p class="text-uppercase"><strong>Ordenador de Gasto:</strong>
-              {{ contrato.OrdenadorGasto.NombreOrdenador }}
-            </p>
-          </div>
-          <div class="col">
-            <p class="text-uppercase"><strong>Cargo:</strong> {{ contrato.OrdenadorGasto.RolOrdenadorGasto }}</p>
-          </div>
-        </div>
-
-        <div *ngIf="detalle && entradaEspecifica.TipoEntradaId.Nombre === 'Terceros'" class="row">
-          <div class="col">
-            <p class="text-uppercase"><strong>Supervisor:</strong> {{ contrato.Supervisor.Nombre }}</p>
-          </div>
-          <div class="col">
-            <p class="text-uppercase"><strong>Cargo:</strong> {{ contrato.Supervisor.Cargo }}</p>
-          </div>
-        </div>
-
-        <!-- OBSERVACIONES -->
-        <div *ngIf="detalle" class=" row">
-          <div class="col">
-            <p *ngIf="entradaEspecifica.Observacion !== ''" class="text-uppercase">
-              <strong>Observaciones:</strong> {{ entradaEspecifica.Observacion }}</p>
-            <p *ngIf="entradaEspecifica.Observacion === ''" class="text-uppercase">
-              <strong>Observaciones:</strong> N/A</p>
-          </div>
-        </div>
-
-        <!-- SOPORTES -->
-        <label *ngIf="documentoId" class="text-uppercase"><strong>Soportes:</strong></label>
-        <button *ngIf="documentoId" mat-button type="button" (click)="loadSoporte()">
-          <mat-icon>cloud_download</mat-icon>
-        </button>
-
       </div>
 
-      <h5 class="pt-4 pb-4" *ngIf="detalle">{{'GLOBAL.elementos_entrada' | translate}}</h5>
-
-      <ngx-tabla-entradas [actaRecibidoId]="actaRecibidoId" *ngIf="detalle"></ngx-tabla-entradas>
-
-      <div class="pt-4">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="onVolver()"
-          *ngIf="detalle">{{'GLOBAL.volver' | translate}}
-        </button>
+      <div *ngIf="((detalle && !edit) || editarEntrada) && factura" class="row">
+        <div class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.factura' | translate }}</strong>:
+            {{ factura.Consecutivo }}</p>
+        </div>
       </div>
 
-    </nb-card-body>
-  </nb-card>
-</div>
+      <!-- ADQUISICIÓN -->
+
+      <div *ngIf="((detalle && !edit) || editarEntrada)  && entradaEspecifica.TipoEntradaId.Nombre === 'Adquisición'" class="row">
+        <div class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.numero_contrato' | translate }}</strong>: {{ entradaEspecifica.ContratoId }}</p>
+        </div>
+        <div class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.tipo_contrato' | translate }}</strong>: {{ contrato.TipoContrato }}</p>
+        </div>
+      </div>
+
+      <div *ngIf="((detalle && !edit) || editarEntrada) && entradaEspecifica.TipoEntradaId.Nombre === 'Adquisición'" class="row">
+        <div class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.ordenador_gasto' | translate }}</strong>
+           : {{ contrato.OrdenadorGasto.NombreOrdenador }}
+          </p>
+        </div>
+        <div class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.Cargo' | translate }}</strong>: {{ contrato.OrdenadorGasto.RolOrdenadorGasto }}</p>
+        </div>
+      </div>
+
+      <div *ngIf="((detalle && !edit) || editarEntrada) && entradaEspecifica.TipoEntradaId.Nombre === 'Adquisición'" class="row">
+        <div class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.supervisor' | translate }}</strong>: {{ contrato.Supervisor.Nombre }}</p>
+        </div>
+        <div class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.ordenador_gasto' | translate }}</strong>: {{ contrato.Supervisor.Cargo }}</p>
+        </div>
+      </div>
+
+      <!-- ELABORACIÓN PROPIA -->
+      <div *ngIf="((detalle && !edit) || editarEntrada) && entradaEspecifica.TipoEntradaId.Nombre === 'Elaboración Propia'" class="row">
+        <div class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.ordenador_gasto' | translate }}</strong>
+           : capturar
+          </p>
+        </div>
+        <div class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.Cargo' | translate }}</strong>: capturar</p>
+        </div>
+      </div>
+
+      <div *ngIf="((detalle && !edit) || editarEntrada) && entradaEspecifica.TipoEntradaId.Nombre === 'Elaboración Propia'" class="row">
+        <div class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.Solicitante' | translate }}</strong>: capturar </p>
+        </div>
+        <div class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.Cargo' | translate }}</strong>: capturar</p>
+        </div>
+      </div>
+
+      <!-- DONACIÓN -->
+      <div *ngIf="((detalle && !edit) || editarEntrada) && entradaEspecifica.TipoEntradaId.Nombre === 'Donación'" class="row">
+        <div class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.numero_contrato' | translate }}</strong>: {{ entradaEspecifica.ContratoId }}</p>
+        </div>
+        <div class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.tipo_contrato' | translate }}</strong>: {{ contrato.TipoContrato }}</p>
+        </div>
+      </div>
+
+      <div *ngIf="((detalle && !edit) || editarEntrada) && entradaEspecifica.TipoEntradaId.Nombre === 'Donación'" class="row">
+        <div class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.ordenador_gasto' | translate }}</strong>
+           : {{ contrato.OrdenadorGasto.NombreOrdenador }}
+          </p>
+        </div>
+        <div class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.Cargo' | translate }}</strong>: {{ contrato.OrdenadorGasto.RolOrdenadorGasto }}</p>
+        </div>
+      </div>
+
+
+      <div *ngIf="((detalle && !edit) || editarEntrada) && entradaEspecifica.TipoEntradaId.Nombre === 'Donación'" class="row">
+        <div class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.supervisor' | translate }}</strong>: {{ contrato.Supervisor.Nombre }}</p>
+        </div>
+        <div class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.Cargo' | translate }}</strong>: {{ contrato.Supervisor.Cargo }}</p>
+        </div>
+      </div>
+
+      <div *ngIf="((detalle && !edit) || editarEntrada) && entradaEspecifica.TipoEntradaId.Nombre === 'Donación'" class="row">
+        <div class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.Solicitante' | translate }}</strong>: capturar </p>
+        </div>
+        <div class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.Cargo' | translate }}</strong>: capturar</p>
+        </div>
+      </div>
+
+      <!-- REPOSICIÓN -->
+      <div *ngIf="((detalle && !edit) || editarEntrada)  && entradaEspecifica.TipoEntradaId.Nombre === 'Reposición'" class="row">
+        <div class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.Encargado' | translate }} </strong>: {{encargado}}</p>
+        </div>
+        <div class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.Placa' | translate }}</strong>: {{Placa}}</p>
+        </div>
+      </div>
+      <!-- HACER CUANDO ESTE LISTO -->
+
+      <!-- SOBRANTE -->
+      <div *ngIf="((detalle && !edit) || editarEntrada) && entradaEspecifica.TipoEntradaId.Nombre === 'Sobrante'" class="row">
+      </div>      
+      
+
+      <!-- TERCEROS -->
+      <div *ngIf="((detalle && !edit) || editarEntrada) && entradaEspecifica.TipoEntradaId.Nombre === 'Terceros'" class="row">
+        <div class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.numero_contrato' | translate }}</strong>: {{ entradaEspecifica.ContratoId }}</p>
+        </div>
+        <div class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.tipo_contrato' | translate }}</strong>: {{ contrato.TipoContrato }}</p>
+        </div>
+      </div>
+
+      <div *ngIf="((detalle && !edit) || editarEntrada) && entradaEspecifica.TipoEntradaId.Nombre === 'Terceros'" class="row">
+        <div class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.ordenador_gasto' | translate }}</strong>
+           : {{ contrato.OrdenadorGasto.NombreOrdenador }}
+          </p>
+        </div>
+        <div class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.Cargo' | translate }}</strong>: {{ contrato.OrdenadorGasto.RolOrdenadorGasto }}</p>
+        </div>
+      </div>
+
+      <div *ngIf="((detalle && !edit) || editarEntrada) && entradaEspecifica.TipoEntradaId.Nombre === 'Terceros'" class="row">
+        <div class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.supervisor' | translate }}</strong>: {{ contrato.Supervisor.Nombre }}</p>
+        </div>
+        <div class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.Cargo' | translate }}</strong>: {{ contrato.Supervisor.Cargo }}</p>
+        </div>
+      </div>
+
+      <!-- CAJA MENOR -->
+      <div *ngIf="((detalle && !edit) || editarEntrada) && entradaEspecifica.TipoEntradaId.Nombre === 'Caja menor'" class="row">
+        <div *ngIf="Supervisor!=undefined" class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.supervisor' | translate }}</strong>: {{ Supervisor.TerceroPrincipal.NombreCompleto }}</p>
+        </div>
+        <div *ngIf="Supervisor!=undefined" class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.dependencia' | translate }}</strong>: {{ Supervisor.Dependencia.Nombre}}</p>
+        </div>
+      </div>
+      
+      <div *ngIf="((detalle && !edit) || editarEntrada) && entradaEspecifica.TipoEntradaId.Nombre === 'Caja menor'" class="row">
+        <div *ngIf="Ordenador!=undefined" class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.ordenador_gasto' | translate }}</strong>: {{ Ordenador.TerceroPrincipal.NombreCompleto }}</p>
+        </div>
+      </div>
+
+      <!-- ADICIONES Y MEJORAS -->
+      <div *ngIf="((detalle && !edit) || editarEntrada) && entradaEspecifica.TipoEntradaId.Nombre === 'Adiciones y mejoras'" class="row">
+        <div class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.numero_contrato' | translate }}</strong>: {{ entradaEspecifica.ContratoId }}</p>
+        </div>
+        <div class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.tipo_contrato' | translate }}</strong>: {{ contrato.TipoContrato }}</p>
+        </div>
+      </div>
+
+      <div *ngIf="((detalle && !edit) || editarEntrada) && entradaEspecifica.TipoEntradaId.Nombre === 'Adiciones y mejoras'" class="row">
+        <div class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.ordenador_gasto' | translate }}</strong>
+           : {{ contrato.OrdenadorGasto.NombreOrdenador }}
+          </p>
+        </div>
+        <div class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.Cargo' | translate }}</strong>: {{ contrato.OrdenadorGasto.RolOrdenadorGasto }}</p>
+        </div>
+      </div>
+
+      <div *ngIf="((detalle && !edit) || editarEntrada) && entradaEspecifica.TipoEntradaId.Nombre === 'Adiciones y mejoras'" class="row">
+        <div class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.supervisor' | translate }}</strong>: {{ contrato.Supervisor.Nombre }}</p>
+        </div>
+        <div class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.Cargo' | translate }}</strong>: {{ contrato.Supervisor.Cargo }}</p>
+        </div>
+      </div>   
+
+      <!-- INTANGIBLES ADQUIRIDOS -->
+      <div *ngIf="((detalle && !edit) || editarEntrada) && entradaEspecifica.TipoEntradaId.Nombre === 'Intangibles'" class="row">
+        <div class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.numero_contrato' | translate }}</strong>: {{ entradaEspecifica.ContratoId }}</p>
+        </div>
+        <div class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.tipo_contrato' | translate }}</strong>: {{ contrato.TipoContrato }}</p>
+        </div>
+      </div>
+
+      <div *ngIf="((detalle && !edit) || editarEntrada) && entradaEspecifica.TipoEntradaId.Nombre === 'Intangibles'" class="row">
+        <div class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.ordenador_gasto' | translate }}</strong>
+           : {{ contrato.OrdenadorGasto.NombreOrdenador }}
+          </p>
+        </div>
+        <div class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.Cargo' | translate }}</strong>: {{ contrato.OrdenadorGasto.RolOrdenadorGasto }}</p>
+        </div>
+      </div>
+
+      <div *ngIf="((detalle && !edit) || editarEntrada) && entradaEspecifica.TipoEntradaId.Nombre === 'Intangibles'" class="row">
+        <div class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.supervisor' | translate }}</strong>: {{ contrato.Supervisor.Nombre }}</p>
+        </div>
+        <div class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.Cargo' | translate }}</strong>: {{ contrato.Supervisor.Cargo }}</p>
+        </div>
+      </div>     
+
+      <!-- PROVISIONAL -->
+      <div *ngIf="((detalle && !edit) || editarEntrada) && entradaEspecifica.TipoEntradaId.Nombre === 'Provisional'" class="row">
+        <div class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.numero_contrato' | translate }}</strong>: {{ entradaEspecifica.ContratoId }}</p>
+        </div>
+        <div class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.tipo_contrato' | translate }}</strong>: {{ contrato.TipoContrato }}</p>
+        </div>
+      </div>
+
+      <div *ngIf="((detalle && !edit) || editarEntrada) && entradaEspecifica.TipoEntradaId.Nombre === 'Provisional'" class="row">
+        <div class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.ordenador_gasto' | translate }}</strong>
+           : {{ contrato.OrdenadorGasto.NombreOrdenador }}
+          </p>
+        </div>
+        <div class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.Cargo' | translate }}</strong>: {{ contrato.OrdenadorGasto.RolOrdenadorGasto }}</p>
+        </div>
+      </div>
+
+      <div *ngIf="((detalle && !edit) || editarEntrada) && entradaEspecifica.TipoEntradaId.Nombre === 'Provisional'" class="row">
+        <div class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.supervisor' | translate }}</strong>: {{ contrato.Supervisor.Nombre }}</p>
+        </div>
+        <div class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.Cargo' | translate }}</strong>: {{ contrato.Supervisor.Cargo }}</p>
+        </div>
+      </div>  
+
+      <!-- COMPRAS EXTRANJERAS -->
+      <div *ngIf="((detalle && !edit) || editarEntrada) && entradaEspecifica.TipoEntradaId.Nombre === 'Compras extranjeras'" class="row">
+        <div class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.numero_contrato' | translate }}</strong>: {{ entradaEspecifica.ContratoId }}</p>
+        </div>
+        <div class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.tipo_contrato' | translate }}</strong>: {{ contrato.TipoContrato }}</p>
+        </div>
+      </div>
+
+      <div *ngIf="((detalle && !edit) || editarEntrada) && entradaEspecifica.TipoEntradaId.Nombre === 'Compras extranjeras'" class="row">
+        <div class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.ordenador_gasto' | translate }}</strong>
+           : {{ contrato.OrdenadorGasto.NombreOrdenador }}
+          </p>
+        </div>
+        <div class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.Cargo' | translate }}</strong>: {{ contrato.OrdenadorGasto.RolOrdenadorGasto }}</p>
+        </div>
+      </div>
+
+      <div *ngIf="((detalle && !edit) || editarEntrada) && entradaEspecifica.TipoEntradaId.Nombre === 'Compras extranjeras'" class="row">
+        <div class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.supervisor' | translate }}</strong>: {{ contrato.Supervisor.Nombre }}</p>
+        </div>
+        <div class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.Cargo' | translate }}</strong>: {{ contrato.Supervisor.Cargo }}</p>
+        </div>
+      </div>
+      <div *ngIf="((detalle && !edit) || editarEntrada) && entradaEspecifica.TipoEntradaId.Nombre === 'Compras extranjeras'" class="row">
+        <div class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.Cargo' | translate }}</strong>: {{ entradaEspecifica.RegistroImportacion
+            }}</p>
+        </div>
+        <div class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.trm' | translate }}</strong> {{
+            entradaEspecifica.TasaRepresentativaMercado }}</p>
+        </div>
+      </div>
+      <div *ngIf="((detalle && !edit) || editarEntrada) && entradaEspecifica.TipoEntradaId.Nombre === 'Compras extranjeras'" class="row">
+        <div class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.Divisa' | translate }}</strong>: {{ entradaEspecifica.Divisa
+            }}</p>
+        </div>
+      </div>
+        
+      <!-- INTANGIBLES DESARROLLADOS -->
+      <div *ngIf="((detalle && !edit) || editarEntrada) && entradaEspecifica.TipoEntradaId.Nombre === 'Desarrollo interior'" class="row">
+        <div *ngIf="Supervisor!=undefined" class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.supervisor' | translate }}</strong>: {{ Supervisor.TerceroPrincipal.NombreCompleto }}</p>
+        </div>
+        <div *ngIf="Supervisor!=undefined" class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.dependencia' | translate }}</strong>: {{ Supervisor.Dependencia.Nombre}}</p>
+        </div>
+      </div>
+
+      <div *ngIf="((detalle && !edit) || editarEntrada) && entradaEspecifica.TipoEntradaId.Nombre === 'Desarrollo interior'" class="row">
+        <div *ngIf="Ordenador!=undefined" class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.ordenador_gasto' | translate }}</strong>: {{ Ordenador.TerceroPrincipal.NombreCompleto }}</p>
+        </div>
+      </div>
+
+      <!-- APROVECHAMIENTOS -->
+
+      <div *ngIf="((detalle && !edit) || editarEntrada) && entradaEspecifica.TipoEntradaId.Nombre === 'Partes por Aprovechamientos'" class="row">
+        <div *ngIf="Supervisor!=undefined" class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.supervisor' | translate }}</strong>: {{ Supervisor.TerceroPrincipal.NombreCompleto }}</p>
+        </div>
+        <div *ngIf="Supervisor?.Dependencia" class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.dependencia' | translate }}</strong>: {{ Supervisor.Dependencia.Nombre}}</p>
+        </div>
+      </div>
+
+      <!-- OBSERVACIONES -->
+      <div *ngIf="((detalle && !edit) || editarEntrada)" class=" row">
+        <div class="col">
+          <p *ngIf="entradaEspecifica.Observacion !== ''" class="text-uppercase">
+            <strong>{{'GLOBAL.observaciones' | translate }}</strong>: {{ entradaEspecifica.Observacion }}
+          </p>
+          <p *ngIf="entradaEspecifica.Observacion === ''" class="text-uppercase">
+            <strong>{{'GLOBAL.observaciones' | translate }}</strong>: N/A
+          </p>
+        </div>
+      </div>
+
+      <!-- SOPORTES -->
+      <label *ngIf="documentoId" class="text-uppercase"><strong>Soportes:</strong></label>
+      <button *ngIf="documentoId" mat-button type="button" (click)="loadSoporte()">
+        <mat-icon>cloud_download</mat-icon>
+      </button>
+    </mat-step>
+  </mat-vertical-stepper>
+
+    <mat-vertical-stepper #stepper>
+      <mat-step label="{{'GLOBAL.elementos_entrada' | translate}}">
+        <ngx-gestionar-elementos [ActaRecibidoId]="actaRecibidoId" [Modo]="'ver'" *ngIf="detalle"></ngx-gestionar-elementos>
+      </mat-step>
+    </mat-vertical-stepper>
+    <ngx-comprobante *ngIf="trContable" [ajusteInfo]="trContable" [modo]="'get'"
+      [consecutivo]="entradaEspecifica?.Consecutivo" [fecha]="trContable.fecha" [concepto]="trContable.concepto">
+    </ngx-comprobante>
+
+  <ngx-ver-comprobante [consecutivo] = "entradaEspecifica.Consecutivo" [transaccion]="transaccionContable" *ngIf="verComponente"></ngx-ver-comprobante>
+
+      <mat-card-actions>
+        <div *ngIf="modo === 'revision' && !verComponente" class="justify-content-center" style="padding-bottom: 2rem;">
+          <button mat-flat-button color="primary" class="float-left text-uppercase" (click)="confirmSubmit(false)">
+            {{'GLOBAL.Acta_Recibido.VerificacionActa.Rechazar' | translate}}
+          </button>
+          <button mat-flat-button color="primary" class="float-right text-uppercase" (click)="confirmSubmit(true)">
+            {{'GLOBAL.Acta_Recibido.VerificacionActa.Verificar' | translate}}
+          </button>
+        </div>
+        <button mat-flat-button color="primary" class="float-left text-uppercase" (click)="onVolver()"
+          *ngIf="(detalle && !edit) || editarEntrada">{{'GLOBAL.volver' | translate}}
+        </button>
+      </mat-card-actions>
+    </div>
+  </mat-card-content>
+</mat-card>

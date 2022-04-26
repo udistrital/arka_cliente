@@ -10,12 +10,11 @@ import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoH
 import { ActaRecibido } from '../../../@core/data/models/acta_recibido/acta_recibido';
 import { Elemento, Impuesto } from '../../../@core/data/models/acta_recibido/elemento';
 import { TipoBien } from '../../../@core/data/models/acta_recibido/tipo_bien';
-import { SoporteActa, Ubicacion, Dependencia } from '../../../@core/data/models/acta_recibido/soporte_acta';
+import { SoporteActa, Ubicacion } from '../../../@core/data/models/acta_recibido/soporte_acta';
 import { Proveedor } from '../../../@core/data/models/acta_recibido/Proveedor';
 import { EstadoActa } from '../../../@core/data/models/acta_recibido/estado_acta';
 import { EstadoElemento } from '../../../@core/data/models/acta_recibido/estado_elemento';
 import { HistoricoActa } from '../../../@core/data/models/acta_recibido/historico_acta';
-import { TransaccionSoporteActa, TransaccionActaRecibido } from '../../../@core/data/models/acta_recibido/transaccion_acta_recibido';
 import Swal from 'sweetalert2';
 import { ToasterService, ToasterConfig, Toast, BodyOutputType } from 'angular2-toaster';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
@@ -29,7 +28,7 @@ import { ListService } from '../../../@core/store/services/list.service';
 import { PopUpManager } from '../../../managers/popUpManager';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { DocumentoService } from '../../../@core/data/documento.service';
-import { LocalDataSource } from 'ngx-smart-table';
+import { LocalDataSource } from 'ng2-smart-table';
 import { BodegaConsumoHelper } from '../../../helpers/bodega_consumo/bodegaConsumoHelper';
 import { UserService } from '../../../@core/data/users.service';
 
@@ -150,7 +149,7 @@ export class FormElementosSeleccionadosComponent implements OnInit {
       // console.log('valor excede limite')
       (Swal as any).fire({
         title: 'Cantidad No Valida',
-        text: 'Ca cantidad no debe ser nula ni exceder la cantidad maxima disponible',
+        text: 'La cantidad no debe ser nula ni exceder la cantidad máxima disponible',
         type: 'warning',
       });
     } else {
@@ -209,32 +208,29 @@ export class FormElementosSeleccionadosComponent implements OnInit {
       });
     });
   }
-  usarLocalStorage() {
-  }
+
   loadTablaSettings() {
-
     this.settings2 = {
-
-      noDataMessage: 'No se encontraron elementos asociados.',
+      noDataMessage: this.translate.instant('GLOBAL.no_data_entradas'),
       actions: {
-        columnTitle: 'Acciones',
+        columnTitle: this.translate.instant('GLOBAL.eliminar'),
         position: 'right',
         add: false,
         edit: false,
         delete: false,
         custom: [
           {
-            name: 'Eliminar',
+            name: this.translate.instant('GLOBAL.eliminar'),
             title: '<i class="fas fa-times" title="Ver"></i>',
           },
         ],
       },
       columns: {
         Nombre: {
-          title: 'Nombre',
+          title: this.translate.instant('GLOBAL.Nombre'),
         },
         ElementoCatalogoId: {
-          title: 'Descripcion',
+          title: this.translate.instant('GLOBAL.Descripcion'),
           valuePrepareFunction: (value: any) => {
             if (value !== null) {
               return value.Descripcion;
@@ -257,10 +253,10 @@ export class FormElementosSeleccionadosComponent implements OnInit {
           },
         },
         Cantidad: {
-          title: 'Cantidad',
+          title: this.translate.instant('GLOBAL.cantidad'),
         },
         Sede: {
-          title: 'Sede',
+          title: this.translate.instant('GLOBAL.sede'),
           valuePrepareFunction: (value: any) => {
             if (value !== null) {
               return value.Nombre;
@@ -283,7 +279,7 @@ export class FormElementosSeleccionadosComponent implements OnInit {
           },
         },
         Dependencia: {
-          title: 'Dependencia',
+          title: this.translate.instant('GLOBAL.dependencia'),
           valuePrepareFunction: (value: any) => {
             if (value !== null) {
               return value.Nombre;
@@ -306,7 +302,7 @@ export class FormElementosSeleccionadosComponent implements OnInit {
           },
         },
         Ubicacion: {
-          title: 'Ubicacion',
+          title: this.translate.instant('GLOBAL.ubicacion'),
           valuePrepareFunction: (value: any) => {
             if (value !== null) {
               return value.EspacioFisicoId.Nombre;
@@ -335,7 +331,7 @@ export class FormElementosSeleccionadosComponent implements OnInit {
   onCustom(event) {
     // console.log(event);
     this.source2.remove(event.data).then((res) => {
-      if (res.data === []) {
+      if (this.source2.count() === 0) {
         this.detalle2 = false;
       }
     });

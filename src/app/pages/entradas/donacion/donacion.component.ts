@@ -7,11 +7,14 @@ import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoH
 import { PopUpManager } from '../../../managers/popUpManager';
 import { OrdenadorGasto } from '../../../@core/data/models/entrada/ordenador_gasto';
 import { Supervisor } from '../../../@core/data/models/entrada/supervisor';
-import { Entrada } from '../../../@core/data/models/entrada/entrada';
+import { TransaccionEntrada } from '../../../@core/data/models/entrada/entrada';
 import { TipoEntrada } from '../../../@core/data/models/entrada/tipo_entrada';
 import { NavigationExtras, Router } from '@angular/router';
 import { NbStepperComponent } from '@nebular/theme';
 import Swal from 'sweetalert2';
+import { isObject } from 'rxjs/internal-compatibility';
+import { Soporte } from '../soporteHelper';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'ngx-donacion',
@@ -46,21 +49,23 @@ export class DonacionComponent implements OnInit {
   ordenadorId: number;
   cargoOrdenador: string;
   // Selects
+  tipos: Array<any>;
   opcionTipoContrato: string;
   opcionvigencia: string;
   opcionSolicitante: string;
   fechaSolicitante: string;
   ordenadores: Array<OrdenadorGasto>;
-
-  tipoEntrada: any;
+  registrando: boolean;
   formatoTipoMovimiento: any;
 
   @ViewChild('stepper') stepper: NbStepperComponent;
 
-  @Input() actaRecibidoId: string;
+  @Input() actaRecibidoId: number;
+  @Input() entradaId: any;
+  @Input() EntradaEdit: any;
 
   constructor(private router: Router, private entradasHelper: EntradaHelper, private actaRecibidoHelper: ActaRecibidoHelper,
-    private pUpManager: PopUpManager, private fb: FormBuilder) {
+    private pUpManager: PopUpManager, private fb: FormBuilder, private soporteHelper: Soporte, private translate: TranslateService) {
     this.tipoContratoSelect = false;
     this.vigenciaSelect = false;
     this.solicitanteSelect = false;
@@ -73,8 +78,6 @@ export class DonacionComponent implements OnInit {
     this.validar = false;
     this.ordenadorId = 0;
     this.iniciarContrato();
-    this.getTipoEntrada();
-    this.getFormatoEntrada();
   }
 
   ngOnInit() {
@@ -102,17 +105,16 @@ export class DonacionComponent implements OnInit {
    * Métodos para cargar los contratos.
    */
   loadContratos(): void {
+    this.contratos = [];
     if (this.opcionTipoContrato !== '' && this.opcionvigencia) {
       this.entradasHelper.getContratos(this.opcionTipoContrato, this.opcionvigencia).subscribe(res => {
         if (res !== null) {
-          while (this.contratos.length > 0) {
-            this.contratos.pop();
-          }
-          for (const index of Object.keys(res.contratos_suscritos.contrato_suscritos)) {
-            const contratoAux = new Contrato;
-            contratoAux.NumeroContratoSuscrito = res.contratos_suscritos.contrato_suscritos[index].numero_contrato;
-            this.contratos.push(contratoAux);
-          }
+          if (isObject(res.contratos_suscritos.contrato_suscritos))
+            for (const index of Object.keys(res.contratos_suscritos.contrato_suscritos)) {
+              const contratoAux = new Contrato;
+              contratoAux.NumeroContratoSuscrito = res.contratos_suscritos.contrato_suscritos[index].numero_contrato;
+              this.contratos.push(contratoAux);
+            }
         }
       });
     }
@@ -135,23 +137,6 @@ export class DonacionComponent implements OnInit {
         this.contratoEspecifico.TipoContrato = res.contrato.tipo_contrato;
         this.contratoEspecifico.FechaSuscripcion = res.contrato.fecha_suscripcion;
         this.contratoEspecifico.Supervisor = supervisorAux;
-      }
-    });
-  }
-
-  loadSoporte(): void {
-    this.actaRecibidoHelper.getSoporte(this.actaRecibidoId).subscribe(res => {
-      if (res !== null) {
-        for (const index in res) {
-          if (res.hasOwnProperty(index)) {
-            const soporte = new SoporteActaProveedor;
-            soporte.Id = res[index].Id;
-            soporte.Consecutivo = res[index].Consecutivo;
-            soporte.Proveedor = res[index].ProveedorId;
-            soporte.FechaSoporte = res[index].FechaSoporte;
-            this.soportes.push(soporte);
-          }
-        }
       }
     });
   }
@@ -189,7 +174,11 @@ export class DonacionComponent implements OnInit {
         }
         if (existe) {
           this.loadContratoEspecifico();
-          this.loadSoporte();
+          this.soporteHelper.cargarSoporte(this.actaRecibidoId).then(info => {
+            this.fechaFactura = info.fecha,
+            this.soportes = info.soportes,
+            this.proveedor = info.proveedor;
+          });
         } else {
           this.stepper.previous();
           this.iniciarContrato();
@@ -227,7 +216,6 @@ export class DonacionComponent implements OnInit {
     const soporteId: string = event.target.options[event.target.options.selectedIndex].value;
     for (const i in this.soportes) {
       if (this.soportes[i].Id.toString() === soporteId) {
-        this.proveedor = this.soportes[i].Proveedor.NomProveedor;
         const date = this.soportes[i].FechaSoporte.toString().split('T');
         this.fechaFactura = date[0];
       }
@@ -274,27 +262,7 @@ export class DonacionComponent implements OnInit {
    */
   getVigencia() {
     this.vigencia = new Date().getFullYear();
-  }
-
-  getTipoEntrada() {
-    this.entradasHelper.getTipoEntradaByAcronimo('e_arka').subscribe(res => {
-      if (res !== null) {
-        const data = <Array<any>>res;
-        for (const datos in Object.keys(data)) {
-          if (data.hasOwnProperty(datos) && data[datos].Nombre !== undefined && data[datos].Nombre === 'Donación') {
-            this.tipoEntrada = data[datos];
-          }
-        }
-      }
-    });
-  }
-
-  getFormatoEntrada() {
-    this.entradasHelper.getFormatoEntradaByName('Donación').subscribe(res => {
-      if (res !== null) {
-        this.formatoTipoMovimiento = res;
-      }
-    });
+    this.tipos = this.entradasHelper.getTiposContrato();
   }
 
   /**
@@ -302,42 +270,36 @@ export class DonacionComponent implements OnInit {
    */
   onSubmit() {
     if (this.validar) {
+      this.registrando = true;
       const detalle = {
         acta_recibido_id: +this.actaRecibidoId,
-        consecutivo: 'P4-' + this.actaRecibidoId + '-' + new Date().getFullYear(),
-        documento_contable_id: 1, // REVISAR
         contrato_id: +this.contratoEspecifico.NumeroContratoSuscrito,
         vigencia_contrato: this.contratoForm.value.vigenciaCtrl,
         vigencia_solicitante: this.solicitanteForm.value.fechaCtrl,
         ordenador_gasto_id: +this.ordenadorId,
         tipo_contrato: this.opcionTipoContrato === '14' ? 'Orden de Servicios' :
-        this.opcionTipoContrato === '15' ? 'Orden de Compra' : '',
-      };
-      const movimientoAdquisicion = {
-        Observacion: this.observacionForm.value.observacionCtrl,
-        Detalle: JSON.stringify(detalle),
-        Activo: true,
-        FormatoTipoMovimientoId: {
-          Id: this.formatoTipoMovimiento[0].Id,
-        },
-        EstadoMovimientoId: {
-          Id: 2, // REVISAR
-        },
-        SoporteMovimientoId: 0,
-        IdTipoMovimiento: this.tipoEntrada.Id,
+          this.opcionTipoContrato === '15' ? 'Orden de Compra' : '',
       };
 
-      this.entradasHelper.postEntrada(movimientoAdquisicion).subscribe((res: any) => {
+      const transaccion = <TransaccionEntrada>{
+        Observacion: this.observacionForm.value.observacionCtrl,
+        Detalle: JSON.stringify(detalle),
+        FormatoTipoMovimientoId: 'ENT_DN',
+        SoporteMovimientoId: 0,
+      };
+
+      this.entradasHelper.postEntrada(transaccion).subscribe((res: any) => {
         if (res !== null) {
+          this.registrando = false;
           (Swal as any).fire({
             type: 'success',
-            title: 'Entrada N° ' + `${detalle.consecutivo}` + ' Registrada',
-            text: 'La Entrada N° ' + `${detalle.consecutivo}` + ' ha sido registrada de forma exitosa',
+            title: this.translate.instant('GLOBAL.movimientos.entradas.registroTtlOk', { CONSECUTIVO: res.Consecutivo }),
+            text: this.translate.instant('GLOBAL.movimientos.entradas.registroTxtOk', { CONSECUTIVO: res.Consecutivo }),
+            showConfirmButton: true,
           });
-          const navigationExtras: NavigationExtras = { state: { consecutivo: detalle.consecutivo } };
-          this.router.navigate(['/pages/reportes/registro-entradas'], navigationExtras);
+          this.router.navigate(['/pages/entradas']);
         } else {
-          this.pUpManager.showErrorAlert('No es posible hacer el registro.');
+          this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.entradas.registroFail'));
         }
       });
     } else {

@@ -4,7 +4,7 @@ import { Detalle } from './detalle'; // TODO: Eliminar una vez se actualice la A
 
 export class GrupoTransaccion {
   Catalogo: CatalogoID;
-  Subgrupo: Grupo;
+  Subgrupo: Subgrupo;
 }
 
 export class SubgrupoTransaccion {

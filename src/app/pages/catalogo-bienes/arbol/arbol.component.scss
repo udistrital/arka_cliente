@@ -41,26 +41,56 @@ button[nbTreeGridRowToggle] {
   }
 }
 
-:host /deep/ table thead th {
+:host ::ng-deep table thead th {
   text-align: center;
-  // border: hidden !important;
 }
 
-:host /deep/ table tr:hover td {
+:host ::ng-deep table tr:hover td {
   background: #e6e6e6;
 }
 
-/* :host /deep/ table tr td {
-  // padding: -0.125rem 1.25rem !important;
-  // font-size: 12px !important;
-  // height: 50% !important;
-  // width: 100% !important;
-  border: hidden !important;
+.dialogo {
+  min-width: 55vw;
+  max-width: 95vw;
+  min-height: 55vh;
+  max-height: 95vh;
 }
-:host /deep/ table {
-  // padding: -0.125rem 1.25rem !important;
-  // font-size: 12px !important;
-  // height: 50% !important;
-  // width: 100% !important;
-  border: hidden;
-} */
+
+.dialogo nb-card-header {
+  text-align: center;
+}
+
+.file {
+  margin: 1px solid !important;
+}
+
+.indent {
+  width: 10px;
+}
+
+table {
+  width: 100%;
+}
+
+th.mat-header-cell {
+    border: 0;
+    text-align: center;
+}
+
+.mat-header-row {
+  background-color: rgba(128, 128, 128, 0.1);
+  height: 5em;
+}
+
+.fila {
+  display: flex;
+  align-items: center;
+  div, th {
+    flex: 1;
+  }
+}
+
+.fila-centrado {
+  display: flex;
+  justify-content: center;
+}

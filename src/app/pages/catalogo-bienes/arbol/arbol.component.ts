@@ -1,42 +1,25 @@
-import { Component, OnInit, Input, EventEmitter, Output, OnChanges } from '@angular/core';
-import { NbTreeGridDataSource, NbSortDirection, NbSortRequest, NbTreeGridDataSourceBuilder } from '@nebular/theme';
-import { Observable, combineLatest, from } from 'rxjs';
-import { CuentaContable } from '../../../@core/data/models/catalogo/cuenta_contable';
+import { Component, OnInit, Input, EventEmitter, Output, OnChanges, TemplateRef, ViewChild } from '@angular/core';
+import { NbTreeGridDataSource, NbSortDirection, NbSortRequest, NbTreeGridDataSourceBuilder, NbDialogService } from '@nebular/theme';
+import { Observable, combineLatest } from 'rxjs';
 import { PopUpManager } from '../../../managers/popUpManager';
 import { CuentasGrupoTransaccion } from '../../../@core/data/models/catalogo/cuentas_subgrupo';
-import {TipoNivelID} from '../../../@core/data/models/catalogo/tipo_nivel';
-import { SubgrupoTransaccion } from '../../../@core/data/models/catalogo/transacciones';
 import { Subgrupo } from '../../../@core/data/models/catalogo/jerarquia';
 import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/catalogoElementosHelper';
+import { DynamicDatabase, DynamicDataSource, DynamicFlatNode } from '../../../helpers/catalogo-elementos/arbolHelper';
 import { TipoBien } from '../../../@core/data/models/acta_recibido/tipo_bien';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { TipoNivel } from '../../../@core/data/models/catalogo/tipo_nivel';
-import { request } from 'http';
-import { exists } from 'fs';
-import { shiftInitState } from '@angular/core/src/view';
+import { NivelHelper as nh } from '../../../@core/utils/niveles.helper';
+import {FlatTreeControl} from '@angular/cdk/tree';
+import { MatTable } from '@angular/material/table';
 
 interface TreeNode<T> {
   data: T;
   children?: TreeNode<T>[];
   expanded?: boolean;
 }
-interface TreeNode2<T> {
-  data: T;
-  children?: TreeNode2<T>[];
-  expanded?: boolean;
-}
 
 interface CatalogoArbol {
-  Id: number;
-  Nombre: string;
-  Descripcion: string;
-  FechaCreacion: string;
-  FechaModificacion: string;
-  Activo: boolean;
-  Codigo: string;
-  TipoNivelId: TipoNivel;
-}
-interface CatalogoArbol2 {
   Id: number;
   Nombre: string;
   Descripcion: string;
@@ -54,11 +37,25 @@ interface CatalogoArbol2 {
 })
 export class ArbolComponent implements OnInit, OnChanges {
 
+
+  @ViewChild(MatTable) table: MatTable<any>;
+
+  treeControl: FlatTreeControl<DynamicFlatNode>;
+
+  dataSourcex: DynamicDataSource;
+
+  getLevel = (node: DynamicFlatNode) => node.level;
+
+  isExpandable = (node: DynamicFlatNode) => node.expandible;
+
+  hasChild = (_: number, _nodeData: DynamicFlatNode) => _nodeData.expandible;
+
+
   data: TreeNode<CatalogoArbol>[];
-  data2: TreeNode2<CatalogoArbol2>[];
+  data2: TreeNode<CatalogoArbol>[];
   customColumn = 'Codigo';
-  defaultColumns = ['Nombre', 'Descripcion', 'Acciones'];
-  allColumns = [this.customColumn, ...this.defaultColumns];
+  defaultColumns: string[];
+  allColumns: string[];
   stringBusqueda: any;
   mostrar: boolean = false;
 
@@ -72,11 +69,14 @@ export class ArbolComponent implements OnInit, OnChanges {
   detalle: boolean;
   cuentasContables: Array<CuentasGrupoTransaccion>;
   grupoSeleccionado: Subgrupo;
+  nivelSeleccionado: string;
 
   @Input() catalogoId: number;
-  @Input() updateSignal: Observable<string[]>;
-  @Output() grupo = new EventEmitter<CatalogoArbol>();
-  @Output() subgrupo = new EventEmitter<CatalogoArbol>();
+  @Input() updateSignal: any;
+  @Input() acciones: boolean = false;
+  @Input() elementos: boolean = false;
+  @Output() fila = new EventEmitter<CatalogoArbol>();
+  @Input() subgruposInactivos: boolean = false;
   tipos_de_bien: TipoBien;
   elementosSubgrupo: TipoBien;
   customColumn2: any;
@@ -88,9 +88,17 @@ export class ArbolComponent implements OnInit, OnChanges {
     private dataSourceBuilder: NbTreeGridDataSourceBuilder<CatalogoArbol>,
     private catalogoHelper: CatalogoElementosHelper,
     private translate: TranslateService,
-    private pUpManager: PopUpManager) {
+    private pUpManager: PopUpManager,
+    private dialogService: NbDialogService,
+    private database: DynamicDatabase,
+    ) {
+    this.treeControl = new FlatTreeControl<DynamicFlatNode>(this.getLevel, this.isExpandable);
     this.stringBusqueda = '';
     this.aux = 0;
+  }
+
+  ngOnInit() {
+    this.dataSourcex = new DynamicDataSource(this.treeControl, this.database, this.subgruposInactivos, this.elementos);
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
       this.construirForm();
     });
@@ -100,32 +108,41 @@ export class ArbolComponent implements OnInit, OnChanges {
       this.Movimientos = res;
 
     });
+    this.catalogoSeleccionado = 0;
+    this.detalle = false;
+    this.cuentasContables = new Array<CuentasGrupoTransaccion>();
+
+    if (this.updateSignal) {
+      this.updateSignal.subscribe((res) => {
+        this.dataSourcex.updateNode(res.item, res.parentId);
+      });
+    }
   }
 
   construirForm() {
+    this.defaultColumns = ['Nombre', 'Descripcion'];
+    this.subgruposInactivos ? this.defaultColumns.push('Activo') : null;
+    this.acciones ? this.defaultColumns.push('Acciones') : null;
+
+    this.allColumns = [this.customColumn].concat(this.defaultColumns);
     this.customColumn2 = this.translate.instant('GLOBAL.codigo');
     this.defaultColumns2 = [
       this.translate.instant('GLOBAL.Nombre'),
       this.translate.instant('GLOBAL.Descripcion'),
-      this.translate.instant('GLOBAL.Acciones'),
     ];
-    this.allColumns2 = [this.customColumn, ...this.defaultColumns];
-  }
-  ngOnInit() {
-    this.catalogoSeleccionado = 0;
-    this.detalle = false;
-    this.cuentasContables = new Array<CuentasGrupoTransaccion>();
+
+    this.subgruposInactivos ?
+      this.defaultColumns2.push(this.translate.instant('GLOBAL.estado')) : null;
+    this.acciones ?
+      this.defaultColumns2.push(this.translate.instant('GLOBAL.info')) : null;
+
+    this.allColumns2 = [this.customColumn2].concat(this.defaultColumns2);
   }
 
   ngOnChanges(changes) {
-    if (this.catalogoId !== this.catalogoSeleccionado) {
+    if (changes.hasOwnProperty('catalogoId')) {
+      this.catalogoSeleccionado = changes.catalogoId.currentValue;
       this.loadTreeCatalogo();
-      this.catalogoSeleccionado = this.catalogoId;
-    }
-    if (changes['updateSignal'] && this.updateSignal) {
-      this.updateSignal.subscribe(() => {
-        this.loadTreeCatalogo();
-      });
     }
   }
 
@@ -178,7 +195,7 @@ export class ArbolComponent implements OnInit, OnChanges {
       this.loadTreeCatalogo();
     }
     if (this.stringBusqueda.length < this.aux) {
-      this.catalogoHelper.getArbolCatalogo(this.catalogoId).subscribe((res) => {
+      this.catalogoHelper.getArbolCatalogo(this.catalogoId, this.elementos, this.subgruposInactivos).subscribe((res) => {
         this.mostrar = true;
         if (res !== null) {
           if (res[0].hasOwnProperty('data')) {
@@ -247,27 +264,39 @@ export class ArbolComponent implements OnInit, OnChanges {
     return minWithForMultipleColumns + (nextColumnStep * index);
   }
 
-  getSelectedRow2(selectedRow) {
-    this.grupo.emit(selectedRow);
-  }
   loadTreeCatalogo() {
-    this.mostrar = false;
-    this.catalogoHelper.getArbolCatalogo(this.catalogoId).subscribe((res) => {
+    // this.catalogoHelper.getArbolCatalogo(this.catalogoId, this.elementos).subscribe((res) => {
+    //   this.mostrar = true;
+    //   if (res !== null) {
+    //     if (res[0].hasOwnProperty('data')) {
+    //       this.data = res;
+    //       this.aux = res;
+    //       this.dataSource = this.dataSourceBuilder.create(this.data);
+    //     } else {
+    //       this.dataSource = this.dataSourceBuilder.create([]);
+    //     }
+    //   }
+    // });
+    this.database.getNivelSuperior(this.catalogoId, this.subgruposInactivos).subscribe(res => {
+      this.dataSourcex.data = res;
       this.mostrar = true;
-      if (res !== null) {
-        if (res[0].hasOwnProperty('data')) {
-          this.data = res;
-          this.aux = res;
-          this.dataSource = this.dataSourceBuilder.create(this.data);
-          // this.dataSource.sortService.sort = ()
-          // console.log(this.dataSource)
-        }
-      }
     });
+
+  }
+  array(n: number): any[] {
+    return Array(n);
   }
 
   getSelectedRow(selectedRow) {
-    this.subgrupo.emit(selectedRow);
+    this.fila.emit(selectedRow);
+  }
+
+  /**
+   * Usar únicamente para depurar!
+   * Por ejemplo, dentro de una etiqueta 'pre'
+  */
+  imprime(t: any): string {
+    return JSON.stringify(t, undefined, 2);
   }
 
   volver() {
@@ -275,58 +304,36 @@ export class ArbolComponent implements OnInit, OnChanges {
     this.cuentasContables = undefined;
     this.tipos_de_bien = undefined;
     this.elementosSubgrupo = undefined;
-
   }
-  getDetalle(selectedRow) {
-    // console.log(selectedRow);
+
+  getDetalle(selectedRow, dialog: TemplateRef<any>) {
+    this.detalle = false;
+    this.dialogService.open(dialog);
+
     this.grupoSeleccionado = selectedRow;
     const observable = combineLatest([
       this.catalogoHelper.getCuentasContables(selectedRow.Id),
       this.catalogoHelper.getDetalleSubgrupo(selectedRow.Id),
       this.catalogoHelper.getElementosSubgrupo(selectedRow.Id),
     ]);
+    this.nivelSeleccionado = this.translate.instant('GLOBAL.subgrupo.' + nh.Texto(selectedRow.TipoNivelId.Id) + '.nombre');
 
     observable.subscribe(([cuentas, detalle, elementos]: any[]) => {
-      // console.log([cuentas, detalle, elementos]);
-      // console.log(cuentas);
-      // console.log(Object.keys(elementos).length);
-      // console.log(Object.keys(cuentas).length);
-      if (Object.keys(cuentas[0]).length !== 0) {
-        // console.log(this.Movimientos)
-        for (const cuenta in cuentas) {
-          if (true) {
-            cuentas[cuenta].SubtipoMovimientoId = this.Movimientos.find(x => x.Id === parseFloat(cuentas[cuenta].SubtipoMovimientoId));
-          }
-        }
+      if (cuentas.length) {
         this.cuentasContables = <Array<CuentasGrupoTransaccion>>cuentas;
       }
-      if (Object.keys(detalle[0]).length !== 0) {
+      if (detalle.length) {
         this.tipos_de_bien = <TipoBien>detalle[0].TipoBienId;
+      } else {
+        this.tipos_de_bien = undefined;
       }
-      if (Object.keys(elementos[0]).length !== 0) {
+      if (elementos.length) {
         this.elementosSubgrupo = elementos;
+      } else {
+        this.elementosSubgrupo = undefined;
       }
       // this.pUpManager.showErrorAlert('no existen cuentas asociadas a este grupo');
       this.detalle = true;
     });
-  }
-}
-@Component({
-  selector: 'ngx-nb-fs-icon',
-  template: `
-    <nb-tree-grid-row-toggle
-      [expanded]="expanded"
-      *ngIf="isDir(); else fileIcon"
-    >
-    </nb-tree-grid-row-toggle>
-    <ng-template #fileIcon> </ng-template>
-  `,
-})
-export class FsIconAComponent {
-  @Input() kind: string;
-  @Input() expanded: boolean;
-
-  isDir(): boolean {
-    return this.kind === 'dir';
   }
 }

@@ -1,8 +1,6 @@
-FROM python:3.0
-RUN pip install awscli
-WORKDIR /
-COPY entrypoint.sh entrypoint.sh
-COPY main main
-COPY conf/app.conf conf/app.conf
-RUN chmod +x main entrypoint.sh
-ENTRYPOINT ["/entrypoint.sh"]
+FROM node:14
+WORKDIR /app/src
+COPY *.json *.js ./
+RUN npm install
+ENTRYPOINT ["npm", "run"]
+CMD [ "start", "--", "--host", "0.0.0.0" ]

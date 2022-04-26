@@ -2,10 +2,9 @@ import { SubgrupoID } from './jerarquia';
 
 export class Elemento {
     Id: number;
+    Codigo: string;
     Nombre: string;
     Descripcion: string;
-    FechaInicio: Date;
-    FechaFin: Date;
     FechaCreacion: Date;
     FechaModificacion: Date;
     Activo: boolean;

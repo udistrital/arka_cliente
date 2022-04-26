@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { LocalDataSource } from 'ngx-smart-table';
+import { LocalDataSource } from 'ng2-smart-table';
 import { Router } from '@angular/router';
 import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
 import { Entrada } from '../../../@core/data/models/entrada/entrada';
@@ -40,11 +40,14 @@ export class ConsultaKardexComponent implements OnInit {
   Proveedores: any;
   Dependencias: any;
   Sedes: any;
+  cargandoListaKardex: boolean;
 
   Metodos: any[] = [
     {
       Id: 1,
-      Nombre: 'Promedio Ponderado',
+      Nombre: 'PP',
+      // Estaba con los global pero la descripción es muy larga para el tamaño de la tabla.
+      // Nombre: this.translate.instant('GLOBAL.BodegaConsumo.MetodoInventario.PP'),
     },
     {
       Id: 2,
@@ -71,12 +74,12 @@ export class ConsultaKardexComponent implements OnInit {
   ) {
     this.source = new LocalDataSource();
     this.detalle = false;
-    this.loadTablaSettings();
   }
 
 
 
   ngOnInit() {
+    this.loadTablaSettings();
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
       this.loadTablaSettings();
     });
@@ -95,24 +98,19 @@ export class ConsultaKardexComponent implements OnInit {
         delete: false,
         custom: [
           {
-            // name: this.translate.instant('GLOBAL.detalle'),
-            name: 'Seleccionar',
+            name: this.translate.instant('GLOBAL.seleccionar'),
             title: '<i class="fas fa-eye"></i>',
           },
         ],
       },
       columns: {
-        Id: {
-          title: 'Consecutivo',
-        },
-        Observaciones: {
-          title: 'Observaciones',
-        },
         ElementoCatalogoId: {
-          title: 'Elemento',
+          title: this.translate.instant('GLOBAL.Elemento.Uno'),
           valuePrepareFunction: (value: any) => {
             if (value !== null) {
-              return value.Descripcion;
+              let elem = value.Codigo ? value.Codigo + ' - ' : '';
+              elem += value.Nombre ? value.Nombre : '';
+              return elem;
             } else {
               return '';
             }
@@ -131,8 +129,11 @@ export class ConsultaKardexComponent implements OnInit {
             }
           },
         },
+        Observaciones: {
+          title: this.translate.instant('GLOBAL.observaciones'),
+        },
         FechaCreacion: {
-          title: 'Fecha de Creacion',
+          title: this.translate.instant('GLOBAL.fecha_creacion'),
           width: '70px',
           valuePrepareFunction: (value: any) => {
             const date = value.split('T');
@@ -147,6 +148,7 @@ export class ConsultaKardexComponent implements OnInit {
             },
           },
         },
+        /* // Esta columna no tiene sentido, una ficha se puede llenar de varias salidas
         MovimientoPadreId: {
           title: 'Salida Asociada',
           valuePrepareFunction: (value: any) => {
@@ -157,8 +159,9 @@ export class ConsultaKardexComponent implements OnInit {
             }
           },
         },
+        // */
         MetodoValoracion: {
-          title: 'Metodo de Valoracion',
+          title: this.translate.instant('GLOBAL.BodegaConsumo.MetodoInventario.Nombre'),
           valuePrepareFunction: (value: any) => {
             if (value !== null) {
               return value.Nombre;
@@ -181,15 +184,16 @@ export class ConsultaKardexComponent implements OnInit {
           },
         },
         CantidadMinima: {
-          title: 'Cantidad Minima',
+          title: this.translate.instant('GLOBAL.Solicitudes.CantMin'),
         },
         CantidadMaxima: {
-          title: 'Cantidad Maxima',
+          title: this.translate.instant('GLOBAL.Solicitudes.CantMax'),
         },
       },
     };
   }
   loadSalidas(): void {
+    this.cargandoListaKardex = true;
 
     this.BodegaConsumoService.getAperturasKardex().subscribe(res1 => {
       if (Object.keys(res1[0]).length !== 0) {
@@ -197,8 +201,10 @@ export class ConsultaKardexComponent implements OnInit {
           const met = this.Metodos.find(x => x.Id === element.MetodoValoracion);
           element.MetodoValoracion = met;
         });
+        // console.log(res1);
         this.source.load(res1);
       }
+      this.cargandoListaKardex = false;
     });
   }
   onCustom(event) {

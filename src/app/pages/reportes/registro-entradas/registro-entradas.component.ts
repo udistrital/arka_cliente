@@ -3,6 +3,7 @@ import { ToasterConfig, ToasterService, Toast, BodyOutputType } from 'angular2-t
 import { TranslateService } from '@ngx-translate/core';
 import { spagoBIService } from '../../../@core/utils/spagoBIAPI/spagoBIService';
 import { Router } from '@angular/router';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'ngx-registro-entradas',
@@ -13,70 +14,20 @@ export class RegistroEntradasComponent implements OnInit {
   url = '';
   config: ToasterConfig;
   consecutivo: string;
-  detalle: boolean;
+  loading: boolean;
 
   @ViewChild('spagoBIDocumentArea') spagoBIDocumentArea: ElementRef;
   @Input() reportConfig: any;
 
   constructor(private router: Router, private translate: TranslateService, private toasterService: ToasterService) {
-    this.loadParametros();
-    this.initReportConfig();
   }
 
   loadParametros() {
     const navigation = this.router.getCurrentNavigation();
     this.consecutivo = '';
-     if (navigation.extras.state) {
-       const state = navigation.extras.state as { consecutivo: number };
-       this.consecutivo = (state.consecutivo).toString();
-     }
-  }
-
-  initReportConfig() {
-    if (this.consecutivo === '') {
-      this.reportConfig = {
-        // documentLabel: 'ARKA reporte entrada', // Prod
-        documentLabel: 'prueba_arka', // Dev
-        executionRole: '/spagobi/user/admin',
-        displayToolbar: true,
-        displaySliders: true,
-        iframe: {
-          style: 'border: solid rgb(0,0,0,0.2) 1px;',
-          height: '500px;',
-          width: '100%',
-        },
-      };
-    } else {
-      const parametros = 'consecutivo=' + this.consecutivo + '&outputType=PDF';
-      this.reportConfig = {
-        // documentLabel: 'ARKA reporte entrada', // Prod
-        documentLabel: 'prueba_arka', // Dev
-        eecutionRole: '/spagobi/user/admin',
-        // parameters: {'PARAMETERS': 'param_1=1&param_2=2'},
-        parameters: { 'PARAMETERS': parametros },
-        displayToolbar: true,
-        displaySliders: true,
-        iframe: {
-          style: 'border: solid rgb(0,0,0,0.2) 1px;',
-          height: '500px;',
-          width: '100%',
-        },
-      };
-    }
-  }
-
-  callbackFunction(result, args, success) {
-    if (success === true) {
-
-      const iframeSpago = spagoBIService.getDocumentHtml(this.reportConfig);
-      this.url = iframeSpago.split('"')[3];
-      // debugger;
-      // this.spagoBIDocumentArea.nativeElement.innerHTML = html;
-    } else {
-      // console.info('ERROR: authentication failed! Invalid username and/or password ');
-      const message = this.translate.instant('reportes.error_obteniendo_reporte');
-      this.spagoBIDocumentArea.nativeElement.innerHTML = `<h5>${message}</h5>`;
-      this.showToast('error', 'Error', this.translate.instant('reportes.error_obteniendo_reporte'));
+    if (navigation.extras.state) {
+      const state = navigation.extras.state as { consecutivo: number };
+      this.consecutivo = (state.consecutivo).toString();
     }
   }
 
@@ -85,7 +36,9 @@ export class RegistroEntradasComponent implements OnInit {
   }
 
   getReport() {
-    spagoBIService.getReport(this, this.callbackFunction);
+    const parametros = this.consecutivo ? 'consecutivo=' + this.consecutivo : '';
+    this.url = spagoBIService.buildUrl('DOCUMENT_LABEL_ENTRADAS', parametros);
+    this.loading = false;
   }
 
   private showToast(type: string, title: string, body: string) {

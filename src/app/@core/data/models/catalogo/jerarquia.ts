@@ -2,7 +2,6 @@ import { CatalogoID, Catalogo } from './catalogo';
 import { Detalle } from './detalle';
 import { TipoBienID } from '../acta_recibido/tipo_bien';
 import { TipoNivelID } from './tipo_nivel';
-import { VerDetalleComponent } from '../../../../pages/acta-recibido/ver-detalle/ver-detalle.component';
 
 export class SubgrupoID {
   Id: number;
@@ -32,10 +31,13 @@ export class Clase extends Subgrupo {
 
 // A eliminar ?
 export class Grupo2 extends Grupo {
+  DetalleId: number;
   Depreciacion: boolean;
   Valorizacion: boolean;
-  Deterioro: boolean;
+  Amortizacion: boolean;
   TipoBienId: TipoBienID;
+  VidaUtil: number;
+  ValorResidual: number;
 }
 
 // A eliminar ?

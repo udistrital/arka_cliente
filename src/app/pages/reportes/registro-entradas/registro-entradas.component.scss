@@ -1,0 +1,8 @@
+.reporte {
+    display: flex;
+    min-height: 70vh;
+    padding: 0 1rem;
+    iframe {
+        flex: 1;
+    }
+}

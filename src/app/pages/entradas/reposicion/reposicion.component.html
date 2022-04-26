@@ -1,6 +1,4 @@
-<h3 class="pt-4 pb-2">{{'GLOBAL.entrada_reposicion' | translate}}</h3>
-<p class="font-weight-bold font-italic pb-2">{{'GLOBAL.acta_recibido' | translate}} # {{ actaRecibidoId }}</p>
-
+<div [nbSpinner]="registrando">
 <!-- FORMULARIO -->
 <nb-stepper #stepper orientation="horizontal">
 
@@ -13,11 +11,11 @@
           <label>Placa Hurtada</label>
           <div class="input-group">
             <input type="text" placeholder="Placa Elemento Hurtado" class="form-control" formControlName="elementoCtrl" (input)="changePlacaElemento($event)"
-              [ngClass]="{'form-control-danger': elementoForm.invalid && (elementoForm.dirty || elementoForm.touched)}" list="elementosList" 
+              [ngClass]="{'form-control-danger': elementoForm.invalid && (elementoForm.dirty || elementoForm.touched)}" list="elementosList"
               />
           </div>
-          <datalist id="elementosList">  
-            <option value="sleccione un valor" selected disabled></option>          
+          <datalist id="elementosList">
+            <option value="sleccione un valor" selected disabled></option>
             <option *ngFor="let item of elementos" value='{{ item }}'></option>
           </datalist>
         </div>
@@ -26,122 +24,55 @@
           <div class="input-group">
             <input nbInput type="text" placeholder="{{'GLOBAL.asignacion' | translate}}" class="form-control"
               formControlName="encargadoCtrl"  [readonly]="true" value="{{ encargado }}"
-              />             
+              />
           </div>
         </div>
       </div>
-      <button type="button" (click)="onElementoSubmit()" nbButton
-      nbStepperNext>{{'GLOBAL.siguiente' | translate}}</button>
+      <div class="row float-right">
+        <button type="button" (click)="onElementoSubmit()" nbButton
+      nbStepperNext>
+          {{'GLOBAL.siguiente' | translate}}</button>
+      </div>
+    </form>
+  </nb-step>
+  
+  <!-- OBSERVACIONES -->
+  <nb-step [stepControl]="observacionForm" label="{{'GLOBAL.observaciones' | translate}}">
+    <form [formGroup]="observacionForm" class="step-container">
+      <h5>{{'GLOBAL.observaciones' | translate}}</h5>
+      <div class="row">
+        <div class="form-group  col-lg-12">
+          <div class="input-group">
+            <textarea rows="5" shape="semi-round" placeholder="{{'GLOBAL.observaciones' | translate}}"
+              class="form-control" formControlName="observacionCtrl"></textarea>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <button nbButton nbStepperPrevious>{{'GLOBAL.anterior' | translate}}</button>
+        </div>
+        <div class="col" align="end">
+          <button type="button" (click)="onObservacionSubmit()" nbButton nbStepperNext>{{'GLOBAL.siguiente' |
+            translate}}</button>
+        </div>
+      </div>
     </form>
   </nb-step>
 
-  <!-- FACTURA -->
-  <nb-step [stepControl]="facturaForm" label="{{'GLOBAL.factura' | translate}}">
-      <form [formGroup]="facturaForm" class="step-container">
-        <h5>{{'GLOBAL.factura' | translate}}</h5>
-        <div class="row">
-          <div class="form-group col-sm">
-            <label>{{'GLOBAL.numero_factura' | translate}}</label>
-            <div class="input-group">
-              <select class="form-control" (change)="changeSelectSoporte($event)">
-                <option disabled selected>{{'GLOBAL.seleccionar' | translate}}...</option>
-                <option *ngFor="let item of soportes" value="{{ item.Id }}">{{ item.Consecutivo }}</option>
-              </select>
-            </div>
-          </div>
-          <div class="form-group col-sm">
-            <label>{{'GLOBAL.proveedor' | translate}}</label>
-            <div class="input-group">
-              <input nbInput type="text" shape="semi-round" placeholder="{{'GLOBAL.razon_social' | translate}}"
-                class="form-control" value="{{proveedor}}" [readonly]="true" />
-            </div>
-          </div>
-          <div class="form-group col-sm">
-            <label>{{'GLOBAL.fecha_factura' | translate}}</label>
-            <div class="input-group">
-              <input nbInput type="text" shape="semi-round" placeholder="{{'GLOBAL.fecha_factura' | translate}}"
-                class="form-control" value="{{ fechaFactura }}" [readonly]="true">
-            </div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="form-group col-sm">
-            <label>{{'GLOBAL.importacion' | translate}}</label>
-            <div class="input-group">
-              <nb-checkbox status="success" (change)="changeCheck()"></nb-checkbox>
-            </div>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col">
-            <button nbButton nbStepperPrevious>{{'GLOBAL.anterior' | translate}}</button>
-          </div>
-          <div class="col" align="end">
-            <button type="button" nbButton nbStepperNext>{{'GLOBAL.siguiente' | translate}}</button>
-          </div>
-        </div>
-      </form>
-    </nb-step>
-  
-  <!-- SOPORTE -->
-  <nb-step [stepControl]="soporteForm" label="Soporte">
-      <h5>{{'GLOBAL.soporte' | translate}}</h5>
-      <form [formGroup]="soporteForm" class="step-container">
-        <div class="pb-3">
-          <label>Oficio de Reposición</label>
-          <input nbInput type="file" class="form-control-file" #file id="soporte" formControlName="soporteCtrl"
-            [ngClass]="{'form-control-danger': soporteForm.invalid && (soporteForm.dirty || soporteForm.touched)}"
-            (change)="getSoporte($event)" accept=".pdf" data-max-size="5120"
-            >
-        </div>
-        <div class="row">
-          <div class="col">
-            <button nbButton nbStepperPrevious>{{'GLOBAL.anterior' | translate}}</button>
-          </div>
-          <div class="col" align="end">
-            <button (click)="onSoporteSubmit()" nbButton nbStepperNext>{{'GLOBAL.siguiente' | translate}}</button>
-          </div>
-        </div>
-      </form>
-      
-    </nb-step>
-  <!-- OBSERVACIONES -->
-  <nb-step [stepControl]="observacionForm" label="Observaciones">
-    <h5>Observaciones</h5>
-    <div class="row">
-      <div class="form-group  col-lg-12">
-        <div class="input-group">
-          <textarea rows="5" placeholder="Observaciones" class="form-control"></textarea>
-        </div>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col">
-        <button nbButton nbStepperPrevious>{{'GLOBAL.anterior' | translate}}</button>
-      </div>
-      <div class="col" align="end">
-        <button type="button" nbButton nbStepperNext>{{'GLOBAL.siguiente' | translate}}</button>
-      </div>
-    </div>
-  </nb-step>
-
-   <!-- FINALIZAR -->
-   <nb-step [hidden]="true">
+  <!-- FINALIZAR -->
+  <nb-step [hidden]="true">
       <div class="step-container d-flex justify-content-center">
         <h3>{{'GLOBAL.datos_correctos' | translate}}!</h3>
       </div>
       <div class="step-container d-flex justify-content-center">
         <p>{{'GLOBAL.mensaje_registrar' | translate}}</p>
       </div>
-    </nb-step>
+      <div class="row float-right">
+        <button type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off"
+        [disabled]="!validar" (click)="onSubmit()">
+          {{'GLOBAL.registrar_entrada' | translate}}</button>
+      </div>
+  </nb-step>
 </nb-stepper>
-
-<h5 class="pt-4">{{'GLOBAL.elementos_entrada' | translate}}</h5>
-<ngx-tabla-entradas [actaRecibidoId]="actaRecibidoId"></ngx-tabla-entradas>
-
-<div class="justify-content-center float-right pt-4">
-  <button type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off"
-    [disabled]="!validar" (click)="onSubmit()">
-    {{'GLOBAL.registrar_entrada' | translate}}
-  </button>
 </div>

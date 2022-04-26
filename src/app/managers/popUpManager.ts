@@ -34,12 +34,10 @@ export class PopUpManager {
 
     public showSuccesToast(message: string) {
         this.showToast({status: s.SUCCESS}, message, this.translate.instant('GLOBAL.info'));
-        const status: any = 'success';
-        this.toast.show(message, this.translate.instant('GLOBAL.info'), { status });
     }
 
     public showAlert(status: string, text: string, titulo: string = status) {
-        (Swal as any).fire({
+        return this.showAlertWithOptions({
             type: status,
             title: titulo,
             text: text,
@@ -47,13 +45,17 @@ export class PopUpManager {
         });
     }
 
+    public showAlertWithOptions(options: any) {
+        return (Swal as any).fire(options);
+    }
+
     public showSuccessAlert(text) {
-        this.showAlert('success', text,
+        return this.showAlert('success', text,
             this.translate.instant('GLOBAL.operacion_exitosa'));
     }
 
     public showErrorAlert(text) {
-        this.showAlert('error', text,
+        return this.showAlert('error', text,
             this.translate.instant('GLOBAL.error'));
     }
 }

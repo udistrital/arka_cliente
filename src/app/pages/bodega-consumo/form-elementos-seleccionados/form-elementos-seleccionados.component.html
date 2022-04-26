@@ -1,20 +1,14 @@
-<!-- <code>
-  <pre>
-    {{form_salida.value | json}}
-  </pre>
-</code> -->
 <form [formGroup]="form_salida" #fform="ngForm" class="step-container">
   <nb-card>
-    <nb-card-header>
-      <div *ngIf="Datos">
-        {{ Datos.Nombre }} | {{ Datos.ElementoCatalogoId.Descripcion }} | Cantidad Maxima: {{ Datos.SaldoCantidad }}
-      </div>
-    </nb-card-header>
     <nb-card-body class="bla">
-      <div class="form-group col-sm">
+        <header *ngIf="Datos" class="row form-group"><table class="col-sm input-group">
+          <tr><th id="col-nombre">{{'GLOBAL.Nombre' | translate}}:</th><td>{{ Datos.Nombre }}</td></tr>
+          <tr><th id="col-descripcion">{{'GLOBAL.Descripcion' | translate}}:</th><td>{{ Datos.ElementoCatalogoId.Descripcion }}</td></tr>
+          <tr><th id="col-cantidadmax">{{'GLOBAL.cantidadMax' | translate}}:</th><td>{{ Datos.SaldoCantidad }}</td></tr>
+        </table></header>
         <div class="row">
           <div class="form-group col-sm">
-            <label>Cantidad</label>
+            <label>{{'GLOBAL.cantidad' | translate}}</label>
             <div class="input-group">
               <input currencyMask [options]="{allowNegative: false, prefix: '',align: 'left', precision: 0}" nbInput type="text"
                 placeholder="{{'GLOBAL.Acta_Recibido.CapturarElementos.CantidadHeader' | translate }}"
@@ -27,12 +21,9 @@
               (click)="Traer_Relacion_Ubicaciones();">
               <option *ngFor="let sede of Sedes" [(value)]="sede.Id">{{sede.Nombre}}</option>
             </select>
-            <!-- <p class="campo" *ngIf="firstForm.get('Formulario1').get('Sede').invalid">
-                {{'GLOBAL.placeholder' | translate}}</p> -->
           </div>
         </div>
         <div class="row">
-          
           <div class="form-group col-sm">
             <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Dependencia' | translate}}</label>
             <ng2-completer style="border: 0rem" inputClass="form-control" [clearUnselected]="true" nbInput
@@ -40,37 +31,28 @@
               (change)="Traer_Relacion_Ubicaciones()"
               placeholder="{{'GLOBAL.Acta_Recibido.RegistroActa.SeleccioneFiltro' | translate}}">
             </ng2-completer>
-            <!-- <p class="campo" *ngIf="firstForm.get('Formulario1').get('Dependencia').untouched">
-                {{'GLOBAL.placeholder' | translate}}</p> -->
           </div>
           <div class="form-group col-sm">
             <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Ubicacion' | translate}}</label>
-            <!-- <ng2-completer style="border: 0rem" inputClass="form-control" [clearUnselected]="true" nbInput
-              [datasource]="dataService" formControlName="Ubicacion" [minSearchLength]="3"
-              placeholder="{{'GLOBAL.Acta_Recibido.RegistroActa.SeleccioneFiltro' | translate}}">
-            </ng2-completer> -->
             <select nbInput type="text" class="form-control" formControlName="Ubicacion"
               (click)="Traer_Relacion_Ubicaciones();" required>
               <option value=""></option>
               <option *ngFor="let ubicacion of Ubicaciones" [(value)]="ubicacion.Id">{{ubicacion.Nombre}}
               </option>
             </select>
-            <!-- <p class="campo" *ngIf="firstForm.get('Formulario1').get('Ubicacion').invalid">
-                {{'GLOBAL.placeholder' | translate}}</p> -->
           </div>
         </div>
-      </div>
     </nb-card-body>
     <nb-card-footer>
-      <button nbButton [disabled]="!form_salida.valid" (click)="onSubmit()" class="float-right">Asignar</button>
+      <button nbButton [disabled]="!form_salida.valid" (click)="onSubmit()" class="float-right">{{'GLOBAL.seleccionar' | translate}}</button>
     </nb-card-footer>
   </nb-card>
 </form>
-<p></p>
 <nb-card>
+  <nb-card-body>
     <ng2-smart-table [settings]="settings2" [source]="source2" (custom)="onCustom($event)"></ng2-smart-table>
+  </nb-card-body>
     <nb-card-footer>
-        <button *ngIf="detalle2" nbButton (click)="onSubmit2()" class="float-right">Crear Solicitud</button>
+        <button *ngIf="detalle2" nbButton (click)="onSubmit2()" class="float-right">{{'GLOBAL.enviarSolicitud' | translate}}</button>
     </nb-card-footer>
 </nb-card>
-

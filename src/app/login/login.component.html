@@ -1,0 +1,19 @@
+<div class="login-container">
+    <div class="login-header">
+        <img src="{{ basePathAssets + 'logotipos_aplicativos_svg/ud.svg' }}" class="header-login" alt="logo-udistrital">
+    </div>
+
+    <div class="login">
+        <img src="{{ appname ? basePathAssets + 'logotipos_aplicativos_svg/' + appname + '.svg' : '' }}" class="logotipo"
+            alt="{{ 'logotipo aplicación ' + appname }}" srcset="">
+        <button *ngIf="!isloading" class="button" (click)="login()">{{'HOME.login' | translate}}</button>
+        <ngx-load *ngIf="isloading"></ngx-load>
+    </div>
+    <div class="footer-login">
+        <div class="credit">
+            <p>{{'HOME.desarrolladoPor' | translate}}<br/>
+                {{'HOME.OAS' | translate}}</p>
+        </div>
+    </div>
+
+</div>

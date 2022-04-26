@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter, OnChanges, ViewChild } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, OnChanges, ViewChild, OnDestroy } from '@angular/core';
 import { MatDatepicker } from '@angular/material/datepicker';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { CompleterService, CompleterData } from 'ng2-completer';
@@ -9,11 +9,11 @@ import { CompleterService, CompleterData } from 'ng2-completer';
   styleUrls: ['./dinamicform.component.scss'],
 })
 
-
-export class DinamicformComponent implements OnInit, OnChanges {
+export class DinamicformComponent implements OnInit, OnChanges, OnDestroy {
 
   @Input('normalform') normalform: any;
   @Input('modeloData') modeloData: any;
+  @Input('escritura') escritura: boolean;
   @Input('clean') clean: boolean;
   @Output() result: EventEmitter<any> = new EventEmitter();
   @Output() resultAux: EventEmitter<any> = new EventEmitter();
@@ -22,6 +22,7 @@ export class DinamicformComponent implements OnInit, OnChanges {
   @Output() percentage: EventEmitter<any> = new EventEmitter();
   protected dataService: CompleterData[];
   data: any;
+  init: boolean;
   @ViewChild(MatDatepicker) datepicker: MatDatepicker<Date>;
 
   constructor(private sanitization: DomSanitizer,
@@ -37,6 +38,7 @@ export class DinamicformComponent implements OnInit, OnChanges {
   }
 
   ngOnInit() {
+    this.init = true;
     if (!this.normalform.tipo_formulario) {
       this.normalform.tipo_formulario = 'grid';
     }
@@ -47,7 +49,11 @@ export class DinamicformComponent implements OnInit, OnChanges {
         d.relacion = true;
       }
       if (!d.valor) {
-        d.valor = '';
+        if (d.tipo === 'boolean') {
+          d.valor = false;
+        } else {
+          d.valor = '';
+        }
       }
       if (!d.deshabilitar) {
         d.deshabilitar = false;
@@ -55,9 +61,8 @@ export class DinamicformComponent implements OnInit, OnChanges {
       return d;
     });
   }
+
   ngOnChanges(changes) {
-
-
     if (changes.normalform !== undefined) {
       if (changes.normalform.currentValue !== undefined) {
         this.normalform = changes.normalform.currentValue;
@@ -97,6 +102,25 @@ export class DinamicformComponent implements OnInit, OnChanges {
                         });
                       }
                       break;
+                    case 'autocompletedouble':
+                      if (element.hasOwnProperty('opciones')) {
+
+              //          var a = element.opciones.map(x=> {return {Codigo: x.Codigo + " " + x.Nombre}})
+              //          var b = element.valor
+                        this.dataService[element.id] = this.completerService.local(element.opciones, element.key, element.key);
+                        element.opciones.forEach((e1) => {
+                          if (this.modeloData[i].Id !== null) {
+                            if (e1.Id === this.modeloData[i].Id) {
+                              element.valor = e1[element.key];
+                            }
+                            if (e1.Codigo !== undefined && e1.Codigo !== null &&
+                              e1.Codigo.substring(0, e1.Codigo.indexOf(' ')) === this.modeloData[i].Id) {
+                              element.valor = e1[element.key];
+                            }
+                          }
+                        });
+                      }
+                      break;
                     case 'select':
                       if (element.hasOwnProperty('opciones')) {
                         element.opciones.forEach((e1) => {
@@ -127,7 +151,7 @@ export class DinamicformComponent implements OnInit, OnChanges {
         }
       }
     }
-    if (changes.clean !== undefined) {
+    if (changes.clean !== undefined && this.init) {
       this.clearForm();
       this.clean = false;
     }
@@ -143,12 +167,12 @@ export class DinamicformComponent implements OnInit, OnChanges {
   }
 
   onChange(event, c) {
-
+  //  console.log("On change")
     if (c.valor !== undefined) {
       c.urlTemp = URL.createObjectURL(event.srcElement.files[0]);
       c.url = this.cleanURL(c.urlTemp);
       c.valor = event.srcElement.files[0];
-      console.info(c);
+    //  console.info(c);
       this.validCampo(c);
       c.File = event.srcElement.files[0];
     }
@@ -162,6 +186,7 @@ export class DinamicformComponent implements OnInit, OnChanges {
   }
 
   validCampo(c): boolean {
+    // console.log({c});
     if (c.uppercase) {
       c.valor = c.valor.toUpperCase();
     }
@@ -177,15 +202,23 @@ export class DinamicformComponent implements OnInit, OnChanges {
       return false;
     }
     if (c.etiqueta === 'input' && c.tipo === 'number') {
-      c.valor = parseInt(c.valor, 10);
+      c.valor = parseFloat(c.valor);
       if (c.valor < c.minimo) {
         c.clase = 'form-control form-control-danger';
         c.alerta = 'El valor no puede ser menor que ' + c.minimo;
         return false;
       }
     }
+    if (c.etiqueta === 'input' && c.tipo === 'number') {
+      c.valor = parseFloat(c.valor);
+      if (c.valor > c.max) {
+        c.clase = 'form-control form-control-danger';
+        c.alerta = 'El valor no puede ser mayor que ' + c.max;
+        return false;
+      }
+    }
     if (c.etiqueta === 'radio') {
-      if (c.valor.Id === undefined) {
+      if (c.valor === undefined) {
         c.clase = 'form-control form-control-danger';
         c.alerta = 'Seleccione el campo';
         return false;
@@ -246,6 +279,13 @@ export class DinamicformComponent implements OnInit, OnChanges {
     return true;
   }
 
+  eventoCuentas(c: any) {
+    c.valor && this.init && c.nombre === 'CuentaDebitoId' ? this.resultSmart.emit({'CuentaDebitoId': c}) : null;
+  }
+  eventoCompleter() {
+    this.resultSmart.emit(this.validForm());
+  }
+
   validCampo2(c): boolean {
     if (c.uppercase) {
       c.valor = c.valor.toUpperCase();
@@ -261,10 +301,18 @@ export class DinamicformComponent implements OnInit, OnChanges {
       return false;
     }
     if (c.etiqueta === 'input' && c.tipo === 'number') {
-      c.valor = parseInt(c.valor, 10);
+      c.valor = parseFloat(c.valor);
       if (c.valor < c.minimo) {
         c.clase = 'form-control form-control-danger';
         c.alerta = 'El valor no puede ser menor que ' + c.minimo;
+        return false;
+      }
+    }
+    if (c.etiqueta === 'input' && c.tipo === 'number') {
+      c.valor = parseFloat(c.valor);
+      if (c.valor > c.max) {
+        c.clase = 'form-control form-control-danger';
+        c.alerta = 'El valor no puede ser mayor que ' + c.max;
         return false;
       }
     }
@@ -346,6 +394,7 @@ export class DinamicformComponent implements OnInit, OnChanges {
         /// console.log('ok');
 
         if (this.validCampo(d)) {
+          // console.log({sisas: d});
           if (d.etiqueta === 'file') {
             result[d.nombre] = { nombre: d.nombre, file: d.File };
             // result[d.nombre].push({ nombre: d.name, file: d.valor });
@@ -359,6 +408,7 @@ export class DinamicformComponent implements OnInit, OnChanges {
           // console.log(result);
           resueltos = d.requerido ? resueltos + 1 : resueltos;
         } else {
+          // console.log({noclas: d});
           this.data.valid = false;
         }
       } else {
@@ -398,6 +448,11 @@ export class DinamicformComponent implements OnInit, OnChanges {
       }
     }
 
+    const exclusive = this.normalform.campos.filter(d => (d.exclusive && d.valor));
+    if (exclusive.length > 1) {
+      exclusive.forEach(e => e.alerta = 'No puede seleccionar depreciación y amortización');
+      this.data.valid = false;
+    }
     this.result.emit(this.data);
     if (this.data.valid)
       this.percentage.emit(this.data.percentage);
@@ -437,5 +492,9 @@ export class DinamicformComponent implements OnInit, OnChanges {
 
   isEqual(obj1, obj2) {
     return JSON.stringify(obj1) === JSON.stringify(obj2);
+  }
+
+  ngOnDestroy() {
+    this.clearForm();
   }
 }

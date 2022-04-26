@@ -8,8 +8,12 @@ import { NuxeoService } from '../../../@core/utils/nuxeo.service';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { DocumentoService } from '../../../@core/data/documento.service';
 import { TranslateService } from '@ngx-translate/core';
-import { Entrada } from '../../../@core/data/models/entrada/entrada';
+import { TransaccionEntrada } from '../../../@core/data/models/entrada/entrada';
 import { TipoEntrada } from '../../../@core/data/models/entrada/tipo_entrada';
+import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
+import { TerceroCriterioJefe, TerceroCriterioPlanta } from '../../../@core/data/models/terceros_criterio';
+import {Observable} from 'rxjs';
+import {map, startWith} from 'rxjs/operators';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -24,6 +28,14 @@ export class ElaboracionPropiaComponent implements OnInit {
   ordenadorForm: FormGroup;
   supervisorForm: FormGroup;
 
+
+  registrando: boolean;
+  Supervisores: TerceroCriterioPlanta[];
+  supervisoresFiltrados: Observable<TerceroCriterioPlanta[]>;
+  Ordenadores: TerceroCriterioJefe[];
+  ordenadoresFiltrados: Observable<TerceroCriterioJefe[]>;
+  contratoForm: FormGroup;
+
   ordenadores: Array<OrdenadorGasto>;
   solicitanteSelect: boolean;
   ordenadorId: number;
@@ -35,14 +47,25 @@ export class ElaboracionPropiaComponent implements OnInit {
   fileDocumento: any;
   uidDocumento: string;
   idDocumento: number;
+  cargando_proveedores: boolean = true;
+  cargando_supervisores: boolean = true;
+  cargando_ordenadores: boolean = true;
 
-  tipoEntrada: any;
   formatoTipoMovimiento: any;
 
-  @Input() actaRecibidoId: string;
+  @Input() actaRecibidoId: Number;
+  @Input() entradaId: any;
+  @Input() EntradaEdit: any;
 
-  constructor(private router: Router, private entradasHelper: EntradaHelper, private pUpManager: PopUpManager, private fb: FormBuilder,
-    private nuxeoService: NuxeoService, private sanitization: DomSanitizer, private documentoService: DocumentoService,
+  constructor(
+    private router: Router,
+    private entradasHelper: EntradaHelper,
+    private pUpManager: PopUpManager,
+    private fb: FormBuilder,
+    private nuxeoService: NuxeoService,
+    private sanitization: DomSanitizer,
+    private documentoService: DocumentoService,
+    private tercerosHelper: TercerosHelper,
     private translate: TranslateService) {
     this.ordenadores = new Array<OrdenadorGasto>();
     this.solicitanteSelect = false;
@@ -61,14 +84,14 @@ export class ElaboracionPropiaComponent implements OnInit {
     });
     this.ordenadorForm = this.fb.group({
       ordenadorCtrl: ['', Validators.required],
-      fechaCtrl: ['', Validators.required],
+      vigenciaCtrl: ['', [Validators.required]],
     });
     this.supervisorForm = this.fb.group({
       supervisorCtrl: ['', Validators.required],
     });
     this.getVigencia();
-    this.getTipoEntrada();
-    this.getFormatoEntrada();
+    this.loadSupervisores();
+    this.loadOrdenadores();
   }
 
   // Métodos para validar campos requeridos en el formulario
@@ -116,21 +139,90 @@ export class ElaboracionPropiaComponent implements OnInit {
       }
     }
   }
-
-  changeSupervisor() {
-    for (const i in this.ordenadores) {
-      if (this.ordenadores[i].NombreOrdenador === this.ordenadorForm.value.ordenadorCtrl) {
-        this.supervisorId = this.ordenadores[i].Id;
+  // -------------------------SUPERVISORES--------------------------------------------------------
+  loadSupervisores(): void {
+    this.tercerosHelper.getTercerosByCriterio('funcionarioPlanta').subscribe( res => {
+      if (Array.isArray(res)) {
+        this.Supervisores = res;
+        this.supervisoresFiltrados = this.supervisorForm.get('supervisorCtrl').valueChanges
+          .pipe(
+            startWith(''),
+            map(val => typeof val === 'string' ? val : this.muestraSupervisor(val)),
+            map(nombre => this.filtroSupervisores(nombre)),
+          );
+        // console.log({supervisores: this.Supervisores});
+        this.cargando_supervisores = false;
       }
+    });
+  }
+  datosSupervisor(param: string): string {
+    const supervisorSeleccionado: TerceroCriterioPlanta = <TerceroCriterioPlanta>this.supervisorForm.value.supervisorCtrl;
+    // console.log({supervisorSeleccionado});
+    if (supervisorSeleccionado) {
+      switch (param) {
+        case 'sede':
+          return supervisorSeleccionado.Sede.Nombre;
+
+        case 'dependencia':
+          return supervisorSeleccionado.Dependencia.Nombre;
+
+        default:
+          return '';
+      }
+    }
+    return '';
+  }
+  filtroSupervisores(nombre: string): TerceroCriterioPlanta[] {
+    // if (nombre.length >= 4 ) {
+      const valorFiltrado = nombre.toLowerCase();
+      return this.Supervisores.filter(sup => sup.TerceroPrincipal.NombreCompleto.toLowerCase().includes(valorFiltrado));
+    // } else return [];
+  }
+
+  muestraSupervisor(sup: TerceroCriterioPlanta): string {
+    if (sup.TerceroPrincipal !== undefined) {
+      return sup.TerceroPrincipal.NombreCompleto;
+    }else {
+      return '';
     }
   }
 
+// -------------------------------------ORDENADORES---------------------------------------------------
   onSoporteSubmit() {
     if (this.ordenadorId !== 0) {
       this.soporteForm.markAsDirty();
     }
   }
+  loadOrdenadores(): void {
+    this.tercerosHelper.getTercerosByCriterio('ordenadoresGasto').subscribe( res => {
+      if (Array.isArray(res)) {
+        this.Ordenadores = res;
+        this.ordenadoresFiltrados = this.ordenadorForm.get('ordenadorCtrl').valueChanges
+          .pipe(
+            startWith(''),
+            map(val => typeof val === 'string' ? val : this.muestraOrdenador(val)),
+            map(nombre => this.filtroOrdenadores(nombre)),
+          );
+        // console.log({supervisores: this.Supervisores});
+        this.cargando_ordenadores = false;
+      }
+    });
+  }
+  filtroOrdenadores(nombre: string): TerceroCriterioJefe[] {
+    // if (nombre.length >= 4 ) {
+      const valorFiltrado = nombre.toLowerCase();
+      return this.Ordenadores.filter(sup => sup.TerceroPrincipal.NombreCompleto.toLowerCase().includes(valorFiltrado));
+    // } else return [];
+  }
 
+  muestraOrdenador(ord: TerceroCriterioJefe): string {
+    if (ord.TerceroPrincipal !== undefined) {
+      return ord.TerceroPrincipal.NombreCompleto;
+    }else {
+      return '';
+    }
+  }
+// ---------------------------------FIN ORDENADORES-------------------------------------------------
   onObservacionSubmit() {
     this.validar = true;
   }
@@ -187,67 +279,42 @@ export class ElaboracionPropiaComponent implements OnInit {
     this.vigencia = new Date().getFullYear();
   }
 
-  getTipoEntrada() {
-    this.entradasHelper.getTipoEntradaByAcronimo('e_arka').subscribe(res => {
-      if (res !== null) {
-        const data = <Array<any>>res;
-        for (const datos in Object.keys(data)) {
-          if (data.hasOwnProperty(datos) && data[datos].Nombre !== undefined && data[datos].Nombre === 'Elaboración Propia') {
-            this.tipoEntrada = data[datos];
-          }
-        }
-      }
-    });
-  }
-
-  getFormatoEntrada() {
-    this.entradasHelper.getFormatoEntradaByName('Elaboración Propia').subscribe(res => {
-      if (res !== null) {
-        this.formatoTipoMovimiento = res;
-      }
-    });
-  }
-
   /**
    * Método para enviar registro
    */
   async onSubmit() {
     if (this.validar) {
+      this.registrando = true;
       await this.postSoporteNuxeo([this.fileDocumento]);
 
       const detalle = {
         acta_recibido_id: +this.actaRecibidoId,
-        consecutivo: 'P3-' + this.actaRecibidoId + '-' + new Date().getFullYear(),
-        documento_contable_id: 1, // REVISAR
-        vigencia_ordenador: this.fechaSolicitante,
-        ordenador_gasto_id: +this.ordenadorId,
-        solicitante_id: +this.supervisorId,
-      };
-      const movimientoAdquisicion = {
-        Observacion: this.observacionForm.value.observacionCtrl,
-        Detalle: JSON.stringify(detalle),
-        Activo: true,
-        FormatoTipoMovimientoId: {
-          Id: this.formatoTipoMovimiento[0].Id,
-        },
-        EstadoMovimientoId: {
-          Id: 2, // REVISAR
-        },
-        SoporteMovimientoId: this.idDocumento,
-        IdTipoMovimiento: this.tipoEntrada.Id,
+        supervisor: this.supervisorForm.value.supervisorCtrl.TerceroPrincipal.Id,
+        vigencia_ordenador: this.ordenadorForm.value.vigenciaCtrl,
+        ordenador_gasto_id: this.ordenadorForm.value.ordenadorCtrl.TerceroPrincipal.Id,
+        // solicitante_id: +this.supervisorId,
       };
 
-      this.entradasHelper.postEntrada(movimientoAdquisicion).subscribe((res: any) => {
+      const transaccion = <TransaccionEntrada>{
+        Observacion: this.observacionForm.value.observacionCtrl,
+        Detalle: JSON.stringify(detalle),
+        FormatoTipoMovimientoId: 'ENT_EP',
+        SoporteMovimientoId: this.idDocumento,
+      };
+
+      this.entradasHelper.postEntrada(transaccion).subscribe((res: any) => {
         if (res !== null) {
+          this.registrando = false;
           (Swal as any).fire({
             type: 'success',
-            title: 'Entrada N° ' + `${detalle.consecutivo}` + ' Registrada',
-            text: 'La Entrada N° ' + `${detalle.consecutivo}` + ' ha sido registrada de forma exitosa',
+            title: this.translate.instant('GLOBAL.movimientos.entradas.registroTtlOk', { CONSECUTIVO: res.Consecutivo }),
+            text: this.translate.instant('GLOBAL.movimientos.entradas.registroTxtOk', { CONSECUTIVO: res.Consecutivo }),
+            showConfirmButton: false,
+            timer: 2000,
           });
-          const navigationExtras: NavigationExtras = { state: { consecutivo: res.Id } };
-          this.router.navigate(['/pages/reportes/registro-entradas'], navigationExtras);
+          this.router.navigate(['/pages/entradas']);
         } else {
-          this.pUpManager.showErrorAlert('No es posible hacer el registro.');
+          this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.entradas.registroFail'));
         }
       });
     } else {

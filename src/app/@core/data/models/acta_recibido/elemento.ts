@@ -3,6 +3,8 @@ import { EstadoElemento } from './estado_elemento';
 import { SoporteActa } from './soporte_acta';
 import { UnidadMedida } from '../unidad_medida/unidad_medida';
 import { ParametrosGobierno } from '../parametros_gobierno/parametros_gobierno';
+import { ActaRecibido } from './acta_recibido';
+import { Detalle } from '../catalogo/detalle';
 
 export class Elemento {
     Id: number;
@@ -19,14 +21,13 @@ export class Elemento {
     ValorIva: number;
     ValorFinal: number;
     SubgrupoCatalogoId: number; // Remplazar por modelo cuando este disponoble
-    Verificado: boolean;
-    TipoBienId: TipoBien;
     EstadoElementoId: EstadoElemento;
-    SoporteActaId: SoporteActa;
+    EspacioFisicoId: number;
+    ActaRecibidoId: ActaRecibido;
+    Placa: string;
     Activo: boolean;
     FechaCreacion: Date;
     FechaModificacion: Date;
-    Placa: string;
 }
 
 export class Impuesto {
@@ -51,7 +52,7 @@ export class ElementoActa {
     Cantidad: number;
     Marca: string;
     Serie: string;
-    UnidadMedidaId: UnidadMedida;
+    UnidadMedida: number;
     ValorUnitario: number;
     Subtotal: number;
     Descuento: number;
@@ -59,13 +60,18 @@ export class ElementoActa {
     PorcentajeIvaId: ParametrosGobierno;
     ValorIva: number;
     ValorFinal: number;
-    SubgrupoCatalogoId: number; // Remplazar por modelo cuando este disponoble
-    Verificado: boolean;
-    TipoBienId: TipoBien;
+    SubgrupoCatalogoId: Detalle;
     EstadoElementoId: EstadoElemento;
-    SoporteActaId: SoporteActa;
+    EspacioFisicoId: number;
+    ActaRecibidoId: ActaRecibido;
+    Placa: string;
     Activo: boolean;
     FechaCreacion: Date;
     FechaModificacion: Date;
-    Placa: string;
+    VidaUtil: number;
+    ValorResidual: number;
+}
+
+export class ElementoActaTabla extends ElementoActa {
+    Combinado: string;
 }

@@ -1,29 +1,26 @@
-import { Component, OnInit, Input, Output, EventEmitter, ViewChild, AfterViewInit, OnChanges } from '@angular/core';
-import { LocalDataSource } from 'ngx-smart-table';
+import { Component, OnInit, Input } from '@angular/core';
+import { LocalDataSource } from 'ng2-smart-table';
 import { Router } from '@angular/router';
-import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
 import { Entrada } from '../../../@core/data/models/entrada/entrada';
 import { Contrato } from '../../../@core/data/models/entrada/contrato';
-import { Supervisor } from '../../../@core/data/models/entrada/supervisor';
-import { OrdenadorGasto } from '../../../@core/data/models/entrada/ordenador_gasto';
-import { TipoEntrada } from '../../../@core/data/models/entrada/tipo_entrada';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
-import { NuxeoService } from '../../../@core/utils/nuxeo.service';
-import { DocumentoService } from '../../../@core/data/documento.service';
 import { SalidaHelper } from '../../../helpers/salidas/salidasHelper';
-import { Store } from '@ngrx/store';
-import { IAppState } from '../../../@core/store/app.state';
-import { ListService } from '../../../@core/store/services/list.service';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
-import { ElementoSalida } from '../../../@core/data/models/salidas/salida_elementos';
-import { combineLatest } from 'rxjs';
+import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
 
 
 @Component({
   selector: 'ngx-consulta-salida-especifica',
   templateUrl: './consulta-salida-especifica.component.html',
   styleUrls: ['./consulta-salida-especifica.component.scss'],
+  providers: [
+    {
+      provide: STEPPER_GLOBAL_OPTIONS,
+      useValue: { displayDefaultIndicatorType: false },
+    },
+  ],
 })
+
 export class ConsultaSalidaEspecificaComponent implements OnInit {
   salida_id: number;
   salida: any;
@@ -34,11 +31,11 @@ export class ConsultaSalidaEspecificaComponent implements OnInit {
   Dependencias: any;
   Sedes: any;
   TipoBien: any;
+  mode: string = 'determinate';
 
   @Input('salida_id')
   set name(salida_id: number) {
     this.salida_id = salida_id;
-    // console.log(this.subgrupo_id);
     if (this.salida_id !== undefined) {
       this.CargarSalida();
     }
@@ -49,10 +46,13 @@ export class ConsultaSalidaEspecificaComponent implements OnInit {
   detalle: boolean;
   actaRecibidoId: number;
   consecutivoEntrada: string;
-  entradaEspecifica: Entrada;
   contrato: Contrato;
   settings: any;
   documentoId: boolean;
+  trContable: any;
+  fecha: Date;
+  concepto: string;
+  consecutivo: string;
 
   constructor(
     private router: Router,
@@ -77,14 +77,31 @@ export class ConsultaSalidaEspecificaComponent implements OnInit {
 
 
   CargarSalida() {
+    this.salidasHelper.getSalida(this.salida_id).subscribe((res: any) => {
+      if (res.Salida) {
 
-    this.salidasHelper.getSalida(this.salida_id).subscribe(res1 => {
-      if (Object.keys(res1).length !== 0) {
-        // console.log(res1)
-        this.salida = res1.Salida;
-        this.source.load(res1.Elementos);
+        res.Salida.MovimientoPadreId.Detalle = JSON.parse(res.Salida.MovimientoPadreId.Detalle);
+        this.salida = res.Salida;
+
+        if (res.Elementos.length) {
+          res.Elementos.forEach(el => {
+            const sg = el.SubgrupoCatalogoId;
+            el.SubgrupoCatalogoId = sg.SubgrupoId;
+            el.TipoBienId = sg.TipoBienId;
+          });
+          this.source.load(res.Elementos);
+        }
+
+        if (res.trContable) {
+          const fecha = new Date(res.trContable.fecha).toLocaleString();
+          this.trContable = {
+            rechazo: '',
+            movimientos: res.trContable.movimientos,
+            concepto: res.trContable.concepto,
+            fecha,
+          };
+        }
       }
-
     });
   }
   cargarCampos() {
@@ -106,8 +123,14 @@ export class ConsultaSalidaEspecificaComponent implements OnInit {
             return value;
           },
         },
-        SaldoCantidad: {
+        Cantidad: {
           title: 'Cantidad',
+          valuePrepareFunction: (value: any) => {
+            return value;
+          },
+        },
+        Placa: {
+          title: 'Placa',
           valuePrepareFunction: (value: any) => {
             return value;
           },
@@ -161,6 +184,18 @@ export class ConsultaSalidaEspecificaComponent implements OnInit {
           valuePrepareFunction: (value: any) => {
             return value;
           },
+        },
+        ValorTotal: {
+          title: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.ValorTotalHeader'),
+          valuePrepareFunction: (value) => {
+            return value ? Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP' }).format(value) : '';
+          },
+        },
+        VidaUtil: {
+          title: this.translate.instant('GLOBAL.vidaUtilSug'),
+        },
+        ValorResidual: {
+          title: this.translate.instant('GLOBAL.valorResidualSug'),
         },
       },
     };

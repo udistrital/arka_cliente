@@ -11,6 +11,7 @@ import { SafeResourceUrl, DomSanitizer } from '@angular/platform-browser';
 import { SoporteActaProveedor } from '../../../@core/data/models/acta_recibido/soporte_acta';
 import { Router, NavigationExtras } from '@angular/router';
 import Swal from 'sweetalert2';
+import { TransaccionEntrada } from '../../../@core/data/models/entrada/entrada';
 
 @Component({
   selector: 'ngx-reposicion',
@@ -32,15 +33,17 @@ export class ReposicionComponent implements OnInit {
   uidDocumento: string;
   idDocumento: number;
   fileDocumento: any;
-  validar: boolean;
+  validar: boolean = false;
   formatoTipoMovimiento: any;
-  tipoEntrada: any;
   proveedor: string;
   fechaFactura: string;
   checked: boolean;
+  registrando: boolean;
 
    @ViewChild('file') fileInput: ElementRef;
-   @Input() actaRecibidoId: string;
+   @Input() actaRecibidoId: Number;
+  @Input() entradaId: any;
+  @Input() EntradaEdit: any;
 
   constructor(private router: Router, private fb: FormBuilder, private  actasHelper: ActaRecibidoHelper, private  entradasHelper: EntradaHelper,
     private nuxeoService: NuxeoService, private translate: TranslateService, private documentoService: DocumentoService,
@@ -59,16 +62,9 @@ export class ReposicionComponent implements OnInit {
         Validators.pattern('^[0-9]{13,13}$')] ],
       encargadoCtrl: [''],
     });
-
-    this.soporteForm = this.fb.group({
-      soporteCtrl: ['', Validators.required],
-    });
     this.observacionForm = this.fb.group({
       observacionCtrl: ['', Validators.nullValidator],
     });
-    this.facturaForm = this.fb.group({});
-    this.getFormatoEntrada();
-    this.getTipoEntrada();
     this.loadSoporte();
   }
 
@@ -79,10 +75,6 @@ export class ReposicionComponent implements OnInit {
   // Métodos para validar campos requeridos en el formulario
   onElementoSubmit() {
     this.elementoForm.markAsDirty();
-  }
-
-  onSoporteSubmit() {
-    this.soporteForm.markAsDirty();
   }
 
   // MÉTODO PARA BUSCAR PLACAS EXISTENTES
@@ -124,52 +116,9 @@ export class ReposicionComponent implements OnInit {
         }
       });
   }
-  // MÉTODOS PARA CARGAR SOPORTES
-  getSoporte(event) {
-    if (event.target.files.length > 0) {
-      const file = event.target.files[0];
-      const [_, extension] = event.target.files[0].name;
-      if (file.type === 'application/pdf' ) {
-        this.validar = true;
-        file.urlTemp = URL.createObjectURL(event.srcElement.files[0]);
-        file.url = this.cleanURL(file.urlTemp);
-        file.IdDocumento = 12; // tipo de documento (API documentos_crud)
-        file.file = event.target.files[0];
-        this.fileDocumento = file;
-      } else {
-        this.fileInput.nativeElement.value = null;
-        this.validar = true;
-        this.pUpManager.showToast('error', this.translate.instant('GLOBAL.error'), this.translate.instant('ERROR.formato_documento_pdf'));
-      }
-    }
-  }
 
   cleanURL(oldURL: string): SafeResourceUrl {
     return this.sanitization.bypassSecurityTrustUrl(oldURL);
-  }
-
-  postSoporteNuxeo(files) {
-    return new Promise((resolve, reject) => {
-      files.forEach((file) => {
-        file.Id = file.nombre;
-        file.nombre = 'soporte_' + file.IdDocumento + '_entradas';
-        // file.key = file.Id;
-        file.key = 'soporte_' + file.IdDocumento;
-      });
-      this.nuxeoService.getDocumentos$(files, this.documentoService)
-        .subscribe(response => {
-          if (Object.keys(response).length === files.length) {
-            // console.log("response", response);
-            files.forEach((file) => {
-              this.uidDocumento = file.uid;
-              this.idDocumento = response[file.key].Id;
-            });
-            resolve(true);
-          }
-        }, error => {
-          reject(error);
-        });
-    });
   }
 
   loadSoporte(): void {
@@ -189,87 +138,42 @@ export class ReposicionComponent implements OnInit {
     });
   }
 
-  getTipoEntrada() {
-    this.entradasHelper.getTipoEntradaByAcronimo('e_arka').subscribe(res => {
-      if (res !== null) {
-        const data = <Array<any>>res;
-        for (const datos in Object.keys(data)) {
-          if (data.hasOwnProperty(datos) && data[datos].Nombre !== undefined && data[datos].Nombre === 'Reposición') {
-            this.tipoEntrada = data[datos];
-          }
-        }
-      }
-    });
+  onObservacionSubmit() {
+    this.validar = true;
   }
-
-  getFormatoEntrada() {
-    this.entradasHelper.getFormatoEntradaByName('Reposición').subscribe(res => {
-      if (res !== null) {
-        this.formatoTipoMovimiento = res;
-      }
-    });
-  }
-
-  changeSelectSoporte(event) {
-    const soporteId: string = event.target.options[event.target.options.selectedIndex].value;
-    for (const i in this.soportes) {
-      if (this.soportes[i].Id.toString() === soporteId) {
-        this.proveedor = this.soportes[i].Proveedor.NomProveedor;
-        const date = this.soportes[i].FechaSoporte.toString().split('T');
-        this.fechaFactura = date[0];
-      }
-    }
-  }
-
     /**
    * Método para enviar registro
    */
   async onSubmit() {
-    if (this.validar && this.fileDocumento !== null ) {
-      if (this.encargado.length !== 0) {
-        await this.postSoporteNuxeo([this.fileDocumento]);
+    if (this.encargado.length !== 0 && this.validar === true) {
+      this.registrando = true;
       const detalle = {
         acta_recibido_id: +this.actaRecibidoId,
-        consecutivo: 'P2-' + this.actaRecibidoId + '-' + new Date().getFullYear(),
-        documento_contable_id: 1, // REVISAR
         placa_id: this.placa,
         encargado_id: this.encargadoId,
       };
-      const movimientoReposicion = {
+
+      const transaccion = <TransaccionEntrada>{
         Observacion: this.observacionForm.value.observacionCtrl,
         Detalle: JSON.stringify(detalle),
-        Activo: true,
-        FormatoTipoMovimientoId: {
-          Id: this.formatoTipoMovimiento[0].Id,
-        },
-        EstadoMovimientoId: {
-          Id: 2, // REVISAR
-        },
+        FormatoTipoMovimientoId: 'ENT_RP',
         SoporteMovimientoId: this.idDocumento,
-        IdTipoMovimiento: this.tipoEntrada.Id,
       };
 
-      this.entradasHelper.postEntrada(movimientoReposicion).subscribe((res: any) => {
+      this.entradasHelper.postEntrada(transaccion).subscribe((res: any) => {
         if (res !== null) {
+          this.registrando = false;
           (Swal as any).fire({
             type: 'success',
-            title: 'Entrada N° ' + `${detalle.consecutivo}` + ' Registrada',
-            text: 'La Entrada N° ' + `${detalle.consecutivo}` + ' ha sido registrada de forma exitosa',
+            title: this.translate.instant('GLOBAL.movimientos.entradas.registroTtlOk', { CONSECUTIVO: res.Consecutivo }),
+            text: this.translate.instant('GLOBAL.movimientos.entradas.registroTxtOk', { CONSECUTIVO: res.Consecutivo }),
+            showConfirmButton: true,
           });
-          const navigationExtras: NavigationExtras = { state: { consecutivo: res.Id } };
-          this.router.navigate(['/pages/reportes/registro-entradas'], navigationExtras);
+          this.router.navigate(['/pages/entradas']);
         } else {
-          this.pUpManager.showErrorAlert('No es posible hacer el registro.');
+          this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.entradas.registroFail'));
         }
       });
-      }else {
-        this.pUpManager.showErrorAlert('Placa invalida o encargado no encontrado');
-      }
-    } else {
-      this.pUpManager.showErrorAlert('No ha llenado todos los campos! No es posible hacer el registro.');
     }
   }
-
 }
-
-

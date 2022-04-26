@@ -14,29 +14,24 @@ import { Catalogo } from '../../../@core/data/models/catalogo/catalogo';
 })
 export class RegistroCatalogoComponent implements OnInit {
 
-  grupo_id: number;
-
   @Output() eventChange = new EventEmitter();
 
-  info_grupo: Grupo;
-  formGrupo: any;
-  regGrupo1: any;
-  clean: boolean;
   catalogos: Array<Catalogo>;
   catalogoId: number;
   subgrupoPadre: Subgrupo;
-  subgrupoHijo: Subgrupo;
-  uid_1: number;
-  ModificarGrupo: boolean;
-  uid_2: number;
-  uid_3: number;
-  uid_4: number;
+  subgrupo: Subgrupo;
+  modificarGrupo: boolean;
+  modificarSubgrupo: boolean;
+  crearSubgrupo: boolean;
   ver_formulario: boolean;
+  catalogoSeleccionado: number;
 
   nivel_actual: string;
   nivel_hijo: string;
 
   permitir_crear_subgrupo: boolean;
+  cargando_catalogos: boolean = true;
+  stringHeader: string;
 
   constructor(
     private translate: TranslateService,
@@ -44,15 +39,11 @@ export class RegistroCatalogoComponent implements OnInit {
   ) {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
     });
-    this.catalogos = new Array<Catalogo>();
-    this.catalogoId = 0;
-    this.loadCatalogos();
   }
 
   ngOnInit() {
-    this.nivel_actual = undefined;
-    this.nivel_hijo = undefined;
-    this.permitir_crear_subgrupo = false;
+    this.catalogos = new Array<Catalogo>();
+    this.loadCatalogos();
   }
 
   useLanguage(language: string) {
@@ -68,18 +59,14 @@ export class RegistroCatalogoComponent implements OnInit {
             this.catalogos.push(data[datos]);
           }
         }
+        this.cargando_catalogos = false;
       }
     });
   }
 
   recargarCatalogo(event) {
-    // console.log(event);
-    this.eventChange.emit(true);
-    setTimeout(() => {
-      this.QuitarVista();
-    }, 2000);
-
-    // this.ver_formulario = false;
+    this.eventChange.emit(event);
+    this.QuitarVista();
   }
 
   onChange(catalogo) {
@@ -87,59 +74,53 @@ export class RegistroCatalogoComponent implements OnInit {
     this.QuitarVista();
   }
 
-  AgregarGrupo(id: number) {
-    this.QuitarVista();
-    this.uid_3 = id;
+  AgregarGrupo() {
+    this.stringHeader = '.agregar';
+    this.catalogoSeleccionado = this.catalogoId;
+    this.subgrupo = undefined;
+    this.modificarGrupo = true;
+    this.modificarSubgrupo = false;
     this.ver_formulario = true;
   }
 
-  AgregarSubgrupo(id: number) {
-    this.QuitarVista();
-    this.uid_4 = id;
-    this.ver_formulario = true;
+  AgregarSubgrupo() {
+    this.stringHeader = '.agregar';
+    this.nivel_actual = this.nivel_hijo;
+    this.crearSubgrupo = true;
+    this.modificarSubgrupo = true;
+    this.modificarGrupo = false;
+    this.subgrupo = this.subgrupoPadre;
+    this.permitir_crear_subgrupo = false;
   }
+
   QuitarVista() {
-    this.uid_1 = undefined;
-    this.uid_2 = undefined;
-    this.uid_3 = undefined;
-    this.uid_4 = undefined;
+    this.modificarGrupo = false;
+    this.modificarSubgrupo = false;
+    this.crearSubgrupo = false;
+    this.subgrupo = undefined;
+    this.subgrupoPadre = undefined;
+    this.catalogoSeleccionado = undefined;
     this.ver_formulario = false;
   }
 
   // Ver formularios de modificacion
   receiveMessage(event) {
-    // console.log({'receiveMessage(event)': event});
+    const nivel = <Nivel_t>(event.TipoNivelId.Id);
     this.QuitarVista();
+    this.stringHeader = '.modificar';
+    this.subgrupo = event;
     this.subgrupoPadre = event;
-    this.info_grupo = <Grupo>event;
-    this.catalogoElementosService.getGrupoById(event.Id).subscribe(
-      res => {
-        if (Object.keys(res[0]).length !== 0) {
-          // Si es grupo (no tiene subgrupo padre, tiene catalogo)
-          // console.log({'receiveMessage - res': res});
-          this.uid_1 = event.Id;
-          this.nivel_hijo = nh.Texto(nh.Hijo(Nivel_t.Grupo));
-        } else {
-          // Si NO es grupo (es segmento/familia/clase, tiene subgrupo padre)
-          this.permitir_crear_subgrupo = false; // Reinicia "permiso"
-          this.nivel_actual = undefined; // Reinicia traducción
-          this.nivel_hijo = undefined; // Reinicia traducción
-          this.catalogoElementosService.getSubgrupoById(event.Id).subscribe( res_sub => {
-            // console.log({'receiveMessage - res_sub': res_sub});
-            if (Object.keys(res_sub[0]).length !== 0) {
-              const nivel = <Nivel_t>(res_sub[0].Subgrupo.TipoNivelId.Id);
-              this.permitir_crear_subgrupo = (nivel !== Nivel_t.Clase);
-              this.nivel_actual = nh.Texto(nivel);
-              this.nivel_hijo = nh.Texto(nh.Hijo(nivel));
-            } else {
-              // Posible error...
-            }
-          });
-          this.uid_2 = event.Id;
-        }
-        this.ver_formulario = true;
-        // console.log({'permitir_crear_subgrupo': this.permitir_crear_subgrupo});
-        // console.log({'modificando_tipo': this.modificando_tipo});
-      });
+    this.nivel_hijo = nh.Texto(nh.Hijo(nivel));
+    if (nivel === Nivel_t.Grupo) {
+      // Si es grupo (no tiene subgrupo padre, tiene catalogo)
+      this.modificarGrupo = true;
+      this.ver_formulario = true;
+    } else {
+      // Si NO es grupo (es segmento/familia/clase, tiene subgrupo padre)
+      this.permitir_crear_subgrupo = (nivel !== Nivel_t.Clase);
+      this.nivel_actual = nh.Texto(nivel);
+      this.modificarSubgrupo = true;
+      this.ver_formulario = true;
+    }
   }
 }

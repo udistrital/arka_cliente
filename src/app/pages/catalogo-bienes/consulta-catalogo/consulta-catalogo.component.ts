@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Catalogo } from '../../../@core/data/models/catalogo/catalogo';
 import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/catalogoElementosHelper';
 
@@ -11,25 +11,25 @@ export class ConsultaCatalogoComponent implements OnInit {
 
   catalogos: Array<Catalogo>;
   catalogoId: number;
-
-  @Output() eventChange = new EventEmitter();
+  cargando_catalogos: boolean = true;
 
   constructor(private catalogoHelper: CatalogoElementosHelper) {
     this.catalogos = new Array<Catalogo>();
-    this.catalogoId = 0;
-    this.loadCatalogos();
   }
 
   ngOnInit() {
+    this.loadCatalogos();
   }
 
   loadCatalogos() {
-    this.catalogoHelper.getCatalogos().subscribe((res) => {
+    this.catalogoId = 0;
+    this.catalogoHelper.getCatalogo().subscribe((res) => {
       if (res !== null) {
         const data = <Array<Catalogo>>res;
         for (const datos in Object.keys(data)) {
           if (data.hasOwnProperty(datos)) {
             this.catalogos.push(data[datos]);
+            this.cargando_catalogos = false;
           }
         }
       }

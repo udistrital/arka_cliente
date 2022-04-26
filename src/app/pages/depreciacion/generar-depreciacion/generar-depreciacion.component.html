@@ -1,0 +1,71 @@
+<mat-card [nbSpinner]="loading">
+
+  <mat-card-title>
+    {{ title }}
+  </mat-card-title>
+
+  <mat-card-subtitle *ngIf="showForm">
+    {{ subtitle }}
+  </mat-card-subtitle>
+  <mat-card-content *ngIf="showForm">
+    <mat-vertical-stepper #stepper>
+      <mat-step label="{{'GLOBAL.razonRechazo' | translate}}"
+        *ngIf="formDepreciacion && formDepreciacion.get('razon').value !== ''">
+        <form [formGroup]="formDepreciacion">
+          <div class="row">
+            <div class="col">
+              <mat-form-field appearance="outline" style="width: 90%;">
+                <mat-label>{{'GLOBAL.observaciones' | translate}}</mat-label>
+                <textarea matInput rows="5"
+                  placeholder="{{'GLOBAL.Acta_Recibido.RegistroActa.Observaciones2' | translate}}"
+                  formControlName="razon">
+                </textarea>
+              </mat-form-field>
+            </div>
+          </div>
+        </form>
+      </mat-step>
+      <mat-step label="{{'GLOBAL.depreciacion.informacion' | translate}}">
+        <form [formGroup]="formDepreciacion">
+          <div class="row">
+            <div class="col">
+              <mat-form-field appearance="outline">
+                <mat-label>{{'GLOBAL.fechaCorte' | translate}}</mat-label>
+                <input matInput [matDatepicker]="fecha" [min]="refDate" [max]="maxDate" formControlName="fecha"
+                  placeholder="{{'GLOBAL.depreciacion.infoFechaCorte' | translate}}">
+                <mat-datepicker-toggle matSuffix [for]="fecha"></mat-datepicker-toggle>
+                <mat-datepicker #fecha></mat-datepicker>
+                <mat-error>* {{'GLOBAL.Errores.ErrorFecha' | translate}}</mat-error>
+              </mat-form-field>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <mat-form-field appearance="outline" style="width: 90%;">
+                <mat-label>{{'GLOBAL.observaciones' | translate}}</mat-label>
+                <textarea matInput rows="5"
+                  placeholder="{{'GLOBAL.Acta_Recibido.RegistroActa.Observaciones2' | translate}}"
+                  formControlName="observaciones">
+                </textarea>
+              </mat-form-field>
+            </div>
+          </div>
+        </form>
+      </mat-step>
+      <mat-step *ngIf="trContable" label="{{'GLOBAL.trContable' | translate}}">
+        <ngx-ver-comprobante [consecutivo]="consecutivo" [transaccion]="trContable"></ngx-ver-comprobante>
+      </mat-step>
+    </mat-vertical-stepper>
+
+  </mat-card-content>
+  <mat-card-actions *ngIf="modoCrud !== 'get'">
+    <button mat-flat-button color="primary" class="float-left text-uppercase" *ngIf="modoCrud === 'review'"
+      [disabled]="submitted" (click)="rechazar()">
+      {{'GLOBAL.bajas.revisar.accionR' | translate}}
+    </button>
+    <button mat-flat-button color="primary" class="float-right text-uppercase"
+      [disabled]="(!formDepreciacion.valid && modoCrud !== 'review') || submitted" (click)="confirm()">
+      {{ action }}
+    </button>
+  </mat-card-actions>
+</mat-card>

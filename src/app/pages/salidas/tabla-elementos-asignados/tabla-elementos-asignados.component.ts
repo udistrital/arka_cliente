@@ -1,25 +1,21 @@
-import { Component, OnInit, ViewChild, ElementRef, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
-import * as XLSX from 'xlsx';
+import { Component, OnInit, ViewChild, Input, HostListener } from '@angular/core';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
-import { FormBuilder, FormGroup, Validators, FormControl } from '@angular/forms';
+import { FormControl } from '@angular/forms';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
 import Swal from 'sweetalert2';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
-import { MatTableDataSource, MatTable } from '@angular/material/table';
-import { TipoBien } from '../../../@core/data/models/acta_recibido/tipo_bien';
-import { DatosLocales, DatosLocales2 } from './datos_locales';
-import { Unidad } from '../../../@core/data/models/acta_recibido/unidades';
-import { Impuesto, ElementoActa, Elemento } from '../../../@core/data/models/acta_recibido/elemento';
-import { SoporteActa } from '../../../@core/data/models/acta_recibido/soporte_acta';
-import { Store } from '@ngrx/store';
-import { ListService } from '../../../@core/store/services/list.service';
+import { MatTableDataSource } from '@angular/material/table';
+import { ElementoActa } from '../../../@core/data/models/acta_recibido/elemento';
 import { PopUpManager } from '../../../managers/popUpManager';
-import { IAppState } from '../../../@core/store/app.state';
-import { Router, NavigationEnd } from '@angular/router';
-import { LocalDataSource } from 'ngx-smart-table';
-import { ElementoSalida } from '../../../@core/data/models/salidas/salida_elementos';
+import { Router } from '@angular/router';
 import { SalidaHelper } from '../../../helpers/salidas/salidasHelper';
+import { isArray } from 'util';
+import { MatCheckbox } from '@angular/material';
+import { ElementoMovimientosArka, EstadoMovimiento, FormatoTipoMovimiento } from '../../../@core/data/models/entrada/entrada';
+import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
+import { MovimientosHelper } from '../../../helpers/movimientos/movimientosHelper';
+export const CONSUMO = 'Consumo';
 
 @Component({
   selector: 'ngx-tabla-elementos-asignados',
@@ -28,29 +24,30 @@ import { SalidaHelper } from '../../../helpers/salidas/salidasHelper';
 })
 export class TablaElementosAsignadosComponent implements OnInit {
 
-  settings: any;
-  settings2: any;
-  bandera: boolean;
-  navigationSubscription;
   actaRecibidoId: number;
-  respuesta: any;
-  Datos: ElementoSalida[];
-  DatosConsumo: ElementoSalida[];
-  Consumo: any;
-  Sedes: any;
-  Dependencias: any;
-  ConsumoControlado: any;
-  Clases: any;
-  Devolutivo: any;
-  DatosSeleccionados: any;
   formulario: boolean;
-  Datos2: ElementoSalida[];
-  bandera2: boolean;
-  Observaciones: string;
   entradaId: string;
-  Datos_Salida_Consumo: any;
   selected = new FormControl(0);
+  estadoShift: boolean;
+  JefeOficinaId: number;
+  mostrar: boolean;
+  mode: string = 'determinate';
+  checkTodos: boolean = false;
+  checkParcial: boolean = false;
+  displayedColumns: string[];
+  displayedColumnsDev: string[];
+  private checkAnterior: number = undefined;
+  counter = 0;
+  basePaginasD: number = 0;
+  basePaginasC: number = 0;
+  elementosActa: any;
 
+  @ViewChild('paginatorD') paginatorD: MatPaginator;
+  @ViewChild('paginatorC') paginatorC: MatPaginator;
+  @ViewChild(MatSort) sortD: MatSort;
+  @ViewChild(MatSort) sortC: MatSort;
+  formatoMovimientoBodega: FormatoTipoMovimiento;
+  formatoMovimientoFuncionario: FormatoTipoMovimiento;
   @Input('actaRecibidoId')
   set name(acta_id: number) {
     this.actaRecibidoId = acta_id;
@@ -58,572 +55,311 @@ export class TablaElementosAsignadosComponent implements OnInit {
   @Input('entradaId')
   set name2(entrada_id: string) {
     this.entradaId = entrada_id;
-    // console.log(this.entradaId);
   }
-  source: any;
-  source2: any;
-  elementos: Elemento[];
+  @Input('salida_id') salida_id: number = 0;
+  @Input('edicionSalida') edicionSalida: boolean = false;
+  sourceDevolutivo: MatTableDataSource<any>;
+  sourceConsumo: MatTableDataSource<any>;
+  devolutivoSeleccionados: boolean;
+  consumoSeleccionados: boolean;
+  salida: any;
+  @ViewChild('checkTodoInput') checkDummy: MatCheckbox;
 
   constructor(private translate: TranslateService,
     private router: Router,
     private actaRecibidoHelper: ActaRecibidoHelper,
     private salidasHelper: SalidaHelper,
-    private store: Store<IAppState>,
-    private listService: ListService,
-    private pUpManager: PopUpManager) {
-    this.listService.findSubgruposConsumo();
-    this.listService.findSubgruposConsumoControlado();
-    this.listService.findSubgruposDevolutivo();
-    this.listService.findDependencias();
-    this.listService.findSedes();
-    this.listService.findClases();
-    this.navigationSubscription = this.router.events.subscribe((e: any) => {
-      // If it is a NavigationEnd event re-initalise the component
-      if (e instanceof NavigationEnd) {
-        this.initialiseInvites();
-      }
+    private pUpManager: PopUpManager,
+    private entradasHelper: EntradaHelper,
+    private movimientosHelper: MovimientosHelper) {
+    this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
     });
-
-    this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
-      this.cargarCampos();
-    });
-    this.respuesta = undefined;
-    this.source = new LocalDataSource(); // create the source
-    this.source2 = new LocalDataSource();
-    this.elementos = new Array<Elemento>();
-    this.Datos2 = new Array<any>();
-    this.cargarCampos();
-    this.loadLists();
-
   }
+
   ngOnInit() {
-    this.respuesta = undefined;
-    this.source = new LocalDataSource(); // create the source
-    this.source2 = new LocalDataSource();
-    this.elementos = new Array<Elemento>();
-    this.Datos2 = new Array<any>();
-    this.cargarCampos();
-    this.loadLists();
-  }
-  initialiseInvites() {
-    // Set default values and re-fetch any data you need.
-    // this.ngOnInit();
-    // console.log('1')
-  }
-  public loadLists() {
-    this.store.select((state) => state).subscribe(
-      (list) => {
-        this.Consumo = list.listConsumo[0];
-        this.ConsumoControlado = list.listConsumoControlado[0];
-        this.Devolutivo = list.listDevolutivo[0];
-        this.Sedes = list.listSedes[0];
-        this.Dependencias = list.listDependencias[0];
-        // console.log(this.actaRecibidoId);
-        // console.log(this.Consumo);
-        // console.log(this.Devolutivo);
-        // console.log(this.ConsumoControlado);
-        if (this.actaRecibidoId !== undefined && this.Consumo !== undefined &&
-          this.ConsumoControlado !== undefined && this.Devolutivo !== undefined &&
-          this.respuesta === undefined && this.Sedes !== undefined && this.Dependencias !== undefined) {
-          this.actaRecibidoHelper.getElementosActa(this.actaRecibidoId).subscribe((res: any) => {
-            // console.log(res)
-            this.respuesta = res;
-            this.AjustarDatos(res);
-          });
+    this.loadElementos();
+    this.getJefeAlmacen();
+    this.setColumnas();
+    this.getFormatoBodega();
+    this.getFormatoFuncionario();
+
+    if (this.edicionSalida) {
+    this.movimientosHelper.getElementosMovimientoById(this.salida_id).subscribe(res => {
+        if (res !== null) {
+            this.elementosActa = res;
         }
-      },
-    );
+    });
 
-  }
-  onRowSelect(event) {
-    // console.log(event);
-    this.DatosSeleccionados = event;
-    if (Object.keys(this.DatosSeleccionados.selected).length !== 0) {
-      this.formulario = true;
-    } else {
-      this.formulario = false;
-    }
-
-  }
-  cargarCampos() {
-
-    this.settings = {
-      hideSubHeader: false,
-      selectMode: 'multi',
-      noDataMessage: 'No se encontraron elementos asociados.',
-      actions: {
-        columnTitle: 'Acciones',
-        position: 'right',
-        add: false,
-        delete: false,
-        edit: false,
-      },
-      add: {
-        addButtonContent: '<i class="nb-plus"></i>',
-        createButtonContent: '<i class="nb-checkmark"></i>',
-        cancelButtonContent: '<i class="nb-close"></i>',
-      },
-      edit: {
-        editButtonContent: '<i class="fas fa-pencil-alt"></i>',
-        saveButtonContent: '<i class="nb-checkmark"></i>',
-        cancelButtonContent: '<i class="nb-close"></i>',
-      },
-      delete: {
-        deleteButtonContent: '<i class="fas fa-eye"></i>',
-      },
-      mode: 'external',
-      columns: {
-        Nombre: {
-          title: 'Elemento',
-          valuePrepareFunction: (value: any) => {
-            return value;
-          },
-        },
-        Cantidad: {
-          title: 'Cantidad',
-          valuePrepareFunction: (value: any) => {
-            return value;
-          },
-        },
-        TipoBienId: {
-          title: 'Tipo de Bien',
-          valuePrepareFunction: (value: any) => {
-            return value.Nombre;
-          },
-          filterFunction: (cell?: any, search?: string): boolean => {
-            // console.log(cell);
-            // console.log(search);
-            if (Object.keys(cell).length !== 0) {
-              if (cell.Nombre.indexOf(search) > -1) {
-                return true;
-              } else {
-                return false;
-              }
-            } else {
-              return false;
-            }
-          },
-        },
-        SubgrupoCatalogoId: {
-          title: 'Subgrupo',
-          valuePrepareFunction: (value: any) => {
-            return value.Nombre;
-          },
-          filterFunction: (cell?: any, search?: string): boolean => {
-            // console.log(cell);
-            // console.log(search);
-            if (Object.keys(cell).length !== 0) {
-              if (cell.Nombre.indexOf(search) > -1) {
-                return true;
-              } else {
-                return false;
-              }
-            } else {
-              return false;
-            }
-          },
-        },
-        Marca: {
-          title: 'Marca',
-          valuePrepareFunction: (value: any) => {
-            return value;
-          },
-        },
-        Serie: {
-          title: 'Serie',
-          valuePrepareFunction: (value: any) => {
-            return value;
-          },
-
-        },
-        Funcionario: {
-          title: 'Funcionario',
-          valuePrepareFunction: (value: any) => {
-            if (value !== null) {
-              return value.NombreCompleto;
-            } else {
-              return '';
-            }
-          },
-          filterFunction: (cell?: any, search?: string): boolean => {
-            // console.log(cell);
-            // console.log(search);
-            if (Object.keys(cell).length !== 0) {
-              if (cell.compuesto.indexOf(search) > -1) {
-                return true;
-              } else {
-                return false;
-              }
-            } else {
-              return false;
-            }
-          },
-        },
-        Sede: {
-          title: 'Sede',
-          valuePrepareFunction: (value: any) => {
-            if (value !== null) {
-              return value.Nombre;
-            } else {
-              return '';
-            }
-          },
-          filterFunction: (cell?: any, search?: string): boolean => {
-            // console.log(cell);
-            // console.log(search);
-            if (Object.keys(cell).length !== 0) {
-              if (cell.Nombre.indexOf(search) > -1) {
-                return true;
-              } else {
-                return false;
-              }
-            } else {
-              return false;
-            }
-          },
-        },
-        Dependencia: {
-          title: 'Dependencia',
-          valuePrepareFunction: (value: any) => {
-            if (value !== null) {
-              return value.Nombre;
-            } else {
-              return '';
-            }
-          },
-          filterFunction: (cell?: any, search?: string): boolean => {
-            // console.log(cell);
-            // console.log(search);
-            if (Object.keys(cell).length !== 0) {
-              if (cell.Nombre.indexOf(search) > -1) {
-                return true;
-              } else {
-                return false;
-              }
-            } else {
-              return false;
-            }
-          },
-        },
-        Ubicacion: {
-          title: 'Ubicacion',
-          valuePrepareFunction: (value: any) => {
-            if (value !== null) {
-              return value.Nombre;
-            } else {
-              return '';
-            }
-          },
-          filterFunction: (cell?: any, search?: string): boolean => {
-            // console.log(cell);
-            // console.log(search);
-            if (Object.keys(cell).length !== 0) {
-              if (cell.Nombre.indexOf(search) > -1) {
-                return true;
-              } else {
-                return false;
-              }
-            } else {
-              return false;
-            }
-          },
-        },
-      },
-    };
-
-    this.settings2 = {
-      hideSubHeader: false,
-      noDataMessage: 'No se encontraron elementos asociados.',
-      actions: {
-        columnTitle: 'Acciones',
-        position: 'right',
-        add: false,
-        delete: false,
-        edit: false,
-      },
-      add: {
-        addButtonContent: '<i class="nb-plus"></i>',
-        createButtonContent: '<i class="nb-checkmark"></i>',
-        cancelButtonContent: '<i class="nb-close"></i>',
-      },
-      edit: {
-        editButtonContent: '<i class="fas fa-pencil-alt"></i>',
-        saveButtonContent: '<i class="nb-checkmark"></i>',
-        cancelButtonContent: '<i class="nb-close"></i>',
-      },
-      delete: {
-        deleteButtonContent: '<i class="fas fa-eye"></i>',
-      },
-      mode: 'external',
-      columns: {
-        Nombre: {
-          title: 'Elemento',
-          valuePrepareFunction: (value: any) => {
-            return value;
-          },
-        },
-        Cantidad: {
-          title: 'Cantidad',
-          valuePrepareFunction: (value: any) => {
-            return value;
-          },
-        },
-        TipoBienId: {
-          title: 'Tipo de Bien',
-          valuePrepareFunction: (value: any) => {
-            return value.Nombre;
-          },
-          filterFunction: (cell?: any, search?: string): boolean => {
-            // console.log(cell);
-            // console.log(search);
-            if (Object.keys(cell).length !== 0) {
-              if (cell.Nombre.indexOf(search) > -1) {
-                return true;
-              } else {
-                return false;
-              }
-            } else {
-              return false;
-            }
-          },
-        },
-        SubgrupoCatalogoId: {
-          title: 'Subgrupo',
-          valuePrepareFunction: (value: any) => {
-            return value.Nombre;
-          },
-          filterFunction: (cell?: any, search?: string): boolean => {
-            // console.log(cell);
-            // console.log(search);
-            if (Object.keys(cell).length !== 0) {
-              if (cell.Nombre.indexOf(search) > -1) {
-                return true;
-              } else {
-                return false;
-              }
-            } else {
-              return false;
-            }
-          },
-        },
-        Marca: {
-          title: 'Marca',
-          valuePrepareFunction: (value: any) => {
-            return value;
-          },
-        },
-        Serie: {
-          title: 'Serie',
-          valuePrepareFunction: (value: any) => {
-            return value;
-          },
-        },
-      },
-    };
+    this.salidasHelper.getSalida(this.salida_id).subscribe(res => {
+        if (res !== null) {
+            this.salida = res;
+        }
+    });
+}
 
   }
 
-  AjustarDatos(datos: any[]) {
-    // console.log(datos);
-    this.Datos = new Array<ElementoSalida>();
-    this.DatosConsumo = new Array<ElementoSalida>();
-    for (const index in datos) {
-      if (true) {
-        // console.log(datos[index])
-        const elemento = new ElementoSalida();
-        elemento.ValorUnitario = datos[index].ValorUnitario;
-        elemento.ValorTotal = datos[index].ValorTotal;
-        elemento.Id = datos[index].Id;
-        elemento.Nombre = datos[index].Nombre;
-        elemento.Cantidad = datos[index].Cantidad;
-        elemento.Marca = datos[index].Marca;
-        elemento.Serie = datos[index].Serie;
-        elemento.TipoBienId = datos[index].TipoBienId;
-        elemento.Funcionario = null;
-        elemento.Sede = null;
-        elemento.Asignado = false;
-        elemento.Dependencia = null;
-        elemento.Ubicacion = null;
-        // console.log({Consumo:this.Consumo, ConsumoCon:this.ConsumoControlado});
-        if (datos[index].TipoBienId.Id === 1 && Object.keys(this.Consumo[0]).length !== 0) {
-          elemento.SubgrupoCatalogoId = this.Consumo.find(x => x.SubgrupoId.Id === datos[index].SubgrupoCatalogoId).SubgrupoId;
-        }
-        if (datos[index].TipoBienId.Id === 2 && Object.keys(this.ConsumoControlado[0]).length !== 0) {
-          elemento.SubgrupoCatalogoId = this.ConsumoControlado.find(x => x.SubgrupoId.Id === datos[index].SubgrupoCatalogoId).SubgrupoId;
-        }
-        if (datos[index].TipoBienId.Id === 3 && Object.keys(this.Devolutivo[0]).length !== 0) {
-          elemento.SubgrupoCatalogoId = this.Devolutivo.find(x => x.Id === datos[index].SubgrupoCatalogoId);
-        }
-        // console.log(elemento);
-        if (datos[index].TipoBienId.Id === 1) {
-          this.DatosConsumo.push(elemento);
+  private loadElementos() {
+    this.actaRecibidoHelper.getElementosActa(this.actaRecibidoId).toPromise().then(res => {
+      if (res && res.length > 0) {
+        res.forEach(el => {
+          el.Funcionario = '',
+            el.Sede = '',
+            el.Dependencia = '',
+            el.Ubicacion = '',
+            el.SubgrupoCatalogoId.ValorResidual =
+              (el.SubgrupoCatalogoId.Depreciacion || el.SubgrupoCatalogoId.Amortizacion) ? el.SubgrupoCatalogoId.ValorResidual * 100 : 0,
+            el.SubgrupoCatalogoId.VidaUtil =
+              (el.SubgrupoCatalogoId.Depreciacion || el.SubgrupoCatalogoId.Amortizacion) ? el.SubgrupoCatalogoId.VidaUtil : 0,
+            el.Combinado = el.SubgrupoCatalogoId.SubgrupoId.Id ?
+              el.SubgrupoCatalogoId.SubgrupoId.Codigo + ' - ' + el.SubgrupoCatalogoId.SubgrupoId.Nombre : '';
+        });
+
+        if (this.edicionSalida) {
+            this.salidasHelper.getSalida(this.salida_id).subscribe(res1 => {
+                const elementosConsumo = res.filter(el => el.SubgrupoCatalogoId.TipoBienId.Nombre === CONSUMO).
+                filter(el => res1.Elementos.some(sal => sal.ElementoActaId === el.Id));
+                const elementosDevolutivo = res.filter(el => el.SubgrupoCatalogoId.TipoBienId.Nombre !== CONSUMO).
+                filter(el => res1.Elementos.some(sal => sal.ElementoActaId === el.Id));
+                this.sourceDevolutivo = new MatTableDataSource<ElementoActa>(elementosDevolutivo);
+                this.sourceConsumo = new MatTableDataSource<ElementoActa>(elementosConsumo);
+            });
         } else {
-          this.Datos.push(elemento);
+            const elementosConsumo = res.filter(el => el.SubgrupoCatalogoId.TipoBienId.Nombre === CONSUMO);
+            const elementosDevolutivo = res.filter(el => el.SubgrupoCatalogoId.TipoBienId.Nombre !== CONSUMO);
+            this.sourceDevolutivo = new MatTableDataSource<ElementoActa>(elementosDevolutivo);
+            this.sourceConsumo = new MatTableDataSource<ElementoActa>(elementosConsumo);
         }
+
+        this.sourceDevolutivo.paginator = this.paginatorD;
+        this.sourceDevolutivo.sort = this.sortD;
+        this.sourceConsumo.paginator = this.paginatorC;
+        this.sourceConsumo.sort = this.sortC;
+
+      } else {
+        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.salidas.errorElementos'));
       }
-    }
+    });
+    this.mostrar = true;
+  }
 
-    if (this.DatosConsumo !== undefined) {
-      this.Salida_Consumo();
-      this.source2.load(this.DatosConsumo);
-    }
-    if (this.Datos !== undefined) {
-
-      // console.log(this.Datos)
-      if (Object.keys(this.Datos).length === 0) {
-        // console.log('ok')
-
-        this.bandera2 = true;
+  private getJefeAlmacen() {
+    this.salidasHelper.getJefeOficina().subscribe((res: any) => {
+      if (res) {
+        this.JefeOficinaId = res[0].TerceroPrincipalId.Id;
       }
-      this.source.load(this.Datos);
-      // console.log(this.source)
+    });
+  }
+
+  cambioCheckTodos(source, marcar: boolean) {
+    source.data.forEach(elem => {
+      elem.seleccionado = marcar;
+    });
+    this.checkAnterior = undefined;
+    this.refrescaCheckTotal(source);
+  }
+  @HostListener('window:keydown', ['$event'])
+  handleKeyDown(event: KeyboardEvent) {
+    if (event.shiftKey) {
+      this.estadoShift = true;
     }
   }
-  AjustarDatos2(datos: any[]) {
-    this.Datos2 = new Array<ElementoSalida>();
-    const datos2 = new Array<any>();
-    for (const index in datos) {
-      if (true) {
-        // console.log(datos[index])
-        const elemento = new ElementoSalida();
-        elemento.ValorUnitario = datos[index].ValorUnitario;
-        elemento.ValorTotal = datos[index].ValorTotal;
-        elemento.Id = datos[index].Id;
-        elemento.Nombre = datos[index].Nombre;
-        elemento.Cantidad = datos[index].Cantidad;
-        elemento.Marca = datos[index].Marca;
-        elemento.Serie = datos[index].Serie;
-        elemento.Asignado = datos[index].Asignado;
-        elemento.TipoBienId = datos[index].TipoBienId;
-        if (datos[index].Funcionario !== null) {
-          if (datos[index].Funcionario !== undefined) {
-            elemento.Funcionario = datos[index].Funcionario;
-          }
-        }
-        if (datos[index].Sede !== null) {
-          if (datos[index].Sede !== undefined) {
-            elemento.Sede = datos[index].Sede;
-          }
-        }
-        if (datos[index].Dependencia !== null) {
-          if (datos[index].Dependencia !== undefined) {
-            elemento.Dependencia = datos[index].Dependencia;
-          }
-        }
-        if (datos[index].Ubicacion !== null) {
-          if (datos[index].Ubicacion !== undefined) {
-            elemento.Ubicacion = datos[index].Ubicacion;
-          }
-        }
-        if (datos[index].TipoBienId.Id === 1 && Object.keys(this.Consumo[0]).length !== 0) {
-          elemento.SubgrupoCatalogoId = this.Consumo.find(x => x.SubgrupoId.Id === datos[index].SubgrupoCatalogoId.Id).SubgrupoId;
-        }
-        if (datos[index].TipoBienId.Id === 2 && Object.keys(this.ConsumoControlado[0]).length !== 0) {
-          elemento.SubgrupoCatalogoId = this.ConsumoControlado.find(x => x.SubgrupoId.Id === datos[index].SubgrupoCatalogoId.Id).SubgrupoId;
-        }
-        if (datos[index].TipoBienId.Id === 3 && Object.keys(this.Devolutivo[0]).length !== 0) {
-          elemento.SubgrupoCatalogoId = this.Devolutivo.find(x => x.Id === datos[index].SubgrupoCatalogoId.Id).SubgrupoId;
-        }
-        // elemento.SubgrupoCatalogoId = datos[index].SubgrupoCatalogoId;
-        // console.log(elemento);
-        datos2.push(elemento);
+  @HostListener('window:keyup', ['$event'])
+  handleKeyUp() {
+    this.estadoShift = false;
+  }
+
+  tabChange() {
+    this.checkAnterior = undefined;
+  }
+
+  setCasilla(base, source, fila: number, checked: boolean) {
+    fila += base;
+    // console.log({fila, checked, 'shift': this.estadoShift, 'anterior': this.checkAnterior});
+    if (this.estadoShift && this.checkAnterior !== undefined) { // Shift presionado
+      const menor = Math.min(this.checkAnterior, fila);
+      const mayor = Math.max(this.checkAnterior, fila);
+      source.data
+        .map((elem, idx) => elem.seleccionado = (idx >= menor && idx <= mayor));
+    } else { // Shift suelto
+      if (checked) {
+        this.checkAnterior = fila;
+      } else {
+        if (fila === this.checkAnterior)
+          this.checkAnterior = undefined;
       }
     }
-    if (datos2 !== undefined) {
-      this.source.load(datos2);
-      this.formulario = false;
-      // console.log(this.source);
-      this.checkElementosAsignados();
+    this.refrescaCheckTotal(source);
+  }
+
+  refrescaCheckTotal(source) {
+    let checkTodos = false;
+    let checkParcial = false;
+    if (source && isArray(source.data) && source.data.length) {
+      if (source.data.every(elem => elem.seleccionado)) {
+        // console.log('todos');
+        checkTodos = true;
+      } else if (source.data.some(elem => elem.seleccionado)) {
+        // console.log('algunos');
+        checkParcial = true;
+      } // "else" ninguno
     }
+    this.checkTodos = checkTodos;
+    this.checkParcial = checkParcial;
+    this.devolutivoSeleccionados = this.sourceDevolutivo.data.some(elem => elem.seleccionado);
+    this.consumoSeleccionados = this.sourceConsumo.data.some(elem => elem.seleccionado);
+  }
+
+  setColumnas() {
+    this.displayedColumns = [
+      'AccionesMacro',
+      'Nombre',
+      'Cantidad',
+      'SubgrupoCatalogoId',
+      'TipoBienId',
+      'Placa',
+      'Marca',
+      'Serie',
+      'Funcionario',
+      'Sede',
+      'Dependencia',
+      'Ubicacion',
+      'ValorTotal',
+    ];
+    this.displayedColumnsDev = this.displayedColumns.concat(
+      'VidaUtil',
+      'ValorResidual',
+    );
+  }
+
+  cambioPagina(base, eventoPagina) {
+    if (base === 1) {
+      this.basePaginasD = eventoPagina.pageIndex * eventoPagina.pageSize;
+    } else {
+      this.basePaginasC = eventoPagina.pageIndex * eventoPagina.pageSize;
+    }
+    this.checkDummy.focus();
+  }
+
+  AjustarDatos2(source, datos: any[]) {
+    const seleccionados = this.getSeleccionados(source);
+    seleccionados.forEach((index) => { this.setAsignacion(source, datos, index); });
+    this.refrescaCheckTotal(source);
+  }
+
+  private getSeleccionados(source) {
+    return source.data.map((elem, idx) => ({ 'idx_data': idx, elem }))
+      .filter(elem => elem.elem.seleccionado)
+      .map(elem => elem.idx_data);
+  }
+
+  private setAsignacion(source, item, index) {
+    source.data[index].Funcionario = item.Funcionario;
+    source.data[index].Sede = item.Sede;
+    source.data[index].Dependencia = item.Dependencia;
+    source.data[index].Ubicacion = item.Ubicacion;
+    source.data[index].Observaciones = item.Observaciones;
+    source.data[index].seleccionado = false;
   }
 
   checkElementosAsignados() {
-    this.bandera = false;
-    // console.log(this.source);
-    for (const datos of this.source.data) {
-      if (datos.Asignado !== true) {
-        this.bandera = true;
-        break;
-      }
-    }
-    if (this.bandera === false) {
-      this.bandera2 = true;
-    } else {
-      this.bandera = false;
-      this.bandera2 = false;
-    }
-
-  }
-  onEdit(event): void {
-  }
-
-  itemselec(event): void {
-
-  }
-  onCreate(event): void {
-
+    const alertControlado = !this.sourceDevolutivo.data.length ? false :
+      this.sourceDevolutivo.data.every(el => el.Funcionario.Id && el.Ubicacion.Id) ? false : true;
+    const alertConsumo = !this.sourceConsumo.data.length ? false :
+      this.sourceConsumo.data.every(el => el.Funcionario.Id && el.Ubicacion.Id) ? false : true;
+    const elementos = this.sourceConsumo.data.concat(this.sourceDevolutivo.data);
+    const alertResidual = elementos.some(el => (el.SubgrupoCatalogoId.ValorResidual > 100 || el.SubgrupoCatalogoId.ValorResidual < 0));
+    const alertVidaUtil = elementos.some(el => (el.SubgrupoCatalogoId.VidaUtil > 100 || el.SubgrupoCatalogoId.VidaUtil < 0));
+    const alert = (alertControlado && alertConsumo) ? 'GLOBAL.movimientos.alerta_ambos' :
+      (alertConsumo) ? 'GLOBAL.movimientos.alerta_consumo' :
+        (alertControlado) ? 'GLOBAL.movimientos.alerta_controlado' :
+          (alertResidual) ? 'GLOBAL.movimientos.alertaResidual' :
+            (alertVidaUtil) ? 'GLOBAL.movimientos.alertaVida' : null;
+    alert ? (Swal as any).fire({
+      title: this.translate.instant('GLOBAL.movimientos.alerta_descargue'),
+      text: this.translate.instant(alert),
+      type: 'warning',
+    }) : this.onSubmit();
   }
 
-  onDelete(event): void {
-
-  }
-  Traer_Relacion_Ubicaciones() {
-
-  }
-  Salida_Consumo() {
-
-    if (Object.keys(this.DatosConsumo).length !== 0) {
-      const sede = 'FICC';
-      const dependencia = 'ALMACEN GENERAL E INVENTARIOS';
-
-      const transaccion: any = {};
-      transaccion.Sede = this.Sedes.find((x) => x.CodigoAbreviacion === sede);
-      transaccion.Dependencia = this.Dependencias.find((x) => x.Nombre === dependencia);
-      // console.log(transaccion);
-      this.actaRecibidoHelper.postRelacionSedeDependencia(transaccion).subscribe((res: any) => {
-        // console.log(res)
-        const detalle = {
-          ubicacion: res[0].Relaciones[0].Id,
-        };
-        const Salida = {
-          Salida: {
-            Observacion: 'Salida Automatica para Bodega de Consumo',
-            Detalle: JSON.stringify(detalle),
-            Activo: true,
-            MovimientoPadreId: {
-              Id: parseFloat(this.entradaId),
-            },
-            FormatoTipoMovimientoId: {
-              Id: 9,
-            },
-            EstadoMovimientoId: {
-              Id: 3,
-            },
-          },
-          Elementos: [],
-        };
-
-        for (const currentValue of this.DatosConsumo) {
-          const elemento = {};
-          elemento['Activo'] = true;
-          elemento['ElementoActaId'] = currentValue.Id;
-          elemento['SaldoCantidad'] = currentValue.Cantidad;
-          elemento['SaldoValor'] = currentValue.ValorTotal;
-          elemento['Unidad'] = currentValue.Cantidad;
-          elemento['ValorUnitario'] = currentValue.ValorUnitario;
-          elemento['ValorTotal'] = currentValue.ValorTotal;
-
-          Salida.Elementos.push(elemento);
-          // console.log(Salida)
+  private crearElemento(elementoActa) {
+    const elemento = new ElementoMovimientosArka;
+    elemento.Activo = true;
+    elemento.ElementoActaId = elementoActa.Id;
+    elemento.SaldoCantidad = elementoActa.Cantidad;
+    elemento.SaldoValor = elementoActa.ValorTotal;
+    elemento.Unidad = elementoActa.Cantidad;
+    elemento.ValorUnitario = elementoActa.ValorTotal / elementoActa.Cantidad;
+    elemento.ValorTotal = elementoActa.ValorTotal;
+    elemento.VidaUtil = elementoActa.SubgrupoCatalogoId.VidaUtil;
+    elemento.ValorResidual = elementoActa.ValorTotal * elementoActa.SubgrupoCatalogoId.ValorResidual / 100;
+    if (this.edicionSalida) {
+        const found = this.elementosActa.find(element => element.ElementoActaId === elemento.ElementoActaId);
+        if (found) {
+           elemento.Id = found.Id;
         }
-        this.Datos_Salida_Consumo = Salida;
-      });
     }
-
+    return elemento;
   }
-  Salida_General() {
-    if (Object.keys(this.Datos).length !== 0) {
-      const datos_agrupados2 = this.source.data.reduce((accumulator, currentValue) => {
+
+  private getFormatoBodega() {
+    this.entradasHelper.getFormatoEntradaByName('Salida de Consumo').subscribe(res => {
+      if (res !== null) {
+        this.formatoMovimientoBodega = res[0];
+      }
+    });
+  }
+
+  private getFormatoFuncionario() {
+    this.entradasHelper.getFormatoEntradaByName('Salida').subscribe(res => {
+      if (res !== null) {
+        this.formatoMovimientoFuncionario = res[0];
+      }
+    });
+  }
+
+  private salidaBodega() {
+    const elementosBodega = this.sourceConsumo.data.filter(el =>
+      el.Ubicacion.Nombre === 'SECCION ALMACEN GENERAL E INVENTARIOS' &&
+      el.Funcionario.Id === this.JefeOficinaId,
+    );
+
+    if (elementosBodega.length > 0) {
+      const detalle = {
+        ubicacion: elementosBodega[0].Ubicacion.Id,
+        funcionario: this.JefeOficinaId,
+      };
+
+      const Salida = {
+        Salida: {
+          Observacion: 'Salida Automatica para Bodega de Consumo',
+          Detalle: JSON.stringify(detalle),
+          Activo: true,
+          MovimientoPadreId: {
+            Id: parseFloat(this.entradaId),
+          },
+          FormatoTipoMovimientoId: {
+            Id: this.formatoMovimientoBodega.Id,
+          },
+          EstadoMovimientoId: new EstadoMovimiento,
+        },
+        Elementos: [],
+      };
+
+      for (const currentValue of elementosBodega) {
+        const elemento = this.crearElemento(currentValue);
+        Salida.Elementos.push(elemento);
+      }
+      return Salida;
+    } else {
+      return null;
+    }
+  }
+
+  private salidaFuncionarioDevolutivo() {
+    if (this.sourceDevolutivo.data.length > 0) {
+      const obs = 'Salida con elementos Devolutivos o de Consumo Controlado asignados a funcionario.';
+      const datos_agrupados2 = this.sourceDevolutivo.data.reduce((accumulator, currentValue) => {
         const detalle = {
           funcionario: currentValue.Funcionario.Id,
           ubicacion: currentValue.Ubicacion.Id,
@@ -631,68 +367,111 @@ export class TablaElementosAsignadosComponent implements OnInit {
         const val = currentValue.Funcionario.Id + '-' + currentValue.Ubicacion.Id;
         accumulator[val] = accumulator[val] || {
           Salida: {
-            Observacion: this.Observaciones,
+            Observacion: this.getObservacion(obs, currentValue.Observaciones),
             Detalle: JSON.stringify(detalle),
             Activo: true,
+            Id: this.salida_id,
             MovimientoPadreId: {
               Id: parseFloat(this.entradaId),
             },
             FormatoTipoMovimientoId: {
-              Id: 7,
+              Id: this.formatoMovimientoFuncionario.Id,
             },
-            EstadoMovimientoId: {
-              Id: 3,
-            },
+            EstadoMovimientoId: new EstadoMovimiento,
           },
           Elementos: [],
         };
-        // accumulator[val].Ubicacion = currentValue.Ubicacion.Id;
-        // accumulator[val].Funcionario = currentValue.Funcionario.Id;
-        const elemento = {};
-        elemento['Activo'] = true;
-        elemento['ElementoActaId'] = currentValue.Id;
-        elemento['SaldoCantidad'] = currentValue.Cantidad;
-        elemento['SaldoValor'] = currentValue.ValorTotal;
-        elemento['Unidad'] = currentValue.Cantidad;
-        elemento['ValorUnitario'] = currentValue.ValorUnitario;
-        elemento['ValorTotal'] = currentValue.ValorTotal;
-
+        const elemento = this.crearElemento(currentValue); // incluir el id del elemento
         accumulator[val].Elementos.push(elemento);
-        // console.log(currentValue);
         return accumulator;
-
       }, {});
 
       return datos_agrupados2;
     } else {
-      return this.Datos;
+      return null;
     }
-
   }
-  onSubmit() {
 
-    const datos_agrupados = this.Salida_General();
-    // console.log(datos_agrupados);
-    // console.log(Object.keys(datos_agrupados));
+  private salidaConsumoFuncionario() {
+
+    const elementosAsignados = this.sourceConsumo.data.filter(el =>
+      el.Ubicacion.Nombre !== 'SECCION ALMACEN GENERAL E INVENTARIOS' ||
+      el.Funcionario.Id !== this.JefeOficinaId,
+    );
+    const obs = 'Salida con elementos de consumo asignados a funcionario.';
+
+    if (elementosAsignados.length > 0) {
+      const datos_agrupados2 = elementosAsignados.reduce((accumulator, currentValue) => {
+        if (currentValue.Funcionario.Id) {
+          const detalle = {
+            funcionario: currentValue.Funcionario.Id,
+            ubicacion: currentValue.Ubicacion.Id,
+          };
+          const val = currentValue.Funcionario.Id + '-' + currentValue.Ubicacion.Id;
+          accumulator[val] = accumulator[val] || {
+            Salida: {
+              Observacion: this.getObservacion(obs, currentValue.Observaciones),
+              Detalle: JSON.stringify(detalle),
+              Activo: true,
+              MovimientoPadreId: {
+                Id: parseFloat(this.entradaId),
+              },
+              FormatoTipoMovimientoId: {
+                Id: this.formatoMovimientoFuncionario.Id,
+              },
+              EstadoMovimientoId: new EstadoMovimiento,
+            },
+            Elementos: [],
+          };
+          const elemento = this.crearElemento(currentValue);
+          accumulator[val].Elementos.push(elemento);
+          return accumulator;
+        }
+      }, {});
+
+      return datos_agrupados2;
+    } else {
+      return null;
+    }
+  }
+
+  onSubmit() {
+    const salidaBodega = this.salidaBodega();
+    const salidaFuncionariosC = this.salidaConsumoFuncionario();
+    const salidaFuncionariosD = this.salidaFuncionarioDevolutivo();
+
     const Salidas = {
       Salidas: [],
     };
-    if (Object.keys(this.DatosConsumo).length !== 0) {
-      Salidas.Salidas.push(this.Datos_Salida_Consumo);
-    }
 
-    if (Object.keys(datos_agrupados).length !== 0) {
-      for (const salida of Object.keys(datos_agrupados)) {
-        Salidas.Salidas.push(datos_agrupados[salida]);
+    if (salidaBodega) {
+      Salidas.Salidas.push(salidaBodega);
+    }
+    if (salidaFuncionariosC) {
+      for (const salida of Object.keys(salidaFuncionariosC)) {
+        Salidas.Salidas.push(salidaFuncionariosC[salida]);
+      }
+    }
+    if (salidaFuncionariosD) {
+      for (const salida of Object.keys(salidaFuncionariosD)) {
+        Salidas.Salidas.push(salidaFuncionariosD[salida]);
       }
     }
 
-
-    // console.log(Salidas);
+    const idsalida = this.salida_id;
+    if (this.edicionSalida) {
+       const consecutivo = this.salida.Salida.Consecutivo;
+       Salidas.Salidas.forEach(function(element) {
+          element.Salida.Id = Number(idsalida);
+          const x = JSON.parse(element.Salida.Detalle);
+          x.consecutivo = consecutivo;
+          element.Salida.Detalle = JSON.stringify(x);
+       });
+    }
 
     (Swal as any).fire({
-      title: 'Desea Registrar Salida?',
-      text: 'Esta seguro de registrar los datos suministrados',
+      title: this.translate.instant('GLOBAL.movimientos.salidas.registroConfrmTtl'),
+      text: this.translate.instant('GLOBAL.movimientos.salidas.registroConfrmTxt'),
       type: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
@@ -700,22 +479,64 @@ export class TablaElementosAsignadosComponent implements OnInit {
       confirmButtonText: 'Si',
       cancelButtonText: 'No',
     }).then((result) => {
-      if (result.value) {
-        this.salidasHelper.postSalidas(Salidas).subscribe(res => {
-          // console.log(res);
-          (Swal as any).fire({
-            title: 'Salida Registrada',
-            text: 'Ok',
-          });
-        });
-
-      }
+        if (result.value) {
+          if (this.edicionSalida) {
+            this.salidasHelper.editarSalida(Salidas, this.salida_id).subscribe((res: any) => {
+               if (res) {
+                   let pconsecutivo = '';
+                   let text = '';
+                   let title = '';
+                   if (typeof res.trSalida.Salidas !== 'undefined') {
+                       const length = res.trSalida.Salidas.length;
+                       const s = length > 1 ? 's' : '';
+                       pconsecutivo = JSON.parse(res.trSalida.Salidas[0].Salida.Detalle).consecutivo +
+                       (length > 1 ? (' - ' + JSON.parse(res.trSalida.Salidas[length - 1].Salida.Detalle).consecutivo) : '');
+                       title = this.translate.instant('GLOBAL.movimientos.salidas.registroTtlOk', { S: s });
+                       text = this.translate.instant('GLOBAL.movimientos.salidas.registroTxtOk' +
+                       (length > 1 ? 'Varios' : ''), { CONSECUTIVO: pconsecutivo });
+                    } else {
+                       pconsecutivo = JSON.parse(res.trSalida.Detalle).consecutivo;
+                       text = this.translate.instant('GLOBAL.movimientos.salidas.registroTxtOk' +
+                       { CONSECUTIVO: pconsecutivo });
+                       title = this.translate.instant('GLOBAL.movimientos.salidas.registroTtlOk', { S: '' });
+                    }
+                    const options = {
+                       type: 'success',
+                       title,
+                       text,
+                       showConfirmButton: true,
+                    };
+                    this.pUpManager.showAlertWithOptions(options);
+                    this.router.navigate(['/pages/salidas']);
+                }
+            });
+        } else {
+           this.salidasHelper.registrarSalida(Salidas).subscribe((res: any) => {
+           if (res) {
+             const length = res.trSalida.Salidas.length;
+             const s = length > 1 ? 's' : '';
+             const pconsecutivo = JSON.parse(res.trSalida.Salidas[0].Salida.Detalle).consecutivo +
+             (length > 1 ? (' - ' + JSON.parse(res.trSalida.Salidas[length - 1].Salida.Detalle).consecutivo) : '');
+             const title = this.translate.instant('GLOBAL.movimientos.salidas.registroTtlOk', { S: s });
+             const text = this.translate.instant('GLOBAL.movimientos.salidas.registroTxtOk' +
+             (length > 1 ? 'Varios' : ''), { CONSECUTIVO: pconsecutivo });
+             const options = {
+              type: 'success',
+              title,
+              text,
+              showConfirmButton: true,
+             };
+             this.pUpManager.showAlertWithOptions(options);
+             this.router.navigate(['/pages/salidas/consulta_salidas']);
+           }
+           });
+        }
+    }
     });
   }
 
-
-  onBack() {
-
+  private getObservacion(min: string, custom: string) {
+    return custom ? (min + ' // ' + custom) : min;
   }
 
 }

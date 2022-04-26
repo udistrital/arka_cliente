@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { LocalDataSource } from 'ngx-smart-table';
-import { Router } from '@angular/router';
+import { LocalDataSource } from 'ng2-smart-table';
+import { ActivatedRoute, Router } from '@angular/router';
 import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
-import { Entrada } from '../../../@core/data/models/entrada/entrada';
+import { Entrada, EstadoMovimiento, Movimiento } from '../../../@core/data/models/entrada/entrada';
 import { Contrato } from '../../../@core/data/models/entrada/contrato';
 import { Supervisor } from '../../../@core/data/models/entrada/supervisor';
 import { OrdenadorGasto } from '../../../@core/data/models/entrada/ordenador_gasto';
@@ -18,6 +18,8 @@ import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoH
 import { parse } from 'path';
 import { combineLatest } from 'rxjs';
 import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
+import Swal from 'sweetalert2';
+import { PopUpManager } from '../../../managers/popUpManager';
 
 @Component({
   selector: 'ngx-consulta-salidas',
@@ -29,6 +31,9 @@ export class ConsultaSalidasComponent implements OnInit {
   source: LocalDataSource;
   entradas: Array<Entrada>;
   detalle: boolean;
+  editaentrada: boolean;
+  actaParametro: number = 0;
+  entradaParametro: string = '';
   actaRecibidoId: number;
   consecutivoEntrada: string;
   entradaEspecifica: Entrada;
@@ -40,8 +45,17 @@ export class ConsultaSalidasComponent implements OnInit {
   Dependencias: any;
   Sedes: any;
   mostrar: boolean;
+  consecutivoSalida: string;
+  modo: string = 'consulta';
+  estadosMovimiento: Array<EstadoMovimiento>;
+  movimiento: Movimiento;
+  filaSeleccionada: any;
+  verComprobante: boolean = false;
+  transaccionContable: any;
+  cargaLista: boolean = false;
 
   constructor(
+    private pUpManager: PopUpManager,
     private router: Router,
     private salidasHelper: SalidaHelper,
     private translate: TranslateService,
@@ -51,41 +65,88 @@ export class ConsultaSalidasComponent implements OnInit {
     private Actas_Recibido: ActaRecibidoHelper,
     private listService: ListService,
     private terceros: TercerosHelper,
+    private route: ActivatedRoute,
+    private entradasHelper: EntradaHelper,
   ) {
     this.source = new LocalDataSource();
     this.detalle = false;
-    this.loadTablaSettings();
   }
 
 
 
   ngOnInit() {
+    this.route.data.subscribe(data => {
+      if (data && data.modo !== null && data.modo !== undefined) {
+        this.modo = data.modo;
+      }
+    });
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
       this.loadTablaSettings();
     });
-    this.loadSalidas();
+    this.loadEstados();
+  }
+
+  loadEstados() {
+    this.entradasHelper.getEstadosMovimiento().toPromise().then(res => {
+      if (res.length > 0) {
+        this.estadosMovimiento = res;
+        this.loadTablaSettings();
+        this.loadSalidas();
+      }
+    });
   }
 
   loadTablaSettings() {
+    const t = {
+      registrar: this.translate.instant('GLOBAL.movimientos.salidas.nuevaSalida'),
+      accion: this.translate.instant('GLOBAL.' +
+        (this.modo === 'consulta' ? 'verDetalle' : 'movimientos.salidas.accionRevision')),
+      icon: this.modo === 'consulta' ? 'eye' : 'edit',
+    };
+    const estadoSelect = 'GLOBAL.movimientos.estado';
+    const columns = this.modo === 'consulta' ? {
+      EstadoMovimientoId: {
+        title: this.translate.instant('GLOBAL.tipo_entrada'),
+        width: '300px',
+        filter: {
+          type: 'list',
+          config: {
+            selectText: this.translate.instant('GLOBAL.seleccionar') + '...',
+            list: [
+              { value: this.estadosMovimiento.find(status => status.Nombre === 'Salida En Trámite').Nombre,
+                title: this.translate.instant(estadoSelect + 'Tramite') },
+              { value: this.estadosMovimiento.find(status => status.Nombre === 'Salida Aprobada').Nombre,
+                title: this.translate.instant(estadoSelect + 'Aprobado') },
+              { value: this.estadosMovimiento.find(status => status.Nombre === 'Salida Rechazada').Nombre,
+                title: this.translate.instant(estadoSelect + 'Rechazo') },
+            ],
+          },
+        },
+      },
+    } : [];
     this.settings = {
       hideSubHeader: false,
-      noDataMessage: this.translate.instant('GLOBAL.no_data_entradas'),
+      noDataMessage: this.translate.instant('GLOBAL.movimientos.salidas.' +
+        (this.modo === 'consulta' ? 'noSalidasView' : 'noSalidasReview')),
       actions: {
-        columnTitle: this.translate.instant('GLOBAL.detalle'),
+        columnTitle: this.translate.instant('GLOBAL.Acciones'),
         position: 'right',
-        add: false,
-        edit: false,
-        delete: false,
-        custom: [
-          {
-            // name: this.translate.instant('GLOBAL.detalle'),
-            name: 'Seleccionar',
-            title: '<i class="fas fa-eye"></i>',
-          },
-        ],
+        delete: true,
+        edit: (this.modo === 'consulta' ? true : false),
+        add: true,
       },
+      add: {
+        addButtonContent: '<i class="fas">' + this.translate.instant('GLOBAL.crear_nuevo') + '</i>',
+      },
+      edit: {
+        editButtonContent: '<i ng-disabled="true"  class="far fa-edit"></i>',
+      },
+      delete: {
+        deleteButtonContent: '<i class="fas fa-' + t.icon + '"></i>',
+      },
+      mode: 'external',
       columns: {
-        Id: {
+        Consecutivo: {
           title: 'Consecutivo',
         },
         Observacion: {
@@ -95,8 +156,26 @@ export class ConsultaSalidasComponent implements OnInit {
           title: 'Fecha de Creacion',
           width: '70px',
           valuePrepareFunction: (value: any) => {
-            const date = value.split('T');
-            return date[0];
+            const date = new Date(value);
+            date.setUTCMinutes(date.getTimezoneOffset());
+            return new Date(Date.parse(date.toString())).toLocaleDateString('es-CO');
+          },
+          filter: {
+            type: 'daterange',
+            config: {
+              daterange: {
+                format: 'yyyy/mm/dd',
+              },
+            },
+          },
+        },
+        FechaModificacion: {
+          title: this.translate.instant('GLOBAL.fechaAprobacion'),
+          width: '70px%',
+          valuePrepareFunction: (value) => {
+            const date = value ? this.formatDate(value) :
+              this.translate.instant('GLOBAL.bajas.consulta.espera');
+            return date;
           },
           filter: {
             type: 'daterange',
@@ -109,13 +188,6 @@ export class ConsultaSalidasComponent implements OnInit {
         },
         MovimientoPadreId: {
           title: 'Entrada Asociada',
-          valuePrepareFunction: (value: any) => {
-            if (value !== null) {
-              return value.Id;
-            } else {
-              return '';
-            }
-          },
         },
         Funcionario: {
           title: 'Funcionario',
@@ -209,32 +281,129 @@ export class ConsultaSalidasComponent implements OnInit {
             }
           },
         },
+        ...columns,
       },
     };
   }
   loadSalidas(): void {
-
-    this.salidasHelper.getSalidas().subscribe(res1 => {
+    this.salidasHelper.getSalidas(this.modo === 'revision').subscribe(res => {
+      if (res.length) {
+        res.forEach(salida => {
+          const movimientoPadre = salida.MovimientoPadreId;
+          salida.MovimientoPadreId = movimientoPadre ? JSON.parse(movimientoPadre.Detalle).consecutivo : '';
+          salida.EstadoMovimientoId = this.estadosMovimiento.find(estado =>
+            estado.Id === salida.EstadoMovimientoId).Nombre;
+          salida.FechaModificacion = salida.EstadoMovimientoId === 'Salida Aprobada' ? salida.FechaModificacion : '';
+        });
+        this.source.load(res);
+        this.source.setSort([{ field: 'FechaCreacion', direction: 'desc' }]);
+      }
       this.mostrar = true;
-      if (res1[0]) {
-        if (Object.keys(res1[0]).length !== 0) {
-          this.source.load(res1);
-        }
+    });
+  }
 
+  onDelete(event) {
+    this.salidaId = `${event.data.Id}`;
+    this.detalle = true;
+    this.editaentrada = false;
+    this.filaSeleccionada = event.data;
+    this.cargarSalida();
+  }
+
+  onEdit(event) {
+    if (event.data.EstadoMovimientoId === 'Salida Rechazada') {
+       this.salidaId = `${event.data.Id}`;
+       this.detalle = false;
+       this.editaentrada = true;
+       this.filaSeleccionada = event.data;
+       this.cargarSalida();
+    }
+  }
+
+  onRegister() {
+    this.router.navigate(['/pages/salidas/registro_salidas']);
+  }
+  onVolver() {
+    this.detalle = false;
+    if (this.verComprobante) {
+        this.mostrar = false;
+        this.verComprobante = false;
+    }
+    this.editaentrada = false;
+    this.verComprobante = false;
+  }
+
+  private cargarSalida () {
+   this.entradasHelper.getMovimiento(this.salidaId).toPromise().then((res: any) => {
+      this.entradaParametro = res[0].MovimientoPadreId.Id;
+      this.actaParametro = JSON.parse(res[0].MovimientoPadreId.Detalle).acta_recibido_id;
+      this.movimiento = res[0];
+      this.cargaLista = true;
+    });
+  }
+
+  confirmSubmit(aprobar: boolean) {
+    (Swal as any).fire({
+      title: this.translate.instant('GLOBAL.movimientos.salidas.' + (aprobar ? 'aprobacion' : 'rechazo') + 'ConfrmTtl'),
+      text: this.translate.instant('GLOBAL.movimientos.salidas.' + (aprobar ? 'aprobacion' : 'rechazo') + 'ConfrmTxt'),
+      type: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: this.translate.instant('GLOBAL.si'),
+      cancelButtonText: this.translate.instant('GLOBAL.no'),
+    }).then((result) => {
+      if (result.value) {
+        this.onSubmitRevision(aprobar);
       }
     });
   }
-  onCustom(event) {
-    this.salidaId = `${event.data.Id}`;
-    this.detalle = true;
+
+  private onSubmitRevision(aprobar: boolean) {
+    if (aprobar) {
+      this.salidasHelper.postSalida(this.movimiento.Id).toPromise().then((res: any) => {
+        if (res && res.errorTransaccion === '') {
+          const obj = JSON.parse(res.movimientoArka.Detalle);
+          this.transaccionContable = res.transaccionContable;
+          this.consecutivoSalida = obj.consecutivo;
+          this.verComprobante = true;
+        } else {
+          if (res.errorTransaccion !== '') {
+              this.mostrar = true;
+              this.pUpManager.showErrorAlert(res.errorTransaccion);
+              this.onVolver();
+          }
+        }
+      });
+    } else {
+      this.mostrar = false;
+      const estado = this.estadosMovimiento.find(estadoMovimiento => estadoMovimiento.Nombre === 'Salida Rechazada').Id;
+      this.movimiento.EstadoMovimientoId = <EstadoMovimiento>{ Id: estado };
+      this.entradasHelper.putMovimiento(this.movimiento).toPromise().then((res: any) => {
+        if (res) {
+          this.alertSuccess(false);
+        }
+      });
+    }
   }
-  onVolver() {
-    // this.source.empty().then(() => {
-    this.detalle = !this.detalle;
-    //   if (this.Dependencias !== undefined && this.Sedes !== undefined && this.Proveedores !== undefined) {
-    //    // console.log('ok');
-    //     this.loadSalidas();
-    //  }
-    // });
+
+  private alertSuccess(aprobar: boolean) {
+    (Swal as any).fire({
+      type: 'success',
+      title: this.translate.instant('GLOBAL.movimientos.salidas.' + (aprobar ? 'aprobacion' : 'rechazo') + 'TtlOk'),
+      text: this.translate.instant('GLOBAL.movimientos.salidas.' + (aprobar ? 'aprobacion' : 'rechazo') + 'TxtOk',
+        { CONSECUTIVO: this.movimiento.Id }),
+      showConfirmButton: false,
+      timer: 3000,
+    });
+    this.source.remove(this.filaSeleccionada);
+    this.onVolver();
+    this.mostrar = true;
+  }
+
+  private formatDate(value) {
+    const date = new Date(value);
+    date.setUTCMinutes(date.getTimezoneOffset());
+    return new Date(Date.parse(date.toString())).toLocaleDateString('es-CO');
   }
 }

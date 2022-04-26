@@ -1,72 +1,53 @@
-import { Grupo2, Clase, Subgrupo, SubgrupoID } from '../../../@core/data/models/catalogo/jerarquia';
+import { Grupo2, Subgrupo, SubgrupoComun, SubgrupoID } from '../../../@core/data/models/catalogo/jerarquia';
 import { Detalle } from '../../../@core/data/models/catalogo/detalle';
 import { TipoNivelID, Nivel_t } from '../../../@core/data/models/catalogo/tipo_nivel';
 import { NivelHelper as nh } from '../../../@core/utils/niveles.helper';
-import { TipoBien, TipoBienID, Bien_t } from '../../../@core/data/models/acta_recibido/tipo_bien';
-import { SubgrupoTransaccion, SubgrupoTransaccionDetalle } from '../../../@core/data/models/catalogo/transacciones';
-import { Component, OnInit, AfterViewInit, Input, Output, EventEmitter } from '@angular/core';
-import { FORM_SUBGRUPO } from './form-subgrupo';
-import { ToasterService, ToasterConfig, Toast, BodyOutputType } from 'angular2-toaster';
+import { TipoBien, TipoBienID } from '../../../@core/data/models/acta_recibido/tipo_bien';
+import { SubgrupoTransaccionDetalle } from '../../../@core/data/models/catalogo/transacciones';
+import { Component, OnInit, Input, Output, EventEmitter, OnChanges } from '@angular/core';
+import { FORM_SUBGRUPO, FORM_SUBGRUPO_DETALLE } from './form-subgrupo';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
-import Swal from 'sweetalert2';
-import 'style-loader!angular2-toaster/toaster.css';
 import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/catalogoElementosHelper';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'ngx-crud-subgrupo',
   templateUrl: './crud-subgrupo.component.html',
   styleUrls: ['./crud-subgrupo.component.scss'],
 })
-export class CrudSubgrupoComponent implements OnInit, AfterViewInit {
-  config: ToasterConfig;
-  subgrupo: Subgrupo;
-  subgrupo_id: number;
-  subgrupoPadre: any;
-  detalle: Detalle;
-  detalle_id: number;
-
-  @Input('subgrupo_id')
-  set name(subgrupo_id: number) {
-    this.subgrupo_id = subgrupo_id;
-    this.loadSubgrupo();
-  }
-
-  @Input('subgrupo_Padre')
-  set name2(subgrupo: any) {
-    this.subgrupoPadre = subgrupo;
-  }
-
-  @Output() eventChange = new EventEmitter();
-  @Output() mostrar = new EventEmitter();
-
-  info_subgrupo: Grupo2;
+export class CrudSubgrupoComponent implements OnInit, OnChanges {
+  infoSubgrupo: any;
+  init: boolean;
+  tiposBien: Array<TipoBien>;
   formSubgrupo: any;
-  regSubgrupo: any;
   clean: boolean;
+  cargando: boolean = true;
 
-  // ver comentarios en muestraDetalles()
-  // campos_detalle_requeridos: Array<boolean>;
+  @Input('subgrupo') subgrupo: Subgrupo;
+  @Input('create') create: boolean;
+  @Output() eventChange = new EventEmitter();
 
   constructor(
     private translate: TranslateService,
     private catalogoElementosService: CatalogoElementosHelper,
-    private toasterService: ToasterService,
   ) {
-    // ver comentarios en muestraDetalles()
-    // this.campos_detalle_requeridos = FORM_SUBGRUPO.campos.map(campo => {
-    //   return campo.claseGrid.includes('det-subg-catalogo') && campo.requerido;
-    // });
-    // console.log({'campos requeridos':this.campos_detalle_requeridos});
-
-    this.construirForm();
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
       this.construirForm();
     });
-    this.loadOptionsCatalogo();
   }
 
   construirForm() {
-    this.formSubgrupo = FORM_SUBGRUPO;
+    const nivel = this.create ? nh.Hijo(this.subgrupo.TipoNivelId.Id) : this.subgrupo.TipoNivelId.Id;
+    const titulo = 'GLOBAL.subgrupo.' + nh.Texto(!this.create ? nivel : nivel - 1);
+
+    this.formSubgrupo = nivel === Nivel_t.Clase ? FORM_SUBGRUPO_DETALLE : FORM_SUBGRUPO;
+    nivel === Nivel_t.Clase ? this.formSubgrupo.campos[this.getIndexForm('TipoBienId')].opciones = this.tiposBien : null;
+
+    this.formSubgrupo.titulo = this.translate.instant(!this.create ? titulo + '.nombre' : titulo + '.padre',
+      this.create ? { CODIGO: this.subgrupo.Codigo, NOMBRE: this.subgrupo.Nombre } : null);
+
+    this.formSubgrupo.campos[0].suffix.value = '0000'.substring(2 * nivel - 4, 4);
+    this.formSubgrupo.campos[0].prefix.value = this.subgrupo.Codigo.substring(0, 2 * nivel - 4);
     this.formSubgrupo.btn = this.translate.instant('GLOBAL.guardar');
     for (let i = 0; i < this.formSubgrupo.campos.length; i++) {
       this.formSubgrupo.campos[i].label = this.translate.instant('GLOBAL.' + this.formSubgrupo.campos[i].label_i18n);
@@ -74,19 +55,13 @@ export class CrudSubgrupoComponent implements OnInit, AfterViewInit {
     }
   }
 
-  useLanguage(language: string) {
-    this.translate.use(language);
-  }
-
   loadOptionsCatalogo(): void {
-    let Tipo_Bien: Array<any> = [];
-    this.catalogoElementosService.getTipoBien()
-      .subscribe(res => {
-        if (res !== null) {
-          Tipo_Bien = <Array<TipoBien>>res;
-        }
-        this.formSubgrupo.campos[this.getIndexForm('TipoBienId')].opciones = Tipo_Bien;
-      });
+    this.catalogoElementosService.getTipoBien().toPromise().then(res => {
+      if (res !== null) {
+        this.tiposBien = res;
+        this.construirForm();
+      }
+    });
   }
 
   getIndexForm(nombre: String): number {
@@ -99,294 +74,182 @@ export class CrudSubgrupoComponent implements OnInit, AfterViewInit {
     return 0;
   }
 
+  public cargarForm(): void {
+    if (this.create) {
 
-  public loadSubgrupo(): void {
-    if (this.subgrupo_id !== undefined && this.subgrupo_id !== 0) {
-      this.formSubgrupo.campos[this.getIndexForm('Codigo')].prefix.value = '';
-      this.formSubgrupo.campos[this.getIndexForm('Codigo')].suffix.value = '';
-
-      this.catalogoElementosService.getSubgrupoById(this.subgrupo_id)
-        .subscribe(res => {
-          // console.log({'loadSubgrupo() - res': res});
-          if (Object.keys(res[0]).length !== 0) {
-            // this.info_subgrupo = <Subgrupo>res[0].SubgrupoHijoId;
-            const subgrupo = new Subgrupo;
-            Object.assign(subgrupo, res[0].Subgrupo);
-            const nivel: TipoNivelID = { Id: subgrupo.TipoNivelId.Id };
-            this.formSubgrupo.titulo = this.translate.instant('GLOBAL.subgrupo.' + nh.Texto(nivel.Id) + '.nombre');
-            subgrupo.TipoNivelId = nivel;
-            // console.log({'subgrupo': subgrupo});
-
-            const info__grupo = new Grupo2;
-            info__grupo.Descripcion = subgrupo.Descripcion;
-            info__grupo.Nombre = subgrupo.Nombre;
-            info__grupo.Id = subgrupo.Id;
-
-            if (this.subgrupo !== undefined) {
-              if (subgrupo.TipoNivelId.Id === Nivel_t.Segmento) {
-                this.formSubgrupo.campos[this.getIndexForm('Codigo')].prefix.value = '';
-                info__grupo.Codigo = this.subgrupo.Codigo.substring(0, 2);
-                this.formSubgrupo.campos[this.getIndexForm('Codigo')].suffix.value = '0000';
-              } else  if (subgrupo.TipoNivelId.Id === Nivel_t.Familia) {
-                this.formSubgrupo.campos[this.getIndexForm('Codigo')].prefix.value = this.subgrupo.Codigo.substring(0, 2);
-                info__grupo.Codigo = this.subgrupo.Codigo.substring(2, 4);
-                this.formSubgrupo.campos[this.getIndexForm('Codigo')].suffix.value = '00';
-              } else if (subgrupo.TipoNivelId.Id === Nivel_t.Clase) {
-                this.formSubgrupo.campos[this.getIndexForm('Codigo')].prefix.value = this.subgrupo.Codigo.substring(0, 4);
-                info__grupo.Codigo = this.subgrupo.Codigo.substring(4, 6);
-                this.formSubgrupo.campos[this.getIndexForm('Codigo')].suffix.value = '';
-              } else {
-                this.formSubgrupo.campos[this.getIndexForm('Codigo')].prefix.value = '';
-                this.formSubgrupo.campos[this.getIndexForm('Codigo')].suffix.value = '';
-              }
-            }
-
-            // console.log(info__grupo.Codigo);
-
-            if (nivel.Id === Nivel_t.Clase) {
-              const detalle = new Detalle;
-              Object.assign(detalle, res[0].Detalle);
-              // console.log({'detalle': detalle});
-              this.detalle_id = detalle.Id;
-              info__grupo.TipoBienId = detalle.TipoBienId;
-              info__grupo.Depreciacion = detalle.Depreciacion;
-              info__grupo.Valorizacion = detalle.Valorizacion;
-              this.detalle = detalle;
-            } else {
-              // Valores "dummy" para campos requeridos
-              info__grupo.TipoBienId = <TipoBienID>{Id: Bien_t.devolutivo};
-            }
-            this.muestraDetalles(nivel.Id === Nivel_t.Clase);
-
-            this.subgrupo = subgrupo;
-            this.info_subgrupo = info__grupo;
-            this.mostrar.emit(true);
-          } else {
-            this.info_subgrupo = undefined;
-            this.clean = !this.clean;
-            this.mostrar.emit(false);
-          }
-        });
-    } else {
-      // this.subgrupo = undefined;
-      this.info_subgrupo = undefined;
+      this.infoSubgrupo = undefined;
       this.clean = !this.clean;
+      this.cargando = false;
+
+    } else if (this.subgrupo.TipoNivelId.Id < Nivel_t.Clase) {
+      const subgrupo = new Subgrupo;
+      subgrupo.Id = this.subgrupo.Id;
+      subgrupo.Activo = this.subgrupo.Activo;
+      subgrupo.Codigo = this.subgrupo.Codigo.substring(this.subgrupo.TipoNivelId.Id * 2 - 4, this.subgrupo.TipoNivelId.Id * 2 - 2);
+      subgrupo.Nombre = this.subgrupo.Nombre;
+      subgrupo.Descripcion = this.subgrupo.Descripcion;
+      subgrupo.TipoNivelId = this.subgrupo.TipoNivelId;
+      this.infoSubgrupo = subgrupo;
+      this.cargando = false;
+
+    } else if (this.subgrupo.TipoNivelId.Id === Nivel_t.Clase) {
+
+      this.catalogoElementosService.getDetalleSubgrupo(this.subgrupo.Id).toPromise().then(res => {
+        const clase = new Grupo2;
+
+        clase.Id = this.subgrupo.Id;
+        clase.Activo = this.subgrupo.Activo;
+        clase.Codigo = this.subgrupo.Codigo.substring(4, 6);
+        clase.Nombre = this.subgrupo.Nombre;
+        clase.Descripcion = this.subgrupo.Descripcion;
+
+        if (res.length > 0) {
+          const detalleSubgrupo = res[0];
+
+          clase.DetalleId = detalleSubgrupo.Id;
+          clase.TipoBienId = detalleSubgrupo.TipoBienId;
+          clase.Depreciacion = detalleSubgrupo.Depreciacion;
+          clase.Amortizacion = detalleSubgrupo.Amortizacion;
+          clase.ValorResidual = detalleSubgrupo.ValorResidual * 100.00;
+          clase.VidaUtil = detalleSubgrupo.VidaUtil;
+
+        } else {
+          clase.DetalleId = 0;
+          clase.TipoBienId = { Id: 0 };
+          clase.Depreciacion = false;
+          clase.Amortizacion = false;
+          clase.ValorResidual = 0;
+          clase.VidaUtil = 0;
+        }
+        this.cargando = false;
+        this.infoSubgrupo = clase;
+      });
     }
   }
 
-  updateSubgrupo(form_data: any): void {
+  updateSubgrupo(formData: any): void {
 
-    // console.log({'updateSubgrupo(form_data)': form_data});
     const nivel = this.subgrupo.TipoNivelId.Id;
 
-    const opt: any = {
-      title: this.translate.instant('GLOBAL.Actualizar'),
-      text: this.translate.instant('GLOBAL.subgrupo.' + nh.Texto(nivel) + '.pregunta_actualizar'),
-      type: 'warning',
-      showCancelButton: true,
-    };
-    (Swal as any).fire(opt)
-      .then((willDelete) => {
-        if (willDelete.value) {
-          // console.log({'this.info_subgrupo': this.info_subgrupo});
-          // console.log({'this.subgrupo': this.subgrupo});
+    const subgrupo = new Subgrupo;
+    const trSubrupo = new SubgrupoTransaccionDetalle;
 
-          let subGrupoPut;
-          // this.subgrupo.Codigo = form_data.Codigo;
-          this.subgrupo.Nombre = form_data.Nombre;
-
-          if (nivel === Nivel_t.Segmento) {
-            this.subgrupo.Codigo = form_data.Codigo + '0000';
-          } else if (nivel === Nivel_t.Familia) {
-              this.subgrupo.Codigo = this.subgrupo.Codigo.substring(0, 2) + form_data.Codigo + '00';
-            } else if (nivel === Nivel_t.Clase) {
-                this.subgrupo.Codigo = this.subgrupo.Codigo.substring(0, 4) + form_data.Codigo;
-          }
-
-          // console.log(this.subgrupo.Codigo);
-          this.subgrupo.Descripcion = form_data.Descripcion;
-
-          if (nivel === Nivel_t.Clase) {
-            subGrupoPut = new SubgrupoTransaccionDetalle;
-            const detalle = new Detalle;
-            detalle.Id = this.detalle_id;
-            detalle.Activo = true;
-            detalle.Depreciacion = <boolean>form_data.Depreciacion;
-            detalle.Valorizacion = <boolean>form_data.Valorizacion;
-            detalle.TipoBienId = {Id: form_data.TipoBienId.Id};
-            detalle.SubgrupoId = {Id: form_data.Id};
-            subGrupoPut.SubgrupoHijo = this.subgrupo;
-            subGrupoPut.DetalleSubgrupo = detalle;
-          } else {
-            subGrupoPut = new SubgrupoTransaccion;
-            subGrupoPut.SubgrupoHijo = {...this.subgrupo};
-          }
-
-          // console.log(subGrupoPut);
-          this.catalogoElementosService.putSubgrupo(subGrupoPut, this.info_subgrupo.Id)
-            .subscribe(res => {
-              this.loadSubgrupo();
-              this.eventChange.emit(true);
-              this.showToast(
-                'info',
-                this.translate.instant('GLOBAL.Actualizado'),
-                this.translate.instant('GLOBAL.subgrupo.' + nh.Texto(nivel) + '.respuesta_actualizar_ok'),
-              );
-            });
-        }
-      });
-  }
-
-  createSubgrupo(form_data: any): void {
-
-    const nivel = nh.Hijo(this.subgrupoPadre.TipoNivelId.Id);
-
-    const opt: any = {
-      title: this.translate.instant('GLOBAL.Crear'),
-      text: this.translate.instant('GLOBAL.subgrupo.' + nh.Texto(nivel) + '.pregunta_crear'),
-      type: 'warning',
-      showCancelButton: true,
-    };
-    (Swal as any).fire(opt)
-      .then((willDelete) => {
-        if (willDelete.value) {
-          // console.log({'formulario subgrupo': form_data});
-          // console.log({'this.subgrupoPadre': this.subgrupoPadre});
-          // Subgrupo
-          form_data.Activo = true;
-          form_data.TipoNivelId = <TipoNivelID>{'Id': nivel};
-          // subgrupo.TipoNivelId = { Id: nh.Hijo(this.subgrupoPadre.TipoNivelId.Id) };
-
-          // Detalle
-          let detalle;
-          if (nivel === Nivel_t.Clase) {
-            // Usar datos del detalle
-            detalle = new Detalle;
-            detalle.Activo = true;
-            detalle.Depreciacion = (form_data.Depreciacion === '') ? false : form_data.Depreciacion;
-            detalle.Valorizacion = (form_data.Valorizacion === '') ? false : form_data.Valorizacion;
-            detalle.TipoBienId = <TipoBienID>{'Id': form_data.TipoBienId.Id};
-          }
-
-          // Limpieza antes de enviar el POST...
-          delete form_data.Depreciacion;
-          delete form_data.Valorizacion;
-          delete form_data.TipoBienId;
-
-          // POST
-          let subgrupoPost;
-          if (detalle !== undefined) {
-            subgrupoPost = new SubgrupoTransaccionDetalle;
-            subgrupoPost.DetalleSubgrupo = detalle;
-          } else {
-            subgrupoPost = new SubgrupoTransaccion;
-          }
-          subgrupoPost.SubgrupoPadre = <SubgrupoID>{'Id': this.subgrupoPadre.Id};
-          subgrupoPost.SubgrupoHijo = form_data;
-          // console.log({'POST': subgrupoPost});
-
-          this.catalogoElementosService.postSubgrupo(subgrupoPost)
-            .subscribe(res => {
-              const subg = <Clase><unknown>res;
-              this.detalle = <Detalle>subg.Detalle;
-              this.eventChange.emit(true);
-              this.showToast('info', this.translate.instant('GLOBAL.Creado'),
-                this.translate.instant('GLOBAL.subgrupo.' + nh.Texto(nivel) + '.respuesta_crear_ok') );
-            });
-        }
-      });
-  }
-
-  muestraDetalles (mostrar: boolean): void {
-
-    // PARTE 1: Hacer que los campos que eran requeridos, ahora no lo sean
-    // // Forma 1: Funciona PERO, cuando se guarda el formulario, no llegan los datos...
-    // this.campos_detalle_requeridos.map((campoNum,idx) => [idx, campoNum]).filter(campoReq => campoReq[1]).forEach(campo => {
-    //   // console.log({'campo':campo,'mostrar':mostrar});
-    //   this.formSubgrupo.campos[<number>campo[0]].requerido = mostrar;
-    // });
-    // Forma 2 (EN USO):  Cargar valores dummy en campos requeridos que se van a ocultar (e ignorar)
-    // (Ver loadSubgrupo())
-
-    // PARTE 2: Actualizar el estilo
-    // Funciona, pero si quedaron campos simplemente quedaron ocultos
-    document.querySelectorAll<HTMLElement>('.det-subg-catalogo').forEach(campo => {
-      // campo.style.display = 'none' ;
-      campo.style.display = mostrar ? 'block' : 'none' ;
-    });
-  }
-
-  ngAfterViewInit() {
-    if (this.subgrupoPadre !== undefined) {
-      const nivel = nh.Hijo(this.subgrupoPadre.TipoNivelId.Id);
-      this.formSubgrupo.titulo = this.translate.instant('GLOBAL.subgrupo.' + nh.Texto(nivel) + '.nombre');
-      this.muestraDetalles(nivel === Nivel_t.Clase);
+    if (nivel === Nivel_t.Clase) {
+      const tipoBien = formData.TipoBienId && formData.TipoBienId.Id ? formData.TipoBienId.Id : formData.TipoBienId;
+      const detalle = new Detalle;
+      detalle.Id = formData.DetalleId;
+      detalle.Activo = true;
+      detalle.Depreciacion = formData.Depreciacion;
+      detalle.Amortizacion = formData.Amortizacion;
+      detalle.ValorResidual = formData.ValorResidual / 100;
+      detalle.VidaUtil = formData.VidaUtil;
+      detalle.TipoBienId = <TipoBien>{ Id: tipoBien };
+      detalle.SubgrupoId = <SubgrupoComun>{Id: this.subgrupo.Id};
+      trSubrupo.DetalleSubgrupo = detalle;
     }
+
+    subgrupo.Id = formData.Id;
+    subgrupo.Activo = formData.Activo;
+    subgrupo.Nombre = formData.Nombre;
+    subgrupo.Codigo = formData.Codigo;
+    subgrupo.Descripcion = formData.Descripcion;
+    subgrupo.TipoNivelId = <TipoNivelID>{ Id: nivel };
+    trSubrupo.SubgrupoHijo = subgrupo;
+    this.catalogoElementosService.putSubgrupo(trSubrupo, subgrupo.Id).toPromise()
+      .then(res => {
+        if (res !== null) {
+          this.showAlert();
+          this.eventChange.emit({item: subgrupo, parentId: 0});
+        }
+      });
+  }
+
+  createSubgrupo(formData: any): void {
+
+    const nivel = nh.Hijo(this.subgrupo.TipoNivelId.Id);
+    const subgrupoHijo = new Subgrupo;
+    const trSubrupo = new SubgrupoTransaccionDetalle;
+
+    if (nivel === Nivel_t.Clase) {
+      const detalle = new Detalle;
+      const tipoBien = formData.TipoBienId && formData.TipoBienId.Id ? formData.TipoBienId.Id : formData.TipoBienId;
+      detalle.Id = formData.DetalleId;
+      detalle.Depreciacion = formData.Depreciacion;
+      detalle.Amortizacion = formData.Amortizacion;
+      detalle.TipoBienId = <TipoBien>{ Id: tipoBien };
+      detalle.ValorResidual = formData.ValorResidual / 100;
+      detalle.VidaUtil = formData.VidaUtil;
+      trSubrupo.DetalleSubgrupo = detalle;
+    }
+
+    subgrupoHijo.Id = formData.Id;
+    subgrupoHijo.Activo = formData.Activo;
+    subgrupoHijo.Nombre = formData.Nombre;
+    subgrupoHijo.Codigo = formData.Codigo;
+    subgrupoHijo.Descripcion = formData.Descripcion;
+    subgrupoHijo.TipoNivelId = <TipoNivelID>{ Id: nivel };
+    trSubrupo.SubgrupoHijo = subgrupoHijo;
+
+    trSubrupo.SubgrupoPadre = <SubgrupoID>{ 'Id': this.subgrupo.Id };
+
+    this.catalogoElementosService.postSubgrupo(trSubrupo).toPromise()
+      .then((res: any) => {
+        if (res.SubgrupoHijo) {
+          this.showAlert();
+          this.eventChange.emit({item: res.SubgrupoHijo, parentId: res.SubgrupoPadre.Id});
+        }
+      });
   }
 
   ngOnInit() {
-    this.loadSubgrupo();
-    this.loadPrefixSuffixCreate();
+    this.init = true;
   }
 
-  loadPrefixSuffixCreate () {
-    if (this.subgrupoPadre !== undefined) {
-      if (this.subgrupoPadre.TipoNivelId.Id === Nivel_t.Grupo) {
-        this.formSubgrupo.campos[this.getIndexForm('Codigo')].prefix.value = '';
-        this.formSubgrupo.campos[this.getIndexForm('Codigo')].suffix.value = '0000';
-      } else  if (this.subgrupoPadre.TipoNivelId.Id === Nivel_t.Segmento) {
-        this.formSubgrupo.campos[this.getIndexForm('Codigo')].prefix.value = this.subgrupoPadre.Codigo.substring(0, 2);
-        this.formSubgrupo.campos[this.getIndexForm('Codigo')].suffix.value = '00';
-      } else if (this.subgrupoPadre.TipoNivelId.Id === Nivel_t.Familia) {
-        this.formSubgrupo.campos[this.getIndexForm('Codigo')].prefix.value = this.subgrupoPadre.Codigo.substring(0, 4);
-        this.formSubgrupo.campos[this.getIndexForm('Codigo')].suffix.value = '';
-      } else {
-        this.formSubgrupo.campos[this.getIndexForm('Codigo')].prefix.value = '';
-        this.formSubgrupo.campos[this.getIndexForm('Codigo')].suffix.value = '';
-      }
-      this.construirForm();
-    }
+  ngOnChanges() {
+    this.cargando = true;
+    !this.init ? this.loadOptionsCatalogo() : this.construirForm();
+    this.cargarForm();
   }
 
-validarForm(event) {
+  validarForm(event) {
     if (event.valid) {
-        if (this.info_subgrupo === undefined) {
-          if (this.subgrupoPadre.TipoNivelId.Id === Nivel_t.Grupo) {
-            event.data.Subgrupo.Codigo = event.data.Subgrupo.Codigo + '0000';
-          } else if (this.subgrupoPadre.TipoNivelId.Id === Nivel_t.Segmento) {
-            event.data.Subgrupo.Codigo = this.subgrupoPadre.Codigo.substring(0, 2) + event.data.Subgrupo.Codigo + '00';
-            this.formSubgrupo.campos[this.getIndexForm('Codigo')].prefix.value = this.subgrupoPadre.Codigo.substring(0, 2);
-            } else if (this.subgrupoPadre.TipoNivelId.Id === Nivel_t.Familia) {
-              event.data.Subgrupo.Codigo = this.subgrupoPadre.Codigo.substring(0, 4) + event.data.Subgrupo.Codigo;
-              this.formSubgrupo.campos[this.getIndexForm('Codigo')].prefix.value = this.subgrupoPadre.Codigo.substring(0, 4);
+
+      const nivel = this.create ? nh.Hijo(this.subgrupo.TipoNivelId.Id) : this.subgrupo.TipoNivelId.Id;
+      const text = this.create ? '.pregunta_crear' : '.pregunta_actualizar';
+      (Swal as any).fire({
+        title: this.translate.instant(this.create ? 'GLOBAL.Crear' : 'GLOBAL.Actualizar'),
+        text: this.translate.instant('GLOBAL.subgrupo.' + nh.Texto(nivel) + text),
+        type: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085D6',
+        cancelButtonColor: '#D33',
+        confirmButtonText: 'Si',
+        cancelButtonText: 'No',
+      }).then((willDelete) => {
+        if (willDelete.value) {
+
+          event.data.Subgrupo.Codigo =
+            this.formSubgrupo.campos[0].prefix.value + event.data.Subgrupo.Codigo + this.formSubgrupo.campos[0].suffix.value;
+          if (this.create) {
+            this.createSubgrupo(event.data.Subgrupo);
+          } else {
+            this.updateSubgrupo(event.data.Subgrupo);
           }
-          this.construirForm();
-          this.createSubgrupo(event.data.Subgrupo);
-        } else {
-          this.updateSubgrupo(event.data.Subgrupo);
         }
+      });
     }
   }
 
-private showToast(type: string, title: string, body: string) {
-    this.config = new ToasterConfig({
-    // 'toast-top-full-width', 'toast-bottom-full-width', 'toast-top-left', 'toast-top-center'
-      positionClass: 'toast-top-center',
-      timeout: 5000,  // ms
-      newestOnTop: true,
-      tapToDismiss: false, // hide on click
-      preventDuplicates: true,
-      animation: 'slideDown', // 'fade', 'flyLeft', 'flyRight', 'slideDown', 'slideUp'
-      limit: 5,
+  private showAlert() {
+    const nivel = this.create ? nh.Hijo(this.subgrupo.TipoNivelId.Id) : this.subgrupo.TipoNivelId.Id;
+    const text = this.create ? '.respuesta_crear_ok' : '.respuesta_actualizar_ok';
+    (Swal as any).fire({
+      title: this.translate.instant(this.create ? 'GLOBAL.Creado' : 'GLOBAL.Actualizado'),
+      text: this.translate.instant('GLOBAL.subgrupo.' + nh.Texto(nivel) + text),
+      type: 'success',
+      showConfirmButton: false,
+      timer: 2500,
     });
-    const toast: Toast = {
-      type: type, // 'default', 'info', 'success', 'warning', 'error'
-      title: title,
-      body: body,
-      showCloseButton: true,
-      bodyOutputType: BodyOutputType.TrustedHtml,
-    };
-    this.toasterService.popAsync(toast);
   }
 
 }

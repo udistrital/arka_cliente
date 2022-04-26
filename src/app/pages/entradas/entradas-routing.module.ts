@@ -3,6 +3,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { EntradasComponent } from './entradas.component';
 import { RegistroComponent } from './registro/registro.component';
 import { ConsultaEntradaComponent } from './consulta-entrada/consulta-entrada.component';
+import { VerComprobanteComponent } from './ver-comprobante/ver-comprobante.component';
 
 const routes: Routes = [{
   path: '',
@@ -15,6 +16,12 @@ const routes: Routes = [{
     {
       path: 'consulta_entrada',
       component: ConsultaEntradaComponent,
+      data: { modo: 'consulta' },
+    },
+    {
+      path: 'aprobar_entrada',
+      component: ConsultaEntradaComponent,
+      data: { modo: 'revision' },
     },
   ],
 }];

@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { LocalDataSource } from 'ngx-smart-table';
+import { LocalDataSource } from 'ng2-smart-table';
 import { Router } from '@angular/router';
 import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
 import { Entrada } from '../../../@core/data/models/entrada/entrada';
@@ -33,6 +33,7 @@ export class RelacionCatalogoComponent implements OnInit {
   settings: any;
   documentoId: boolean;
   settings2: any;
+  cargando: boolean;
 
   @Output() DatosEnviados = new EventEmitter();
   @Output() DatosTotales = new EventEmitter();
@@ -67,31 +68,34 @@ export class RelacionCatalogoComponent implements OnInit {
       hideSubHeader: false,
       noDataMessage: this.translate.instant('GLOBAL.no_data_entradas'),
       actions: {
-        columnTitle: 'Solicitar',
+        columnTitle: this.translate.instant('GLOBAL.Relacionar'),
         position: 'right',
         add: false,
         edit: false,
         delete: false,
         custom: [
           {
-            name: 'Solicitar',
-            title: '<i class="fas fa-pencil-alt" title="Ver"></i>',
+            name: this.translate.instant('GLOBAL.Relacionar'),
+            title: '<span class="fas fa-arrow-right" title="' + this.translate.instant('GLOBAL.Relacionar') + '"></span>',
           },
         ],
       },
       columns: {
         Nombre: {
-          title: 'Nombre',
+          title: this.translate.instant('GLOBAL.nombre'),
           valuePrepareFunction: (value: any) => {
             return value;
           },
         },
         Descripcion: {
-          title: 'Descripcion',
+          title: this.translate.instant('GLOBAL.descripcion'),
           valuePrepareFunction: (value: any) => {
             return value;
           },
         },
+        /*
+        // Estas columnas pueden ser innecesarias/irrelevantes
+        // Considerar si deberían eliminarse
         FechaInicio: {
           title: 'Fecha de Inicio',
           width: '70px',
@@ -124,19 +128,20 @@ export class RelacionCatalogoComponent implements OnInit {
             },
           },
         },
+        // */
       },
     };
   }
 
-
   ElementosSinAsignar(subgrupo_id): void {
     // console.log(subgrupo_id);
+    this.cargando = true;
     this.catalogoHelper.getElementosSubgrupo(subgrupo_id).subscribe((res: any) => {
       // console.log(res[0]);
       if (Object.keys(res[0]).length !== 0) {
         this.source.load(res);
       }
-
+      this.cargando = false;
     });
   }
 
@@ -148,13 +153,7 @@ export class RelacionCatalogoComponent implements OnInit {
 
   onVolver() {
     this.detalle = !this.detalle;
-    this.iniciarParametros();
   }
-
-  iniciarParametros() {
-
-  }
-
 
   onRegister() {
     this.router.navigate(['/pages/entradas/registro']);
@@ -165,6 +164,5 @@ export class RelacionCatalogoComponent implements OnInit {
       this.loadTablaSettings();
     });
   }
-
 
 }

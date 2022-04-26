@@ -1,0 +1,115 @@
+.filter {
+  width: 100%;
+}
+.mat-form-field {
+  font-size: 14px;
+  width: 100%;
+}
+
+:host ::ng-deep .material-icons {
+  font-family: "Material Icons" !important;
+}
+
+.cell {
+  height: 50px;
+  width: 150px;
+  text-align: left;
+}
+
+.cell-2 {
+  height: 50px;
+  width: 150px;
+  text-align: right;
+}
+table {
+  width: 100%;
+  text-align: center;
+}
+th,
+td {
+  width: 160px;
+  text-align: right;
+}
+tr.mat-footer-row {
+  font-weight: bold;
+}
+
+.mat-table-sticky {
+  border-top: 1px solid #e0e0e0;
+}
+.card-2 {
+  display: flex;
+  width: center;
+  justify-content: center;
+  align-items: center;
+}
+
+.soporte {
+  text-align: center;
+}
+
+/* Desactivar seleccion de texto */
+.noselect {
+  -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Old versions of Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome, Edge, Opera and Firefox */
+}
+
+::ng-deep ng2-completer[id="clase"] .completer-input {
+  height: 50px;
+  width: 250px;
+}
+::ng-deep ng2-completer[id="clase"] .completer-dropdown {
+  width: 250px !important;
+}
+
+p {
+  margin: 0.5rem 0;
+}
+
+mat-card-actions {
+  text-align: center;
+  padding-top: 0;
+}
+
+.seleccionados {
+  margin-left: 1rem;
+}
+
+button {
+  text-transform: uppercase;
+}
+
+mat-table {
+  overflow-x: scroll;
+}
+
+.mat-form-field {
+  margin-bottom: -1.25em;
+}
+
+.mat-input-element:disabled,
+.mat-form-field-type-mat-native-select.mat-form-field-disabled.mat-form-field-infix::after {
+    color: rgba(0, 0, 0, 0.9);
+}
+
+.valores {
+  width: 160px;
+}
+
+.selects {
+  width: 120px;
+}
+
+.small {
+  width: 80px;
+}
+
+td.mat-footer-cell {
+  font-weight: bold;
+  padding-top: 1rem;
+}

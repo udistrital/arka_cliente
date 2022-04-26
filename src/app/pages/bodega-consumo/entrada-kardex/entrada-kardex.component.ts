@@ -44,6 +44,7 @@ export class EntradaKardexComponent implements OnInit {
     // console.log(elemento);
   }
 
+  cargaLista: boolean;
 
   Metodos: any[] = [
     {
@@ -71,32 +72,43 @@ export class EntradaKardexComponent implements OnInit {
     private listService: ListService,
     private BodegaConsumo: BodegaConsumoHelper,
   ) {
+  }
+
+  ngOnInit() {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
     });
-    listService.findformatosKardex();
-    listService.findEstadosMovimiento();
+    this.listService.findformatosKardex();
+    this.listService.findEstadosMovimiento();
     this.loadLists();
     this.form_apertura = this.fb.group({
       Observaciones: ['', Validators.required],
     });
-
   }
 
   public loadLists() {
+    if (this.cargaLista === undefined) {
+      this.cargaLista = false;
     this.store.select((state) => state).subscribe(
       (list) => {
         // console.log(list.listFormatosKardex[0]);
         // console.log(list.listEstadosMovimiento[0])
         this.FormatosKardex = list.listFormatosKardex[0];
         this.EstadosMovimiento = list.listEstadosMovimiento[0];
+        this.checkCarga();
       },
     );
+    }
   }
-  ngOnInit() {
 
+  checkCarga() {
+    if (this.FormatosKardex !== null && this.FormatosKardex !== undefined
+      && this.EstadosMovimiento !== null && this.EstadosMovimiento !== undefined
+    ) {
+      this.cargaLista = true;
+    }
   }
+
   onSubmit() {
-
     const ultimo_elemento = this.elementos_kardex[this.elementos_kardex.length - 1];
     const form = this.form_apertura.value;
     this.Movimiento = {};
@@ -104,23 +116,23 @@ export class EntradaKardexComponent implements OnInit {
     this.Movimiento.Activo = true;
     this.Movimiento.Detalle = JSON.stringify({});
     this.Movimiento.FormatoTipoMovimientoId = this.FormatosKardex.find(x => x.CodigoAbreviacion === 'ENT_KDX');
-    this.Movimiento.EstadoMovimientoId = this.EstadosMovimiento.find(x => x.Id === 4);
+    this.Movimiento.EstadoMovimientoId = this.EstadosMovimiento.find(x => x.Nombre === 'Registro Kardex').Id;
     this.Movimiento.MovimientoPadreId = this.elemento_bodega.MovimientoId;
     // console.log(this.Movimiento);
 
     this.elemento_bodega.ElementoCatalogoId = this.elemento_catalogo.Id;
     this.elemento_bodega.MovimientoId = this.Movimiento;
 
-
     this.elemento_bodega.SaldoCantidad += ultimo_elemento.SaldoCantidad;
     this.elemento_bodega.SaldoValor += ultimo_elemento.SaldoValor;
 
     this.ElementoMovimiento = this.elemento_bodega;
     // console.log(this.ElementoMovimiento);
-
+    // console.log({ultimo_elemento, elementos_kardex: this.elementos_kardex});
+    // console.log({Movimiento: this.Movimiento, ElementoMovimiento: this.ElementoMovimiento});
   }
-  onSubmit2() {
 
+  onSubmit2() {
     const AperturaKardex = {
       Movimiento: [],
     };
@@ -130,7 +142,8 @@ export class EntradaKardexComponent implements OnInit {
         Elementos: [this.ElementoMovimiento],
       },
     );
-    // console.log(AperturaKardex);
+    // console.log({AperturaKardex});
+    // /*
     this.BodegaConsumo.postMovimientoKardex(AperturaKardex).subscribe((res: any) => {
       const opt: any = {
         title: 'Entrada Realizada',
@@ -140,5 +153,6 @@ export class EntradaKardexComponent implements OnInit {
       (Swal as any).fire(opt);
       this.router.navigate(['/pages/bodega_consumo/consulta_kardex']);
     });
+    // */
   }
 }

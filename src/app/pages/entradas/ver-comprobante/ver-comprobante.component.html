@@ -1,0 +1,101 @@
+<mat-card-title>
+   {{'GLOBAL.Comprobante_Contable.Titulo' | translate}}
+</mat-card-title>
+      <div class="row">
+        <div class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.Comprobante_Contable.Consecutivo' | translate}}</strong>:
+            {{consecutivo}}</p>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.Comprobante_Contable.Concepto' | translate}}</strong>:
+            {{transaccion.Descripcion}}</p>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.Comprobante_Contable.FechaTransaccion' | translate}}</strong>:
+            {{transaccion.FechaTransaccion | date: 'dd/MM/yyyy'}}</p>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.Comprobante_Contable.Secuencia' | translate}}</strong></p>
+        </div>
+        <div class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.Comprobante_Contable.Tercero' | translate}}</strong></p>
+        </div>
+        <div class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.Comprobante_Contable.Cuenta' | translate}}</strong></p>
+        </div>
+        <div class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.Comprobante_Contable.NombreCuenta' | translate}}</strong></p>
+        </div>
+        <div class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.Comprobante_Contable.Descripcion' | translate}}</strong></p>
+        </div>
+        <div class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.Comprobante_Contable.Debito' | translate}}</strong></p>
+        </div>
+        <div class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.Comprobante_Contable.Credito' | translate}}</strong></p>
+        </div>
+      </div>
+
+      <div class="row" *ngFor="let mvto of transaccion.Movimientos; let i= index;">
+        <div class="col">
+           <p class="text-uppercase">{{[i+1]}}</p>
+        </div>
+        <div class="col">
+           <p class="text-uppercase">{{mvto.TerceroId}}</p>
+        </div>
+        <div class="col">
+           <p class="text-uppercase">{{mvto.CuentaId.Codigo}}</p>
+        </div>
+        <div class="col">
+           <p class="text-uppercase">{{mvto.CuentaId.Nombre}}</p>
+        </div>
+        <div class="col">
+           <p class="text-uppercase">{{mvto.Descripcion}}</p>
+        </div>
+        <div class="col" *ngIf="mvto.TipoMovimientoId==m_db">
+           <p class="text-uppercase pesos">{{mvto.Valor | currency}}</p>
+        </div>
+        <div class="col" *ngIf="mvto.TipoMovimientoId==m_cr">
+         <p class="text-uppercase pesos">{{0 | currency}}</p>
+        </div>
+        <div class="col" *ngIf="mvto.TipoMovimientoId==m_cr">
+           <p class="text-uppercase pesos">{{mvto.Valor | currency}}</p>
+        </div>
+        <div class="col" *ngIf="mvto.TipoMovimientoId==m_db">
+           <p class="text-uppercase pesos">{{0 | currency}}</p>
+        </div>
+      </div>
+
+
+      <div class="row">
+        <div class="col">
+           <p class="text-uppercase"></p>
+        </div>
+        <div class="col">
+           <p class="text-uppercase"></p>
+        </div>
+        <div class="col">
+           <p class="text-uppercase"></p>
+        </div>
+        <div class="col">
+           <p class="text-uppercase"></p>
+        </div>
+        <div class="col">
+           <p class="text-uppercase">{{'GLOBAL.Comprobante_Contable.Total' | translate}}</p>
+        </div>
+        <div class="col">
+           <p class="text-uppercase pesos">{{totalDebitos | currency}}</p>
+        </div>
+        <div class="col">
+           <p class="text-uppercase pesos">{{totalCreditos | currency}}</p>
+        </div>
+      </div>

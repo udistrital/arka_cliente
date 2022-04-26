@@ -1,0 +1,327 @@
+<div class="card-2" *ngIf="Modo === 'agregar'">
+  <form [formGroup]="formElementos.get('archivo')">
+    <mat-card>
+      <mat-card-title>{{'GLOBAL.Acta_Recibido.CapturarElementos.CargaMasivaTitle' | translate }}</mat-card-title>
+      <mat-card-content>
+        <div class="row">
+          <div class="form-group col-sm soporte">
+            <p>{{'GLOBAL.descargarP' | translate }}</p>
+            <button mat-flat-button color="primary" (click)="TraerPlantilla()" style="padding: 1rem 0;">
+              <em class="fas fa-file-download fa-2x"></em>
+            </button>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm soporte">
+            <p>{{'GLOBAL.seleccionarArch' | translate }}</p>
+            <button mat-flat-button color="primary" (click)="fileInputDocumento.click()" style="padding: 1rem 0;"
+              [disabled]="formElementos.get('archivo').valid">
+              <em class="fas fa-file-upload fa-2x"></em>
+              <input type="file" formControlname="archivo" id="archivo" #fileInputDocumento style="display: none;"
+                accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                (change)="onFileChange($event)" (click)="$event.target.value=null">
+            </button>
+            <p *ngIf="formElementos.get('archivo').valid">{{formElementos.get('archivo').value.name}}</p>
+            <p *ngIf="!formElementos.get('archivo').valid">{{'GLOBAL.Acta_Recibido.CapturarElementos.ValidadorPlaceholder' | translate:
+              {EXT:'xlsx'} }}</p>
+          </div>
+          <div class="col-sm soporte">
+            <p>{{'GLOBAL.Acta_Recibido.CapturarElementos.LimpiarEspacioButton' | translate }}</p>
+            <button mat-flat-button color="primary" (click)="clearFile()" style="padding: 1rem 0;"
+              [disabled]="!formElementos.get('archivo').valid">
+              <em class="fas fa-trash-alt fa-2x"></em>
+            </button>
+          </div>
+        </div>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-flat-button color="primary" [disabled]="!formElementos.get('archivo').valid" (click)="onSubmit()">
+          {{'GLOBAL.Acta_Recibido.CapturarElementos.CargarElementosButton' | translate }}
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </form>
+</div>
+
+<mat-card [nbSpinner]="cargando">
+  <mat-card-content>
+    <div class="row" *ngIf="Modo === 'agregar' || Modo === 'ajustar'">
+      <button mat-flat-button color="primary" class="seleccionados" *ngIf="Modo === 'agregar'" [disabled]="!checkParcial && !checkTodos"  (click)="borraSeleccionados()">
+        {{'GLOBAL.borrarSel' | translate }}
+      </button>
+      <div class="col" *ngIf="mostrarClase || Modo === 'ajustar'">
+        <form [formGroup]="formElementos.get('clase')">
+          <input matInput type="text" class="form-control" style="height: auto;"
+            placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}" formControlName="clase"
+            [matAutocomplete]="autoClase">
+          <mat-autocomplete #autoClase="matAutocomplete" [displayWith]="muestraClase" (optionSelected)="setClase()">
+            <mat-option *ngFor="let clase of clasesFiltradas" [value]="clase">
+              {{muestraClase(clase)}}
+            </mat-option>
+          </mat-autocomplete>
+        </form>
+      </div>
+      <div class="col">
+        <input nbInput (keyup)="applyFilter($event.target.value)" class="filter" placeholder="Filtro"
+          style="height: 45px;">
+      </div>
+    </div>
+    <form [formGroup]="formElementos">
+    <mat-table #table class="noselect" formArrayName="elementos" [dataSource]="dataSource" matSort>
+
+      <!-- Acciones -->
+      <ng-container matColumnDef="Acciones">
+        <th id="col-seleccionado" mat-header-cell *matHeaderCellDef>
+          <div style="display: flex; flex-direction: row; align-items: center;">
+            <mat-checkbox aria-label="Seleccionar/Deseleccionar Todo" style="padding-top: 0.6rem;"
+              (change)="cambioCheckTodos($event.checked)" nbPopover="Seleccionar/Deseleccionar Todo"
+               nbPopoverTrigger="hover" nbPopoverPlacement="left" [checked]="checkTodos" [disabled]="Modo === 'ver'"
+              [indeterminate]="checkParcial">
+            </mat-checkbox>
+            <button mat-icon-button color="primary" [disabled]="Modo !== 'agregar'" (click)="addElemento()"
+              matTooltip="{{'GLOBAL.Acta_Recibido.CapturarElementos.AgregarElemento' | translate }}">
+              <mat-icon>add_box</mat-icon>
+            </button>
+          </div>
+        </th>
+        <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="getActualIndex(rowIndex)">
+          <div style="display: flex; flex-direction: row; align-items: center;">
+            <mat-checkbox style="padding-top: 0.75rem;" (change)="setCasilla(rowIndex, $event)"
+              formControlName="Seleccionado">
+            </mat-checkbox>
+            <button mat-icon-button color="secondary" [disabled]="Modo !== 'agregar'" (click)="deleteElemento(getActualIndex(rowIndex))"
+              matTooltip="{{'GLOBAL.Acta_Recibido.CapturarElementos.EliminarElemento' | translate }}">
+              <mat-icon>delete_outline</mat-icon>
+            </button>
+          </div>
+        </td>
+        <td mat-footer-cell *matFooterCellDef>
+          {{'GLOBAL.Acta_Recibido.CapturarElementos.TotalesFooter' | translate }}
+        </td>
+      </ng-container>
+
+      <!-- Subgrupo Catalogo -->
+      <ng-container matColumnDef="SubgrupoCatalogoId">
+        <th id="col-combinado" mat-header-cell *matHeaderCellDef mat-sort-header>
+          {{ 'GLOBAL.subgrupo.clase.nombre' | translate }}
+        </th>
+        <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="getActualIndex(rowIndex)">
+          <mat-form-field appearance="outline" style="width: 250px;">
+            <input matInput type="text" formControlName="SubgrupoCatalogoId" (blur)="onBlurClase(getActualIndex(rowIndex))"
+              placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}" [matAutocomplete]="autoSubgrupo">
+            <mat-autocomplete #autoSubgrupo="matAutocomplete" [displayWith]="muestraClase"
+              (optionSelected)="fillClase(getActualIndex(rowIndex))">
+              <mat-option *ngFor="let clase of clasesFiltradas" [value]="clase">
+                {{muestraClase(clase)}}
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+        </td>
+        <td mat-footer-cell *matFooterCellDef></td>
+      </ng-container>
+
+      <!-- Tipo de Bien -->
+      <ng-container matColumnDef="TipoBienId">
+        <th id="col-bien-nombre" mat-header-cell *matHeaderCellDef mat-sort-header>
+          {{'GLOBAL.Acta_Recibido.CapturarElementos.TipoBienHeader' | translate }} </th>
+        <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="getActualIndex(rowIndex)">
+          <mat-form-field appearance="outline" class="valores">
+            <input matInput type="text" formControlName="TipoBienId">
+          </mat-form-field>
+        </td>
+        <td mat-footer-cell *matFooterCellDef></td>
+      </ng-container>
+
+      <!-- Placa -->
+      <ng-container matColumnDef="Placa">
+        <th id="col-placa" mat-header-cell *matHeaderCellDef mat-sort-header>
+          {{'GLOBAL.Placa' | translate }} </th>
+        <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="getActualIndex(rowIndex)">
+          <mat-form-field appearance="outline" class="valores">
+            <input matInput type="text" formControlName="Placa">
+          </mat-form-field>
+        </td>
+        <td mat-footer-cell *matFooterCellDef></td>
+      </ng-container>
+
+      <!-- Nombre Catalogo -->
+      <ng-container matColumnDef="Nombre">
+        <th id="col-nombre" mat-header-cell *matHeaderCellDef mat-sort-header>
+          {{'GLOBAL.Acta_Recibido.CapturarElementos.DescripcionHeader' | translate }} </th>
+        <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="getActualIndex(rowIndex)">
+          <mat-form-field appearance="outline" class="md-col">
+            <input matInput type="text" formControlName="Nombre">
+          </mat-form-field>
+        </td>
+        <td mat-footer-cell *matFooterCellDef></td>
+      </ng-container>
+
+      <!-- Cantidad Column -->
+      <ng-container matColumnDef="Cantidad">
+        <th id="col-cantidad" mat-header-cell *matHeaderCellDef mat-sort-header>
+          {{'GLOBAL.Acta_Recibido.CapturarElementos.CantidadHeader' | translate }} </th>
+        <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="getActualIndex(rowIndex)">
+          <mat-form-field appearance="outline" class="small">
+            <input matInput type="number" min="0" formControlName="Cantidad">
+          </mat-form-field>
+        </td>
+        <td mat-footer-cell *matFooterCellDef></td>
+      </ng-container>
+
+      <!-- Marca Column -->
+      <ng-container matColumnDef="Marca">
+        <th id="col-marca" mat-header-cell *matHeaderCellDef mat-sort-header>
+          {{'GLOBAL.Acta_Recibido.CapturarElementos.MarcaHeader' | translate }}
+        </th>
+        <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="getActualIndex(rowIndex)">
+          <mat-form-field appearance="outline" class="md-col">
+            <input matInput type="text" formControlName="Marca">
+          </mat-form-field>
+        </td>
+        <td mat-footer-cell *matFooterCellDef></td>
+      </ng-container>
+
+      <!-- Serie Column -->
+      <ng-container matColumnDef="Serie">
+        <th id="col-serie" mat-header-cell *matHeaderCellDef mat-sort-header>
+          {{'GLOBAL.Acta_Recibido.CapturarElementos.SerieHeader' | translate }}
+        </th>
+        <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="getActualIndex(rowIndex)">
+          <mat-form-field appearance="outline" class="md-col">
+            <input matInput type="text" formControlName="Serie">
+          </mat-form-field>
+        </td>
+        <td mat-footer-cell *matFooterCellDef></td>
+      </ng-container>
+
+      <!-- UnidadMedida Column -->
+      <ng-container matColumnDef="UnidadMedida">
+        <th id="col-unidad" mat-header-cell *matHeaderCellDef mat-sort-header>
+          {{'GLOBAL.Acta_Recibido.CapturarElementos.UnidadMedidaHeader' | translate }} </th>
+        <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="getActualIndex(rowIndex)">
+          <mat-form-field appearance="outline" class="valores">
+            <mat-select matInput type="text" formControlName="UnidadMedida">
+              <mat-option value="">--{{ 'GLOBAL.seleccionar' | translate }}--</mat-option>
+              <mat-option *ngFor="let unidad of unidades" [(value)]="unidad.Id">{{unidad.Unidad}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </td>
+        <td mat-footer-cell *matFooterCellDef></td>
+      </ng-container>
+
+      <!-- ValorUnitario Column -->
+      <ng-container matColumnDef="ValorUnitario">
+        <th id="col-valorunitario" mat-header-cell *matHeaderCellDef mat-sort-header>
+          {{'GLOBAL.Acta_Recibido.CapturarElementos.ValorUnitarioHeader' | translate }}
+        </th>
+        <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="getActualIndex(rowIndex)">
+          <mat-form-field appearance="outline" class="valores">
+            <input matInput type="text" formControlName="ValorUnitario" currencyMask [options]="{allowNegative: false}">
+          </mat-form-field>
+        </td>
+        <td mat-footer-cell *matFooterCellDef></td>
+      </ng-container>
+
+      <!-- Subtotal Column -->
+      <ng-container matColumnDef="Subtotal">
+        <th id="col-subtotal" mat-header-cell *matHeaderCellDef mat-sort-header>
+          {{'GLOBAL.Acta_Recibido.CapturarElementos.SubtotalHeader' | translate }}
+        </th>
+        <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="getActualIndex(rowIndex)">
+          <mat-form-field appearance="outline" class="valores">
+            <input matInput type="text" formControlName="Subtotal" currencyMask [options]="{allowNegative: false}">
+          </mat-form-field>
+        </td>
+        <td mat-footer-cell *matFooterCellDef>{{ Totales.Subtotal | currency }}</td>
+      </ng-container>
+
+      <!-- Descuento Column -->
+      <ng-container matColumnDef="Descuento">
+        <th id="col-descuento" mat-header-cell *matHeaderCellDef mat-sort-header>
+          {{'GLOBAL.Acta_Recibido.CapturarElementos.DescuentoHeader' | translate }}
+        </th>
+        <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="getActualIndex(rowIndex)">
+          <mat-form-field appearance="outline" class="valores">
+            <input matInput type="text" formControlName="Descuento" currencyMask [options]="{allowNegative: false}">
+          </mat-form-field>
+        </td>
+        <td mat-footer-cell *matFooterCellDef></td>
+      </ng-container>
+
+      <!-- PorcentajeIvaId Column -->
+      <ng-container matColumnDef="PorcentajeIvaId">
+        <th id="col-porcentajeiva" mat-header-cell *matHeaderCellDef mat-sort-header>
+          {{'GLOBAL.Acta_Recibido.CapturarElementos.IVAHeader' | translate }}
+        </th>
+        <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="getActualIndex(rowIndex)">
+          <mat-form-field appearance="outline" class="selects">
+            <mat-select matInput type="text" formControlName="PorcentajeIvaId">
+              <mat-option value="">--{{ 'GLOBAL.seleccionar' | translate }}--</mat-option>
+              <mat-option *ngFor="let tarifa of Tarifas_Iva" [(value)]="tarifa.Tarifa">{{tarifa.Nombre}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </td>
+        <td mat-footer-cell *matFooterCellDef></td>
+      </ng-container>
+
+      <!-- ValorIva Column -->
+      <ng-container matColumnDef="ValorIva">
+        <th id="col-valoriva" mat-header-cell *matHeaderCellDef mat-sort-header>
+          {{'GLOBAL.Acta_Recibido.CapturarElementos.ValorIVAHeader' | translate }}
+        </th>
+        <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="getActualIndex(rowIndex)">
+          <mat-form-field appearance="outline" class="valores">
+            <input matInput type="text" formControlName="ValorIva" currencyMask [options]="{allowNegative: false}">
+          </mat-form-field>
+        </td>
+        <td mat-footer-cell *matFooterCellDef>{{ Totales.ValorIva | currency }}</td>
+      </ng-container>
+
+      <!-- ValorTotal Column -->
+      <ng-container matColumnDef="ValorTotal">
+        <th id="col-valortotal" mat-header-cell *matHeaderCellDef mat-sort-header>
+          {{'GLOBAL.Acta_Recibido.CapturarElementos.ValorTotalHeader' | translate }}
+        </th>
+        <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="getActualIndex(rowIndex)">
+          <mat-form-field appearance="outline" class="valores">
+            <input matInput type="text" formControlName="ValorTotal" currencyMask [options]="{allowNegative: false}">
+          </mat-form-field>
+        </td>
+        <td mat-footer-cell *matFooterCellDef>{{ Totales.ValorTotal | currency }}</td>
+      </ng-container>
+
+      <!-- ValorResidual Column -->
+      <ng-container matColumnDef="VidaUtil">
+        <th id="col-valor-residual" mat-header-cell *matHeaderCellDef mat-sort-header>
+          {{'GLOBAL.valorResidualSug' | translate }}
+        </th>
+        <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="getActualIndex(rowIndex)">
+          <mat-form-field appearance="outline" class="small">
+            <input matInput type="number" formControlName="ValorResidual" min="0" max="100" step="0.01">
+          </mat-form-field>
+        </td>
+        <td mat-footer-cell *matFooterCellDef></td>
+      </ng-container>
+
+      <!-- VidaUtil Column -->
+      <ng-container matColumnDef="ValorResidual">
+        <th id="col-vida-util" mat-header-cell *matHeaderCellDef mat-sort-header>
+          {{'GLOBAL.vidaUtilSug' | translate }}
+        </th>
+        <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="getActualIndex(rowIndex)">
+          <mat-form-field appearance="outline" class="small">
+            <input matInput type="number" formControlName="VidaUtil" min="0" max="100" step="1">
+          </mat-form-field>
+        </td>
+        <td mat-footer-cell *matFooterCellDef></td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      <tr mat-footer-row *matFooterRowDef="displayedColumns; sticky: true"></tr>
+    </mat-table>
+    <mat-paginator #paginator [pageSizeOptions]="[10, 20, 30, 40, 50]" (page)="cambioPagina($event)"></mat-paginator>
+    </form>
+
+  </mat-card-content>
+</mat-card>

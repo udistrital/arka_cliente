@@ -1,0 +1,238 @@
+<mat-vertical-stepper *ngIf="formCuentas" [linear]="this.escritura" #stepper>
+	<mat-step [stepControl]="formCuentas.get('entradas')" label="{{'GLOBAL.Entradas' | translate}}">
+		<form [formGroup]="formCuentas.get('entradas')">
+			<div class="row" *ngFor="let entr of formCuentas.get('entradas')['controls']; let i = index" [formGroupName]="i">
+				<fieldset>
+					<legend>
+						{{ 'GLOBAL.movimientos.tipo.' + entr.get('tipoMovimientoId')?.value.CodigoAbreviacion + '.nombre' |
+						translate }}
+					</legend>
+					<mat-form-field appearance="outline" class="form-group">
+						<mat-label>{{'GLOBAL.Comprobante_Contable.Debito' | translate}}</mat-label>
+						<input matInput type="text" formControlName="debito" [matAutocomplete]="autoDbE"
+							placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}">
+						<mat-autocomplete #autoDbE="matAutocomplete" [displayWith]="muestraCuenta"
+							(optionSelected)="setGeneral(i, null)">
+							<mat-option *ngFor="let cta of ctasFiltradas" [value]="cta">
+								{{muestraCuenta(cta)}}
+							</mat-option>
+						</mat-autocomplete>
+						<mat-error *ngIf="entr.get('debito')?.errors?.required">
+							* {{'GLOBAL.Errores.ErrorRequerido' | translate}}
+						</mat-error>
+						<mat-error *ngIf="entr.get('debito')?.errors?.errSelected">
+							* {{'GLOBAL.Errores.ErrorCuenta' | translate}}
+						</mat-error>
+						<mat-error *ngIf="entr.get('debito')?.errors?.errMinLength">
+							* {{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}
+						</mat-error>
+					</mat-form-field>
+					<mat-form-field appearance="outline" class="form-group">
+						<mat-label>{{'GLOBAL.Comprobante_Contable.Credito' | translate}}</mat-label>
+						<input matInput type="text" formControlName="credito" [matAutocomplete]="autoCrE"
+							placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}">
+						<mat-autocomplete #autoCrE="matAutocomplete" [displayWith]="muestraCuenta">
+							<mat-option *ngFor="let cta of ctasFiltradas" [value]="cta">
+								{{muestraCuenta(cta)}}
+							</mat-option>
+						</mat-autocomplete>
+						<mat-error *ngIf="entr.get('credito')?.errors?.required">
+							* {{'GLOBAL.Errores.ErrorRequerido' | translate}}
+						</mat-error>
+						<mat-error *ngIf="entr.get('credito')?.errors?.errSelected">
+							* {{'GLOBAL.Errores.ErrorCuenta' | translate}}
+						</mat-error>
+						<mat-error *ngIf="entr.get('credito')?.errors?.errMinLength">
+							* {{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}
+						</mat-error>
+					</mat-form-field>
+				</fieldset>
+			</div>
+			<div class="row">
+				<div class="col botones">
+					<button mat-flat-button color="primary" matStepperNext class="float-right text-uppercase"
+						[disabled]="false && formCuentas.get('entradas').invalid">{{'GLOBAL.siguiente' | translate}}
+					</button>
+				</div>
+			</div>
+		</form>
+	</mat-step>
+	<mat-step [stepControl]="formCuentas.get('salida')" label="{{'GLOBAL.Salidas' | translate}}">
+		<form [formGroup]="formCuentas.get('salida')">
+			<div class="row">
+				<fieldset>
+					<legend>
+						{{'GLOBAL.Salidas' | translate}}
+					</legend>
+					<mat-form-field appearance="outline" class="form-group">
+						<mat-label>{{'GLOBAL.Comprobante_Contable.Debito' | translate}}</mat-label>
+						<input matInput type="text" formControlName="debito" [matAutocomplete]="autoDbS"
+							placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}">
+						<mat-autocomplete #autoDbS="matAutocomplete" [displayWith]="muestraCuenta">
+							<mat-option *ngFor="let cta of ctasFiltradas" [value]="cta">
+								{{muestraCuenta(cta)}}
+							</mat-option>
+						</mat-autocomplete>
+						<mat-error *ngIf="formCuentas.get('salida.debito')?.errors?.required">
+							* {{'GLOBAL.Errores.ErrorRequerido' | translate}}
+						</mat-error>
+						<mat-error *ngIf="formCuentas.get('salida.debito')?.errors?.errSelected">
+							* {{'GLOBAL.Errores.ErrorCuenta' | translate}}
+						</mat-error>
+						<mat-error *ngIf="formCuentas.get('salida.debito')?.errors?.errMinLength">
+							* {{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}
+						</mat-error>
+					</mat-form-field>
+					<mat-form-field appearance="outline" class="form-group">
+						<mat-label>{{'GLOBAL.Comprobante_Contable.Credito' | translate}}</mat-label>
+						<input matInput type="text" formControlName="credito" [matAutocomplete]="autoCrS"
+							placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}">
+						<mat-autocomplete #autoCrS="matAutocomplete" [displayWith]="muestraCuenta"
+							(optionSelected)="setGeneral(null, true)">
+							<mat-option *ngFor="let cta of ctasFiltradas" [value]="cta">
+								{{muestraCuenta(cta)}}
+							</mat-option>
+						</mat-autocomplete>
+						<mat-error *ngIf="formCuentas.get('salida.credito')?.errors?.required">
+							* {{'GLOBAL.Errores.ErrorRequerido' | translate}}
+						</mat-error>
+						<mat-error *ngIf="formCuentas.get('salida.credito')?.errors?.errSelected">
+							* {{'GLOBAL.Errores.ErrorCuenta' | translate}}
+						</mat-error>
+						<mat-error *ngIf="formCuentas.get('salida.credito')?.errors?.errMinLength">
+							* {{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}
+						</mat-error>
+					</mat-form-field>
+				</fieldset>
+			</div>
+			<div class="row">
+				<div class="col botones">
+					<button mat-flat-button color="primary" matStepperPrevious class="float-left text-uppercase">
+						{{'GLOBAL.anterior' | translate}}
+					</button>
+					<button mat-flat-button color="primary" matStepperNext class="float-right text-uppercase"
+						[disabled]="formCuentas.get('salida').invalid">{{'GLOBAL.siguiente' | translate}}
+					</button>
+				</div>
+			</div>
+		</form>
+	</mat-step>
+	<mat-step [stepControl]="formCuentas.get('mediciones')" label="{{'GLOBAL.MedicionesPosteriores' | translate}}"
+		*ngIf="formCuentas.get('mediciones').value">
+		<form [formGroup]="formCuentas.get('mediciones')">
+			<div class="row">
+				<fieldset>
+					<legend>
+						{{ 'GLOBAL.movimientos.tipo.' + formCuentas.get('mediciones.tipoMovimientoId')?.value.CodigoAbreviacion +
+						'.nombre' | translate }}
+					</legend>
+					<mat-form-field appearance="outline" class="form-group">
+						<mat-label style="font-size: 1rem;">{{'GLOBAL.Comprobante_Contable.Debito' | translate}}
+						</mat-label>
+						<input matInput type="text" formControlName="debito" [matAutocomplete]="autoDbD"
+							placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}">
+						<mat-autocomplete #autoDbD="matAutocomplete" [displayWith]="muestraCuenta">
+							<mat-option *ngFor="let cta of ctasFiltradas" [value]="cta">
+								{{muestraCuenta(cta)}}
+							</mat-option>
+						</mat-autocomplete>
+						<mat-error *ngIf="formCuentas.get('mediciones.debito')?.errors?.required">
+							* {{'GLOBAL.Errores.ErrorRequerido' | translate}}
+						</mat-error>
+						<mat-error *ngIf="formCuentas.get('mediciones.debito')?.errors?.errSelected">
+							* {{'GLOBAL.Errores.ErrorCuenta' | translate}}
+						</mat-error>
+						<mat-error *ngIf="formCuentas.get('mediciones.debito')?.errors?.errMinLength">
+							* {{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}
+						</mat-error>
+					</mat-form-field>
+					<mat-form-field appearance="outline" class="form-group">
+						<mat-label>{{'GLOBAL.Comprobante_Contable.Credito' | translate}}</mat-label>
+						<input matInput type="text" formControlName="credito" [matAutocomplete]="autoCrD"
+							placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 1} }}">
+						<mat-autocomplete #autoCrD="matAutocomplete" [displayWith]="muestraCuenta">
+							<mat-option *ngFor="let cta of ctasFiltradas" [value]="cta">
+								{{muestraCuenta(cta)}}
+							</mat-option>
+						</mat-autocomplete>
+						<mat-error *ngIf="formCuentas.get('mediciones.credito')?.errors?.required">
+							* {{'GLOBAL.Errores.ErrorRequerido' | translate}}
+						</mat-error>
+						<mat-error *ngIf="formCuentas.get('mediciones.credito')?.errors?.errSelected">
+							* {{'GLOBAL.Errores.ErrorCuenta' | translate}}
+						</mat-error>
+						<mat-error *ngIf="formCuentas.get('mediciones.credito')?.errors?.errMinLength">
+							* {{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}
+						</mat-error>
+					</mat-form-field>
+				</fieldset>
+			</div>
+			<div class="row">
+				<div class="col botones">
+					<button mat-flat-button color="primary" matStepperPrevious class="float-left text-uppercase">
+						{{'GLOBAL.anterior' | translate}}
+					</button>
+					<button mat-flat-button color="primary" matStepperNext class="float-right text-uppercase"
+						[disabled]="formCuentas.get('mediciones').invalid">{{'GLOBAL.siguiente' | translate}}
+					</button>
+				</div>
+			</div>
+		</form>
+	</mat-step>
+	<mat-step [stepControl]="formCuentas.get('baja')" label="{{'GLOBAL.Baja' | translate}}">
+		<form [formGroup]="formCuentas.get('baja')">
+			<div class="row">
+				<fieldset>
+					<legend>
+						{{'GLOBAL.Baja' | translate}}
+					</legend>
+					<mat-form-field appearance="outline" class="full-width">
+						<mat-label>{{'GLOBAL.Comprobante_Contable.Debito' | translate}}</mat-label>
+						<input matInput type="text" formControlName="debito" [matAutocomplete]="autoDbB"
+							placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}">
+						<mat-autocomplete #autoDbB="matAutocomplete" [displayWith]="muestraCuenta">
+							<mat-option *ngFor="let cta of ctasFiltradas" [value]="cta">
+								{{muestraCuenta(cta)}}
+							</mat-option>
+						</mat-autocomplete>
+						<mat-error *ngIf="formCuentas.get('baja.debito')?.errors?.required">
+							* {{'GLOBAL.Errores.ErrorRequerido' | translate}}
+						</mat-error>
+						<mat-error *ngIf="formCuentas.get('baja.debito')?.errors?.errSelected">
+							* {{'GLOBAL.Errores.ErrorCuenta' | translate}}
+						</mat-error>
+						<mat-error *ngIf="formCuentas.get('baja.debito')?.errors?.errMinLength">
+							* {{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}
+						</mat-error>
+					</mat-form-field>
+					<mat-form-field appearance="outline" class="form-group">
+						<mat-label>{{'GLOBAL.Comprobante_Contable.Credito' | translate}}</mat-label>
+						<input matInput type="text" formControlName="credito" [matAutocomplete]="autoCrB"
+							placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 1} }}">
+						<mat-autocomplete #autoCrB="matAutocomplete" [displayWith]="muestraCuenta">
+							<mat-option *ngFor="let cta of ctasFiltradas" [value]="cta">
+								{{muestraCuenta(cta)}}
+							</mat-option>
+						</mat-autocomplete>
+						<mat-error *ngIf="formCuentas.get('baja.credito')?.errors?.required">
+							* {{'GLOBAL.Errores.ErrorRequerido' | translate}}
+						</mat-error>
+						<mat-error *ngIf="formCuentas.get('baja.credito')?.errors?.errSelected">
+							* {{'GLOBAL.Errores.ErrorCuenta' | translate}}
+						</mat-error>
+						<mat-error *ngIf="formCuentas.get('baja.credito')?.errors?.errMinLength">
+							* {{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}
+						</mat-error>
+					</mat-form-field>
+				</fieldset>
+			</div>
+			<div class="row">
+				<div class="col botones">
+					<button mat-flat-button color="primary" matStepperPrevious class="float-left text-uppercase">
+						{{'GLOBAL.anterior' | translate}}
+					</button>
+				</div>
+			</div>
+		</form>
+	</mat-step>
+</mat-vertical-stepper>

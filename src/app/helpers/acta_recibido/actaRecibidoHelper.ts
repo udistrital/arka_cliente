@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
+import { Observable, of } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { RequestManager } from '../../managers/requestManager';
 import { PopUpManager } from '../../managers/popUpManager';
-import { map } from 'rxjs/operators';
-import { TransaccionActaRecibido } from '../../@core/data/models/acta_recibido/transaccion_acta_recibido';
+import { EspacioFisico } from '../../@core/data/models/ubicacion/espacio_fisico';
 
 @Injectable({
     providedIn: 'root',
@@ -11,6 +12,56 @@ export class ActaRecibidoHelper {
 
     constructor(private rqManager: RequestManager,
         private pUpManager: PopUpManager) { }
+
+
+        public sendCorreo(elemento) {
+            this.rqManager.setPath('GOOGLE_SERVICE');
+            return this.rqManager.post('notificacion', elemento).pipe(
+                map(
+                    (res) => {
+                        if (res['Type'] === 'error') {
+                            this.pUpManager.showErrorAlert('No se pudo enviar correo');
+                            return undefined;
+                        }
+                        return res;
+                    },
+                ),
+            );
+        }
+
+
+        public getEmailTercero(id: any) {
+            this.rqManager.setPath('TERCEROS_SERVICE');
+            return this.rqManager.get('info_complementaria_tercero/?query=TerceroId__Id:' + id + ',Activo:true,info_complementaria_id:53').pipe(
+                map(
+                    (res) => {
+                        if (res === 'error') {
+                            this.pUpManager.showErrorAlert('No se pudo consultar el email del tercero');
+                            return undefined;
+                        }
+                        return res;
+                    },
+                ),
+            );
+        }
+
+        public getIdDelTercero(documento: any) {
+            this.rqManager.setPath('TERCEROS_SERVICE');
+            return this.rqManager.get('datos_identificacion/?query=numero:' + documento + ',Activo:true').pipe(
+                map(
+                    (res) => {
+                        if (res === 'error') {
+                            this.pUpManager.showErrorAlert('No se pudo consultar el email del tercero');
+                            return undefined;
+                        }
+                        return res;
+                    },
+                ),
+            );
+        }
+
+
+
 
     /**
      * Actas de Recibido Get
@@ -75,9 +126,9 @@ export class ActaRecibidoHelper {
         );
     }
 
-    public getActasRecibidoPorEstados(estados: string[]) {
+    public getActasRecibidoPorEstados(estado) {
         this.rqManager.setPath('ARKA_SERVICE');
-        return this.rqManager.get('acta_recibido/get_all_actas?states=' + estados.join()).pipe(
+        return this.rqManager.get('acta_recibido/get_actas_recibido_tipo/' + estado).pipe(
             map(
                 (res) => {
                     if (res === 'error') {
@@ -93,6 +144,22 @@ export class ActaRecibidoHelper {
     public getActasRecibidoUsuario(usuario: string) {
         this.rqManager.setPath('ARKA_SERVICE');
         return this.rqManager.get('acta_recibido/get_all_actas?u=' + usuario).pipe(
+            map(
+                (res) => {
+                    if (res === 'error') {
+                        this.pUpManager.showErrorAlert('No se pudo consultar las actas de recibido');
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
+
+    public getAllActasRecibidoByEstado(estados: [string]) {
+        const querySt = estados.join();
+        this.rqManager.setPath('ARKA_SERVICE');
+        return this.rqManager.get('acta_recibido/get_all_actas?states=' + querySt).pipe(
             map(
                 (res) => {
                     if (res === 'error') {
@@ -128,14 +195,58 @@ export class ActaRecibidoHelper {
     }
 
     /**
+     * Elementos Acta Get
+     * If the response has errors in the OAS API it should show a popup message with an error.
+     * If the response is successs, it returns the object's data.
+     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
+     */
+     public getElementosActaMov(actaId) {
+        this.rqManager.setPath('ARKA_SERVICE');
+        return this.rqManager.get(
+            'ajustes/automatico/elementos/' + actaId).pipe(
+                map(
+                    (res) => {
+                        if (res === 'error') {
+                            this.pUpManager.showErrorAlert('No se pudo consultar los elementos');
+                            return undefined;
+                        }
+                        return res;
+                    },
+                ),
+            );
+    }
+
+    /**
+     * Elementos Acta Get
+     * If the response has errors in the OAS API it should show a popup message with an error.
+     * If the response is successs, it returns the object's data.
+     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
+     */
+    public postAjusteAutomatico(elementos: any) {
+        this.rqManager.setPath('ARKA_SERVICE');
+        return this.rqManager.post('ajustes/automatico/', elementos).pipe(
+            map(
+                (res) => {
+                    if (res['Type'] === 'error') {
+                        this.pUpManager.showErrorAlert('No se pudo consultar el acta solicitada');
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
+
+
+    /**
      * Soportes Acta Get
      * If the response has errors in the OAS API it should show a popup message with an error.
      * If the response is successs, it returns the object's data.
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
      */
     public getSoporte(actaId) {
-        this.rqManager.setPath('ARKA_SERVICE');
-        return this.rqManager.get('acta_recibido/get_soportes_acta/' + actaId).pipe(
+        this.rqManager.setPath('ACTA_RECIBIDO_SERVICE');
+        return this.rqManager.get('soporte_acta?query=Activo:True,ActaRecibidoId__Id:' + actaId).pipe(
             map(
                 (res) => {
                     if (res === 'error') {
@@ -169,6 +280,20 @@ export class ActaRecibidoHelper {
         );
     }
 
+    public getActaById(Id: number) {
+        this.rqManager.setPath('ACTA_RECIBIDO_SERVICE');
+        return this.rqManager.get('historico_acta?query=Activo:true,ActaRecibidoId__Id:' + Id).pipe(
+            map(
+                (res) => {
+                    if (res === 'error') {
+                        this.pUpManager.showErrorAlert('No se pudo consultar los tipos de bien');
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
     /**
      * Estados Acta Get
      * If the response has errors in the OAS API it should show a popup message with an error.
@@ -216,9 +341,10 @@ export class ActaRecibidoHelper {
      * If the response is successs, it returns the object's data.
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
      */
-    public getTransaccionActa(actaId) {
+    public getTransaccionActa(actaId, elementos) {
+        const query = !elementos ? '?elementos=false' : '';
         this.rqManager.setPath('ACTA_RECIBIDO_SERVICE');
-        return this.rqManager.get('transaccion_acta_recibido/' + actaId + '').pipe(
+        return this.rqManager.get('transaccion_acta_recibido/' + actaId + query).pipe(
             map(
                 (res) => {
                     if (res === 'error') {
@@ -361,27 +487,6 @@ export class ActaRecibidoHelper {
      * If the response is successs, it returns the object's data.
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
      */
-    public getProveedores() {
-        this.rqManager.setPath('UNIDADES_SERVICE');
-        return this.rqManager.get('informacion_proveedor?fields=Id,NumDocumento,NomProveedor&limit=-1').pipe(
-            map(
-                (res) => {
-                    if (res['Type'] === 'error') {
-                        this.pUpManager.showErrorAlert('No se pudieron cargar los parametros generales');
-                        return undefined;
-                    }
-                    return res;
-                },
-            ),
-        );
-    }
-
-    /**
-     * Conversion Archivo Get
-     * If the response has errors in the OAS API it should show a popup message with an error.
-     * If the response is successs, it returns the object's data.
-     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
-     */
     public getProveedor(idProveedor) {
         this.rqManager.setPath('UNIDADES_SERVICE');
         return this.rqManager.get('informacion_proveedor/' + idProveedor + '?fields=Id,NumDocumento,NomProveedor').pipe(
@@ -426,17 +531,22 @@ export class ActaRecibidoHelper {
      */
     public getSedeDependencia(id) {
         this.rqManager.setPath('OIKOS_SERVICE');
-        return this.rqManager.get('asignacion_espacio_fisico_dependencia?query=Id:' + id).pipe(
-            map(
-                (res) => {
-                    if (res['Type'] === 'error') {
-                        this.pUpManager.showErrorAlert('No se pudieron cargar los parametros generales');
-                        return undefined;
-                    }
-                    return res;
-                },
-            ),
-        );
+        if (id > 0) {
+            return this.rqManager.get('asignacion_espacio_fisico_dependencia?query=Id:' + id).pipe(
+                map(
+                    (res) => {
+                        if (res['Type'] === 'error') {
+                            this.pUpManager.showErrorAlert('No se pudieron cargar los parametros generales');
+                            return undefined;
+                        }
+                        return res;
+                    },
+                ),
+            );
+
+        } else {
+            return of(new EspacioFisico()).pipe(map(o => JSON.stringify(o)));
+        }
     }
     /**
      * Elementos get

@@ -1,7 +1,8 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ThemeModule } from '../../@theme/theme.module';
-
+import { ActaRecibidoModule } from '../acta-recibido/acta-recibido.module';
+import { AjustesModule } from '../ajustes/ajustes.module';
 import { EntradasRoutingModule, routedComponents } from './entradas-routing.module';
 import { EntradasComponent } from './entradas.component';
 import { ReposicionComponent } from './reposicion/reposicion.component';
@@ -12,13 +13,19 @@ import { SobranteComponent } from './sobrante/sobrante.component';
 import { RegistroComponent } from './registro/registro.component';
 import { TercerosComponent } from './terceros/terceros.component';
 import { ConsultaEntradaComponent } from './consulta-entrada/consulta-entrada.component';
-import { Ng2SmartTableModule } from 'ngx-smart-table';
+import { Ng2SmartTableModule } from 'ng2-smart-table';
 import { OwlDateTimeModule, OwlNativeDateTimeModule } from 'ng-pick-datetime';
-import { TablaEntradasComponent } from './tabla-entradas/tabla-entradas.component';
+import { CajaMenorComponent } from './caja-menor/caja-menor.component';
+import { AprovechamientosComponent } from './aprovechamientos/aprovechamientos.component';
+import { AdicionesMejorasComponent } from './adiciones-mejoras/adiciones-mejoras.component';
+import { IntangiblesAdquiridosComponent } from './intangibles-adquiridos/intangibles-adquiridos.component';
+import { ExtranjeroComponent } from './extranjero/extranjero.component';
+import { ProvisionalComponent } from './provisional/provisional.component';
+import { IntangiblesDesarrolladosComponent } from './intangibles-desarrollados/intangibles-desarrollados.component';
+import { VerComprobanteComponent } from './ver-comprobante/ver-comprobante.component';
 
 @NgModule({
   declarations: [
-    ...routedComponents,
     EntradasComponent,
     ReposicionComponent,
     ElaboracionPropiaComponent,
@@ -28,7 +35,14 @@ import { TablaEntradasComponent } from './tabla-entradas/tabla-entradas.componen
     RegistroComponent,
     TercerosComponent,
     ConsultaEntradaComponent,
-    TablaEntradasComponent,
+    CajaMenorComponent,
+    AprovechamientosComponent,
+    AdicionesMejorasComponent,
+    IntangiblesAdquiridosComponent,
+    ExtranjeroComponent,
+    ProvisionalComponent,
+    IntangiblesDesarrolladosComponent,
+    VerComprobanteComponent,
   ],
   imports: [
     CommonModule,
@@ -37,6 +51,11 @@ import { TablaEntradasComponent } from './tabla-entradas/tabla-entradas.componen
     OwlDateTimeModule,
     OwlNativeDateTimeModule,
     Ng2SmartTableModule,
+    ActaRecibidoModule,
+    AjustesModule,
+  ],
+  exports: [
+    VerComprobanteComponent,
   ],
 })
 export class EntradasModule { }

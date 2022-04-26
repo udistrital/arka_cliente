@@ -1,0 +1,22 @@
+<mat-card *ngIf="mostrar">
+  <mat-card-title *ngIf="!continuar">
+    {{ title }}
+  </mat-card-title>
+
+  <mat-card-subtitle *ngIf="!continuar">
+    {{ subtitle }}
+  </mat-card-subtitle>
+
+  <mat-card-content>
+    <ng2-smart-table *ngIf="!continuar" [settings]="settings" [source]="source" (create)="onRegister()"
+      (edit)="onEdit($event)" (delete)="onView($event)">
+    </ng2-smart-table>
+    <ngx-generar-depreciacion *ngIf="continuar" [modoCrud]="modoCrud" [depreciacionId]="depreciacionId"
+      [refDate]="fechaMin" [tipo]="tipo" (accion)="actualizarVista($event)"></ngx-generar-depreciacion>
+  </mat-card-content>
+
+  <mat-card-actions *ngIf="continuar">
+    <button mat-raised-button color="primary" class="float-left text-uppercase" (click)="volver()">
+      {{'GLOBAL.volver' | translate}}</button>
+  </mat-card-actions>
+</mat-card>

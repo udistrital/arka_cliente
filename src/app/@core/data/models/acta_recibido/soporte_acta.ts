@@ -4,9 +4,8 @@ import { Proveedor } from './Proveedor';
 export class SoporteActa {
     Id: number;
     Consecutivo: string;
-    ProveedorId: number; // CAMBIAR POR MODELO CUANDO SE PUEDA CONSULTAR
-    FechaSoporte: Date;
     DocumentoId: number;
+    FechaSoporte: Date;
     ActaRecibidoId: ActaRecibido;
     Activo: boolean;
     FechaCreacion: Date;
@@ -18,12 +17,6 @@ export class Ubicacion {
     Codigo: string;
     Nombre: string; // CAMBIAR POR MODELO CUANDO SE PUEDA CONSULTAR
     Estado: string;
-}
-export class Dependencia {
-    Id: number;
-    Nombre: string;
-    TelefonoDependencia: string;
-    CorreoElectronico: string;
 }
 
 export class SoporteActaProveedor {

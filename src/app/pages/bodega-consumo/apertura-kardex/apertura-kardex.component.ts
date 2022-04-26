@@ -25,6 +25,8 @@ export class AperturaKardexComponent implements OnInit {
   EstadosMovimiento: any;
   Movimiento: any;
 
+  cargaLista: boolean;
+
   @Input('Elemento_C')
   set name(elemento: any) {
     this.elemento_catalogo = elemento;
@@ -35,7 +37,6 @@ export class AperturaKardexComponent implements OnInit {
     this.elemento_bodega = elemento;
     // console.log(elemento);
   }
-
 
   Metodos: any[] = [
     {
@@ -63,10 +64,14 @@ export class AperturaKardexComponent implements OnInit {
     private listService: ListService,
     private BodegaConsumo: BodegaConsumoHelper,
   ) {
+  }
+
+  ngOnInit() {
+    // this.cargaLista = undefined;
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
     });
-    listService.findformatosKardex();
-    listService.findEstadosMovimiento();
+    this.listService.findformatosKardex();
+    this.listService.findEstadosMovimiento();
     this.loadLists();
     this.form_apertura = this.fb.group({
       Metodo_Valoracion: ['', Validators.required],
@@ -74,24 +79,32 @@ export class AperturaKardexComponent implements OnInit {
       Cantidad_Maxima: ['', Validators.required],
       Observaciones: ['', Validators.required],
     });
-
   }
 
   public loadLists() {
+    if (this.cargaLista === undefined) {
+      this.cargaLista = false;
     this.store.select((state) => state).subscribe(
       (list) => {
         // console.log(list.listFormatosKardex[0]);
         // console.log(list.listEstadosMovimiento[0])
         this.FormatosKardex = list.listFormatosKardex[0];
         this.EstadosMovimiento = list.listEstadosMovimiento[0];
+        this.checkCarga();
       },
     );
+    }
   }
-  ngOnInit() {
 
+  checkCarga() {
+    if (this.FormatosKardex !== null && this.FormatosKardex !== undefined
+      && this.EstadosMovimiento !== null && this.EstadosMovimiento !== undefined
+    ) {
+      this.cargaLista = true;
+    }
   }
+
   onSubmit() {
-
     const form = this.form_apertura.value;
     const detalle: any = {};
     detalle.Metodo_Valoracion = parseFloat(form.Metodo_Valoracion);
@@ -103,7 +116,7 @@ export class AperturaKardexComponent implements OnInit {
     this.Movimiento.Activo = true;
     this.Movimiento.Detalle = JSON.stringify(detalle);
     this.Movimiento.FormatoTipoMovimientoId = this.FormatosKardex.find(x => x.CodigoAbreviacion === 'AP_KDX');
-    this.Movimiento.EstadoMovimientoId = this.EstadosMovimiento.find(x => x.Id === 4);
+    this.Movimiento.EstadoMovimientoId = this.EstadosMovimiento.find(x => x.Nombre === 'Registro Kardex');
     this.Movimiento.MovimientoPadreId = this.elemento_bodega.MovimientoId;
     // console.log(this.Movimiento);
 
@@ -111,10 +124,9 @@ export class AperturaKardexComponent implements OnInit {
     this.elemento_bodega.MovimientoId = this.Movimiento;
     this.ElementoMovimiento = this.elemento_bodega;
     // console.log(this.ElementoMovimiento);
-
   }
-  onSubmit2() {
 
+  onSubmit2() {
     const AperturaKardex = {
       Movimiento: [],
     };
@@ -128,7 +140,7 @@ export class AperturaKardexComponent implements OnInit {
     this.BodegaConsumo.postMovimientoKardex(AperturaKardex).subscribe((res: any) => {
       const opt: any = {
         title: 'Apertura Realizada',
-        text: 'Se ha registrado la solicitud de los elementos relacionados',
+        text: 'Se ha realizado apertura de tarjeta de Kardex',
         type: 'success',
       };
       (Swal as any).fire(opt);

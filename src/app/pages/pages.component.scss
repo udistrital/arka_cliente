@@ -1,7 +1,8 @@
 @import '../@theme/styles/themes';
+@import url("https://pruebasassets.portaloas.udistrital.edu.co/gaia-style.css");
 
 @include nb-install-component() {
-  /deep/ router-outlet + * {
+  ::ng-deep router-outlet + * {
     display: block;
     animation: fade 1s;
 

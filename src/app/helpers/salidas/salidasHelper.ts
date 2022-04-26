@@ -1,15 +1,23 @@
 import { RequestManager } from '../../managers/requestManager';
 import { Injectable } from '@angular/core';
-import { map } from 'rxjs/operators';
+import { map, switchMap } from 'rxjs/operators';
+import { iif } from 'rxjs';
 import { PopUpManager } from '../../managers/popUpManager';
+import { TranslateService } from '@ngx-translate/core';
+import { DisponibilidadMovimientosService } from '../../@core/data/disponibilidad-movimientos.service';
 
 @Injectable({
     providedIn: 'root',
 })
 export class SalidaHelper {
 
-    constructor(private rqManager: RequestManager,
-        private pUpManager: PopUpManager) { }
+    constructor(
+        private rqManager: RequestManager,
+        private pUpManager: PopUpManager,
+        private dispMvtos: DisponibilidadMovimientosService,
+        private translate: TranslateService,
+    ) {
+    }
 
     /**
      * Entradas Get
@@ -17,9 +25,10 @@ export class SalidaHelper {
      * If the response is successs, it returns the object's data.
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
      */
-    public getSalidas() {
+    public getSalidas(tramiteOnly: boolean) {
+        const query = tramiteOnly ? '?tramite_only=true' : '';
         this.rqManager.setPath('ARKA_SERVICE');
-        return this.rqManager.get('salida/').pipe(
+        return this.rqManager.get('salida' + query).pipe(
             map(
                 (res) => {
                     if (res === 'error') {
@@ -51,6 +60,7 @@ export class SalidaHelper {
             ),
         );
     }
+
     /**
     * Entrada Post
     * If the response has errors in the OAS API it should show a popup message with an error.
@@ -58,13 +68,19 @@ export class SalidaHelper {
     * @param entradaData object to save in the DB
     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
     */
-    public postSalidas(salidasData) {
+    public postSalida(salidaId: number) {
+        return this.dispMvtos.movimientosPermitidos().pipe(
+            switchMap(disp => iif( () => disp, this.registrarSalida([], salidaId) )),
+        );
+    }
+
+    public registrarSalida(salidasData, salidaId: number = 0) {
         this.rqManager.setPath('ARKA_SERVICE');
-        return this.rqManager.post(`salida`, salidasData).pipe(
+        return this.rqManager.post('salida?salidaId=' + salidaId, salidasData).pipe(
             map(
                 (res) => {
                     if (res['Type'] === 'error') {
-                        this.pUpManager.showErrorAlert('No se pudo registrar la entrada solicitada.');
+                        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.error_salida_no_registrada'));
                         return undefined;
                     }
                     return res;
@@ -72,6 +88,24 @@ export class SalidaHelper {
             ),
         );
     }
+
+    public editarSalida(salidasData, salidaId: number = 0) {
+        this.rqManager.setPath('ARKA_SERVICE');
+        const url = 'salida';
+        return this.rqManager.put2(url, salidasData, salidaId).pipe(
+            map(
+                (res) => {
+                    if (res['Type'] === 'error') {
+                        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.error_salida_no_registrada'));
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
+
+
 
     /**
      * Entradas Get
@@ -115,6 +149,45 @@ export class SalidaHelper {
         );
     }
 
+
+    public getElemento(elemento) {
+
+        this.rqManager.setPath('ACTA_RECIBIDO_SERVICE');
+        return this.rqManager.get('elemento/' + elemento.Id).pipe(
+            map(
+                (res) => {
+                    if (res === 'error') {
+                        this.pUpManager.showErrorAlert('No se pudo consultar el contrato contratos');
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
+
+
+
+
+    public putElemento(elemento) {
+
+        this.rqManager.setPath('ARKA_SERVICE');
+        return this.rqManager.post('elemento',  elemento).pipe(
+           map(
+              (res) => {
+                 if (res['Type'] === 'error') {
+                    this.pUpManager.showErrorAlert('No se pudo asignar la placa');
+                    return undefined;
+                 }
+                 return res;
+              },
+           ),
+        );
+    }
+
+
+
+
     /**
      * Entradas Get
      * If the response has errors in the OAS API it should show a popup message with an error.
@@ -123,11 +196,69 @@ export class SalidaHelper {
      */
     public getEntradasSinSalida() {
         this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
-        return this.rqManager.get('movimiento?query=FormatoTipoMovimientoId.Descripcion__contains:entrada,EstadoMovimientoId.Id:2&limit=-1').pipe(
+        return this.rqManager.get('movimiento?query=EstadoMovimientoId__Nombre:Entrada Aprobada&limit=-1').pipe(
             map(
                 (res) => {
                     if (res === 'error') {
-                        this.pUpManager.showErrorAlert('No se pudo consultar el contrato contratos');
+                        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.entradas.errorListaEntradas'));
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
+
+    public getJefeOficina() {
+        this.rqManager.setPath('TERCEROS_SERVICE');
+        return this.rqManager.get('vinculacion?query=CargoId:312').pipe(
+            map(
+                (res) => {
+                    if (res === 'error') {
+                        this.pUpManager.showErrorAlert('No se pudo consultar el encargado del elemento');
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
+
+    /**
+     * Entradas Get
+     * If the response has errors in the OAS API it should show a popup message with an error.
+     * If the response is successs, it returns the object's data.
+     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
+     */
+    public getAjustes() {
+        this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
+        const query = 'movimiento?query=FormatoTipoMovimientoId__Nombre:Ajuste Automático,Activo:true&limit=-1&sortby=Id&order=desc';
+        return this.rqManager.get(query).pipe(
+            map(
+                (res) => {
+                    if (res === 'error') {
+                        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.entradas.errorListaEntradas'));
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
+
+    /**
+     * Entradas Get
+     * If the response has errors in the OAS API it should show a popup message with an error.
+     * If the response is successs, it returns the object's data.
+     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
+     */
+    public getDetalleAjuste(id: number) {
+        this.rqManager.setPath('ARKA_SERVICE');
+        return this.rqManager.get('ajustes/automatico/' + id).pipe(
+            map(
+                (res) => {
+                    if (res === 'error') {
+                        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.entradas.errorListaEntradas'));
                         return undefined;
                     }
                     return res;

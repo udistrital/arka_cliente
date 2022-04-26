@@ -5,38 +5,32 @@ import { ThemeModule } from '../../@theme/theme.module';
 import { ActaRecibidoRoutingModule } from './acta-recibido-routing.module';
 import { ActaRecibidoComponent } from './acta-recibido.component';
 import { RegistroActaRecibidoComponent } from './registro-acta-recibido/registro-acta-recibido.component';
-import { VerificacionActaRecibidoComponent } from './verificacion-acta-recibido/verificacion-acta-recibido.component';
 import { ConsultaActaRecibidoComponent } from './consulta-acta-recibido/consulta-acta-recibido.component';
 import { TranslateModule } from '@ngx-translate/core';
-import { Ng2SmartTableModule } from 'ngx-smart-table';
+import { Ng2SmartTableModule } from 'ng2-smart-table';
 import { NbStepperModule } from '@nebular/theme';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatStepperModule } from '@angular/material/stepper';
 import {MatTableModule} from '@angular/material/table';
 import { MatPaginatorModule, MatSortModule } from '@angular/material';
 import { EdicionActaRecibidoComponent } from './edicion-acta-recibido/edicion-acta-recibido.component';
-import { VerDetalleComponent } from './ver-detalle/ver-detalle.component';
-import { CapturarElementosComponent } from './capturar-elementos/capturar-elementos.component';
+import { GestionarElementosComponent } from './gestionar-elementos/gestionar-elementos.component';
 import { Ng2CompleterModule } from 'ng2-completer';
 import { NgxCurrencyModule } from 'ngx-currency';
 import { rootReducer } from '../../@core/store/rootReducer';
 import { Store, StoreModule } from '@ngrx/store';
 import { ListService } from '../../@core/store/services/list.service';
-import { VerificacionElementosComponent } from './verificacion-elementos/verificacion-elementos.component';
-import { ActaEspecialComponent } from './acta-especial/acta-especial.component';
+import { VerActaRecibidoComponent } from './ver-acta-recibido/ver-acta-recibido.component';
 
 
 @NgModule({
   declarations: [
     ActaRecibidoComponent,
     RegistroActaRecibidoComponent,
-    VerificacionActaRecibidoComponent,
+    VerActaRecibidoComponent,
     ConsultaActaRecibidoComponent,
     EdicionActaRecibidoComponent,
-    VerDetalleComponent,
-    CapturarElementosComponent,
-    VerificacionElementosComponent,
-    ActaEspecialComponent,
+    GestionarElementosComponent,
   ],
   imports: [
     CommonModule,
@@ -53,6 +47,10 @@ import { ActaEspecialComponent } from './acta-especial/acta-especial.component';
     MatTableModule,
     MatPaginatorModule,
     MatSortModule,
+  ],
+  exports: [
+    VerActaRecibidoComponent,
+    GestionarElementosComponent,
   ],
   providers: [
     CurrencyPipe,

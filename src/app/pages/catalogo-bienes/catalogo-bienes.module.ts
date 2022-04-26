@@ -6,31 +6,33 @@ import { CatalogoBienesRoutingModule, routedComponents } from './catalogo-bienes
 import { CatalogoBienesComponent } from './catalogo-bienes.component';
 import { ConsultaCatalogoComponent } from './consulta-catalogo/consulta-catalogo.component';
 import { NbTreeGridModule } from '@nebular/theme';
-import { ArbolComponent, FsIconAComponent } from './arbol/arbol.component';
+import { ArbolComponent } from './arbol/arbol.component';
 import { TreeModule } from 'angular-tree-component';
 import { RegistroCatalogoComponent } from './registro-catalogo/registro-catalogo.component';
 import { ToasterModule } from 'angular2-toaster';
 import { CrudGrupoComponent } from './crud-grupo/crud-grupo.component';
 import { CrudSubgrupoComponent } from './crud-subgrupo/crud-subgrupo.component';
 import { RegistroElementosComponent } from './registro-elementos/registro-elementos.component';
-import { InactivarGrupoComponent } from './inactivar-grupo/inactivar-grupo.component';
-import { RegistroCuentasCatalogoComponent } from './registro-cuentas-catalogo/registro-cuentas-catalogo.component';
-import { CrudMovimientoComponent } from './crud-movimientos/crud-movimiento.component';
-
+import { CrudCuentasComponent } from './crud-cuentas/crud-cuentas.component';
+import { FormCuentasComponent } from './form-cuentas/form-cuentas.component';
+import { MatTreeModule } from '@angular/material';
+import { TiposBienComponent } from './tipos-bien/tipos-bien.component';
+import { Ng2SmartTableModule } from 'ng2-smart-table';
+import { RegistroTipoBienComponent } from './tipos-bien/registro-tipo-bien/registro-tipo-bien.component';
 
 @NgModule({
   declarations: [
     CatalogoBienesComponent,
     ConsultaCatalogoComponent,
     ArbolComponent,
-    FsIconAComponent,
     RegistroCatalogoComponent,
     CrudGrupoComponent,
     CrudSubgrupoComponent,
     RegistroElementosComponent,
-    InactivarGrupoComponent,
-    CrudMovimientoComponent,
-    RegistroCuentasCatalogoComponent,
+    CrudCuentasComponent,
+    FormCuentasComponent,
+    TiposBienComponent,
+    RegistroTipoBienComponent,
   ],
   imports: [
     CommonModule,
@@ -38,6 +40,8 @@ import { CrudMovimientoComponent } from './crud-movimientos/crud-movimiento.comp
     CatalogoBienesRoutingModule,
     NbTreeGridModule,
     ThemeModule,
+    MatTreeModule,
+    Ng2SmartTableModule,
   ],
   exports: [
     ConsultaCatalogoComponent,

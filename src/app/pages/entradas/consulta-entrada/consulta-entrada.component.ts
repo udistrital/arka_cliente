@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import { LocalDataSource } from 'ngx-smart-table';
-import { Router } from '@angular/router';
+import { Component, HostListener, OnInit } from '@angular/core';
+import { LocalDataSource } from 'ng2-smart-table';
+import { ActivatedRoute, Router } from '@angular/router';
 import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
-import { Entrada } from '../../../@core/data/models/entrada/entrada';
+import { Entrada, EstadoMovimiento, Movimiento } from '../../../@core/data/models/entrada/entrada';
 import { Contrato } from '../../../@core/data/models/entrada/contrato';
 import { Supervisor } from '../../../@core/data/models/entrada/supervisor';
 import { OrdenadorGasto } from '../../../@core/data/models/entrada/ordenador_gasto';
@@ -10,71 +10,167 @@ import { TipoEntrada } from '../../../@core/data/models/entrada/tipo_entrada';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { NuxeoService } from '../../../@core/utils/nuxeo.service';
 import { DocumentoService } from '../../../@core/data/documento.service';
+import { ListService } from '../../../@core/store/services/list.service';
+import { Store } from '@ngrx/store';
+import { IAppState } from '../../../@core/store/app.state';
+import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
+import Swal from 'sweetalert2';
+import { PopUpManager } from '../../../managers/popUpManager';
+import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
+import { SoporteActa } from '../../../@core/data/models/acta_recibido/soporte_acta';
 
 @Component({
   selector: 'ngx-consulta-entrada',
   templateUrl: './consulta-entrada.component.html',
   styleUrls: ['./consulta-entrada.component.scss'],
+  providers: [
+    {
+      provide: STEPPER_GLOBAL_OPTIONS,
+      useValue: { displayDefaultIndicatorType: false },
+    },
+  ],
 })
 
 export class ConsultaEntradaComponent implements OnInit {
-
   source: LocalDataSource;
   entradas: Array<Entrada>;
   detalle: boolean;
   actaRecibidoId: number;
-  consecutivoEntrada: string;
+  entradaId: string;
   entradaEspecifica: Entrada;
+  tipos: Array<any>;
   contrato: Contrato;
   settings: any;
   documentoId: boolean;
+  mostrar: boolean = false;
+  edit: boolean;
+  entradaEdit: any;
+  Supervisor: any;
+  Ordenador: any;
+  Proveedores: any;
+  Proveedor: any;
+  Placa: any;
+  encargado: any;
+  estadosMovimiento: Array<EstadoMovimiento>;
+  movimiento: Movimiento;
+  modo: string = 'consulta';
+  filaSeleccionada: any;
+  verComponente: boolean;
+  transaccionContable: any;
+  detalleentrada: String;
+  key: boolean = false;
+  editarEntrada: boolean = false;
+  trContable: any;
+  fecha: Date;
+  concepto: string;
+  factura: SoporteActa;
 
-  constructor(private router: Router, private entradasHelper: EntradaHelper, private translate: TranslateService,
-    private nuxeoService: NuxeoService, private documentoService: DocumentoService) {
+  constructor(
+    private pUpManager: PopUpManager,
+    private router: Router,
+    private entradasHelper: EntradaHelper,
+    private translate: TranslateService,
+    private nuxeoService: NuxeoService,
+    private documentoService: DocumentoService,
+    private listService: ListService,
+    private store: Store<IAppState>,
+    private tercerosHelper: TercerosHelper,
+    private route: ActivatedRoute) {
     this.source = new LocalDataSource();
     this.entradas = new Array<Entrada>();
     this.detalle = false;
     this.entradaEspecifica = new Entrada;
     this.contrato = new Contrato;
     this.documentoId = false;
-    this.loadTablaSettings();
+    this.movimiento = new Movimiento;
     this.iniciarParametros();
-    this.loadEntradas();
+    this.listService.findClases();
+    this.listService.findImpuestoIVA();
+
+  }
+
+@HostListener('window:keydown', ['$event'])
+keyEventDown(event: KeyboardEvent) {
+   this.key = true;
+}
+
+
+@HostListener('window:keyup', ['$event'])
+keyEventUp(event: KeyboardEvent) {
+   this.key = false;
+}
+
+
+
+  onEdit(event) {
+    this.edit = true;
+    this.entradaEdit = event.data;
   }
 
   loadTablaSettings() {
+    const t = {
+      registrar: this.translate.instant('GLOBAL.registrar_nueva_entrada'),
+      accion: this.translate.instant('GLOBAL.' +
+        (this.modo === 'consulta' ? 'verDetalle' : 'movimientos.entradas.accionRevision')),
+      icon: this.modo === 'consulta' ? 'eye' : 'edit',
+    };
+
+    const columns = this.modo === 'consulta' ? {
+      EstadoMovimientoId: {
+        title: this.translate.instant('GLOBAL.tipo_entrada'),
+        width: '300px',
+        filter: {
+          type: 'list',
+          config: {
+            selectText: this.translate.instant('GLOBAL.seleccionar') + '...',
+            list: [
+              { value: 'Entrada En Trámite', title: 'En Trámite' },
+              { value: 'Entrada Aprobada', title: 'Aprobada' },
+              { value: 'Entrada Rechazada', title: 'Rechazada' },
+              { value: 'Entrada Con Salida', title: 'Con Salida' },
+            ],
+          },
+        },
+      },
+    } : [];
+
     this.settings = {
       hideSubHeader: false,
-      noDataMessage: this.translate.instant('GLOBAL.no_data_entradas'),
+      noDataMessage: this.translate.instant('GLOBAL.movimientos.entradas.' +
+        (this.modo === 'consulta' ? 'noEntradasView' : 'noEntradasReview')),
       actions: {
-        columnTitle: this.translate.instant('GLOBAL.detalle'),
+        columnTitle: this.translate.instant('GLOBAL.Acciones'),
         position: 'right',
-        add: false,
-        edit: false,
         delete: false,
+        edit: false,
         custom: [
           {
             name: this.translate.instant('GLOBAL.detalle'),
-            title: '<i class="fas fa-eye" title="Ver"></i>',
+            title: '<i class="fas fa-' + t.icon + '" title="' + t.accion + '" aria-label="' + t.accion + '"></i>',
           },
         ],
       },
+      add: {
+        addButtonContent: '<i class="fas" title="' + t.registrar + '" aria-label="' + t.registrar + '">'
+        + this.translate.instant('GLOBAL.crear_nuevo') + '</i>',
+      },
+      mode: 'external',
       columns: {
-        Id: {
-          title: 'ID',
-        },
         Consecutivo: {
           title: this.translate.instant('GLOBAL.consecutivo'),
+          width: '150px',
         },
         ActaRecibidoId: {
-          title: this.translate.instant('GLOBAL.acta_recibido'),
+          title: this.translate.instant('GLOBAL.Acta_Recibido.una'),
+          width: '140px',
         },
         FechaCreacion: {
           title: this.translate.instant('GLOBAL.fecha_entrada'),
           width: '70px',
           valuePrepareFunction: (value: any) => {
-            const date = value.split('T');
-            return date[0];
+            const date = new Date(value);
+            date.setUTCMinutes(date.getTimezoneOffset());
+            return new Date(Date.parse(date.toString())).toLocaleDateString('es-CO');
           },
           filter: {
             type: 'daterange',
@@ -85,11 +181,9 @@ export class ConsultaEntradaComponent implements OnInit {
             },
           },
         },
-        TipoEntradaId: {
+        FormatoTipoMovimientoId: {
           title: this.translate.instant('GLOBAL.tipo_entrada'),
-          valuePrepareFunction: (value: any) => {
-            return value.Nombre;
-          },
+          width: '300px',
           filter: {
             type: 'list',
             config: {
@@ -101,41 +195,62 @@ export class ConsultaEntradaComponent implements OnInit {
                 { value: 'Reposición', title: 'Reposición' },
                 { value: 'Sobrante', title: 'Sobrante' },
                 { value: 'Terceros', title: 'Terceros' },
+                { value: 'Caja menor', title: 'Caja Menor' },
+                { value: 'Desarrollo interior', title: 'Desarrollo interior' },
+                { value: 'Adiciones y mejoras', title: 'Adiciones y mejoras' },
+                { value: 'Intangibles', title: 'Intangibles' },
+                { value: 'Aprovechamientos', title: 'Aprovechamientos' },
+                { value: 'Compras extranjeras', title: 'Compras extranjeras' },
+                { value: 'Provisional', title: 'Provisional' },
               ],
             },
           },
         },
+        ...columns,
       },
     };
   }
 
   loadEntradas(): void {
-    this.entradasHelper.getEntradas().subscribe(res => {
-      if (res !== null) {
-        const data = <Array<any>>res;
-        for (const datos in Object.keys(data)) {
-          if (data.hasOwnProperty(datos) && data[datos].Movimiento.Id !== undefined) {
-            const entrada = new Entrada;
-            const tipoEntradaAux = new TipoEntrada;
-            const detalle = JSON.parse((data[datos].Movimiento.Detalle));
-            entrada.Id = data[datos].Movimiento.Id;
-            entrada.ActaRecibidoId = detalle.acta_recibido_id;
-            entrada.FechaCreacion = data[datos].Movimiento.FechaCreacion;
-            entrada.Consecutivo = detalle.consecutivo;
-            tipoEntradaAux.Nombre = data[datos].TipoMovimiento.Nombre;
-            entrada.TipoEntradaId = tipoEntradaAux;
-            this.entradas.push(entrada);
-          }
-        }
-        this.source.load(this.entradas);
+    this.entradasHelper.getEntradas(this.modo === 'revision').subscribe(res => {
+      if (res.length) {
+        res.forEach(entrada => {
+          entrada.Detalle = JSON.parse((entrada.Detalle));
+          entrada.ActaRecibidoId = entrada.Detalle.acta_recibido_id;
+          entrada.Consecutivo = entrada.Detalle.consecutivo;
+          entrada.FormatoTipoMovimientoId = entrada.FormatoTipoMovimientoId.Nombre;
+          entrada.EstadoMovimientoId = entrada.EstadoMovimientoId.Nombre;
+        });
+        this.source.load(res);
+        this.source.setSort([{ field: 'FechaCreacion', direction: 'desc' }]);
       }
+      this.mostrar = true;
     });
   }
 
   loadEntradaEspecifica(): void {
-    this.entradasHelper.getEntrada(this.consecutivoEntrada).subscribe(res => {
+    this.entradasHelper.getEntrada(this.entradaId).subscribe(res => {
       if (res !== null) {
-        switch (res.TipoMovimiento.TipoMovimientoId.Nombre) {
+        this.movimiento = res.movimiento;
+        if (res.trContable) {
+          const fecha = new Date(res.trContable.fecha).toLocaleString();
+          this.trContable = {
+            rechazo: '',
+            movimientos: res.trContable.movimientos,
+            concepto: res.trContable.concepto,
+            fecha,
+          };
+        }
+
+        if (res.proveedor) {
+          this.Proveedor = res.proveedor;
+        }
+
+        if (res.factura) {
+          this.factura = res.factura;
+        }
+
+        switch (this.movimiento.FormatoTipoMovimientoId.Nombre) {
           case 'Adquisición': {
             this.loadDetalleAdquisicion(res);
             break;
@@ -156,6 +271,38 @@ export class ConsultaEntradaComponent implements OnInit {
             this.loadDetalleTerceros(res);
             break;
           }
+          case 'Caja menor': {
+            this.loadDetalleCajaMenor(res);
+            break;
+          }
+          case 'Adiciones y mejoras': {
+            this.loadDetalleAdicionesMejoras(res);
+            break;
+          }
+          case 'Intangibles adquiridos': {
+            this.loadDetalleIntangiblesAdquiridos(res);
+            break;
+          }
+          case 'Provisional': {
+            this.loadDetalleProvisional(res);
+            break;
+          }
+          case 'Compra en el Extranjero': {
+            this.loadDetalleComprasExtranjeras(res);
+            break;
+          }
+          case 'Intangibles desarrollados': {
+            this.loadDetalleIntangiblesDesarrollados(res);
+            break;
+          }
+          case 'Partes por Aprovechamientos': {
+            this.loadDetalleAprovechamientos(res);
+            break;
+          }
+          case 'Reposición': {
+            this.loadDetalleReposicion(res);
+            break;
+          }
           default: {
             break;
           }
@@ -164,35 +311,97 @@ export class ConsultaEntradaComponent implements OnInit {
     });
   }
 
-  loadContrato(): void {
-    this.entradasHelper.getContrato(this.entradaEspecifica.ContratoId, this.entradaEspecifica.Vigencia).subscribe(res => {
-      if (res !== null) {
-        const ordenadorAux = new OrdenadorGasto;
-        const supervisorAux = new Supervisor;
-        ordenadorAux.Id = res.contrato.ordenador_gasto.id;
-        ordenadorAux.NombreOrdenador = res.contrato.ordenador_gasto.nombre_ordenador;
-        ordenadorAux.RolOrdenadorGasto = res.contrato.ordenador_gasto.rol_ordenador;
-        supervisorAux.Id = res.contrato.supervisor.id;
-        supervisorAux.Nombre = res.contrato.supervisor.nombre;
-        supervisorAux.Cargo = res.contrato.supervisor.cargo;
-        supervisorAux.Dependencia = res.contrato.supervisor.dependencia_supervisor;
-        supervisorAux.Sede = res.contrato.supervisor.sede_supervisor;
-        supervisorAux.DocumentoIdentificacion = res.contrato.supervisor.documento_identificacion;
-        this.contrato.OrdenadorGasto = ordenadorAux;
-        this.contrato.NumeroContratoSuscrito = res.contrato.numero_contrato_suscrito;
-        this.contrato.TipoContrato = res.contrato.tipo_contrato;
-        this.contrato.FechaSuscripcion = res.contrato.fecha_suscripcion;
-        this.contrato.Supervisor = supervisorAux;
+  loadContrato(info: any): void {
+    if (info) {
+      const ordenadorAux = new OrdenadorGasto;
+      const supervisorAux = new Supervisor;
+      ordenadorAux.Id = info.ordenador_gasto.id;
+      ordenadorAux.NombreOrdenador = info.ordenador_gasto.nombre_ordenador;
+      ordenadorAux.RolOrdenadorGasto = info.ordenador_gasto.rol_ordenador;
+      supervisorAux.Id = info.supervisor.id;
+      supervisorAux.Nombre = info.supervisor.nombre;
+      supervisorAux.Cargo = info.supervisor.cargo;
+      supervisorAux.Dependencia = info.supervisor.dependencia_supervisor;
+      supervisorAux.Sede = info.supervisor.sede_supervisor;
+      supervisorAux.DocumentoIdentificacion = info.supervisor.documento_identificacion;
+      this.contrato.OrdenadorGasto = ordenadorAux;
+      this.contrato.NumeroContratoSuscrito = info.numero_contrato_suscrito;
+      this.contrato.TipoContrato = info.tipo_contrato &&
+        this.tipos.find(ct => +ct.Id === +info.tipo_contrato) ? this.tipos.find(ct => +ct.Id === +info.tipo_contrato).Nombre : '';
+      this.contrato.FechaSuscripcion = info.fecha_suscripcion;
+      this.contrato.Supervisor = supervisorAux;
+      this.mostrar = true;
+    } else this.mostrar = true;
+  }
+
+  confirmSubmit(aprobar: boolean) {
+    (Swal as any).fire({
+      title: this.translate.instant('GLOBAL.movimientos.entradas.' + (aprobar ? 'aprobacion' : 'rechazo') + 'ConfrmTtl'),
+      text: this.translate.instant('GLOBAL.movimientos.entradas.' + (aprobar ? 'aprobacion' : 'rechazo') + 'ConfrmTxt'),
+      type: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: this.translate.instant('GLOBAL.si'),
+      cancelButtonText: this.translate.instant('GLOBAL.no'),
+    }).then((result) => {
+      if (result.value) {
+        this.onSubmitRevision(aprobar);
       }
     });
   }
 
-  loadOrdenador() {
+  private onSubmitRevision(aprobar: boolean) {
+    this.mostrar = false;
+    if (aprobar) {
+      this.entradasHelper.postEntrada({}, +this.entradaId).toPromise().then((res: any) => {
+        this.mostrar = true;
+        if (res && res.errorTransaccion === '') {
+          this.verComponente = true;
+          this.transaccionContable = res.transaccionContable;
+          this.source.remove(this.filaSeleccionada);
+        } else if (res && res.errorTransaccion !== '') {
+          this.verComponente = false;
+          this.pUpManager.showErrorAlert(res.errorTransaccion);
+          this.onVolver();
+        }
+      });
+    } else {
+      const estado = this.estadosMovimiento.find(estadoMovimiento => estadoMovimiento.Nombre === 'Entrada Rechazada').Id;
+      this.movimiento.EstadoMovimientoId = <EstadoMovimiento>{ Id: estado };
+      this.entradasHelper.putMovimiento(this.movimiento).toPromise().then((res: any) => {
+        if (res) {
+          this.alertSuccess(false);
+        }
+      });
+    }
+  }
 
+
+  private alertSuccess(aprobar: boolean) {
+    const consecutivo = JSON.parse(this.movimiento.Detalle).consecutivo;
+    (Swal as any).fire({
+      type: 'success',
+      title: this.translate.instant('GLOBAL.movimientos.entradas.' + (aprobar ? 'aprobacion' : 'rechazo') + 'TtlOk'),
+      text: this.translate.instant('GLOBAL.movimientos.entradas.' + (aprobar ? 'aprobacion' : 'rechazo') + 'TxtOk', { CONSECUTIVO: consecutivo }),
+      showConfirmButton: false,
+      timer: 3000,
+    });
+    this.source.remove(this.filaSeleccionada);
+    this.onVolver();
+    this.mostrar = true;
+  }
+
+  loadEstados() {
+    this.entradasHelper.getEstadosMovimiento().toPromise().then(res => {
+      if (res.length > 0) {
+        this.estadosMovimiento = res;
+      }
+    });
   }
 
   loadSoporte() {
-    this.entradasHelper.getSoportes(this.consecutivoEntrada).subscribe(res => {
+    this.entradasHelper.getSoportes(this.entradaId).subscribe(res => {
       if (res !== null) {
         const data = <Array<any>>res;
 
@@ -226,81 +435,217 @@ export class ConsultaEntradaComponent implements OnInit {
 
   // CARGAR DETALLES DE ENTRADA
   loadDetalleAdquisicion(info) {
-    const detalle = JSON.parse(info.Movimiento.Detalle);
+    const detalle = JSON.parse(info.movimiento.Detalle);
     this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id; // ACTA RECIBIDO
     this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
     this.entradaEspecifica.ContratoId = detalle.contrato_id; // CONTRATO
     this.entradaEspecifica.Vigencia = detalle.vigencia_contrato; // VIGENCIA CONTRATO
-    this.loadContrato(); // CONTRATO
     this.entradaEspecifica.Importacion = detalle.importacion; // IMPORTACIÓN
-    this.entradaEspecifica.TipoEntradaId.Nombre = info.TipoMovimiento.TipoMovimientoId.Nombre; // TIPO ENTRADA
-    this.entradaEspecifica.Observacion = info.Movimiento.Observacion; // OBSERVACIÓN
+    this.entradaEspecifica.TipoEntradaId.Nombre = info.movimiento.FormatoTipoMovimientoId.Nombre; // TIPO ENTRADA
+    this.entradaEspecifica.Observacion = info.movimiento.Observacion; // OBSERVACIÓN
     this.documentoId = false; // SOPORTE
+    this.loadContrato(info.contrato); // CONTRATO
   }
 
   loadDetalleElaboracion(info) {
-    const detalle = JSON.parse(info.Movimiento.Detalle);
+    const detalle = JSON.parse(info.movimiento.Detalle);
     this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id; // ACTA RECIBIDO
     this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
     this.entradaEspecifica.Vigencia = detalle.vigencia_ordenador; // VIGENCIA ORDENADOR
     this.entradaEspecifica.OrdenadorId = detalle.ordenador_gasto_id; // ORDENADOR DE GASTO
     this.entradaEspecifica.Solicitante = detalle.solicitante_id; // SOLICITANTE
-    this.entradaEspecifica.TipoEntradaId.Nombre = info.TipoMovimiento.TipoMovimientoId.Nombre; // TIPO ENTRADA
-    this.entradaEspecifica.Observacion = info.Movimiento.Observacion; // OBSERVACIÓN
-    this.documentoId = true; // SOPORTE
+    this.entradaEspecifica.TipoEntradaId.Nombre = info.movimiento.FormatoTipoMovimientoId.Nombre; // TIPO ENTRADA
+    this.entradaEspecifica.Observacion = info.movimiento.Observacion; // OBSERVACIÓN
+    this.documentoId = false; // SOPORTE
+    this.mostrar = true;
   }
 
   loadDetalleDonacion(info) {
-    const detalle = JSON.parse(info.Movimiento.Detalle);
+    const detalle = JSON.parse(info.movimiento.Detalle);
     this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id; // ACTA RECIBIDO
     this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
     this.entradaEspecifica.ContratoId = detalle.contrato_id; // CONTRATO
     this.entradaEspecifica.Vigencia = detalle.vigencia_contrato; // VIGENCIA CONTRATO
-    this.loadContrato(); // CONTRATO
     this.entradaEspecifica.Vigencia = detalle.vigencia_solicitante; // VIGENCIA SOLICITANTE
     this.entradaEspecifica.OrdenadorId = detalle.ordenador_gasto_id; // ORDENADOR DE GASTO
-    this.entradaEspecifica.TipoEntradaId.Nombre = info.TipoMovimiento.TipoMovimientoId.Nombre; // TIPO ENTRADA
-    this.entradaEspecifica.Observacion = info.Movimiento.Observacion; // OBSERVACIÓN
+    this.entradaEspecifica.TipoEntradaId.Nombre = info.movimiento.FormatoTipoMovimientoId.Nombre; // TIPO ENTRADA
+    this.entradaEspecifica.Observacion = info.movimiento.Observacion; // OBSERVACIÓN
     this.documentoId = false; // SOPORTE
+    this.loadContrato(info.contrato); // CONTRATO
   }
 
   loadDetalleSobrante(info) {
-    const detalle = JSON.parse(info.Movimiento.Detalle);
+    const detalle = JSON.parse(info.movimiento.Detalle);
+    this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id; // ACTA RECIBIDO
+    this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
+    this.entradaEspecifica.Vigencia = detalle.vigencia_ordenador; // VIGENCIA ORDENADOR
+    this.entradaEspecifica.TipoEntradaId.Nombre = info.movimiento.FormatoTipoMovimientoId.Nombre; // TIPO ENTRADA
+    this.entradaEspecifica.Observacion = info.movimiento.Observacion; // OBSERVACIÓN
+    this.documentoId = false;
+    this.mostrar = true;
+  }
+
+  loadDetalleTerceros(info) {
+    const detalle = JSON.parse(info.movimiento.Detalle);
+    this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id; // ACTA RECIBIDO
+    this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
+    this.entradaEspecifica.ContratoId = detalle.contrato_id; // CONTRATO
+    this.entradaEspecifica.Vigencia = detalle.vigencia_contrato; // VIGENCIA CONTRATO
+    this.entradaEspecifica.TipoEntradaId.Nombre = info.movimiento.FormatoTipoMovimientoId.Nombre; // TIPO ENTRADA
+    this.entradaEspecifica.Observacion = info.movimiento.Observacion; // OBSERVACIÓN
+    this.documentoId = false; // SOPORTE
+    this.loadContrato(info.contrato); // CONTRATO
+  }
+
+  loadDetalleCajaMenor(info) {
+    const detalle = JSON.parse(info.movimiento.Detalle);
+    this.loadSupervisorById(detalle.supervisor);
+    this.loadOrdenadorById(detalle.ordenador_gasto_id);
+    this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id; // ACTA RECIBIDO
+    this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
+    this.entradaEspecifica.Vigencia = detalle.vigencia; // VIGENCIA ORDENADOR
+    this.entradaEspecifica.Solicitante = detalle.solicitante_id; // SOLICITANTE
+    this.entradaEspecifica.TipoEntradaId.Nombre = info.movimiento.FormatoTipoMovimientoId.Nombre; // TIPO ENTRADA
+    this.entradaEspecifica.Observacion = info.movimiento.Observacion; // OBSERVACIÓN
+    this.documentoId = false; // SOPORTE
+    this.mostrar = true;
+  }
+
+  loadDetalleAdicionesMejoras(info) {
+    const detalle = JSON.parse(info.movimiento.Detalle);
+    this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id; // ACTA RECIBIDO
+    this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
+    this.entradaEspecifica.ContratoId = detalle.contrato_id; // CONTRATO
+    this.entradaEspecifica.Vigencia = detalle.vigencia_contrato; // VIGENCIA CONTRATO
+    this.entradaEspecifica.TipoEntradaId.Nombre = info.movimiento.FormatoTipoMovimientoId.Nombre; // TIPO ENTRADA
+    this.entradaEspecifica.Observacion = info.movimiento.Observacion; // OBSERVACIÓN
+    this.documentoId = false; // SOPORTE
+    this.loadContrato(info.contrato); // CONTRATO
+  }
+
+  loadDetalleIntangiblesAdquiridos(info) {
+    const detalle = JSON.parse(info.movimiento.Detalle);
+    this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id; // ACTA RECIBIDO
+    this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
+    this.entradaEspecifica.ContratoId = detalle.contrato_id; // CONTRATO
+    this.entradaEspecifica.Vigencia = detalle.vigencia_contrato; // VIGENCIA CONTRATO
+    this.entradaEspecifica.TipoEntradaId.Nombre = info.movimiento.FormatoTipoMovimientoId.Nombre; // TIPO ENTRADA
+    this.entradaEspecifica.Observacion = info.movimiento.Observacion; // OBSERVACIÓN
+    this.documentoId = false; // SOPORTE
+    this.loadContrato(info.contrato); // CONTRATO
+    // this.mostrar=true;
+  }
+  loadDetalleProvisional(info) {
+    const detalle = JSON.parse(info.movimiento.Detalle);
+    this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id; // ACTA RECIBIDO
+    this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
+    this.entradaEspecifica.ContratoId = detalle.contrato_id; // CONTRATO
+    this.entradaEspecifica.Vigencia = detalle.vigencia_contrato; // VIGENCIA CONTRATO
+    this.entradaEspecifica.TipoEntradaId.Nombre = info.movimiento.FormatoTipoMovimientoId.Nombre; // TIPO ENTRADA
+    this.entradaEspecifica.Observacion = info.movimiento.Observacion; // OBSERVACIÓN
+    this.documentoId = false; // SOPORTE
+    this.loadContrato(info.contrato); // CONTRATO
+    // this.mostrar=true;
+  }
+  loadDetalleComprasExtranjeras(info) {
+    const detalle = JSON.parse(info.movimiento.Detalle);
+    this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id; // ACTA RECIBIDO
+    this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
+    this.entradaEspecifica.ContratoId = detalle.contrato_id; // CONTRATO
+    this.entradaEspecifica.Vigencia = detalle.vigencia_contrato; // VIGENCIA CONTRATO
+    this.entradaEspecifica.TipoEntradaId.Nombre = info.movimiento.FormatoTipoMovimientoId.Nombre; // TIPO ENTRADA
+    this.entradaEspecifica.Observacion = info.movimiento.Observacion; // OBSERVACIÓN
+    this.entradaEspecifica.RegistroImportacion = detalle.num_reg_importacion; // NUMERO DE IMPORTACION
+    this.entradaEspecifica.TasaRepresentativaMercado = detalle.TRM; // TASA REPRESENTATIVA DEL MERCADO
+    this.entradaEspecifica.Divisa = detalle.divisa;
+    this.documentoId = false; // SOPORTE
+    this.loadContrato(info.contrato); // CONTRATO
+    // this.mostrar=true;
+  }
+  loadAprovechamientos(info) {
+    const detalle = JSON.parse(info.movimiento.Detalle);
     this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id; // ACTA RECIBIDO
     this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
     this.entradaEspecifica.Vigencia = detalle.vigencia_ordenador; // VIGENCIA ORDENADOR
     this.entradaEspecifica.OrdenadorId = detalle.ordenador_gasto_id; // ORDENADOR DE GASTO
-    this.entradaEspecifica.TipoEntradaId.Nombre = info.TipoMovimiento.TipoMovimientoId.Nombre; // TIPO ENTRADA
-    this.entradaEspecifica.Observacion = info.Movimiento.Observacion; // OBSERVACIÓN
-    this.documentoId = true;
+    this.entradaEspecifica.TipoEntradaId.Nombre = info.movimiento.FormatoTipoMovimientoId.Nombre; // TIPO ENTRADA
+    this.entradaEspecifica.Observacion = info.movimiento.Observacion; // OBSERVACIÓN
+    this.documentoId = false;
+    this.mostrar = true;
   }
-
-  loadDetalleTerceros(info) {
-    const detalle = JSON.parse(info.Movimiento.Detalle);
+  loadDetalleIntangiblesDesarrollados(info) {
+    const detalle = JSON.parse(info.movimiento.Detalle);
+    this.loadSupervisorById(detalle.supervisor);
+    this.loadOrdenadorById(detalle.ordenador_gasto_id);
     this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id; // ACTA RECIBIDO
     this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
-    this.entradaEspecifica.ContratoId = detalle.contrato_id; // CONTRATO
-    this.entradaEspecifica.Vigencia = detalle.vigencia_contrato; // VIGENCIA CONTRATO
-    this.loadContrato(); // CONTRATO
-    this.entradaEspecifica.TipoEntradaId.Nombre = info.TipoMovimiento.TipoMovimientoId.Nombre; // TIPO ENTRADA
-    this.entradaEspecifica.Observacion = info.Movimiento.Observacion; // OBSERVACIÓN
-    this.documentoId = false; // SOPORTE
+    this.entradaEspecifica.Vigencia = detalle.vigencia_ordenador; // VIGENCIA ORDENADOR
+    this.entradaEspecifica.OrdenadorId = detalle.ordenador_gasto_id; // ORDENADOR DE GASTO
+    this.entradaEspecifica.TipoEntradaId.Nombre = info.movimiento.FormatoTipoMovimientoId.Nombre; // TIPO ENTRADA
+    this.entradaEspecifica.Observacion = info.movimiento.Observacion; // OBSERVACIÓN
+    this.documentoId = false;
+    this.mostrar = true;
+  }
+  loadDetalleAprovechamientos(info) {
+    const detalle = JSON.parse(info.movimiento.Detalle);
+    // console.log(detalle.supervisor)
+    this.loadSupervisorById(detalle.supervisor); // DATOS GENERALES DEL SUPERVISOR
+    this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id; // ACTA RECIBIDO
+    this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
+    this.entradaEspecifica.Vigencia = detalle.vigencia; // VIGENCIA CONTRATO
+    this.entradaEspecifica.TipoEntradaId.Nombre = info.movimiento.FormatoTipoMovimientoId.Nombre; // TIPO ENTRADA
+    this.entradaEspecifica.Observacion = info.movimiento.Observacion; // OBSERVACIÓN
+    this.documentoId = false;
+    // console.log(this.Proveedor)
+  }
+  loadDetalleReposicion(info) {
+    const detalle = JSON.parse(info.movimiento.Detalle);
+    this.loadEncargadoByPlaca(detalle.placa_id);
+    this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id; // ACTA RECIBIDO
+    this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
+    this.entradaEspecifica.TipoEntradaId.Nombre = info.movimiento.FormatoTipoMovimientoId.Nombre; // TIPO ENTRADA
+    this.entradaEspecifica.Observacion = info.movimiento.Observacion; // OBSERVACIÓN
+    this.Placa = detalle.placa_id;
+    this.documentoId = false;
+    this.mostrar = true;
+    // console.log(this.Proveedor)
   }
 
   onCustom(event) {
-    this.actaRecibidoId = +`${event.data.ActaRecibidoId}`;
-    // this.consecutivoEntrada = `${event.data.Consecutivo}`;
-    this.consecutivoEntrada = `${event.data.Id}`;
-    this.detalle = true;
-    this.loadEntradaEspecifica();
+    if (!this.key) {
+       this.mostrar = false;
+       this.actaRecibidoId = +`${event.data.ActaRecibidoId}`;
+       this.filaSeleccionada = event.data;
+       this.entradaId = `${event.data.Id}`;
+       this.detalle = true;
+       this.loadEntradaEspecifica();
+    } else {
+       if (event.data.EstadoMovimientoId === 'Entrada Rechazada') {
+          this.mostrar = true;
+          this.actaRecibidoId = +`${event.data.ActaRecibidoId}`;
+          this.filaSeleccionada = event.data;
+          this.entradaId = `${event.data.Id}`;
+          this.detalle = false;
+          this.edit = false;
+          this.editarEntrada = true;
+          this.loadEntradaEspecifica();
+        }
+    }
   }
 
   onVolver() {
     this.detalle = !this.detalle;
+    if (this.editarEntrada) {
+        this.detalle = false;
+        this.editarEntrada = false;
+    }
     this.iniciarParametros();
+    this.mostrar = true;
+    this.router.navigate(['/pages/entradas']);
   }
 
   iniciarParametros() {
+    this.tipos = this.entradasHelper.getTiposContrato();
     const tipoEntrada = new TipoEntrada;
     const supervisor = new Supervisor;
     const ordenadorGasto = new OrdenadorGasto;
@@ -308,15 +653,57 @@ export class ConsultaEntradaComponent implements OnInit {
     this.contrato.Supervisor = supervisor;
     this.contrato.OrdenadorGasto = ordenadorGasto;
   }
+  loadSupervisorById(id: number): void {
+    this.tercerosHelper.getTercerosByCriterio('funcionarioPlanta', id).subscribe( res => {
+      if (Array.isArray(res)) {
+        this.Supervisor = res[0];
+        // console.log(this.Supervisor)
+      }
+    });
+    this.mostrar = true;
+  }
+  loadEncargadoByPlaca(placa: string) {
+    this.entradasHelper.getEncargadoElementoByPlaca(placa).subscribe(res => {
+      if (res != null && res !== undefined) {
+        this.encargado = res.NombreCompleto;
+      }else {
+        this.encargado = '';
+      }
+    });
+  }
+  loadOrdenadorById(id: number): void {
+    this.tercerosHelper.getTercerosByCriterio('ordenadoresGasto', id).subscribe( res => {
+      if (Array.isArray(res)) {
+        this.Ordenador = res[0];
+        // console.log(this.Ordenador)
+      }
+    });
+    this.mostrar = true;
+  }
 
   onRegister() {
     this.router.navigate(['/pages/entradas/registro']);
   }
 
   ngOnInit() {
+    this.route.data.subscribe(data => {
+      if (data && data.modo !== null && data.modo !== undefined) {
+        this.modo = data.modo;
+      }
+    });
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
       this.loadTablaSettings();
     });
+    this.loadEstados();
+    this.loadEntradas();
+    this.loadTablaSettings();
+
+  }
+
+  private formatDate(value) {
+    const date = new Date(value);
+    date.setUTCMinutes(date.getTimezoneOffset());
+    return new Date(Date.parse(date.toString())).toLocaleDateString('es-CO');
   }
 
 }

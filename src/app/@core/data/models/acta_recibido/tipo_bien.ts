@@ -16,4 +16,8 @@ export class TipoBien extends TipoBienID {
     NumeroOrden: number;
     FechaCreacion: Date;
     FechaModificacion: Date;
+    NecesitaPlaca:  boolean;
+    NecesitaPoliza:  boolean;
+    Tipo_bien_padre: TipoBien;
+    Reglas: any;
 }

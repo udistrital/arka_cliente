@@ -1,5 +1,5 @@
 import { ModuleWithProviders, NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, CurrencyPipe } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
@@ -114,7 +114,7 @@ import {
   NbTooltipModule,
   NbCalendarKitModule,
 } from '@nebular/theme';
-
+import { NbDateFnsDateModule } from '@nebular/date-fns';
 import { NbSecurityModule } from '@nebular/security';
 
 import {
@@ -160,6 +160,7 @@ import { CdkTreeModule } from '@angular/cdk/tree';
 import { SelectDirective } from './directives/mouse-over-tree';
 import { ARKAII_THEME } from './styles/theme.arka2';
 import { Ng2CompleterModule } from 'ng2-completer';
+import { NgxCurrencyModule } from 'ngx-currency';
 
 const BASE_MODULES = [CommonModule, FormsModule, ReactiveFormsModule, Ng2CompleterModule];
 
@@ -198,6 +199,7 @@ const NB_MODULES = [
   NbTooltipModule,
   NbCalendarKitModule,
   TranslateModule,
+  NgxCurrencyModule,
 ];
 
 const COMPONENTS = [
@@ -249,6 +251,8 @@ const NB_THEME_PROVIDERS = [
   ...NbChatModule.forRoot({
     messageGoogleMapKey: 'AIzaSyA_wNuCzia92MAmdLRzmqitRGvCF7wCZPY',
   }).providers,
+  ...NbDateFnsDateModule.forRoot({ format: 'dd/MM/yyyy' }).providers,
+  ...NbDateFnsDateModule.forChild({ format: 'dd/MM/yyyy' }).providers,
 ];
 
 @NgModule({
@@ -262,6 +266,7 @@ export class ThemeModule {
     return <ModuleWithProviders>{
       ngModule: ThemeModule,
       providers: [...NB_THEME_PROVIDERS,
+        CurrencyPipe,
         ImplicitAutenticationService,
         NotificacionesService,
         ConfiguracionService,

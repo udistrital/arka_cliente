@@ -3,32 +3,17 @@
  * Copyright Akveo. All Rights Reserved.
  * Licensed under the MIT License. See License.txt in the project root for license information.
  */
-import { enableProdMode } from '@angular/core';
-import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
-import { AppModule } from './app/app.module';
-import { environment } from './environments/environment';
-import { ImplicitAutenticationService } from './app/@core/utils/implicit_autentication.service';
+ import { enableProdMode } from '@angular/core';
+ import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 
-if (environment.production) {
-  enableProdMode();
-}
-const autenticacion = new ImplicitAutenticationService;
-const isButtonLogin = false;
-if (!autenticacion.getAuthorizationUrl(isButtonLogin)) {
-  // if(isButtonLogin){
-  //   var button = document.createElement("button");
-  //   button.innerHTML = "LOGIN";
-  //   var body = document.getElementsByTagName("body")[0];
-  //   body.appendChild(button);
-  //   button.addEventListener ("click",()=>{
-  //     auth.getAuthorizationUrl()
-  //   });
-  // }
-} else {
-  autenticacion.live();
-}
+ import { AppModule } from './app/app.module';
+ import { environment } from './environments/environment';
 
-// autenticacion.clearUrl();
+ if (environment.production) {
+   enableProdMode();
+ }
 
-platformBrowserDynamic().bootstrapModule(AppModule)
-  .catch(err => console.error(err));
+ // autenticacion.clearUrl();
+
+ platformBrowserDynamic().bootstrapModule(AppModule)
+   .catch(err => console.error(err));

@@ -1,83 +1,77 @@
-<!-- <code>
-  <pre>
-    {{form_salida.value | json}}
-  </pre>
-</code> -->
-<form [formGroup]="form_salida" #fform="ngForm" class="step-container">
-  <nb-card>
-    <nb-card-body class="bla">
-      <div class="form-group col-sm">
-
-
-        <!-- <ng2-completer style="border: 0rem" (keyup)="changeNombreProveedor($event)" inputClass="form-control" [clearUnselected]="true"
-          placeholder="{{'GLOBAL.Acta_Recibido.RegistroActa.SeleccioneFiltro' | translate}}" nbInput
-          [datasource]="dataService2" formControlName="Proveedor" [minSearchLength]="3">
-        </ng2-completer> -->
-        <p></p>
-        <!-- <p class="campo" *ngIf="firstForm.get('Formulario2').at(i).get('Proveedor').invalid">
-                    {{'GLOBAL.placeholder' | translate}}</p>  (blur)=-->
-
-
-
-        <div class="row">
-          <div class="form-group col-sm">
-            <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Proveedor' | translate}}</label>
-            <input type="text" placeholder="{{'GLOBAL.Acta_Recibido.RegistroActa.SeleccioneFiltro' | translate}}"
-              Class="form-control" (input)="changeNombreProveedor($event)" value='{{proveedorfiltro}}'
-              list="elementosList" formControlName="Proveedor" /> 
-            <!-- <label>{{'GLOBAL.Acta_Recibido.EdicionActa.Proveedor' | translate}}</label>
-            <ng2-completer style="border: 0rem" inputClass="form-control" (keyup)="usarLocalStorage()"
-              placeholder="{{'GLOBAL.Acta_Recibido.EdicionActa.SeleccioneFiltro' | translate}}"
-              [clearUnselected]="true" nbInput [datasource]="dataService2" formControlName="Proveedor"
-              [minSearchLength]="3">
-            </ng2-completer> -->
-          </div>
-          <datalist id="elementosList">
-            <option value="sleccione un valor" selected disabled></option>
-            <option *ngFor="let item of elementos" value='{{ item }}'></option>
-          </datalist>
-        </div>
-        <div class="row">
+<div class="formulario">
+  <form [formGroup]="form_salida" #fform="ngForm" class="step-container">
+  <mat-card-content>
+    <div>
+      <div class="row">
         <div class="form-group col-sm">
-          <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Sede' | translate}}</label>
-          <select nbInput type="text" class="form-control" formControlName="Sede" required
-            (click)="Traer_Relacion_Ubicaciones();">
-            <option *ngFor="let sede of Sedes" [(value)]="sede.Id">{{sede.Nombre}}</option>
-          </select>
-          <!-- <p class="campo" *ngIf="firstForm.get('Formulario1').get('Sede').invalid">
-                {{'GLOBAL.placeholder' | translate}}</p> -->
-        </div>
-
-        
-          <div class="form-group col-sm">
-            <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Dependencia' | translate}}</label>
-            <ng2-completer style="border: 0rem" inputClass="form-control" [clearUnselected]="true" nbInput
-              [datasource]="dataService3" formControlName="Dependencia" [minSearchLength]="3"
-              (change)="Traer_Relacion_Ubicaciones()"
-              placeholder="{{'GLOBAL.Acta_Recibido.RegistroActa.SeleccioneFiltro' | translate}}">
-            </ng2-completer>
-            <!-- <p class="campo" *ngIf="firstForm.get('Formulario1').get('Dependencia').untouched">
-                {{'GLOBAL.placeholder' | translate}}</p> -->
-          </div>
-          <div class="form-group col-sm">
-            <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Ubicacion' | translate}}</label>
-            <!-- <ng2-completer style="border: 0rem" inputClass="form-control" [clearUnselected]="true" nbInput
-              [datasource]="dataService" formControlName="Ubicacion" [minSearchLength]="3"
-              placeholder="{{'GLOBAL.Acta_Recibido.RegistroActa.SeleccioneFiltro' | translate}}">
-            </ng2-completer> -->
-            <select nbInput type="text" class="form-control" formControlName="Ubicacion"
-              (click)="Traer_Relacion_Ubicaciones();" required>
-              <option value=""></option>
-              <option *ngFor="let ubicacion of Ubicaciones" [(value)]="ubicacion.Id">{{ubicacion.Nombre}}
-              </option>
-            </select>
-          </div>
+          <label>{{'GLOBAL.funcionario' | translate}}</label>
+          <input matInput type="text" class="form-control" [matAutocomplete]="autoFuncionario" style="height: auto;"
+            placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}" formControlName="Funcionario">
+          <mat-autocomplete #autoFuncionario="matAutocomplete" [displayWith]="muestraFuncionario">
+            <mat-option *ngFor="let func of funcionariosFiltrados | async" [value]="func">
+              {{muestraFuncionario(func)}}
+            </mat-option>
+          </mat-autocomplete>
+          <p class="error-field" *ngIf="form_salida.get('Funcionario').errors && form_salida.get('Funcionario').errors.required">
+            {{'GLOBAL.placeholder' | translate}}</p>
+          <p class="error-field" *ngIf="form_salida.get('Funcionario').errors && form_salida.get('Funcionario').errors.errorLongitudMinima">
+            {{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}</p>
+          <p class="error-field" *ngIf="form_salida.get('Funcionario').errors && form_salida.get('Funcionario').errors.terceroNoValido">
+            {{'GLOBAL.Errores.ErrorTercero' | translate}}</p>
         </div>
       </div>
-    </nb-card-body>
-    <nb-card-footer>
-      <button nbButton [disabled]="!form_salida.valid" (click)="verfificarProveedor()"
-        class="float-right">Asignar</button>
-    </nb-card-footer>
-  </nb-card>
+      <div class="row">
+        <div class="form-group col-sm">
+          <label class="label">{{'GLOBAL.Acta_Recibido.RegistroActa.Sede' | translate}}</label>
+          <mat-select type="text" class="form-control" formControlName="Sede" style="margin-right: 10%; height: auto;"
+            (selectionChange)="getUbicaciones();">
+            <mat-option value="">--{{ 'GLOBAL.seleccionar' | translate }}--</mat-option>
+            <mat-option *ngFor="let sede of Sedes" [(value)]="sede.Id">{{sede.Nombre}}</mat-option>
+          </mat-select>
+          <p class="error-field" *ngIf="form_salida.get('Sede').invalid">
+            {{'GLOBAL.Errores.ErrorRequerido' | translate}}</p>
+        </div>
+
+        <div class="form-group col-sm">
+          <label class="label">{{'GLOBAL.Acta_Recibido.RegistroActa.Dependencia' | translate}}</label>
+          <input matInput type="text" formControlName="Dependencia" class="form-control" style="height: auto;"
+            placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}" [matAutocomplete]="auto">
+          <mat-autocomplete #auto="matAutocomplete" [displayWith]="muestraDependencia"
+            (optionSelected)="getUbicaciones()">
+            <mat-option *ngFor="let item of dependencias" [value]="item">
+              {{item.Nombre}}
+            </mat-option>
+          </mat-autocomplete>
+            <p class="error-field" *ngIf="form_salida.get('Dependencia').errors && form_salida.get('Dependencia').errors.required">
+              {{'GLOBAL.placeholder' | translate}}</p>
+            <p class="error-field" *ngIf="form_salida.get('Dependencia').errors && form_salida.get('Dependencia').errors.errorLongitudMinima">
+              {{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}</p>
+            <p class="error-field" *ngIf="form_salida.get('Dependencia').errors && form_salida.get('Dependencia').errors.dependenciaNoValido">
+              {{'GLOBAL.Errores.ErrorDependencia' | translate}}</p>
+        </div>
+
+        <div class="form-group col-sm">
+          <label class="ubicacion">{{'GLOBAL.Acta_Recibido.RegistroActa.Ubicacion' | translate}}</label>
+          <mat-select type="text" style="height: auto;" class="form-control ubicacion" formControlName="Ubicacion">
+            <mat-option value="">--{{ 'GLOBAL.seleccionar' | translate }}--</mat-option>
+            <mat-option *ngFor="let ubicacion of UbicacionesFiltradas" [(value)]="ubicacion.Id">{{ubicacion.Nombre}}</mat-option>
+          </mat-select>
+          <p class="error-field ubicacion" *ngIf="!form_salida.get('Ubicacion').valid">
+            {{'GLOBAL.Errores.ErrorRequerido' | translate}}</p>
+        </div>
+      </div>
+      <div class="form-group col-sm" style="padding-left: 0;">
+        <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Observaciones' | translate}}</label>
+        <textarea rows="5" placeholder="{{'GLOBAL.Acta_Recibido.RegistroActa.Observaciones2' | translate}}"
+          class="form-control" formControlName="Observaciones" maxlength="400">
+        </textarea>
+      </div>
+    </div>
+  </mat-card-content>
+  <mat-card-actions>
+    <button mat-flat-button color="primary" (click)="onSubmit()" type="button"
+      [disabled]="!form_salida.get('Funcionario').valid || !form_salida.get('Ubicacion').valid" class="float-right">
+      {{'GLOBAL.movimientos.asignar_funcionario' | translate}}
+    </button>
+  </mat-card-actions>
 </form>

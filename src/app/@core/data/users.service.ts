@@ -39,12 +39,27 @@ export class UserService {
       // this.http.get(path + 'persona/?query=Usuario:' + payload.sub, httpOptions)
       this.http.get(path + 'tercero/?query=UsuarioWSO2:' + payload.sub, httpOptions)
         .subscribe(res => {
-          // console.log({res});
-          if (res !== null) {
+          if (res && Object.keys(res[0]).length) {
             this.user = res[0];
             this.user$.next(this.user);
             // window.localStorage.setItem('ente', res[0].Ente);
             this.terceroId = parseInt(res[0].Id, 10); // window.localStorage.setItem('persona_id', res[0].Id);
+          } else {
+            const doc_ = window.localStorage.getItem('user');
+            const doc = doc_ ? JSON.parse(atob(doc_)).userService : '';
+            const tipo = doc ? ',TipoDocumentoId__CodigoAbreviacion:' + doc.documento_compuesto.replace(/[0-9]/g, '') : '';
+            if (doc) {
+              this.http.get(path + 'datos_identificacion/?query=Activo:true,Numero:' + doc.documento + tipo, httpOptions)
+                .subscribe((res2: any) => {
+                  if (res2 && res2.length && Object.keys(res2[0]).length) {
+                    this.user = res2[0];
+                    this.user$.next(this.user);
+                    if (res2[0].TerceroId) {
+                      this.terceroId = parseInt(res2[0].TerceroId.Id, 10);
+                    }
+                  }
+                });
+            }
           }
         });
     }
@@ -62,8 +77,30 @@ export class UserService {
     return parseInt(window.localStorage.getItem('programa'), 10);
   }
 
-  public getUsuario(): string {
-    return this.tokenData.sub; // window.localStorage.getItem('usuario').toString() ;
+  public getUserMail(): string {
+    return this.tokenData.email; // window.localStorage.getItem('usuario').toString() ;
+  }
+
+  getRoles(): string[] {
+    return this.roles;
+  }
+
+  /**
+   * Obtiene un string con todos los roles, con el separador indicado.
+   * (de no especificarse, el separador es ',').
+   *
+   * NOTA: Hay algo en Autenticación(WSO2) que no deja que lo siguiente
+   * funcione adecuadamente (permitir roles con '/')...:
+   *
+   * Adicionalmente, si los roles tienen '/', se retornan sanitizados
+   * para poderlos usar en URLs
+   *
+   * ... Una vez se arregle, comentar/eliminar el .filter
+   */
+  getStringRolesUrl(separador: string = ','): string {
+    return this.roles
+    .filter(rol => !rol.includes('/'))
+    .join(separador).replace('/', '%2F');
   }
 
   public getPersonaId(): number {

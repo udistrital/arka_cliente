@@ -3,7 +3,7 @@
     <nb-card-header>
       <h1>{{'GLOBAL.registrar_entrada' | translate}}</h1>
     </nb-card-header>
-    <nb-card-body>
+    <nb-card-body [nbSpinner]="!mostrar">
 
       <p class="h4 pb-4" *ngIf="actaSeleccionada === ''">{{'GLOBAL.mensaje_registrar_entrada' | translate}}</p>
 
@@ -14,24 +14,31 @@
 
       <h5 *ngIf="actaSeleccionada != ''">{{'GLOBAL.tipo_entrada' | translate}}</h5>
 
-      <select class="form-control mb-4" [(ngModel)]="opcionEntrada" *ngIf="actaSeleccionada != ''">
-        <option>Adquisición</option>
-        <option>Reposición</option>
-        <option>Elaboración Propia</option>
-        <option>Donación</option>
-        <option>Sobrante de Inventario</option>
-        <option>Terceros</option>
+      <select class="form-control mb-4" [(ngModel)]="opcionEntrada" *ngIf="actaSeleccionada != '' || EntradaEdit" >
+        <option value="" selected>{{ 'GLOBAL.seleccionar' | translate }} ...</option>
+        <option *ngFor="let entrada of tiposDeEntradas" [value]="entrada.CodigoAbreviacion">
+          {{ 'GLOBAL.movimientos.tipo.'+entrada.CodigoAbreviacion+'.nombre' | translate }}
+        </option>
       </select>
 
-      <ngx-adquisicion *ngIf="opcionEntrada === 'Adquisición'" [actaRecibidoId]="actaSeleccionada"></ngx-adquisicion>
-      <ngx-reposicion *ngIf="opcionEntrada === 'Reposición'" [actaRecibidoId]="actaSeleccionada"></ngx-reposicion>
-      <ngx-elaboracion-propia *ngIf="opcionEntrada === 'Elaboración Propia'" [actaRecibidoId]="actaSeleccionada">
-      </ngx-elaboracion-propia>
-      <ngx-donacion *ngIf="opcionEntrada === 'Donación'" [actaRecibidoId]="actaSeleccionada"></ngx-donacion>
-      <ngx-sobrante *ngIf="opcionEntrada === 'Sobrante de Inventario'" [actaRecibidoId]="actaSeleccionada">
-      </ngx-sobrante>
-      <ngx-terceros *ngIf="opcionEntrada === 'Terceros'" [actaRecibidoId]="actaSeleccionada"></ngx-terceros>
+      <h3 *ngIf="opcionEntrada" class="pt-4 pb-2">{{'GLOBAL.movimientos.tipo.' + opcionEntrada + '.descripcion' | translate}}</h3>
+      <p *ngIf="opcionEntrada" class="font-weight-bold font-italic pb-2">{{ 'GLOBAL.Acta_Recibido.id_forma1' | translate : {ID: actaSeleccionada} }}</p>
+
+      <ngx-adquisicion *ngIf="opcionEntrada === 'ENT_ADQ'" [actaRecibidoId]="actaSeleccionada"></ngx-adquisicion>
+      <ngx-reposicion *ngIf="opcionEntrada === 'ENT_RP'" [actaRecibidoId]="actaSeleccionada"></ngx-reposicion>
+      <ngx-elaboracion-propia *ngIf="opcionEntrada === 'ENT_EP'" [actaRecibidoId]="actaSeleccionada"></ngx-elaboracion-propia>
+      <ngx-donacion *ngIf="opcionEntrada === 'ENT_DN'" [actaRecibidoId]="actaSeleccionada"></ngx-donacion>
+      <ngx-aprovechamientos *ngIf="opcionEntrada === 'ENT_PPA'" [actaRecibidoId]="actaSeleccionada"></ngx-aprovechamientos>
+      <ngx-sobrante *ngIf="opcionEntrada === 'ENT_SI'" [actaRecibidoId]="actaSeleccionada"></ngx-sobrante>
+      <ngx-extranjero *ngIf="opcionEntrada === 'ENT_CE'" [actaRecibidoId]="actaSeleccionada"></ngx-extranjero>
+      <ngx-terceros *ngIf="opcionEntrada === 'ENT_TR'" [actaRecibidoId]="actaSeleccionada"></ngx-terceros>
+      <ngx-caja-menor *ngIf="opcionEntrada === 'ENT_CM'" [actaRecibidoId]="actaSeleccionada"></ngx-caja-menor>
+      <ngx-adiciones-mejoras *ngIf="opcionEntrada === 'ENT_AM'" [actaRecibidoId]="actaSeleccionada"></ngx-adiciones-mejoras>
+      <ngx-intangibles-adquiridos *ngIf="opcionEntrada === 'ENT_IA'" [actaRecibidoId]="actaSeleccionada"></ngx-intangibles-adquiridos>
+      <ngx-provisional *ngIf="opcionEntrada === 'ENT_BEP'" [actaRecibidoId]="actaSeleccionada"></ngx-provisional>
+      <ngx-intangibles-desarrollados *ngIf="opcionEntrada === 'ENT_ID'" [actaRecibidoId]="actaSeleccionada"></ngx-intangibles-desarrollados>
 
     </nb-card-body>
+    <ngx-gestionar-elementos *ngIf="opcionEntrada" [ActaRecibidoId]="actaSeleccionada" [Modo]="'ver'"></ngx-gestionar-elementos>
   </nb-card>
 </div>

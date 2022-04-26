@@ -1,38 +1,23 @@
-<div *ngIf="!mostrar" [nbSpinner]="!mostrar">
-  <nb-card>
-    <nb-card-header>
-
-    </nb-card-header>
-    <nb-card-body>
-
-    </nb-card-body>
-  </nb-card>
-</div>
-<div class="col-lg-12">
 <!-- nb-card para mostrar las solicitudes existentes -->
-<nb-card *ngIf="!detalle && mostrar">
+<nb-card *ngIf="!salidaId">
   <nb-card-header>
-    <h1>Solicitudes</h1>
+    <h2>{{ 'GLOBAL.BodegaConsumo.Solicitud.Titulo' + (Editar ? 'Pendientes' : 'Todas') | translate }}</h2>
   </nb-card-header>
-  <nb-card-body>
-    <p class="h5 pb-4">Lista de solicitudes de elementos a la bodega de consumo</p>
-    <ng2-smart-table [settings]="settings" [source]="source" (custom)="onCustom($event)" *ngIf="!detalle">
+  <nb-card-body [nbSpinner]="!mostrar"><nb-card><nb-card-body>
+    <p><em>{{ 'GLOBAL.BodegaConsumo.Solicitud.Lista' + (Editar ? 'Pendientes' : 'Todas') | translate }}</em></p>
+    <ng2-smart-table [settings]="settings" [source]="source" (custom)="onCustom($event)" *ngIf="!salidaId">
     </ng2-smart-table>
-  </nb-card-body>
-  <nb-card-footer>
-
-  </nb-card-footer>
+  </nb-card-body></nb-card></nb-card-body>
 </nb-card>
 
 <!--Card para mostrar el detalle de un elemento-->
-<nb-card *ngIf="detalle">
+<nb-card *ngIf="salidaId">
   <nb-card-header>
-    <h1>Detalle de solicitud</h1>
+    <h1>{{'GLOBAL.Solicitudes.Detalle' | translate}}</h1>
   </nb-card-header>
-  <nb-card-body>
+  <nb-card-body><nb-card><nb-card-body>
     <ngx-detalle-solicitud [Editar]="Editar" [salida_id]="salidaId"></ngx-detalle-solicitud>
-
-  </nb-card-body>
+  </nb-card-body></nb-card></nb-card-body>
   <nb-card-footer>
     <div class="pt-4">
       <button type="button" class="btn btn-secondary" data-dismiss="modal"

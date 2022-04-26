@@ -1,0 +1,56 @@
+<div class="col-lg-12">
+  <mat-card [nbSpinner]="spinner" [nbSpinnerMessage]="spinner">
+
+    <mat-card-title>
+      {{title}}
+    </mat-card-title>
+    <mat-card-title *ngIf="actaSeleccionada && !ajuste">
+      {{'GLOBAL.Acta_Recibido.actaSeleccionada' | translate: {ACTA: actaSeleccionada} }}
+    </mat-card-title>
+
+    <mat-card-subtitle>
+      {{subtitle}}
+    </mat-card-subtitle>
+
+    <mat-card-content *ngIf="!ajuste && !actaSeleccionada">
+
+      <ng2-smart-table [settings]="settingsAjustes" *ngIf="!crear" [source]="ajustes" (custom)="loadAjuste($event)"
+        (create)="loadActas()">
+      </ng2-smart-table>
+      <ng2-smart-table [settings]="settingsActas" [source]="actas" *ngIf="crear" (custom)="loadElementos($event)">
+      </ng2-smart-table>
+
+    </mat-card-content>
+
+    <mat-card-content *ngIf="crear && actaSeleccionada && !ajuste">
+
+      <ngx-gestionar-elementos [ActaRecibidoId]="actaSeleccionada" [Modo]="'ajustar'" [placa]="true"
+        (DatosEnviados)="eventoListaElementos($event)" (ElementosValidos)="setElementosValidos($event)">
+      </ngx-gestionar-elementos>
+
+    </mat-card-content>
+
+    <mat-card-content *ngIf="ajuste">
+      <mat-vertical-stepper [linear]="false" #stepper>
+        <mat-step label="Elementos Modificados">
+          <ngx-gestionar-elementos [Modo]="'ver'" [ajustes]="ajuste.Elementos" [placa]="true"
+            *ngIf="ajuste && ajuste.Elementos.length">
+          </ngx-gestionar-elementos>
+        </mat-step>
+      </mat-vertical-stepper>
+
+      <ngx-comprobante *ngIf="ajuste.TrContable.movimientos" [ajusteInfo]="ajuste.TrContable" [modo]="'get'">
+      </ngx-comprobante>
+    </mat-card-content>
+
+    <mat-card-actions *ngIf="ajuste || crear">
+      <button mat-raised-button color="primary" class="float-left text-uppercase" (click)="onVolver()">
+        {{'GLOBAL.atras' | translate}}</button>
+      <button mat-raised-button color="primary" class="float-right text-uppercase" *ngIf="crear && actaSeleccionada"
+        [disabled]="!valid || !DatosElementos.length || ajuste" (click)="generarAjuste()">
+        {{'GLOBAL.ajustes.registrar.accion' | translate}}</button>
+    </mat-card-actions>
+
+  </mat-card>
+
+</div>
