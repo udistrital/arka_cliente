@@ -237,7 +237,7 @@
           "depreciacion": {
             "name": "Depreciación",
             "children": {
-              "consultarDepreciación": {
+              "consultarDepreciacion": {
                 "name": "Consultar Depreciación"
               },
               "aprobarDepreciacion": {
@@ -248,7 +248,7 @@
           "amortizacion": {
             "name": "Amortización",
             "children": {
-              "consultarAmortización": {
+              "consultarAmortizacion": {
                 "name": "Consultar Amortización"
               },
               "aprobarAmortizacion": {
