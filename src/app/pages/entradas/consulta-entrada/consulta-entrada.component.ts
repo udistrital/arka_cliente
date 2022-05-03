@@ -196,12 +196,12 @@ keyEventUp(event: KeyboardEvent) {
                 { value: 'Sobrante', title: 'Sobrante' },
                 { value: 'Terceros', title: 'Terceros' },
                 { value: 'Caja menor', title: 'Caja Menor' },
-                { value: 'Desarrollo interior', title: 'Desarrollo interior' },
-                { value: 'Adiciones y mejoras', title: 'Adiciones y mejoras' },
-                { value: 'Intangibles', title: 'Intangibles' },
-                { value: 'Aprovechamientos', title: 'Aprovechamientos' },
-                { value: 'Compras extranjeras', title: 'Compras extranjeras' },
+                { value: 'Adiciones y Mejoras', title: 'Adiciones y Mejoras' },
+                { value: 'Intangibles adquiridos', title: 'Intangibles adquiridos' },
                 { value: 'Provisional', title: 'Provisional' },
+                { value: 'Compra en el Extranjero', title: 'Compra en el Extranjero' },
+                { value: 'Intangibles desarrollados', title: 'Intangibles desarrollados' },
+                { value: 'Partes por Aprovechamientos', title: 'Partes por Aprovechamientos' },
               ],
             },
           },
@@ -230,7 +230,7 @@ keyEventUp(event: KeyboardEvent) {
 
   loadEntradaEspecifica(): void {
     this.entradasHelper.getEntrada(this.entradaId).subscribe(res => {
-      if (res !== null) {
+      if (res.movimiento) {
         this.movimiento = res.movimiento;
         if (res.trContable) {
           const fecha = new Date(res.trContable.fecha).toLocaleString();
@@ -248,6 +248,14 @@ keyEventUp(event: KeyboardEvent) {
 
         if (res.factura) {
           this.factura = res.factura;
+        }
+
+        if (res.supervisor) {
+          this.Supervisor = res.supervisor;
+        }
+
+        if (res.ordenador) {
+          this.Ordenador = res.ordenador;
         }
 
         switch (this.movimiento.FormatoTipoMovimientoId.Nombre) {
@@ -271,11 +279,11 @@ keyEventUp(event: KeyboardEvent) {
             this.loadDetalleTerceros(res);
             break;
           }
-          case 'Caja menor': {
+          case 'Caja Menor': {
             this.loadDetalleCajaMenor(res);
             break;
           }
-          case 'Adiciones y mejoras': {
+          case 'Adiciones y Mejoras': {
             this.loadDetalleAdicionesMejoras(res);
             break;
           }
@@ -384,8 +392,6 @@ keyEventUp(event: KeyboardEvent) {
       type: 'success',
       title: this.translate.instant('GLOBAL.movimientos.entradas.' + (aprobar ? 'aprobacion' : 'rechazo') + 'TtlOk'),
       text: this.translate.instant('GLOBAL.movimientos.entradas.' + (aprobar ? 'aprobacion' : 'rechazo') + 'TxtOk', { CONSECUTIVO: consecutivo }),
-      showConfirmButton: false,
-      timer: 3000,
     });
     this.source.remove(this.filaSeleccionada);
     this.onVolver();
@@ -499,8 +505,6 @@ keyEventUp(event: KeyboardEvent) {
 
   loadDetalleCajaMenor(info) {
     const detalle = JSON.parse(info.movimiento.Detalle);
-    this.loadSupervisorById(detalle.supervisor);
-    this.loadOrdenadorById(detalle.ordenador_gasto_id);
     this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id; // ACTA RECIBIDO
     this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
     this.entradaEspecifica.Vigencia = detalle.vigencia; // VIGENCIA ORDENADOR
@@ -533,7 +537,6 @@ keyEventUp(event: KeyboardEvent) {
     this.entradaEspecifica.Observacion = info.movimiento.Observacion; // OBSERVACIÓN
     this.documentoId = false; // SOPORTE
     this.loadContrato(info.contrato); // CONTRATO
-    // this.mostrar=true;
   }
   loadDetalleProvisional(info) {
     const detalle = JSON.parse(info.movimiento.Detalle);
@@ -562,21 +565,9 @@ keyEventUp(event: KeyboardEvent) {
     this.loadContrato(info.contrato); // CONTRATO
     // this.mostrar=true;
   }
-  loadAprovechamientos(info) {
-    const detalle = JSON.parse(info.movimiento.Detalle);
-    this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id; // ACTA RECIBIDO
-    this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
-    this.entradaEspecifica.Vigencia = detalle.vigencia_ordenador; // VIGENCIA ORDENADOR
-    this.entradaEspecifica.OrdenadorId = detalle.ordenador_gasto_id; // ORDENADOR DE GASTO
-    this.entradaEspecifica.TipoEntradaId.Nombre = info.movimiento.FormatoTipoMovimientoId.Nombre; // TIPO ENTRADA
-    this.entradaEspecifica.Observacion = info.movimiento.Observacion; // OBSERVACIÓN
-    this.documentoId = false;
-    this.mostrar = true;
-  }
+
   loadDetalleIntangiblesDesarrollados(info) {
     const detalle = JSON.parse(info.movimiento.Detalle);
-    this.loadSupervisorById(detalle.supervisor);
-    this.loadOrdenadorById(detalle.ordenador_gasto_id);
     this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id; // ACTA RECIBIDO
     this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
     this.entradaEspecifica.Vigencia = detalle.vigencia_ordenador; // VIGENCIA ORDENADOR
@@ -588,14 +579,13 @@ keyEventUp(event: KeyboardEvent) {
   }
   loadDetalleAprovechamientos(info) {
     const detalle = JSON.parse(info.movimiento.Detalle);
-    // console.log(detalle.supervisor)
-    this.loadSupervisorById(detalle.supervisor); // DATOS GENERALES DEL SUPERVISOR
     this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id; // ACTA RECIBIDO
     this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
     this.entradaEspecifica.Vigencia = detalle.vigencia; // VIGENCIA CONTRATO
     this.entradaEspecifica.TipoEntradaId.Nombre = info.movimiento.FormatoTipoMovimientoId.Nombre; // TIPO ENTRADA
     this.entradaEspecifica.Observacion = info.movimiento.Observacion; // OBSERVACIÓN
     this.documentoId = false;
+    this.mostrar = true;
     // console.log(this.Proveedor)
   }
   loadDetalleReposicion(info) {
@@ -653,15 +643,7 @@ keyEventUp(event: KeyboardEvent) {
     this.contrato.Supervisor = supervisor;
     this.contrato.OrdenadorGasto = ordenadorGasto;
   }
-  loadSupervisorById(id: number): void {
-    this.tercerosHelper.getTercerosByCriterio('funcionarioPlanta', id).subscribe( res => {
-      if (Array.isArray(res)) {
-        this.Supervisor = res[0];
-        // console.log(this.Supervisor)
-      }
-    });
-    this.mostrar = true;
-  }
+
   loadEncargadoByPlaca(placa: string) {
     this.entradasHelper.getEncargadoElementoByPlaca(placa).subscribe(res => {
       if (res != null && res !== undefined) {
@@ -670,15 +652,6 @@ keyEventUp(event: KeyboardEvent) {
         this.encargado = '';
       }
     });
-  }
-  loadOrdenadorById(id: number): void {
-    this.tercerosHelper.getTercerosByCriterio('ordenadoresGasto', id).subscribe( res => {
-      if (Array.isArray(res)) {
-        this.Ordenador = res[0];
-        // console.log(this.Ordenador)
-      }
-    });
-    this.mostrar = true;
   }
 
   onRegister() {
