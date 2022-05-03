@@ -135,38 +135,26 @@ export class ConsultaSalidaEspecificaComponent implements OnInit {
             return value;
           },
         },
+        SubgrupoCatalogoId: {
+          title: this.translate.instant('GLOBAL.subgrupo.clase.nombre'),
+          valuePrepareFunction: (value: any) => {
+            return !value ? '' : value.Codigo ? value.Codigo + ' - ' + value.Nombre : value.Nombre;
+          },
+          filterFunction: this.filterFunction,
+        },
         TipoBienId: {
           title: 'Tipo de Bien',
           valuePrepareFunction: (value: any) => {
             return value.Nombre;
           },
           filterFunction: (cell?: any, search?: string): boolean => {
-            // console.log(cell);
-            // console.log(search);
-            if (Object.keys(cell).length !== 0) {
-              if (cell.Nombre.indexOf(search) > -1) {
-                return true;
-              } else {
-                return false;
-              }
-            } else {
-              return false;
-            }
-          },
-        },
-        SubgrupoCatalogoId: {
-          title: 'Subgrupo',
-          valuePrepareFunction: (value: any) => {
-            return value.Nombre;
-          },
-          filterFunction: (cell?: any, search?: string): boolean => {
-            // console.log(cell);
-            // console.log(search);
-            if (Object.keys(cell).length !== 0) {
-              if (cell.Nombre.indexOf(search) > -1) {
-                return true;
-              } else {
-                return false;
+            if (cell && search.length) {
+              if (cell.Nombre) {
+                if (cell.Nombre.toUpperCase().indexOf(search.toUpperCase()) > -1) {
+                  return true;
+                } else {
+                  return false;
+                }
               }
             } else {
               return false;
@@ -187,8 +175,10 @@ export class ConsultaSalidaEspecificaComponent implements OnInit {
         },
         ValorTotal: {
           title: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.ValorTotalHeader'),
-          valuePrepareFunction: (value) => {
-            return value ? Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP' }).format(value) : '';
+          type: 'html',
+          valuePrepareFunction: (data) => {
+            const value = data ? Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP' }).format(data) : '';
+            return '<p class="currency">' + value + '</p>';
           },
         },
         VidaUtil: {
@@ -199,6 +189,26 @@ export class ConsultaSalidaEspecificaComponent implements OnInit {
         },
       },
     };
+  }
+
+  private filterFunction(cell?: any, search?: string): boolean {
+    if (cell && search.length) {
+      if (cell.Codigo && cell.Nombre) {
+        if ((cell.Codigo + ' - ' + cell.Nombre.toUpperCase()).indexOf(search.toUpperCase()) > -1) {
+          return true;
+        } else {
+          return false;
+        }
+      } else if (cell.Nombre) {
+        if ((cell.Nombre.toUpperCase()).indexOf(search.toUpperCase()) > -1) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+    } else {
+      return false;
+    }
   }
 
 }

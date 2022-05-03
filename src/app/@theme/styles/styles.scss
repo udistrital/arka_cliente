@@ -98,3 +98,10 @@ $mat-mytheme: mat-light-theme($mat-mytheme-primary, $mat-mytheme-accent);
 mat-card {
   overflow: auto;
 }
+
+.currency {
+  width: 100%;
+  height: 100%;
+  text-align: right;
+  margin: 0 auto;
+}
