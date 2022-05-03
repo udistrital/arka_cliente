@@ -64,10 +64,11 @@
 
       <div *ngIf="((detalle && !edit) || editarEntrada)  && entradaEspecifica.TipoEntradaId.Nombre === 'Adquisición'" class="row">
         <div class="col">
-          <p class="text-uppercase"><strong>{{'GLOBAL.numero_contrato' | translate }}</strong>: {{ entradaEspecifica.ContratoId }}</p>
+          <p class="text-uppercase"><strong>{{'GLOBAL.contrato' | translate }}:</strong>
+            {{ contrato.NumeroContratoSuscrito + ' de ' + contrato.Vigencia }}</p>
         </div>
         <div class="col">
-          <p class="text-uppercase"><strong>{{'GLOBAL.tipo_contrato' | translate }}</strong>: {{ contrato.TipoContrato }}</p>
+          <p class="text-uppercase"><strong>{{'GLOBAL.tipo_contrato' | translate }}:</strong> {{ contrato.TipoContrato }}</p>
         </div>
       </div>
 
@@ -87,7 +88,7 @@
           <p class="text-uppercase"><strong>{{'GLOBAL.supervisor' | translate }}</strong>: {{ contrato.Supervisor.Nombre }}</p>
         </div>
         <div class="col">
-          <p class="text-uppercase"><strong>{{'GLOBAL.ordenador_gasto' | translate }}</strong>: {{ contrato.Supervisor.Cargo }}</p>
+          <p class="text-uppercase"><strong>{{'GLOBAL.Cargo' | translate }}</strong>: {{ contrato.Supervisor.Cargo }}</p>
         </div>
       </div>
 

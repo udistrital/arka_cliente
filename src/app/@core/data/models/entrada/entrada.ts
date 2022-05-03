@@ -11,8 +11,6 @@ export class Entrada {
     TipoEntradaId: TipoEntrada;
     ActaRecibidoId: number;
     ContratoId: number;
-    ElementoId: number; // REVISAR
-    DocumentoContableId: number; // REVISAR
     Consecutivo: string;
     Vigencia: string;
     OrdenadorId: number;

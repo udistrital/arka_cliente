@@ -338,6 +338,7 @@ keyEventUp(event: KeyboardEvent) {
         this.tipos.find(ct => +ct.Id === +info.tipo_contrato) ? this.tipos.find(ct => +ct.Id === +info.tipo_contrato).Nombre : '';
       this.contrato.FechaSuscripcion = info.fecha_suscripcion;
       this.contrato.Supervisor = supervisorAux;
+      this.contrato.Vigencia = info.vigencia;
       this.mostrar = true;
     } else this.mostrar = true;
   }

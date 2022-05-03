@@ -19,4 +19,5 @@ export class Contrato {
     NumeroContrato: number;
     PlazoEjecucion: number;
     ValorContrato: number;
+    Vigencia: string;
 }
