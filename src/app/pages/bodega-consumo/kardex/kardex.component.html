@@ -26,15 +26,14 @@
         <td class="align-middle">{{kardex.FechaCreacion | date : 'shortDate'}}</td>
         <td class="align-middle">{{kardex.MovimientoId.Observacion}}</td>
         <td class="align-middle">{{kardex.Unidad_E }}</td>
-        <td class="align-middle">{{kardex.ValorUnitario_E | currencycustom }}</td>
-        <td class="align-middle">{{kardex.ValorTotal_E | currencycustom }}</td>
+        <td class="currency">{{kardex.ValorUnitario_E | currency }}</td>
+        <td class="currency">{{kardex.ValorTotal_E | currency }}</td>
         <td class="align-middle">{{kardex.Unidad_S}}</td>
-        <td class="align-middle">{{kardex.ValorUnitario_S | currencycustom }}</td>
-        <td class="align-middle">{{kardex.ValorTotal_S | currencycustom }}</td>
+        <td class="currency">{{kardex.ValorUnitario_S | currency }}</td>
+        <td class="currency">{{kardex.ValorTotal_S | currency }}</td>
         <td class="align-middle">{{kardex.SaldoCantidad}}</td>
-        <td class="align-middle">{{kardex.SaldoValorUnitario | currencycustom }}</td>
-        <td class="align-middle">{{kardex.SaldoValor | currencycustom }}</td>
-
+        <td class="currency">{{kardex.SaldoValorUnitario | currency }}</td>
+        <td class="currency">{{kardex.SaldoValor | currency }}</td>
       </tr>
     </ng-template>
   </p-table>

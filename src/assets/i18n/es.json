@@ -288,7 +288,8 @@
       "ErrorFecha": "Ingrese una fecha válida",
       "ErrorRequerido": "Este campo es obligatorio",
       "MismoTercero": "El funcionario destino deber ser diferente al funcionario que entrega",
-      "errorPlantillaActa":"Las columnas de la plantilla no corresponden a las requeridas."
+      "errorPlantillaActa":"Las columnas de la plantilla no corresponden a las requeridas.",
+      "errorTercero": "Su usuario no está correctamente registrado en el sistema. Contacte soporte para obtener ayuda."
     },
     "Comprobante_Contable": {
       "Titulo": "Comprobante Contable",
@@ -762,10 +763,10 @@
       "Solicitud": {
         "TituloPendientes": "Solicitudes Pendientes de Elementos de Consumo",
         "TituloTodas": "Solicitudes de Elementos de Consumo",
-        "ListaPendientes": "Lista de Solicitudes de Elementos a la Bodega de Consumo, Pendientes por Resolver",
+        "ListaPendientes": "Lista de Solicitudes de Elementos a la Bodega de Consumo pendientes por responder",
         "ListaTodas": "Lista de Todas las Solicitudes de Elementos a la Bodega de Consumo",
         "Titulo": "Solicitud de Elementos de Bodega de Consumo",
-        "ColumnaElementoCatalogo": "Clase/Elemento",
+        "ColumnaElementoCatalogo": "Clase Catálogo",
         "Ayuda": "Para iniciar la solicitud de elementos, por favor seleccione cualquier elemento. Los elementos solicitados serán listados conforme se van seleccionando."
       }
     },
@@ -830,6 +831,7 @@
     "notificacion": "notificacion",
     "placeholder_notificacion": "notificacion",
     "fecha_creacion": "Fecha Creación",
+    "fechaRevision": "Fecha Revisión",
     "placeholder_fecha_creacion": "fecha_creacion",
     "notificacion_estado_usuario": "notificacion_estado_usuario",
     "placeholder_notificacion_estado_usuario": "notificacion_estado_usuario",
@@ -920,6 +922,7 @@
 
     "movimientos": {
       "estadoTramite": "En Trámite",
+      "estadoPendiente": "Pendiente",
       "estadoAprobado": "Aprobada",
       "estadoRechazo": "Rechazada",
       "entradas": {
@@ -1052,8 +1055,8 @@
       "asignar_funcionario": "ASIGNAR A FUNCIONARIO",
       "error_entrada_no_registrada": "No se pudo registrar la entrada solicitada",
       "error_salida_no_registrada": "No se pudo registrar la salida solicitada",
-      "SalidaRechazadaTitle": "Salida Rechazada",
-      "SalidaRechazadaText": "Se ha rechazado la solicitud",
+      "SalidaRechazadaTitle": "Solicitud Rechazada",
+      "SalidaRechazadaText": "La solicitud {{CONSECUTIVO}} ha sido denegada correctamente.",
       "alerta_descargue": "Elementos sin descargar",
       "alerta_consumo": "Elementos de consumo sin asignar",
       "alerta_controlado": "Elementos devolutivos sin asignar",
@@ -1079,8 +1082,8 @@
     "salidas": {
       "titulo_registrar": "Registrar Salida",
       "elementos": "Elementos",
-      "exito_registro_titulo": "Salida Registrada",
-      "exito_registro_texto": "La Salida ha sido Registrada exitosamente",
+      "exito_registro_titulo": "Solicitud Aprobada",
+      "exito_registro_texto": "La solicitud {{CONSECUTIVO}} ha sido aprobada correctamente.",
       "salida_instruccion": "En la siguiente tabla seleccione la entrada para poder generar la salida correspondiente",
       "consulta_salida_info": "En la siguiente tabla se muestran de forma general las salidas, seleccione una para ver la informacion asociada",
       "detalle_salida": "Detalle Salida"
@@ -1090,7 +1093,7 @@
     "Elemento": {
       "Uno": "Elemento",
       "Varios": "Elementos",
-      "Relacionado": "Elemento Relacionado"
+      "Relacionado": "Elemento Catálogo"
     },
 
     "Solicitudes": {

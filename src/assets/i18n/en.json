@@ -288,7 +288,8 @@
       "ErrorFecha": "Enter a valid date",
       "ErrorRequerido": "This is a mandatory field",
       "MismoTercero": "The new civil servant must be different to the current civil servant",
-      "errorPlantillaActa":"Las columnas de la plantilla no corresponden a las requeridas."
+      "errorPlantillaActa":"Las columnas de la plantilla no corresponden a las requeridas.",
+      "errorTercero": "Su usuario no está correctamente registrado en el sistema, contacte soporte para obtener ayuda."
     },
     "Comprobante_Contable": {
       "Titulo": "Comprobante Contable",
@@ -831,6 +832,7 @@
     "placeholder_notificacion": "notificacion",
     "fecha_creacion": "Create Date",
     "placeholder_fecha_creacion": "fecha_creacion",
+    "fechaRevision": "Fecha Revisión",
     "notificacion_estado_usuario": "notificacion_estado_usuario",
     "placeholder_notificacion_estado_usuario": "notificacion_estado_usuario",
     "fecha": "Date",
@@ -920,6 +922,7 @@
 
     "movimientos": {
       "estadoTramite": "Awaiting review",
+      "estadoPendiente": "Pendiente",
       "estadoAprobado": "Approved",
       "estadoRechazo": "Rejected",
       "entradas": {
@@ -1053,7 +1056,7 @@
       "error_entrada_no_registrada": "The requested Input could not be registered",
       "error_salida_no_registrada": "The requested Output could not be registered",
       "SalidaRechazadaTitle": "Output Rejected",
-      "SalidaRechazadaText": "The Output Request has been Rejected",
+      "SalidaRechazadaText": "La solicitud {{ CONSECUTIVO }} ha sido denegada correctamente.",
       "alerta_descargue": "Unassgined elements",
       "alerta_consumo": "Unassgined elements",
       "alerta_controlado": "Unassgined elements",
@@ -1080,7 +1083,7 @@
       "titulo_registrar": "Register Output",
       "elementos": "Elements",
       "exito_registro_titulo": "Output Recorded",
-      "exito_registro_texto": "The Output has been successfully recorded",
+      "exito_registro_texto": "La solicitud {{CONSECUTIVO}} ha sido aprobada correctamente.",
       "salida_instruccion": "Select an entry from the following list",
       "consulta_salida_info": "Select an output from the following list",
       "detalle_salida": "Output Detail"
