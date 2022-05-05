@@ -163,7 +163,7 @@ export class ReposicionComponent implements OnInit {
       this.entradasHelper.postEntrada(transaccion).subscribe((res: any) => {
         if (res.Detalle) {
           this.registrando = false;
-          const consecutivo = JSON.parse(res.Detalle).Consecutivo;
+          const consecutivo = JSON.parse(res.Detalle).consecutivo;
           (Swal as any).fire({
             type: 'success',
             title: this.translate.instant('GLOBAL.movimientos.entradas.registroTtlOk', { CONSECUTIVO: consecutivo }),
