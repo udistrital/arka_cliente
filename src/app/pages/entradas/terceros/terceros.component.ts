@@ -246,26 +246,25 @@ export class TercerosComponent implements OnInit {
         acta_recibido_id: +this.actaRecibidoId,
         contrato_id: +this.contratoEspecifico.NumeroContratoSuscrito,
         vigencia_contrato: this.contratoForm.value.vigenciaCtrl,
-        tercero_id: 0, // REVISAR
         tipo_contrato: this.opcionTipoContrato === '14' ? 'Orden de Servicios' :
           this.opcionTipoContrato === '15' ? 'Orden de Compra' : '',
       };
 
       const transaccion = <TransaccionEntrada>{
         Observacion: this.observacionForm.value.observacionCtrl,
-        Detalle: JSON.stringify(detalle),
+        Detalle: detalle,
         FormatoTipoMovimientoId: 'ENT_TR',
         SoporteMovimientoId: 0,
       };
 
       this.entradasHelper.postEntrada(transaccion).subscribe((res: any) => {
-        if (res !== null) {
+        if (res.Detalle) {
           this.registrando = false;
+          const consecutivo = JSON.parse(res.Detalle).Consecutivo;
           (Swal as any).fire({
             type: 'success',
-            title: this.translate.instant('GLOBAL.movimientos.entradas.registroTtlOk', { CONSECUTIVO: res.Consecutivo }),
-            text: this.translate.instant('GLOBAL.movimientos.entradas.registroTxtOk', { CONSECUTIVO: res.Consecutivo }),
-            showConfirmButton: true,
+            title: this.translate.instant('GLOBAL.movimientos.entradas.registroTtlOk', { CONSECUTIVO: consecutivo }),
+            text: this.translate.instant('GLOBAL.movimientos.entradas.registroTxtOk', { CONSECUTIVO: consecutivo }),
           });
           this.router.navigate(['/pages/entradas']);
         } else {

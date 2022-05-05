@@ -248,19 +248,19 @@ changeSolicitante(event) {
 
       const transaccion = <TransaccionEntrada>{
         Observacion: this.observacionForm.value.observacionCtrl,
-        Detalle: JSON.stringify(detalle),
+        Detalle: detalle,
         FormatoTipoMovimientoId: 'ENT_ID',
         SoporteMovimientoId: this.idDocumento,
       };
 
       this.entradasHelper.postEntrada(transaccion).subscribe((res: any) => {
-        if (res !== null) {
+        if (res.Detalle) {
           this.registrando = false;
+          const consecutivo = JSON.parse(res.Detalle).Consecutivo;
           (Swal as any).fire({
             type: 'success',
-            title: this.translate.instant('GLOBAL.movimientos.entradas.registroTtlOk', { CONSECUTIVO: res.Consecutivo }),
-            text: this.translate.instant('GLOBAL.movimientos.entradas.registroTxtOk', { CONSECUTIVO: res.Consecutivo }),
-            showConfirmButton: true,
+            title: this.translate.instant('GLOBAL.movimientos.entradas.registroTtlOk', { CONSECUTIVO: consecutivo }),
+            text: this.translate.instant('GLOBAL.movimientos.entradas.registroTxtOk', { CONSECUTIVO: consecutivo }),
           });
           this.router.navigate(['/pages/entradas']);
         } else {

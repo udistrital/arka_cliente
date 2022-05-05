@@ -65,7 +65,7 @@
       <div *ngIf="((detalle && !edit) || editarEntrada)  && entradaEspecifica.TipoEntradaId.Nombre === 'Adquisición'" class="row">
         <div class="col">
           <p class="text-uppercase"><strong>{{'GLOBAL.contrato' | translate }}:</strong>
-            {{ contrato.NumeroContratoSuscrito + ' de ' + contrato.Vigencia }}</p>
+            {{ contrato.NumeroContratoSuscrito + ' ' + ('GLOBAL.de' | translate) + ' '+ contrato.Vigencia }}</p>
         </div>
         <div class="col">
           <p class="text-uppercase"><strong>{{'GLOBAL.tipo_contrato' | translate }}:</strong> {{ contrato.TipoContrato }}</p>

@@ -567,6 +567,7 @@
         "RechazadaNO":"El Acta no ha podido ser Devuelta de forma exitosa, intente más tarde"
       }
     },
+    "de": "de",
     "crear_nuevo": "Crear",
     "errorPermisosTtl": "Error cargando permisos de usuario",
     "errorPermisosTxt": "No se pudieron obtener los permisos correctamente, intente más tarde",

@@ -54,7 +54,7 @@ export class TrMovimiento extends Movimiento {
 export class TransaccionEntrada {
     Id: number;
     Observacion: string;
-    Detalle: string;
+    Detalle: any;
     FormatoTipoMovimientoId: string;
     SoporteMovimientoId: number;
 }
