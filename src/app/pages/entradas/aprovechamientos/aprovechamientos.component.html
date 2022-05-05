@@ -63,35 +63,6 @@
     </form>
   </nb-step>
 
-  <!-- PROVEEDOR -->
-  <nb-step [stepControl]="facturaForm" label="{{'GLOBAL.proveedor' | translate}}">
-    <form [formGroup]="facturaForm" class="step-container">
-      <div class="row" [nbSpinner]="cargando_proveedores">
-        <div class="form-group col-sm">
-          <label>{{'GLOBAL.proveedor' | translate}}</label>
-          <div class="input-group">
-            <!-- <input matInput type="text" class="form-control" placeholder="{{'GLOBAL.razon_social' | translate}}"
-              formControlName="proveedorCtrl" [matAutocomplete]="autoProveedor"/>
-            <mat-autocomplete #autoProveedor="matAutocomplete" [displayWith]="muestraProveedor">
-              <mat-option *ngFor="let proveedor of proveedoresFiltrados | async" [value]="proveedor">
-                {{proveedor.compuesto}}
-              </mat-option>
-            </mat-autocomplete> -->
-            <output defaultValue="proveedor" class="form-control" [value]="proveedor"></output>
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col">
-          <button nbButton nbStepperPrevious>{{'GLOBAL.anterior' | translate}}</button>
-        </div>
-        <div class="col" align="end">
-          <button nbButton nbStepperNext>{{'GLOBAL.siguiente' | translate}}</button>
-        </div>
-      </div>
-    </form>
-  </nb-step>
-
   <!-- OBSERVACIONES -->
   <nb-step [stepControl]="observacionForm" label="{{'GLOBAL.observaciones' | translate}}">
     <form [formGroup]="observacionForm" class="step-container">

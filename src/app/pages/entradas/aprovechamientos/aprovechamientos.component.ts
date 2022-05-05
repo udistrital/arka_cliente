@@ -1,26 +1,16 @@
 import { Component, OnInit, ViewChild, Input } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router, NavigationExtras } from '@angular/router';
 import { NbStepperComponent } from '@nebular/theme';
-import { Contrato } from '../../../@core/data/models/entrada/contrato';
-import { Proveedor } from '../../../@core/data/models/acta_recibido/Proveedor';
-import { OrdenadorGasto } from '../../../@core/data/models/entrada/ordenador_gasto';
-import { SoporteActaProveedor } from '../../../@core/data/models/acta_recibido/soporte_acta';
-import { Supervisor } from '../../../@core/data/models/entrada/supervisor';
 import { TerceroCriterioPlanta } from '../../../@core/data/models/terceros_criterio';
 import { PopUpManager } from '../../../managers/popUpManager';
-import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
-import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
 import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
-import { ListService } from '../../../@core/store/services/list.service';
-import { Store } from '@ngrx/store';
-import { IAppState } from '../../../@core/store/app.state';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
-import Swal from 'sweetalert2';
-import { Soporte } from '../soporteHelper';
 import { TransaccionEntrada } from '../../../@core/data/models/entrada/entrada';
+import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
 import { TranslateService } from '@ngx-translate/core';
+import { Router } from '@angular/router';
+import Swal from 'sweetalert2';
 
 
 @Component({
@@ -33,25 +23,15 @@ export class AprovechamientosComponent implements OnInit {
   // Formularios
   fechaForm: FormGroup;
   supervisorForm: FormGroup;
-  facturaForm: FormGroup;
   observacionForm: FormGroup;
 
   // Validadores
-  tipoContratoSelect: boolean;
   vigenciaSelect: boolean;
 
-  vigencia: number; // Año Actual
-  soportes: Array<SoporteActaProveedor>; // Soportes
-  proveedor: string;
-  fechaFactura: string;
   validar: boolean = false;
-  cargando_proveedores: boolean = true;
   cargando_supervisores: boolean = true;
   registrando: boolean;
 
-  private formatoTipoMovimiento: any;
-  private Proveedores: Proveedor[];
-  proveedoresFiltrados: Observable<Proveedor[]>;
   private Supervisores: TerceroCriterioPlanta[];
   supervisoresFiltrados: Observable<TerceroCriterioPlanta[]>;
 
@@ -63,20 +43,13 @@ export class AprovechamientosComponent implements OnInit {
 
   constructor(
     private router: Router,
-    private entradasHelper: EntradaHelper,
-    private actaRecibidoHelper: ActaRecibidoHelper,
     private tercerosHelper: TercerosHelper,
     private pUpManager: PopUpManager,
     private fb: FormBuilder,
-    private listService: ListService,
-    private store: Store<IAppState>,
-    private soporteHelper: Soporte,
+    private entradasHelper: EntradaHelper,
     private translate: TranslateService,
   ) {
     this.vigenciaSelect = false;
-    this.soportes = new Array<SoporteActaProveedor>();
-    this.proveedor = '';
-    this.fechaFactura = '';
     this.validar = false;
   }
 
@@ -84,29 +57,13 @@ export class AprovechamientosComponent implements OnInit {
     this.fechaForm = this.fb.group({
       fechaCtrl: ['', Validators.required],
     });
-    this.facturaForm = this.fb.group({
-      facturaCtrl: ['', Validators.nullValidator],
-      proveedorCtrl: ['', Validators.required],
-    });
     this.observacionForm = this.fb.group({
       observacionCtrl: ['', Validators.nullValidator],
     });
     this.supervisorForm = this.fb.group({
       supervisorCtrl: ['', Validators.required],
     });
-    this.getVigencia();
-    this.loadLists();
     this.loadSupervisores();
-  }
-
-  private filtroProveedores(nombre: string): Proveedor[] {
-    if (nombre && nombre.length >= 4) {
-      const valorFiltrado = nombre.toLowerCase();
-      if (this.Proveedores) {
-        this.proveedor = this.Proveedores.filter(prov => prov.compuesto.toLowerCase().includes(valorFiltrado))[0].compuesto;
-        return this.Proveedores.filter(prov => prov.compuesto.toLowerCase().includes(valorFiltrado));
-      }
-    } else { return []; }
   }
 
   private filtroSupervisores(nombre: string): TerceroCriterioPlanta[] {
@@ -116,30 +73,6 @@ export class AprovechamientosComponent implements OnInit {
     // } else return [];
   }
 
-  private loadLists() {
-    this.store.select(state => state.listProveedores).subscribe(
-      (res) => {
-        if (res.length) {
-          this.Proveedores = <Proveedor[]><any>res[0];
-          this.proveedoresFiltrados = this.facturaForm.get('proveedorCtrl').valueChanges
-            .pipe(
-              startWith(''),
-              map(val => typeof val === 'string' ? val : val.compuesto),
-              map(nombre => this.filtroProveedores(nombre)),
-            );
-          this.cargando_proveedores = false;
-          // console.log({proveedores: this.Proveedores});
-
-          this.soporteHelper.cargarSoporte(this.actaRecibidoId).then(info => {
-            this.fechaFactura = info.fecha,
-            this.soportes = info.soportes,
-            this.proveedor = this.Proveedores.find(x =>
-              x.Id = info.proveedor).NomProveedor;
-          });
-        }
-      },
-    );
-  }
 
   private loadSupervisores(): void {
     this.tercerosHelper.getTercerosByCriterio('funcionarioPlanta').subscribe(res => {
@@ -155,10 +88,6 @@ export class AprovechamientosComponent implements OnInit {
         this.cargando_supervisores = false;
       }
     });
-  }
-
-  muestraProveedor(prov: Proveedor): string {
-    return prov.compuesto;
   }
 
   muestraSupervisor(sup: TerceroCriterioPlanta): string {
@@ -187,13 +116,6 @@ export class AprovechamientosComponent implements OnInit {
     return '';
   }
 
-  /**
-   * Método para obtener el año en curso
-   */
-  getVigencia() {
-    this.vigencia = new Date().getFullYear();
-  }
-
   onObservacionSubmit() {
     this.validar = true;
   }
@@ -208,7 +130,6 @@ export class AprovechamientosComponent implements OnInit {
         acta_recibido_id: +this.actaRecibidoId,
         vigencia: this.fechaForm.value.fechaCtrl,
         supervisor: this.supervisorForm.value.supervisorCtrl.TerceroPrincipal.Id,
-        proveedor: this.facturaForm.value.proveedorCtrl.compuesto,
       };
 
       const transaccion = <TransaccionEntrada>{

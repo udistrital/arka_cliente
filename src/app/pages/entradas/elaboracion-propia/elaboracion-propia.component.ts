@@ -309,8 +309,6 @@ export class ElaboracionPropiaComponent implements OnInit {
             type: 'success',
             title: this.translate.instant('GLOBAL.movimientos.entradas.registroTtlOk', { CONSECUTIVO: res.Consecutivo }),
             text: this.translate.instant('GLOBAL.movimientos.entradas.registroTxtOk', { CONSECUTIVO: res.Consecutivo }),
-            showConfirmButton: false,
-            timer: 2000,
           });
           this.router.navigate(['/pages/entradas']);
         } else {
