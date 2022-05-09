@@ -1083,6 +1083,8 @@
     "salidas": {
       "titulo_registrar": "Register Output",
       "elementos": "Elements",
+      "exitoRegistroSolicitudTtl": "Solicitud Registrada",
+      "exitoRegistroSolicitudTxt": "La solicitud {{CONSECUTIVO}} ha sido registrada correctamente.",
       "exito_registro_titulo": "Output Recorded",
       "exito_registro_texto": "La solicitud {{CONSECUTIVO}} ha sido aprobada correctamente.",
       "salida_instruccion": "Select an entry from the following list",

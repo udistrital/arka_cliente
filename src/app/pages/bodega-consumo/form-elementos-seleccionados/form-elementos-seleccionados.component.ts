@@ -302,8 +302,8 @@ export class FormElementosSeleccionadosComponent implements OnInit {
   get optionsRegistro() {
     return {
       type: 'success',
-      title: this.translate.instant('GLOBAL.salidas.exito_registro_titulo'),
-      text: this.translate.instant('GLOBAL.salidas.exito_registro_texto', { CONSECUTIVO: this.consecutivo }),
+      title: this.translate.instant('GLOBAL.salidas.exitoRegistroSolicitudTtl'),
+      text: this.translate.instant('GLOBAL.salidas.exitoRegistroSolicitudTxt', { CONSECUTIVO: this.consecutivo }),
     };
   }
 
