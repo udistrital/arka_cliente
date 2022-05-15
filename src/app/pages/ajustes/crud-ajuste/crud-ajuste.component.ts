@@ -6,6 +6,7 @@ import { PopUpManager } from '../../../managers/popUpManager';
 import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
 import { AjustesHelper } from '../../../helpers/movimientos/ajustesHelper';
 import { ConfiguracionService } from '../../../@core/data/configuracion.service';
+import { FormBuilder, FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'ngx-crud-ajuste',
@@ -18,6 +19,7 @@ export class CrudAjusteComponent implements OnInit {
   valid: boolean;
   estadosMovimiento: Array<EstadoMovimiento>;
   showForm: boolean;
+  formComprobante: FormGroup;
   modoForm: string; // create | get | update
   title: string;
   subtitle: string;
@@ -26,7 +28,7 @@ export class CrudAjusteComponent implements OnInit {
   rechazo: string = '';
   loading: boolean;
   submitted: boolean;
-  @Input() modoCrud: string; // registrar | ver | editar | revisar | aprobar
+  @Input() modoCrud: string = 'registrar' || 'ver' || 'editar' || 'revisar' || 'aprobar';
   @Input() ajusteId: number = 0;
   @Output() accion: EventEmitter<boolean> = new EventEmitter<boolean>();
 
@@ -36,6 +38,7 @@ export class CrudAjusteComponent implements OnInit {
     private entradasHelper: EntradaHelper,
     private ajustesHelper: AjustesHelper,
     private confService: ConfiguracionService,
+    private fb: FormBuilder,
   ) {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
     });
@@ -64,9 +67,18 @@ export class CrudAjusteComponent implements OnInit {
       if (res) {
         this.ajuste = res.Movimiento;
         const detalle = JSON.parse(res.Movimiento.Detalle);
+        if (detalle.RazonRechazo) {
+          this.formComprobante = this.fb.group({
+            razon: [
+              {
+                value: detalle.RazonRechazo,
+                disabled: true,
+              },
+            ],
+          });
+        }
         this.ajusteData = {};
         this.ajusteData.movimientos = res.TrContable;
-        this.ajusteData.rechazo = detalle.RazonRechazo;
         this.consecutivo = detalle.Consecutivo;
         this.showForm = true;
       }

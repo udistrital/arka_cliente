@@ -31,6 +31,7 @@ export class FormSolicitudComponent implements OnInit {
   @ViewChild('paginator') paginator: MatPaginator;
   load: boolean;
   bajaId: number;
+  trContable: any;
   @Output() valid = new EventEmitter<boolean>();
   @Input() modo: string = 'create'; // get | update
   @Input() bajaInfo: any;
@@ -250,6 +251,9 @@ export class FormSolicitudComponent implements OnInit {
   }
 
   private loadValues(values: any) {
+    if (values.trContable) {
+      this.trContable = values.trContable;
+    }
     const disabled = this.modo === 'get';
     const razon = values.rechazo ? values.rechazo : '';
     const numero = values.numero ? values.numero : '';

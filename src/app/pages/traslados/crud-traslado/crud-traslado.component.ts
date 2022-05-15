@@ -73,7 +73,8 @@ export class CrudTrasladoComponent implements OnInit {
         const rechazo = detalle ? detalle.RazonRechazo : '';
         this.consecutivo = detalle ? detalle.Consecutivo : '';
         if (res.TrContable) {
-          this.trContable = res.TrContable;
+          this.trasladoData.trContable = res.TrContable;
+          this.trasladoData.trContable.consecutivo = this.consecutivo;
         }
         this.trasladoData.origen = res.FuncionarioOrigen;
         this.trasladoData.destino = res.FuncionarioDestino;

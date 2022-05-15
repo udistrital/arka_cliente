@@ -396,16 +396,15 @@
         <mat-icon>cloud_download</mat-icon>
       </button>
     </mat-step>
+    <mat-step label="{{'GLOBAL.elementos_entrada' | translate}}">
+      <ngx-gestionar-elementos [ActaRecibidoId]="actaRecibidoId" [Modo]="'ver'" *ngIf="detalle"></ngx-gestionar-elementos>
+    </mat-step>
+    <mat-step label="{{'GLOBAL.Comprobante_Contable.Titulo' | translate}}" *ngIf="trContable">
+      <ngx-comprobante [ajusteInfo]="trContable" [modo]="'get'" [consecutivo]="entradaEspecifica?.Consecutivo"
+        [fecha]="trContable.fecha" [concepto]="trContable.concepto">
+      </ngx-comprobante>
+    </mat-step>
   </mat-vertical-stepper>
-
-    <mat-vertical-stepper #stepper>
-      <mat-step label="{{'GLOBAL.elementos_entrada' | translate}}">
-        <ngx-gestionar-elementos [ActaRecibidoId]="actaRecibidoId" [Modo]="'ver'" *ngIf="detalle"></ngx-gestionar-elementos>
-      </mat-step>
-    </mat-vertical-stepper>
-    <ngx-comprobante *ngIf="trContable" [ajusteInfo]="trContable" [modo]="'get'"
-      [consecutivo]="entradaEspecifica?.Consecutivo" [fecha]="trContable.fecha" [concepto]="trContable.concepto">
-    </ngx-comprobante>
 
   <ngx-ver-comprobante [consecutivo] = "entradaEspecifica.Consecutivo" [transaccion]="transaccionContable" *ngIf="verComponente"></ngx-ver-comprobante>
 

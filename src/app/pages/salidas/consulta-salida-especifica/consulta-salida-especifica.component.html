@@ -60,22 +60,21 @@
         </div>
 
       </mat-step>
-    </mat-vertical-stepper>
-
-    <mat-vertical-stepper #stepper>
       <mat-step label="{{'GLOBAL.elementos_salida' | translate}}">
-
+  
         <div class="scroll">
           <ng2-smart-table [settings]="settings" [source]="source">
           </ng2-smart-table>
         </div>
-
+  
       </mat-step>
-    </mat-vertical-stepper>
+      <mat-step label="{{'GLOBAL.Comprobante_Contable.Titulo' | translate}}" *ngIf="trContable">
+        <ngx-comprobante [ajusteInfo]="trContable" [modo]="'get'" [concepto]="trContable.concepto"
+          [consecutivo]="salida.Consecutivo" [fecha]="trContable.fecha">
+        </ngx-comprobante>
+      </mat-step>
 
-    <ngx-comprobante *ngIf="trContable" [ajusteInfo]="trContable" [modo]="'get'"
-      [consecutivo]="salida.Consecutivo" [fecha]="trContable.fecha" [concepto]="trContable.concepto">
-    </ngx-comprobante>
+    </mat-vertical-stepper>
 
   </mat-card-content>
 </div>

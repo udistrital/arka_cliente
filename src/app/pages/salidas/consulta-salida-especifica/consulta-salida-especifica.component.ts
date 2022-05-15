@@ -6,19 +6,11 @@ import { Contrato } from '../../../@core/data/models/entrada/contrato';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { SalidaHelper } from '../../../helpers/salidas/salidasHelper';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
-import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
-
 
 @Component({
   selector: 'ngx-consulta-salida-especifica',
   templateUrl: './consulta-salida-especifica.component.html',
   styleUrls: ['./consulta-salida-especifica.component.scss'],
-  providers: [
-    {
-      provide: STEPPER_GLOBAL_OPTIONS,
-      useValue: { displayDefaultIndicatorType: false },
-    },
-  ],
 })
 
 export class ConsultaSalidaEspecificaComponent implements OnInit {

@@ -16,19 +16,12 @@ import { IAppState } from '../../../@core/store/app.state';
 import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
 import Swal from 'sweetalert2';
 import { PopUpManager } from '../../../managers/popUpManager';
-import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
 import { SoporteActa } from '../../../@core/data/models/acta_recibido/soporte_acta';
 
 @Component({
   selector: 'ngx-consulta-entrada',
   templateUrl: './consulta-entrada.component.html',
   styleUrls: ['./consulta-entrada.component.scss'],
-  providers: [
-    {
-      provide: STEPPER_GLOBAL_OPTIONS,
-      useValue: { displayDefaultIndicatorType: false },
-    },
-  ],
 })
 
 export class ConsultaEntradaComponent implements OnInit {

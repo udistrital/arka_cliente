@@ -16,6 +16,7 @@ import { TrasladosHelper } from '../../../helpers/movimientos/trasladosHelper';
   templateUrl: './form-traslado.component.html',
   styleUrls: ['./form-traslado.component.scss'],
 })
+
 export class FormTrasladoComponent implements OnInit {
   private funcionarios: TerceroCriterioContratista[];
   funcionariosFiltrados: Observable<Partial<TerceroCriterioContratista>[]>;
@@ -31,6 +32,7 @@ export class FormTrasladoComponent implements OnInit {
   trasladoId: number = 0;
   elementos = [];
   elementosFiltrados: any[];
+  trContable: any;
   @Output() valid = new EventEmitter<boolean>();
   @Input() modo: string = 'create'; // get | update
   @Input() trasladoInfo: any;
@@ -237,6 +239,9 @@ export class FormTrasladoComponent implements OnInit {
   }
 
   private loadValues(values: any) {
+    if (values.trContable) {
+      this.trContable = values.trContable;
+    }
     const razon = values.rechazo ? values.rechazo : '';
     this.formTraslado.get('rechazo').patchValue({ razon });
     const disabled = this.modo === 'get';

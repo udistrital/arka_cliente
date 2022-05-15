@@ -14,7 +14,7 @@ export class DetalleTraslado {
 export class FormatoAjuste {
     RazonRechazo: string;
     TrContable: any;
-    TrContableId: Number;
+    ConsecutivoId: Number;
     Consecutivo: string;
 }
 

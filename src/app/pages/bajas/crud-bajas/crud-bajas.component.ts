@@ -28,7 +28,6 @@ export class CrudBajasComponent implements OnInit {
   boton: string;
   consecutivo: string = '';
   movimiento: Movimiento;
-  trContable: any;
   rechazo: string = '';
   loading: boolean;
   @Input() modoCrud: string = 'registrar'; // registrar | ver | editar | revisar | aprobar
@@ -72,7 +71,6 @@ export class CrudBajasComponent implements OnInit {
         const detalle = res.Movimiento && res.Movimiento.Detalle ? JSON.parse(res.Movimiento.Detalle) : '';
         this.consecutivo = detalle ? detalle.Consecutivo : '';
         this.movimiento = res.Movimiento;
-        this.trContable = res.TrContable;
         this.bajaData = {};
         this.bajaData.elementos = res.Elementos;
         this.bajaData.soporte = res.Soporte;
@@ -84,6 +82,10 @@ export class CrudBajasComponent implements OnInit {
         this.bajaData.rechazo = res.RazonRechazo;
         this.bajaData.numero = res.Resolucion;
         this.bajaData.fechaRevisionC = res.FechaRevisionC;
+        if (res.TrContable) {
+          this.bajaData.trContable = res.TrContable;
+          this.bajaData.trContable.consecutivo = this.consecutivo;
+        }
         this.showForm = true;
       }
     });
