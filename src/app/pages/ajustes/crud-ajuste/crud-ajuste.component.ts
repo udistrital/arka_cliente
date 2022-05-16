@@ -87,44 +87,36 @@ export class CrudAjusteComponent implements OnInit {
 
   public confRechazo() {
     if (!this.loading && !this.submitted && this.valid) {
-      (Swal as any).fire({
-        title: this.translate.instant('GLOBAL.ajustes.' + this.modoCrud + '.confrmTtlR'),
-        text: this.translate.instant('GLOBAL.ajustes.' + this.modoCrud + '.confrmTxtR'),
-        type: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: this.translate.instant('GLOBAL.si'),
-        cancelButtonText: this.translate.instant('GLOBAL.no'),
-      }).then((result) => {
-        if (result.value) {
-          (Swal as any).mixin({
-            input: 'text',
-            confirmButtonText: this.translate.instant('GLOBAL.Acta_Recibido.VerificacionActa.Rechazar'),
-            showCancelButton: true,
-            progressSteps: ['1'],
-            inputValidator: (value) => {
-              return new Promise<string>((resolve) => {
-                if (!value.length) {
-                  resolve(this.translate.instant('GLOBAL.ajustes.revisar.confrmRechazoTtx'));
-                } else {
-                  resolve('');
-                }
-              });
-            },
-          }).queue([
-            {
-              title: this.translate.instant('GLOBAL.ajustes.revisar.confrmRechazoTtl'),
-              text: this.translate.instant('GLOBAL.ajustes.revisar.confrmRechazoTtx'),
-            },
-          ]).then((result2) => {
-            if (result2.value) {
-              this.rechazo = result2.value[0];
-              this.rechazar();
-            }
-          });
-        }
-      });
+      this.pUpManager.showAlertWithOptions(this.optionsRechazo)
+        .then((result) => {
+          if (result.value) {
+            (Swal as any).mixin({
+              input: 'text',
+              confirmButtonText: this.translate.instant('GLOBAL.Acta_Recibido.VerificacionActa.Rechazar'),
+              showCancelButton: true,
+              progressSteps: ['1'],
+              inputValidator: (value) => {
+                return new Promise<string>((resolve) => {
+                  if (!value.length) {
+                    resolve(this.translate.instant('GLOBAL.ajustes.revisar.confrmRechazoTtx'));
+                  } else {
+                    resolve('');
+                  }
+                });
+              },
+            }).queue([
+              {
+                title: this.translate.instant('GLOBAL.ajustes.revisar.confrmRechazoTtl'),
+                text: this.translate.instant('GLOBAL.ajustes.revisar.confrmRechazoTtx'),
+              },
+            ]).then((result2) => {
+              if (result2.value) {
+                this.rechazo = result2.value[0];
+                this.rechazar();
+              }
+            });
+          }
+        });
     }
   }
 
@@ -137,7 +129,7 @@ export class CrudAjusteComponent implements OnInit {
       const sfx = this.modoCrud !== 'revisar' ? '' : rechazar ? 'R' : 'A';
       const title = this.translate.instant('GLOBAL.ajustes.' + this.modoCrud + '.confrmTtl' + sfx);
       const text = this.translate.instant('GLOBAL.ajustes.' + this.modoCrud + '.confrmTxt' + sfx);
-      (Swal as any).fire({
+      const options = {
         title,
         text,
         type: 'warning',
@@ -146,17 +138,19 @@ export class CrudAjusteComponent implements OnInit {
         cancelButtonColor: '#d33',
         confirmButtonText: this.translate.instant('GLOBAL.si'),
         cancelButtonText: this.translate.instant('GLOBAL.no'),
-      }).then((result) => {
-        if (result.value) {
-          if (this.modoCrud === 'registrar') {
-            this.post();
-          } else if (this.modoCrud === 'revisar') {
-            this.aprobar();
-          } else if (this.modoCrud === 'editar') {
-            this.update();
+      };
+      this.pUpManager.showAlertWithOptions(options)
+        .then((result) => {
+          if (result.value) {
+            if (this.modoCrud === 'registrar') {
+              this.post();
+            } else if (this.modoCrud === 'revisar') {
+              this.aprobar();
+            } else if (this.modoCrud === 'editar') {
+              this.update();
+            }
           }
-        }
-      });
+        });
     }
   }
 
@@ -256,4 +250,18 @@ export class CrudAjusteComponent implements OnInit {
       }
     });
   }
+
+  get optionsRechazo(): any {
+    return {
+      title: this.translate.instant('GLOBAL.ajustes.' + this.modoCrud + '.confrmTtlR'),
+      text: this.translate.instant('GLOBAL.ajustes.' + this.modoCrud + '.confrmTxtR'),
+      type: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: this.translate.instant('GLOBAL.si'),
+      cancelButtonText: this.translate.instant('GLOBAL.no'),
+    };
+  }
+
 }

@@ -1,14 +1,8 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { LocalDataSource } from 'ng2-smart-table';
-import { ActaRecibido, ActaRecibidoUbicacion } from '../../../@core/data/models/acta_recibido/acta_recibido';
-import { Tercero } from '../../../@core/data/models/terceros';
 import { PopUpManager } from '../../../managers/popUpManager';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
-import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
 import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
-import { ListService } from '../../../@core/store/services/list.service';
-import { Store } from '@ngrx/store';
-import { IAppState } from '../../../@core/store/app.state';
 import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
 
 @Component({
@@ -33,7 +27,6 @@ export class RegistroComponent implements OnInit {
   @Input() entradaId: any;
   @Input() EntradaEdit: any;
 
-  private terceros: Partial<Tercero>[];
   private actas: any[];
 
   constructor(
@@ -41,10 +34,6 @@ export class RegistroComponent implements OnInit {
     private entradasHelper: EntradaHelper,
     private pUpManager: PopUpManager,
     private translate: TranslateService,
-    private listService: ListService,
-    private store: Store<IAppState>,
-    private tercerosHelper: TercerosHelper,
-
   ) {
     this.source = new LocalDataSource();
     this.actaSeleccionada = '';
@@ -56,12 +45,9 @@ export class RegistroComponent implements OnInit {
     }
     this.loadTablaSettings();
     this.loadActas();
-    this.listService.findClases();
-    this.listService.findImpuestoIVA();
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
       this.loadTablaSettings();
     });
-    this.loadTerceros();
     this.actaSeleccionada = this.EntradaEdit ? this.EntradaEdit.ActaRecibidoId : '';
     this.movimientoId = this.EntradaEdit ? this.EntradaEdit.Id : '';
   }
@@ -151,30 +137,6 @@ export class RegistroComponent implements OnInit {
     });
   }
 
-  private loadTerceros(): void {
-    this.tercerosHelper.getTerceros().subscribe(terceros => {
-      this.terceros = terceros;
-      this.mostrarData();
-      // console.log({terceros: this.terceros});
-    });
-  }
-
-  private mostrarData(): void {
-    if (!this.mostrar
-      && this.actas && this.actas.length
-      && this.terceros && this.terceros.length) {
-      this.source.load(this.actas.map(acta => {
-        const buscar = (tercero: Tercero) => tercero.Id === acta.RevisorId;
-        let nombre = '';
-        if (this.terceros.some(buscar)) {
-          nombre = this.terceros.find(buscar).NombreCompleto;
-        }
-        acta.RevisorId = nombre;
-        return acta;
-      }));
-      this.mostrar = true;
-    }
-  }
 
   onCustom(event) {
     this.actaRecibidoHelper.getTransaccionActa(event.data.Id, true).subscribe(res => {
