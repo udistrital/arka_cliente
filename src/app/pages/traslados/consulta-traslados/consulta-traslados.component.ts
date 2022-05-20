@@ -133,7 +133,7 @@ export class ConsultaTrasladosComponent implements OnInit {
             selectText: this.translate.instant('GLOBAL.seleccionar') + '...',
             list: [
               {
-                value: this.estadosMovimiento.find(status => status.Nombre === 'Traslado En Trámite').Nombre,
+                value: this.estadosMovimiento.find(status => status.Nombre === 'Traslado Por Confirmar').Nombre,
                 title: this.translate.instant(estadoSelect + 'tramite'),
               },
               {

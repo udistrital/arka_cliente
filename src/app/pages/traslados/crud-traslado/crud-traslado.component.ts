@@ -174,12 +174,12 @@ export class CrudTrasladoComponent implements OnInit {
       const Ubicacion = val.controls.ubicacion.value.ubicacion;
       const Observacion = val.controls.observaciones.value.observaciones;
       const estadoId =
-        (this.modoCrud === 'registrar' || this.modoCrud === 'editar') ? 'Traslado En Trámite' :
+        (this.modoCrud === 'registrar' || this.modoCrud === 'editar') ? 'Traslado Por Confirmar' :
           (rechazar) ? 'Traslado Rechazado' :
             (this.modoCrud === 'revisar') ? 'Traslado Aprobado' :
               (this.modoCrud === 'confirmar') ? 'Traslado Confirmado' : '';
       const RazonRechazo = (this.rechazo) ? this.rechazo :
-        estadoId === 'Traslado En Trámite' ? val.controls.rechazo.value.razon : '';
+        estadoId === 'Traslado Por Confirmar' ? val.controls.rechazo.value.razon : '';
 
       const detalle = <DetalleTraslado>{
         FuncionarioOrigen,
