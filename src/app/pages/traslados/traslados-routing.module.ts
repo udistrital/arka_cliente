@@ -8,14 +8,19 @@ const routes: Routes = [{
   component: TrasladosComponent,
   children: [
     {
-      path: 'consulta-traslados',
+      path: 'consulta',
       component: ConsultaTrasladosComponent,
       data: { modo: 'consulta' },
     },
     {
-      path: 'aprobar-traslados',
+      path: 'aprobar',
       component: ConsultaTrasladosComponent,
       data: { modo: 'revision' },
+    },
+    {
+      path: 'confirmar',
+      component: ConsultaTrasladosComponent,
+      data: { modo: 'confirmacion' },
     },
   ],
 }];

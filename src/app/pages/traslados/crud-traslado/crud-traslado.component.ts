@@ -205,8 +205,8 @@ export class CrudTrasladoComponent implements OnInit {
       };
       if (this.modoCrud === 'registrar') {
         this.postTraslado(movimiento);
-      } else if (this.modoCrud === 'confirmar') {
-        this.confirmarTraslado(movimiento);
+      } else if (this.modoCrud === 'aprobar') {
+        this.aprobarTraslado(movimiento);
       } else {
         this.updateTraslado(movimiento, rechazar);
       }
@@ -226,7 +226,7 @@ export class CrudTrasladoComponent implements OnInit {
     });
   }
 
-  private confirmarTraslado(movimiento) {
+  private aprobarTraslado(movimiento) {
     this.trasladosHelper.aprobarTraslado(movimiento).subscribe((res: any) => {
       this.alertSuccess(false, JSON.parse(res.movimiento.Detalle).Consecutivo);
       this.trContable = res.trContable;

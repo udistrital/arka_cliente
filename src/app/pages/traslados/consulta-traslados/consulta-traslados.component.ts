@@ -13,11 +13,12 @@ import { PopUpManager } from '../../../managers/popUpManager';
   templateUrl: './consulta-traslados.component.html',
   styleUrls: ['./consulta-traslados.component.scss'],
 })
+
 export class ConsultaTrasladosComponent implements OnInit {
 
   settings: any;
-  modo: string = 'consulta'; // 'revision'
-  modoCrud: string; // registrar // editar // ver // revisar // confirmar
+  modo: string; // 'consulta' || 'confirmacion' || 'revision';
+  modoCrud: string; // 'registrar' || 'editar' || 'ver' || 'revisar' || 'confirmar';
   source: LocalDataSource;
   estadosMovimiento: Array<EstadoMovimiento>;
   mostrar: boolean;
@@ -49,7 +50,7 @@ export class ConsultaTrasladosComponent implements OnInit {
   }
 
   loadTraslados(): void {
-    this.trasladosHelper.getTraslados(this.modo === 'revision').subscribe(res => {
+    this.trasladosHelper.getTraslados(this.modo === 'confirmacion', this.modo === 'revision').subscribe(res => {
       if (res.length) {
         res.forEach(salida => {
           salida.EstadoMovimientoId = this.estadosMovimiento.find(estado =>
@@ -89,15 +90,15 @@ export class ConsultaTrasladosComponent implements OnInit {
   public onEdit(event) {
     this.filaSeleccionada = event.data;
     if (this.modo === 'consulta') {
-      if (event.data.EstadoMovimientoId === 'Traslado Aprobado') {
-        this.modoCrud = 'confirmar';
-        this.trasladoId = event.data.Id;
-      } else if (event.data.EstadoMovimientoId === 'Traslado Rechazado') {
+      if (event.data.EstadoMovimientoId === 'Traslado Rechazado') {
         this.modoCrud = 'editar';
         this.trasladoId = event.data.Id;
       } else {
         this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.traslados.consulta.errorEditar'));
       }
+    } else if (this.modo === 'confirmacion') {
+      this.modoCrud = 'confirmar';
+      this.trasladoId = event.data.Id;
     } else if (this.modo === 'revision') {
       this.modoCrud = 'revisar';
       this.trasladoId = event.data.Id;
@@ -167,7 +168,7 @@ export class ConsultaTrasladosComponent implements OnInit {
       },
       add: {
         addButtonContent: '<i class="fas" title="' + t.registrar + '" aria-label="' + t.registrar + '">'
-        + this.translate.instant('GLOBAL.crear_nuevo') + '</i>',
+          + this.translate.instant('GLOBAL.crear_nuevo') + '</i>',
       },
       edit: {
         editButtonContent: '<i class="fas fa-edit" title="' + t.edit + '" aria-label="' + t.edit + '"></i>',

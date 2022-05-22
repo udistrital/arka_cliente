@@ -147,6 +147,9 @@
               "consultarTraslado": {
                 "name": "Browse Requests"
               },
+              "confirmarTraslado": {
+                "name": "Confirm Requests"
+              },
               "aprobarTraslado": {
                 "name": "Approve Requests"
               }

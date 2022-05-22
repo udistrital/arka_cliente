@@ -147,6 +147,9 @@
               "consultarTraslado": {
                 "name": "Consultar Traslados"
               },
+              "confirmarTraslado": {
+                "name": "Confirmar Traslados"
+              },
               "aprobarTraslado": {
                 "name": "Aprobar Traslados"
               }
