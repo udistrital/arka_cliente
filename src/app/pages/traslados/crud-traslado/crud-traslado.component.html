@@ -17,7 +17,7 @@
 </mat-card-content>
 <mat-card-actions *ngIf="modoCrud !== 'ver'">
   <div class="justify-content-center" style="padding-bottom: 1rem;">
-    <button mat-flat-button color="primary" class="float-left text-uppercase" *ngIf="modoCrud === 'revisar'"
+    <button mat-flat-button color="primary" class="float-left text-uppercase" *ngIf="modoCrud === 'revisar' || modoCrud === 'confirmar'"
       [disabled]="!valid || submitted" (click)="rechazar()">
       {{'GLOBAL.traslados.revisar.confrmTtlR' | translate}}
     </button>

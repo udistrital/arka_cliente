@@ -51,7 +51,7 @@ export class CrudTrasladoComponent implements OnInit {
     if (this.modoCrud === 'registrar') {
       this.modoForm = 'create';
       this.showForm = true;
-    } else if (this.modoCrud !== 'editar') {
+    } else if (this.modoCrud !== 'editar' && this.trasladoId) {
       this.getTraslado(this.trasladoId);
       this.modoForm = 'get';
     } else if (this.trasladoId) {
@@ -205,10 +205,10 @@ export class CrudTrasladoComponent implements OnInit {
       };
       if (this.modoCrud === 'registrar') {
         this.postTraslado(movimiento);
-      } else if (this.modoCrud === 'aprobar') {
-        this.aprobarTraslado(movimiento);
-      } else {
+      }else if (this.modoCrud !== 'aprobar' || rechazar) {
         this.updateTraslado(movimiento, rechazar);
+      } else {
+        this.aprobarTraslado(movimiento);
       }
     }
 
