@@ -79,8 +79,8 @@ export class MenuService {
     });
   }
 
-  get(endpoint) {
-    return this.http.get(path + endpoint, httpOptions).pipe(
+  get(roles) {
+    return this.http.get(path + this.getStringRolesUrl(roles) + '/arka_ii_main', httpOptions).pipe(
       catchError(this.handleError),
     );
   }
@@ -101,6 +101,12 @@ export class MenuService {
       status: error.status,
       message: 'Something bad happened; please try again later.',
     });
+  }
+
+  private getStringRolesUrl(roles: string[], separador: string = ','): string {
+    return roles
+    .join(separador)
+    .replace(/\//g, '');
   }
 
   /*

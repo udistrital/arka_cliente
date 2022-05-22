@@ -97,11 +97,6 @@ export class UserService {
    *
    * ... Una vez se arregle, comentar/eliminar el .filter
    */
-  getStringRolesUrl(separador: string = ','): string {
-    return this.roles
-    .filter(rol => !rol.includes('/'))
-    .join(separador).replace('/', '%2F');
-  }
 
   public getPersonaId(): number {
     return this.terceroId;
