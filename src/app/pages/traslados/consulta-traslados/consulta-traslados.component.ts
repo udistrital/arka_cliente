@@ -4,6 +4,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { LocalDataSource } from 'ng2-smart-table';
 import { ConfiguracionService } from '../../../@core/data/configuracion.service';
 import { EstadoMovimiento } from '../../../@core/data/models/entrada/entrada';
+import { UserService } from '../../../@core/data/users.service';
 import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
 import { TrasladosHelper } from '../../../helpers/movimientos/trasladosHelper';
 import { PopUpManager } from '../../../managers/popUpManager';
@@ -35,6 +36,7 @@ export class ConsultaTrasladosComponent implements OnInit {
     private trasladosHelper: TrasladosHelper,
     private pUpManager: PopUpManager,
     private confService: ConfiguracionService,
+    private userService: UserService,
   ) { }
 
   ngOnInit() {
@@ -91,8 +93,14 @@ export class ConsultaTrasladosComponent implements OnInit {
     this.filaSeleccionada = event.data;
     if (this.modo === 'consulta') {
       if (event.data.EstadoMovimientoId === 'Traslado Rechazado') {
-        this.modoCrud = 'editar';
-        this.trasladoId = event.data.Id;
+        const usuario = this.userService.getPersonaId();
+        if (usuario && event.data && event.data.FuncionarioOrigen
+            && event.data.FuncionarioOrigen.Id && event.data.FuncionarioOrigen.Id === usuario) {
+          this.modoCrud = 'editar';
+          this.trasladoId = event.data.Id;
+        } else {
+          this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.traslados.consulta.errorPermisoEditar'));
+        }
       } else {
         this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.traslados.consulta.errorEditar'));
       }
@@ -158,7 +166,7 @@ export class ConsultaTrasladosComponent implements OnInit {
     this.settings = {
       hideSubHeader: false,
       noDataMessage: this.translate.instant('GLOBAL.traslados.consulta.' +
-        (this.modo === 'consulta' ? 'noTrasladosView' : 'noTrasladosReview')),
+        (this.modo === 'consulta' ? 'noTrasladosView' : this.modo === 'revision' ? 'noTrasladosReview' : 'noTrasladosConfirm')),
       actions: {
         columnTitle: this.translate.instant('GLOBAL.Acciones'),
         position: 'right',
@@ -197,25 +205,19 @@ export class ConsultaTrasladosComponent implements OnInit {
             },
           },
         },
-        FuncionarioDestino: {
-          title: this.translate.instant('GLOBAL.funcionarioDestino'),
-          valuePrepareFunction: (value: any) => {
-            if (value !== null) {
-              return value;
-            } else {
-              return '';
-            }
-          },
-        },
         FuncionarioOrigen: {
           title: this.translate.instant('GLOBAL.funcionarioOrigen'),
           valuePrepareFunction: (value: any) => {
-            if (value !== null) {
-              return value;
-            } else {
-              return '';
-            }
+            return value ? value.NombreCompleto : '';
           },
+          filterFunction: this.filterFunction,
+        },
+        FuncionarioDestino: {
+          title: this.translate.instant('GLOBAL.funcionarioDestino'),
+          valuePrepareFunction: (value: any) => {
+            return value ? value.NombreCompleto : '';
+          },
+          filterFunction: this.filterFunction,
         },
         Ubicacion: {
           title: this.translate.instant('GLOBAL.ubicacion'),
@@ -230,5 +232,17 @@ export class ConsultaTrasladosComponent implements OnInit {
         ...columns,
       },
     };
+  }
+
+  private filterFunction(cell?: any, search?: string): boolean {
+    if (cell && search.length) {
+      if (cell && cell.NombreCompleto) {
+        if ((cell.NombreCompleto.toUpperCase()).indexOf(search.toUpperCase()) > -1) {
+          return true;
+        }
+      }
+    } else {
+      return false;
+    }
   }
 }

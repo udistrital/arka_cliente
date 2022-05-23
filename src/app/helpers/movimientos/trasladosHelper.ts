@@ -94,9 +94,10 @@ export class TrasladosHelper {
      * If the response is successs, it returns the object's data.
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
      */
-    public getElementosFuncionario(funcionarioId: number) {
+    public getInventarioTercero() {
+        const usuario = this.userService.getPersonaId();
         this.rqManager.setPath('ARKA_SERVICE');
-        return this.rqManager.get('traslados/funcionario/' + funcionarioId).pipe(
+        return this.rqManager.get('traslados/funcionario/' + usuario).pipe(
             map(
                 (res) => {
                     if (res['Type'] === 'error') {

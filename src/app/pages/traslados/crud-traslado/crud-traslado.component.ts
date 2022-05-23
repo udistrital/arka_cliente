@@ -142,7 +142,7 @@ export class CrudTrasladoComponent implements OnInit {
   }
 
   public confirm(rechazar: boolean = false) {
-    const sfx = this.modoCrud !== 'revisar' ? '' : rechazar ? 'R' : 'A';
+    const sfx = (this.modoCrud !== 'revisar' && this.modoCrud !== 'confirmar') ? '' : rechazar ? 'R' : 'A';
     const title = this.translate.instant('GLOBAL.traslados.' + this.modoCrud + '.confrmTtl' + sfx);
     const text = this.translate.instant('GLOBAL.traslados.' + this.modoCrud + '.confrmTxt' + sfx);
     (Swal as any).fire({
@@ -234,7 +234,7 @@ export class CrudTrasladoComponent implements OnInit {
   }
 
   private alertSuccess(rechazar: boolean, consecutivo: string) {
-    const sfx = this.modoCrud !== 'revisar' ? '' : rechazar ? 'R' : 'A';
+    const sfx = (this.modoCrud !== 'revisar' && this.modoCrud !== 'confirmar') ? '' : rechazar ? 'R' : 'A';
     const title = this.translate.instant('GLOBAL.traslados.' + this.modoCrud + '.successTtl' + sfx);
     const text = this.translate.instant('GLOBAL.traslados.' + this.modoCrud + '.successTxt' + sfx, { CONSECUTIVO: consecutivo });
     const options = {

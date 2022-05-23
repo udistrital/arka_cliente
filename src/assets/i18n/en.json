@@ -1301,13 +1301,15 @@
        "nuevoTraslado": "Register new Transfer Request",
        "noTrasladosView": "There are no transfers to view",
        "noTrasladosReview": "There are no transfers to review",
+       "noTrasladosConfirm": "Usted no tiene traslados pendientes por confirmar",
        "accionEdit": "Edit Transfer Request",
        "estadoTraslado": "Transfer Request Status",
        "errorEditar": "The selected request can not be edited",
+       "errorPermisoEditar": "No tiene permisos para editar este traslado.",
        "errorElementos": "There was an error getting the civil servant's elements",
        "errorConsulta": "There was an error getting the requests list"
      },
-     "registro": {
+     "registrar": {
        "title": "Confirm Transfer Registration",
        "subtitle": "Enter the requested information in the following form",
        "accion": "Create Request",
@@ -1315,7 +1317,12 @@
        "confrmTxt": "Are you sure to send the request with the provided information?",
        "successTtl": "Transfer Request Created",
        "successTxt:": "The transfer request {{CONSECUTIVO}} has been successfully registered",
-       "errTxt:": "There was an error when trying to create the transfer request"
+       "errTxt:": "There was an error when trying to create the transfer request",
+       "noElementos": "Usted no tiene elementos asignados."
+      },
+      "confirmacion": {
+        "title": "Confirmar Solicitud de Traslado",
+        "subtitle": "Seleccione un traslado de la lista para confirmar la solicitud."
       },
       "revisar": {
         "title": "Review Transfer Request",
@@ -1325,9 +1332,9 @@
         "confrmTtlA": "Approve transfer request",
         "confrmTxtA": "Are you sure to approve the transfer request?",
         "confrmTtlR": "Deny request",
+        "confrmTxtR": "Are you sure to deny the request?",
         "confrmRechazoTtl": "Request denial reason",
         "confrmRechazoTtx": "Enter the instructions to correct the request",
-        "confrmTxtR": "Are you sure to deny the request?",
         "successTtlA": "Transfer Request Approved",
         "successTxtA": "The request {{CONSECUTIVO}} has been approved",
         "successTtlR": "Transfer Request Denied",
@@ -1337,10 +1344,14 @@
         "title": "Confirm transfer completion",
         "subtitle": "Check the request information and confirm if you already have the elements",
         "accion": "Confirm Transfer Request",
-        "confrmTtl": "Confirmar Recepción",
-        "confrmTxt": "Are you sure to confirm you already have the elements?",
-        "successTtl": "Transfer completed",
-        "successTxt": "The transfer request {{CONSECUTIVO}} has been completed"
+        "confrmTtlA": "Confirmar Solicitud de Traslado",
+        "confrmTxtA": "¿Desea confirmar que usted será el responsable de estos elementos?",
+        "confrmTtlR": "Rechazar Solicitud",
+        "confrmTxtR": "¿Desea rechazar la solicitud de traslado con la información suministrada?",
+        "successTtlA": "Solicitud Confirmada",
+        "successTxtA": "La solicitud de traslado {{CONSECUTIVO}} ha sido confirmada.",
+        "successTtlR": "Solicitud Rechazada",
+        "successTxtR": "La solicitud de traslado {{CONSECUTIVO}} ha sido rechazada."
       },
       "revision": {
         "title": "Approve tranfer requests",

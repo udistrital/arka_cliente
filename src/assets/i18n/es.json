@@ -1301,9 +1301,11 @@
         "nuevoTraslado": "Registrar nuevo traslado",
         "noTrasladosView": "No se encontraron traslados",
         "noTrasladosReview": "No hay traslados pendientes por ser revisados",
+        "noTrasladosConfirm": "Usted no tiene traslados pendientes por confirmar",
         "accionEdit": "Editar Solicitud",
         "estadoTraslado": "Estado Traslado",
         "errorEditar": "No se puede editar este traslado",
+        "errorPermisoEditar": "No tiene permisos para editar este traslado.",
         "errorElementos": "Hubo un error consultando los elementos del funcionario",
         "errorConsulta": "Hubo un error consultando la lista de traslados"
       },
@@ -1315,7 +1317,12 @@
         "confrmTxt": "¿Desea registrar la solicitud de traslado con la información suministrada?",
         "successTtl": "Traslado Solicitado",
         "successTxt": "La solicitud de traslado {{CONSECUTIVO}} se ha registrado de manera exitosa",
-        "errTxt:": "Hubo un error al registrar la solicitud de traslado"
+        "errTxt:": "Hubo un error al registrar la solicitud de traslado",
+        "noElementos": "Usted no tiene elementos asignados."
+      },
+      "confirmacion": {
+        "title": "Confirmar Solicitud de Traslado",
+        "subtitle": "Seleccione un traslado de la lista para confirmar la solicitud."
       },
       "revisar": {
         "title": "Revisar Solicitud de Traslado",
@@ -1325,9 +1332,9 @@
         "confrmTtlA": "Aprobar Solicitud de Traslado",
         "confrmTxtA": "¿Desea aprobar la solicitud de traslado con la información suministrada?",
         "confrmTtlR": "Rechazar Solicitud",
+        "confrmTxtR": "¿Desea rechazar la solicitud de traslado con la información suministrada?",
         "confrmRechazoTtl": "Motivo de rechazo",
         "confrmRechazoTtx": "Indique la razón por la que esta solicitud será denegada",
-        "confrmTxtR": "¿Desea rechazar la solicitud de traslado con la información suministrada?",
         "successTtlA": "Solicitud Aprobada",
         "successTxtA": "La solicitud de traslado {{CONSECUTIVO}} ha sido aprobada",
         "successTtlR": "Solicitud Rechazada",
@@ -1337,10 +1344,14 @@
         "title": "Confirmar Recepción de Traslado",
         "subtitle": "Revise la información de la solicitud y confirme que los elementos están en su poder",
         "accion": "Confirmar Traslado",
-        "confrmTtl": "Confirmar Recepción",
-        "confrmTxt": "¿Desea confirmar que los elementos están en su poder?",
-        "successTtl": "Traslado Confirmado",
-        "successTxt": "La solicitud de traslado {{CONSECUTIVO}} ha sido confirmada"
+        "confrmTtlA": "Confirmar Solicitud de Traslado",
+        "confrmTxtA": "¿Desea confirmar que usted será el responsable de estos elementos?",
+        "confrmTtlR": "Rechazar Solicitud",
+        "confrmTxtR": "¿Desea rechazar la solicitud de traslado con la información suministrada?",
+        "successTtlA": "Solicitud Confirmada",
+        "successTxtA": "La solicitud de traslado {{CONSECUTIVO}} ha sido confirmada.",
+        "successTtlR": "Solicitud Rechazada",
+        "successTxtR": "La solicitud de traslado {{CONSECUTIVO}} ha sido rechazada."
       },
       "revision": {
         "title": "Aprobar Solicitudes de Traslados de bienes",

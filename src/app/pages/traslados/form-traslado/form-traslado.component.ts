@@ -10,6 +10,7 @@ import { TerceroCriterioContratista } from '../../../@core/data/models/terceros_
 import { debounceTime, distinctUntilChanged, map, startWith, switchMap } from 'rxjs/operators';
 import { MatPaginator, MatTableDataSource } from '@angular/material';
 import { TrasladosHelper } from '../../../helpers/movimientos/trasladosHelper';
+import { PopUpManager } from '../../../managers/popUpManager';
 
 @Component({
   selector: 'ngx-form-traslado',
@@ -46,6 +47,7 @@ export class FormTrasladoComponent implements OnInit {
     private tercerosHelper: TercerosHelper,
     private oikosHelper: OikosHelper,
     private trasladosHelper: TrasladosHelper,
+    private pUpManager: PopUpManager,
   ) {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
     });
@@ -60,7 +62,12 @@ export class FormTrasladoComponent implements OnInit {
   private loadSedes() {
     this.oikosHelper.getSedes().subscribe((res: any) => {
       this.sedes = res;
-      this.modo !== 'create' ? this.loadValues(this.trasladoInfo) : this.load = true;
+      if (this.modo === 'create' || this.modo === 'put') {
+        this.getInventarioTercero();
+      }
+      if (this.modo !== 'create') {
+        this.loadValues(this.trasladoInfo);
+      }
     });
   }
 
@@ -77,7 +84,7 @@ export class FormTrasladoComponent implements OnInit {
   }
 
   get terceroOrigen(): FormGroup {
-    const disabled = this.modo === 'get';
+    const disabled = true;
     const form = this.fb.group({
       tercero: [
         {
@@ -101,7 +108,7 @@ export class FormTrasladoComponent implements OnInit {
         },
       ],
     });
-    this.funcionariosFiltrados = this.cambiosFuncionario(form.get('tercero'));
+
     return form;
   }
 
@@ -361,20 +368,35 @@ export class FormTrasladoComponent implements OnInit {
     }
   }
 
-  getInfoTercero(controlName: string) {
+  public getInfoTercero(controlName: string) {
     const terceroId = this.formTraslado.get(controlName + '.tercero').value.Tercero.Id;
-    if (controlName === 'origen') {
-      (this.formTraslado.get('elementos') as FormArray).reset();
-      this.removeElemento(0);
-      this.dataSource.data = [];
-      this.elementos = [];
-      this.elementosFiltrados = [];
-      this.trasladosHelper.getElementosFuncionario(terceroId).subscribe(res => {
-        this.elementos = res;
-      });
-    }
     this.loadCargo(terceroId, controlName);
     this.loadEmail(terceroId, controlName);
+  }
+
+  private getInventarioTercero() {
+    this.trasladosHelper.getInventarioTercero()
+      .subscribe((res: any) => {
+        if (res.Elementos.length) {
+          this.elementos = res.Elementos;
+          if (this.modo === 'create') {
+            const tercero_ = res.Tercero;
+            const tercero = tercero_.Tercero && tercero_.Tercero.length ? tercero_.Tercero[0] : null;
+            const emailO = tercero_.Correo.length && tercero_.Correo[0].Dato ?
+              JSON.parse(tercero_.Correo[0].Dato).value : this.translate.instant('GLOBAL.traslados.noEmail');
+            const cargoO = tercero_.Cargo.length ?
+              tercero_.Cargo[0].Nombre : this.translate.instant('GLOBAL.traslados.noCargo');
+
+            this.formTraslado.get('origen').patchValue({ tercero: tercero });
+            this.formTraslado.get('origen').patchValue({ email: emailO });
+            this.formTraslado.get('origen').patchValue({ cargo: cargoO });
+          }
+        } else if (this.modo === 'create') {
+          this.formTraslado.disable();
+          this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.traslados.registrar.noElementos'));
+        }
+        this.load = true;
+      });
   }
 
   private loadCargo(terceroId: number, controlName: string) {
