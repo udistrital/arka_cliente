@@ -24,6 +24,7 @@ export class CrudTrasladoComponent implements OnInit {
   title: string;
   subtitle: string;
   boton: string;
+  botonR: string;
   consecutivo: string = '';
   loading: boolean;
   submitted: boolean;
@@ -62,6 +63,7 @@ export class CrudTrasladoComponent implements OnInit {
     this.title = this.translate.instant('GLOBAL.traslados.' + this.modoCrud + '.title');
     this.subtitle = this.translate.instant('GLOBAL.traslados.' + this.modoCrud + '.subtitle');
     this.boton = this.translate.instant('GLOBAL.traslados.' + this.modoCrud + '.accion');
+    this.botonR = this.translate.instant('GLOBAL.traslados.' + this.modoCrud + '.accionR');
   }
 
   getTraslado(trasladoId: number) {
@@ -142,7 +144,7 @@ export class CrudTrasladoComponent implements OnInit {
   }
 
   public confirm(rechazar: boolean = false) {
-    const sfx = (this.modoCrud !== 'revisar' && this.modoCrud !== 'confirmar') ? '' : rechazar ? 'R' : 'A';
+    const sfx = (this.modoCrud !== 'editar' && this.modoCrud !== 'confirmar' && this.modoCrud !== 'revisar') ? '' : rechazar ? 'R' : 'A';
     const title = this.translate.instant('GLOBAL.traslados.' + this.modoCrud + '.confrmTtl' + sfx);
     const text = this.translate.instant('GLOBAL.traslados.' + this.modoCrud + '.confrmTxt' + sfx);
     (Swal as any).fire({
@@ -174,10 +176,11 @@ export class CrudTrasladoComponent implements OnInit {
       const Ubicacion = val.controls.ubicacion.value.ubicacion;
       const Observacion = val.controls.observaciones.value.observaciones;
       const estadoId =
-        (this.modoCrud === 'registrar' || this.modoCrud === 'editar') ? 'Traslado Por Confirmar' :
-          (rechazar) ? 'Traslado Rechazado' :
-            (this.modoCrud === 'revisar') ? 'Traslado Aprobado' :
-              (this.modoCrud === 'confirmar') ? 'Traslado Confirmado' : '';
+        (this.modoCrud === 'registrar' || (this.modoCrud === 'editar' && !rechazar)) ? 'Traslado Por Confirmar' :
+          (this.modoCrud === 'editar' && rechazar) ? 'Traslado Anulado' :
+            (rechazar) ? 'Traslado Rechazado' :
+              (this.modoCrud === 'confirmar') ? 'Traslado Confirmado' :
+                (this.modoCrud === 'revisar') ? 'Traslado Aprobado' : '';
       const RazonRechazo = (this.rechazo) ? this.rechazo :
         estadoId === 'Traslado Por Confirmar' ? val.controls.rechazo.value.razon : '';
 
@@ -234,7 +237,7 @@ export class CrudTrasladoComponent implements OnInit {
   }
 
   private alertSuccess(rechazar: boolean, consecutivo: string) {
-    const sfx = (this.modoCrud !== 'revisar' && this.modoCrud !== 'confirmar') ? '' : rechazar ? 'R' : 'A';
+    const sfx = (this.modoCrud !== 'editar' && this.modoCrud !== 'confirmar' && this.modoCrud !== 'revisar') ? '' : rechazar ? 'R' : 'A';
     const title = this.translate.instant('GLOBAL.traslados.' + this.modoCrud + '.successTtl' + sfx);
     const text = this.translate.instant('GLOBAL.traslados.' + this.modoCrud + '.successTxt' + sfx, { CONSECUTIVO: consecutivo });
     const options = {

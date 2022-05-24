@@ -127,7 +127,7 @@
           <label class="label">{{'GLOBAL.Acta_Recibido.RegistroActa.Sede' | translate}}</label>
           <mat-select type="text" class="form-control" formControlName="sede" (selectionChange)="getUbicaciones();">
             <mat-option value="">--{{ 'GLOBAL.seleccionar' | translate }}--</mat-option>
-            <mat-option *ngFor="let sede of sedes" [(value)]="sede.Id">{{sede.Nombre}}</mat-option>
+            <mat-option *ngFor="let sede of sedes" [value]="sede.Id">{{sede.Nombre}}</mat-option>
           </mat-select>
           <p class="error-field" *ngIf="formTraslado.get('ubicacion.sede').invalid">
             {{'GLOBAL.Errores.ErrorRequerido' | translate}}</p>
@@ -156,7 +156,7 @@
           <label class="ubicacion">{{'GLOBAL.Acta_Recibido.RegistroActa.Ubicacion' | translate}}</label>
           <mat-select type="text" class="form-control ubicacion" formControlName="ubicacion">
             <mat-option value="">--{{ 'GLOBAL.seleccionar' | translate }}--</mat-option>
-            <mat-option *ngFor="let ubicacion of ubicacionesFiltradas" [(value)]="ubicacion.Id">
+            <mat-option *ngFor="let ubicacion of ubicacionesFiltradas" [value]="ubicacion.Id">
               {{ubicacion.Nombre}}
             </mat-option>
           </mat-select>

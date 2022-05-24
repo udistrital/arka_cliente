@@ -81,7 +81,6 @@ export class ConsultaTrasladosComponent implements OnInit {
     } else {
       this.loadTraslados();
     }
-    // this.volver();
   }
 
   public onRegister() {
@@ -92,7 +91,7 @@ export class ConsultaTrasladosComponent implements OnInit {
   public onEdit(event) {
     this.filaSeleccionada = event.data;
     if (this.modo === 'consulta') {
-      if (event.data.EstadoMovimientoId === 'Traslado Rechazado') {
+      if (event.data.EstadoMovimientoId === 'Traslado Rechazado' || event.data.EstadoMovimientoId === 'Traslado Por Confirmar') {
         const usuario = this.userService.getPersonaId();
         if (usuario && event.data && event.data.FuncionarioOrigen &&
           event.data.FuncionarioOrigen.Id && event.data.FuncionarioOrigen.Id === usuario) {
