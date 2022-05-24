@@ -19,7 +19,7 @@ export class ConsultaTrasladosComponent implements OnInit {
 
   settings: any;
   modo: string; // 'consulta' || 'confirmacion' || 'revision';
-  modoCrud: string; // 'registrar' || 'editar' || 'ver' || 'revisar' || 'confirmar';
+  modoCrud: string; // 'registrar' || 'ver' || 'editar' || 'confirmar' || 'revisar';
   source: LocalDataSource;
   estadosMovimiento: Array<EstadoMovimiento>;
   mostrar: boolean;
@@ -94,8 +94,8 @@ export class ConsultaTrasladosComponent implements OnInit {
     if (this.modo === 'consulta') {
       if (event.data.EstadoMovimientoId === 'Traslado Rechazado') {
         const usuario = this.userService.getPersonaId();
-        if (usuario && event.data && event.data.FuncionarioOrigen
-            && event.data.FuncionarioOrigen.Id && event.data.FuncionarioOrigen.Id === usuario) {
+        if (usuario && event.data && event.data.FuncionarioOrigen &&
+          event.data.FuncionarioOrigen.Id && event.data.FuncionarioOrigen.Id === usuario) {
           this.modoCrud = 'editar';
           this.trasladoId = event.data.Id;
         } else {
@@ -146,16 +146,20 @@ export class ConsultaTrasladosComponent implements OnInit {
                 title: this.translate.instant(estadoSelect + 'tramite'),
               },
               {
-                value: this.estadosMovimiento.find(status => status.Nombre === 'Traslado Aprobado').Nombre,
-                title: this.translate.instant(estadoSelect + 'aprobado'),
+                value: this.estadosMovimiento.find(status => status.Nombre === 'Traslado Confirmado').Nombre,
+                title: this.translate.instant(estadoSelect + 'confirmado'),
               },
               {
                 value: this.estadosMovimiento.find(status => status.Nombre === 'Traslado Rechazado').Nombre,
                 title: this.translate.instant(estadoSelect + 'rechazado'),
               },
               {
-                value: this.estadosMovimiento.find(status => status.Nombre === 'Traslado Confirmado').Nombre,
-                title: this.translate.instant(estadoSelect + 'confirmado'),
+                value: this.estadosMovimiento.find(status => status.Nombre === 'Traslado Aprobado').Nombre,
+                title: this.translate.instant(estadoSelect + 'aprobado'),
+              },
+              {
+                value: this.estadosMovimiento.find(status => status.Nombre === 'Traslado Anulado').Nombre,
+                title: this.translate.instant(estadoSelect + 'anulado'),
               },
             ],
           },

@@ -1371,10 +1371,11 @@
         "subtitle": "En el siguiente formulario se muestra el detalle del traslado"
       },
       "estados": {
-        "tramite": "En Trámite",
+        "tramite": "Por Confirmar",
         "aprobado": "Aprobado",
         "rechazado": "Rechazado",
-        "confirmado": "Confirmado"
+        "confirmado": "Confirmado",
+        "anulado": "Anulado"
       },
       "funcActual": "Funcionario Responsable del Bien",
       "funcDestino": "Funcionario Destinatario del Bien",

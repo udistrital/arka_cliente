@@ -1371,10 +1371,11 @@
         "subtitle": "This form includes the details of the transfer request"
       },
       "estados": {
-        "tramite": "Awaiting review",
+        "tramite": "Awaiting Confirmation",
         "aprobado": "Approved",
         "rechazado": "Denied",
-        "confirmado": "Confirmed"
+        "confirmado": "Confirmed",
+        "anulado": "Cancel"
       },
       "funcActual": "Current possessor of the good ",
       "funcDestino": "New possessor of the good ",

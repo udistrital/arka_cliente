@@ -20,7 +20,7 @@ export class CrudTrasladoComponent implements OnInit {
   formatoTraslado: FormatoTipoMovimiento;
   estadosMovimiento: Array<EstadoMovimiento>;
   showForm: boolean;
-  modoForm: string; // create | get | update
+  modoForm: string; // 'create' || 'get' || 'put'
   title: string;
   subtitle: string;
   boton: string;
@@ -30,7 +30,7 @@ export class CrudTrasladoComponent implements OnInit {
   rechazo: string = '';
   trContable: any;
   movimiento: Movimiento;
-  @Input() modoCrud: string = 'registrar' || 'ver' || 'editar' || 'revisar' || 'aprobar';
+  @Input() modoCrud: string = 'registrar' || 'ver' || 'editar' || 'confirmar' || 'revisar';
   @Input() trasladoId: number = 0;
   @Output() accion: EventEmitter<boolean> = new EventEmitter<boolean>();
 
@@ -205,7 +205,7 @@ export class CrudTrasladoComponent implements OnInit {
       };
       if (this.modoCrud === 'registrar') {
         this.postTraslado(movimiento);
-      }else if (this.modoCrud !== 'aprobar' || rechazar) {
+      } else if (this.modoCrud !== 'revisar' || rechazar) {
         this.updateTraslado(movimiento, rechazar);
       } else {
         this.aprobarTraslado(movimiento);
