@@ -490,10 +490,11 @@ export class TablaElementosAsignadosComponent implements OnInit {
                        const length = res.trSalida.Salidas.length;
                        const s = length > 1 ? 's' : '';
                        pconsecutivo = JSON.parse(res.trSalida.Salidas[0].Salida.Detalle).consecutivo +
-                       (length > 1 ? (' - ' + JSON.parse(res.trSalida.Salidas[length - 1].Salida.Detalle).consecutivo) : '');
+                         (length > 1 ? (' ' + this.translate.instant('GLOBAL.hasta') + ' '
+                           + JSON.parse(res.trSalida.Salidas[length - 1].Salida.Detalle).consecutivo) : '');
                        title = this.translate.instant('GLOBAL.movimientos.salidas.registroTtlOk', { S: s });
                        text = this.translate.instant('GLOBAL.movimientos.salidas.registroTxtOk' +
-                       (length > 1 ? 'Varios' : ''), { CONSECUTIVO: pconsecutivo });
+                         (length > 1 ? 'Varios' : ''), { CONSECUTIVO: pconsecutivo });
                     } else {
                        pconsecutivo = JSON.parse(res.trSalida.Detalle).consecutivo;
                        text = this.translate.instant('GLOBAL.movimientos.salidas.registroTxtOk' +

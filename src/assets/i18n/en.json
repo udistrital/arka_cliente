@@ -1163,6 +1163,7 @@
     "descargarP": "Descargar Plantilla",
     "seleccionarArch": "Seleccionar archivo",
     "borrarSel": "Eliminar seleccionados",
+    "hasta": "to",
   "ajustes": {
     "movimientos_relacionados": "Related transfers",
     "confirmar_anular_entrada": "The related accounting and inventory entries will be reversed",

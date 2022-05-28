@@ -57,8 +57,21 @@ export class ConfiguracionService {
   }
 
   getAccion(accion: string): Partial<Menu> {
-    // TODO: Para trabajar con acciones anidadas, falta implementar recurrencia
-    return this.configuraciones.find(conf => conf.TipoOpcion === TipoOpcion.Accion && conf.Nombre === accion);
+    return this.findAccion(this.configuraciones, accion);
+  }
+
+  getRoute(accion: string): Partial<Menu> {
+    return this.findRoute(this.configuraciones, accion);
+  }
+
+  findRoute(menu: Partial<Menu>[], option: string) {
+    return menu.find(opt => (opt.TipoOpcion === TipoOpcion.Menu && opt.Url === option) ||
+      (opt.Opciones && opt.Opciones.length && this.findRoute(opt.Opciones, option)));
+  }
+
+  findAccion(menu: Partial<Menu>[], option: string) {
+    return menu.find(opt => (opt.TipoOpcion === TipoOpcion.Accion && opt.Nombre === option) ||
+      (opt.Opciones && opt.Opciones.length && this.findAccion(opt.Opciones, option)));
   }
 
   // Funciones CRUD

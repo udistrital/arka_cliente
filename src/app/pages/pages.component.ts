@@ -83,7 +83,7 @@ export class PagesComponent implements OnInit {
     this.menuws.get(roles).subscribe(
       data => {
         this.configuracion.setAcciones(data);
-        this.dataMenu = this.menuws.filtrarMenus(<Partial<Menu>[]>data);
+        this.dataMenu = data;
         this.buildMenu();
       },
       (error: HttpErrorResponse) => {

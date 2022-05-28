@@ -60,23 +60,25 @@ export class MenuService {
 
   convertirMenuNebular(m: Partial<Menu>[], base: string = ''): any[] {
     const keyLevel = base ? base + '.' : '';
-    return m.map(original => {
-      const newm = {};
-      const level = keyLevel + original.Nombre;
-      if (original.Nombre !== '') {
-        newm['title'] = this.translate.instant(level + '.name');
-      }
-      if (original.Icono && original.Icono !== '') {
-        newm['icon'] = original.Icono;
-      }
-      if (original.Url !== '') {
-        newm['link'] = original.Url;
-      }
-      if (original.Opciones && Array.isArray(original.Opciones)) {
-        newm['children'] = this.convertirMenuNebular(original.Opciones, level + '.children');
-      }
-      return newm;
-    });
+    return m
+      .filter(op => op.TipoOpcion === TipoOpcion.Menu)
+      .map(original => {
+        const newm = {};
+        const level = keyLevel + original.Nombre;
+        if (original.Nombre !== '') {
+          newm['title'] = this.translate.instant(level + '.name');
+        }
+        if (original.Icono && original.Icono !== '') {
+          newm['icon'] = original.Icono;
+        }
+        if (original.Url !== '') {
+          newm['link'] = original.Url;
+        }
+        if (original.Opciones && Array.isArray(original.Opciones)) {
+          newm['children'] = this.convertirMenuNebular(original.Opciones, level + '.children');
+        }
+        return newm;
+      });
   }
 
   get(roles) {
@@ -105,8 +107,8 @@ export class MenuService {
 
   private getStringRolesUrl(roles: string[], separador: string = ','): string {
     return roles
-    .join(separador)
-    .replace(/\//g, '');
+      .join(separador)
+      .replace(/\//g, '');
   }
 
   /*

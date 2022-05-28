@@ -4,6 +4,7 @@ import { EntradasComponent } from './entradas.component';
 import { RegistroComponent } from './registro/registro.component';
 import { ConsultaEntradaComponent } from './consulta-entrada/consulta-entrada.component';
 import { VerComprobanteComponent } from './ver-comprobante/ver-comprobante.component';
+import { AuthGuard } from '../../@core/_guards/auth.guard';
 
 const routes: Routes = [{
   path: '',
@@ -12,16 +13,19 @@ const routes: Routes = [{
     {
       path: 'registro',
       component: RegistroComponent,
+      canActivate: [AuthGuard],
     },
     {
       path: 'consulta_entrada',
       component: ConsultaEntradaComponent,
       data: { modo: 'consulta' },
+      canActivate: [AuthGuard],
     },
     {
       path: 'aprobar_entrada',
       component: ConsultaEntradaComponent,
       data: { modo: 'revision' },
+      canActivate: [AuthGuard],
     },
   ],
 }];
