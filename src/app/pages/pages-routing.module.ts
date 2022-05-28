@@ -24,11 +24,6 @@ const routes: Routes = [{
       canActivate: [AuthGuard],
     },
     {
-      path: 'movimientos',
-      loadChildren: './movimientos/movimientos.module#MovimientosModule',
-      canActivate: [AuthGuard],
-    },
-    {
       path: 'entradas',
       loadChildren: './entradas/entradas.module#EntradasModule',
       canActivate: [AuthGuard],
