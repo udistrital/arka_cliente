@@ -65,7 +65,7 @@ export class ConfiguracionService {
   }
 
   findRoute(menu: Partial<Menu>[], option: string) {
-    return menu.find(opt => (opt.TipoOpcion === TipoOpcion.Menu && opt.Url === option) ||
+    return menu.find(opt => (opt.Url === option) ||
       (opt.Opciones && opt.Opciones.length && this.findRoute(opt.Opciones, option)));
   }
 

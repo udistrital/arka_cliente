@@ -128,7 +128,7 @@ export class ConsultaActaRecibidoComponent implements OnInit {
         columnTitle: this.translate.instant('GLOBAL.Acciones'),
         position: 'right',
         delete: !!this.confService.getAccion('anularActaRecibido'),
-        add: !!this.confService.getAccion('crearActaRecibido'),
+        add: !!this.confService.getRoute('/pages/acta_recibido/registro_acta_recibido'),
       },
       add: {
         addButtonContent: '<i class="fas" title="' + f.registrar + '" aria-label="' + f.registrar + '">' +

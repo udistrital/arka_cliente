@@ -175,7 +175,7 @@ export class ConsultaTrasladosComponent implements OnInit {
         position: 'right',
         delete: this.modo === 'consulta',
         edit: true,
-        add: this.confService.getAccion('registrarTraslado') !== undefined,
+        add: !!this.confService.getAccion('registrarTraslado'),
       },
       add: {
         addButtonContent: '<i class="fas" title="' + t.registrar + '" aria-label="' + t.registrar + '">'

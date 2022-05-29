@@ -15,6 +15,7 @@ import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoH
 import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
 import Swal from 'sweetalert2';
 import { PopUpManager } from '../../../managers/popUpManager';
+import { ConfiguracionService } from '../../../@core/data/configuracion.service';
 
 @Component({
   selector: 'ngx-consulta-salidas',
@@ -62,6 +63,7 @@ export class ConsultaSalidasComponent implements OnInit {
     private terceros: TercerosHelper,
     private route: ActivatedRoute,
     private entradasHelper: EntradaHelper,
+    private confService: ConfiguracionService,
   ) {
     this.source = new LocalDataSource();
     this.detalle = false;
@@ -127,8 +129,8 @@ export class ConsultaSalidasComponent implements OnInit {
         columnTitle: this.translate.instant('GLOBAL.Acciones'),
         position: 'right',
         delete: true,
-        edit: (this.modo === 'consulta' ? true : false),
-        add: true,
+        edit: this.modo === 'consulta',
+        add: !!this.confService.getRoute('/pages/salidas/registro_salidas'),
       },
       add: {
         addButtonContent: '<i class="fas">' + this.translate.instant('GLOBAL.crear_nuevo') + '</i>',

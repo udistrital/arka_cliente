@@ -17,6 +17,7 @@ import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
 import Swal from 'sweetalert2';
 import { PopUpManager } from '../../../managers/popUpManager';
 import { SoporteActa } from '../../../@core/data/models/acta_recibido/soporte_acta';
+import { ConfiguracionService } from '../../../@core/data/configuracion.service';
 
 @Component({
   selector: 'ngx-consulta-entrada',
@@ -68,7 +69,8 @@ export class ConsultaEntradaComponent implements OnInit {
     private listService: ListService,
     private store: Store<IAppState>,
     private tercerosHelper: TercerosHelper,
-    private route: ActivatedRoute) {
+    private route: ActivatedRoute,
+    private confService: ConfiguracionService,) {
     this.source = new LocalDataSource();
     this.entradas = new Array<Entrada>();
     this.detalle = false;
@@ -136,6 +138,7 @@ keyEventUp(event: KeyboardEvent) {
         position: 'right',
         delete: false,
         edit: false,
+        add: !!this.confService.getRoute('/pages/entradas/registro'),
         custom: [
           {
             name: this.translate.instant('GLOBAL.detalle'),
