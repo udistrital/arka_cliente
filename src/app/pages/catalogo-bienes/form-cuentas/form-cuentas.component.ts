@@ -263,7 +263,7 @@ export class FormCuentasComponent implements OnInit, OnChanges {
   private validarCompleter(key: string): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
       const valor = control.value;
-      const checkMinLength = typeof (valor) === 'string' && valor.length < 4;
+      const checkMinLength = typeof (valor) === 'string' && valor.length && valor.length < 4;
       const checkInvalidTercero = (typeof (valor) === 'object' && valor && !valor[key]) ||
         (typeof (valor) === 'string' && valor.length >= 4);
       return checkMinLength ? { errMinLength: true } : checkInvalidTercero ? { errSelected: true } : null;
