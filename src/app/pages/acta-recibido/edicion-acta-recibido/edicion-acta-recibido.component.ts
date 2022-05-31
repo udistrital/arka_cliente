@@ -464,7 +464,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
                 contratista.Tercero.Id === transaccion_.UltimoEstado.PersonaAsignadaId;
               return this.Contratistas.some(criterio) ? this.Contratistas.find(criterio) : '';
             })(),
-            disabled: !this.getPermisoEditar(this.permisos.Acta),
+            disabled: !this.confService.getAccion('edicionActaAuxI'),
           }, ar ? [Validators.required, this.validarTercero()] : [],
         ],
         Proveedor: [
