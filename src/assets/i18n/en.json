@@ -959,7 +959,7 @@
         "registroConfrmTxt":"Are you sure to register the issues with the information provided?",
         "registroTtlOk":"Issue{{S}} Registered",
         "registroTxtOk":"The issue {{CONSECUTIVO}} was successfully registered",
-        "registroTxtOkVarios":"The issues {{CONSECUTIVO}} were successfully registered",
+        "registroTxtOkVarios":"Se generaron {{N}} salidas, de {{CONSECUTIVO0}} hasta {{CONSECUTIVOF}}.",
         "aprobacionConfrmTtl":"Confirm issue Approval",
         "aprobacionConfrmTxt":"Are you sure to approve this issue?",
         "aprobacionTtlOk": "Issue approved",

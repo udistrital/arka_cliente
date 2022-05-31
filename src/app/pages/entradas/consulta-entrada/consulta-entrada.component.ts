@@ -70,7 +70,7 @@ export class ConsultaEntradaComponent implements OnInit {
     private store: Store<IAppState>,
     private tercerosHelper: TercerosHelper,
     private route: ActivatedRoute,
-    private confService: ConfiguracionService,) {
+    private confService: ConfiguracionService) {
     this.source = new LocalDataSource();
     this.entradas = new Array<Entrada>();
     this.detalle = false;

@@ -959,7 +959,7 @@
         "registroConfrmTxt":"¿Está seguro de registrar las salidas con la información suministrada?",
         "registroTtlOk":"Salida{{S}} Registrada{{S}}",
         "registroTxtOk":"La salida {{CONSECUTIVO}} se ha registrado de manera exitosa",
-        "registroTxtOkVarios":"Las salidas {{CONSECUTIVO}} se han registrado de manera exitosa",
+        "registroTxtOkVarios":"Se generaron {{N}} salidas, de {{CONSECUTIVO0}} hasta {{CONSECUTIVOF}}.",
         "aprobacionConfrmTtl":"Confirmar Aprobación de Salida",
         "aprobacionConfrmTxt":"¿Está seguro que desea aprobar la salida?",
         "aprobacionTtlOk": "Salida Aprobada",

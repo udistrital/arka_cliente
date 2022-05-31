@@ -479,60 +479,51 @@ export class TablaElementosAsignadosComponent implements OnInit {
       confirmButtonText: 'Si',
       cancelButtonText: 'No',
     }).then((result) => {
-        if (result.value) {
-          if (this.edicionSalida) {
-            this.salidasHelper.editarSalida(Salidas, this.salida_id).subscribe((res: any) => {
-               if (res) {
-                   let pconsecutivo = '';
-                   let text = '';
-                   let title = '';
-                   if (typeof res.trSalida.Salidas !== 'undefined') {
-                       const length = res.trSalida.Salidas.length;
-                       const s = length > 1 ? 's' : '';
-                       pconsecutivo = JSON.parse(res.trSalida.Salidas[0].Salida.Detalle).consecutivo +
-                         (length > 1 ? (' ' + this.translate.instant('GLOBAL.hasta') + ' '
-                           + JSON.parse(res.trSalida.Salidas[length - 1].Salida.Detalle).consecutivo) : '');
-                       title = this.translate.instant('GLOBAL.movimientos.salidas.registroTtlOk', { S: s });
-                       text = this.translate.instant('GLOBAL.movimientos.salidas.registroTxtOk' +
-                         (length > 1 ? 'Varios' : ''), { CONSECUTIVO: pconsecutivo });
-                    } else {
-                       pconsecutivo = JSON.parse(res.trSalida.Detalle).consecutivo;
-                       text = this.translate.instant('GLOBAL.movimientos.salidas.registroTxtOk' +
-                       { CONSECUTIVO: pconsecutivo });
-                       title = this.translate.instant('GLOBAL.movimientos.salidas.registroTtlOk', { S: '' });
-                    }
-                    const options = {
-                       type: 'success',
-                       title,
-                       text,
-                       showConfirmButton: true,
-                    };
-                    this.pUpManager.showAlertWithOptions(options);
-                    this.router.navigate(['/pages/salidas']);
-                }
-            });
+      if (result.value) {
+        if (this.edicionSalida) {
+          this.salidasHelper.editarSalida(Salidas, this.salida_id).subscribe((res: any) => {
+            if (res.trSalida.Salidas && res.trSalida.Salidas.length) {
+              const length = res.trSalida.Salidas.length;
+              const s = length > 1 ? 's' : '';
+              const consecutivo0 = JSON.parse(res.trSalida.Salidas[0].Salida.Detalle).consecutivo;
+              const consecutivoF = JSON.parse(res.trSalida.Salidas[length - 1].Salida.Detalle).consecutivo;
+              const title = this.translate.instant('GLOBAL.movimientos.salidas.registroTtlOk', { S: s });
+              const text = this.translate.instant('GLOBAL.movimientos.salidas.registroTxtOk' +
+                (length > 1 ? 'Varios' : ''), { N: length, CONSECUTIVO0: consecutivo0, CONSECUTIVOF: consecutivoF });
+
+              const options = {
+                type: 'success',
+                title,
+                text,
+                showConfirmButton: true,
+              };
+              this.pUpManager.showAlertWithOptions(options);
+              this.router.navigate(['/pages/salidas/consulta_salidas']);
+            }
+          });
         } else {
-           this.salidasHelper.registrarSalida(Salidas).subscribe((res: any) => {
-           if (res) {
-             const length = res.trSalida.Salidas.length;
-             const s = length > 1 ? 's' : '';
-             const pconsecutivo = JSON.parse(res.trSalida.Salidas[0].Salida.Detalle).consecutivo +
-             (length > 1 ? (' - ' + JSON.parse(res.trSalida.Salidas[length - 1].Salida.Detalle).consecutivo) : '');
-             const title = this.translate.instant('GLOBAL.movimientos.salidas.registroTtlOk', { S: s });
-             const text = this.translate.instant('GLOBAL.movimientos.salidas.registroTxtOk' +
-             (length > 1 ? 'Varios' : ''), { CONSECUTIVO: pconsecutivo });
-             const options = {
-              type: 'success',
-              title,
-              text,
-              showConfirmButton: true,
-             };
-             this.pUpManager.showAlertWithOptions(options);
-             this.router.navigate(['/pages/salidas/consulta_salidas']);
-           }
-           });
+          this.salidasHelper.registrarSalida(Salidas).subscribe((res: any) => {
+            if (res.trSalida.Salidas && res.trSalida.Salidas.length) {
+              const length = res.trSalida.Salidas.length;
+              const s = length > 1 ? 's' : '';
+              const consecutivo0 = JSON.parse(res.trSalida.Salidas[0].Salida.Detalle).consecutivo;
+              const consecutivoF = JSON.parse(res.trSalida.Salidas[length - 1].Salida.Detalle).consecutivo;
+              const title = this.translate.instant('GLOBAL.movimientos.salidas.registroTtlOk', { S: s });
+              const text = this.translate.instant('GLOBAL.movimientos.salidas.registroTxtOk' +
+                (length > 1 ? 'Varios' : ''), { N: length, CONSECUTIVO0: consecutivo0, CONSECUTIVOF: consecutivoF });
+
+              const options = {
+                type: 'success',
+                title,
+                text,
+                showConfirmButton: true,
+              };
+              this.pUpManager.showAlertWithOptions(options);
+              this.router.navigate(['/pages/salidas/consulta_salidas']);
+            }
+          });
         }
-    }
+      }
     });
   }
 
