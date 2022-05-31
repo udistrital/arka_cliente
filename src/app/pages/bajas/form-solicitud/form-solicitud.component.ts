@@ -227,6 +227,12 @@ export class FormSolicitudComponent implements OnInit {
           disabled: true,
         },
       ],
+      dependencia: [
+        {
+          value: '',
+          disabled: true,
+        },
+      ],
       numero: [
         {
           value: '',
@@ -256,10 +262,12 @@ export class FormSolicitudComponent implements OnInit {
     }
     const disabled = this.modo === 'get';
     const razon = values.rechazo ? values.rechazo : '';
+    const dependencia = values.dependencia ? values.dependencia : '';
     const numero = values.numero ? values.numero : '';
     const fecha = values.fechaRevisionC ? values.fechaRevisionC : '';
     this.formBaja.get('rechazo').patchValue({ razon });
     this.formBaja.get('resolucion').patchValue({ numero });
+    this.formBaja.get('resolucion').patchValue({ dependencia });
     this.formBaja.get('resolucion').patchValue({ fecha });
     const soporte = { Id: values.soporte };
     const revisor = {

@@ -82,6 +82,7 @@ export class CrudBajasComponent implements OnInit {
         this.bajaData.rechazo = res.RazonRechazo;
         this.bajaData.numero = res.Resolucion;
         this.bajaData.fechaRevisionC = res.FechaRevisionC;
+        this.bajaData.dependencia = res.DependenciaId;
         if (res.TrContable) {
           this.bajaData.trContable = res.TrContable;
           this.bajaData.trContable.consecutivo = this.consecutivo;
