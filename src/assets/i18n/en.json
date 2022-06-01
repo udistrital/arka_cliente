@@ -329,6 +329,7 @@
       },
       "CapturarElementos": {
         "CargaMasivaTitle": "Bulk Load",
+        "CCE": "Enlace al clasificador de bienes CCE",
         "ValidadorPlaceholder": "The file shall have {{EXT}} extension (*.{{EXT}})",
         "LimpiarEspacioButton": "Discard File",
         "CargarElementosButton": "Load Items",

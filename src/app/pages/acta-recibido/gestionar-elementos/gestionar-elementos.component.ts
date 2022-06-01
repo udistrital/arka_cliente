@@ -57,6 +57,7 @@ export class GestionarElementosComponent implements OnInit {
   file: any;
   submitted: boolean = true;
   sizeSoporte: number;
+  cce: string = 'https://colombiacompra.gov.co/clasificador-de-bienes-y-servicios';
 
   private checkAnterior: number = undefined;
   private estadoShift: boolean = false;

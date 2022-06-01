@@ -329,6 +329,7 @@
       },
       "CapturarElementos":{
         "CargaMasivaTitle":"Carga Masiva",
+        "CCE": "Enlace al clasificador de bienes CCE",
         "ValidadorPlaceholder":"El archivo debe tener extensión {{EXT}} (*.{{EXT}})",
         "LimpiarEspacioButton":"Descartar Archivo",
         "CargarElementosButton":"Cargar Elementos",
@@ -958,7 +959,7 @@
         "registroConfrmTtl":"Confirmar Registro de Salida",
         "registroConfrmTxt":"¿Está seguro de registrar las salidas con la información suministrada?",
         "registroTtlOk":"Salida{{S}} Registrada{{S}}",
-        "registroTxtOk":"La salida {{CONSECUTIVO}} se ha registrado de manera exitosa",
+        "registroTxtOk":"La salida {{CONSECUTIVO0}} se ha registrado de manera exitosa",
         "registroTxtOkVarios":"Se generaron {{N}} salidas, de {{CONSECUTIVO0}} hasta {{CONSECUTIVOF}}.",
         "aprobacionConfrmTtl":"Confirmar Aprobación de Salida",
         "aprobacionConfrmTxt":"¿Está seguro que desea aprobar la salida?",
