@@ -236,8 +236,6 @@ export class ProvisionalComponent implements OnInit {
         contrato_id: +this.contratoEspecifico.NumeroContratoSuscrito,
         vigencia_contrato: this.contratoForm.value.vigenciaCtrl,
         importacion: this.checked,
-        tipo_contrato: this.opcionTipoContrato === '14' ? 'Orden de Servicios' :
-        this.opcionTipoContrato === '15' ? 'Orden de Compra' : '',
       };
 
       const transaccion = <TransaccionEntrada>{

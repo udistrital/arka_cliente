@@ -277,8 +277,6 @@ export class DonacionComponent implements OnInit {
         vigencia_contrato: this.contratoForm.value.vigenciaCtrl,
         vigencia_solicitante: this.solicitanteForm.value.fechaCtrl,
         ordenador_gasto_id: +this.ordenadorId,
-        tipo_contrato: this.opcionTipoContrato === '14' ? 'Orden de Servicios' :
-          this.opcionTipoContrato === '15' ? 'Orden de Compra' : '',
       };
 
       const transaccion = <TransaccionEntrada>{

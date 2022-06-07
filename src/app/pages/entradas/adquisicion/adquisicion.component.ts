@@ -224,8 +224,6 @@ export class AdquisicionComponent implements OnInit {
         acta_recibido_id: +this.actaRecibidoId,
         contrato_id: +this.contratoEspecifico.NumeroContratoSuscrito,
         vigencia_contrato: this.contratoForm.value.vigenciaCtrl,
-        tipo_contrato: this.opcionTipoContrato === '14' ? 'Orden de Servicios' :
-          this.opcionTipoContrato === '15' ? 'Orden de Compra' : '',
         factura: this.factura ? this.factura.Id : 0,
       };
 
