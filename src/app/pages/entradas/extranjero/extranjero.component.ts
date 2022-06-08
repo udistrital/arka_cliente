@@ -109,7 +109,9 @@ export class ExtranjeroComponent implements OnInit {
    */
   private getVigencia() {
     this.vigencia = new Date().getFullYear();
-    this.tipos = this.entradasHelper.getTiposContrato();
+    this.entradasHelper.getTiposContrato().subscribe((res: any) => {
+      this.tipos = res;
+    });
   }
 
   private loadContratos(): void {

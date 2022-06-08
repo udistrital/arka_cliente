@@ -469,17 +469,18 @@ export class EntradaHelper {
     }
 
     public getTiposContrato() {
-        const tipos = [
-            {
-                Nombre: 'Orden de servicios',
-                Id: 14,
-            },
-            {
-                Nombre: 'Orden de compra',
-                Id: 15,
-            },
-        ];
-        return tipos;
+        this.rqManager.setPath('UNIDADES_SERVICE');
+        return this.rqManager.get('tipo_contrato?fields=Id,TipoContrato&sortby=TipoContrato&order=asc&limit=-1').pipe(
+            map(
+                (res) => {
+                    if (res === 'error') {
+                        this.pUpManager.showErrorAlert('No se pudo consultar los contratos');
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
     }
 
 }

@@ -234,7 +234,9 @@ export class TercerosComponent implements OnInit {
    */
   getVigencia() {
     this.vigencia = new Date().getFullYear();
-    this.tipos = this.entradasHelper.getTiposContrato();
+    this.entradasHelper.getTiposContrato().subscribe((res: any) => {
+      this.tipos = res;
+    });
   }
 
 //  Método para enviar registro

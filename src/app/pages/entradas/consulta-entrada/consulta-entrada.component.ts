@@ -627,7 +627,7 @@ export class ConsultaEntradaComponent implements OnInit {
   }
 
   private getTiposContrato() {
-    this.entradasHelper.getTiposContrato_().subscribe((res: any) => {
+    this.entradasHelper.getTiposContrato().subscribe((res: any) => {
       this.tipos = res;
     });
   }
