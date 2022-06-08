@@ -18,6 +18,7 @@ import Swal from 'sweetalert2';
 import { PopUpManager } from '../../../managers/popUpManager';
 import { SoporteActa } from '../../../@core/data/models/acta_recibido/soporte_acta';
 import { ConfiguracionService } from '../../../@core/data/configuracion.service';
+import { SmartTableService } from '../../../@core/data/SmartTableService';
 
 @Component({
   selector: 'ngx-consulta-entrada',
@@ -28,7 +29,7 @@ import { ConfiguracionService } from '../../../@core/data/configuracion.service'
 export class ConsultaEntradaComponent implements OnInit {
   source: LocalDataSource;
   actaRecibidoId: number;
-  entradaId: string;
+  entradaId: number;
   entradaEspecifica: Entrada;
   tipos: Array<any>;
   contrato: Contrato;
@@ -63,7 +64,8 @@ export class ConsultaEntradaComponent implements OnInit {
     private store: Store<IAppState>,
     private tercerosHelper: TercerosHelper,
     private route: ActivatedRoute,
-    private confService: ConfiguracionService) {
+    private confService: ConfiguracionService,
+    private tabla: SmartTableService) {
     this.source = new LocalDataSource();
     this.entradaEspecifica = new Entrada;
     this.contrato = new Contrato;
@@ -137,7 +139,7 @@ export class ConsultaEntradaComponent implements OnInit {
         FechaCreacion: {
           title: this.translate.instant('GLOBAL.fecha_entrada'),
           width: '70px',
-          valuePrepareFunction: this.formatDate,
+          valuePrepareFunction: this.tabla.formatDate,
           filter: {
             type: 'daterange',
             config: {
@@ -155,19 +157,19 @@ export class ConsultaEntradaComponent implements OnInit {
             config: {
               selectText: this.translate.instant('GLOBAL.seleccionar') + '...',
               list: [
+                { value: 'Adiciones y Mejoras', title: 'Adiciones y Mejoras' },
                 { value: 'Adquisición', title: 'Adquisición' },
-                { value: 'Elaboración Propia', title: 'Elaboración Propia' },
+                { value: 'Caja menor', title: 'Caja Menor' },
+                { value: 'Compra en el Extranjero', title: 'Compra en el Extranjero' },
                 { value: 'Donación', title: 'Donación' },
+                { value: 'Elaboración Propia', title: 'Elaboración Propia' },
+                { value: 'Intangibles adquiridos', title: 'Intangibles adquiridos' },
+                { value: 'Intangibles desarrollados', title: 'Intangibles desarrollados' },
+                { value: 'Partes por Aprovechamientos', title: 'Partes por Aprovechamientos' },
+                { value: 'Provisional', title: 'Provisional' },
                 { value: 'Reposición', title: 'Reposición' },
                 { value: 'Sobrante', title: 'Sobrante' },
                 { value: 'Terceros', title: 'Terceros' },
-                { value: 'Caja menor', title: 'Caja Menor' },
-                { value: 'Adiciones y Mejoras', title: 'Adiciones y Mejoras' },
-                { value: 'Intangibles adquiridos', title: 'Intangibles adquiridos' },
-                { value: 'Provisional', title: 'Provisional' },
-                { value: 'Compra en el Extranjero', title: 'Compra en el Extranjero' },
-                { value: 'Intangibles desarrollados', title: 'Intangibles desarrollados' },
-                { value: 'Partes por Aprovechamientos', title: 'Partes por Aprovechamientos' },
               ],
             },
           },
@@ -341,7 +343,7 @@ export class ConsultaEntradaComponent implements OnInit {
   private onSubmitRevision(aprobar: boolean) {
     if (aprobar) {
       this.spinner = 'Aprobando entrada y generando transacción contable';
-      this.entradasHelper.postEntrada({}, +this.entradaId).toPromise().then((res: any) => {
+      this.entradasHelper.postEntrada({}, +this.entradaId, true).toPromise().then((res: any) => {
         this.spinner = '';
         if (res && res.errorTransaccion === '') {
           this.verComponente = true;
@@ -585,7 +587,7 @@ export class ConsultaEntradaComponent implements OnInit {
     this.mostrar = false;
     this.actaRecibidoId = +`${event.data.ActaRecibidoId}`;
     this.filaSeleccionada = event.data;
-    this.entradaId = `${event.data.Id}`;
+    this.entradaId = event.data.Id;
     this.loadEntradaEspecifica();
   }
 
@@ -594,22 +596,25 @@ export class ConsultaEntradaComponent implements OnInit {
       this.mostrar = false;
       this.actaRecibidoId = +`${event.data.ActaRecibidoId}`;
       this.filaSeleccionada = event.data;
-      this.entradaId = `${event.data.Id}`;
+      this.entradaId = event.data.Id;
       this.updateEntrada = false;
       this.loadEntradaEspecifica();
     } else if (event.data.EstadoMovimientoId === 'Entrada Rechazada') {
       this.mostrar = false;
       this.actaRecibidoId = +`${event.data.ActaRecibidoId}`;
       this.filaSeleccionada = event.data;
-      this.entradaId = `${event.data.Id}`;
+      this.entradaId = event.data.Id;
       this.updateEntrada = true;
     } else {
-      this.pUpManager.showErrorAlert('this.translate.instant(GLOBAL.bajas.consulta.errorEditar');
+      this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.entradas.errorEditar'));
     }
 
   }
 
-  onVolver() {
+  onVolver($event: boolean = false) {
+    if ($event) {
+      this.loadEntradas();
+    }
     this.updateEntrada = false;
     this.iniciarParametros();
     this.mostrar = true;
@@ -665,12 +670,6 @@ export class ConsultaEntradaComponent implements OnInit {
     this.loadTablaSettings();
     this.getTiposContrato();
 
-  }
-
-  private formatDate(value) {
-    const date = new Date(value);
-    date.setUTCMinutes(date.getTimezoneOffset());
-    return new Date(Date.parse(date.toString())).toLocaleDateString('es-CO');
   }
 
 }

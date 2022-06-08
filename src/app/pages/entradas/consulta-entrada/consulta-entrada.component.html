@@ -20,7 +20,7 @@
     </div>
 
     <div *ngIf="updateEntrada">
-      <ngx-registro [EntradaId]="entradaId" [ActaParaEditar]="actaRecibidoId" (volver)="onVolver()"></ngx-registro>
+      <ngx-registro [EntradaId]="entradaId" [ActaParaEditar]="actaRecibidoId" (volver)="onVolver($event)"></ngx-registro>
     </div>
 
     <!-- CARD PARA MOSTRAR LOS DETALLES DE LAS SOLICITUDES -->
@@ -451,7 +451,7 @@
       </mat-vertical-stepper>
 
       <ngx-ver-comprobante [consecutivo]="entradaEspecifica.Consecutivo" [transaccion]="transaccionContable"
-        *ngIf="verComponente"></ngx-ver-comprobante>
+        *ngIf="verComponente && transaccionContable"></ngx-ver-comprobante>
 
     </div>
   </mat-card-content>

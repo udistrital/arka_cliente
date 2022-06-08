@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, Input } from '@angular/core';
+import { Component, OnInit, ViewChild, Input, Output, EventEmitter } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NbStepperComponent } from '@nebular/theme';
 import { TerceroCriterioPlanta } from '../../../@core/data/models/terceros_criterio';
@@ -7,11 +7,7 @@ import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import { TransaccionEntrada } from '../../../@core/data/models/entrada/entrada';
-import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
 import { TranslateService } from '@ngx-translate/core';
-import { Router } from '@angular/router';
-import Swal from 'sweetalert2';
-
 
 @Component({
   selector: 'ngx-aprovechamientos',
@@ -30,7 +26,6 @@ export class AprovechamientosComponent implements OnInit {
 
   validar: boolean = false;
   cargando_supervisores: boolean = true;
-  registrando: boolean;
 
   private Supervisores: TerceroCriterioPlanta[];
   supervisoresFiltrados: Observable<TerceroCriterioPlanta[]>;
@@ -38,17 +33,13 @@ export class AprovechamientosComponent implements OnInit {
   @ViewChild('stepper') stepper: NbStepperComponent;
 
   @Input() actaRecibidoId: number;
-  @Input() entradaId: any;
-  @Input() EntradaEdit: any;
+  @Output() data: EventEmitter<TransaccionEntrada> = new EventEmitter<TransaccionEntrada>();
 
   constructor(
-    private router: Router,
     private tercerosHelper: TercerosHelper,
     private pUpManager: PopUpManager,
     private fb: FormBuilder,
-    private entradasHelper: EntradaHelper,
-    private translate: TranslateService,
-  ) {
+    private translate: TranslateService) {
     this.vigenciaSelect = false;
     this.validar = false;
   }
@@ -120,12 +111,9 @@ export class AprovechamientosComponent implements OnInit {
     this.validar = true;
   }
 
-  /**
-   * Método para enviar registro
-   */
+// Método para enviar registro
   onSubmit() {
     if (this.validar) {
-      this.registrando = true;
       const detalle = {
         acta_recibido_id: +this.actaRecibidoId,
         vigencia: this.fechaForm.value.fechaCtrl,
@@ -139,20 +127,7 @@ export class AprovechamientosComponent implements OnInit {
         SoporteMovimientoId: 0,
       };
 
-      this.entradasHelper.postEntrada(transaccion).subscribe((res: any) => {
-        if (res.Detalle) {
-          this.registrando = false;
-          const consecutivo = JSON.parse(res.Detalle).consecutivo;
-          (Swal as any).fire({
-            type: 'success',
-            title: this.translate.instant('GLOBAL.movimientos.entradas.registroTtlOk', { CONSECUTIVO: consecutivo }),
-            text: this.translate.instant('GLOBAL.movimientos.entradas.registroTxtOk', { CONSECUTIVO: consecutivo }),
-          });
-          this.router.navigate(['/pages/entradas']);
-        } else {
-          this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.entradas.registroFail'));
-        }
-      });
+      this.data.emit(transaccion);
     } else {
       this.pUpManager.showErrorAlert('No ha llenado todos los campos! No es posible hacer el registro.');
     }

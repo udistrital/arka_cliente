@@ -90,16 +90,17 @@ export class EntradaHelper {
      * @param entradaData object to save in the DB
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
      */
-    public postEntrada(entradaData: Partial<TransaccionEntrada>, entradaId: number = 0) {
+    public postEntrada(entradaData: Partial<TransaccionEntrada>, entradaId: number = 0, aprobar: boolean = false) {
 //          console.log("mira el numero", entradaId);
         return this.dispMvtos.movimientosPermitidos().pipe(
-         switchMap(disp => iif(() => disp, this.postEntradaFinal(entradaData, entradaId))),
+         switchMap(disp => iif(() => disp, this.postEntradaFinal(entradaData, entradaId, aprobar))),
         );
     }
 
-    private postEntradaFinal(entradaData: Partial<TransaccionEntrada>, entradaId: number) {
+    private postEntradaFinal(entradaData: Partial<TransaccionEntrada>, entradaId: number, aprobar: boolean) {
         this.rqManager.setPath('ARKA_SERVICE');
-        return this.rqManager.post('entrada?entradaId=' + entradaId, entradaData).pipe(
+        const query = 'entrada?entradaId=' + entradaId + (aprobar ? '&aprobar=true' : '');
+        return this.rqManager.post(query, entradaData).pipe(
             map(
                 (res) => {
                     if (res['Type'] === 'error') {
@@ -408,7 +409,7 @@ export class EntradaHelper {
     public getTiposEntradaByOrden(NumeroOrden) {
         this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
         return this.rqManager.get('formato_tipo_movimiento?query=Activo:true,NumeroOrden:' +
-            NumeroOrden + '&fields=CodigoAbreviacion&sortby=Id&order=asc&limit=-1').pipe(
+            NumeroOrden + '&fields=CodigoAbreviacion&sortby=Nombre&order=asc&limit=-1').pipe(
                 map(
                     (res) => {
                         if (res === 'error') {

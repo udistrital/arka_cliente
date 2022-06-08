@@ -1,5 +1,5 @@
-import { Component, OnInit, Input, ViewChild, ɵConsole } from '@angular/core';
-import { Validators, FormBuilder, FormGroup, AbstractControl, ValidatorFn } from '@angular/forms';
+import { Component, OnInit, Input, ViewChild, Output, EventEmitter } from '@angular/core';
+import { Validators, FormBuilder, FormGroup } from '@angular/forms';
 import { PopUpManager } from '../../../managers/popUpManager';
 import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
 import { Contrato } from '../../../@core/data/models/entrada/contrato';
@@ -8,10 +8,7 @@ import { OrdenadorGasto } from '../../../@core/data/models/entrada/ordenador_gas
 import { Supervisor } from '../../../@core/data/models/entrada/supervisor';
 import { SoporteActaProveedor } from '../../../@core/data/models/acta_recibido/soporte_acta';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
-import { TipoEntrada } from '../../../@core/data/models/entrada/tipo_entrada';
-import { Router, NavigationExtras } from '@angular/router';
 import { NbStepperComponent } from '@nebular/theme';
-import Swal from 'sweetalert2';
 import { isObject } from 'rxjs/internal-compatibility';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -20,6 +17,7 @@ import { TranslateService } from '@ngx-translate/core';
   templateUrl: './adiciones-mejoras.component.html',
   styleUrls: ['./adiciones-mejoras.component.scss'],
 })
+
 export class AdicionesMejorasComponent implements OnInit {
 
   // Formularios
@@ -44,23 +42,22 @@ export class AdicionesMejorasComponent implements OnInit {
   soportes: Array<SoporteActaProveedor>;
   proveedor: string;
   fechaFactura: string;
-  observaciones: string;
   validar: boolean;
   // Selects
   opcionTipoContrato: string;
   opcionvigencia: string;
 
-  formatoTipoMovimiento: any;
-  registrando: boolean;
-
   @ViewChild('stepper') stepper: NbStepperComponent;
 
   @Input() actaRecibidoId: Number;
-  @Input() entradaId: any;
-  @Input() EntradaEdit: any;
+  @Output() data: EventEmitter<TransaccionEntrada> = new EventEmitter<TransaccionEntrada>();
 
-  constructor(private router: Router, private entradasHelper: EntradaHelper, private actaRecibidoHelper: ActaRecibidoHelper,
-    private pUpManager: PopUpManager, private fb: FormBuilder, private translate: TranslateService) {
+  constructor(
+    private entradasHelper: EntradaHelper,
+    private actaRecibidoHelper: ActaRecibidoHelper,
+    private pUpManager: PopUpManager,
+    private fb: FormBuilder,
+    private translate: TranslateService) {
     this.tipoContratoSelect = false;
     this.vigenciaSelect = false;
     this.contratos = new Array<Contrato>();
@@ -235,12 +232,9 @@ export class AdicionesMejorasComponent implements OnInit {
     this.tipos = this.entradasHelper.getTiposContrato();
   }
 
-  /**
-   * Método para enviar registro
-   */
+  // Método para enviar registro
   onSubmit() {
     if (this.validar) {
-      this.registrando = true;
       const detalle = {
         acta_recibido_id: +this.actaRecibidoId,
         contrato_id: +this.contratoEspecifico.NumeroContratoSuscrito,
@@ -254,20 +248,7 @@ export class AdicionesMejorasComponent implements OnInit {
         SoporteMovimientoId: 0,
       };
 
-      this.entradasHelper.postEntrada(transaccion).subscribe((res: any) => {
-        if (res.Detalle) {
-          this.registrando = false;
-          const consecutivo = JSON.parse(res.Detalle).consecutivo;
-          (Swal as any).fire({
-            type: 'success',
-            title: this.translate.instant('GLOBAL.movimientos.entradas.registroTtlOk', { CONSECUTIVO: consecutivo }),
-            text: this.translate.instant('GLOBAL.movimientos.entradas.registroTxtOk', { CONSECUTIVO: consecutivo }),
-          });
-          this.router.navigate(['/pages/entradas']);
-        } else {
-          this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.entradas.registroFail'));
-        }
-      });
+      this.data.emit(transaccion);
     } else {
       this.pUpManager.showErrorAlert('No ha llenado todos los campos! No es posible hacer el registro.');
     }

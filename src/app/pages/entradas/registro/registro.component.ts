@@ -5,25 +5,25 @@ import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoH
 import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
 import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
 import { TransaccionEntrada } from '../../../@core/data/models/entrada/entrada';
+import { SmartTableService } from '../../../@core/data/SmartTableService';
 
 @Component({
   selector: 'ngx-registro',
   templateUrl: './registro.component.html',
   styleUrls: ['./registro.component.scss'],
 })
-export class RegistroComponent implements OnInit {
 
-  mostrar: boolean = false;
+export class RegistroComponent implements OnInit {
 
   // Datos Tabla
   source: LocalDataSource;
+  settings: any;
   tiposDeEntradas: any;
   // Acta de recibido
   actaSeleccionada: string;
-  settings: any;
   opcionEntrada: string = '';
-  movimientoId: number;
   title: string;
+  spinner: string;
 
   @Input() ActaParaEditar: any;
   @Input() EntradaId: number;
@@ -34,7 +34,7 @@ export class RegistroComponent implements OnInit {
     private entradasHelper: EntradaHelper,
     private pUpManager: PopUpManager,
     private translate: TranslateService,
-  ) {
+    private tabla: SmartTableService) {
     this.source = new LocalDataSource();
     this.actaSeleccionada = '';
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { });
@@ -42,21 +42,20 @@ export class RegistroComponent implements OnInit {
 
   ngOnInit() {
     if (this.EntradaId && this.ActaParaEditar) {
+      this.title = this.translate.instant('GLOBAL.movimientos.entradas.editarTtl');
       this.cargarTiposDeEntradas();
-      this.title = this.translate.instant('GLOBAL.movimientos.fff');
     } else {
+      this.title = this.translate.instant('GLOBAL.registrar_entrada');
       this.loadTablaSettings();
       this.loadActas();
-      this.title = this.translate.instant('GLOBAL.registrar_entrada');
     }
     this.actaSeleccionada = this.EntradaId && this.ActaParaEditar ? this.ActaParaEditar : '';
-    this.movimientoId = this.EntradaId ? this.EntradaId : 0;
   }
 
   onVolver() {
     const update = this.EntradaId && this.ActaParaEditar;
     if (update && !this.opcionEntrada) {
-      this.volver.emit(true);
+      this.volver.emit(false);
     } else if (update) {
       this.opcionEntrada = '';
     } else if (!update && this.opcionEntrada) {
@@ -64,22 +63,20 @@ export class RegistroComponent implements OnInit {
     } else if (!update && this.actaSeleccionada) {
       this.actaSeleccionada = '';
     } else {
-      this.volver.emit(true);
+      this.volver.emit(false);
     }
   }
 
   onSubmit(entrada: TransaccionEntrada) {
     if (entrada.Detalle) {
-      this.mostrar = false;
-      if (this.EntradaId) {
-        entrada.Id = this.EntradaId;
-      }
-      this.entradasHelper.postEntrada(entrada).subscribe((res: any) => {
-        this.mostrar = true;
+      this.spinner = this.EntradaId ? 'Actualizando Entrada' : 'Registrando Entrada';
+      entrada.Id = this.EntradaId ? this.EntradaId : 0;
+      this.entradasHelper.postEntrada(entrada, entrada.Id, false).subscribe((res: any) => {
         if (res.Detalle) {
           const consecutivo = JSON.parse(res.Detalle).consecutivo;
           this.pUpManager.showAlertWithOptions(this.getOptionsRegistro(consecutivo));
-          // volver
+          this.volver.emit(true);
+          this.spinner = '';
         } else {
           this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.entradas.registroFail'));
         }
@@ -89,11 +86,12 @@ export class RegistroComponent implements OnInit {
   }
 
   private getOptionsRegistro(consecutivo: string) {
+    const modo = this.EntradaId && this.ActaParaEditar ? 'update' : 'registro';
     return {
       type: 'success',
-      title: this.translate.instant('GLOBAL.movimientos.entradas.registroTtlOk', { CONSECUTIVO: consecutivo }),
-      text: this.translate.instant('GLOBAL.movimientos.entradas.registroTxtOk', { CONSECUTIVO: consecutivo }),
-    }
+      title: this.translate.instant('GLOBAL.movimientos.entradas.' + modo + 'TtlOk', { CONSECUTIVO: consecutivo }),
+      text: this.translate.instant('GLOBAL.movimientos.entradas.' + modo + 'TxtOk', { CONSECUTIVO: consecutivo }),
+    };
   }
 
   loadTablaSettings() {
@@ -121,6 +119,7 @@ export class RegistroComponent implements OnInit {
         FechaCreacion: {
           title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.FechaCreacionHeader'),
           width: '70',
+          valuePrepareFunction: this.tabla.formatDate,
           filter: {
             type: 'daterange',
             config: {
@@ -133,6 +132,7 @@ export class RegistroComponent implements OnInit {
         FechaVistoBueno: {
           title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.FechaVistoBuenoHeader'),
           width: '70',
+          valuePrepareFunction: this.tabla.formatDate,
           filter: {
             type: 'daterange',
             config: {
@@ -171,16 +171,18 @@ export class RegistroComponent implements OnInit {
   }
 
   loadActas(): void {
+    this.spinner = 'Cargando actas aceptadas';
     this.actaRecibidoHelper.getAllActasRecibidoByEstado(['Aceptada']).subscribe(res => {
+      this.spinner = '';
       if (res && res.length) {
         this.source.load(res);
-        this.mostrar = true;
+        this.spinner = '';
       }
     });
   }
 
-
   onCustom(event) {
+    this.spinner = 'Cargando tipos de entradas';
     this.actaRecibidoHelper.getTransaccionActa(event.data.Id, true).subscribe(res => {
       res.ActaRecibido.TipoActaId.Id === 1 ?
         this.entradasHelper.getTiposEntradaByOrden(1).subscribe(res_ => {
@@ -189,10 +191,12 @@ export class RegistroComponent implements OnInit {
           this.tiposDeEntradas = res__;
         });
       this.actaSeleccionada = `${event.data.Id}`;
+      this.spinner = '';
     });
   }
 
   cargarTiposDeEntradas() {
+    this.spinner = 'Cargando tipos de entradas';
     this.actaRecibidoHelper.getTransaccionActa(this.ActaParaEditar, true).subscribe(res => {
       res.ActaRecibido.TipoActaId.Id === 1 ?
         this.entradasHelper.getTiposEntradaByOrden(1).subscribe(res_ => {
@@ -200,8 +204,7 @@ export class RegistroComponent implements OnInit {
         }) : this.entradasHelper.getTiposEntradaByOrden(2).subscribe(res__ => {
           this.tiposDeEntradas = res__;
         });
-      this.mostrar = true;
-      // this.actaSeleccionada = this.ActaParaEditar;
+      this.spinner = '';
     });
   }
 }
