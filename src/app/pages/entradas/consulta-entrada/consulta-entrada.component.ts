@@ -27,8 +27,6 @@ import { ConfiguracionService } from '../../../@core/data/configuracion.service'
 
 export class ConsultaEntradaComponent implements OnInit {
   source: LocalDataSource;
-  entradas: Array<Entrada>;
-  detalle: boolean;
   actaRecibidoId: number;
   entradaId: string;
   entradaEspecifica: Entrada;
@@ -37,11 +35,10 @@ export class ConsultaEntradaComponent implements OnInit {
   settings: any;
   documentoId: boolean;
   mostrar: boolean = false;
-  edit: boolean;
-  entradaEdit: any;
+  mostrarEntrada: boolean = false;
+  spinner: string;
   Supervisor: any;
   Ordenador: any;
-  Proveedores: any;
   Proveedor: any;
   Placa: any;
   encargado: any;
@@ -51,12 +48,8 @@ export class ConsultaEntradaComponent implements OnInit {
   filaSeleccionada: any;
   verComponente: boolean;
   transaccionContable: any;
-  detalleentrada: String;
-  key: boolean = false;
-  editarEntrada: boolean = false;
+  updateEntrada: boolean = false;
   trContable: any;
-  fecha: Date;
-  concepto: string;
   factura: SoporteActa;
 
   constructor(
@@ -72,8 +65,6 @@ export class ConsultaEntradaComponent implements OnInit {
     private route: ActivatedRoute,
     private confService: ConfiguracionService) {
     this.source = new LocalDataSource();
-    this.entradas = new Array<Entrada>();
-    this.detalle = false;
     this.entradaEspecifica = new Entrada;
     this.contrato = new Contrato;
     this.documentoId = false;
@@ -84,30 +75,13 @@ export class ConsultaEntradaComponent implements OnInit {
 
   }
 
-@HostListener('window:keydown', ['$event'])
-keyEventDown(event: KeyboardEvent) {
-   this.key = true;
-}
-
-
-@HostListener('window:keyup', ['$event'])
-keyEventUp(event: KeyboardEvent) {
-   this.key = false;
-}
-
-
-
-  onEdit(event) {
-    this.edit = true;
-    this.entradaEdit = event.data;
-  }
-
   loadTablaSettings() {
     const t = {
       registrar: this.translate.instant('GLOBAL.registrar_nueva_entrada'),
       accion: this.translate.instant('GLOBAL.' +
         (this.modo === 'consulta' ? 'verDetalle' : 'movimientos.entradas.accionRevision')),
       icon: this.modo === 'consulta' ? 'eye' : 'edit',
+      edit: this.translate.instant('GLOBAL.movimientos.entradas.editar'),
     };
 
     const columns = this.modo === 'consulta' ? {
@@ -136,19 +110,19 @@ keyEventUp(event: KeyboardEvent) {
       actions: {
         columnTitle: this.translate.instant('GLOBAL.Acciones'),
         position: 'right',
-        delete: false,
-        edit: false,
+        delete: this.modo === 'consulta',
+        edit: true,
         add: !!this.confService.getRoute('/pages/entradas/registro'),
-        custom: [
-          {
-            name: this.translate.instant('GLOBAL.detalle'),
-            title: '<i class="fas fa-' + t.icon + '" title="' + t.accion + '" aria-label="' + t.accion + '"></i>',
-          },
-        ],
       },
       add: {
         addButtonContent: '<i class="fas" title="' + t.registrar + '" aria-label="' + t.registrar + '">'
-        + this.translate.instant('GLOBAL.crear_nuevo') + '</i>',
+          + this.translate.instant('GLOBAL.crear_nuevo') + '</i>',
+      },
+      delete: {
+        deleteButtonContent: '<i class="far fa-eye" title="' + 'Editar entrada' + '" aria-label="' + 'Editar entrada' + '"></i>',
+      },
+      edit: {
+        editButtonContent: '<i class="far fa-edit" title="' + t.edit + '" aria-label="' + t.edit + '"></i>',
       },
       mode: 'external',
       columns: {
@@ -163,11 +137,7 @@ keyEventUp(event: KeyboardEvent) {
         FechaCreacion: {
           title: this.translate.instant('GLOBAL.fecha_entrada'),
           width: '70px',
-          valuePrepareFunction: (value: any) => {
-            const date = new Date(value);
-            date.setUTCMinutes(date.getTimezoneOffset());
-            return new Date(Date.parse(date.toString())).toLocaleDateString('es-CO');
-          },
+          valuePrepareFunction: this.formatDate,
           filter: {
             type: 'daterange',
             config: {
@@ -208,6 +178,7 @@ keyEventUp(event: KeyboardEvent) {
   }
 
   loadEntradas(): void {
+    this.spinner = 'Cargando Entradas';
     this.entradasHelper.getEntradas(this.modo === 'revision').subscribe(res => {
       if (res.length) {
         res.forEach(entrada => {
@@ -220,11 +191,13 @@ keyEventUp(event: KeyboardEvent) {
         this.source.load(res);
         this.source.setSort([{ field: 'FechaCreacion', direction: 'desc' }]);
       }
+      this.spinner = '';
       this.mostrar = true;
     });
   }
 
   loadEntradaEspecifica(): void {
+    this.spinner = 'Cargando detalle de la entrada';
     this.entradasHelper.getEntrada(this.entradaId).subscribe(res => {
       if (res.movimiento) {
         this.movimiento = res.movimiento;
@@ -312,6 +285,7 @@ keyEventUp(event: KeyboardEvent) {
           }
         }
       }
+      this.spinner = '';
     });
   }
 
@@ -331,12 +305,20 @@ keyEventUp(event: KeyboardEvent) {
       this.contrato.OrdenadorGasto = ordenadorAux;
       this.contrato.NumeroContratoSuscrito = info.numero_contrato_suscrito;
       this.contrato.TipoContrato = info.tipo_contrato &&
-        this.tipos.find(ct => +ct.Id === +info.tipo_contrato) ? this.tipos.find(ct => +ct.Id === +info.tipo_contrato).Nombre : '';
+        this.tipos.find(ct => +ct.Id === +info.tipo_contrato) ? this.tipos.find(ct => +ct.Id === +info.tipo_contrato).TipoContrato : '';
       this.contrato.FechaSuscripcion = info.fecha_suscripcion;
       this.contrato.Supervisor = supervisorAux;
       this.contrato.Vigencia = info.vigencia;
+      this.mostrarEntrada = true;
+    } else {
       this.mostrar = true;
-    } else this.mostrar = true;
+      this.mostrarEntrada = false;
+    }
+  }
+
+  verLista() {
+    this.mostrar = true;
+    this.mostrarEntrada = false;
   }
 
   confirmSubmit(aprobar: boolean) {
@@ -357,10 +339,10 @@ keyEventUp(event: KeyboardEvent) {
   }
 
   private onSubmitRevision(aprobar: boolean) {
-    this.mostrar = false;
     if (aprobar) {
+      this.spinner = 'Aprobando entrada y generando transacción contable';
       this.entradasHelper.postEntrada({}, +this.entradaId).toPromise().then((res: any) => {
-        this.mostrar = true;
+        this.spinner = '';
         if (res && res.errorTransaccion === '') {
           this.verComponente = true;
           this.transaccionContable = res.transaccionContable;
@@ -372,9 +354,11 @@ keyEventUp(event: KeyboardEvent) {
         }
       });
     } else {
+      this.spinner = 'Actualizando entrada';
       const estado = this.estadosMovimiento.find(estadoMovimiento => estadoMovimiento.Nombre === 'Entrada Rechazada').Id;
       this.movimiento.EstadoMovimientoId = <EstadoMovimiento>{ Id: estado };
       this.entradasHelper.putMovimiento(this.movimiento).toPromise().then((res: any) => {
+        this.spinner = '';
         if (res) {
           this.alertSuccess(false);
         }
@@ -460,7 +444,7 @@ keyEventUp(event: KeyboardEvent) {
     this.entradaEspecifica.TipoEntradaId.Nombre = info.movimiento.FormatoTipoMovimientoId.Nombre; // TIPO ENTRADA
     this.entradaEspecifica.Observacion = info.movimiento.Observacion; // OBSERVACIÓN
     this.documentoId = false; // SOPORTE
-    this.mostrar = true;
+    this.mostrarEntrada = true;
   }
 
   loadDetalleDonacion(info) {
@@ -485,7 +469,7 @@ keyEventUp(event: KeyboardEvent) {
     this.entradaEspecifica.TipoEntradaId.Nombre = info.movimiento.FormatoTipoMovimientoId.Nombre; // TIPO ENTRADA
     this.entradaEspecifica.Observacion = info.movimiento.Observacion; // OBSERVACIÓN
     this.documentoId = false;
-    this.mostrar = true;
+    this.mostrarEntrada = true;
   }
 
   loadDetalleTerceros(info) {
@@ -509,7 +493,7 @@ keyEventUp(event: KeyboardEvent) {
     this.entradaEspecifica.TipoEntradaId.Nombre = info.movimiento.FormatoTipoMovimientoId.Nombre; // TIPO ENTRADA
     this.entradaEspecifica.Observacion = info.movimiento.Observacion; // OBSERVACIÓN
     this.documentoId = false; // SOPORTE
-    this.mostrar = true;
+    this.mostrarEntrada = true;
   }
 
   loadDetalleAdicionesMejoras(info) {
@@ -560,7 +544,7 @@ keyEventUp(event: KeyboardEvent) {
     this.entradaEspecifica.Divisa = detalle.divisa;
     this.documentoId = false; // SOPORTE
     this.loadContrato(info.contrato); // CONTRATO
-    // this.mostrar=true;
+    this.mostrarEntrada = true;
   }
 
   loadDetalleIntangiblesDesarrollados(info) {
@@ -572,7 +556,7 @@ keyEventUp(event: KeyboardEvent) {
     this.entradaEspecifica.TipoEntradaId.Nombre = info.movimiento.FormatoTipoMovimientoId.Nombre; // TIPO ENTRADA
     this.entradaEspecifica.Observacion = info.movimiento.Observacion; // OBSERVACIÓN
     this.documentoId = false;
-    this.mostrar = true;
+    this.mostrarEntrada = true;
   }
   loadDetalleAprovechamientos(info) {
     const detalle = JSON.parse(info.movimiento.Detalle);
@@ -582,7 +566,7 @@ keyEventUp(event: KeyboardEvent) {
     this.entradaEspecifica.TipoEntradaId.Nombre = info.movimiento.FormatoTipoMovimientoId.Nombre; // TIPO ENTRADA
     this.entradaEspecifica.Observacion = info.movimiento.Observacion; // OBSERVACIÓN
     this.documentoId = false;
-    this.mostrar = true;
+    this.mostrarEntrada = true;
     // console.log(this.Proveedor)
   }
   loadDetalleReposicion(info) {
@@ -594,45 +578,56 @@ keyEventUp(event: KeyboardEvent) {
     this.entradaEspecifica.Observacion = info.movimiento.Observacion; // OBSERVACIÓN
     this.Placa = detalle.placa_id;
     this.documentoId = false;
-    this.mostrar = true;
-    // console.log(this.Proveedor)
+    this.mostrarEntrada = true;
   }
 
-  onCustom(event) {
-    if (!this.key) {
-       this.mostrar = false;
-       this.actaRecibidoId = +`${event.data.ActaRecibidoId}`;
-       this.filaSeleccionada = event.data;
-       this.entradaId = `${event.data.Id}`;
-       this.detalle = true;
-       this.loadEntradaEspecifica();
+  onDelete(event) {
+    this.mostrar = false;
+    this.actaRecibidoId = +`${event.data.ActaRecibidoId}`;
+    this.filaSeleccionada = event.data;
+    this.entradaId = `${event.data.Id}`;
+    this.loadEntradaEspecifica();
+  }
+
+  onEdit(event) {
+    if (this.modo === 'revision') {
+      this.mostrar = false;
+      this.actaRecibidoId = +`${event.data.ActaRecibidoId}`;
+      this.filaSeleccionada = event.data;
+      this.entradaId = `${event.data.Id}`;
+      this.updateEntrada = false;
+      this.loadEntradaEspecifica();
+    } else if (event.data.EstadoMovimientoId === 'Entrada Rechazada') {
+      this.mostrar = false;
+      this.actaRecibidoId = +`${event.data.ActaRecibidoId}`;
+      this.filaSeleccionada = event.data;
+      this.entradaId = `${event.data.Id}`;
+      this.updateEntrada = true;
     } else {
-       if (event.data.EstadoMovimientoId === 'Entrada Rechazada') {
-          this.mostrar = true;
-          this.actaRecibidoId = +`${event.data.ActaRecibidoId}`;
-          this.filaSeleccionada = event.data;
-          this.entradaId = `${event.data.Id}`;
-          this.detalle = false;
-          this.edit = false;
-          this.editarEntrada = true;
-          this.loadEntradaEspecifica();
-        }
+      this.pUpManager.showErrorAlert('this.translate.instant(GLOBAL.bajas.consulta.errorEditar');
     }
+
   }
 
   onVolver() {
-    this.detalle = !this.detalle;
-    if (this.editarEntrada) {
-        this.detalle = false;
-        this.editarEntrada = false;
-    }
+    this.updateEntrada = false;
     this.iniciarParametros();
     this.mostrar = true;
-    this.router.navigate(['/pages/entradas']);
+    this.mostrarEntrada = false;
+    this.filaSeleccionada = undefined;
+    this.entradaId = undefined;
+    this.trContable = undefined;
+    this.transaccionContable = undefined;
+    this.verComponente = false;
+  }
+
+  private getTiposContrato() {
+    this.entradasHelper.getTiposContrato_().subscribe((res: any) => {
+      this.tipos = res;
+    });
   }
 
   iniciarParametros() {
-    this.tipos = this.entradasHelper.getTiposContrato();
     const tipoEntrada = new TipoEntrada;
     const supervisor = new Supervisor;
     const ordenadorGasto = new OrdenadorGasto;
@@ -645,14 +640,15 @@ keyEventUp(event: KeyboardEvent) {
     this.entradasHelper.getEncargadoElementoByPlaca(placa).subscribe(res => {
       if (res != null && res !== undefined) {
         this.encargado = res.NombreCompleto;
-      }else {
+      } else {
         this.encargado = '';
       }
     });
   }
 
   onRegister() {
-    this.router.navigate(['/pages/entradas/registro']);
+    this.updateEntrada = true;
+    this.mostrar = false;
   }
 
   ngOnInit() {
@@ -667,6 +663,7 @@ keyEventUp(event: KeyboardEvent) {
     this.loadEstados();
     this.loadEntradas();
     this.loadTablaSettings();
+    this.getTiposContrato();
 
   }
 

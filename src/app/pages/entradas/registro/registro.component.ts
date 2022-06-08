@@ -1,9 +1,10 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { LocalDataSource } from 'ng2-smart-table';
 import { PopUpManager } from '../../../managers/popUpManager';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
 import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
 import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
+import { TransaccionEntrada } from '../../../@core/data/models/entrada/entrada';
 
 @Component({
   selector: 'ngx-registro',
@@ -22,12 +23,11 @@ export class RegistroComponent implements OnInit {
   settings: any;
   opcionEntrada: string = '';
   movimientoId: number;
+  title: string;
 
   @Input() ActaParaEditar: any;
-  @Input() entradaId: any;
-  @Input() EntradaEdit: any;
-
-  private actas: any[];
+  @Input() EntradaId: number;
+  @Output() volver: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   constructor(
     private actaRecibidoHelper: ActaRecibidoHelper,
@@ -37,19 +37,63 @@ export class RegistroComponent implements OnInit {
   ) {
     this.source = new LocalDataSource();
     this.actaSeleccionada = '';
+    this.translate.onLangChange.subscribe((event: LangChangeEvent) => { });
   }
 
   ngOnInit() {
-    if (this.EntradaEdit === true) {
-       this.cargarTiposDeEntradas();
-    }
-    this.loadTablaSettings();
-    this.loadActas();
-    this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
+    if (this.EntradaId && this.ActaParaEditar) {
+      this.cargarTiposDeEntradas();
+      this.title = this.translate.instant('GLOBAL.movimientos.fff');
+    } else {
       this.loadTablaSettings();
-    });
-    this.actaSeleccionada = this.EntradaEdit ? this.EntradaEdit.ActaRecibidoId : '';
-    this.movimientoId = this.EntradaEdit ? this.EntradaEdit.Id : '';
+      this.loadActas();
+      this.title = this.translate.instant('GLOBAL.registrar_entrada');
+    }
+    this.actaSeleccionada = this.EntradaId && this.ActaParaEditar ? this.ActaParaEditar : '';
+    this.movimientoId = this.EntradaId ? this.EntradaId : 0;
+  }
+
+  onVolver() {
+    const update = this.EntradaId && this.ActaParaEditar;
+    if (update && !this.opcionEntrada) {
+      this.volver.emit(true);
+    } else if (update) {
+      this.opcionEntrada = '';
+    } else if (!update && this.opcionEntrada) {
+      this.opcionEntrada = '';
+    } else if (!update && this.actaSeleccionada) {
+      this.actaSeleccionada = '';
+    } else {
+      this.volver.emit(true);
+    }
+  }
+
+  onSubmit(entrada: TransaccionEntrada) {
+    if (entrada.Detalle) {
+      this.mostrar = false;
+      if (this.EntradaId) {
+        entrada.Id = this.EntradaId;
+      }
+      this.entradasHelper.postEntrada(entrada).subscribe((res: any) => {
+        this.mostrar = true;
+        if (res.Detalle) {
+          const consecutivo = JSON.parse(res.Detalle).consecutivo;
+          this.pUpManager.showAlertWithOptions(this.getOptionsRegistro(consecutivo));
+          // volver
+        } else {
+          this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.entradas.registroFail'));
+        }
+      });
+    }
+
+  }
+
+  private getOptionsRegistro(consecutivo: string) {
+    return {
+      type: 'success',
+      title: this.translate.instant('GLOBAL.movimientos.entradas.registroTtlOk', { CONSECUTIVO: consecutivo }),
+      text: this.translate.instant('GLOBAL.movimientos.entradas.registroTxtOk', { CONSECUTIVO: consecutivo }),
+    }
   }
 
   loadTablaSettings() {
@@ -128,9 +172,7 @@ export class RegistroComponent implements OnInit {
 
   loadActas(): void {
     this.actaRecibidoHelper.getAllActasRecibidoByEstado(['Aceptada']).subscribe(res => {
-      if (Array.isArray(res) && res.length !== 0) {
-        const data = <Array<any>>res;
-        this.actas = data;
+      if (res && res.length) {
         this.source.load(res);
         this.mostrar = true;
       }
@@ -158,7 +200,8 @@ export class RegistroComponent implements OnInit {
         }) : this.entradasHelper.getTiposEntradaByOrden(2).subscribe(res__ => {
           this.tiposDeEntradas = res__;
         });
-      this.actaSeleccionada = this.ActaParaEditar;
+      this.mostrar = true;
+      // this.actaSeleccionada = this.ActaParaEditar;
     });
   }
 }
