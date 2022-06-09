@@ -42,7 +42,6 @@ export class CajaMenorComponent implements OnInit {
   uidDocumento: string;
   idDocumento: number;
   soportes: Array<SoporteActaProveedor>;
-  proveedor: string;
   fechaFactura: string;
 
   cargando_supervisores: boolean = true;
@@ -65,7 +64,6 @@ export class CajaMenorComponent implements OnInit {
     this.supervisorId = 0;
     this.validar = false;
     this.soportes = new Array<SoporteActaProveedor>();
-    this.proveedor = '';
     this.fechaFactura = '';
   }
 
@@ -213,9 +211,8 @@ export class CajaMenorComponent implements OnInit {
   }
   loadSoporte(): void {
     this.soporteHelper.cargarSoporte(this.actaRecibidoId).then(info => {
-      this.fechaFactura = info.fecha,
-      this.soportes = info.soportes,
-      this.proveedor = info.proveedor;
+      this.fechaFactura = info.fecha;
+      this.soportes = info.soportes;
     });
   }
   onObservacionSubmit() {
@@ -238,7 +235,6 @@ export class CajaMenorComponent implements OnInit {
     const soporteId: string = event.target.options[event.target.options.selectedIndex].value;
     for (const i in this.soportes) {
       if (this.soportes[i].Id.toString() === soporteId) {
-        this.proveedor = this.soportes[i].Proveedor.NomProveedor;
         const date = this.soportes[i].FechaSoporte.toString().split('T');
         this.fechaFactura = date[0];
       }

@@ -920,8 +920,8 @@
     "ubicacion": "Location",
     "observaciones": "Comments",
     "placeholder_observaciones": "Comments",
-    "funcionarioOrigen": "Current Civil Servant",
-    "funcionarioDestino": "New Civil Servant",
+    "funcionarioOrigen": "Requestor Current Civil Servant",
+    "funcionarioDestino": "recipient Civil Servant",
     "razonRechazo": "Denial reason",
     "resolucion": "Resolution number",
 

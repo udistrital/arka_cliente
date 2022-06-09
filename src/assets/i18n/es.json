@@ -920,8 +920,8 @@
     "ubicacion": "Ubicación",
     "observaciones": "Observaciones",
     "placeholder_observaciones": "Observaciones",
-    "funcionarioOrigen": "Funcionario Origen",
-    "funcionarioDestino": "Funcionario Destino",
+    "funcionarioOrigen": "Funcionario Solicitante",
+    "funcionarioDestino": "Funcionario Receptor",
     "razonRechazo": "Razón de rechazo",
     "resolucion": "Número de resolución",
 
