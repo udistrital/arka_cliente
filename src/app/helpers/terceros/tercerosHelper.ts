@@ -133,6 +133,28 @@ export class TercerosHelper {
     }
 
     /**
+     *
+     * getSupervisores
+     *
+     * Trae todos o un tercero, de acuerdo al criterio especificado
+     */
+    public getSupervisores() {
+        this.rqManager.setPath('UNIDADES_SERVICE');
+        const query = 'supervisor_contrato?limit=-1&fields=Id,Nombre,SedeSupervisor';
+        return this.rqManager.get(query).pipe(
+            map(
+                (res) => {
+                    if (res === 'error' || !Array.isArray(res)) {
+                        this.pUpManager.showErrorAlert('No se encontro ningun tercero que pueda ejercer como supervisor');
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
+
+    /**
      * getCargo
      *
      * Trae todos el cargo de un determinado funcionario
