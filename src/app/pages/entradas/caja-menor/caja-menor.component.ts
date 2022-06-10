@@ -76,7 +76,7 @@ export class CajaMenorComponent implements OnInit {
     });
     this.ordenadorForm = this.fb.group({
       ordenadorCtrl: ['', Validators.required],
-      vigenciaCtrl: ['', Validators.required],
+      // vigenciaCtrl: ['', Validators.required],
     });
     this.supervisorForm = this.fb.group({
       supervisorCtrl: ['', Validators.required],
@@ -246,7 +246,7 @@ export class CajaMenorComponent implements OnInit {
     if (this.validar) {
       const detalle = {
         acta_recibido_id: +this.actaRecibidoId,
-        vigencia: this.ordenadorForm.value.vigenciaCtrl,
+        // vigencia: this.ordenadorForm.value.vigenciaCtrl,
         supervisor: this.supervisorForm.value.supervisorCtrl.TerceroPrincipal.Id,
         ordenador_gasto_id: this.ordenadorForm.value.ordenadorCtrl.TerceroPrincipal.Id,
         // solicitante_id: +this.supervisorId,

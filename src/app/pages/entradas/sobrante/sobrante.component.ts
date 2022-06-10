@@ -77,7 +77,7 @@ export class SobranteComponent implements OnInit {
     if (this.validar) {
       const detalle = {
         acta_recibido_id: +this.actaRecibidoId,
-        vigencia: this.fechaForm.value.fechaCtrl,
+        // vigencia: this.fechaForm.value.fechaCtrl,
       };
 
       const transaccion = <TransaccionEntrada>{
