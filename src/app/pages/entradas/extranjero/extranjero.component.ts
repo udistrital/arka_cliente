@@ -37,7 +37,6 @@ export class ExtranjeroComponent implements OnInit {
   contratoEspecifico: Contrato; // Contrato Seleccionado
   private contratoInput: string; // Número de Contrato
   soportes: Array<SoporteActaProveedor>; // Soportes
-  proveedor: string;
   fechaFactura: string;
   divisas: string;
   validar: boolean;
@@ -60,7 +59,6 @@ export class ExtranjeroComponent implements OnInit {
     this.contratos = new Array<Contrato>();
     this.contratoEspecifico = new Contrato;
     this.soportes = new Array<SoporteActaProveedor>();
-    this.proveedor = '';
     this.fechaFactura = '';
     this.validar = false;
     this.iniciarContrato();
@@ -207,9 +205,8 @@ export class ExtranjeroComponent implements OnInit {
         if (existe) {
           this.loadContratoEspecifico();
           this.soporteHelper.cargarSoporte(this.actaRecibidoId).then(info => {
-            this.fechaFactura = info.fecha,
-            this.soportes = info.soportes,
-            this.proveedor = info.proveedor;
+            this.fechaFactura = info.fecha;
+            this.soportes = info.soportes;
           });
         } else {
           this.stepper.previous();

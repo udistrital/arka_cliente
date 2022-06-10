@@ -39,7 +39,6 @@ export class DonacionComponent implements OnInit {
   contratoInput: string;
   // Soportes
   soportes: Array<SoporteActaProveedor>;
-  proveedor: string;
   fechaFactura: string;
   observaciones: string;
   validar: boolean;
@@ -72,7 +71,6 @@ export class DonacionComponent implements OnInit {
     this.contratoEspecifico = new Contrato;
     this.soportes = new Array<SoporteActaProveedor>();
     this.ordenadores = new Array<OrdenadorGasto>();
-    this.proveedor = '';
     this.fechaFactura = '';
     this.validar = false;
     this.ordenadorId = 0;
@@ -174,9 +172,8 @@ export class DonacionComponent implements OnInit {
         if (existe) {
           this.loadContratoEspecifico();
           this.soporteHelper.cargarSoporte(this.actaRecibidoId).then(info => {
-            this.fechaFactura = info.fecha,
-            this.soportes = info.soportes,
-            this.proveedor = info.proveedor;
+            this.fechaFactura = info.fecha;
+            this.soportes = info.soportes;
           });
         } else {
           this.stepper.previous();

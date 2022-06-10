@@ -40,7 +40,6 @@ export class TercerosComponent implements OnInit {
   contratoInput: string;
   // Soportes
   soportes: Array<SoporteActaProveedor>;
-  proveedor: string;
   fechaFactura: string;
   observaciones: string;
   validar: boolean;
@@ -64,7 +63,6 @@ export class TercerosComponent implements OnInit {
     this.contratos = new Array<Contrato>();
     this.contratoEspecifico = new Contrato;
     this.soportes = new Array<SoporteActaProveedor>();
-    this.proveedor = '';
     this.fechaFactura = '';
     this.validar = false;
     this.iniciarContrato();
@@ -150,7 +148,6 @@ export class TercerosComponent implements OnInit {
             this.soportes.push(soporte);
           }
         }
-        this.proveedor = this.soportes[0].Proveedor.NomProveedor;
         const date = this.soportes[0].FechaSoporte.toString().split('T');
         this.fechaFactura = date[0];
       }
@@ -212,7 +209,6 @@ export class TercerosComponent implements OnInit {
     const soporteId: string = event.target.options[event.target.options.selectedIndex].value;
     for (const i in this.soportes) {
       if (this.soportes[i].Id.toString() === soporteId) {
-        this.proveedor = this.soportes[i].Proveedor.NomProveedor;
         const date = this.soportes[i].FechaSoporte.toString().split('T');
         this.fechaFactura = date[0];
       }

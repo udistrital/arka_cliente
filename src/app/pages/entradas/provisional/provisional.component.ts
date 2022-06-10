@@ -41,7 +41,6 @@ export class ProvisionalComponent implements OnInit {
   contratoInput: string;
   // Soportes
   soportes: Array<SoporteActaProveedor>;
-  proveedor: string;
   fechaFactura: string;
   observaciones: string;
   validar: boolean;
@@ -66,7 +65,6 @@ export class ProvisionalComponent implements OnInit {
     this.contratos = new Array<Contrato>();
     this.contratoEspecifico = new Contrato;
     this.soportes = new Array<SoporteActaProveedor>();
-    this.proveedor = '';
     this.fechaFactura = '';
     this.validar = false;
     this.iniciarContrato();
@@ -154,9 +152,8 @@ export class ProvisionalComponent implements OnInit {
         if (existe) {
           this.loadContratoEspecifico();
           this.soporteHelper.cargarSoporte(this.actaRecibidoId).then(info => {
-            this.fechaFactura = info.fecha,
-            this.soportes = info.soportes,
-            this.proveedor = info.proveedor;
+            this.fechaFactura = info.fecha;
+            this.soportes = info.soportes;
           });
         } else {
           this.stepper.previous();
