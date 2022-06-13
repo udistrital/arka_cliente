@@ -177,4 +177,25 @@ export class TercerosHelper {
         );
     }
 
+    /**
+     * getAllDatosIdentificacion
+     * Consulta al controlador datos_identifiacion del api terceros_crud
+     * @param query payload
+     */
+    public getAllDatosIdentificacion(query: string) {
+        const path = 'datos_identificacion?';
+        this.rqManager.setPath('TERCEROS_SERVICE');
+        return this.rqManager.get(path + query).pipe(
+            map(
+                (res) => {
+                    if (res === 'error' || !Array.isArray(res)) {
+                        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.errorDatosIdentificacion'));
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
+
 }

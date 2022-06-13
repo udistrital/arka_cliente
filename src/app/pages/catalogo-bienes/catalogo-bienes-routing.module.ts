@@ -6,6 +6,7 @@ import { RegistroCatalogoComponent } from './registro-catalogo/registro-catalogo
 import { RegistroElementosComponent } from './registro-elementos/registro-elementos.component';
 import { CrudCuentasComponent } from './crud-cuentas/crud-cuentas.component';
 import { TiposBienComponent } from './tipos-bien/tipos-bien.component';
+import { AuthGuard } from '../../@core/_guards/auth.guard';
 
 
 const routes: Routes = [{
@@ -15,22 +16,27 @@ const routes: Routes = [{
     {
       path: 'consulta_catalogo',
       component: ConsultaCatalogoComponent,
+      canActivate: [AuthGuard],
     },
     {
       path: 'registro_catalogo',
       component: RegistroCatalogoComponent,
+      canActivate: [AuthGuard],
     },
     {
       path: 'registro_elementos',
       component: RegistroElementosComponent,
+      canActivate: [AuthGuard],
     },
     {
       path: 'registro_cuentas_catalogo',
       component: CrudCuentasComponent,
+      canActivate: [AuthGuard],
     },
     {
       path: 'tipos_bien',
       component: TiposBienComponent,
+      canActivate: [AuthGuard],
     },
   ],
 }];

@@ -23,7 +23,7 @@ import { Store, StoreModule } from '@ngrx/store';
 import { ListService } from '../../@core/store/services/list.service';
 import { ConsultaSalidaEspecificaComponent } from './consulta-salida-especifica/consulta-salida-especifica.component';
 import { EntradasModule} from './../entradas/entradas.module';
-
+import { AjustesModule } from '../ajustes/ajustes.module';
 
 
 @NgModule({
@@ -56,6 +56,7 @@ import { EntradasModule} from './../entradas/entradas.module';
     MatPaginatorModule,
     MatSortModule,
     EntradasModule,
+    AjustesModule,
   ],
   providers: [
     CurrencyPipe,

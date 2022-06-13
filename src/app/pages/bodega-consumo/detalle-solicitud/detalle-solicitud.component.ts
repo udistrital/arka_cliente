@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { LocalDataSource } from 'ng2-smart-table';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -15,13 +15,13 @@ import { FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { Elemento } from '../../../@core/data/models/acta_recibido/elemento';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
-import { stream } from 'xlsx/types';
 
 @Component({
   selector: 'ngx-detalle-solicitud',
   templateUrl: './detalle-solicitud.component.html',
   styleUrls: ['./detalle-solicitud.component.scss'],
 })
+
 export class DetalleSolicitudComponent implements OnInit {
   salida_id: any;
   settings: any;
@@ -33,6 +33,8 @@ export class DetalleSolicitudComponent implements OnInit {
   EstadosMovimiento: any;
   form_apertura: FormGroup;
   Detalle_Solicitud: any;
+  submitted: boolean;
+  @Output() done = new EventEmitter<boolean>();
   @Input('Editar')
   set name4(edit: boolean) {
     this.Editar = edit;
@@ -106,33 +108,19 @@ export class DetalleSolicitudComponent implements OnInit {
       },
       mode: 'external',
       columns: {
-        Nombre: {
-          title: this.translate.instant('GLOBAL.Elemento.Relacionado'),
+        SubgrupoCatalogoId: {
+          title: this.translate.instant('GLOBAL.BodegaConsumo.Solicitud.ColumnaElementoCatalogo'),
+          valuePrepareFunction: (value: any) => {
+            return !value ? '' : value.Codigo ? value.Codigo + ' - ' + value.Nombre : value.Nombre;
+          },
+          filterFunction: this.filterFunction,
         },
         ElementoCatalogoId: {
-          title: this.translate.instant('GLOBAL.BodegaConsumo.Solicitud.ColumnaElementoCatalogo'),
-          type: 'text',
+          title: this.translate.instant('GLOBAL.Elemento.Relacionado'),
           valuePrepareFunction: (value: any) => {
-            if (value !== null && value.SubgrupoId !== null) {
-              return value.SubgrupoId.Codigo + ' - ' + value.SubgrupoId.Nombre + '/\n' +
-                value.Codigo + ' - ' + value.Nombre;
-            } else {
-              return '';
-            }
+            return !value ? '' : value.Codigo ? value.Codigo + ' - ' + value.Nombre : value.Nombre;
           },
-          filterFunction: (cell?: any, search?: string): boolean => {
-            // console.log(cell);
-            // console.log(search);
-            if (Object.keys(cell).length !== 0) {
-              if (cell.Descripcion.indexOf(search) > -1) {
-                return true;
-              } else {
-                return false;
-              }
-            } else {
-              return false;
-            }
-          },
+          filterFunction: this.filterFunction,
         },
         Sede: {
           title: this.translate.instant('GLOBAL.sede'),
@@ -241,8 +229,8 @@ export class DetalleSolicitudComponent implements OnInit {
       },
     }).onClose.subscribe(data => {
       if (data) {
-      this.AgregarElementos(data);
-      this.RevisarCantidadesAprobadas();
+        this.AgregarElementos(data);
+        this.RevisarCantidadesAprobadas();
       }
     });
   }
@@ -258,7 +246,7 @@ export class DetalleSolicitudComponent implements OnInit {
           this.verificar = false;
         }
         this.Detalle_Solicitud.Elementos.forEach((element: any) => {
-          if (element.ElementoActa === elementos.ElementoCatalogoId.Id) {
+          if (element.ElementoCatalogoId === elementos.ElementoCatalogoId.Id) {
             element.CantidadAprobada = elementos.CantidadAprobada;
           }
         });
@@ -283,7 +271,13 @@ export class DetalleSolicitudComponent implements OnInit {
     this.source.refresh();
   }
 
-  onSubmit() {
+  onAprobar() {
+    if (this.submitted) {
+      return;
+    } else {
+      this.submitted = true;
+    }
+
     const SalidaKardex = {
       Movimiento: [],
     };
@@ -304,9 +298,9 @@ export class DetalleSolicitudComponent implements OnInit {
       },
     );
 
-    this.source.getAll().then((res) => {
+    this.source.getAll().then((elementos) => {
       // console.log({res});
-      res.forEach(element => {
+      elementos.forEach(element => {
 
         const elemento: any = {};
         const valor_promedio = element.SaldoValor / element.SaldoCantidad;
@@ -324,43 +318,71 @@ export class DetalleSolicitudComponent implements OnInit {
 
       });
 
-      // console.log({SalidaKardex});
-      // /*
-      this.BodegaConsumo.postResponderSolicitud(SalidaKardex).subscribe((res2: any) => {
-        if (res2 !== null) {
-          const opt: any = {
-            title: this.translate.instant('GLOBAL.salidas.exito_registro_titulo'),
-            text: this.translate.instant('GLOBAL.salidas.exito_registro_texto'),
-            type: 'success',
-          };
-          (Swal as any).fire(opt);
-          this.router.navigate(['/pages/bodega_consumo/consulta_solicitud']);
+      this.BodegaConsumo.postResponderSolicitud(SalidaKardex).subscribe((res: any) => {
+        if (res) {
+          this.done.emit(true);
+          this.pUpManager.showAlertWithOptions(this.optionsAprobacion);
         }
       });
-      // */
     });
 
   }
 
-  onSubmit2() {
+  onRechazar() {
+    if (this.submitted) {
+      return;
+    } else {
+      this.submitted = true;
+    }
+
     this.Solicitud.EstadoMovimientoId = this.EstadosMovimiento.find(x => x.Id === 8);
     this.Detalle_Solicitud.Elementos.forEach((element: any) => {
-        element.CantidadAprobada = 0;
+      element.CantidadAprobada = 0;
     });
     this.Solicitud.Detalle = JSON.stringify(this.Detalle_Solicitud);
 
-    // console.log({Solicitud: this.Solicitud, Detalle_Solicitud: this.Detalle_Solicitud});
-    // /*
     this.BodegaConsumo.postRechazarSolicitud(this.Solicitud).subscribe((res: any) => {
-      const opt: any = {
-        title: this.translate.instant('GLOBAL.movimientos.SalidaRechazadaTitle'),
-        text: this.translate.instant('GLOBAL.movimientos.SalidaRechazadaText'),
-        type: 'info',
-      };
-      (Swal as any).fire(opt);
-      this.router.navigate(['/pages/bodega_consumo/consulta_solicitud']);
+      if (res) {
+        this.done.emit(true);
+        this.pUpManager.showAlertWithOptions(this.optionsRechazo);
+      }
     });
-    // */
+  }
+
+  private filterFunction(cell?: any, search?: string): boolean {
+    if (cell && search.length) {
+      if (cell.Codigo && cell.Nombre) {
+        if ((cell.Codigo + ' - ' + cell.Nombre.toUpperCase()).indexOf(search.toUpperCase()) > -1) {
+          return true;
+        } else {
+          return false;
+        }
+      } else if (cell.Nombre) {
+        if ((cell.Nombre.toUpperCase()).indexOf(search.toUpperCase()) > -1) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+    } else {
+      return false;
+    }
+  }
+
+  get optionsRechazo() {
+    return {
+      title: this.translate.instant('GLOBAL.movimientos.SalidaRechazadaTitle'),
+      text: this.translate.instant('GLOBAL.movimientos.SalidaRechazadaText', { CONSECUTIVO: this.Detalle_Solicitud.Consecutivo }),
+      type: 'success',
+    };
+  }
+
+  get optionsAprobacion() {
+    return {
+      title: this.translate.instant('GLOBAL.salidas.exito_registro_titulo'),
+      text: this.translate.instant('GLOBAL.salidas.exito_registro_texto', { CONSECUTIVO: this.Detalle_Solicitud.Consecutivo }),
+      type: 'success',
+    };
   }
 
 }

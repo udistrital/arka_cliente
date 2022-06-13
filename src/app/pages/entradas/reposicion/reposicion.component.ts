@@ -1,23 +1,18 @@
-import { Component, OnInit, Input, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, ElementRef, Output, EventEmitter } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { Elemento } from '../../../@core/data/models/acta_recibido/elemento';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
 import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
-import { PopUpManager } from '../../../managers/popUpManager';
-import { NuxeoService } from '../../../@core/utils/nuxeo.service';
 import { TranslateService } from '@ngx-translate/core';
-import { DocumentoService } from '../../../@core/data/documento.service';
 import { SafeResourceUrl, DomSanitizer } from '@angular/platform-browser';
 import { SoporteActaProveedor } from '../../../@core/data/models/acta_recibido/soporte_acta';
-import { Router, NavigationExtras } from '@angular/router';
-import Swal from 'sweetalert2';
-import { EstadoMovimiento, TrMovimiento } from '../../../@core/data/models/entrada/entrada';
+import { TransaccionEntrada } from '../../../@core/data/models/entrada/entrada';
 
 @Component({
   selector: 'ngx-reposicion',
   templateUrl: './reposicion.component.html',
   styleUrls: ['./reposicion.component.scss'],
 })
+
 export class ReposicionComponent implements OnInit {
 
   elementoForm: FormGroup;
@@ -34,21 +29,20 @@ export class ReposicionComponent implements OnInit {
   idDocumento: number;
   fileDocumento: any;
   validar: boolean = false;
-  formatoTipoMovimiento: any;
   proveedor: string;
   fechaFactura: string;
   checked: boolean;
-  registrando: boolean;
 
-   @ViewChild('file') fileInput: ElementRef;
-   @Input() actaRecibidoId: Number;
-  @Input() entradaId: any;
-  @Input() EntradaEdit: any;
+  @ViewChild('file') fileInput: ElementRef;
+  @Input() actaRecibidoId: Number;
+  @Output() data: EventEmitter<TransaccionEntrada> = new EventEmitter<TransaccionEntrada>();
 
-  constructor(private router: Router, private fb: FormBuilder, private  actasHelper: ActaRecibidoHelper, private  entradasHelper: EntradaHelper,
-    private nuxeoService: NuxeoService, private translate: TranslateService, private documentoService: DocumentoService,
-    private pUpManager: PopUpManager,
-    private sanitization: DomSanitizer ) {
+  constructor(
+    private fb: FormBuilder,
+    private  actasHelper: ActaRecibidoHelper,
+    private  entradasHelper: EntradaHelper,
+    private sanitization: DomSanitizer,
+    private translate: TranslateService) {
     this.elementos = [];
     this.soportes = new Array<SoporteActaProveedor>();
     this.proveedor = '';
@@ -65,7 +59,6 @@ export class ReposicionComponent implements OnInit {
     this.observacionForm = this.fb.group({
       observacionCtrl: ['', Validators.nullValidator],
     });
-    this.getFormatoEntrada();
     this.loadSoporte();
   }
 
@@ -139,57 +132,27 @@ export class ReposicionComponent implements OnInit {
     });
   }
 
-  getFormatoEntrada() {
-    this.entradasHelper.getFormatoEntradaByName('Reposición').subscribe(res => {
-      if (res !== null) {
-        this.formatoTipoMovimiento = res;
-      }
-    });
-  }
-
   onObservacionSubmit() {
     this.validar = true;
   }
-    /**
-   * Método para enviar registro
-   */
+
+//  Método para enviar registro
   async onSubmit() {
     if (this.encargado.length !== 0 && this.validar === true) {
-      this.registrando = true;
       const detalle = {
         acta_recibido_id: +this.actaRecibidoId,
-        consecutivo: 'P8',
         placa_id: this.placa,
         encargado_id: this.encargadoId,
       };
-      const movimientoReposicion = <TrMovimiento>{
-        Observacion: this.observacionForm.value.observacionCtrl,
-        Detalle: JSON.stringify(detalle),
-        Activo: true,
-        FormatoTipoMovimientoId: {
-          Id: this.formatoTipoMovimiento[0].Id,
-        },
-        SoporteMovimientoId: this.idDocumento,
-        EstadoMovimientoId: new EstadoMovimiento,
-      };
-      // console.log(movimientoReposicion);
 
-      this.entradasHelper.postEntrada(movimientoReposicion).subscribe((res: any) => {
-        if (res !== null) {
-          this.registrando = false;
-          (Swal as any).fire({
-            type: 'success',
-            title: this.translate.instant('GLOBAL.movimientos.entradas.registroTtlOk', { CONSECUTIVO: res.Consecutivo }),
-            text: this.translate.instant('GLOBAL.movimientos.entradas.registroTxtOk', { CONSECUTIVO: res.Consecutivo }),
-            showConfirmButton: false,
-            timer: 2000,
-          });
-          const navigationExtras: NavigationExtras = { state: { consecutivo: res.Consecutivo } };
-          this.router.navigate(['/pages/reportes/registro-entradas'], navigationExtras);
-        } else {
-          this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.entradas.registroFail'));
-        }
-      });
+      const transaccion = <TransaccionEntrada>{
+        Observacion: this.observacionForm.value.observacionCtrl,
+        Detalle: detalle,
+        FormatoTipoMovimientoId: 'ENT_RP',
+        SoporteMovimientoId: this.idDocumento,
+      };
+
+      this.data.emit(transaccion);
     }
   }
 }

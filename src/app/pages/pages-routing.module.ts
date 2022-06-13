@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { PagesComponent } from './pages.component';
 import { NotFoundComponent } from './miscellaneous/not-found/not-found.component';
+import { AuthGuard } from '../@core/_guards/auth.guard';
 
 const routes: Routes = [{
   path: '',
@@ -15,58 +16,67 @@ const routes: Routes = [{
     {
       path: 'acta_recibido',
       loadChildren: './acta-recibido/acta-recibido.module#ActaRecibidoModule',
+      canActivate: [AuthGuard],
     },
     {
       path: 'catalogo',
       loadChildren: './catalogo/catalogo.module#CatalogoModule',
-    },
-    {
-      path: 'movimientos',
-      loadChildren: './movimientos/movimientos.module#MovimientosModule',
+      canActivate: [AuthGuard],
     },
     {
       path: 'entradas',
       loadChildren: './entradas/entradas.module#EntradasModule',
+      canActivate: [AuthGuard],
     },
     {
       path: 'salidas',
       loadChildren: './salidas/salidas.module#SalidasModule',
+      canActivate: [AuthGuard],
     },
     {
       path: 'reportes',
       loadChildren: './reportes/reportes.module#ReportesModule',
+      canActivate: [AuthGuard],
     },
     {
       path: 'catalogo_bienes',
       loadChildren: './catalogo-bienes/catalogo-bienes.module#CatalogoBienesModule',
+      canActivate: [AuthGuard],
     },
     {
       path: 'bodega_consumo',
       loadChildren: './bodega-consumo/bodega-consumo.module#BodegaConsumoModule',
+      canActivate: [AuthGuard],
     },
     {
       path: 'bajas',
       loadChildren: './bajas/bajas.module#BajasModule',
+      canActivate: [AuthGuard],
     },
     {
       path: 'ajustes',
       loadChildren: './ajustes/ajustes.module#AjustesModule',
+      canActivate: [AuthGuard],
     },
     {
       path: 'bienes-inmuebles',
       loadChildren: './bienes-inmuebles/bienes-inmuebles.module#BienesInmueblesModule',
+      canActivate: [AuthGuard],
     },
     {
       path: 'parametros',
       loadChildren: './parametros/parametros.module#ParametrosModule',
+      canActivate: [AuthGuard],
     },
     {
       path: 'traslados',
       loadChildren: './traslados/traslados.module#TrasladosModule',
+      canActivate: [AuthGuard],
     },
     {
       path: 'mediciones_posteriores',
       loadChildren: './depreciacion/depreciacion.module#DepreciacionModule',
+      canActivate: [AuthGuard],
     },
     {
       path: '',

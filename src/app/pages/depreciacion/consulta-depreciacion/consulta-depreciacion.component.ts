@@ -180,7 +180,7 @@ export class ConsultaDepreciacionComponent implements OnInit {
         position: 'right',
         delete: this.modo === 'consulta',
         edit: true,
-        add: this.modo === this.confService.getAccion('registrarMedicionPosterior') !== undefined,
+        add: !!this.confService.getAccion('registrarMedicionPosterior'),
       },
       add: {
         addButtonContent: '<i class="fas" title="' + t.registrar + '" aria-label="' + t.registrar + '">'

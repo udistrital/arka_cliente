@@ -4,9 +4,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
 import { Entrada, EstadoMovimiento, Movimiento } from '../../../@core/data/models/entrada/entrada';
 import { Contrato } from '../../../@core/data/models/entrada/contrato';
-import { Supervisor } from '../../../@core/data/models/entrada/supervisor';
-import { OrdenadorGasto } from '../../../@core/data/models/entrada/ordenador_gasto';
-import { TipoEntrada } from '../../../@core/data/models/entrada/tipo_entrada';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { NuxeoService } from '../../../@core/utils/nuxeo.service';
 import { DocumentoService } from '../../../@core/data/documento.service';
@@ -15,11 +12,10 @@ import { Store } from '@ngrx/store';
 import { IAppState } from '../../../@core/store/app.state';
 import { ListService } from '../../../@core/store/services/list.service';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
-import { parse } from 'path';
-import { combineLatest } from 'rxjs';
 import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
 import Swal from 'sweetalert2';
 import { PopUpManager } from '../../../managers/popUpManager';
+import { ConfiguracionService } from '../../../@core/data/configuracion.service';
 
 @Component({
   selector: 'ngx-consulta-salidas',
@@ -67,6 +63,7 @@ export class ConsultaSalidasComponent implements OnInit {
     private terceros: TercerosHelper,
     private route: ActivatedRoute,
     private entradasHelper: EntradaHelper,
+    private confService: ConfiguracionService,
   ) {
     this.source = new LocalDataSource();
     this.detalle = false;
@@ -132,8 +129,8 @@ export class ConsultaSalidasComponent implements OnInit {
         columnTitle: this.translate.instant('GLOBAL.Acciones'),
         position: 'right',
         delete: true,
-        edit: (this.modo === 'consulta' ? true : false),
-        add: true,
+        edit: this.modo === 'consulta',
+        add: !!this.confService.getRoute('/pages/salidas/registro_salidas'),
       },
       add: {
         addButtonContent: '<i class="fas">' + this.translate.instant('GLOBAL.crear_nuevo') + '</i>',
@@ -296,7 +293,6 @@ export class ConsultaSalidasComponent implements OnInit {
           salida.FechaModificacion = salida.EstadoMovimientoId === 'Salida Aprobada' ? salida.FechaModificacion : '';
         });
         this.source.load(res);
-        this.source.setSort([{ field: 'FechaCreacion', direction: 'desc' }]);
       }
       this.mostrar = true;
     });
@@ -323,12 +319,9 @@ export class ConsultaSalidasComponent implements OnInit {
   onRegister() {
     this.router.navigate(['/pages/salidas/registro_salidas']);
   }
+
   onVolver() {
     this.detalle = false;
-    if (this.verComprobante) {
-        this.mostrar = false;
-        this.verComprobante = false;
-    }
     this.editaentrada = false;
     this.verComprobante = false;
   }
@@ -367,16 +360,15 @@ export class ConsultaSalidasComponent implements OnInit {
           this.transaccionContable = res.transaccionContable;
           this.consecutivoSalida = obj.consecutivo;
           this.verComprobante = true;
+          this.alertSuccess(true);
         } else {
           if (res.errorTransaccion !== '') {
-              this.mostrar = true;
               this.pUpManager.showErrorAlert(res.errorTransaccion);
               this.onVolver();
           }
         }
       });
     } else {
-      this.mostrar = false;
       const estado = this.estadosMovimiento.find(estadoMovimiento => estadoMovimiento.Nombre === 'Salida Rechazada').Id;
       this.movimiento.EstadoMovimientoId = <EstadoMovimiento>{ Id: estado };
       this.entradasHelper.putMovimiento(this.movimiento).toPromise().then((res: any) => {
@@ -388,17 +380,17 @@ export class ConsultaSalidasComponent implements OnInit {
   }
 
   private alertSuccess(aprobar: boolean) {
+    this.source.remove(this.filaSeleccionada);
+    const consecutivo = this.movimiento.Detalle ? JSON.parse(this.movimiento.Detalle).consecutivo : '';
     (Swal as any).fire({
       type: 'success',
       title: this.translate.instant('GLOBAL.movimientos.salidas.' + (aprobar ? 'aprobacion' : 'rechazo') + 'TtlOk'),
       text: this.translate.instant('GLOBAL.movimientos.salidas.' + (aprobar ? 'aprobacion' : 'rechazo') + 'TxtOk',
-        { CONSECUTIVO: this.movimiento.Id }),
-      showConfirmButton: false,
-      timer: 3000,
+        { CONSECUTIVO: consecutivo }),
     });
-    this.source.remove(this.filaSeleccionada);
-    this.onVolver();
-    this.mostrar = true;
+    if (!aprobar) {
+      this.onVolver();
+    }
   }
 
   private formatDate(value) {

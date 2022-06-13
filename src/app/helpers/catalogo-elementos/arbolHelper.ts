@@ -99,8 +99,10 @@ export class DynamicDataSource {
     async toggleNode(node: DynamicFlatNode, expand: boolean) {
 
         node.isLoading = true;
-        const children = [this.loadChildren(node.item.Id)];
-        await Promise.all(children);
+        if (expand) {
+            const children = [this.loadChildren(node.item.Id)];
+            await Promise.all(children);
+        }
 
         const index = this.data.indexOf(node);
         if (!this.children || index < 0) { // If no children, or cannot find the node, no op

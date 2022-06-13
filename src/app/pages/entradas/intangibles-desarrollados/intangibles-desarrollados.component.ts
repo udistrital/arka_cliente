@@ -1,28 +1,23 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { Validators, FormGroup, FormBuilder } from '@angular/forms';
 import { OrdenadorGasto } from '../../../@core/data/models/entrada/ordenador_gasto';
-import { Router, NavigationExtras } from '@angular/router';
 import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
 import { PopUpManager } from '../../../managers/popUpManager';
-import { NuxeoService } from '../../../@core/utils/nuxeo.service';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-import { DocumentoService } from '../../../@core/data/documento.service';
 import { TranslateService } from '@ngx-translate/core';
 import { SoporteActaProveedor } from '../../../@core/data/models/acta_recibido/soporte_acta';
-import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
 import { TerceroCriterioJefe, TerceroCriterioPlanta } from '../../../@core/data/models/terceros_criterio';
 import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
 import {Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
-import { EstadoMovimiento, TrMovimiento } from '../../../@core/data/models/entrada/entrada';
-import { TipoEntrada } from '../../../@core/data/models/entrada/tipo_entrada';
-import Swal from 'sweetalert2';
+import { TransaccionEntrada } from '../../../@core/data/models/entrada/entrada';
 
 @Component({
   selector: 'ngx-intangibles-desarrollados',
   templateUrl: './intangibles-desarrollados.component.html',
   styleUrls: ['./intangibles-desarrollados.component.scss'],
 })
+
 export class IntangiblesDesarrolladosComponent implements OnInit {
   soporteForm: FormGroup;
   observacionForm: FormGroup;
@@ -48,26 +43,18 @@ export class IntangiblesDesarrolladosComponent implements OnInit {
   soportes: Array<SoporteActaProveedor>;
   proveedor: string;
 
-  formatoTipoMovimiento: any;
-  registrando: boolean;
-
   cargando_proveedores: boolean = true;
   cargando_supervisores: boolean = true;
   cargando_ordenadores: boolean = true;
 
   @Input() actaRecibidoId: Number;
-  @Input() entradaId: any;
-  @Input() EntradaEdit: any;
+  @Output() data: EventEmitter<TransaccionEntrada> = new EventEmitter<TransaccionEntrada>();
 
   constructor(
-    private router: Router,
     private entradasHelper: EntradaHelper,
     private pUpManager: PopUpManager,
-    private actaRecibidoHelper: ActaRecibidoHelper,
     private fb: FormBuilder,
-    private nuxeoService: NuxeoService,
     private sanitization: DomSanitizer,
-    private documentoService: DocumentoService,
     private tercerosHelper: TercerosHelper,
     private translate: TranslateService) {
     this.ordenadores = new Array<OrdenadorGasto>();
@@ -95,7 +82,6 @@ export class IntangiblesDesarrolladosComponent implements OnInit {
       supervisorCtrl: ['', Validators.required],
     });
     this.getVigencia();
-    this.getFormatoEntrada();
     this.loadSupervisores();
     this.loadOrdenadores();
   }
@@ -235,54 +221,24 @@ changeSolicitante(event) {
     this.vigencia = new Date().getFullYear();
   }
 
-  getFormatoEntrada() {
-    this.entradasHelper.getFormatoEntradaByName('Intangibles desarrollados').subscribe(res => {
-      if (res !== null) {
-        this.formatoTipoMovimiento = res;
-      }
-    });
-  }
-  /**
-   * Método para enviar registro
-   */
+// Método para enviar registro
   async onSubmit() {
     if (this.validar) {
-      this.registrando = true;
       const detalle = {
         acta_recibido_id: +this.actaRecibidoId,
-        consecutivo: 'P8',
         vigencia: this.ordenadorForm.value.vigenciaCtrl,
         supervisor: this.supervisorForm.value.supervisorCtrl.TerceroPrincipal.Id,
         ordenador_gasto_id: this.ordenadorForm.value.ordenadorCtrl.TerceroPrincipal.Id,
       };
-      const movimientoAdquisicion = <TrMovimiento>{
+
+      const transaccion = <TransaccionEntrada>{
         Observacion: this.observacionForm.value.observacionCtrl,
-        Detalle: JSON.stringify(detalle),
-        Activo: true,
-        FormatoTipoMovimientoId: {
-          Id: this.formatoTipoMovimiento[0].Id,
-        },
+        Detalle: detalle,
+        FormatoTipoMovimientoId: 'ENT_ID',
         SoporteMovimientoId: this.idDocumento,
-        EstadoMovimientoId: new EstadoMovimiento,
       };
 
-      this.entradasHelper.postEntrada(movimientoAdquisicion).subscribe((res: any) => {
-        if (res !== null) {
-          this.registrando = false;
-          (Swal as any).fire({
-            type: 'success',
-            title: this.translate.instant('GLOBAL.movimientos.entradas.registroTtlOk', { CONSECUTIVO: res.Consecutivo }),
-            text: this.translate.instant('GLOBAL.movimientos.entradas.registroTxtOk', { CONSECUTIVO: res.Consecutivo }),
-            showConfirmButton: false,
-            timer: 2000,
-          });
-          const navigationExtras: NavigationExtras = { state: { consecutivo: res.Consecutivo } };
-        //  this.router.navigate(['/pages/reportes/registro-entradas'], navigationExtras);
-          this.router.navigate(['/pages/entradas'], navigationExtras);
-        } else {
-          this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.entradas.registroFail'));
-        }
-      });
+      this.data.emit(transaccion);
     } else {
       this.pUpManager.showErrorAlert('No ha llenado todos los campos! No es posible hacer el registro.');
     }

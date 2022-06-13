@@ -34,13 +34,14 @@
       <mat-vertical-stepper [linear]="false" #stepper>
         <mat-step label="Elementos Modificados">
           <ngx-gestionar-elementos [Modo]="'ver'" [ajustes]="ajuste.Elementos" [placa]="true"
-            *ngIf="ajuste && ajuste.Elementos.length">
+            *ngIf="ajuste?.Elementos?.length">
           </ngx-gestionar-elementos>
         </mat-step>
+        <mat-step label="{{'GLOBAL.Comprobante_Contable.Titulo' | translate}}" *ngIf="ajuste?.TrContable?.movimientos">
+          <ngx-comprobante [ajusteInfo]="ajuste.TrContable" [modo]="'get'">
+          </ngx-comprobante>
+        </mat-step>
       </mat-vertical-stepper>
-
-      <ngx-comprobante *ngIf="ajuste.TrContable.movimientos" [ajusteInfo]="ajuste.TrContable" [modo]="'get'">
-      </ngx-comprobante>
     </mat-card-content>
 
     <mat-card-actions *ngIf="ajuste || crear">

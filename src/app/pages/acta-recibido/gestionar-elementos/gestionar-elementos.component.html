@@ -1,6 +1,11 @@
 <div class="card-2" *ngIf="Modo === 'agregar'">
   <form [formGroup]="formElementos.get('archivo')">
     <mat-card>
+      <div class="cce">
+        <a mat-flat-button [attr.href]="cce" target="_blank" color="accent">
+          {{'GLOBAL.Acta_Recibido.CapturarElementos.CCE' | translate }}
+        </a>
+      </div>
       <mat-card-title>{{'GLOBAL.Acta_Recibido.CapturarElementos.CargaMasivaTitle' | translate }}</mat-card-title>
       <mat-card-content>
         <div class="row">
@@ -45,11 +50,11 @@
 
 <mat-card [nbSpinner]="cargando">
   <mat-card-content>
-    <div class="row" *ngIf="Modo === 'agregar' || Modo === 'editar'">
+    <div class="row" *ngIf="Modo === 'agregar' || Modo === 'ajustar'">
       <button mat-flat-button color="primary" class="seleccionados" *ngIf="Modo === 'agregar'" [disabled]="!checkParcial && !checkTodos"  (click)="borraSeleccionados()">
         {{'GLOBAL.borrarSel' | translate }}
       </button>
-      <div class="col" *ngIf="mostrarClase || Modo === 'editar'">
+      <div class="col" *ngIf="mostrarClase || Modo === 'ajustar'">
         <form [formGroup]="formElementos.get('clase')">
           <input matInput type="text" class="form-control" style="height: auto;"
             placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}" formControlName="clase"

@@ -7,7 +7,8 @@ import Swal from 'sweetalert2';
 import 'style-loader!angular2-toaster/toaster.css';
 import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/catalogoElementosHelper';
 import {Router} from '@angular/router';
-import { DatePipe } from '@angular/common';
+import { SmartTableService } from '../../../@core/data/SmartTableService';
+import { ConfiguracionService } from '../../../@core/data/configuracion.service';
 
 @Component({
   selector: 'ngx-list-catalogo',
@@ -28,7 +29,8 @@ export class ListCatalogoComponent implements OnInit {
     private catalogoElementosService: CatalogoElementosHelper,
     private toasterService: ToasterService,
     public router: Router,
-  ) {
+    private tabla: SmartTableService,
+    private confService: ConfiguracionService) {
     this.cargarCampos();
   }
 
@@ -49,6 +51,7 @@ export class ListCatalogoComponent implements OnInit {
       actions: {
         position: 'right',
         columnTitle: this.translate.instant('GLOBAL.Acciones'),
+        add: !!this.confService.getRoute('/pages/catalogo/crud-catalogo'),
       },
       add: {
         addButtonContent: '<i class="fas" title="' + t.crear + '" aria-label="' + t.crear + '">'
@@ -89,21 +92,14 @@ export class ListCatalogoComponent implements OnInit {
               },
             },
           },
-          valuePrepareFunction: (value) => {
-            value = value.split('T');
-            value = value[0];
-            return value;
-          },
+          valuePrepareFunction: this.tabla.formatDate,
         },
         Activo: {
-          title: this.translate.instant('GLOBAL.activo'),
+          title: this.translate.instant('GLOBAL.estado'),
           width: '10%',
           // type: 'boolean;',
           valuePrepareFunction: (value) => {
-            if (value === true)
-               return 'Activo';
-            else
-               return 'Inactivo';
+            return this.translate.instant('GLOBAL.' + (value ? 'activo' : 'inactivo'));
           },
         },
       },

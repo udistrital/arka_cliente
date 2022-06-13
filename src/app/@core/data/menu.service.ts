@@ -60,27 +60,29 @@ export class MenuService {
 
   convertirMenuNebular(m: Partial<Menu>[], base: string = ''): any[] {
     const keyLevel = base ? base + '.' : '';
-    return m.map(original => {
-      const newm = {};
-      const level = keyLevel + original.Nombre;
-      if (original.Nombre !== '') {
-        newm['title'] = this.translate.instant(level + '.name');
-      }
-      if (original.Icono && original.Icono !== '') {
-        newm['icon'] = original.Icono;
-      }
-      if (original.Url !== '') {
-        newm['link'] = original.Url;
-      }
-      if (original.Opciones && Array.isArray(original.Opciones)) {
-        newm['children'] = this.convertirMenuNebular(original.Opciones, level + '.children');
-      }
-      return newm;
-    });
+    return m
+      .filter(op => op.TipoOpcion === TipoOpcion.Menu)
+      .map(original => {
+        const newm = {};
+        const level = keyLevel + original.Nombre;
+        if (original.Nombre !== '') {
+          newm['title'] = this.translate.instant(level + '.name');
+        }
+        if (original.Icono && original.Icono !== '') {
+          newm['icon'] = original.Icono;
+        }
+        if (original.Url !== '') {
+          newm['link'] = original.Url;
+        }
+        if (original.Opciones && Array.isArray(original.Opciones)) {
+          newm['children'] = this.convertirMenuNebular(original.Opciones, level + '.children');
+        }
+        return newm;
+      });
   }
 
-  get(endpoint) {
-    return this.http.get(path + endpoint, httpOptions).pipe(
+  get(roles) {
+    return this.http.get(path + this.getStringRolesUrl(roles) + '/arka_ii_main', httpOptions).pipe(
       catchError(this.handleError),
     );
   }
@@ -101,6 +103,12 @@ export class MenuService {
       status: error.status,
       message: 'Something bad happened; please try again later.',
     });
+  }
+
+  private getStringRolesUrl(roles: string[], separador: string = ','): string {
+    return roles
+      .join(separador)
+      .replace(/\//g, '');
   }
 
   /*

@@ -52,7 +52,7 @@ export class TiposBienComponent implements OnInit {
         this.spinner = true;
         this.TiposBien.load(res);
         this.source.load(res);
-        this.source.setSort([{ field: 'Orden', direction: 'desc' }]);
+        // this.source.setSort([{ field: 'Orden', direction: 'desc' }]);
       }
     });
   }

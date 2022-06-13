@@ -1,27 +1,6 @@
-<div [nbSpinner]="registrando">
+<div>
 <!-- FORMULARIO -->
 <nb-stepper #stepper orientation="horizontal">
-
-  <!-- VIGENCIA//CUMPLIMIENTO -->
-  <nb-step [stepControl]="fechaForm" label="{{'GLOBAL.solicitante' | translate}}">
-    <h5>{{'GLOBAL.solicitante' | translate}}</h5>
-    <form [formGroup]="fechaForm" class="step-container">
-      <div class="row">
-        <div class="form-group col-sm">
-          <label>{{'GLOBAL.vigencia' | translate}}</label>
-          <div class="input-group">
-            <input nbInput shape="semi-round" placeholder="{{'GLOBAL.placeholder_fecha' | translate}}"
-              formControlName="fechaCtrl" class="form-control" [nbDatepicker]="formpicker" required>
-            <nb-datepicker  #formpicker></nb-datepicker>
-          </div>
-        </div>
-      </div>
-      <div class="row float-right">
-        <button type="button" (click)="onFechaSubmit()"  nbButton nbStepperNext>
-          {{'GLOBAL.siguiente' | translate}}</button>
-      </div>
-    </form>
-  </nb-step>
 
   <!-- OBSERVACIONES -->
   <nb-step [stepControl]="observacionForm" label="{{'GLOBAL.observaciones' | translate}}">
@@ -36,9 +15,6 @@
         </div>
       </div>
       <div class="row">
-        <div class="col">
-          <button nbButton nbStepperPrevious>{{'GLOBAL.anterior' | translate}}</button>
-        </div>
         <div class="col" align="end">
           <button type="button" (click)="onObservacionSubmit()" nbButton nbStepperNext>{{'GLOBAL.siguiente' |
             translate}}</button>

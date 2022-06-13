@@ -147,6 +147,9 @@
               "consultarTraslado": {
                 "name": "Browse Requests"
               },
+              "confirmarTraslado": {
+                "name": "Confirm Requests"
+              },
               "aprobarTraslado": {
                 "name": "Approve Requests"
               }
@@ -287,7 +290,9 @@
       "ErrorMinLength": "Enter at least {{NUM}} characters",
       "ErrorFecha": "Enter a valid date",
       "ErrorRequerido": "This is a mandatory field",
-      "MismoTercero": "The new civil servant must be different to the current civil servant"
+      "MismoTercero": "The new civil servant must be different to the current civil servant",
+      "errorPlantillaActa":"Las columnas de la plantilla no corresponden a las requeridas.",
+      "errorTercero": "Su usuario no está correctamente registrado en el sistema, contacte soporte para obtener ayuda."
     },
     "Comprobante_Contable": {
       "Titulo": "Comprobante Contable",
@@ -324,6 +329,7 @@
       },
       "CapturarElementos": {
         "CargaMasivaTitle": "Bulk Load",
+        "CCE": "Enlace al clasificador de bienes CCE",
         "ValidadorPlaceholder": "The file shall have {{EXT}} extension (*.{{EXT}})",
         "LimpiarEspacioButton": "Discard File",
         "CargarElementosButton": "Load Items",
@@ -565,6 +571,7 @@
         "RechazadaNO": "The Certificate hasn't been succesfully rejected, try again later"
       }
     },
+    "de": "de",
     "crear_nuevo": "Create",
     "errorPermisosTtl": "Error loading user permissions",
     "errorPermisosTxt": "The permissions were not loaded properly. Try later.",
@@ -586,6 +593,7 @@
     "consultar_catalogo": "Consult Catalog Tree",
     "error_cargos":"Error getting the positions assigned to the civil servant",
     "error_correo":"Error getting the emails assigned to the civil servant",
+    "errorDatosIdentificacion":"Error al consultar los documentos de identificación",
     "cuenta_credito": "Credit",
     "cuenta_debito": "Debit",
     "placeholder_cuenta_credito": "Credit",
@@ -612,6 +620,7 @@
     "Descripcion": "Description",
     "Acciones": "Actions",
     "verDetalle" : "Ver Detalle",
+    "NA": "N/A",
 
     "Deshacer": "Undo",
     "colapsar": "Collapse",
@@ -828,6 +837,7 @@
     "placeholder_notificacion": "notificacion",
     "fecha_creacion": "Create Date",
     "placeholder_fecha_creacion": "fecha_creacion",
+    "fechaRevision": "Fecha Revisión",
     "notificacion_estado_usuario": "notificacion_estado_usuario",
     "placeholder_notificacion_estado_usuario": "notificacion_estado_usuario",
     "fecha": "Date",
@@ -887,6 +897,7 @@
     "registrar_nueva_entrada": "New Entry",
     "registrar_nueva_salida": "New Output",
     "elementos_entrada": "Entry Elements",
+    "elementos_salida": "Elementos Salida",
     "volver": "Return",
     "factura": "Bill",
     "tipo_bien": "Type of Asset",
@@ -909,13 +920,14 @@
     "ubicacion": "Location",
     "observaciones": "Comments",
     "placeholder_observaciones": "Comments",
-    "funcionarioOrigen": "Current Civil Servant",
-    "funcionarioDestino": "New Civil Servant",
+    "funcionarioOrigen": "Requestor Current Civil Servant",
+    "funcionarioDestino": "recipient Civil Servant",
     "razonRechazo": "Denial reason",
     "resolucion": "Resolution number",
 
     "movimientos": {
       "estadoTramite": "Awaiting review",
+      "estadoPendiente": "Pendiente",
       "estadoAprobado": "Approved",
       "estadoRechazo": "Rejected",
       "entradas": {
@@ -926,17 +938,22 @@
         "errorListaEntradas": "Error getting the entries list",
         "errorEstadosMov": "Error getting the status",
         "errorRechazoEntrada": "Error when trying o reject the entry",
-        "registroTtlOk":"Entry Registered",
-        "registroTxtOk":"The entry {{CONSECUTIVO}} has been successfully registered",
-        "registroFail":"There was an error creating the entry.",
-        "aprobacionConfrmTtl":"Confirm entry Approval",
-        "aprobacionConfrmTxt":"Are you sure to approve this entry?",
+        "registroTtlOk": "Entry Registered",
+        "registroTxtOk": "The entry {{CONSECUTIVO}} has been successfully registered",
+        "registroFail": "There was an error creating the entry.",
+        "updateTtlOk": "Entrada Actualizada",
+        "updateTxtOk": "La entrada {{CONSECUTIVO}} ha sido actualizada de manera exitosa",
+        "aprobacionConfrmTtl": "Confirm entry Approval",
+        "aprobacionConfrmTxt": "Are you sure to approve this entry?",
         "aprobacionTtlOk": "Entry Approved",
         "aprobacionTxtOk": "The entry {{CONSECUTIVO}} was successfully approved",
-        "rechazoConfrmTtl":"Confirm entry rejection",
-        "rechazoConfrmTxt":"Are you sure to reject this entry?",
+        "rechazoConfrmTtl": "Confirm entry rejection",
+        "rechazoConfrmTxt": "Are you sure to reject this entry?",
         "rechazoTtlOk": "Entry Rejected",
-        "rechazoTxtOk": "The entry {{CONSECUTIVO}} was successfully rejected"
+        "rechazoTxtOk": "The entry {{CONSECUTIVO}} was successfully rejected",
+        "editar": "Editar Entrada",
+        "editarTtl": "Editar Entrada",
+        "errorEditar": "No se puede editar esta entrada."
       },
       "salidas": {
         "nuevaSalida": "Register a new issue",
@@ -948,7 +965,7 @@
         "registroConfrmTxt":"Are you sure to register the issues with the information provided?",
         "registroTtlOk":"Issue{{S}} Registered",
         "registroTxtOk":"The issue {{CONSECUTIVO}} was successfully registered",
-        "registroTxtOkVarios":"The issues {{CONSECUTIVO}} were successfully registered",
+        "registroTxtOkVarios":"Se generaron {{N}} salidas, de {{CONSECUTIVO0}} hasta {{CONSECUTIVOF}}.",
         "aprobacionConfrmTtl":"Confirm issue Approval",
         "aprobacionConfrmTxt":"Are you sure to approve this issue?",
         "aprobacionTtlOk": "Issue approved",
@@ -1049,7 +1066,7 @@
       "error_entrada_no_registrada": "The requested Input could not be registered",
       "error_salida_no_registrada": "The requested Output could not be registered",
       "SalidaRechazadaTitle": "Output Rejected",
-      "SalidaRechazadaText": "The Output Request has been Rejected",
+      "SalidaRechazadaText": "La solicitud {{ CONSECUTIVO }} ha sido denegada correctamente.",
       "alerta_descargue": "Unassgined elements",
       "alerta_consumo": "Unassgined elements",
       "alerta_controlado": "Unassgined elements",
@@ -1075,8 +1092,10 @@
     "salidas": {
       "titulo_registrar": "Register Output",
       "elementos": "Elements",
+      "exitoRegistroSolicitudTtl": "Solicitud Registrada",
+      "exitoRegistroSolicitudTxt": "La solicitud {{CONSECUTIVO}} ha sido registrada correctamente.",
       "exito_registro_titulo": "Output Recorded",
-      "exito_registro_texto": "The Output has been successfully recorded",
+      "exito_registro_texto": "La solicitud {{CONSECUTIVO}} ha sido aprobada correctamente.",
       "salida_instruccion": "Select an entry from the following list",
       "consulta_salida_info": "Select an output from the following list",
       "detalle_salida": "Output Detail"
@@ -1150,6 +1169,7 @@
     "descargarP": "Descargar Plantilla",
     "seleccionarArch": "Seleccionar archivo",
     "borrarSel": "Eliminar seleccionados",
+    "hasta": "to",
   "ajustes": {
     "movimientos_relacionados": "Related transfers",
     "confirmar_anular_entrada": "The related accounting and inventory entries will be reversed",
@@ -1288,13 +1308,15 @@
        "nuevoTraslado": "Register new Transfer Request",
        "noTrasladosView": "There are no transfers to view",
        "noTrasladosReview": "There are no transfers to review",
+       "noTrasladosConfirm": "Usted no tiene traslados pendientes por confirmar",
        "accionEdit": "Edit Transfer Request",
        "estadoTraslado": "Transfer Request Status",
        "errorEditar": "The selected request can not be edited",
+       "errorPermisoEditar": "No tiene permisos para editar este traslado.",
        "errorElementos": "There was an error getting the civil servant's elements",
        "errorConsulta": "There was an error getting the requests list"
      },
-     "registro": {
+     "registrar": {
        "title": "Confirm Transfer Registration",
        "subtitle": "Enter the requested information in the following form",
        "accion": "Create Request",
@@ -1302,19 +1324,25 @@
        "confrmTxt": "Are you sure to send the request with the provided information?",
        "successTtl": "Transfer Request Created",
        "successTxt:": "The transfer request {{CONSECUTIVO}} has been successfully registered",
-       "errTxt:": "There was an error when trying to create the transfer request"
+       "errTxt:": "There was an error when trying to create the transfer request",
+       "noElementos": "Usted no tiene elementos asignados."
+      },
+      "confirmacion": {
+        "title": "Confirmar Solicitud de Traslado",
+        "subtitle": "Seleccione un traslado de la lista para confirmar la solicitud."
       },
       "revisar": {
         "title": "Review Transfer Request",
         "subtitle": "Check the information provided in the request form and approve or deny it",
         "accion": "Approve request",
+        "accionR": "Rechazar Traslado",
         "accionEdit": "Review request",
         "confrmTtlA": "Approve transfer request",
         "confrmTxtA": "Are you sure to approve the transfer request?",
         "confrmTtlR": "Deny request",
+        "confrmTxtR": "Are you sure to deny the request?",
         "confrmRechazoTtl": "Request denial reason",
         "confrmRechazoTtx": "Enter the instructions to correct the request",
-        "confrmTxtR": "Are you sure to deny the request?",
         "successTtlA": "Transfer Request Approved",
         "successTxtA": "The request {{CONSECUTIVO}} has been approved",
         "successTtlR": "Transfer Request Denied",
@@ -1324,10 +1352,15 @@
         "title": "Confirm transfer completion",
         "subtitle": "Check the request information and confirm if you already have the elements",
         "accion": "Confirm Transfer Request",
-        "confrmTtl": "Confirmar Recepción",
-        "confrmTxt": "Are you sure to confirm you already have the elements?",
-        "successTtl": "Transfer completed",
-        "successTxt": "The transfer request {{CONSECUTIVO}} has been completed"
+        "accionR": "Rechazar Traslado",
+        "confrmTtlA": "Confirmar Solicitud de Traslado",
+        "confrmTxtA": "¿Desea confirmar que usted será el responsable de estos elementos?",
+        "confrmTtlR": "Rechazar Solicitud",
+        "confrmTxtR": "¿Desea rechazar la solicitud de traslado con la información suministrada?",
+        "successTtlA": "Solicitud Confirmada",
+        "successTxtA": "La solicitud de traslado {{CONSECUTIVO}} ha sido confirmada.",
+        "successTtlR": "Solicitud Rechazada",
+        "successTxtR": "La solicitud de traslado {{CONSECUTIVO}} ha sido rechazada."
       },
       "revision": {
         "title": "Approve tranfer requests",
@@ -1337,20 +1370,26 @@
         "title": "Update transfer request",
         "subtitle": "Check the denial reasons and update the request",
         "accion": "Update Transfer Request",
-        "confrmTtl": "Update Request",
-        "confrmTxt": "Are you sure to update the trasfer request?",
-        "successTtl": "Transfer Request Updated",
-        "successTxt": "The transfer request {{CONSECUTIVO}} has been updated"
+        "accionR": "Cancel request",
+        "confrmTtlA": "Update Request",
+        "confrmTxtA": "Are you sure to update the trasfer request?",
+        "confrmTtlR": "Cancel Request",
+        "confrmTxtR": "Are you sure to cancel the transfer request?",
+        "successTtlA": "Transfer Request Updated",
+        "successTxtA": "The transfer request {{CONSECUTIVO}} has been updated",
+        "successTtlR": "Transfer Request Cancelled",
+        "successTxtR": "The transfer request {{CONSECUTIVO}} has been cancelled."
       },
       "ver": {
         "title": "See Transfer Request details",
         "subtitle": "This form includes the details of the transfer request"
       },
       "estados": {
-        "tramite": "Awaiting review",
+        "tramite": "Awaiting Confirmation",
         "aprobado": "Approved",
         "rechazado": "Denied",
-        "confirmado": "Confirmed"
+        "confirmado": "Confirmed",
+        "anulado": "Cancel"
       },
       "funcActual": "Current possessor of the good ",
       "funcDestino": "New possessor of the good ",

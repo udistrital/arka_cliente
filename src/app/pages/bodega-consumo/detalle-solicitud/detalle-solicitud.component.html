@@ -3,12 +3,22 @@
     <div class="row">
         <div class="col">
             <p class="text-uppercase"><strong>{{'GLOBAL.consecutivo' | translate}}:</strong>
-                {{Solicitud.Id}} </p>
+                {{Detalle_Solicitud.Consecutivo}} </p>
         </div>
+        <div class="col">
+            <p class="text-uppercase"><strong>{{'GLOBAL.estado' | translate}}:</strong>
+                {{Solicitud.EstadoMovimientoId.Nombre}} </p>
+        </div>
+    </div>
+    <div class="row">
         <div class="col">
             <p class="text-uppercase"><strong>{{'GLOBAL.fecha_creacion' | translate}}:</strong>
                 {{Solicitud.FechaCreacion | date: 'dd/MM/yyyy'}}
             </p>
+        </div>
+        <div class="col" *ngIf="Solicitud.EstadoMovimientoId.Nombre !== 'Solicitud Pendiente'">
+            <p class="text-uppercase"><strong>{{'GLOBAL.fechaRevision' | translate}}:</strong>
+                {{Solicitud.FechaModificacion | date: 'dd/MM/yyyy'}} </p>
         </div>
     </div>
     <div class="row">
@@ -27,29 +37,31 @@
             <p class="text-uppercase"><strong>{{'GLOBAL.observaciones' | translate}}:</strong>
                 {{Solicitud.Observacion}} </p>
         </div>
-        <div class="col">
-            <p class="text-uppercase"><strong>{{'GLOBAL.estado' | translate}}:</strong>
-                {{Solicitud.EstadoMovimientoId.Nombre}} </p>
-        </div>
     </div>
 </ng-container>
 
-    <ng2-smart-table [settings]="settings" [source]="source" (edit)="onEdit($event)">
-    </ng2-smart-table>
+<ng2-smart-table [settings]="settings" [source]="source" (edit)="onEdit($event)">
+</ng2-smart-table>
 
-    <form [formGroup]="form_apertura" #fform="ngForm" *ngIf="form_apertura">
-        <div class="form-group col-sm">
-            <div class="form-group  col-lg-12">
-                <label>{{'GLOBAL.Detalle' | translate}}</label>
-                <div class="input-group">
-                    <textarea rows="5" placeholder="{{'GLOBAL.BodegaConsumo.Asignacion.Placeholder' | translate}}"
-                        class="form-control" formControlName="Observaciones" required></textarea>
-                </div>
+<form [formGroup]="form_apertura" #fform="ngForm" *ngIf="form_apertura">
+    <div class="form-group col-sm">
+        <div class="form-group  col-lg-12">
+            <label>{{'GLOBAL.Detalle' | translate}}</label>
+            <div class="input-group">
+                <textarea rows="5" placeholder="{{'GLOBAL.BodegaConsumo.Asignacion.Placeholder' | translate}}"
+                    class="form-control" formControlName="Observaciones" required></textarea>
             </div>
         </div>
-    </form>
+    </div>
+</form>
 
-<div class="pt-4" *ngIf="Editar">
-    <button [disabled]="verificar" nbButton (click)="onSubmit()" class="float-right">{{'GLOBAL.Solicitudes.Aprobar' | translate}}</button>
-    <button nbButton (click)="onSubmit2()">{{'GLOBAL.Solicitudes.Rechazar' | translate}}</button>
-</div>
+<mat-card-actions *ngIf="Editar" class="justify-content-center" style="padding-bottom: 2rem;">
+    <button mat-raised-button color="primary" class="float-left text-uppercase" [disabled]="submitted"
+        (click)="onRechazar()">
+        {{'GLOBAL.Solicitudes.Rechazar' | translate}}
+    </button>
+    <button mat-raised-button color="primary" class="float-right text-uppercase" [disabled]="verificar || submitted"
+        (click)="onAprobar()">
+        {{'GLOBAL.Solicitudes.Aprobar' | translate}}
+    </button>
+</mat-card-actions>

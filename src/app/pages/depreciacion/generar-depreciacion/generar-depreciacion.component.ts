@@ -25,6 +25,7 @@ export class GenerarDepreciacionComponent implements OnInit {
   movimiento: any;
   rechazo: string = '';
   submitted: boolean;
+  consecutivo: string = '';
   estadosMovimiento: Array<EstadoMovimiento>;
   @Output() accion: EventEmitter<boolean> = new EventEmitter<boolean>();
   @Input() modoCrud: string; // create | get | review | update
@@ -64,6 +65,7 @@ export class GenerarDepreciacionComponent implements OnInit {
     this.depreciacionHelper.getDepreciacion(depreciacionId).subscribe(res => {
       if (res) {
         this.movimiento = res.Movimiento;
+        this.consecutivo = res.Movimiento && res.Movimiento.Detalle ? JSON.parse(res.Movimiento.Detalle).Consecutivo : '';
         this.fillForm(res.Movimiento);
         this.trContable = res.TrContable.simulacro;
       }
@@ -214,6 +216,7 @@ export class GenerarDepreciacionComponent implements OnInit {
           this.formDepreciacion.disable();
           this.submitted = true;
           this.accion.emit(true);
+          this.consecutivo = res.Movimiento && res.Movimiento.Detalle ? JSON.parse(res.Movimiento.Detalle).Consecutivo : '';
           this.alertSuccess(res.trContable.simulacro, false);
         }
       });

@@ -1,28 +1,22 @@
-<!-- nb-card para mostrar las solicitudes existentes -->
-<nb-card *ngIf="!salidaId">
-  <nb-card-header>
-    <h2>{{ 'GLOBAL.BodegaConsumo.Solicitud.Titulo' + (Editar ? 'Pendientes' : 'Todas') | translate }}</h2>
-  </nb-card-header>
-  <nb-card-body [nbSpinner]="!mostrar"><nb-card><nb-card-body>
-    <p><em>{{ 'GLOBAL.BodegaConsumo.Solicitud.Lista' + (Editar ? 'Pendientes' : 'Todas') | translate }}</em></p>
-    <ng2-smart-table [settings]="settings" [source]="source" (custom)="onCustom($event)" *ngIf="!salidaId">
+<mat-card>
+  <mat-card-title *ngIf="!salidaId">
+    {{ 'GLOBAL.BodegaConsumo.Solicitud.Titulo' + (Editar ? 'Pendientes' : 'Todas') | translate }}
+  </mat-card-title>
+  <mat-card-title *ngIf="salidaId">
+    {{'GLOBAL.Solicitudes.Detalle' | translate}}
+  </mat-card-title>
+  <mat-card-subtitle *ngIf="!salidaId">
+    {{ 'GLOBAL.BodegaConsumo.Solicitud.Lista' + (Editar ? 'Pendientes' : 'Todas') | translate }}
+  </mat-card-subtitle>
+  <mat-card-content [nbSpinner]="!mostrar">
+    <ng2-smart-table *ngIf="!salidaId" [settings]="settings" [source]="source" (custom)="onCustom($event)">
     </ng2-smart-table>
-  </nb-card-body></nb-card></nb-card-body>
-</nb-card>
-
-<!--Card para mostrar el detalle de un elemento-->
-<nb-card *ngIf="salidaId">
-  <nb-card-header>
-    <h1>{{'GLOBAL.Solicitudes.Detalle' | translate}}</h1>
-  </nb-card-header>
-  <nb-card-body><nb-card><nb-card-body>
-    <ngx-detalle-solicitud [Editar]="Editar" [salida_id]="salidaId"></ngx-detalle-solicitud>
-  </nb-card-body></nb-card></nb-card-body>
-  <nb-card-footer>
-    <div class="pt-4">
-      <button type="button" class="btn btn-secondary" data-dismiss="modal"
-        (click)="onVolver()">{{'GLOBAL.volver' | translate}}
-      </button>
-    </div>
-  </nb-card-footer>
-</nb-card>
+    <ngx-detalle-solicitud *ngIf="salidaId" (done)="onResponder()" [Editar]="Editar" [salida_id]="salidaId">
+    </ngx-detalle-solicitud>
+  </mat-card-content>
+  <mat-card-actions *ngIf="salidaId">
+    <button mat-raised-button color="primary" class="float-left text-uppercase" (click)="onVolver()">
+      {{'GLOBAL.volver' | translate}}
+    </button>
+  </mat-card-actions>
+</mat-card>

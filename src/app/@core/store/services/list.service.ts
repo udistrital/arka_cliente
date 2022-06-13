@@ -17,32 +17,6 @@ export class ListService {
     private store: Store<IAppState>) {
   }
 
-  public findProveedores() {
-
-    this.store.select(REDUCER_LIST.Proveedores).subscribe(
-      (list: any) => {
-        if (!list || list.length === 0) {
-          this.ActaRecibido.getProveedores()
-            .subscribe(
-              (res: any[]) => {
-
-                for (const index in res) {
-                  if (res.hasOwnProperty(index)) {
-                    res[index].compuesto = res[index].NumDocumento + ' - ' + res[index].NomProveedor;
-                  }
-                }
-                this.addList(REDUCER_LIST.Proveedores, res);
-
-              },
-              error => {
-                this.addList(REDUCER_LIST.Proveedores, []);
-              },
-            );
-        }
-      },
-    );
-  }
-
   public findPlanCuentasCredito() {
 
     this.store.select(REDUCER_LIST.PlanCuentasCredito).subscribe(
