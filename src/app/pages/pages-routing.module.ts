@@ -4,6 +4,7 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { PagesComponent } from './pages.component';
 import { NotFoundComponent } from './miscellaneous/not-found/not-found.component';
 import { AuthGuard } from '../@core/_guards/auth.guard';
+import { CanLoadChildren } from '../@core/_guards/children.guard';
 
 const routes: Routes = [{
   path: '',
@@ -16,7 +17,7 @@ const routes: Routes = [{
     {
       path: 'acta_recibido',
       loadChildren: './acta-recibido/acta-recibido.module#ActaRecibidoModule',
-      canActivate: [AuthGuard],
+      canLoad: [CanLoadChildren],
     },
     {
       path: 'catalogo',

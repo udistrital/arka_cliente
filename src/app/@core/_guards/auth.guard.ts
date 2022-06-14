@@ -16,10 +16,15 @@ export class AuthGuard implements CanActivate {
 
     if (!!this.menu.getRoute(state.url)) {
       return true;
-    } else {
-      this.pUpManager.showErrorAlert('No tiene permisos');
-      return false;
+    } else if (route.params && route.params.id) {
+      const route_ = state.url.replace(route.params.id, ':id');
+      if (!!this.menu.getRoute(route_)) {
+        return true;
+      }
     }
+
+    this.pUpManager.showErrorAlert('No tiene permisos');
+    return false;
 
   }
 

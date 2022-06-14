@@ -64,6 +64,10 @@ export class ConfiguracionService {
     return this.findRoute(this.configuraciones, accion);
   }
 
+  checkSegment(segments: string[]) {
+    return this.checkSegments(this.configuraciones, segments.join('/').replace(/\d+$/, ':id'));
+  }
+
   findRoute(menu: Partial<Menu>[], option: string) {
     return menu.find(opt => (opt.Url === option) ||
       (opt.Opciones && opt.Opciones.length && this.findRoute(opt.Opciones, option)));
@@ -72,6 +76,11 @@ export class ConfiguracionService {
   findAccion(menu: Partial<Menu>[], option: string) {
     return menu.find(opt => (opt.TipoOpcion === TipoOpcion.Accion && opt.Nombre === option) ||
       (opt.Opciones && opt.Opciones.length && this.findAccion(opt.Opciones, option)));
+  }
+
+  checkSegments(menu: Partial<Menu>[], segment: string) {
+    return menu.some(opt => (opt.Url.includes(segment)) ||
+      (opt.Opciones && opt.Opciones.length && this.checkSegments(opt.Opciones, segment)));
   }
 
   // Funciones CRUD
