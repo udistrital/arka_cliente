@@ -2,8 +2,8 @@
   "HOME": {
     "TITLE": "CONFIGURACION",
     "SELECT": "Cambiar idioma",
-    "LOGIN": "Iniciar sesion",
-    "LOGOUT": "Cerrar sesion",
+    "LOGIN": "Iniciar sesión",
+    "LOGOUT": "Cerrar sesión",
     "THEME": "Tema",
     "OAS": "Oficina Asesora de Sistemas OAS",
     "login": "Iniciar Sesión",
@@ -179,7 +179,7 @@
             "name": "Solicitud de Baja de Bien"
           },
           "aprobacion": {
-            "name": "Aprobacion de Baja de Bien"
+            "name": "Aprobación de Baja de Bien"
           }
         }
       },
@@ -271,11 +271,11 @@
       "consulta": "Consulta de Actas",
       "registro": "Registro de Actas",
       "edicion": "Edicion de Actas",
-      "verificacion": "Verificacion de Actas",
+      "verificacion": "Verificación de Actas",
       "detalle": "Ver Detalle"
     },
     "auth": {
-      "auth": "Autenticacion",
+      "auth": "Autenticación",
       "login": "Login",
       "register": "Registro",
       "request-password": "Recuperar Password",
@@ -336,7 +336,7 @@
         "ArticulosRelacionadosTitle":"Articulos Relacionados",
         "TipoBienHeader":"Tipo de Bien",
         "TotalesFooter":"Totales",
-        "DescripcionHeader":"Descripcion",
+        "DescripcionHeader":"Descripción",
         "CantidadHeader":"Cantidad",
         "MarcaHeader":"Marca",
         "SerieHeader":"Serie",
@@ -503,7 +503,7 @@
         "ArticulosRelacionadosTitle":"Artículos Relacionados",
         "TipoBienHeader":"Tipo de Bien",
         "TotalesFooter":"Totales",
-        "DescripcionHeader":"Descripcion",
+        "DescripcionHeader":"Descripción",
         "CantidadHeader":"Cantidad",
         "MarcaHeader":"Marca",
         "SerieHeader":"Serie",
@@ -540,7 +540,7 @@
         "Descuento":"Gran Descuentos:",
         "ValorIva":"Gran IVA:",
         "Total":"Gran Total",
-        "ArticulosRelacionadosTitle":"Articulos Relacionados",
+        "ArticulosRelacionadosTitle":"Artículos Relacionados",
         "TipoBienHeader":"Tipo de Bien",
         "TotalesFooter":"Totales",
         "DescripcionHeader":"Descripción",
