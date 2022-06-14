@@ -375,8 +375,8 @@ export class ConsultaEntradaComponent implements OnInit {
     this.source.remove(this.filaSeleccionada);
     if (!aprobar) {
       this.onVolver();
+      this.mostrar = true;
     }
-    this.mostrar = true;
   }
 
   loadEstados() {
