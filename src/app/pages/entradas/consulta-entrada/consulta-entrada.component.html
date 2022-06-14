@@ -45,8 +45,8 @@
           <!-- ACTA RECIBIDO -->
           <div class="row">
             <div class="col">
-              <p class="text-uppercase"><strong>{{'GLOBAL.Acta_Recibido.ActaNo' | translate }}</strong>
-                : {{ entradaEspecifica.ActaRecibidoId }}</p>
+              <a [href]="linkActa" class="text-uppercase"><strong>{{'GLOBAL.Acta_Recibido.ActaNo' | translate }}</strong>
+                : {{ entradaEspecifica.ActaRecibidoId }}</a>
             </div>
             <div class="col" *ngIf="Proveedor">
               <p class="text-uppercase"><strong>{{'GLOBAL.proveedor' | translate }}</strong>
@@ -457,7 +457,8 @@
   </mat-card-content>
 
   <mat-card-actions *ngIf="(mostrarEntrada && modo === 'revision' && !verComponente) || mostrarEntrada">
-    <div style="padding-bottom: 3rem;" *ngIf="(modo === 'revision' && !verComponente)">
+    <div *ngIf="movimiento?.EstadoMovimientoId?.Nombre === 'Entrada En Trámite' && (modo === 'revision' && !verComponente)"
+      style="padding-bottom: 3rem;">
       <button mat-flat-button color="primary" class="float-left text-uppercase" (click)="confirmSubmit(false)">
         {{'GLOBAL.Acta_Recibido.VerificacionActa.Rechazar' | translate}}
       </button>

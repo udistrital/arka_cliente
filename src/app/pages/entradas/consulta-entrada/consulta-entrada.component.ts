@@ -14,7 +14,6 @@ import { ListService } from '../../../@core/store/services/list.service';
 import { Store } from '@ngrx/store';
 import { IAppState } from '../../../@core/store/app.state';
 import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
-import Swal from 'sweetalert2';
 import { PopUpManager } from '../../../managers/popUpManager';
 import { SoporteActa } from '../../../@core/data/models/acta_recibido/soporte_acta';
 import { ConfiguracionService } from '../../../@core/data/configuracion.service';
@@ -52,6 +51,7 @@ export class ConsultaEntradaComponent implements OnInit {
   updateEntrada: boolean = false;
   trContable: any;
   factura: SoporteActa;
+  linkActa: string;
 
   constructor(
     private pUpManager: PopUpManager,
@@ -203,6 +203,11 @@ export class ConsultaEntradaComponent implements OnInit {
     this.entradasHelper.getEntrada(this.entradaId).subscribe(res => {
       if (res.movimiento) {
         this.movimiento = res.movimiento;
+
+        const detalle = JSON.parse(res.movimiento.Detalle);
+        this.actaRecibidoId = detalle.acta_recibido_id;
+        this.linkActa = '#/pages/acta_recibido/consulta_acta_recibido/' + this.actaRecibidoId;
+
         if (res.trContable) {
           const fecha = new Date(res.trContable.fecha).toLocaleString();
           this.trContable = {
@@ -306,7 +311,7 @@ export class ConsultaEntradaComponent implements OnInit {
       supervisorAux.DocumentoIdentificacion = info.supervisor.documento_identificacion;
       this.contrato.OrdenadorGasto = ordenadorAux;
       this.contrato.NumeroContratoSuscrito = info.numero_contrato_suscrito;
-      this.contrato.TipoContrato = info.tipo_contrato &&
+      this.contrato.TipoContrato = info.tipo_contrato && this.tipos &&
         this.tipos.find(ct => +ct.Id === +info.tipo_contrato) ? this.tipos.find(ct => +ct.Id === +info.tipo_contrato).TipoContrato : '';
       this.contrato.FechaSuscripcion = info.fecha_suscripcion;
       this.contrato.Supervisor = supervisorAux;
@@ -324,20 +329,14 @@ export class ConsultaEntradaComponent implements OnInit {
   }
 
   confirmSubmit(aprobar: boolean) {
-    (Swal as any).fire({
-      title: this.translate.instant('GLOBAL.movimientos.entradas.' + (aprobar ? 'aprobacion' : 'rechazo') + 'ConfrmTtl'),
-      text: this.translate.instant('GLOBAL.movimientos.entradas.' + (aprobar ? 'aprobacion' : 'rechazo') + 'ConfrmTxt'),
-      type: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: this.translate.instant('GLOBAL.si'),
-      cancelButtonText: this.translate.instant('GLOBAL.no'),
-    }).then((result) => {
-      if (result.value) {
-        this.onSubmitRevision(aprobar);
-      }
-    });
+    if (this.movimiento && this.movimiento.EstadoMovimientoId && this.movimiento.EstadoMovimientoId.Nombre === 'Entrada En Trámite') {
+      this.pUpManager.showAlertWithOptions(this.getOptionsRevision(aprobar))
+        .then((result) => {
+          if (result.value) {
+            this.onSubmitRevision(aprobar);
+          }
+        });
+    }
   }
 
   private onSubmitRevision(aprobar: boolean) {
@@ -346,6 +345,7 @@ export class ConsultaEntradaComponent implements OnInit {
       this.entradasHelper.postEntrada({}, +this.entradaId, true).toPromise().then((res: any) => {
         this.spinner = '';
         if (res && res.errorTransaccion === '') {
+          this.alertSuccess(true);
           this.verComponente = true;
           this.transaccionContable = res.transaccionContable;
           this.source.remove(this.filaSeleccionada);
@@ -371,13 +371,11 @@ export class ConsultaEntradaComponent implements OnInit {
 
   private alertSuccess(aprobar: boolean) {
     const consecutivo = JSON.parse(this.movimiento.Detalle).consecutivo;
-    (Swal as any).fire({
-      type: 'success',
-      title: this.translate.instant('GLOBAL.movimientos.entradas.' + (aprobar ? 'aprobacion' : 'rechazo') + 'TtlOk'),
-      text: this.translate.instant('GLOBAL.movimientos.entradas.' + (aprobar ? 'aprobacion' : 'rechazo') + 'TxtOk', { CONSECUTIVO: consecutivo }),
-    });
+    this.pUpManager.showAlertWithOptions(this.getOptionsSubmit(aprobar, consecutivo));
     this.source.remove(this.filaSeleccionada);
-    this.onVolver();
+    if (!aprobar) {
+      this.onVolver();
+    }
     this.mostrar = true;
   }
 
@@ -584,21 +582,12 @@ export class ConsultaEntradaComponent implements OnInit {
   }
 
   onDelete(event) {
-    this.mostrar = false;
-    this.actaRecibidoId = +`${event.data.ActaRecibidoId}`;
-    this.filaSeleccionada = event.data;
-    this.entradaId = event.data.Id;
-    this.loadEntradaEspecifica();
+    this.router.navigateByUrl('/pages/entradas/consulta_entrada/' + event.data.Id);
   }
 
   onEdit(event) {
     if (this.modo === 'revision') {
-      this.mostrar = false;
-      this.actaRecibidoId = +`${event.data.ActaRecibidoId}`;
-      this.filaSeleccionada = event.data;
-      this.entradaId = event.data.Id;
-      this.updateEntrada = false;
-      this.loadEntradaEspecifica();
+      this.router.navigateByUrl('/pages/entradas/aprobar_entrada/' + event.data.Id);
     } else if (event.data.EstadoMovimientoId === 'Entrada Rechazada') {
       this.mostrar = false;
       this.actaRecibidoId = +`${event.data.ActaRecibidoId}`;
@@ -624,6 +613,8 @@ export class ConsultaEntradaComponent implements OnInit {
     this.trContable = undefined;
     this.transaccionContable = undefined;
     this.verComponente = false;
+    this.router.navigateByUrl('/pages/entradas/' +
+      (this.modo === 'consulta' ? 'consulta' : this.modo === 'revision' ? 'aprobar' : '') + '_entrada');
   }
 
   private getTiposContrato() {
@@ -657,19 +648,53 @@ export class ConsultaEntradaComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.route.data.subscribe(data => {
-      if (data && data.modo !== null && data.modo !== undefined) {
-        this.modo = data.modo;
-      }
-    });
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
       this.loadTablaSettings();
     });
-    this.loadEstados();
-    this.loadEntradas();
-    this.loadTablaSettings();
     this.getTiposContrato();
+    this.loadEstados();
 
+    this.route.data.subscribe(data => {
+      if (data && data.modo) {
+        this.modo = data.modo;
+      }
+    });
+
+    this.route.paramMap.subscribe(params => {
+
+      if (params && +params.get('id')) {
+        this.entradaId = +this.route.snapshot.paramMap.get('id');
+        this.loadEntradaEspecifica();
+      } else {
+        this.loadEntradas();
+        this.loadTablaSettings();
+      }
+
+    });
+
+  }
+
+  private getOptionsRevision(aprobar: boolean) {
+    const base = 'GLOBAL.movimientos.entradas.';
+    return {
+      title: this.translate.instant(base + (aprobar ? 'aprobacion' : 'rechazo') + 'ConfrmTtl'),
+      text: this.translate.instant(base + (aprobar ? 'aprobacion' : 'rechazo') + 'ConfrmTxt'),
+      type: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: this.translate.instant('GLOBAL.si'),
+      cancelButtonText: this.translate.instant('GLOBAL.no'),
+    };
+  }
+
+  private getOptionsSubmit(aprobar: boolean, consecutivo: string) {
+    const base = 'GLOBAL.movimientos.entradas.';
+    return {
+      type: 'success',
+      title: this.translate.instant(base + (aprobar ? 'aprobacion' : 'rechazo') + 'TtlOk'),
+      text: this.translate.instant(base + (aprobar ? 'aprobacion' : 'rechazo') + 'TxtOk', { CONSECUTIVO: consecutivo }),
+    };
   }
 
 }

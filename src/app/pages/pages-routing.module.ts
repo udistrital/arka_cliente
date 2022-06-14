@@ -27,7 +27,7 @@ const routes: Routes = [{
     {
       path: 'entradas',
       loadChildren: './entradas/entradas.module#EntradasModule',
-      canActivate: [AuthGuard],
+      canLoad: [CanLoadChildren],
     },
     {
       path: 'salidas',
