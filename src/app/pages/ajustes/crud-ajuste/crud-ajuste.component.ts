@@ -6,6 +6,7 @@ import { PopUpManager } from '../../../managers/popUpManager';
 import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
 import { AjustesHelper } from '../../../helpers/movimientos/ajustesHelper';
 import { ConfiguracionService } from '../../../@core/data/configuracion.service';
+import { FormBuilder, FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'ngx-crud-ajuste',
@@ -18,6 +19,7 @@ export class CrudAjusteComponent implements OnInit {
   valid: boolean;
   estadosMovimiento: Array<EstadoMovimiento>;
   showForm: boolean;
+  formComprobante: FormGroup;
   modoForm: string; // create | get | update
   title: string;
   subtitle: string;
@@ -26,7 +28,7 @@ export class CrudAjusteComponent implements OnInit {
   rechazo: string = '';
   loading: boolean;
   submitted: boolean;
-  @Input() modoCrud: string; // registrar | ver | editar | revisar | aprobar
+  @Input() modoCrud: string = 'registrar' || 'ver' || 'editar' || 'revisar' || 'aprobar';
   @Input() ajusteId: number = 0;
   @Output() accion: EventEmitter<boolean> = new EventEmitter<boolean>();
 
@@ -36,6 +38,7 @@ export class CrudAjusteComponent implements OnInit {
     private entradasHelper: EntradaHelper,
     private ajustesHelper: AjustesHelper,
     private confService: ConfiguracionService,
+    private fb: FormBuilder,
   ) {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
     });
@@ -64,9 +67,18 @@ export class CrudAjusteComponent implements OnInit {
       if (res) {
         this.ajuste = res.Movimiento;
         const detalle = JSON.parse(res.Movimiento.Detalle);
+        if (detalle.RazonRechazo) {
+          this.formComprobante = this.fb.group({
+            razon: [
+              {
+                value: detalle.RazonRechazo,
+                disabled: true,
+              },
+            ],
+          });
+        }
         this.ajusteData = {};
         this.ajusteData.movimientos = res.TrContable;
-        this.ajusteData.rechazo = detalle.RazonRechazo;
         this.consecutivo = detalle.Consecutivo;
         this.showForm = true;
       }
@@ -75,44 +87,36 @@ export class CrudAjusteComponent implements OnInit {
 
   public confRechazo() {
     if (!this.loading && !this.submitted && this.valid) {
-      (Swal as any).fire({
-        title: this.translate.instant('GLOBAL.ajustes.' + this.modoCrud + '.confrmTtlR'),
-        text: this.translate.instant('GLOBAL.ajustes.' + this.modoCrud + '.confrmTxtR'),
-        type: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: this.translate.instant('GLOBAL.si'),
-        cancelButtonText: this.translate.instant('GLOBAL.no'),
-      }).then((result) => {
-        if (result.value) {
-          (Swal as any).mixin({
-            input: 'text',
-            confirmButtonText: this.translate.instant('GLOBAL.Acta_Recibido.VerificacionActa.Rechazar'),
-            showCancelButton: true,
-            progressSteps: ['1'],
-            inputValidator: (value) => {
-              return new Promise<string>((resolve) => {
-                if (!value.length) {
-                  resolve(this.translate.instant('GLOBAL.ajustes.revisar.confrmRechazoTtx'));
-                } else {
-                  resolve('');
-                }
-              });
-            },
-          }).queue([
-            {
-              title: this.translate.instant('GLOBAL.ajustes.revisar.confrmRechazoTtl'),
-              text: this.translate.instant('GLOBAL.ajustes.revisar.confrmRechazoTtx'),
-            },
-          ]).then((result2) => {
-            if (result2.value) {
-              this.rechazo = result2.value[0];
-              this.rechazar();
-            }
-          });
-        }
-      });
+      this.pUpManager.showAlertWithOptions(this.optionsRechazo)
+        .then((result) => {
+          if (result.value) {
+            (Swal as any).mixin({
+              input: 'text',
+              confirmButtonText: this.translate.instant('GLOBAL.Acta_Recibido.VerificacionActa.Rechazar'),
+              showCancelButton: true,
+              progressSteps: ['1'],
+              inputValidator: (value) => {
+                return new Promise<string>((resolve) => {
+                  if (!value.length) {
+                    resolve(this.translate.instant('GLOBAL.ajustes.revisar.confrmRechazoTtx'));
+                  } else {
+                    resolve('');
+                  }
+                });
+              },
+            }).queue([
+              {
+                title: this.translate.instant('GLOBAL.ajustes.revisar.confrmRechazoTtl'),
+                text: this.translate.instant('GLOBAL.ajustes.revisar.confrmRechazoTtx'),
+              },
+            ]).then((result2) => {
+              if (result2.value) {
+                this.rechazo = result2.value[0];
+                this.rechazar();
+              }
+            });
+          }
+        });
     }
   }
 
@@ -125,7 +129,7 @@ export class CrudAjusteComponent implements OnInit {
       const sfx = this.modoCrud !== 'revisar' ? '' : rechazar ? 'R' : 'A';
       const title = this.translate.instant('GLOBAL.ajustes.' + this.modoCrud + '.confrmTtl' + sfx);
       const text = this.translate.instant('GLOBAL.ajustes.' + this.modoCrud + '.confrmTxt' + sfx);
-      (Swal as any).fire({
+      const options = {
         title,
         text,
         type: 'warning',
@@ -134,17 +138,19 @@ export class CrudAjusteComponent implements OnInit {
         cancelButtonColor: '#d33',
         confirmButtonText: this.translate.instant('GLOBAL.si'),
         cancelButtonText: this.translate.instant('GLOBAL.no'),
-      }).then((result) => {
-        if (result.value) {
-          if (this.modoCrud === 'registrar') {
-            this.post();
-          } else if (this.modoCrud === 'revisar') {
-            this.aprobar();
-          } else if (this.modoCrud === 'editar') {
-            this.update();
+      };
+      this.pUpManager.showAlertWithOptions(options)
+        .then((result) => {
+          if (result.value) {
+            if (this.modoCrud === 'registrar') {
+              this.post();
+            } else if (this.modoCrud === 'revisar') {
+              this.aprobar();
+            } else if (this.modoCrud === 'editar') {
+              this.update();
+            }
           }
-        }
-      });
+        });
     }
   }
 
@@ -175,7 +181,7 @@ export class CrudAjusteComponent implements OnInit {
         Cuenta: fg.controls.cuenta.value.Id,
         Debito: fg.controls.debito.value,
         Credito: fg.controls.credito.value,
-        TerceroId: fg.controls.tercero.value.Id,
+        TerceroId: fg.controls.tercero.value.TerceroId ? fg.controls.tercero.value.TerceroId.Id : 0,
         Descripcion: fg.controls.descripcion.value,
       })),
     };
@@ -212,7 +218,7 @@ export class CrudAjusteComponent implements OnInit {
         Cuenta: fg.controls.cuenta.value.Id,
         Debito: fg.controls.debito.value,
         Credito: fg.controls.credito.value,
-        TerceroId: fg.controls.tercero.value.Id,
+        TerceroId: fg.controls.tercero.value.TerceroId ? fg.controls.tercero.value.TerceroId.Id : 0,
         Descripcion: fg.controls.descripcion.value,
       })),
     };
@@ -244,4 +250,18 @@ export class CrudAjusteComponent implements OnInit {
       }
     });
   }
+
+  get optionsRechazo(): any {
+    return {
+      title: this.translate.instant('GLOBAL.ajustes.' + this.modoCrud + '.confrmTtlR'),
+      text: this.translate.instant('GLOBAL.ajustes.' + this.modoCrud + '.confrmTxtR'),
+      type: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: this.translate.instant('GLOBAL.si'),
+      cancelButtonText: this.translate.instant('GLOBAL.no'),
+    };
+  }
+
 }

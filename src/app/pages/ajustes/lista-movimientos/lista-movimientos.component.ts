@@ -288,7 +288,7 @@ export class ListaMovimientosComponent implements OnInit {
       actions: {
         columnTitle: this.translate.instant('GLOBAL.Acciones'),
         position: 'right',
-        add: !!this.confService.getAccion('crearAjusteAuto'),
+        add: !!this.confService.getAccion('registrarAjusteAuto'),
         edit: false,
         delete: false,
         custom: [

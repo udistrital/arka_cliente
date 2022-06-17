@@ -70,19 +70,9 @@ export class TablaEntradaAprobadaComponent implements OnInit {
     this.documentoId = false;
     this.listService.findClases();
     this.listService.findImpuestoIVA();
-    this.listService.findProveedores();
     this.loadTablaSettings();
     this.iniciarParametros();
     this.loadEntradas();
-    this.loadLists();
-  }
-  private loadLists() {
-    this.store.select((state) => state).subscribe(
-      (list) => {
-        this.Proveedores = list.listProveedores[0];
-        // console.log(this.Proveedores)
-      },
-    );
   }
 
   loadTablaSettings() {

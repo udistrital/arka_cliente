@@ -14,6 +14,7 @@ import { ThemeModule } from '../../@theme/theme.module';
 import { FormSolicitudComponent } from './form-solicitud/form-solicitud.component';
 import { CrudBajasComponent } from './crud-bajas/crud-bajas.component';
 import { FormResolucionComponent } from './form-resolucion/form-resolucion.component';
+import { AjustesModule } from '../ajustes/ajustes.module';
 
 
 @NgModule({
@@ -32,6 +33,7 @@ import { FormResolucionComponent } from './form-resolucion/form-resolucion.compo
     TranslateModule,
     Ng2CompleterModule,
     ThemeModule,
+    AjustesModule,
   ],
   providers: [
     ListService,

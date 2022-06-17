@@ -20,13 +20,18 @@ export class CrudTrasladoComponent implements OnInit {
   formatoTraslado: FormatoTipoMovimiento;
   estadosMovimiento: Array<EstadoMovimiento>;
   showForm: boolean;
-  modoForm: string; // create | get | update
+  modoForm: string; // 'create' || 'get' || 'put'
   title: string;
   subtitle: string;
   boton: string;
+  botonR: string;
   consecutivo: string = '';
+  loading: boolean;
+  submitted: boolean;
   rechazo: string = '';
-  @Input() modoCrud: string; // registrar | ver | editar | revisar | aprobar
+  trContable: any;
+  movimiento: Movimiento;
+  @Input() modoCrud: string = 'registrar' || 'ver' || 'editar' || 'confirmar' || 'revisar';
   @Input() trasladoId: number = 0;
   @Output() accion: EventEmitter<boolean> = new EventEmitter<boolean>();
 
@@ -47,7 +52,7 @@ export class CrudTrasladoComponent implements OnInit {
     if (this.modoCrud === 'registrar') {
       this.modoForm = 'create';
       this.showForm = true;
-    } else if (this.modoCrud !== 'editar') {
+    } else if (this.modoCrud !== 'editar' && this.trasladoId) {
       this.getTraslado(this.trasladoId);
       this.modoForm = 'get';
     } else if (this.trasladoId) {
@@ -58,21 +63,27 @@ export class CrudTrasladoComponent implements OnInit {
     this.title = this.translate.instant('GLOBAL.traslados.' + this.modoCrud + '.title');
     this.subtitle = this.translate.instant('GLOBAL.traslados.' + this.modoCrud + '.subtitle');
     this.boton = this.translate.instant('GLOBAL.traslados.' + this.modoCrud + '.accion');
+    this.botonR = this.translate.instant('GLOBAL.traslados.' + this.modoCrud + '.accionR');
   }
 
   getTraslado(trasladoId: number) {
     this.trasladosHelper.getTraslado(trasladoId).subscribe(res => {
       if (res) {
         this.trasladoData = {};
-        const consecutivo = JSON.parse(res.Detalle).Consecutivo;
-        const rechazo = JSON.parse(res.Detalle).RazonRechazo;
+        this.movimiento = res.Movimiento;
+        const detalle = res.Movimiento && res.Movimiento.Detalle ? JSON.parse(res.Movimiento.Detalle) : '';
+        const rechazo = detalle ? detalle.RazonRechazo : '';
+        this.consecutivo = detalle ? detalle.Consecutivo : '';
+        if (res.TrContable) {
+          this.trasladoData.trContable = res.TrContable;
+          this.trasladoData.trContable.consecutivo = this.consecutivo;
+        }
         this.trasladoData.origen = res.FuncionarioOrigen;
         this.trasladoData.destino = res.FuncionarioDestino;
         this.trasladoData.ubicacion = res.Ubicacion;
         this.trasladoData.elementos = res.Elementos;
         this.trasladoData.observaciones = res.Observaciones;
         this.trasladoData.rechazo = rechazo;
-        this.consecutivo = consecutivo ? consecutivo : '';
         this.showForm = true;
       }
     });
@@ -133,7 +144,7 @@ export class CrudTrasladoComponent implements OnInit {
   }
 
   public confirm(rechazar: boolean = false) {
-    const sfx = this.modoCrud !== 'revisar' ? '' : rechazar ? 'R' : 'A';
+    const sfx = (this.modoCrud !== 'editar' && this.modoCrud !== 'confirmar' && this.modoCrud !== 'revisar') ? '' : rechazar ? 'R' : 'A';
     const title = this.translate.instant('GLOBAL.traslados.' + this.modoCrud + '.confrmTtl' + sfx);
     const text = this.translate.instant('GLOBAL.traslados.' + this.modoCrud + '.confrmTxt' + sfx);
     (Swal as any).fire({
@@ -153,46 +164,57 @@ export class CrudTrasladoComponent implements OnInit {
   }
 
   private buildMovimiento(rechazar: boolean) {
-    const val = this.trasladoData;
-    const Elementos = val.controls.elementos.value.map(element => element.id);
-    const FuncionarioOrigen = val.controls.origen.value.tercero.Tercero.Id;
-    const FuncionarioDestino = val.controls.destino.value.tercero.Tercero.Id;
-    const Ubicacion = val.controls.ubicacion.value.ubicacion;
-    const Observacion = val.controls.observaciones.value.observaciones;
-    const estadoId =
-      (this.modoCrud === 'registrar' || this.modoCrud === 'editar') ? 'Traslado En Trámite' :
-        (rechazar) ? 'Traslado Rechazado' :
-          (this.modoCrud === 'revisar') ? 'Traslado Aprobado' :
-            (this.modoCrud === 'confirmar') ? 'Traslado Confirmado' : '';
-    const RazonRechazo = (this.rechazo) ? this.rechazo :
-      estadoId === 'Traslado En Trámite' ? val.controls.rechazo.value.razon : '';
 
-    const detalle = <DetalleTraslado>{
-      FuncionarioOrigen,
-      FuncionarioDestino,
-      Ubicacion,
-      Elementos,
-      Consecutivo: this.consecutivo ? this.consecutivo : '',
-      RazonRechazo,
-    };
+    if (!this.submitted) {
+      this.loading = true;
+      this.submitted = true;
+      const detalle_ = this.movimiento ? <DetalleTraslado>JSON.parse(this.movimiento.Detalle) : new (DetalleTraslado);
+      const val = this.trasladoData;
+      const Elementos = val.controls.elementos.value.map(element => element.id);
+      const FuncionarioOrigen = val.controls.origen.value.tercero.Tercero.Id;
+      const FuncionarioDestino = val.controls.destino.value.tercero.Tercero.Id;
+      const Ubicacion = val.controls.ubicacion.value.ubicacion;
+      const Observacion = val.controls.observaciones.value.observaciones;
+      const estadoId =
+        (this.modoCrud === 'registrar' || (this.modoCrud === 'editar' && !rechazar)) ? 'Traslado Por Confirmar' :
+          (this.modoCrud === 'editar' && rechazar) ? 'Traslado Anulado' :
+            (rechazar) ? 'Traslado Rechazado' :
+              (this.modoCrud === 'confirmar') ? 'Traslado Confirmado' :
+                (this.modoCrud === 'revisar') ? 'Traslado Aprobado' : '';
+      const RazonRechazo = (this.rechazo) ? this.rechazo :
+        estadoId === 'Traslado Por Confirmar' ? val.controls.rechazo.value.razon : '';
 
-    const movimiento = <Movimiento>{
-      Id: this.trasladoId,
-      Detalle: JSON.stringify(detalle),
-      Observacion,
-      Activo: true,
-      FormatoTipoMovimientoId: {
-        Id: this.formatoTraslado.Id,
-      },
-      EstadoMovimientoId: {
-        Id: this.estadosMovimiento.find(st => st.Nombre === estadoId).Id,
-      },
-    };
-    if (this.modoCrud === 'registrar') {
-      this.postTraslado(movimiento);
-    } else {
-      this.updateTraslado(movimiento, rechazar);
+      const detalle = <DetalleTraslado>{
+        FuncionarioOrigen,
+        FuncionarioDestino,
+        Ubicacion,
+        Elementos,
+        Consecutivo: detalle_ ? detalle_.Consecutivo : '',
+        ConsecutivoId: detalle_ ? detalle_.ConsecutivoId : 0,
+        RazonRechazo,
+      };
+
+      const movimiento = <Movimiento>{
+        Id: this.trasladoId,
+        Detalle: JSON.stringify(detalle),
+        Observacion,
+        Activo: true,
+        FormatoTipoMovimientoId: {
+          Id: this.formatoTraslado.Id,
+        },
+        EstadoMovimientoId: {
+          Id: this.estadosMovimiento.find(st => st.Nombre === estadoId).Id,
+        },
+      };
+      if (this.modoCrud === 'registrar') {
+        this.postTraslado(movimiento);
+      } else if (this.modoCrud !== 'revisar' || rechazar) {
+        this.updateTraslado(movimiento, rechazar);
+      } else {
+        this.aprobarTraslado(movimiento);
+      }
     }
+
   }
 
   private updateTraslado(movimiento, rechazar: boolean) {
@@ -207,18 +229,25 @@ export class CrudTrasladoComponent implements OnInit {
     });
   }
 
+  private aprobarTraslado(movimiento) {
+    this.trasladosHelper.aprobarTraslado(movimiento).subscribe((res: any) => {
+      this.alertSuccess(false, JSON.parse(res.movimiento.Detalle).Consecutivo);
+      this.trContable = res.trContable;
+    });
+  }
+
   private alertSuccess(rechazar: boolean, consecutivo: string) {
-    const sfx = this.modoCrud !== 'revisar' ? '' : rechazar ? 'R' : 'A';
+    const sfx = (this.modoCrud !== 'editar' && this.modoCrud !== 'confirmar' && this.modoCrud !== 'revisar') ? '' : rechazar ? 'R' : 'A';
     const title = this.translate.instant('GLOBAL.traslados.' + this.modoCrud + '.successTtl' + sfx);
     const text = this.translate.instant('GLOBAL.traslados.' + this.modoCrud + '.successTxt' + sfx, { CONSECUTIVO: consecutivo });
     const options = {
       type: 'success',
       title,
       text,
-      showConfirmButton: false,
-      timer: 3000,
+      showConfirmButton: true,
     };
     this.accion.emit(true);
+    this.loading = false;
     this.pUpManager.showAlertWithOptions(options);
   }
 

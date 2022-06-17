@@ -41,12 +41,12 @@ export class BodegaConsumoHelper {
     * Entrada Post
     * If the response has errors in the OAS API it should show a popup message with an error.
     * If the response suceed, it returns the data of the updated object.
-    * @param entradaData object to save in the DB
+    * @param data detalle de la solicitud
     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
     */
-    public postSolicitud(salidasData) {
-        this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
-        return this.rqManager.post(`movimiento`, salidasData).pipe(
+    public postSolicitud(data) {
+        this.rqManager.setPath('ARKA_SERVICE');
+        return this.rqManager.post(`bodega_consumo/solicitud`, data).pipe(
             map(
                 (res) => {
                     if (res['Type'] === 'error') {
@@ -218,30 +218,10 @@ export class BodegaConsumoHelper {
      * If the response is successs, it returns the object's data.
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
      */
-    public getSolicitudesBodega() {
-        this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
-        return this.rqManager.get('movimiento/?query=FormatoTipoMovimientoId__Id:8,Activo:true&limit=-1').pipe(
-            map(
-                (res) => {
-                    if (res === 'error') {
-                        this.pUpManager.showErrorAlert('No se pudo consultar las solicitudes');
-                        return undefined;
-                    }
-                    return res;
-                },
-            ),
-        );
-    }
-
-    /**
-     * SolicitudesBodega Get
-     * If the response has errors in the OAS API it should show a popup message with an error.
-     * If the response is successs, it returns the object's data.
-     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
-     */
-    public getSolicitudesBodegaPendiente() {
-        this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
-        return this.rqManager.get('movimiento/?query=FormatoTipoMovimientoId__Id:8,EstadoMovimientoId.Id:5,Activo:true&limit=-1').pipe(
+    public getSolicitudesBodega(tramiteOnly: boolean = false) {
+        this.rqManager.setPath('ARKA_SERVICE');
+        const query = 'bodega_consumo/solicitud/' + (tramiteOnly ? '?tramite_only=true' : '');
+        return this.rqManager.get(query).pipe(
             map(
                 (res) => {
                     if (res === 'error') {

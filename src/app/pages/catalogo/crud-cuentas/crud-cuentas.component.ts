@@ -161,7 +161,7 @@ export class CrudCuentasComponent implements OnInit {
   }
 
   public onSubmit() {
-    if (this.valid && this.cuentasPendientes.length) {
+    if (this.cuentasPendientes.length) {
       this.updateMovimientos();
     }
   }

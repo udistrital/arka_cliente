@@ -1,17 +1,14 @@
-import { Component, OnInit, Input, ViewChild, ɵConsole } from '@angular/core';
-import { Validators, FormBuilder, FormGroup, AbstractControl, ValidatorFn } from '@angular/forms';
+import { Component, OnInit, Input, ViewChild, Output, EventEmitter } from '@angular/core';
+import { Validators, FormBuilder, FormGroup } from '@angular/forms';
 import { PopUpManager } from '../../../managers/popUpManager';
 import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
 import { Contrato } from '../../../@core/data/models/entrada/contrato';
-import { EstadoMovimiento, FormatoTipoMovimiento, TrMovimiento } from '../../../@core/data/models/entrada/entrada';
+import { TransaccionEntrada } from '../../../@core/data/models/entrada/entrada';
 import { OrdenadorGasto } from '../../../@core/data/models/entrada/ordenador_gasto';
 import { Supervisor } from '../../../@core/data/models/entrada/supervisor';
 import { SoporteActaProveedor } from '../../../@core/data/models/acta_recibido/soporte_acta';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
-import { TipoEntrada } from '../../../@core/data/models/entrada/tipo_entrada';
-import { Router, NavigationExtras } from '@angular/router';
 import { NbStepperComponent } from '@nebular/theme';
-import Swal from 'sweetalert2';
 import { isObject } from 'rxjs/internal-compatibility';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -20,6 +17,7 @@ import { TranslateService } from '@ngx-translate/core';
   templateUrl: './adiciones-mejoras.component.html',
   styleUrls: ['./adiciones-mejoras.component.scss'],
 })
+
 export class AdicionesMejorasComponent implements OnInit {
 
   // Formularios
@@ -34,6 +32,7 @@ export class AdicionesMejorasComponent implements OnInit {
   // Año Actual
   vigencia: number;
   // Contratos
+  tipos: Array<any>;
   contratos: Array<Contrato>;
   // Contrato Seleccionado
   contratoEspecifico: Contrato;
@@ -41,35 +40,31 @@ export class AdicionesMejorasComponent implements OnInit {
   contratoInput: string;
   // Soportes
   soportes: Array<SoporteActaProveedor>;
-  proveedor: string;
   fechaFactura: string;
-  observaciones: string;
   validar: boolean;
   // Selects
   opcionTipoContrato: string;
   opcionvigencia: string;
 
-  formatoTipoMovimiento: any;
-  registrando: boolean;
-
   @ViewChild('stepper') stepper: NbStepperComponent;
 
   @Input() actaRecibidoId: Number;
-  @Input() entradaId: any;
-  @Input() EntradaEdit: any;
+  @Output() data: EventEmitter<TransaccionEntrada> = new EventEmitter<TransaccionEntrada>();
 
-  constructor(private router: Router, private entradasHelper: EntradaHelper, private actaRecibidoHelper: ActaRecibidoHelper,
-    private pUpManager: PopUpManager, private fb: FormBuilder, private translate: TranslateService) {
+  constructor(
+    private entradasHelper: EntradaHelper,
+    private actaRecibidoHelper: ActaRecibidoHelper,
+    private pUpManager: PopUpManager,
+    private fb: FormBuilder,
+    private translate: TranslateService) {
     this.tipoContratoSelect = false;
     this.vigenciaSelect = false;
     this.contratos = new Array<Contrato>();
     this.contratoEspecifico = new Contrato;
     this.soportes = new Array<SoporteActaProveedor>();
-    this.proveedor = '';
     this.fechaFactura = '';
     this.validar = false;
     this.iniciarContrato();
-    this.getFormatoEntrada();
   }
 
   ngOnInit() {
@@ -151,7 +146,6 @@ export class AdicionesMejorasComponent implements OnInit {
           }
         }
       }
-      this.proveedor = this.soportes[0].Proveedor.NomProveedor;
       const date = this.soportes[0].FechaSoporte.toString().split('T');
       this.fechaFactura = date[0];
     });
@@ -210,7 +204,6 @@ export class AdicionesMejorasComponent implements OnInit {
     const soporteId: string = event.target.options[event.target.options.selectedIndex].value;
     for (const i in this.soportes) {
       if (this.soportes[i].Id.toString() === soporteId) {
-        this.proveedor = this.soportes[i].Proveedor.NomProveedor;
         const date = this.soportes[i].FechaSoporte.toString().split('T');
         this.fechaFactura = date[0];
       }
@@ -227,61 +220,33 @@ export class AdicionesMejorasComponent implements OnInit {
     this.contratoEspecifico.Supervisor = supervisorAux;
   }
 
-  getFormatoEntrada() {
-    this.entradasHelper.getFormatoEntradaByName('Adqusición').subscribe(res => {
-      if (res !== null) {
-        this.formatoTipoMovimiento = res;
-      }
-    });
-  }
-
   /**
    * Método para obtener el año en curso
    */
   getVigencia() {
     this.vigencia = new Date().getFullYear();
+    this.entradasHelper.getTiposContrato().subscribe((res: any) => {
+      this.tipos = res;
+    });
   }
 
-  /**
-   * Método para enviar registro
-   */
+  // Método para enviar registro
   onSubmit() {
     if (this.validar) {
-      this.registrando = true;
       const detalle = {
         acta_recibido_id: +this.actaRecibidoId,
-        consecutivo: 'P8',
         contrato_id: +this.contratoEspecifico.NumeroContratoSuscrito,
         vigencia_contrato: this.contratoForm.value.vigenciaCtrl,
-        tipo_contrato: this.opcionTipoContrato === '14' ? 'Orden de Servicios' :
-          this.opcionTipoContrato === '15' ? 'Orden de Compra' : '',
       };
-      const movimientoAdquisicion = <TrMovimiento>{
+
+      const transaccion = <TransaccionEntrada>{
         Observacion: this.observacionForm.value.observacionCtrl,
-        Detalle: JSON.stringify(detalle),
-        Activo: true,
-        FormatoTipoMovimientoId: <FormatoTipoMovimiento>{
-          Id: this.formatoTipoMovimiento[0].Id,
-        },
+        Detalle: detalle,
+        FormatoTipoMovimientoId: 'ENT_AM',
         SoporteMovimientoId: 0,
-        EstadoMovimientoId: new EstadoMovimiento,
       };
-      this.entradasHelper.postEntrada(movimientoAdquisicion).subscribe((res: any) => {
-        if (res !== null) {
-          this.registrando = false;
-          (Swal as any).fire({
-            type: 'success',
-            title: this.translate.instant('GLOBAL.movimientos.entradas.registroTtlOk', { CONSECUTIVO: res.Consecutivo }),
-            text: this.translate.instant('GLOBAL.movimientos.entradas.registroTxtOk', { CONSECUTIVO: res.Consecutivo }),
-            showConfirmButton: false,
-            timer: 2000,
-          });
-          const navigationExtras: NavigationExtras = { state: { consecutivo: res.Consecutivo } };
-          this.router.navigate(['/pages/reportes/registro-entradas'], navigationExtras);
-        } else {
-          this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.entradas.registroFail'));
-        }
-      });
+
+      this.data.emit(transaccion);
     } else {
       this.pUpManager.showErrorAlert('No ha llenado todos los campos! No es posible hacer el registro.');
     }

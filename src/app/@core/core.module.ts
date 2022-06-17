@@ -23,6 +23,7 @@ import {
   UtilidadesService,
 } from './utils';
 import { AutenticationService } from './utils/authentication.service';
+import { SmartTableService } from './data/SmartTableService';
 
 
 const socialLinks = [
@@ -96,6 +97,7 @@ export const NB_CORE_PROVIDERS = [
   NotificacionesService,
   UtilidadesService,
   AutenticationService,
+  SmartTableService,
 ];
 
 @NgModule({

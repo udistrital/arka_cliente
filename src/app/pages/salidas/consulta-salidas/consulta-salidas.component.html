@@ -1,4 +1,4 @@
-<mat-card *ngIf="mostrar">
+<mat-card *ngIf="mostrar" [nbSpinner]="!mostrar">
   <div>
     <mat-card-title>
       {{'GLOBAL.consultar_salida' | translate}}

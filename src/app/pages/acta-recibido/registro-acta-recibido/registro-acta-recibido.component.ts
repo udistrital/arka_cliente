@@ -116,7 +116,6 @@ export class RegistroActaRecibidoComponent implements OnInit {
   ngOnInit() {
     this.listService.findDependencias();
     this.listService.findSedes();
-    this.listService.findProveedores();
     this.listService.findEstadosActa();
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
     });

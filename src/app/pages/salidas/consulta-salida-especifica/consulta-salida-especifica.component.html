@@ -1,63 +1,80 @@
 <mat-spinner style="margin:0 auto;" *ngIf="!salida" [diameter]="35" [value]="99" [mode]="mode">
 </mat-spinner>
 
-<mat-card *ngIf="salida">
-
-  <mat-card-subtitle>
-    {{'GLOBAL.detalle_entrada' | translate}}
-  </mat-card-subtitle>
+<div *ngIf="salida">
 
   <mat-card-content>
-    <div class="row">
-      <div class="col">
-        <p class="text-uppercase"><strong>{{'GLOBAL.consecutivo' | translate}}</strong>: {{ salida.MovimientoPadreId.Detalle }}</p>
-      </div>
-      <div class="col">
-        <p class="text-uppercase"><strong>{{'GLOBAL.fecha_creacion' | translate}}</strong>
-          : {{ salida.MovimientoPadreId.FechaCreacion | date }}</p>
-      </div>
-    </div>
+    <mat-vertical-stepper #stepper>
+      <mat-step label="{{'GLOBAL.info' | translate}}">
+
+        <mat-card-subtitle>
+          {{'GLOBAL.detalle_entrada' | translate}}
+        </mat-card-subtitle>
+
+        <div class="row">
+          <div class="col">
+            <p class="text-uppercase"><strong>{{'GLOBAL.consecutivo' | translate}}</strong>
+              : {{ salida.MovimientoPadreId?.Detalle?.consecutivo }}
+            </p>
+          </div>
+          <div class="col">
+            <p class="text-uppercase"><strong>{{'GLOBAL.fecha_creacion' | translate}}</strong>
+              : {{ salida.MovimientoPadreId.FechaCreacion | date }}
+            </p>
+          </div>
+        </div>
+
+        <mat-card-subtitle>
+          {{'GLOBAL.salidas.detalle_salida' | translate}}
+        </mat-card-subtitle>
+
+        <div class="row">
+          <div class="col">
+            <p class="text-uppercase"><strong>{{'GLOBAL.consecutivo' | translate}}</strong>: {{ salida.Consecutivo }}
+            </p>
+          </div>
+          <div class="col">
+            <p class="text-uppercase"><strong>{{'GLOBAL.fecha_creacion' | translate}}</strong>
+              : {{ salida.FechaCreacion | date }}</p>
+          </div>
+          <div class="col" *ngIf="salida.Funcionario">
+            <p class="text-uppercase"><strong>{{'GLOBAL.funcionario' | translate}}</strong>
+              : {{ salida.Funcionario.NombreCompleto}}</p>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col">
+            <p class="text-uppercase"><strong>{{'GLOBAL.Acta_Recibido.RegistroActa.Sede' | translate}}</strong>: {{
+              salida.Sede.Nombre }}</p>
+          </div>
+          <div class="col">
+            <p class="text-uppercase"><strong>{{'GLOBAL.Acta_Recibido.RegistroActa.Dependencia' | translate}}</strong>:
+              {{
+              salida.Dependencia.Nombre }}</p>
+          </div>
+          <div class="col">
+            <p class="text-uppercase"><strong>{{'GLOBAL.Acta_Recibido.RegistroActa.Ubicacion' | translate}}</strong>: {{
+              salida.Ubicacion.Nombre }}</p>
+          </div>
+        </div>
+
+      </mat-step>
+      <mat-step label="{{'GLOBAL.elementos_salida' | translate}}">
+  
+        <div class="scroll">
+          <ng2-smart-table [settings]="settings" [source]="source">
+          </ng2-smart-table>
+        </div>
+  
+      </mat-step>
+      <mat-step label="{{'GLOBAL.Comprobante_Contable.Titulo' | translate}}" *ngIf="trContable">
+        <ngx-comprobante [ajusteInfo]="trContable" [modo]="'get'" [concepto]="trContable.concepto"
+          [consecutivo]="salida.Consecutivo" [fecha]="trContable.fecha">
+        </ngx-comprobante>
+      </mat-step>
+
+    </mat-vertical-stepper>
+
   </mat-card-content>
-
-  <mat-card-subtitle>
-    {{'GLOBAL.salidas.detalle_salida' | translate}}
-  </mat-card-subtitle>
-
-  <mat-card-content>
-    <div class="row">
-      <div class="col">
-        <p class="text-uppercase"><strong>{{'GLOBAL.consecutivo' | translate}}</strong>: {{ salida.Consecutivo }}</p>
-      </div>
-      <div class="col">
-        <p class="text-uppercase"><strong>{{'GLOBAL.fecha_creacion' | translate}}</strong>
-          : {{ salida.FechaCreacion | date }}</p>
-      </div>
-      <div class="col" *ngIf="salida.Funcionario">
-        <p class="text-uppercase"><strong>{{'GLOBAL.funcionario' | translate}}</strong>
-          : {{ salida.Funcionario.NombreCompleto}}</p>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col">
-        <p class="text-uppercase"><strong>{{'GLOBAL.Acta_Recibido.RegistroActa.Sede' | translate}}</strong>: {{
-          salida.Sede.Nombre }}</p>
-      </div>
-      <div class="col">
-        <p class="text-uppercase"><strong>{{'GLOBAL.Acta_Recibido.RegistroActa.Dependencia' | translate}}</strong>: {{
-          salida.Dependencia.Nombre }}</p>
-      </div>
-      <div class="col">
-        <p class="text-uppercase"><strong>{{'GLOBAL.Acta_Recibido.RegistroActa.Ubicacion' | translate}}</strong>: {{
-          salida.Ubicacion.Nombre }}</p>
-      </div>
-    </div>
-
-    <mat-card-subtitle>
-      {{'GLOBAL.salidas.elementos' | translate}}
-    </mat-card-subtitle>
-    <ng2-smart-table [settings]="settings" [source]="source">
-    </ng2-smart-table>
-  </mat-card-content>
-
-</mat-card>
+</div>

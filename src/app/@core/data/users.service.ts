@@ -39,18 +39,27 @@ export class UserService {
       // this.http.get(path + 'persona/?query=Usuario:' + payload.sub, httpOptions)
       this.http.get(path + 'tercero/?query=UsuarioWSO2:' + payload.sub, httpOptions)
         .subscribe(res => {
-          if (Object.keys(res).length) {
+          if (res && Object.keys(res[0]).length) {
             this.user = res[0];
             this.user$.next(this.user);
             // window.localStorage.setItem('ente', res[0].Ente);
             this.terceroId = parseInt(res[0].Id, 10); // window.localStorage.setItem('persona_id', res[0].Id);
           } else {
-            this.http.get(path + 'tercero/?query=UsuarioWSO2:' + payload.email, httpOptions)
-            .subscribe(res2 => {
-              this.user = res2[0];
-              this.user$.next(this.user);
-              this.terceroId = parseInt(res2[0].Id, 10);
-            });
+            const doc_ = window.localStorage.getItem('user');
+            const doc = doc_ ? JSON.parse(atob(doc_)).userService : '';
+            const tipo = doc ? ',TipoDocumentoId__CodigoAbreviacion:' + doc.documento_compuesto.replace(/[0-9]/g, '') : '';
+            if (doc) {
+              this.http.get(path + 'datos_identificacion/?query=Activo:true,Numero:' + doc.documento + tipo, httpOptions)
+                .subscribe((res2: any) => {
+                  if (res2 && res2.length && Object.keys(res2[0]).length) {
+                    this.user = res2[0];
+                    this.user$.next(this.user);
+                    if (res2[0].TerceroId) {
+                      this.terceroId = parseInt(res2[0].TerceroId.Id, 10);
+                    }
+                  }
+                });
+            }
           }
         });
     }
@@ -88,11 +97,6 @@ export class UserService {
    *
    * ... Una vez se arregle, comentar/eliminar el .filter
    */
-  getStringRolesUrl(separador: string = ','): string {
-    return this.roles
-    .filter(rol => !rol.includes('/'))
-    .join(separador).replace('/', '%2F');
-  }
 
   public getPersonaId(): number {
     return this.terceroId;

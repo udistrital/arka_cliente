@@ -1,4 +1,4 @@
-<mat-vertical-stepper [nbSpinner]="!load" [linear]="true" #stepper>
+<mat-vertical-stepper [nbSpinner]="!load" [linear]="modo !== 'get'" #stepper>
   <mat-step [stepControl]="formBaja.get('rechazo')" *ngIf="formBaja && formBaja.get('rechazo.razon').value !== ''"
     label="{{'GLOBAL.razonRechazo' | translate}}">
     <form [formGroup]="formBaja.get('rechazo')">
@@ -99,13 +99,13 @@
       <mat-table #table [dataSource]="dataSource" formArrayName="elementos" matSort>
         <ng-container matColumnDef="acciones">
           <th id="col-acciones" mat-header-cell *matHeaderCellDef class="acciones">
-            <button mat-icon-button color="primary" [disabled]="modo !== 'create'" (click)="addElemento()"
+            <button mat-icon-button color="primary" [disabled]="modo === 'get'" (click)="addElemento()"
               matTooltip="{{'GLOBAL.Acta_Recibido.CapturarElementos.AgregarElemento' | translate }}">
               <mat-icon>add_box</mat-icon>
             </button>
           </th>
           <td mat-cell *matCellDef="let element; let rowIndex = index" class="acciones">
-            <button mat-icon-button color="secondary" [disabled]="modo !== 'create'" (click)="removeElemento(rowIndex)"
+            <button mat-icon-button color="secondary" [disabled]="modo === 'get'" (click)="removeElemento(rowIndex)"
               matTooltip="{{'GLOBAL.Acta_Recibido.CapturarElementos.EliminarElemento' | translate }}">
               <mat-icon>delete_outline</mat-icon>
             </button>
@@ -251,6 +251,11 @@
             placeholder="{{'GLOBAL.resolucion' | translate }}">
         </div>
         <div class="form-group col-sm">
+          <label class="label">{{'GLOBAL.dependencia' | translate}}</label>
+          <input type="text" class="form-control" formControlName="dependencia" style="width: 100%;"
+            placeholder="{{'GLOBAL.dependencia' | translate }}">
+        </div>
+        <div class="form-group col-sm">
           <label class="label">{{'GLOBAL.bajas.consulta.fechaRevC' | translate}}</label>
           <input type="text" class="form-control" formControlName="fecha" style="width: 100%;"
             placeholder="{{'GLOBAL.bajas.consulta.fechaRevC' | translate }}">
@@ -285,8 +290,21 @@
           <button mat-flat-button color="primary" matStepperPrevious class="float-left text-uppercase">
             {{'GLOBAL.anterior' | translate}}
           </button>
+          <button mat-flat-button color="primary" matStepperNext class="float-right text-uppercase" *ngIf="trContable">
+            {{'GLOBAL.siguiente' | translate}}
+          </button>
         </div>
       </div>
     </form>
+  </mat-step>
+  <mat-step label="{{'GLOBAL.Comprobante_Contable.Titulo' | translate}}" *ngIf="trContable">
+    <ngx-comprobante [ajusteInfo]="trContable" [modo]="'get'" [consecutivo]="trContable.consecutivo"
+      [fecha]="trContable.Fecha" [concepto]="trContable.Concepto">
+    </ngx-comprobante>
+    <div class="form-group col-sm" style="padding: 1rem 0 0 0;">
+      <button mat-flat-button color="primary" matStepperPrevious class="float-left text-uppercase">
+        {{'GLOBAL.anterior' | translate}}
+      </button>
+    </div>
   </mat-step>
 </mat-vertical-stepper>

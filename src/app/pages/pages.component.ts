@@ -80,10 +80,10 @@ export class PagesComponent implements OnInit {
   getMenu(roles) {
     this.roles = roles;
 
-    this.menuws.get(roles + '/arka_ii_main').subscribe(
+    this.menuws.get(roles).subscribe(
       data => {
         this.configuracion.setAcciones(data);
-        this.dataMenu = this.menuws.filtrarMenus(<Partial<Menu>[]>data);
+        this.dataMenu = data;
         this.buildMenu();
       },
       (error: HttpErrorResponse) => {
@@ -124,7 +124,7 @@ export class PagesComponent implements OnInit {
       const { user, userService } = data;
       const roleUser = typeof user.role !== 'undefined' ? user.role : [];
       const roleUserService = typeof userService.role !== 'undefined' ? userService.role : [];
-      const roles = (roleUser.concat(roleUserService)).filter((data2: any) => (data2.indexOf('/') === -1));
+      const roles = roleUser.concat(roleUserService);
       this.getMenu(Array.from(new Set(roles)));
     });
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload

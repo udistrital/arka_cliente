@@ -27,7 +27,7 @@ export class BajasHelper {
      */
     public GetElemento(id) {
         this.rqManager.setPath('ARKA_SERVICE');
-        return this.rqManager.get('bajas_elementos/elemento/' + id).pipe(
+        return this.rqManager.get('bajas_elementos/elemento_arka/' + id).pipe(
             map(
                 (res) => {
                     if (res === 'error') {

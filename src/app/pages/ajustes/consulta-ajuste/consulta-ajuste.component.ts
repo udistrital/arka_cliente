@@ -133,7 +133,7 @@ export class ConsultaAjusteComponent implements OnInit {
         position: 'right',
         delete: this.modo === 'consulta',
         edit: true,
-        add: this.confService.getAccion('registrarAjuste') !== undefined,
+        add: !!this.confService.getAccion('registrarAjusteManual'),
       },
       add: {
         addButtonContent: '<i class="fas" title="' + t.registrar + '" aria-label="' + t.registrar + '">'

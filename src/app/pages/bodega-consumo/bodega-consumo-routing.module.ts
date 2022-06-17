@@ -8,6 +8,7 @@ import { DetalleSolicitudComponent } from './detalle-solicitud/detalle-solicitud
 import { AsignacionKardexComponent } from './asignacion-kardex/asignacion-kardex.component';
 import { BodegaSinAsignarComponent } from './bodega-sin-asignar/bodega-sin-asignar.component';
 import { ConsultaKardexComponent } from './consulta-kardex/consulta-kardex.component';
+import { AuthGuard } from '../../@core/_guards/auth.guard';
 
 const routes: Routes = [{
   path: '',
@@ -16,39 +17,48 @@ const routes: Routes = [{
     {
       path: 'kardex',
       component: KardexComponent,
+      canActivate: [AuthGuard],
     },
     {
       path: 'agregar_elementos',
       component: AgregarElementosComponent,
+      canActivate: [AuthGuard],
     },
     {
       path: 'kardex',
       component: KardexComponent,
+      canActivate: [AuthGuard],
     },
     {
       path: 'consulta_solicitud',
       component: ConsultaSolicitudComponent,
+      canActivate: [AuthGuard],
     },
     {
       path: 'detalle_solicitud',
       component: DetalleSolicitudComponent,
+      canActivate: [AuthGuard],
     },
     {
       path: 'asignacion_kardex',
       component: AsignacionKardexComponent,
+      canActivate: [AuthGuard],
     },
     {
       path: 'consulta_kardex',
       component: ConsultaKardexComponent,
+      canActivate: [AuthGuard],
     },
     {
       path: 'bodega_sin_asignar',
       component: BodegaSinAsignarComponent,
+      canActivate: [AuthGuard],
     },
     {
       path: 'responder_solicitudes',
       component: ConsultaSolicitudComponent,
       data: { Editar: true },
+      canActivate: [AuthGuard],
     },
   ],
 }];

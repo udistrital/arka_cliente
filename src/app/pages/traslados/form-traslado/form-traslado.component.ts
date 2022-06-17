@@ -10,12 +10,14 @@ import { TerceroCriterioContratista } from '../../../@core/data/models/terceros_
 import { debounceTime, distinctUntilChanged, map, startWith, switchMap } from 'rxjs/operators';
 import { MatPaginator, MatTableDataSource } from '@angular/material';
 import { TrasladosHelper } from '../../../helpers/movimientos/trasladosHelper';
+import { PopUpManager } from '../../../managers/popUpManager';
 
 @Component({
   selector: 'ngx-form-traslado',
   templateUrl: './form-traslado.component.html',
   styleUrls: ['./form-traslado.component.scss'],
 })
+
 export class FormTrasladoComponent implements OnInit {
   private funcionarios: TerceroCriterioContratista[];
   funcionariosFiltrados: Observable<Partial<TerceroCriterioContratista>[]>;
@@ -31,8 +33,9 @@ export class FormTrasladoComponent implements OnInit {
   trasladoId: number = 0;
   elementos = [];
   elementosFiltrados: any[];
+  trContable: any;
   @Output() valid = new EventEmitter<boolean>();
-  @Input() modo: string = 'create'; // get | update
+  @Input() modo: string; // 'create' || 'get' || 'put'
   @Input() trasladoInfo: any;
   @Output() trasladoInfoChange: EventEmitter<any> = new EventEmitter<any>();
 
@@ -44,21 +47,113 @@ export class FormTrasladoComponent implements OnInit {
     private tercerosHelper: TercerosHelper,
     private oikosHelper: OikosHelper,
     private trasladosHelper: TrasladosHelper,
+    private pUpManager: PopUpManager,
   ) {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
     });
   }
 
   ngOnInit() {
-    this.loadSedes();
-    this.loadFuncionarios();
-    this.buildForm();
+    this.initForms();
+    if (this.modo !== 'get') {
+      this.loadFuncionarios();
+    }
   }
 
-  private loadSedes() {
-    this.oikosHelper.getSedes().subscribe((res: any) => {
-      this.sedes = res;
-      this.modo !== 'create' ? this.loadValues(this.trasladoInfo) : this.load = true;
+  private async initForms() {
+    const data = [this.buildForm(), this.loadUbicaciones(), this.loadSedes(), this.loadInventario()];
+    await Promise.all(data);
+    if (this.modo !== 'create') {
+      this.loadValues(this.trasladoInfo);
+    }
+    this.load = true;
+  }
+
+  private buildForm(): Promise<void> {
+    return new Promise<void>(resolve => {
+      this.formTraslado = this.fb.group({
+        rechazo: this.rechazo,
+        origen: this.terceroOrigen,
+        destino: this.terceroDestino,
+        ubicacion: this.ubicacionDestino,
+        elementos: this.fb.array([], { validators: this.validateElementos() }),
+        observaciones: this.observaciones,
+      }, { validators: this.checkValidness });
+      this.dataSource = new MatTableDataSource<any>();
+      this.dataSource.paginator = this.paginator;
+      this.submitForm(this.formTraslado.statusChanges);
+      if (this.formTraslado) {
+        resolve();
+      }
+    });
+  }
+
+  private loadUbicaciones(): Promise<void> {
+    return new Promise<void>(resolve => {
+      if (this.modo === 'put') {
+        const transaccion = {
+          Sede: this.trasladoInfo.ubicacion.Sede,
+          Dependencia: this.trasladoInfo.ubicacion.Dependencia,
+        };
+        this.Actas_Recibido.postRelacionSedeDependencia(transaccion).subscribe((res: any) => {
+          if (res && res.length && res[0].Relaciones.length) {
+            this.ubicacionesFiltradas = res[0].Relaciones;
+          }
+          resolve();
+        });
+      } else if (this.modo === 'get') {
+        this.ubicacionesFiltradas = [{
+          Id: this.trasladoInfo.ubicacion.Ubicacion.Id,
+          Nombre: this.trasladoInfo.ubicacion.Ubicacion.EspacioFisicoId.Nombre,
+        }];
+        resolve();
+      } else {
+        resolve();
+      }
+    });
+  }
+
+  private loadSedes(): Promise<void> {
+    return new Promise<void>(resolve => {
+      if (this.modo !== 'get') {
+        this.oikosHelper.getSedes().subscribe((res: any) => {
+          this.sedes = res;
+          resolve();
+        });
+      } else {
+        this.sedes = [this.trasladoInfo.ubicacion.Sede];
+        resolve();
+      }
+    });
+  }
+
+  private loadInventario(): Promise<void> {
+    return new Promise<void>(resolve => {
+      if (this.modo !== 'get') {
+        this.trasladosHelper.getInventarioTercero().subscribe((res: any) => {
+          if (res.Elementos.length) {
+            this.elementos = res.Elementos;
+            if (this.modo === 'create') {
+              const tercero_ = res.Tercero;
+              const tercero = tercero_.Tercero && tercero_.Tercero.length ? tercero_.Tercero[0] : null;
+              const emailO = tercero_.Correo.length && tercero_.Correo[0].Dato ?
+                JSON.parse(tercero_.Correo[0].Dato).value : this.translate.instant('GLOBAL.traslados.noEmail');
+              const cargoO = tercero_.Cargo.length ?
+                tercero_.Cargo[0].Nombre : this.translate.instant('GLOBAL.traslados.noCargo');
+
+              this.formTraslado.get('origen').patchValue({ tercero: tercero });
+              this.formTraslado.get('origen').patchValue({ email: emailO });
+              this.formTraslado.get('origen').patchValue({ cargo: cargoO });
+            }
+          } else if (this.modo === 'create') {
+            this.formTraslado.disable();
+            this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.traslados.registrar.noElementos'));
+          }
+          resolve();
+        });
+      } else {
+        resolve();
+      }
     });
   }
 
@@ -75,7 +170,7 @@ export class FormTrasladoComponent implements OnInit {
   }
 
   get terceroOrigen(): FormGroup {
-    const disabled = this.modo === 'get';
+    const disabled = true;
     const form = this.fb.group({
       tercero: [
         {
@@ -99,7 +194,7 @@ export class FormTrasladoComponent implements OnInit {
         },
       ],
     });
-    this.funcionariosFiltrados = this.cambiosFuncionario(form.get('tercero'));
+
     return form;
   }
 
@@ -128,7 +223,9 @@ export class FormTrasladoComponent implements OnInit {
         },
       ],
     });
-    this.tercerosDestino = this.cambiosFuncionario(form.get('tercero'));
+    if (!disabled) {
+      this.tercerosDestino = this.cambiosFuncionario(form.get('tercero'));
+    }
     return form;
   }
 
@@ -156,14 +253,16 @@ export class FormTrasladoComponent implements OnInit {
       ubicacion: [
         {
           value: '',
-          disabled: true,
+          disabled,
         },
         {
           validators: [Validators.required],
         },
       ],
     });
-    this.cambiosDependencia(form.get('dependencia').valueChanges);
+    if (!disabled) {
+      this.cambiosDependencia(form.get('dependencia').valueChanges);
+    }
     return form;
   }
 
@@ -205,7 +304,9 @@ export class FormTrasladoComponent implements OnInit {
         },
       ],
     });
-    this.cambiosPlaca(form.get('placa').valueChanges);
+    if (!disabled) {
+      this.cambiosPlaca(form.get('placa').valueChanges);
+    }
     return form;
   }
 
@@ -222,21 +323,10 @@ export class FormTrasladoComponent implements OnInit {
     return form;
   }
 
-  private buildForm(): void {
-    this.formTraslado = this.fb.group({
-      rechazo: this.rechazo,
-      origen: this.terceroOrigen,
-      destino: this.terceroDestino,
-      ubicacion: this.ubicacionDestino,
-      elementos: this.fb.array([], { validators: this.validateElementos() }),
-      observaciones: this.observaciones,
-    }, { validators: this.checkValidness });
-    this.dataSource = new MatTableDataSource<any>();
-    this.dataSource.paginator = this.paginator;
-    this.submitForm(this.formTraslado.statusChanges);
-  }
-
   private loadValues(values: any) {
+    if (values.trContable) {
+      this.trContable = values.trContable;
+    }
     const razon = values.rechazo ? values.rechazo : '';
     this.formTraslado.get('rechazo').patchValue({ razon });
     const disabled = this.modo === 'get';
@@ -261,9 +351,15 @@ export class FormTrasladoComponent implements OnInit {
     const sede = values.ubicacion.Sede.Id;
     const dependencia = values.ubicacion.Dependencia;
     const ubicacion = values.ubicacion.Ubicacion.Id;
-    this.formTraslado.get('ubicacion').patchValue({ sede, emitEvent: false });
-    this.formTraslado.get('ubicacion').patchValue({ dependencia, emitEvent: false });
-    this.formTraslado.get('ubicacion').patchValue({ ubicacion });
+
+    this.formTraslado.get('ubicacion').setValue(
+      {
+        sede,
+        dependencia,
+        ubicacion,
+      },
+      { emitEvent: false },
+    );
 
     values.elementos.forEach(element => {
       const formEl = this.fb.group({
@@ -329,45 +425,25 @@ export class FormTrasladoComponent implements OnInit {
 
   public getUbicaciones() {
     const sede = this.formTraslado.get('ubicacion.sede').value ? this.formTraslado.get('ubicacion.sede').value : '';
-    const dependencia = this.formTraslado.get('ubicacion.dependencia').value.Id ? this.formTraslado.get('ubicacion.dependencia').value : '';
+    const dependencia = this.formTraslado.get('ubicacion.dependencia').valid ? this.formTraslado.get('ubicacion.dependencia').value : '';
     this.formTraslado.get('ubicacion').patchValue({ ubicacion: '' });
+    this.ubicacionesFiltradas = [];
     if (sede && dependencia) {
-      this.ubicacionesFiltradas = [];
       const transaccion: any = {};
       transaccion.Sede = this.sedes.find((x) => x.Id === parseInt(sede, 10));
       transaccion.Dependencia = dependencia;
       if (transaccion.Sede !== undefined && transaccion.Dependencia !== undefined) {
         this.Actas_Recibido.postRelacionSedeDependencia(transaccion).subscribe((res: any) => {
-          if (!this.load) {
-            this.formTraslado.get('ubicacion').patchValue({ ubicacion: this.trasladoInfo.ubicacion.Ubicacion.Id });
-            this.load = true;
-          }
-          if (isObject(res[0].Relaciones)) {
+          if (res.length && res[0].Relaciones && res[0].Relaciones.length) {
             this.ubicacionesFiltradas = res[0].Relaciones;
-            this.modo !== 'get' ? this.formTraslado.get('ubicacion.ubicacion').enable() : null;
-          } else {
-            this.formTraslado.get('ubicacion.ubicacion').disable();
           }
         });
       }
-    } else {
-      this.formTraslado.get('ubicacion.ubicacion').disable();
-      this.ubicacionesFiltradas = [];
     }
   }
 
-  getInfoTercero(controlName: string) {
+  public getInfoTercero(controlName: string) {
     const terceroId = this.formTraslado.get(controlName + '.tercero').value.Tercero.Id;
-    if (controlName === 'origen') {
-      (this.formTraslado.get('elementos') as FormArray).reset();
-      this.removeElemento(0);
-      this.dataSource.data = [];
-      this.elementos = [];
-      this.elementosFiltrados = [];
-      this.trasladosHelper.getElementosFuncionario(terceroId).subscribe(res => {
-        this.elementos = res;
-      });
-    }
     this.loadCargo(terceroId, controlName);
     this.loadEmail(terceroId, controlName);
   }
@@ -454,13 +530,14 @@ export class FormTrasladoComponent implements OnInit {
 
   private cambiosDependencia(valueChanges: Observable<any>) {
     valueChanges.pipe(
-      startWith(''),
       debounceTime(250),
       distinctUntilChanged(),
       switchMap((val) => this.loadDependencias(val)),
     ).subscribe((response: any) => {
-      this.dependencias = response.queryOptions[0].Id ? response.queryOptions : [];
-      this.getUbicaciones();
+      if (this.load) {
+        this.dependencias = response.queryOptions[0].Id ? response.queryOptions : [];
+        this.getUbicaciones();
+      }
     });
   }
 

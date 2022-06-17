@@ -79,7 +79,7 @@ export class FormCuentasComponent implements OnInit, OnChanges {
         .map((elem) => (elem = this.cuentasMov(elem.Id, elem.SubtipoMovimientoId, elem.CuentaDebitoId, elem.CuentaCreditoId)));
 
       const amt = this.cuentasInfo.filter(cf => cf.SubtipoMovimientoId.CodigoAbreviacion === 'AMT')
-      .map((elem) => (elem = this.cuentasMov(elem.Id, elem.SubtipoMovimientoId, elem.CuentaDebitoId, elem.CuentaCreditoId)));
+        .map((elem) => (elem = this.cuentasMov(elem.Id, elem.SubtipoMovimientoId, elem.CuentaDebitoId, elem.CuentaCreditoId)));
 
       this.formCuentas = this.fb.group({
         entradas: this.fb.array(ent),
@@ -102,7 +102,7 @@ export class FormCuentasComponent implements OnInit, OnChanges {
           disabled,
         },
         {
-          validators: [Validators.required, this.validarCompleter('Id')],
+          validators: [this.validarCompleter('Id')],
         },
       ],
       credito: [
@@ -111,7 +111,7 @@ export class FormCuentasComponent implements OnInit, OnChanges {
           disabled,
         },
         {
-          validators: [Validators.required, this.validarCompleter('Id')],
+          validators: [this.validarCompleter('Id')],
         },
       ],
     });
@@ -139,10 +139,7 @@ export class FormCuentasComponent implements OnInit, OnChanges {
     valueChanges
       .pipe(debounceTime(250))
       .subscribe(() => {
-        this.valid.emit(this.formCuentas.valid);
-        if (this.formCuentas.valid) {
-          this.cuentasPendientes.emit(this.generarTr());
-        }
+        this.cuentasPendientes.emit(this.generarTr());
       });
   }
 
@@ -168,7 +165,9 @@ export class FormCuentasComponent implements OnInit, OnChanges {
 
   private generarTr() {
     const changed = (this.formCuentas.get('entradas') as FormArray).controls
-      .filter((elem) => !elem.pristine)
+      .filter((elem) => !elem.pristine &&
+        elem.get('credito').valid && elem.get('credito').value &&
+        elem.get('debito').valid && elem.get('debito').value)
       .map((elem) => ({
         CuentaDebitoId: elem.value.debito.Id,
         CuentaCreditoId: elem.value.credito.Id,
@@ -176,7 +175,9 @@ export class FormCuentasComponent implements OnInit, OnChanges {
         Id: elem.value.id,
       }));
 
-    if (!this.formCuentas.get('salida').pristine) {
+    if (!this.formCuentas.get('salida').pristine &&
+      this.formCuentas.get('salida.credito').valid && this.formCuentas.get('salida.credito').value &&
+      this.formCuentas.get('salida.debito').valid && this.formCuentas.get('salida.debito').value) {
       const value = {
         CuentaDebitoId: this.formCuentas.get('salida').value.debito.Id,
         CuentaCreditoId: this.formCuentas.get('salida').value.credito.Id,
@@ -186,7 +187,9 @@ export class FormCuentasComponent implements OnInit, OnChanges {
       changed.push(value);
     }
 
-    if (!this.formCuentas.get('baja').pristine) {
+    if (!this.formCuentas.get('baja').pristine &&
+      this.formCuentas.get('baja.credito').valid && this.formCuentas.get('baja.credito').value &&
+      this.formCuentas.get('baja.debito').valid && this.formCuentas.get('baja.debito').value) {
       const value = {
         CuentaDebitoId: this.formCuentas.get('baja').value.debito.Id,
         CuentaCreditoId: this.formCuentas.get('baja').value.credito.Id,
@@ -196,7 +199,9 @@ export class FormCuentasComponent implements OnInit, OnChanges {
       changed.push(value);
     }
 
-    if (!this.formCuentas.get('mediciones').pristine) {
+    if (!this.formCuentas.get('mediciones').pristine &&
+      this.formCuentas.get('mediciones.credito').valid && this.formCuentas.get('mediciones.credito').value &&
+      this.formCuentas.get('mediciones.debito').valid && this.formCuentas.get('mediciones.debito').value) {
       const value = {
         CuentaDebitoId: this.formCuentas.get('mediciones').value.debito.Id,
         CuentaCreditoId: this.formCuentas.get('mediciones').value.credito.Id,

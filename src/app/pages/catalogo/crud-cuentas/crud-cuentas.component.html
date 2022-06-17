@@ -33,11 +33,11 @@
       </mat-card-subtitle>
       <mat-card-content>
         <ngx-form-cuentas [escritura]="modificando_cuentas && puede_editar" [cuentasInfo]="infoCuentas"
-          [cuentasNuevas]="cuentasNuevas" (cuentasPendientes)="setPendientes($event)" (valid)="setValidness($event)"></ngx-form-cuentas>
+          [cuentasNuevas]="cuentasNuevas" (cuentasPendientes)="setPendientes($event)"></ngx-form-cuentas>
       </mat-card-content>
       <mat-card-actions>
         <button mat-flat-button color="primary" class="float-right text-uppercase" (click)="onSubmit()"
-          [disabled]="!valid || !cuentasPendientes?.length" *ngIf="modificando_cuentas && puede_editar">
+          [disabled]="!cuentasPendientes?.length" *ngIf="modificando_cuentas && puede_editar">
           {{'GLOBAL.Acta_Recibido.RegistroActa.GuardarCambiosButton' | translate}}
         </button>
       </mat-card-actions>

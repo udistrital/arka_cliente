@@ -125,6 +125,7 @@ export class ConsultaBajasComponent implements OnInit {
     const RazonRechazo = !aprobar ? info.RazonRechazo : '';
     const FechaRevisionC = aprobar ? new Date(Date.parse(info.fecha)).toLocaleDateString('es-CO') : '';
     const Resolucion = aprobar ? info.numero : '';
+    const DependenciaId = aprobar ? info.dependencia.Id : '';
     const ids = this.seleccionados.map(el => el.Id);
     const data = {
       Bajas: ids,
@@ -132,7 +133,9 @@ export class ConsultaBajasComponent implements OnInit {
       RazonRechazo,
       FechaRevisionC,
       Resolucion,
+      DependenciaId,
     };
+
     this.bajasHelper.postRevisionComite(data).subscribe((res: any) => {
       this.alertSuccess(aprobar);
     });
@@ -264,7 +267,7 @@ export class ConsultaBajasComponent implements OnInit {
         position: 'right',
         delete: this.modo !== 'revision',
         edit: this.modo !== 'aprobacion',
-        add: this.confService.getAccion('registrarBaja') !== undefined,
+        add: !!this.confService.getAccion('registrarBaja'),
       },
       add: {
         addButtonContent: '<em class="fas" title="' + t.registrar + '" aria-label="' + t.registrar + '">'

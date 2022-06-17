@@ -31,6 +31,7 @@ export class FormSolicitudComponent implements OnInit {
   @ViewChild('paginator') paginator: MatPaginator;
   load: boolean;
   bajaId: number;
+  trContable: any;
   @Output() valid = new EventEmitter<boolean>();
   @Input() modo: string = 'create'; // get | update
   @Input() bajaInfo: any;
@@ -226,6 +227,12 @@ export class FormSolicitudComponent implements OnInit {
           disabled: true,
         },
       ],
+      dependencia: [
+        {
+          value: '',
+          disabled: true,
+        },
+      ],
       numero: [
         {
           value: '',
@@ -250,12 +257,17 @@ export class FormSolicitudComponent implements OnInit {
   }
 
   private loadValues(values: any) {
+    if (values.trContable) {
+      this.trContable = values.trContable;
+    }
     const disabled = this.modo === 'get';
     const razon = values.rechazo ? values.rechazo : '';
+    const dependencia = values.dependencia ? values.dependencia : '';
     const numero = values.numero ? values.numero : '';
     const fecha = values.fechaRevisionC ? values.fechaRevisionC : '';
     this.formBaja.get('rechazo').patchValue({ razon });
     this.formBaja.get('resolucion').patchValue({ numero });
+    this.formBaja.get('resolucion').patchValue({ dependencia });
     this.formBaja.get('resolucion').patchValue({ fecha });
     const soporte = { Id: values.soporte };
     const revisor = {
@@ -355,6 +367,7 @@ export class FormSolicitudComponent implements OnInit {
             },
           ],
         });
+        this.cambiosPlaca(formEl.get('placa').valueChanges);
         (this.formBaja.get('elementos') as FormArray).push(formEl);
         this.dataSource.data = this.dataSource.data.concat(formEl.value);
       });
@@ -389,7 +402,7 @@ export class FormSolicitudComponent implements OnInit {
       distinctUntilChanged(),
       switchMap((val) => this.loadPlacas(val)),
     ).subscribe((response: any) => {
-      this.dependencias = response.queryOptions[0].Id ? response.queryOptions : [];
+      this.dependencias = response.queryOptions && response.queryOptions.length && response.queryOptions[0].Id ? response.queryOptions : [];
     });
   }
 

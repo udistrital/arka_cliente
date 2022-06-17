@@ -9,11 +9,29 @@
   </mat-card-subtitle>
   <mat-card-content>
     <form [formGroup]="formResolucion">
-      <div class="row" style="width: 60%">
+      <div class="row">
         <div class="form-group col-sm">
           <mat-form-field appearance="outline">
             <mat-label>{{'GLOBAL.resolucion' | translate}}</mat-label>
             <input matInput formControlName="numero">
+          </mat-form-field>
+        </div>
+        <div class="form-group col-sm">
+          <mat-form-field appearance="outline">
+            <mat-label>{{'GLOBAL.dependencia' | translate}}</mat-label>
+            <input matInput type="text" formControlName="dependencia" [matAutocomplete]="auto"
+              placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}">
+            <mat-autocomplete #auto="matAutocomplete" [displayWith]="muestraDependencia">
+              <mat-option *ngFor="let item of dependencias" [value]="item">
+                {{item.Nombre}}
+              </mat-option>
+            </mat-autocomplete>
+            <mat-error *ngIf="formResolucion.get('dependencia').errors?.required">
+              {{'GLOBAL.placeholder' | translate}}</mat-error>
+            <mat-error *ngIf="formResolucion.get('dependencia').errors?.errorLongitudMinima">
+              {{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}</mat-error>
+            <mat-error *ngIf="formResolucion.get('dependencia').errors?.dependenciaNoValido">
+              {{'GLOBAL.Errores.ErrorDependencia' | translate}}</mat-error>
           </mat-form-field>
         </div>
         <div class="form-group col-sm">

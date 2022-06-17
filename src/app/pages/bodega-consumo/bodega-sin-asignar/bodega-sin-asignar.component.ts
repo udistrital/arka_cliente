@@ -77,45 +77,38 @@ export class BodegaSinAsignarComponent implements OnInit {
         ],
       },
       columns: {
+        MovimientoId: {
+          title: this.translate.instant('GLOBAL.Salida'),
+          width: '20%',
+          valuePrepareFunction: (value: any) => {
+            return value && value.Detalle && JSON.parse(value.Detalle) ? JSON.parse(value.Detalle).consecutivo : '';
+          },
+        },
         SubgrupoCatalogoId: {
           title: this.translate.instant('GLOBAL.subgrupo.clase.nombre'),
+          width: '20%',
           valuePrepareFunction: (value: any) => {
             return value.Codigo + ' - ' + value.Nombre;
           },
-          filterFunction: (cell?: any, search?: string): boolean => {
-            // console.log(cell);
-            // console.log(search);
-            if (Object.keys(cell).length !== 0) {
-              if (cell.Nombre.indexOf(search) > -1) {
-                return true;
-              } else {
-                return false;
-              }
-            } else {
-              return false;
-            }
-          },
+          filterFunction: this.filterFunction,
         },
         Nombre: {
-          title: this.translate.instant('GLOBAL.Elemento.Uno'),
+          title: this.translate.instant('GLOBAL.Descripcion'),
+          width: '30%',
           valuePrepareFunction: (value: any) => {
             return value;
           },
         },
         Marca: {
           title: this.translate.instant('GLOBAL.marca'),
-          valuePrepareFunction: (value: any) => {
-            return value;
-          },
-        },
-        Serie: {
-          title: this.translate.instant('GLOBAL.serie'),
+          width: '20%',
           valuePrepareFunction: (value: any) => {
             return value;
           },
         },
         SaldoCantidad: {
           title: this.translate.instant('GLOBAL.Existencias'),
+          width: '10%',
           valuePrepareFunction: (value: any) => {
             return value;
           },
@@ -141,8 +134,24 @@ export class BodegaSinAsignarComponent implements OnInit {
     this.detalle = !this.detalle;
   }
 
-  onRegister() {
-    this.router.navigate(['/pages/entradas/registro']);
+  private filterFunction(cell?: any, search?: string): boolean {
+    if (cell && search.length) {
+      if (cell.Codigo && cell.Nombre) {
+        if ((cell.Codigo + ' - ' + cell.Nombre.toUpperCase()).indexOf(search.toUpperCase()) > -1) {
+          return true;
+        } else {
+          return false;
+        }
+      } else if (cell.Nombre) {
+        if ((cell.Nombre.toUpperCase()).indexOf(search.toUpperCase()) > -1) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+    } else {
+      return false;
+    }
   }
 
 }

@@ -59,4 +59,25 @@ export class OikosHelper {
         );
     }
 
+    /**
+    * Consulta endpoint espacio_fisico el api oikos_crud
+    * If the response has errors in the OAS API it should show a popup message with an error.
+    * If the response is successs, it returns the object's data.
+    * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
+    */
+    public getAllEspacioFisico(query: string) {
+        this.rqManager.setPath('OIKOS_SERVICE');
+        return this.rqManager.get('espacio_fisico?' + query).pipe(
+            map(
+                (res) => {
+                    if (res === 'error') {
+                        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.error_dependencias'));
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
+
 }

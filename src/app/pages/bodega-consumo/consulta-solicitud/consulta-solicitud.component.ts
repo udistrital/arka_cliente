@@ -1,8 +1,7 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { LocalDataSource } from 'ng2-smart-table';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
-import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
 import { BodegaConsumoHelper } from '../../../helpers/bodega_consumo/bodegaConsumoHelper';
 
 @Component({
@@ -10,26 +9,21 @@ import { BodegaConsumoHelper } from '../../../helpers/bodega_consumo/bodegaConsu
   templateUrl: './consulta-solicitud.component.html',
   styleUrls: ['./consulta-solicitud.component.scss'],
 })
+
 export class ConsultaSolicitudComponent implements OnInit {
 
   settings: any;
   source: LocalDataSource;
-  kardex: any[];
-  listColumns: object;
   salidaId: any;
   mostrar: boolean;
   Editar: boolean = false;
 
-  private numSalidas: number;
-
   constructor(
     private translate: TranslateService,
     private bodegaHelper: BodegaConsumoHelper,
-    private tercerosHelper: TercerosHelper,
     private route: ActivatedRoute,
   ) {
     this.source = new LocalDataSource();
-    this.numSalidas = Infinity;
   }
 
   ngOnInit() {
@@ -37,7 +31,6 @@ export class ConsultaSolicitudComponent implements OnInit {
       this.loadTablaSettings();
     });
     this.route.data.subscribe(data => {
-      // console.log({data});
       if (data && data.Editar !== null && data.Editar !== undefined) {
         this.Editar = data.Editar;
       }
@@ -47,19 +40,6 @@ export class ConsultaSolicitudComponent implements OnInit {
   }
 
   loadTablaSettings() {
-    this.listColumns = {
-      FechaRegistro: {
-        title: this.translate.instant('GLOBAL.fecha_creacion'),
-        // width: '70px',
-        valuePrepareFunction: (value: any) => {
-          const date = value.split('T');
-          return date[0];
-        },
-      },
-      Solicitante: {
-        title: this.translate.instant('GLOBAL.solicitante'),
-      },
-    };
     this.settings = {
       hideSubHeader: false,
       noDataMessage: this.translate.instant('GLOBAL.no_data_entradas'),
@@ -71,83 +51,141 @@ export class ConsultaSolicitudComponent implements OnInit {
         delete: false,
         custom: [
           {
-            // name: this.translate.instant('GLOBAL.detalle'),
             name: this.translate.instant('GLOBAL.seleccionar'),
             title: '<span class="fas fas fa-arrow-right" title="' + this.translate.instant('GLOBAL.seleccionar') + '"></span>',
           },
         ],
       },
-      columns: this.listColumns,
+      columns: this.columnas,
     };
   }
 
   loadSalidas(): void {
-    if (this.Editar) {
-      // console.log('Modo: Editar');
-      this.bodegaHelper.getSolicitudesBodegaPendiente().subscribe(res => {
-        // console.log({resEditar: res});
-        if (res !== null) {
-          this.completarInfoTercero(res);
-        }
-      });
-    } else {
-      // console.log('Modo: Consulta');
-      this.bodegaHelper.getSolicitudesBodega().subscribe(res => {
-        // console.log({resConsulta: res});
-        if (res.length) {
-          // console.log(res)
-          this.completarInfoTercero(res);
-        }
-      });
-    }
-  }
-
-  private completarInfoTercero(res) {
-          let detalle: any;
-          this.numSalidas = res.length;
-          res.forEach((elemento, k) => {
-            detalle = JSON.parse(elemento.Detalle);
-            if (detalle.hasOwnProperty('Funcionario') && detalle.Funcionario) {
-              this.tercerosHelper.getTerceroById(detalle.Funcionario).subscribe(res1 => {
-                // console.log({k, detalle, res1});
-                if (res1 !== null) {
-                  // console.log('funcionario', res1.NombreCompleto);
-                  this.source.append({
-                    Id: elemento.Id,
-                    FechaRegistro: elemento.FechaCreacion,
-                    Solicitante: res1.Numero + ' - ' + res1.NombreCompleto,
-                    // Elemento: '$20.000',
-                    // Detalle: elemento.Observacion,
-                    // Cantidad: '50'
-                  });
-                }
-                this.decSalidas();
-              });
-            } else {
-              this.decSalidas();
-            }
-          });
-  }
-
-  private decSalidas() {
-    this.numSalidas--;
-    if (this.numSalidas === 0) {
-      this.mostrar = true;
-    }
+    this.bodegaHelper.getSolicitudesBodega(this.Editar).subscribe(res => {
+      if (res.length) {
+        this.source.load(res);
+        this.mostrar = true;
+      }
+    });
   }
 
   onCustom(event) {
-    const date = event.data.Solicitante.split(' - ');
     this.salidaId = {
       Id: event.data.Id,
-      Cedula: date[0],
-      Funcionario: date[1],
+      Cedula: event.data.Solicitante.Numero,
+      Funcionario: event.data.Solicitante.NombreCompleto,
+      data: event.data,
     };
-    // console.log({event, salidaId: this.salidaId});
   }
 
   onVolver() {
     this.salidaId = undefined;
+  }
+
+  onResponder() {
+    this.source.remove(this.salidaId.data);
+  }
+
+  get columnas() {
+    return {
+      Detalle: {
+        title: this.translate.instant('GLOBAL.consecutivo'),
+        width: '15%',
+        valuePrepareFunction: (value: any) => {
+          return value ? JSON.parse(value).Consecutivo : '';
+        },
+        filterFunction: (cell?: any, search?: string): boolean => {
+          if (cell && search.length) {
+            const consecutivo = JSON.parse(cell).Consecutivo;
+            if (consecutivo) {
+              if (consecutivo.indexOf(search) > -1) {
+                return true;
+              }
+            }
+          }
+          return false;
+        },
+      },
+      FechaCreacion: {
+        title: this.translate.instant('GLOBAL.fecha_creacion'),
+        width: '15%',
+        valuePrepareFunction: (value: any) => {
+          return this.formatDate(value);
+        },
+      },
+      FechaModificacion: {
+        title: this.translate.instant('GLOBAL.fechaRevision'),
+        width: '15%',
+        valuePrepareFunction: (value: any) => {
+          return this.formatDate(value);
+        },
+      },
+      Solicitante: {
+        title: this.translate.instant('GLOBAL.solicitante'),
+        width: '25%',
+        valuePrepareFunction: (value: any) => {
+          return !value ? '' :
+            value.Numero ? value.Numero + ' - ' + value.NombreCompleto :
+              value.NombreCompleto;
+        },
+        filterFunction: (cell?: any, search?: string): boolean => {
+          if (cell && search.length) {
+            if (cell.NombreCompleto && cell.Numero) {
+              if ((cell.Numero + ' - ' + cell.NombreCompleto.toUpperCase()).indexOf(search.toUpperCase()) > -1) {
+                return true;
+              } else {
+                return false;
+              }
+            } else if (cell.Nombre) {
+              if ((cell.NombreCompleto.toUpperCase()).indexOf(search.toUpperCase()) > -1) {
+                return true;
+              } else {
+                return false;
+              }
+            }
+          } else {
+            return false;
+          }
+        },
+      },
+      EstadoMovimientoId: {
+        title: this.translate.instant('GLOBAL.estado'),
+        width: '15%',
+        filter: {
+          type: 'list',
+          config: {
+            selectText: this.translate.instant('GLOBAL.seleccionar') + '...',
+            list: [
+              { value: 'Solicitud Pendiente', title: this.translate.instant('GLOBAL.movimientos.estadoPendiente') },
+              { value: 'Solicitud Rechazada', title: this.translate.instant('GLOBAL.movimientos.estadoRechazo') },
+              { value: 'Solicitud Aprobada', title: this.translate.instant('GLOBAL.movimientos.estadoAprobado') },
+            ],
+          },
+        },
+        valuePrepareFunction: (value: any) => {
+          return value ? value.Nombre : '';
+        },
+        filterFunction: (cell?: any, search?: string): boolean => {
+          if (cell && search.length) {
+            if (cell.Nombre) {
+              if ((cell.Nombre).indexOf(search) > -1) {
+                return true;
+              } else {
+                return false;
+              }
+            }
+          } else {
+            return false;
+          }
+        },
+      },
+    };
+  }
+
+  private formatDate(value: Date) {
+    const date = new Date(value);
+    date.setUTCMinutes(date.getTimezoneOffset());
+    return new Date(Date.parse(date.toString())).toLocaleDateString('es-CO');
   }
 
 }

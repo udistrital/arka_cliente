@@ -2,8 +2,8 @@
   "HOME": {
     "TITLE": "CONFIGURACION",
     "SELECT": "Cambiar idioma",
-    "LOGIN": "Iniciar sesion",
-    "LOGOUT": "Cerrar sesion",
+    "LOGIN": "Iniciar sesión",
+    "LOGOUT": "Cerrar sesión",
     "THEME": "Tema",
     "OAS": "Oficina Asesora de Sistemas OAS",
     "login": "Iniciar Sesión",
@@ -147,6 +147,9 @@
               "consultarTraslado": {
                 "name": "Consultar Traslados"
               },
+              "confirmarTraslado": {
+                "name": "Confirmar Traslados"
+              },
               "aprobarTraslado": {
                 "name": "Aprobar Traslados"
               }
@@ -156,7 +159,7 @@
             "name": "Bajas",
             "children": {
               "consultarBajas": {
-                "name": "Consultar Solicitudes"
+                "name": "Consultar Bajas"
               },
               "revisionAlmacen": {
                 "name": "Revisión de Almacén"
@@ -176,7 +179,7 @@
             "name": "Solicitud de Baja de Bien"
           },
           "aprobacion": {
-            "name": "Aprobacion de Baja de Bien"
+            "name": "Aprobación de Baja de Bien"
           }
         }
       },
@@ -268,11 +271,11 @@
       "consulta": "Consulta de Actas",
       "registro": "Registro de Actas",
       "edicion": "Edicion de Actas",
-      "verificacion": "Verificacion de Actas",
+      "verificacion": "Verificación de Actas",
       "detalle": "Ver Detalle"
     },
     "auth": {
-      "auth": "Autenticacion",
+      "auth": "Autenticación",
       "login": "Login",
       "register": "Registro",
       "request-password": "Recuperar Password",
@@ -287,7 +290,9 @@
       "ErrorMinLength": "Escriba {{NUM}} o más caracteres",
       "ErrorFecha": "Ingrese una fecha válida",
       "ErrorRequerido": "Este campo es obligatorio",
-      "MismoTercero": "El funcionario destino deber ser diferente al funcionario que entrega"
+      "MismoTercero": "El funcionario destino deber ser diferente al funcionario que entrega",
+      "errorPlantillaActa":"Las columnas de la plantilla no corresponden a las requeridas.",
+      "errorTercero": "Su usuario no está correctamente registrado en el sistema. Contacte soporte para obtener ayuda."
     },
     "Comprobante_Contable": {
       "Titulo": "Comprobante Contable",
@@ -324,13 +329,14 @@
       },
       "CapturarElementos":{
         "CargaMasivaTitle":"Carga Masiva",
+        "CCE": "Enlace al clasificador de bienes CCE",
         "ValidadorPlaceholder":"El archivo debe tener extensión {{EXT}} (*.{{EXT}})",
         "LimpiarEspacioButton":"Descartar Archivo",
         "CargarElementosButton":"Cargar Elementos",
         "ArticulosRelacionadosTitle":"Articulos Relacionados",
         "TipoBienHeader":"Tipo de Bien",
         "TotalesFooter":"Totales",
-        "DescripcionHeader":"Descripcion",
+        "DescripcionHeader":"Descripción",
         "CantidadHeader":"Cantidad",
         "MarcaHeader":"Marca",
         "SerieHeader":"Serie",
@@ -392,7 +398,7 @@
         "Proveedor":"Proveedor",
         "FechaSoporte":"Fecha de Soporte",
         "FechaFiltro":"Seleccione Fecha",
-        "Consecutivo":"Consecutivo",
+        "Consecutivo":"Consecutivo o Número de Factura",
         "Soporte":"Soporte a Relacionar",
         "Revisor":"Auxiliar II",
         "DatosAdicionales":"Información adicional",
@@ -434,7 +440,7 @@
         "Proveedor":"Proveedor",
         "FechaSoporte":"Fecha de Soporte",
         "FechaFiltro":"Seleccione Fecha",
-        "Consecutivo":"Consecutivo",
+        "Consecutivo":"Consecutivo o Número de Factura",
         "Soporte":"Soporte a Relacionar",
         "DatosAdicionales":"Información adicional",
         "Observaciones":"Observaciones",
@@ -481,7 +487,7 @@
         "Proveedor":"Proveedor",
         "FechaSoporte":"Fecha de Soporte",
         "FechaFiltro":"Seleccione Fecha",
-        "Consecutivo":"Consecutivo",
+        "Consecutivo":"Consecutivo o Número de Factura",
         "Soporte":"Soporte a Relacionar",
         "DatosAdicionales":"Datos Adicionales",
         "Observaciones":"Observaciones",
@@ -497,7 +503,7 @@
         "ArticulosRelacionadosTitle":"Artículos Relacionados",
         "TipoBienHeader":"Tipo de Bien",
         "TotalesFooter":"Totales",
-        "DescripcionHeader":"Descripcion",
+        "DescripcionHeader":"Descripción",
         "CantidadHeader":"Cantidad",
         "MarcaHeader":"Marca",
         "SerieHeader":"Serie",
@@ -534,7 +540,7 @@
         "Descuento":"Gran Descuentos:",
         "ValorIva":"Gran IVA:",
         "Total":"Gran Total",
-        "ArticulosRelacionadosTitle":"Articulos Relacionados",
+        "ArticulosRelacionadosTitle":"Artículos Relacionados",
         "TipoBienHeader":"Tipo de Bien",
         "TotalesFooter":"Totales",
         "DescripcionHeader":"Descripción",
@@ -552,11 +558,11 @@
         "Rechazar":"Rechazar",
         "Volver":"Volver",
         "DatosVeridicosTitle":"Está Seguro?",
-        "VerificadaPre":"¿Está seguro de que desea aprobar el acta?",
+        "VerificadaPre":"¿Está seguro de que desea verificar el acta?",
         "RechazadaPre":"Está seguro de que desea rechazar el acta?",
         "RechazadaRazon": "Inserte la razón de rechazo",
-        "VerificadaTitle":"Acta N° {{ID}} Aprobada",
-        "Verificada":"El Acta N° {{ID}} ha sido aprobada de forma exitosa",
+        "VerificadaTitle":"Acta N° {{ID}} Verificada",
+        "Verificada":"El Acta N° {{ID}} ha sido verificada de forma exitosa",
         "VerificadaTitleNO":"Acta No Aprobada",
         "VerificadaNO":"El Acta no pudo ser aprobada de forma exitosa, intente más tarde",
         "RechazadaTitle":"Acta N° {{ID}} Devuelta",
@@ -565,6 +571,7 @@
         "RechazadaNO":"El Acta no ha podido ser Devuelta de forma exitosa, intente más tarde"
       }
     },
+    "de": "de",
     "crear_nuevo": "Crear",
     "errorPermisosTtl": "Error cargando permisos de usuario",
     "errorPermisosTxt": "No se pudieron obtener los permisos correctamente, intente más tarde",
@@ -573,6 +580,7 @@
     "error_dependencias":"Error al consultar las dependencias",
     "error_cargos":"Error al consultar el cargo del tercero",
     "error_correo":"Error al consultar el correo del tercero",
+    "errorDatosIdentificacion":"Error al consultar los documentos de identificación",
     "errorPlacas": "Error al consultar las placas disponibles",
     "errorHistorialElemento": "Error al consultar los detalles del elemento",
     "fecha_inicio":"Fecha de inicio",
@@ -612,6 +620,7 @@
     "Descripcion":"Descripción",
     "Acciones":"Acciones",
     "verDetalle" : "Ver Detalle",
+    "NA": "N/A",
 
     "Deshacer":"Deshacer",
     "colapsar": "Colapsar",
@@ -759,10 +768,10 @@
       "Solicitud": {
         "TituloPendientes": "Solicitudes Pendientes de Elementos de Consumo",
         "TituloTodas": "Solicitudes de Elementos de Consumo",
-        "ListaPendientes": "Lista de Solicitudes de Elementos a la Bodega de Consumo, Pendientes por Resolver",
+        "ListaPendientes": "Lista de Solicitudes de Elementos a la Bodega de Consumo pendientes por responder",
         "ListaTodas": "Lista de Todas las Solicitudes de Elementos a la Bodega de Consumo",
         "Titulo": "Solicitud de Elementos de Bodega de Consumo",
-        "ColumnaElementoCatalogo": "Clase/Elemento",
+        "ColumnaElementoCatalogo": "Clase Catálogo",
         "Ayuda": "Para iniciar la solicitud de elementos, por favor seleccione cualquier elemento. Los elementos solicitados serán listados conforme se van seleccionando."
       }
     },
@@ -827,6 +836,7 @@
     "notificacion": "notificacion",
     "placeholder_notificacion": "notificacion",
     "fecha_creacion": "Fecha Creación",
+    "fechaRevision": "Fecha Revisión",
     "placeholder_fecha_creacion": "fecha_creacion",
     "notificacion_estado_usuario": "notificacion_estado_usuario",
     "placeholder_notificacion_estado_usuario": "notificacion_estado_usuario",
@@ -887,6 +897,7 @@
     "registrar_nueva_entrada": "Registrar Nueva Entrada",
     "registrar_nueva_salida": "Registrar nueva Salida",
     "elementos_entrada": "Elementos Entrada",
+    "elementos_salida": "Elementos Salida",
     "volver": "Volver",
     "factura": "Factura",
     "tipo_bien": "Tipo Bien",
@@ -909,13 +920,14 @@
     "ubicacion": "Ubicación",
     "observaciones": "Observaciones",
     "placeholder_observaciones": "Observaciones",
-    "funcionarioOrigen": "Funcionario Origen",
-    "funcionarioDestino": "Funcionario Destino",
+    "funcionarioOrigen": "Funcionario Solicitante",
+    "funcionarioDestino": "Funcionario Receptor",
     "razonRechazo": "Razón de rechazo",
     "resolucion": "Número de resolución",
 
     "movimientos": {
       "estadoTramite": "En Trámite",
+      "estadoPendiente": "Pendiente",
       "estadoAprobado": "Aprobada",
       "estadoRechazo": "Rechazada",
       "entradas": {
@@ -926,17 +938,22 @@
         "errorListaEntradas": "Error al consultar las entradas",
         "errorEstadosMov": "Error al consultar el estado movimiento",
         "errorRechazoEntrada": "Error al rechazar el acta",
-        "registroTtlOk":"Entrada Registrada",
-        "registroTxtOk":"La entrada {{CONSECUTIVO}} ha sido registrada de manera exitosa",
-        "registroFail":"No es posible hacer el registro de la entrada",
-        "aprobacionConfrmTtl":"Confirmar Aprobación de Entrada",
-        "aprobacionConfrmTxt":"¿Está seguro que desea aprobar la entrada?",
+        "registroTtlOk": "Entrada Registrada",
+        "registroTxtOk": "La entrada {{CONSECUTIVO}} ha sido registrada de manera exitosa",
+        "registroFail": "No es posible hacer el registro de la entrada",
+        "updateTtlOk": "Entrada Actualizada",
+        "updateTxtOk": "La entrada {{CONSECUTIVO}} ha sido actualizada de manera exitosa",
+        "aprobacionConfrmTtl": "Confirmar Aprobación de Entrada",
+        "aprobacionConfrmTxt": "¿Está seguro que desea aprobar la entrada?",
         "aprobacionTtlOk": "Entrada Aprobada",
         "aprobacionTxtOk": "La entrada {{CONSECUTIVO}} ha sido aprobada de exitosamente",
-        "rechazoConfrmTtl":"Confirmar Rechazo de Entrada",
-        "rechazoConfrmTxt":"¿Está seguro que desea rechazar la entrada?",
+        "rechazoConfrmTtl": "Confirmar Rechazo de Entrada",
+        "rechazoConfrmTxt": "¿Está seguro que desea rechazar la entrada?",
         "rechazoTtlOk": "Entrada Rechazada",
-        "rechazoTxtOk": "La entrada {{CONSECUTIVO}} ha sido rechazada de exitosamente"
+        "rechazoTxtOk": "La entrada {{CONSECUTIVO}} ha sido rechazada de exitosamente",
+        "editar": "Editar Entrada",
+        "editarTtl": "Editar Entrada",
+        "errorEditar": "No se puede editar esta entrada."
       },
       "salidas": {
         "nuevaSalida": "Registrar nueva salida",
@@ -947,9 +964,9 @@
         "registroConfrmTtl":"Confirmar Registro de Salida",
         "registroConfrmTxt":"¿Está seguro de registrar las salidas con la información suministrada?",
         "registroTtlOk":"Salida{{S}} Registrada{{S}}",
-        "registroTxtOk":"La salida {{CONSECUTIVO}} se ha registrado de manera exitosa",
-        "registroTxtOkVarios":"Las salidas {{CONSECUTIVO}} se han registrado de manera exitosa",
-        "aprobacionConfrmTtl":"Confirmar Aprobación de Entrada",
+        "registroTxtOk":"La salida {{CONSECUTIVO0}} se ha registrado de manera exitosa",
+        "registroTxtOkVarios":"Se generaron {{N}} salidas, de {{CONSECUTIVO0}} hasta {{CONSECUTIVOF}}.",
+        "aprobacionConfrmTtl":"Confirmar Aprobación de Salida",
         "aprobacionConfrmTxt":"¿Está seguro que desea aprobar la salida?",
         "aprobacionTtlOk": "Salida Aprobada",
         "aprobacionTxtOk": "La salida {{CONSECUTIVO}} ha sido aprobada de exitosamente",
@@ -1048,8 +1065,8 @@
       "asignar_funcionario": "ASIGNAR A FUNCIONARIO",
       "error_entrada_no_registrada": "No se pudo registrar la entrada solicitada",
       "error_salida_no_registrada": "No se pudo registrar la salida solicitada",
-      "SalidaRechazadaTitle": "Salida Rechazada",
-      "SalidaRechazadaText": "Se ha rechazado la solicitud",
+      "SalidaRechazadaTitle": "Solicitud Rechazada",
+      "SalidaRechazadaText": "La solicitud {{CONSECUTIVO}} ha sido denegada correctamente.",
       "alerta_descargue": "Elementos sin descargar",
       "alerta_consumo": "Elementos de consumo sin asignar",
       "alerta_controlado": "Elementos devolutivos sin asignar",
@@ -1059,7 +1076,7 @@
     },
 
     "cuentas": {
-      "alerta_modificacion": "Cuentas en Modificación. Intente más tarde",
+      "alerta_modificacion": "Cuentas en Modificación. Solicite a Contabilidad habilitar los movimientos de inventario.",
       "estado_modificando": "En Modificación (Transacciones Bloqueadas)",
       "estado_lectura": "Solo Lectura (Transacciones Habilitadas)",
       "iniciar_edicion_boton": "Iniciar Edición de Cuentas",
@@ -1075,8 +1092,10 @@
     "salidas": {
       "titulo_registrar": "Registrar Salida",
       "elementos": "Elementos",
-      "exito_registro_titulo": "Salida Registrada",
-      "exito_registro_texto": "La Salida ha sido Registrada exitosamente",
+      "exitoRegistroSolicitudTtl": "Solicitud Registrada",
+      "exitoRegistroSolicitudTxt": "La solicitud {{CONSECUTIVO}} ha sido registrada correctamente.",
+      "exito_registro_titulo": "Solicitud Aprobada",
+      "exito_registro_texto": "La solicitud {{CONSECUTIVO}} ha sido aprobada correctamente.",
       "salida_instruccion": "En la siguiente tabla seleccione la entrada para poder generar la salida correspondiente",
       "consulta_salida_info": "En la siguiente tabla se muestran de forma general las salidas, seleccione una para ver la informacion asociada",
       "detalle_salida": "Detalle Salida"
@@ -1086,7 +1105,7 @@
     "Elemento": {
       "Uno": "Elemento",
       "Varios": "Elementos",
-      "Relacionado": "Elemento Relacionado"
+      "Relacionado": "Elemento Catálogo"
     },
 
     "Solicitudes": {
@@ -1150,6 +1169,7 @@
     "descargarP": "Descargar Plantilla",
     "seleccionarArch": "Seleccionar archivo",
     "borrarSel": "Eliminar seleccionados",
+    "hasta": "hasta",
     "ajustes": {
       "movimientos_relacionados": "Movimientos relacionados",
       "confirmar_anular_entrada": "Los movimientos de inventario y contables asociados a esta entrada serán anulados",
@@ -1288,9 +1308,11 @@
         "nuevoTraslado": "Registrar nuevo traslado",
         "noTrasladosView": "No se encontraron traslados",
         "noTrasladosReview": "No hay traslados pendientes por ser revisados",
+        "noTrasladosConfirm": "Usted no tiene traslados pendientes por confirmar",
         "accionEdit": "Editar Solicitud",
         "estadoTraslado": "Estado Traslado",
         "errorEditar": "No se puede editar este traslado",
+        "errorPermisoEditar": "No tiene permisos para editar este traslado.",
         "errorElementos": "Hubo un error consultando los elementos del funcionario",
         "errorConsulta": "Hubo un error consultando la lista de traslados"
       },
@@ -1302,19 +1324,25 @@
         "confrmTxt": "¿Desea registrar la solicitud de traslado con la información suministrada?",
         "successTtl": "Traslado Solicitado",
         "successTxt": "La solicitud de traslado {{CONSECUTIVO}} se ha registrado de manera exitosa",
-        "errTxt:": "Hubo un error al registrar la solicitud de traslado"
+        "errTxt:": "Hubo un error al registrar la solicitud de traslado",
+        "noElementos": "Usted no tiene elementos asignados."
+      },
+      "confirmacion": {
+        "title": "Confirmar Solicitud de Traslado",
+        "subtitle": "Seleccione un traslado de la lista para confirmar la solicitud."
       },
       "revisar": {
         "title": "Revisar Solicitud de Traslado",
         "subtitle": "Revise el detalle de la solicitud y realice la aprobación o rechazo de la misma",
         "accion": "Aprobar solicitud",
+        "accionR": "Rechazar Traslado",
         "rechazar": "Rechazar solicitud",
         "confrmTtlA": "Aprobar Solicitud de Traslado",
         "confrmTxtA": "¿Desea aprobar la solicitud de traslado con la información suministrada?",
         "confrmTtlR": "Rechazar Solicitud",
+        "confrmTxtR": "¿Desea rechazar la solicitud de traslado con la información suministrada?",
         "confrmRechazoTtl": "Motivo de rechazo",
         "confrmRechazoTtx": "Indique la razón por la que esta solicitud será denegada",
-        "confrmTxtR": "¿Desea rechazar la solicitud de traslado con la información suministrada?",
         "successTtlA": "Solicitud Aprobada",
         "successTxtA": "La solicitud de traslado {{CONSECUTIVO}} ha sido aprobada",
         "successTtlR": "Solicitud Rechazada",
@@ -1324,10 +1352,15 @@
         "title": "Confirmar Recepción de Traslado",
         "subtitle": "Revise la información de la solicitud y confirme que los elementos están en su poder",
         "accion": "Confirmar Traslado",
-        "confrmTtl": "Confirmar Recepción",
-        "confrmTxt": "¿Desea confirmar que los elementos están en su poder?",
-        "successTtl": "Traslado Confirmado",
-        "successTxt": "La solicitud de traslado {{CONSECUTIVO}} ha sido confirmada"
+        "accionR": "Rechazar Traslado",
+        "confrmTtlA": "Confirmar Solicitud de Traslado",
+        "confrmTxtA": "¿Desea confirmar que usted será el responsable de estos elementos?",
+        "confrmTtlR": "Rechazar Solicitud",
+        "confrmTxtR": "¿Desea rechazar la solicitud de traslado con la información suministrada?",
+        "successTtlA": "Solicitud Confirmada",
+        "successTxtA": "La solicitud de traslado {{CONSECUTIVO}} ha sido confirmada.",
+        "successTtlR": "Solicitud Rechazada",
+        "successTxtR": "La solicitud de traslado {{CONSECUTIVO}} ha sido rechazada."
       },
       "revision": {
         "title": "Aprobar Solicitudes de Traslados de bienes",
@@ -1337,20 +1370,26 @@
         "title": "Editar Solicitud de Traslado",
         "subtitle": "Revise las razones de rechazo del traslado y haga las respectivas modificaciones",
         "accion": "Actualizar solicitud",
-        "confrmTtl": "Actualizar Solicitud",
-        "confrmTxt": "¿Desea actualizar la solicitud de traslado?",
-        "successTtl": "Solicitud Actualizada",
-        "successTxt": "La solicitud de traslado {{CONSECUTIVO}} se ha actualizado"
+        "accionR": "Anular solicitud",
+        "confrmTtlA": "Actualizar Solicitud",
+        "confrmTxtA": "¿Desea actualizar la solicitud de traslado?",
+        "confrmTtlR": "Anular Solicitud",
+        "confrmTxtR": "¿Desea anular la solicitud de traslado?",
+        "successTtlA": "Solicitud Actualizada",
+        "successTxtA": "La solicitud de traslado {{CONSECUTIVO}} se ha actualizado",
+        "successTtlR": "Solicitud Anulada",
+        "successTxtR": "La solicitud de traslado {{CONSECUTIVO}} ha sido anulada."
       },
       "ver": {
         "title": "Consultar Solicitud de Traslado",
         "subtitle": "En el siguiente formulario se muestra el detalle del traslado"
       },
       "estados": {
-        "tramite": "En Trámite",
+        "tramite": "Por Confirmar",
         "aprobado": "Aprobado",
         "rechazado": "Rechazado",
-        "confirmado": "Confirmado"
+        "confirmado": "Confirmado",
+        "anulado": "Anulado"
       },
       "funcActual": "Funcionario Responsable del Bien",
       "funcDestino": "Funcionario Destinatario del Bien",
@@ -1359,8 +1398,8 @@
     },
     "bajas": {
       "consulta": {
-        "title": "Consulta de solicitudes de bajas de bienes",
-        "subtitle": "A continuación se listan las solicitudes, seleccione una de las opciones para ver más detalles",
+        "title": "Consulta de bajas de bienes",
+        "subtitle": "A continuación se listan las basjas registradas, seleccione una de las opciones para ver más detalles",
         "fechaRevA": "Fecha Revisión Almacén",
         "fechaRevC": "Fecha de Aprobación",
         "noBajasReview": "No hay bajas por aprobar",

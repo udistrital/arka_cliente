@@ -133,6 +133,28 @@ export class TercerosHelper {
     }
 
     /**
+     *
+     * getSupervisores
+     *
+     * Trae todos o un tercero, de acuerdo al criterio especificado
+     */
+    public getSupervisores() {
+        this.rqManager.setPath('UNIDADES_SERVICE');
+        const query = 'supervisor_contrato?limit=-1&fields=Id,Nombre,SedeSupervisor';
+        return this.rqManager.get(query).pipe(
+            map(
+                (res) => {
+                    if (res === 'error' || !Array.isArray(res)) {
+                        this.pUpManager.showErrorAlert('No se encontro ningun tercero que pueda ejercer como supervisor');
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
+
+    /**
      * getCargo
      *
      * Trae todos el cargo de un determinado funcionario
@@ -169,6 +191,27 @@ export class TercerosHelper {
                 (res) => {
                     if (res === 'error' || !Array.isArray(res)) {
                         this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.error_correo'));
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
+
+    /**
+     * getAllDatosIdentificacion
+     * Consulta al controlador datos_identifiacion del api terceros_crud
+     * @param query payload
+     */
+    public getAllDatosIdentificacion(query: string) {
+        const path = 'datos_identificacion?';
+        this.rqManager.setPath('TERCEROS_SERVICE');
+        return this.rqManager.get(path + query).pipe(
+            map(
+                (res) => {
+                    if (res === 'error' || !Array.isArray(res)) {
+                        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.errorDatosIdentificacion'));
                         return undefined;
                     }
                     return res;
