@@ -40,11 +40,6 @@ const routes: Routes = [{
       canActivate: [AuthGuard],
     },
     {
-      path: 'catalogo_bienes',
-      loadChildren: './catalogo-bienes/catalogo-bienes.module#CatalogoBienesModule',
-      canActivate: [AuthGuard],
-    },
-    {
       path: 'bodega_consumo',
       loadChildren: './bodega-consumo/bodega-consumo.module#BodegaConsumoModule',
       canActivate: [AuthGuard],
