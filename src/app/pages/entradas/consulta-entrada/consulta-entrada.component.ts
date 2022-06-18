@@ -234,6 +234,10 @@ export class ConsultaEntradaComponent implements OnInit {
           this.Ordenador = res.ordenador;
         }
 
+        if (res.encargado) {
+          this.encargado = res.encargado;
+        }
+
         switch (this.movimiento.FormatoTipoMovimientoId.Nombre) {
           case 'Adquisición': {
             this.loadDetalleAdquisicion(res);
@@ -571,7 +575,6 @@ export class ConsultaEntradaComponent implements OnInit {
   }
   loadDetalleReposicion(info) {
     const detalle = JSON.parse(info.movimiento.Detalle);
-    this.loadEncargadoByPlaca(detalle.placa_id);
     this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id; // ACTA RECIBIDO
     this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
     this.entradaEspecifica.TipoEntradaId.Nombre = info.movimiento.FormatoTipoMovimientoId.Nombre; // TIPO ENTRADA
@@ -630,16 +633,6 @@ export class ConsultaEntradaComponent implements OnInit {
     this.entradaEspecifica.TipoEntradaId = tipoEntrada;
     this.contrato.Supervisor = supervisor;
     this.contrato.OrdenadorGasto = ordenadorGasto;
-  }
-
-  loadEncargadoByPlaca(placa: string) {
-    this.entradasHelper.getEncargadoElementoByPlaca(placa).subscribe(res => {
-      if (res != null && res !== undefined) {
-        this.encargado = res.NombreCompleto;
-      } else {
-        this.encargado = '';
-      }
-    });
   }
 
   onRegister() {
