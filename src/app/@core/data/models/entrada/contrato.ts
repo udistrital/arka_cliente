@@ -5,7 +5,7 @@ export class Contrato {
     ContratoId: number;
     FechaSuscripcion: Date;
     Justificacion: string;
-    TipoContrato: number;
+    TipoContrato: any;
     OrdenadorGasto: OrdenadorGasto;
     DescripcionFormaPago: string;
     ObjetoContrato: string;
