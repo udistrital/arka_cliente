@@ -475,6 +475,15 @@
         "EnviarProveedorButton": "Enviar a Proveedor",
         "EnviarContratistaButton": "Enviar a Auxiliar I"
       },
+      "EstadosActa": {
+        "Aceptada": "Aceptada",
+        "Anulada": "Anulada",
+        "AsociadoEntrada": "Asociada a Entrada",
+        "EnElaboracion": "En Elaboración",
+        "EnModificacion": "En Modificación",
+        "EnVerificacion": "En Verificación",
+        "Registrada": "Registrada"
+      },
       "DetalleActa":{
         "Title": "Detalle Acta de Recibido",
         "TitleId": "Detalle Acta de Recibido #{{ID}}",
@@ -907,6 +916,7 @@
     "cantidad": "Cantidad",
     "cantidadMax": "Cantidad Máxima",
     "marca": "Marca",
+    "seleccione": "Seleccione...",
     "serie": "Serie",
     "unidad_medida": "Unidad de Medida",
     "valor_unitario": "Valor Unitario",

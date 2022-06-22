@@ -475,6 +475,15 @@
         "EnviarProveedorButton": "Send to Supplier",
         "EnviarContratistaButton": "Send to Assistant I"
       },
+      "EstadosActa": {
+        "Aceptada": "Accepted",
+        "Anulada": "Voided",
+        "AsociadoEntrada": "Associated to Entry",
+        "EnElaboracion": "Editing",
+        "EnModificacion": "Modifying",
+        "EnVerificacion": "Verifying",
+        "Registrada": "Created"
+      },
       "DetalleActa": {
         "Title": "Receipt Certificate Detail",
         "TitleId": "Receipt Certificate No.{{ID}} Detail",
@@ -907,6 +916,7 @@
     "cantidad": "Quantity",
     "cantidadMax": "Maximum Quantity",
     "marca": "Brand Name",
+    "seleccione": "Choose...",
     "serie": "Serie",
     "unidad_medida": "Measured Unit",
     "valor_unitario": "Unit Value",
