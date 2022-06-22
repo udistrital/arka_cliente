@@ -1,32 +1,35 @@
 <mat-card *ngIf="mostrar" [nbSpinner]="!mostrar">
   <div>
-    <mat-card-title>
+    <mat-card-title *ngIf="!editaentrada">
       {{'GLOBAL.consultar_salida' | translate}}
     </mat-card-title>
 
-    <mat-card-subtitle *ngIf="!detalle">
+    <mat-card-subtitle *ngIf="!detalle && !editaentrada">
       {{'GLOBAL.salidas.consulta_salida_info' | translate}}
     </mat-card-subtitle>
 
-    <ng2-smart-table [settings]="settings" [source]="source" (edit)="onEdit($event)"
-	     (delete)="onDelete($event)" (create)="onRegister($event)" *ngIf="!detalle && !editaentrada && !verComprobante">
+    <ng2-smart-table *ngIf="!detalle && !editaentrada && !verComprobante" [settings]="settings" [source]="source"
+      (edit)="onEdit($event)" (delete)="onDelete($event)" (create)="onRegister($event)">
     </ng2-smart-table>
 
     <ngx-consulta-salida-especifica [salida_id]="salidaId" *ngIf="detalle && !editaentrada">
     </ngx-consulta-salida-especifica>
-	<ngx-ver-comprobante [consecutivo] = "consecutivoSalida" *ngIf="verComprobante" [transaccion]="transaccionContable"></ngx-ver-comprobante>
+
+    <ngx-ver-comprobante [consecutivo]="consecutivoSalida" *ngIf="verComprobante" [transaccion]="transaccionContable">
+    </ngx-ver-comprobante>
+
+    <ngx-tabla-entrada-aprobada *ngIf="editaentrada && !detalle && cargaLista" [editar]="editaentrada"
+      [salida_id]="salidaId" [actaParametro]="actaParametro" [idEntradaParametro]="entradaParametro">
+    </ngx-tabla-entrada-aprobada>
 
     <mat-card-actions *ngIf="detalle || editaentrada">
-    <ngx-tabla-entrada-aprobada  [editar]="editaentrada" [salida_id]="salidaId" [actaParametro]="actaParametro" [idEntradaParametro]="entradaParametro"
-   	*ngIf="editaentrada && !detalle && cargaLista"></ngx-tabla-entrada-aprobada>
-
       <div *ngIf="modo === 'revision' && !verComprobante" class="justify-content-center" style="padding-bottom: 3rem;">
-        <button nbButton (click)="confirmSubmit(false)">{{'GLOBAL.Acta_Recibido.VerificacionActa.Rechazar' |
-          translate}}</button>
-        <button nbButton (click)="confirmSubmit(true)"
-          class="float-right">{{'GLOBAL.Acta_Recibido.VerificacionActa.Verificar' | translate}}</button>
+        <button mat-raised-button color="primary" (click)="confirmSubmit(false)" class="float-left text-uppercase">
+          {{'GLOBAL.Acta_Recibido.VerificacionActa.Rechazar' | translate}}</button>
+        <button mat-raised-button color="primary" (click)="confirmSubmit(true)" class="float-right text-uppercase">
+          {{'GLOBAL.Acta_Recibido.VerificacionActa.Verificar' | translate}}</button>
       </div>
-        <button mat-raised-button color="primary" (click)="onVolver()" class="float-left text-uppercase">
+      <button mat-raised-button color="primary" (click)="onVolver()" class="float-left text-uppercase">
         {{'GLOBAL.volver' | translate}}</button>
     </mat-card-actions>
   </div>

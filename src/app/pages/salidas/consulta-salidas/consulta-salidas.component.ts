@@ -313,6 +313,8 @@ export class ConsultaSalidasComponent implements OnInit {
        this.editaentrada = true;
        this.filaSeleccionada = event.data;
        this.cargarSalida();
+    } else {
+      this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.salidas.errorEditar'));
     }
   }
 
