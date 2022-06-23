@@ -198,7 +198,7 @@ export class TiposMovimientoComponent implements OnInit {
   }
   private recargarlista() {
     this.router.navigateByUrl('/RefrshComponent', {skipLocationChange: true}).then(
-      () => this.router.navigate(['/pages/movimientos/tipos_movimiento']));
+      () => this.router.navigate(['/pages/parametros/tipos_movimiento']));
   }
   private succesOp(text) {
     this.pupmanager.showSuccessAlert(text);

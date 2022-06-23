@@ -904,6 +904,7 @@
     "placeholder_tipo_bien": "Type of Asset",
     "tipo_movimiento": "Tipo de Movimiento",
     "elementos_asociados": "Elementos Asociados",
+    "elementosAsociadosActa": "Elementos Asociados al Acta",
     "cantidad": "Quantity",
     "cantidadMax": "Maximum Quantity",
     "marca": "Brand Name",
