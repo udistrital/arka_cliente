@@ -13,13 +13,12 @@
 
         <div class="row">
           <div class="col">
-            <p class="text-uppercase"><strong>{{'GLOBAL.consecutivo' | translate}}</strong>
-              : {{ salida.MovimientoPadreId?.Detalle?.consecutivo }}
-            </p>
+            <p><a class="text-uppercase" [href]="linkEntrada"><strong>{{'GLOBAL.consecutivo' | translate}}:</strong>
+              {{ salida.MovimientoPadreId?.Detalle?.consecutivo }}</a></p>
           </div>
           <div class="col">
-            <p class="text-uppercase"><strong>{{'GLOBAL.fecha_creacion' | translate}}</strong>
-              : {{ salida.MovimientoPadreId.FechaCreacion | date }}
+            <p class="text-uppercase"><strong>{{'GLOBAL.fecha_creacion' | translate}}:</strong>
+              {{ salida.MovimientoPadreId.FechaCreacion | date }}
             </p>
           </div>
         </div>
@@ -30,32 +29,32 @@
 
         <div class="row">
           <div class="col">
-            <p class="text-uppercase"><strong>{{'GLOBAL.consecutivo' | translate}}</strong>: {{ salida.Consecutivo }}
+            <p class="text-uppercase"><strong>{{'GLOBAL.consecutivo' | translate}}:</strong>
+              {{ salida.Consecutivo }}
             </p>
           </div>
           <div class="col">
-            <p class="text-uppercase"><strong>{{'GLOBAL.fecha_creacion' | translate}}</strong>
-              : {{ salida.FechaCreacion | date }}</p>
+            <p class="text-uppercase"><strong>{{'GLOBAL.fecha_creacion' | translate}}:</strong>
+              {{ salida.FechaCreacion | date }}</p>
           </div>
           <div class="col" *ngIf="salida.Funcionario">
-            <p class="text-uppercase"><strong>{{'GLOBAL.funcionario' | translate}}</strong>
-              : {{ salida.Funcionario.NombreCompleto}}</p>
+            <p class="text-uppercase"><strong>{{'GLOBAL.funcionario' | translate}}:</strong>
+              {{ salida.Funcionario.NombreCompleto}}</p>
           </div>
         </div>
 
         <div class="row">
           <div class="col">
-            <p class="text-uppercase"><strong>{{'GLOBAL.Acta_Recibido.RegistroActa.Sede' | translate}}</strong>: {{
-              salida.Sede.Nombre }}</p>
+            <p class="text-uppercase"><strong>{{'GLOBAL.Acta_Recibido.RegistroActa.Sede' | translate}}:</strong>
+              {{ salida.Sede.Nombre }}</p>
           </div>
           <div class="col">
-            <p class="text-uppercase"><strong>{{'GLOBAL.Acta_Recibido.RegistroActa.Dependencia' | translate}}</strong>:
-              {{
-              salida.Dependencia.Nombre }}</p>
+            <p class="text-uppercase"><strong>{{'GLOBAL.Acta_Recibido.RegistroActa.Dependencia' | translate}}:</strong>
+              {{ salida.Dependencia.Nombre }}</p>
           </div>
           <div class="col">
-            <p class="text-uppercase"><strong>{{'GLOBAL.Acta_Recibido.RegistroActa.Ubicacion' | translate}}</strong>: {{
-              salida.Ubicacion.Nombre }}</p>
+            <p class="text-uppercase"><strong>{{'GLOBAL.Acta_Recibido.RegistroActa.Ubicacion' | translate}}:</strong>
+              {{ salida.Ubicacion.Nombre }}</p>
           </div>
         </div>
 

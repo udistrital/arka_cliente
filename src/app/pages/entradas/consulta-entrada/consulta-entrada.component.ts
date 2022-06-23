@@ -54,7 +54,6 @@ export class ConsultaEntradaComponent implements OnInit {
     });
 
     this.route.paramMap.subscribe(params => {
-
       if (params && +params.get('id')) {
         this.entradaId = +this.route.snapshot.paramMap.get('id');
         this.loadEntradaEspecifica();
@@ -62,7 +61,6 @@ export class ConsultaEntradaComponent implements OnInit {
         this.loadEntradas();
         this.loadTablaSettings();
       }
-
     });
 
   }
@@ -183,7 +181,6 @@ export class ConsultaEntradaComponent implements OnInit {
     } else {
       this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.entradas.errorEditar'));
     }
-
   }
 
   onVolver($event: boolean = false) {

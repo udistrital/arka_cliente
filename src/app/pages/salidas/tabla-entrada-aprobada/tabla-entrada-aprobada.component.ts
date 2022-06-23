@@ -14,7 +14,6 @@ import { SmartTableService } from '../../../@core/data/SmartTableService';
 export class TablaEntradaAprobadaComponent implements OnInit {
 
   @Input('editar') edicion: boolean = false;
-  @Input('actaParametro') actaParametro: number = 0;
   @Input('salida_id') salida_id: number = 0;
   @Input('idEntradaParametro') idEntradaParametro: string = '';
 

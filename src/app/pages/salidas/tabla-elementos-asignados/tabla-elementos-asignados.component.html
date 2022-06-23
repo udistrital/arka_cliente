@@ -373,7 +373,7 @@
   </mat-tab-group>
 
   <mat-card-actions>
-    <button mat-raised-button color="primary" (click)="checkElementosAsignados()"
-      class="float-right">{{'GLOBAL.movimientos.asignar' | translate}}</button>
+    <button mat-raised-button class="float-right" color="primary" [disabled]="submitted"
+      (click)="checkElementosAsignados()">{{'GLOBAL.movimientos.asignar' | translate}}</button>
   </mat-card-actions>
 </mat-card-content>

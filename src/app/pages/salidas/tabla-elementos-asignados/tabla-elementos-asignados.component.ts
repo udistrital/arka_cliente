@@ -59,6 +59,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
   devolutivoSeleccionados: boolean;
   consumoSeleccionados: boolean;
   salida: any;
+  submitted: boolean;
   @ViewChild('checkTodoInput') checkDummy: MatCheckbox;
 
   @HostListener('window:keydown', ['$event'])
@@ -270,7 +271,8 @@ export class TablaElementosAsignadosComponent implements OnInit {
 
     if (alert) {
       this.pUpManager.showAlertWithOptions(this.getOptionsErrorDescargue(alert));
-    } else {
+    } else if (!this.submitted) {
+      this.submitted = true;
       this.onSubmit();
     }
 
@@ -507,7 +509,6 @@ export class TablaElementosAsignadosComponent implements OnInit {
       this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
         this.router.navigateByUrl('/pages/salidas/consulta_salidas');
       });
-      // this.router.navigate(['/pages/salidas/consulta_salidas']);
     }
   }
 

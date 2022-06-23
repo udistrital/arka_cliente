@@ -1,36 +1,36 @@
-<mat-card *ngIf="mostrar" [nbSpinner]="!mostrar">
-  <div>
-    <mat-card-title *ngIf="!editaentrada">
-      {{'GLOBAL.consultar_salida' | translate}}
-    </mat-card-title>
+<mat-card [nbSpinner]="spinner" [nbSpinnerMessage]="spinner">
+  <mat-card-title *ngIf="!salidaId">
+    {{'GLOBAL.consultar_salida' | translate}}
+  </mat-card-title>
 
-    <mat-card-subtitle *ngIf="!detalle && !editaentrada">
-      {{'GLOBAL.salidas.consulta_salida_info' | translate}}
-    </mat-card-subtitle>
+  <mat-card-subtitle *ngIf="!salidaId">
+    {{'GLOBAL.salidas.consulta_salida_info' | translate}}
+  </mat-card-subtitle>
 
-    <ng2-smart-table *ngIf="!detalle && !editaentrada && !verComprobante" [settings]="settings" [source]="source"
-      (edit)="onEdit($event)" (delete)="onDelete($event)" (create)="onRegister($event)">
-    </ng2-smart-table>
+  <ng2-smart-table *ngIf="!salidaId && settings" [settings]="settings" [source]="source"
+    (edit)="onEdit($event)" (delete)="onDelete($event)" (create)="onRegister($event)">
+  </ng2-smart-table>
 
-    <ngx-consulta-salida-especifica [salida_id]="salidaId" *ngIf="detalle && !editaentrada">
-    </ngx-consulta-salida-especifica>
+  <ngx-consulta-salida-especifica [salida_id]="salidaId" *ngIf="salidaId && !editarSalida">
+  </ngx-consulta-salida-especifica>
 
-    <ngx-ver-comprobante [consecutivo]="consecutivoSalida" *ngIf="verComprobante" [transaccion]="transaccionContable">
-    </ngx-ver-comprobante>
+  <ngx-ver-comprobante [consecutivo]="consecutivoSalida" *ngIf="transaccionContable" [transaccion]="transaccionContable">
+  </ngx-ver-comprobante>
 
-    <ngx-tabla-entrada-aprobada *ngIf="editaentrada && !detalle && cargaLista" [editar]="editaentrada"
-      [salida_id]="salidaId" [actaParametro]="actaParametro" [idEntradaParametro]="entradaParametro">
-    </ngx-tabla-entrada-aprobada>
+  <ngx-tabla-entrada-aprobada *ngIf="editarSalida && salidaId && entradaParametro" [editar]="true"
+    [salida_id]="salidaId" [idEntradaParametro]="entradaParametro">
+  </ngx-tabla-entrada-aprobada>
 
-    <mat-card-actions *ngIf="detalle || editaentrada">
-      <div *ngIf="modo === 'revision' && !verComprobante" class="justify-content-center" style="padding-bottom: 3rem;">
-        <button mat-raised-button color="primary" (click)="confirmSubmit(false)" class="float-left text-uppercase">
-          {{'GLOBAL.Acta_Recibido.VerificacionActa.Rechazar' | translate}}</button>
-        <button mat-raised-button color="primary" (click)="confirmSubmit(true)" class="float-right text-uppercase">
-          {{'GLOBAL.Acta_Recibido.VerificacionActa.Verificar' | translate}}</button>
-      </div>
-      <button mat-raised-button color="primary" (click)="onVolver()" class="float-left text-uppercase">
-        {{'GLOBAL.volver' | translate}}</button>
-    </mat-card-actions>
-  </div>
+  <mat-card-actions *ngIf="salidaId">
+    <div *ngIf="modo === 'revision' && !transaccionContable" class="justify-content-center" style="padding-bottom: 3rem;">
+      <button mat-raised-button color="primary" (click)="confirmSubmit(false)" class="float-left text-uppercase"
+        [disabled]="movimiento?.EstadoMovimientoId?.Nombre !== 'Salida En Trámite' || submitted">
+        {{'GLOBAL.Acta_Recibido.VerificacionActa.Rechazar' | translate}}</button>
+      <button mat-raised-button color="primary" (click)="confirmSubmit(true)" class="float-right text-uppercase"
+        [disabled]="movimiento?.EstadoMovimientoId?.Nombre !== 'Salida En Trámite' || submitted">
+        {{'GLOBAL.Acta_Recibido.VerificacionActa.Verificar' | translate}}</button>
+    </div>
+    <button mat-raised-button color="primary" (click)="onVolver()" class="float-left text-uppercase">
+      {{'GLOBAL.volver' | translate}}</button>
+  </mat-card-actions>
 </mat-card>

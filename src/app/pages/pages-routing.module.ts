@@ -32,7 +32,7 @@ const routes: Routes = [{
     {
       path: 'salidas',
       loadChildren: './salidas/salidas.module#SalidasModule',
-      canActivate: [AuthGuard],
+      canLoad: [CanLoadChildren],
     },
     {
       path: 'reportes',
