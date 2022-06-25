@@ -167,7 +167,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
     this.errores = new Map<string, boolean>();
     this.Acta = new TransaccionActaRecibido;
     this.initForms();
-    this.actaRegistrada = this.estadoActa === 'Registrada' ? true : false;
+    this.actaRegistrada = this.estadoActa === 'Registrada';
   }
 
   private async initForms() {
@@ -196,9 +196,8 @@ export class EdicionActaRecibidoComponent implements OnInit {
       'Elementos',
     ].map(seccion => this.permisosRoles_EstadoSeccion(this.estadoActa, seccion))
       .map(permisosSeccion => {
-        return this.confService.getAccion(permisosSeccion.PuedenModificar) ? Permiso.Modificar : (
-          this.confService.getAccion(permisosSeccion.PuedenVer) ? Permiso.Ver : Permiso.Ninguno
-        );
+        return this.confService.getAccion(permisosSeccion.PuedenModificar) ? Permiso.Modificar :
+          this.confService.getAccion(permisosSeccion.PuedenVer) ? Permiso.Ver : Permiso.Ninguno;
       });
 
     // Guardar permisos requeridos para cada parte del componente
@@ -246,8 +245,8 @@ export class EdicionActaRecibidoComponent implements OnInit {
 
     // Pueden enviar a Validacion
     const envioValidar =
-      this.confService.getAccion('edicionActaRecibidoCambioARevision')
-      && ['En Elaboracion', 'En Modificacion']
+      !!this.confService.getAccion('edicionActaRecibidoCambioARevision') &&
+      ['En Elaboración', 'En Modificación']
         .some(est => this.estadoActa === est);
 
     this.accion.envHabilitado = envioProveedor || envioValidar;
