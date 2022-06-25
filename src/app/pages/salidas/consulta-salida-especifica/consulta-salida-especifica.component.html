@@ -2,6 +2,9 @@
 </mat-spinner>
 
 <div *ngIf="salida">
+  <mat-card-title>
+    {{'GLOBAL.movimientos.salidas.detalleSalidaTtl' | translate}} {{salida.Consecutivo}}
+  </mat-card-title>
 
   <mat-card-content>
     <mat-vertical-stepper #stepper>

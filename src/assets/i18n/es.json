@@ -891,7 +891,6 @@
     "regresar": "regresar",
     "operacion_exitosa": "Operación Exitosa",
     "consultar_entrada": "Consultar Entradas",
-    "consultar_salida" : "Consultar Salidas",
     "mensaje_consulta_entrada": "Lista de entradas realizadas. Para ver el detalle de la entrada presione el ícono de acciones ubicado al costado derecho de la tabla.",
     "consecutivo": "Consecutivo",
     "fecha_entrada": "Fecha de Entrada",
@@ -968,6 +967,11 @@
       },
       "salidas": {
         "nuevaSalida": "Registrar nueva salida",
+        "consultaTtl": "Consultar Salidas",
+        "revisionTtl": "Revisar Salidas",
+        "consultaStl": "En la siguiente tabla se listan las salidas realizadas, seleccione una para ver la informacion asociada.",
+        "revisionStl": "En la siguiente tabla se listan las salidas pendientes por ser revisadas, seleccione una para realizar la revisión.",
+        "detalleSalidaTtl": "Detalle Salida",
         "noSalidasView": "No se encontraron salidas",
         "noSalidasReview": "No hay entradas pendientes para ser revisadas",
         "accionRevision": "Revisar Salida",
@@ -1109,7 +1113,6 @@
       "exito_registro_titulo": "Solicitud Aprobada",
       "exito_registro_texto": "La solicitud {{CONSECUTIVO}} ha sido aprobada correctamente.",
       "salida_instruccion": "En la siguiente tabla seleccione la entrada para poder generar la salida correspondiente",
-      "consulta_salida_info": "En la siguiente tabla se muestran de forma general las salidas, seleccione una para ver la informacion asociada",
       "detalle_salida": "Detalle Salida",
       "errorEditar": "No se puede editar esta salida."
     },

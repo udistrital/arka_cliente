@@ -1,10 +1,10 @@
 <mat-card [nbSpinner]="spinner" [nbSpinnerMessage]="spinner">
   <mat-card-title *ngIf="!salidaId">
-    {{'GLOBAL.consultar_salida' | translate}}
+    {{ title | translate}}
   </mat-card-title>
 
   <mat-card-subtitle *ngIf="!salidaId">
-    {{'GLOBAL.salidas.consulta_salida_info' | translate}}
+    {{ subtitle | translate}}
   </mat-card-subtitle>
 
   <ng2-smart-table *ngIf="!salidaId && settings" [settings]="settings" [source]="source"

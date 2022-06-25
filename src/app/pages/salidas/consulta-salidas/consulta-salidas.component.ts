@@ -28,6 +28,8 @@ export class ConsultaSalidasComponent implements OnInit {
   filaSeleccionada: any;
   transaccionContable: any;
   submitted: boolean;
+  title: string;
+  subtitle: string;
 
   constructor(
     private pUpManager: PopUpManager,
@@ -47,6 +49,8 @@ export class ConsultaSalidasComponent implements OnInit {
     });
     this.route.data.subscribe(data => {
       if (data && data.modo) {
+        this.title = 'GLOBAL.movimientos.salidas.' + data.modo + 'Ttl';
+        this.subtitle = 'GLOBAL.movimientos.salidas.' + data.modo + 'Stl';
         this.modo = data.modo;
       }
     });

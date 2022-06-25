@@ -26,7 +26,7 @@
   <div *ngIf="factura" class="row">
     <div class="col">
       <p class="text-uppercase"><strong>{{'GLOBAL.factura' | translate }}:</strong>
-        {{ factura.Consecutivo }}</p>
+        {{ factura.Consecutivo + ' ' + ('GLOBAL.de' | translate) }} {{ factura.FechaSoporte | date:'dd/MM/yyyy' }}</p>
     </div>
   </div>
 

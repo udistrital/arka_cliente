@@ -272,7 +272,6 @@ export class TablaElementosAsignadosComponent implements OnInit {
     if (alert) {
       this.pUpManager.showAlertWithOptions(this.getOptionsErrorDescargue(alert));
     } else if (!this.submitted) {
-      this.submitted = true;
       this.onSubmit();
     }
 
@@ -474,6 +473,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
     if (Salidas.Salidas.length) {
       this.pUpManager.showAlertWithOptions(this.optionsConfirm).then((result) => {
         if (result.value) {
+          this.submitted = true;
           if (this.edicionSalida) {
             this.salidasHelper.editarSalida(Salidas, this.salida_id).subscribe((res: any) => {
               this.getOptionsSuccess(res.trSalida.Salidas);

@@ -891,7 +891,6 @@
     "regresar": "back",
     "operacion_exitosa": "Successful Operation",
     "consultar_entrada": "View Entries",
-    "consultar_salida" : "View Outputs",
     "mensaje_consulta_entrada": "List of entries made. To see the detail of the entry press the action icon located on the right side of the table.",
     "consecutivo": "Consecutive",
     "fecha_entrada": "Entry Date",
@@ -968,6 +967,12 @@
       },
       "salidas": {
         "nuevaSalida": "Register a new issue",
+        "consultaTtl": "Consultar Salidas",
+        "revisionTtl": "Revisar Salidas",
+        "consultaStl": "En la siguiente tabla se listan las salidas realizadas, seleccione una para ver la informacion asociada.",
+        "revisionStl": "En la siguiente tabla se listan las salidas pendientes por ser revisadas, seleccione una para realizar la revisión.",
+        "detalleSalidaTtl": "Detalle salida",
+        "revisarSalidaTtl": "Revisar salida {{CONSECUTIVO}}",
         "noSalidasView": "There are no issues to view",
         "noSalidasReview": "There are no entries to review",
         "accionRevision": "Review Entry",
@@ -1109,7 +1114,6 @@
       "exito_registro_titulo": "Output Recorded",
       "exito_registro_texto": "La solicitud {{CONSECUTIVO}} ha sido aprobada correctamente.",
       "salida_instruccion": "Select an entry from the following list",
-      "consulta_salida_info": "Select an output from the following list",
       "detalle_salida": "Output Detail",
       "errorEditar": "No se puede editar esta salida."
     },
