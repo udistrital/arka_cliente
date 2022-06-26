@@ -89,10 +89,10 @@ export class SalidaHelper {
         );
     }
 
-    public editarSalida(salidasData, salidaId: number = 0) {
+    public editarSalida(salidasData, salidaId: number, rechazar: boolean = false) {
         this.rqManager.setPath('ARKA_SERVICE');
-        const url = 'salida';
-        return this.rqManager.put2(url, salidasData, salidaId).pipe(
+        const endpoint = salidaId + '?rechazar=' + rechazar;
+        return this.rqManager.put2('salida', salidasData, endpoint).pipe(
             map(
                 (res) => {
                     if (res['Type'] === 'error') {

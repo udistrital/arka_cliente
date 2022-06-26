@@ -475,7 +475,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
         if (result.value) {
           this.submitted = true;
           if (this.edicionSalida) {
-            this.salidasHelper.editarSalida(Salidas, this.salida_id).subscribe((res: any) => {
+            this.salidasHelper.editarSalida(Salidas, this.salida_id, false).subscribe((res: any) => {
               this.getOptionsSuccess(res.trSalida.Salidas);
             });
           } else {

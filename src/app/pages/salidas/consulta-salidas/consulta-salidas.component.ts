@@ -83,13 +83,6 @@ export class ConsultaSalidasComponent implements OnInit {
     this.spinner = 'Cargando Salidas';
     this.salidasHelper.getSalidas(this.modo === 'revision').subscribe(res => {
       if (res.length) {
-        res.forEach(salida => {
-          const movimientoPadre = salida.MovimientoPadreId;
-          salida.MovimientoPadreId = movimientoPadre ? JSON.parse(movimientoPadre.Detalle).consecutivo : '';
-          salida.EstadoMovimientoId = this.estadosMovimiento.find(estado =>
-            estado.Id === salida.EstadoMovimientoId).Nombre;
-          salida.FechaModificacion = salida.EstadoMovimientoId === 'Salida Aprobada' ? salida.FechaModificacion : '';
-        });
         this.source.load(res);
       }
       this.spinner = '';
@@ -103,13 +96,16 @@ export class ConsultaSalidasComponent implements OnInit {
   onEdit(event) {
     if (this.modo === 'revision') {
       this.router.navigateByUrl('/pages/salidas/aprobar_salidas/' + event.data.Id);
-    } else if (event.data.EstadoMovimientoId === 'Salida Rechazada') {
-      this.salidaId = `${event.data.Id}`;
-      this.editarSalida = true;
-      this.filaSeleccionada = event.data;
-      this.cargarSalida();
     } else {
-      this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.salidas.errorEditar'));
+      const estado = this.estadosMovimiento.find(st => st.Nombre === 'Salida Rechazada').Id;
+      if (event.data.EstadoMovimientoId === estado) {
+        this.salidaId = `${event.data.Id}`;
+        this.editarSalida = true;
+        this.filaSeleccionada = event.data;
+        this.cargarSalida();
+      } else {
+        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.salidas.errorEditar'));
+      }
     }
   }
 
@@ -164,12 +160,12 @@ export class ConsultaSalidasComponent implements OnInit {
       });
     } else {
       this.spinner = 'Actualizando salida';
-      const estado = this.estadosMovimiento.find(estadoMovimiento => estadoMovimiento.Nombre === 'Salida Rechazada').Id;
-      this.movimiento.EstadoMovimientoId = <EstadoMovimiento>{ Id: estado };
-      this.entradasHelper.putMovimiento(this.movimiento).toPromise().then((res: any) => {
+      this.salidasHelper.editarSalida({}, +this.salidaId, true).subscribe((res: any) => {
         this.spinner = '';
-        if (res) {
+        if (res && res.EstadoMovimientoId && res.EstadoMovimientoId.Id) {
           this.alertSuccess(false);
+        } else {
+          this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.salidas.errorEditar'));
         }
       });
     }
@@ -193,7 +189,10 @@ export class ConsultaSalidasComponent implements OnInit {
     const estadoSelect = 'GLOBAL.movimientos.estado';
     const columns = this.modo === 'consulta' ? {
       EstadoMovimientoId: {
-        title: this.translate.instant('GLOBAL.tipo_entrada'),
+        title: this.translate.instant('GLOBAL.estadoSalida'),
+        valuePrepareFunction: (value: any) => {
+          return this.estadosMovimiento.find(estado => estado.Id === value).Nombre;
+        },
         width: '300px',
         filter: {
           type: 'list',
@@ -201,15 +200,15 @@ export class ConsultaSalidasComponent implements OnInit {
             selectText: this.translate.instant('GLOBAL.seleccionar') + '...',
             list: [
               {
-                value: this.estadosMovimiento.find(status => status.Nombre === 'Salida En Trámite').Nombre,
+                value: this.estadosMovimiento.find(status => status.Nombre === 'Salida En Trámite').Id,
                 title: this.translate.instant(estadoSelect + 'Tramite'),
               },
               {
-                value: this.estadosMovimiento.find(status => status.Nombre === 'Salida Aprobada').Nombre,
+                value: this.estadosMovimiento.find(status => status.Nombre === 'Salida Aprobada').Id,
                 title: this.translate.instant(estadoSelect + 'Aprobado'),
               },
               {
-                value: this.estadosMovimiento.find(status => status.Nombre === 'Salida Rechazada').Nombre,
+                value: this.estadosMovimiento.find(status => status.Nombre === 'Salida Rechazada').Id,
                 title: this.translate.instant(estadoSelect + 'Rechazo'),
               },
             ],
@@ -239,13 +238,13 @@ export class ConsultaSalidasComponent implements OnInit {
       mode: 'external',
       columns: {
         Consecutivo: {
-          title: 'Consecutivo',
+          title: this.translate.instant('GLOBAL.consecutivo'),
         },
         Observacion: {
-          title: 'Observaciones',
+          title: this.translate.instant('GLOBAL.observaciones'),
         },
         FechaCreacion: {
-          title: 'Fecha de Creacion',
+          title: this.translate.instant('GLOBAL.fecha_creacion'),
           width: '70px',
           valuePrepareFunction: this.tabla.formatDate,
           filter: {
@@ -258,7 +257,7 @@ export class ConsultaSalidasComponent implements OnInit {
           },
         },
         FechaModificacion: {
-          title: this.translate.instant('GLOBAL.fechaAprobacion'),
+          title: this.translate.instant('GLOBAL.ultimaModificacion'),
           width: '70px',
           valuePrepareFunction: this.tabla.formatDate,
           filter: {
@@ -271,10 +270,13 @@ export class ConsultaSalidasComponent implements OnInit {
           },
         },
         MovimientoPadreId: {
-          title: 'Entrada Asociada',
+          title: this.translate.instant('GLOBAL.entradaAsociada'),
+          valuePrepareFunction: (value: any) => {
+            return value && value.Detalle && JSON.parse(value.Detalle) ? JSON.parse(value.Detalle).consecutivo : '';
+          },
         },
         Funcionario: {
-          title: 'Funcionario',
+          title: this.translate.instant('GLOBAL.funcionario'),
           valuePrepareFunction: (value: any) => {
             if (value !== null) {
               return value.NombreCompleto;
@@ -283,86 +285,34 @@ export class ConsultaSalidasComponent implements OnInit {
             }
           },
           filterFunction: (cell?: any, search?: string): boolean => {
-            // console.log(cell);
-            // console.log(search);
-            if (Object.keys(cell).length !== 0) {
-              if (cell.NombreCompleto.indexOf(search) > -1) {
-                return true;
-              } else {
-                return false;
-              }
-            } else {
-              return false;
-            }
+            return this.tabla.filterFunctionObject('NombreCompleto', cell, search);
           },
         },
         Sede: {
-          title: 'Sede',
+          title: this.translate.instant('GLOBAL.sede'),
           valuePrepareFunction: (value: any) => {
-            if (value !== null) {
-              return value.Nombre;
-            } else {
-              return '';
-            }
+            return value && value.Nombre ? value.Nombre : '';
           },
           filterFunction: (cell?: any, search?: string): boolean => {
-            // console.log(cell);
-            // console.log(search);
-            if (Object.keys(cell).length !== 0) {
-              if (cell.Nombre.indexOf(search) > -1) {
-                return true;
-              } else {
-                return false;
-              }
-            } else {
-              return false;
-            }
+            return this.tabla.filterFunctionObject('Nombre', cell, search);
           },
         },
         Dependencia: {
-          title: 'Dependencia',
+          title: this.translate.instant('GLOBAL.dependencia'),
           valuePrepareFunction: (value: any) => {
-            if (value !== null) {
-              return value.Nombre;
-            } else {
-              return '';
-            }
+            return value && value.Nombre ? value.Nombre : '';
           },
           filterFunction: (cell?: any, search?: string): boolean => {
-            // console.log(cell);
-            // console.log(search);
-            if (Object.keys(cell).length !== 0) {
-              if (cell.Nombre.indexOf(search) > -1) {
-                return true;
-              } else {
-                return false;
-              }
-            } else {
-              return false;
-            }
+            return this.tabla.filterFunctionObject('Nombre', cell, search);
           },
         },
         Ubicacion: {
-          title: 'Ubicacion',
+          title: this.translate.instant('GLOBAL.ubicacion'),
           valuePrepareFunction: (value: any) => {
-            if (value !== null) {
-              return value.Nombre;
-            } else {
-              return '';
-            }
+            return value && value.Nombre ? value.Nombre : '';
           },
           filterFunction: (cell?: any, search?: string): boolean => {
-            // console.log(cell);
-            // console.log(search);
-            if (Object.keys(cell).length !== 0) {
-              if (cell.Nombre.indexOf(search) > -1) {
-                return true;
-              } else {
-                return false;
-              }
-            } else {
-              return false;
-            }
+            return this.tabla.filterFunctionObject('Nombre', cell, search);
           },
         },
         ...columns,

@@ -896,6 +896,7 @@
     "fecha_entrada": "Entry Date",
     "tipo_entrada": "Entry Type",
     "estado_entrada": "Entry Status",
+    "estadoSalida": "Estado Salida",
     "detalle": "Detail",
     "seleccionar": "Select",
     "no_data_entradas": "No associated entries found.",
@@ -934,6 +935,8 @@
     "funcionarioDestino": "recipient Civil Servant",
     "razonRechazo": "Denial reason",
     "resolucion": "Resolution number",
+    "entradaAsociada": "Entrada Asociada",
+    "ultimaModificacion": "Última Modificación",
 
     "movimientos": {
       "estadoTramite": "Awaiting review",

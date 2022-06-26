@@ -13,5 +13,16 @@ export class SmartTableService {
         }
     }
 
+    public filterFunctionObject(key: string, cell?: any, search?: string): boolean {
+        if (key && cell && search.length) {
+            if (cell[key]) {
+                if ((cell[key].toUpperCase()).indexOf(search.toUpperCase()) > -1) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
 }
 

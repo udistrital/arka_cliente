@@ -896,6 +896,7 @@
     "fecha_entrada": "Fecha de Entrada",
     "tipo_entrada": "Tipo Entrada",
     "estado_entrada": "Estado Entrada",
+    "estadoSalida": "Estado Salida",
     "detalle": "Detalle",
     "seleccionar": "Seleccionar",
     "no_data_entradas": "No se encontraron entradas asociadas.",
@@ -934,6 +935,8 @@
     "funcionarioDestino": "Funcionario Receptor",
     "razonRechazo": "Razón de rechazo",
     "resolucion": "Número de resolución",
+    "entradaAsociada": "Entrada Asociada",
+    "ultimaModificacion": "Última Modificación",
 
     "movimientos": {
       "estadoTramite": "En Trámite",
