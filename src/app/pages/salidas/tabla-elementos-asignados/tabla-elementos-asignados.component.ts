@@ -58,7 +58,6 @@ export class TablaElementosAsignadosComponent implements OnInit {
   sourceConsumo: MatTableDataSource<any>;
   devolutivoSeleccionados: boolean;
   consumoSeleccionados: boolean;
-  salida: any;
   submitted: boolean;
   @ViewChild('checkTodoInput') checkDummy: MatCheckbox;
 
@@ -100,7 +99,6 @@ export class TablaElementosAsignadosComponent implements OnInit {
   private loadSalida() {
     this.salidasHelper.getSalida(this.salida_id).subscribe(res => {
       if (res && res.Elementos && res.Elementos.length && res.Salida) {
-        this.salida = res.Salida;
         this.loadTablas(res.Elementos, res.Salida.Sede, res.Salida.Dependencia, res.Salida.Ubicacion, res.Salida.Funcionario);
       } else {
         this.pUpManager.showErrorAlert(this.translate.instant(this.baseI18n + 'salidas.errorElementos'));
@@ -302,26 +300,11 @@ export class TablaElementosAsignadosComponent implements OnInit {
   }
 
   private createDetalle(funcionario: number, ubicacion: number): string {
-    if (this.salida_id) {
-      const detalle = {
-        funcionario,
-        ubicacion,
-        consecutivo: this.salida.Consecutivo,
-        ConsecutivoId: this.salida.ConsecutivoId,
-      };
-
-      return JSON.stringify(detalle);
-
-    } else {
-      const detalle = {
-        funcionario,
-        ubicacion,
-      };
-
-      return JSON.stringify(detalle);
-
-    }
-
+    const detalle = {
+      funcionario,
+      ubicacion,
+    };
+    return JSON.stringify(detalle);
   }
 
   private getFormatoBodega() {
@@ -350,7 +333,6 @@ export class TablaElementosAsignadosComponent implements OnInit {
     if (elementosBodega.length) {
       const Salida = {
         Salida: {
-          Id: this.salida_id ? +this.salida_id : 0,
           Observacion: 'Salida automatica para Bodega de Consumo',
           Detalle: this.createDetalle(this.JefeOficinaId, elementosBodega[0].Ubicacion.Id),
           Activo: true,
@@ -382,7 +364,6 @@ export class TablaElementosAsignadosComponent implements OnInit {
         const val = currentValue.Funcionario.Id + '-' + currentValue.Ubicacion.Id;
         accumulator[val] = accumulator[val] || {
           Salida: {
-            Id: this.salida_id ? +this.salida_id : 0,
             Observacion: this.getObservacion(obs, currentValue.Observaciones),
             Detalle: this.createDetalle(currentValue.Funcionario.Id, currentValue.Ubicacion.Id),
             Activo: true,
@@ -421,7 +402,6 @@ export class TablaElementosAsignadosComponent implements OnInit {
           const val = currentValue.Funcionario.Id + '-' + currentValue.Ubicacion.Id;
           accumulator[val] = accumulator[val] || {
             Salida: {
-              Id: this.salida_id ? +this.salida_id : 0,
               Observacion: this.getObservacion(obs, currentValue.Observaciones),
               Detalle: this.createDetalle(currentValue.Funcionario.Id, currentValue.Ubicacion.Id),
               Activo: true,
