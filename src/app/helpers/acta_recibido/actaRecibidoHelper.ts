@@ -67,22 +67,15 @@ export class ActaRecibidoHelper {
      */
     public getActasRecibido(usuario: string = '', estados: string[] = []) {
         const DIVISOR_ESTADOS = ',';
-        let params = '';
+        let params = {};
         if (usuario.length) {
-            params += `u=${encodeURIComponent(usuario)}`;
+            params = {...params, u: usuario};
         }
         if (estados.length) {
-            if (params.length) {
-                params += '&';
-            }
-            params += 'states=' + encodeURIComponent(estados.join(DIVISOR_ESTADOS));
-        }
-
-        if (params.length) {
-            params = '?' + params;
+            params = {...params, states: estados.join(DIVISOR_ESTADOS)};
         }
         this.rqManager.setPath('ARKA_SERVICE');
-        return this.rqManager.get(`acta_recibido/get_all_actas${params}`).pipe(
+        return this.rqManager.get(`acta_recibido/get_all_actas`, params).pipe(
             map(
                 (res) => {
                     if (res === 'error') {
