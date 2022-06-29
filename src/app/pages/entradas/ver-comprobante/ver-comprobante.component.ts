@@ -1,7 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-
-export const MVTO_DB = 344;
-export const MVTO_CR = 345;
+import { ParametrosHelper } from '../../../helpers/parametros/parametrosHelper';
 
 @Component({
    selector: 'ngx-ver-comprobante',
@@ -13,18 +11,18 @@ export class VerComprobanteComponent implements OnInit {
    @Input() consecutivo: any;
    totalCreditos: any;
    totalDebitos: any;
-   m_db = MVTO_DB;
-   m_cr = MVTO_CR;
-   constructor() { }
+   constructor(
+      private p: ParametrosHelper,
+   ) {}
 
    ngOnInit() {
       this.totalCreditos = 0;
       this.totalDebitos = 0;
       this.transaccion.Movimientos.forEach(obj => {
-         if (obj.TipoMovimientoId === MVTO_DB) {
+         if (obj.TipoMovimientoId === this.p.getParametroDebito()) {
             this.totalDebitos += obj.Valor;
          }
-         if (obj.TipoMovimientoId === MVTO_CR) {
+         if (obj.TipoMovimientoId === this.p.getParametroCredito()) {
             this.totalCreditos += obj.Valor;
          }
       });

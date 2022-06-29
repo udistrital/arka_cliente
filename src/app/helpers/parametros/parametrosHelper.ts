@@ -4,6 +4,9 @@ import { PopUpManager } from '../../managers/popUpManager';
 import { map } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
 
+const MVTO_DB = 344;
+const MVTO_CR = 345;
+
 @Injectable({
     providedIn: 'root',
 })
@@ -21,7 +24,7 @@ export class ParametrosHelper {
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
      */
     public getParametroCredito() {
-        return 345;
+        return MVTO_CR;
     }
 
     /**
@@ -31,6 +34,6 @@ export class ParametrosHelper {
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
      */
     public getParametroDebito() {
-        return 344;
+        return MVTO_DB;
     }
 }
