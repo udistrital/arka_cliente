@@ -60,7 +60,7 @@ export class ActaRecibidoHelper {
             );
         }
 
-/**
+    /**
      * Actas de Recibido Activas Get
      * If the response has errors in the OAS API it should show a popup message with an error.
      * If the response is successs, it returns the object's data.
@@ -76,7 +76,7 @@ export class ActaRecibidoHelper {
             params = {...params, states: estados.join(DIVISOR_ESTADOS)};
         }
         this.rqManager.setPath('ARKA_SERVICE');
-        return this.rqManager.get(`acta_recibido/get_all_actas`, params).pipe(
+        return this.rqManager.get('acta_recibido/get_all_actas', params).pipe(
             map(
                 (res) => {
                     if (res === 'error') {
@@ -105,18 +105,17 @@ export class ActaRecibidoHelper {
      */
     public getElementosActa(actaId) {
         this.rqManager.setPath('ARKA_SERVICE');
-        return this.rqManager.get(
-            'acta_recibido/get_elementos_acta/' + actaId).pipe(
-                map(
-                    (res) => {
-                        if (res === 'error') {
-                            this.pUpManager.showErrorAlert('No se pudo consultar los elementos');
-                            return undefined;
-                        }
-                        return res;
-                    },
-                ),
-            );
+        return this.rqManager.get(`acta_recibido/get_elementos_acta/${actaId}`).pipe(
+            map(
+                (res) => {
+                    if (res === 'error') {
+                        this.pUpManager.showErrorAlert('No se pudo consultar los elementos');
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
     }
 
     /**
@@ -127,18 +126,17 @@ export class ActaRecibidoHelper {
      */
     public getElementosActaMov(actaId) {
         this.rqManager.setPath('ARKA_SERVICE');
-        return this.rqManager.get(
-            'ajustes/automatico/elementos/' + actaId).pipe(
-                map(
-                    (res) => {
-                        if (res === 'error') {
-                            this.pUpManager.showErrorAlert('No se pudo consultar los elementos');
-                            return undefined;
-                        }
-                        return res;
-                    },
-                ),
-            );
+        return this.rqManager.get(`ajustes/automatico/elementos/${actaId}`).pipe(
+            map(
+                (res) => {
+                    if (res === 'error') {
+                        this.pUpManager.showErrorAlert('No se pudo consultar los elementos');
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
     }
 
     /**
@@ -213,7 +211,7 @@ export class ActaRecibidoHelper {
     public getTransaccionActa(actaId, elementos) {
         const query = !elementos ? {elementos: false} : {};
         this.rqManager.setPath('ACTA_RECIBIDO_SERVICE');
-        return this.rqManager.get('transaccion_acta_recibido/' + actaId, query).pipe(
+        return this.rqManager.get(`transaccion_acta_recibido/${actaId}`, query).pipe(
             map(
                 (res) => {
                     if (res === 'error') {
@@ -386,7 +384,7 @@ export class ActaRecibidoHelper {
     */
    public getElemento(id) {
     this.rqManager.setPath('ACTA_RECIBIDO_SERVICE');
-    return this.rqManager.get('elemento/' + id + '').pipe(
+    return this.rqManager.get(`elemento/${id}`).pipe(
         map(
             (res) => {
                 if (res === 'error') {
