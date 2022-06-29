@@ -97,7 +97,6 @@ export class ConsultaActaRecibidoComponent implements OnInit {
     // const estados = ['Registrada', 'Anulada'];
     const usuario = this.userService.getUserMail();
 
-    // this.actaRecibidoHelper.getActasRecibidoPorEstados(estados).subscribe((res: any) => {
     this.actaRecibidoHelper.getActasRecibidoUsuario(usuario).subscribe((res: any) => {
       // console.log(res);
       if (Array.isArray(res) && res.length !== 0) {

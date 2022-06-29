@@ -65,7 +65,7 @@ export class ActaRecibidoHelper {
      * If the response is successs, it returns the object's data.
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
      */
-    public getActasRecibido3(usuario: string = '', estados: string[] = []) {
+    public getActasRecibido(usuario: string = '', estados: string[] = []) {
         const DIVISOR_ESTADOS = ',';
         let params = '';
         if (usuario.length) {
@@ -96,11 +96,11 @@ export class ActaRecibidoHelper {
     }
 
     public getActasRecibidoUsuario(usuario: string) {
-        return this.getActasRecibido3(usuario);
+        return this.getActasRecibido(usuario);
     }
 
     public getAllActasRecibidoByEstado(estados: [string]) {
-        return this.getActasRecibido3('', estados);
+        return this.getActasRecibido('', estados);
     }
 
     /**
