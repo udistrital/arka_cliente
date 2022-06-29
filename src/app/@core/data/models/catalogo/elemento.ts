@@ -1,6 +1,6 @@
-import { SubgrupoID } from './jerarquia';
+import { BaseId } from '../base';
 
-export class Elemento {
+export class Elemento extends BaseId {
     Id: number;
     Codigo: string;
     Nombre: string;
@@ -8,5 +8,5 @@ export class Elemento {
     FechaCreacion: Date;
     FechaModificacion: Date;
     Activo: boolean;
-    SubgrupoId: SubgrupoID;
+    SubgrupoId: BaseId;
 }

@@ -1,16 +1,15 @@
-import { SubgrupoID } from './jerarquia';
+import { BaseId } from '../base';
 import { Cuenta } from './cuenta_contable';
 
 
-export class CuentaGrupo {
-    Id: number;
+export class CuentaGrupo extends BaseId {
     CuentaDebitoId: number;
     CuentaCreditoId: number;
     SubtipoMovimientoId: number;
     FechaCreacion: Date;
     FechaModificacion: Date;
     Activo: boolean;
-    SubgrupoId: Partial<SubgrupoID>;
+    SubgrupoId: Partial<BaseId>;
     Tipo_Texto: string;
     orden: number;
 }

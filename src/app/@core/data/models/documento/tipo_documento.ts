@@ -1,9 +1,10 @@
-export class TipoDocumento {
+import { BaseId } from '../base';
+
+export class TipoDocumento extends BaseId {
     Activo: boolean;
     CodigoAbreviacion: string;
     Descripcion: string;
     Extension: string;
-    Id: number;
     Nombre: string;
     NumeroOrden: number;
     Tamano: number;

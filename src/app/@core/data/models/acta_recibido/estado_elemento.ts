@@ -1,10 +1,8 @@
-export class EstadoElemento {
-    Id: number;
+import { Base } from '../base';
+
+export class EstadoElemento extends Base {
     Nombre: string;
     Descripcion: string;
     CodigoAbreviacion: string;
-    Activo: boolean;
     NumeroOrden: number;
-    FechaCreacion: Date;
-    FechaModificacion: Date;
 }

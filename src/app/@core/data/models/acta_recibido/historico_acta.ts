@@ -1,8 +1,8 @@
+import { Base } from '../base';
 import { ActaRecibido } from './acta_recibido';
 import { EstadoActa } from './estado_acta';
 
-export class HistoricoActa {
-    Id: number;
+export class HistoricoActa extends Base {
     ProveedorId: number;
     UbicacionId: number;
     RevisorId: number;
@@ -11,7 +11,4 @@ export class HistoricoActa {
     FechaVistoBueno: Date;
     ActaRecibidoId: ActaRecibido;
     EstadoActaId: EstadoActa;
-    Activo: boolean;
-    FechaCreacion: Date;
-    FechaModificacion: Date;
 }

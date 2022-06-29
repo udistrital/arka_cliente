@@ -1,13 +1,10 @@
+import { Base, BaseId } from '../base';
 import { TipoEntrada } from './tipo_entrada';
 
-export class Entrada {
-    Id: number;
+export class Entrada extends Base {
     Solicitante: number;
     Observacion: string;
     Importacion: boolean;
-    FechaCreacion: Date;
-    FechaModificacion: Date;
-    Activo: boolean;
     TipoEntradaId: TipoEntrada;
     ActaRecibidoId: number;
     ContratoId: number;
@@ -20,8 +17,7 @@ export class Entrada {
     EstadoMovimientoId: number;
 }
 
-export class Movimiento {
-    Id: number;
+export class Movimiento extends BaseId {
     Observacion: string;
     Detalle: string;
     Activo: boolean;
@@ -30,8 +26,7 @@ export class Movimiento {
     EstadoMovimientoId: EstadoMovimiento;
 }
 
-export class FormatoTipoMovimiento {
-    Id: number;
+export class FormatoTipoMovimiento extends BaseId {
     Nombre: string;
     Formato: string;
     Descripcion: string;
@@ -40,8 +35,7 @@ export class FormatoTipoMovimiento {
     Activo: boolean;
 }
 
-export class EstadoMovimiento {
-    Id: number;
+export class EstadoMovimiento extends BaseId {
     Nombre: string;
     Activo: boolean;
     Descripcion: string;
@@ -51,16 +45,14 @@ export class TrMovimiento extends Movimiento {
     SoporteMovimientoId: number;
 }
 
-export class TransaccionEntrada {
-    Id: number;
+export class TransaccionEntrada extends BaseId {
     Observacion: string;
     Detalle: any;
     FormatoTipoMovimientoId: string;
     SoporteMovimientoId: number;
 }
 
-export class ElementoMovimientosArka {
-    Id: number;
+export class ElementoMovimientosArka extends BaseId {
     ElementoActaId: number;
     Activo: boolean;
     SaldoCantidad: number;

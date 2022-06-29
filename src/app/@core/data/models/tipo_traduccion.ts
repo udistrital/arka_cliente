@@ -1,5 +1,6 @@
-export class TipoTraduccion {
-  Id: number;
+import { BaseId } from './base';
+
+export class TipoTraduccion extends BaseId {
   Nombre: string;
   Descripcion: string;
   Codigoabreviacion: string;

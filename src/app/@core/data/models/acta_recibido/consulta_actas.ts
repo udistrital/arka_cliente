@@ -1,16 +1,12 @@
+import { Base } from '../base';
 import { EstadoActa } from './estado_acta';
 
-export class ConsultaActaRecibido {
-    Activo: boolean;
-    FechaCreacion: Date;
-    FechaModificacion: Date;
+export class ConsultaActaRecibido extends Base {
     FechaVistoBueno: Date;
-    Id: number;
     Observaciones: string;
     RevisorId: any;
     UbicacionId: string;
     CodigoAbreviacion: string;
     Estado: string;
     PersonaAsignada: any;
-
 }

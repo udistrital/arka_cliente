@@ -1,4 +1,4 @@
-import { Soporte } from '../../../../pages/entradas/soporteHelper';
+import { BaseId } from '../base';
 import { Movimiento } from '../entrada/entrada';
 
 export class DetalleTraslado {
@@ -18,8 +18,7 @@ export class FormatoAjuste {
     Consecutivo: string;
 }
 
-export class SoporteMovimiento {
-    Id: number;
+export class SoporteMovimiento extends BaseId {
     DocumentoId: number;
     Activo: boolean;
     MovimientoId: Movimiento;

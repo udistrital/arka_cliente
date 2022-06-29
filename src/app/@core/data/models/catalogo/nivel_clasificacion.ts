@@ -1,5 +1,6 @@
-export class NivelClasificacion {
-    Id: number;
+import { BaseId } from '../base';
+
+export class NivelClasificacion extends BaseId {
     Nombre: string;
     Longitud: number;
     Descripcion: string;

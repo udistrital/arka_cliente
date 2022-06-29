@@ -1,11 +1,12 @@
 // Modelos de datos asociados al CRUD de configuracion
 // en orden alfabetico
 
+import { BaseId } from './base';
+
 // ESTRUCTURAS DE DATOS PRINCIPALES
 // (Relacionadas con tablas)
 
-export class Aplicacion {
-  Id: number;
+export class Aplicacion extends BaseId {
   Nombre: string;
   Descripcion: string;
   Dominio: string;
@@ -14,8 +15,7 @@ export class Aplicacion {
   EstiloIcono: string;
 }
 
-export class MenuOpcion {
-  Id: number;
+export class MenuOpcion extends BaseId {
   Nombre: string;
   Descripcion: string;
   Url: string;
@@ -25,27 +25,23 @@ export class MenuOpcion {
   Icono: string;
 }
 
-export class MenuOpcionPadre {
-  Id: number;
+export class MenuOpcionPadre extends BaseId {
   Padre: Partial<MenuOpcion>;
   Hijo: Partial<MenuOpcion>;
 }
 
-export class MetodoHttp {
-  Id: number;
+export class MetodoHttp extends BaseId {
   Nombre: string;
   Descripcion: string;
 }
 
-export class Notificacion {
-  Id: number;
+export class Notificacion extends BaseId {
   FechaCreacion: Date;
   CuerpoNotificacion: JSON;
   NotificacionConfiguracion: Partial<NotificacionConfiguracion>;
 }
 
-export class NotificacionConfiguracion {
-  Id: number;
+export class NotificacionConfiguracion extends BaseId {
   EndPoint: string;
   MetodoHttp: Partial<MetodoHttp>;
   Tipo: Partial<NotificacionTipo>;
@@ -53,14 +49,12 @@ export class NotificacionConfiguracion {
   Aplicacion: Partial<Aplicacion>;
 }
 
-export class NotificacionConfiguracionPerfil {
-  Id: number;
+export class NotificacionConfiguracionPerfil extends BaseId {
   NotificacionConfiguracion: Partial<NotificacionConfiguracion>;
   Perfil: Partial<Perfil>;
 }
 
-export class NotificacionEstado {
-  Id: number;
+export class NotificacionEstado extends BaseId {
   Nombre: string;
   CodigoAbreviacion: string;
   Descripcion: string;
@@ -68,8 +62,7 @@ export class NotificacionEstado {
   NumeroOrden: number; // confirmar
 }
 
-export class NotificacionEstadoUsuario {
-  Id: number;
+export class NotificacionEstadoUsuario extends BaseId {
   Notificacion: Partial<Notificacion>;
   NotificacionEstado: Partial<NotificacionEstado>;
   Fecha: Date;
@@ -77,26 +70,22 @@ export class NotificacionEstadoUsuario {
   Activo: boolean;
 }
 
-export class NotificacionTipo {
-  Id: number;
+export class NotificacionTipo extends BaseId {
   Nombre: string;
 }
 
-export class Parametro {
-  Id: number;
+export class Parametro extends BaseId {
   Nombre: string;
   Valor: string;
   Aplicacion: Partial<Aplicacion>;
 }
 
-export class Perfil {
-  Id: number;
+export class Perfil extends BaseId {
   Nombre: string;
   Aplicacion: Partial<Aplicacion>;
 }
 
-export class PerfilXMenuOpcion {
-  Id: number;
+export class PerfilXMenuOpcion extends BaseId {
   Perfil: Partial<Perfil>;
   Opcion: Partial<MenuOpcion>;
 }

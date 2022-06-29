@@ -1,13 +1,10 @@
+import { Base } from '../base';
 import { TipoImpuesto } from './tipo_impuesto';
 
-export class Impuesto {
-    Id: number;
+export class Impuesto extends Base {
     Nombre: string;
     Descripcion: string;
     CodigoAbreviacion: string;
-    Activo: boolean;
     NumeroOrden: number;
-    FechaCreacion: Date;
-    FechaModificacion: Date;
     TipoImpuestoId: TipoImpuesto;
 }

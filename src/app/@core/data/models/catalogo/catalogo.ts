@@ -1,8 +1,6 @@
-export class CatalogoID {
-    Id: number;
-}
+import { BaseId } from '../base';
 
-export class Catalogo extends CatalogoID {
+export class Catalogo extends BaseId {
     Nombre: string;
     Descripcion: string;
     FechaInicio: Date;

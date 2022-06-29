@@ -5,9 +5,9 @@ import { UnidadMedida } from '../unidad_medida/unidad_medida';
 import { ParametrosGobierno } from '../parametros_gobierno/parametros_gobierno';
 import { ActaRecibido } from './acta_recibido';
 import { Detalle } from '../catalogo/detalle';
+import { Base } from '../base';
 
-export class Elemento {
-    Id: number;
+export class Elemento extends Base {
     Nombre: string;
     Cantidad: number;
     Marca: string;
@@ -25,14 +25,9 @@ export class Elemento {
     EspacioFisicoId: number;
     ActaRecibidoId: ActaRecibido;
     Placa: string;
-    Activo: boolean;
-    FechaCreacion: Date;
-    FechaModificacion: Date;
 }
 
-export class Impuesto {
-    Id: number;
-    Activo: boolean;
+export class Impuesto extends Base {
     Tarifa: number;
     PorcentajeAplicacion: number;
     BaseUvt: number;
@@ -40,14 +35,11 @@ export class Impuesto {
     InicioVigencia: Date;
     FinVigencia: Date;
     Decreto: string;
-    FechaCreacion: Date;
-    FechaModificacion: Date;
     ImpuestoId: string;
     Nombre: string;
 }
 
-export class ElementoActa {
-    Id: number;
+export class ElementoActa extends Base {
     Nombre: string;
     Cantidad: number;
     Marca: string;
@@ -65,9 +57,6 @@ export class ElementoActa {
     EspacioFisicoId: number;
     ActaRecibidoId: ActaRecibido;
     Placa: string;
-    Activo: boolean;
-    FechaCreacion: Date;
-    FechaModificacion: Date;
     VidaUtil: number;
     ValorResidual: number;
 }

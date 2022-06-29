@@ -1,7 +1,7 @@
+import { BaseId } from '../base';
 import { Estado } from './estado';
 
-export class Proveedor {
-    Id: number;
+export class Proveedor extends BaseId {
     TipoPersona: string;
     NumDocumento: string;
     IdCiudadContacto: number;

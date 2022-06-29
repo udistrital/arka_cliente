@@ -1,5 +1,6 @@
-export class Estado {
-    Id: number;
+import { BaseId } from '../base';
+
+export class Estado extends BaseId {
     ClaseParametro: string;
     ValorParametro: string;
     DescripcionParametro: string;

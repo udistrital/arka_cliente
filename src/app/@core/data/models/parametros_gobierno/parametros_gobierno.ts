@@ -1,8 +1,7 @@
+import { Base } from '../base';
 import { Impuesto } from './impuesto';
 
-export class ParametrosGobierno {
-    Id: number;
-    Activo: boolean;
+export class ParametrosGobierno extends Base {
     Tarifa: number;
     PorcentajeAplicacion: number;
     BaseUvt: number;
@@ -10,7 +9,5 @@ export class ParametrosGobierno {
     InicioVigencia: Date;
     FinVigencia: Date;
     Decreto: string;
-    FechaCreacion: Date;
-    FechaModificacion: Date;
     ImpuestoId: Impuesto;
 }
