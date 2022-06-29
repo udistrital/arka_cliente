@@ -10,54 +10,55 @@ import { EspacioFisico } from '../../@core/data/models/ubicacion/espacio_fisico'
 })
 export class ActaRecibidoHelper {
 
-    constructor(private rqManager: RequestManager,
-        private pUpManager: PopUpManager) { }
+    constructor(
+        private rqManager: RequestManager,
+        private pUpManager: PopUpManager,
+    ) {}
 
+        public sendCorreo(elemento) {
+            this.rqManager.setPath('GOOGLE_SERVICE');
+            return this.rqManager.post('notificacion', elemento).pipe(
+                map(
+                    (res) => {
+                        if (res['Type'] === 'error') {
+                            this.pUpManager.showErrorAlert('No se pudo enviar correo');
+                            return undefined;
+                        }
+                        return res;
+                    },
+                ),
+            );
+        }
 
-    public sendCorreo(elemento) {
-        this.rqManager.setPath('GOOGLE_SERVICE');
-        return this.rqManager.post('notificacion', elemento).pipe(
-            map(
-                (res) => {
-                    if (res['Type'] === 'error') {
-                        this.pUpManager.showErrorAlert('No se pudo enviar correo');
-                        return undefined;
-                    }
-                    return res;
-                },
-            ),
-        );
-    }
+        public getEmailTercero(id: any) {
+            this.rqManager.setPath('TERCEROS_SERVICE');
+            return this.rqManager.get('info_complementaria_tercero', {query: `TerceroId__Id:${id},Activo:true,info_complementaria_id:53`}).pipe(
+                map(
+                    (res) => {
+                        if (res === 'error') {
+                            this.pUpManager.showErrorAlert('No se pudo consultar el email del tercero');
+                            return undefined;
+                        }
+                        return res;
+                    },
+                ),
+            );
+        }
 
-    public getEmailTercero(id: any) {
-        this.rqManager.setPath('TERCEROS_SERVICE');
-        return this.rqManager.get('info_complementaria_tercero/?query=TerceroId__Id:' + id + ',Activo:true,info_complementaria_id:53').pipe(
-            map(
-                (res) => {
-                    if (res === 'error') {
-                        this.pUpManager.showErrorAlert('No se pudo consultar el email del tercero');
-                        return undefined;
-                    }
-                    return res;
-                },
-            ),
-        );
-    }
-
-    public getIdDelTercero(documento: any) {
-        this.rqManager.setPath('TERCEROS_SERVICE');
-        return this.rqManager.get('datos_identificacion/?query=numero:' + documento + ',Activo:true').pipe(
-            map(
-                (res) => {
-                    if (res === 'error') {
-                        this.pUpManager.showErrorAlert('No se pudo consultar el email del tercero');
-                        return undefined;
-                    }
-                    return res;
-                },
-            ),
-        );
-    }
+        public getIdDelTercero(documento: any) {
+            this.rqManager.setPath('TERCEROS_SERVICE');
+            return this.rqManager.get('datos_identificacion', {query: `numero:${documento},Activo:true`}).pipe(
+                map(
+                    (res) => {
+                        if (res === 'error') {
+                            this.pUpManager.showErrorAlert('No se pudo consultar el email del tercero');
+                            return undefined;
+                        }
+                        return res;
+                    },
+                ),
+            );
+        }
 
 /**
      * Actas de Recibido Activas Get
@@ -169,7 +170,7 @@ export class ActaRecibidoHelper {
      */
     public getSoporte(actaId) {
         this.rqManager.setPath('ACTA_RECIBIDO_SERVICE');
-        return this.rqManager.get('soporte_acta?query=Activo:True,ActaRecibidoId__Id:' + actaId).pipe(
+        return this.rqManager.get('soporte_acta', {query: `Activo:True,ActaRecibidoId__Id:${actaId}`}).pipe(
             map(
                 (res) => {
                     if (res === 'error') {
@@ -190,7 +191,7 @@ export class ActaRecibidoHelper {
      */
     public getTipoBien() {
         this.rqManager.setPath('ACTA_RECIBIDO_SERVICE');
-        return this.rqManager.get('tipo_bien?limit=-1').pipe(
+        return this.rqManager.get('tipo_bien', {limit: -1}).pipe(
             map(
                 (res) => {
                     if (res === 'error') {
@@ -210,9 +211,9 @@ export class ActaRecibidoHelper {
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
      */
     public getTransaccionActa(actaId, elementos) {
-        const query = !elementos ? '?elementos=false' : '';
+        const query = !elementos ? {elementos: false} : {};
         this.rqManager.setPath('ACTA_RECIBIDO_SERVICE');
-        return this.rqManager.get('transaccion_acta_recibido/' + actaId + query).pipe(
+        return this.rqManager.get('transaccion_acta_recibido/' + actaId, query).pipe(
             map(
                 (res) => {
                     if (res === 'error') {
@@ -360,7 +361,7 @@ export class ActaRecibidoHelper {
     public getSedeDependencia(id) {
         this.rqManager.setPath('OIKOS_SERVICE');
         if (id > 0) {
-            return this.rqManager.get('asignacion_espacio_fisico_dependencia?query=Id:' + id).pipe(
+            return this.rqManager.get('asignacion_espacio_fisico_dependencia', {query: `Id:${id}`}).pipe(
                 map(
                     (res) => {
                         if (res['Type'] === 'error') {
@@ -406,7 +407,7 @@ export class ActaRecibidoHelper {
     */
     public getElementosByPlaca(placa) {
     this.rqManager.setPath('ACTA_RECIBIDO_SERVICE');
-    return this.rqManager.get('elemento/?query=Placa__contains:' + placa + ',Activo:true&fields=Id,Placa&limit=-1').pipe(
+    return this.rqManager.get('elemento', {query: `Placa__contains:${placa},Activo:true`, fields: 'Id,Placa', limit: -1}).pipe(
         map(
             (res) => {
                 if (res === 'error') {
