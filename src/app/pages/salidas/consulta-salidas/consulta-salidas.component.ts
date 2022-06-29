@@ -274,6 +274,15 @@ export class ConsultaSalidasComponent implements OnInit {
           valuePrepareFunction: (value: any) => {
             return value && value.Detalle && JSON.parse(value.Detalle) ? JSON.parse(value.Detalle).consecutivo : '';
           },
+          filterFunction(cell?: any, search?: string): boolean {
+            if (cell && search.length) {
+              const consecutivo = cell.Detalle && JSON.parse(cell.Detalle) ? JSON.parse(cell.Detalle).consecutivo : '';
+              if (consecutivo && consecutivo.indexOf(search.toUpperCase()) > -1) {
+                return true;
+              }
+            }
+            return false;
+          },
         },
         Funcionario: {
           title: this.translate.instant('GLOBAL.funcionario'),

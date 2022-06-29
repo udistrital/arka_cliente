@@ -55,7 +55,7 @@ export const FORM_TIPO_BIEN = {
             nombre: 'Descripcion',
             label_i18n: 'observaciones',
             placeholder_i18n: 'observaciones',
-            requerido: true,
+            requerido: false,
             tipo: 'text',
         },
         {
