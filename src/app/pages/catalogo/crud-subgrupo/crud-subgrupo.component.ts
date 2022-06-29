@@ -1,4 +1,4 @@
-import { Grupo2, Subgrupo, SubgrupoComun } from '../../../@core/data/models/catalogo/jerarquia';
+import { Grupo, Subgrupo, SubgrupoComun } from '../../../@core/data/models/catalogo/jerarquia';
 import { Detalle } from '../../../@core/data/models/catalogo/detalle';
 import { TipoNivelID, Nivel_t } from '../../../@core/data/models/catalogo/tipo_nivel';
 import { NivelHelper as nh } from '../../../@core/utils/niveles.helper';
@@ -96,7 +96,7 @@ export class CrudSubgrupoComponent implements OnInit, OnChanges {
     } else if (this.subgrupo.TipoNivelId.Id === Nivel_t.Clase) {
 
       this.catalogoElementosService.getDetalleSubgrupo(this.subgrupo.Id).toPromise().then(res => {
-        const clase = new Grupo2;
+        const clase = new Grupo;
 
         clase.Id = this.subgrupo.Id;
         clase.Activo = this.subgrupo.Activo;

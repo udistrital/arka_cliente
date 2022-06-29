@@ -18,20 +18,11 @@ export class Subgrupo extends SubgrupoComun {
 
 export class Grupo extends SubgrupoComun {
   Catalogo: BaseId;
-  // TipoBienId: TipoBien;
-}
-
-export class Clase extends Subgrupo {
-  Detalle: Detalle;
-}
-
-// A eliminar ?
-export class Grupo2 extends Grupo {
-  DetalleId: number;
-  Depreciacion: boolean;
-  Valorizacion: boolean;
-  Amortizacion: boolean;
-  TipoBienId: TipoBienID;
-  VidaUtil: number;
-  ValorResidual: number;
+  DetalleId?: number;
+  Depreciacion?: boolean;
+  Valorizacion?: boolean;
+  Amortizacion?: boolean;
+  TipoBienId?: TipoBienID;
+  VidaUtil?: number;
+  ValorResidual?: number;
 }

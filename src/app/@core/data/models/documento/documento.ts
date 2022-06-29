@@ -6,6 +6,6 @@ export class Documento extends BaseId {
     Enlace: string;
     Metadatos: string;
     Nombre: string;
-    Activo: boolean;
+    Activo?: boolean;
     TipoDocumento: TipoDocumento;
 }
