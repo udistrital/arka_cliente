@@ -111,9 +111,24 @@ export class ActaRecibidoHelper {
      * If the response is successs, it returns the object's data.
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
      */
-    public getActasRecibido3() {
+    public getActasRecibido3(usuario: string = '', estados: string[] = []) {
+        const DIVISOR_ESTADOS = ',';
+        let params = '';
+        if (usuario.length) {
+            params += `u=${encodeURIComponent(usuario)}`;
+        }
+        if (estados.length) {
+            if (params.length) {
+                params += '&';
+            }
+            params += 'states=' + encodeURIComponent(estados.join(DIVISOR_ESTADOS));
+        }
+
+        if (params.length) {
+            params = '?' + params;
+        }
         this.rqManager.setPath('ARKA_SERVICE');
-        return this.rqManager.get('acta_recibido/get_all_actas/').pipe(
+        return this.rqManager.get(`acta_recibido/get_all_actas${params}`).pipe(
             map(
                 (res) => {
                     if (res === 'error') {
@@ -142,34 +157,11 @@ export class ActaRecibidoHelper {
     }
 
     public getActasRecibidoUsuario(usuario: string) {
-        this.rqManager.setPath('ARKA_SERVICE');
-        return this.rqManager.get('acta_recibido/get_all_actas?u=' + usuario).pipe(
-            map(
-                (res) => {
-                    if (res === 'error') {
-                        this.pUpManager.showErrorAlert('No se pudo consultar las actas de recibido');
-                        return undefined;
-                    }
-                    return res;
-                },
-            ),
-        );
+        return this.getActasRecibido3(usuario);
     }
 
     public getAllActasRecibidoByEstado(estados: [string]) {
-        const querySt = estados.join();
-        this.rqManager.setPath('ARKA_SERVICE');
-        return this.rqManager.get('acta_recibido/get_all_actas?states=' + querySt).pipe(
-            map(
-                (res) => {
-                    if (res === 'error') {
-                        this.pUpManager.showErrorAlert('No se pudo consultar las actas de recibido');
-                        return undefined;
-                    }
-                    return res;
-                },
-            ),
-        );
+        return this.getActasRecibido3('', estados);
     }
 
     /**
