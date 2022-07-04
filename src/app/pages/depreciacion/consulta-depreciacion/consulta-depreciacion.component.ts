@@ -28,7 +28,7 @@ export class ConsultaDepreciacionComponent implements OnInit {
   depreciaciones: Array<any>;
   continuar: boolean;
   fechaMin: Date;
-  tipo: string;
+  tipo: string = 'cierres';
 
   constructor(
     private translate: TranslateService,
@@ -41,9 +41,8 @@ export class ConsultaDepreciacionComponent implements OnInit {
 
   ngOnInit() {
     this.route.data.subscribe(data => {
-      if (data && data.modo !== null && data.modo !== undefined && data.tipo !== null && data.tipo !== undefined) {
+      if (data && data.modo !== null && data.modo !== undefined) {
         this.modo = data.modo;
-        this.tipo = data.tipo;
       }
     });
     this.source = new LocalDataSource();
@@ -53,22 +52,21 @@ export class ConsultaDepreciacionComponent implements OnInit {
   }
 
   loadMediciones(): void {
-    const tipo = this.tipo === 'depreciacion' ? 'Depreciación' : this.tipo === 'amortizacion' ? 'Amortizacion' : '';
-    this.depreciacionHelper.getDepreciaciones(tipo, this.modo === 'revision').subscribe(res => {
+    this.depreciacionHelper.getDepreciaciones(this.modo === 'revision').subscribe(res => {
       if (res.length) {
         res.forEach(dep => {
           const detalle = JSON.parse(dep.Detalle);
           dep.FechaCorte = detalle.FechaCorte;
           dep.EstadoMovimientoId = dep.EstadoMovimientoId.Nombre;
-          dep.FechaAprobacion = dep.EstadoMovimientoId === 'Depr Aprobada' ?
+          dep.FechaAprobacion = dep.EstadoMovimientoId === 'Cierre Aprobado' ?
             dep.FechaModificacion : '';
         });
       }
       this.source.load(res);
       this.mostrar = true;
       this.depreciaciones = res;
-      const pendiente = this.depreciaciones.some(dp => dp.EstadoMovimientoId !== 'Depr Aprobada');
-      const aprobada = this.depreciaciones.some(dp => dp.EstadoMovimientoId === 'Depr Aprobada');
+      const pendiente = this.depreciaciones.some(dp => dp.EstadoMovimientoId !== 'Cierre Aprobado');
+      const aprobada = this.depreciaciones.some(dp => dp.EstadoMovimientoId === 'Cierre Aprobado');
       const date = (!this.depreciaciones.length || !aprobada) ? -1 :
         (!pendiente) ? this.depreciaciones[0].FechaCorte : this.depreciaciones[1].FechaCorte;
       this.fechaMin = new Date(date);
@@ -94,7 +92,7 @@ export class ConsultaDepreciacionComponent implements OnInit {
   }
 
   public onRegister() {
-    const allowed = this.depreciaciones.some(d => d.EstadoMovimientoId !== 'Depr Aprobada');
+    const allowed = this.depreciaciones.some(d => d.EstadoMovimientoId !== 'Cierre Aprobado');
     if (!allowed) {
       this.depreciacionId = 0;
       this.continuar = true;
@@ -107,7 +105,7 @@ export class ConsultaDepreciacionComponent implements OnInit {
   public onEdit(event) {
     this.filaSeleccionada = event.data;
     if (this.modo === 'consulta') {
-      if (event.data.EstadoMovimientoId === 'Depr Rechazada') {
+      if (event.data.EstadoMovimientoId === 'Cierre Rechazado') {
         this.modoCrud = 'update';
         this.continuar = true;
         this.depreciacionId = event.data.Id;
@@ -140,13 +138,13 @@ export class ConsultaDepreciacionComponent implements OnInit {
       edit: this.translate.instant('GLOBAL.traslados.' + (this.modo === 'consulta' ? this.modo : 'revisar') + '.accionEdit'),
       icon: this.modo === 'consulta' ? 'eye' : 'edit',
     };
-    const estadoSelect = 'GLOBAL.depreciacion.estados.';
+    const estadoSelect = 'GLOBAL.cierres.estados.';
     const columns = this.modo === 'consulta' ? {
       EstadoMovimientoId: {
-        title: this.translate.instant('GLOBAL.depreciacion.consulta.estado'),
+        title: this.translate.instant('GLOBAL.cierres.consulta.estado'),
         width: '35%',
         valuePrepareFunction: (value) => {
-          return value.replace('Depr ', '');
+          return value.replace('Cierre ', '');
         },
         filter: {
           type: 'list',
@@ -154,15 +152,15 @@ export class ConsultaDepreciacionComponent implements OnInit {
             selectText: this.translate.instant('GLOBAL.seleccionar') + '...',
             list: [
               {
-                value: this.estadosMovimiento.find(status => status.Nombre === 'Depr Generada').Nombre,
+                value: this.estadosMovimiento.find(status => status.Nombre === 'Cierre En Curso').Nombre,
                 title: this.translate.instant(estadoSelect + 'tramite'),
               },
               {
-                value: this.estadosMovimiento.find(status => status.Nombre === 'Depr Aprobada').Nombre,
+                value: this.estadosMovimiento.find(status => status.Nombre === 'Cierre Aprobado').Nombre,
                 title: this.translate.instant(estadoSelect + 'aprobado'),
               },
               {
-                value: this.estadosMovimiento.find(status => status.Nombre === 'Depr Rechazada').Nombre,
+                value: this.estadosMovimiento.find(status => status.Nombre === 'Cierre Rechazado').Nombre,
                 title: this.translate.instant(estadoSelect + 'rechazado'),
               },
             ],
@@ -180,7 +178,7 @@ export class ConsultaDepreciacionComponent implements OnInit {
         position: 'right',
         delete: this.modo === 'consulta',
         edit: true,
-        add: !!this.confService.getAccion('registrarMedicionPosterior'),
+        add: !!this.confService.getAccion('registrarCierre'),
       },
       add: {
         addButtonContent: '<i class="fas" title="' + t.registrar + '" aria-label="' + t.registrar + '">'

@@ -70,7 +70,7 @@ const routes: Routes = [{
       canActivate: [AuthGuard],
     },
     {
-      path: 'mediciones_posteriores',
+      path: 'cierres',
       loadChildren: './depreciacion/depreciacion.module#DepreciacionModule',
       canActivate: [AuthGuard],
     },
