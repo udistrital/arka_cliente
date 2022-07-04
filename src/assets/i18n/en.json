@@ -405,7 +405,6 @@
         "Registrada": "Receipt Certificate N° {{ID}} has been succesfully registered",
         "RegistradaTitleNO": "Unregistered Certificate",
         "RegistradaNO": "The Certificate hasn't been succesfully registered, try again later",
-        "ErrorRevisorMsg": "The assigned Assistant II is not registered in the Third-Party Database. Please grab a registered Assistant II and Try Again",
         "BotonRegistro": "Register Receipt",
         "SizeSoporte":"Máx size: {{ SIZE }} MB",
         "ErrorSizeSoporteTitle":"Invalid file",

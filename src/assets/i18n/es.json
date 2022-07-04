@@ -405,7 +405,6 @@
         "Registrada":"Acta N° {{ID}} ha sido registrada de forma exitosa",
         "RegistradaTitleNO":"Acta No Registrada",
         "RegistradaNO":"El Acta no ha podido ser registrada de forma exitosa, intenta más tarde",
-        "ErrorRevisorMsg": "El Auxiliar II Asignado no está registrado en la Base de Datos de Terceros. Por favor escoja un Auxiliar II registrado e Intente Nuevamente",
         "BotonRegistro": "Registrar Acta",
         "SizeSoporte":"Tamaño máximo: {{ SIZE }} MB",
         "ErrorSizeSoporteTitle":"Archivo no permitido",
