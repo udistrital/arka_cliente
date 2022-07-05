@@ -23,6 +23,7 @@ import { ExtranjeroComponent } from './extranjero/extranjero.component';
 import { ProvisionalComponent } from './provisional/provisional.component';
 import { IntangiblesDesarrolladosComponent } from './intangibles-desarrollados/intangibles-desarrollados.component';
 import { VerComprobanteComponent } from './ver-comprobante/ver-comprobante.component';
+import { DetalleEntradaComponent } from './detalle-entrada/detalle-entrada.component';
 
 @NgModule({
   declarations: [
@@ -43,6 +44,7 @@ import { VerComprobanteComponent } from './ver-comprobante/ver-comprobante.compo
     ProvisionalComponent,
     IntangiblesDesarrolladosComponent,
     VerComprobanteComponent,
+    DetalleEntradaComponent,
   ],
   imports: [
     CommonModule,
@@ -56,6 +58,7 @@ import { VerComprobanteComponent } from './ver-comprobante/ver-comprobante.compo
   ],
   exports: [
     VerComprobanteComponent,
+    DetalleEntradaComponent,
   ],
 })
 export class EntradasModule { }

@@ -1,7 +1,6 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { Validators, FormGroup, FormBuilder } from '@angular/forms';
 import { OrdenadorGasto } from '../../../@core/data/models/entrada/ordenador_gasto';
-import { Router, NavigationExtras } from '@angular/router';
 import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
 import { PopUpManager } from '../../../managers/popUpManager';
 import { NuxeoService } from '../../../@core/utils/nuxeo.service';
@@ -9,18 +8,17 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { DocumentoService } from '../../../@core/data/documento.service';
 import { TranslateService } from '@ngx-translate/core';
 import { TransaccionEntrada } from '../../../@core/data/models/entrada/entrada';
-import { TipoEntrada } from '../../../@core/data/models/entrada/tipo_entrada';
 import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
 import { TerceroCriterioJefe, TerceroCriterioPlanta } from '../../../@core/data/models/terceros_criterio';
 import {Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
-import Swal from 'sweetalert2';
 
 @Component({
   selector: 'ngx-elaboracion-propia',
   templateUrl: './elaboracion-propia.component.html',
   styleUrls: ['./elaboracion-propia.component.scss'],
 })
+
 export class ElaboracionPropiaComponent implements OnInit {
 
   soporteForm: FormGroup;
@@ -28,8 +26,6 @@ export class ElaboracionPropiaComponent implements OnInit {
   ordenadorForm: FormGroup;
   supervisorForm: FormGroup;
 
-
-  registrando: boolean;
   Supervisores: TerceroCriterioPlanta[];
   supervisoresFiltrados: Observable<TerceroCriterioPlanta[]>;
   Ordenadores: TerceroCriterioJefe[];
@@ -51,14 +47,10 @@ export class ElaboracionPropiaComponent implements OnInit {
   cargando_supervisores: boolean = true;
   cargando_ordenadores: boolean = true;
 
-  formatoTipoMovimiento: any;
-
   @Input() actaRecibidoId: Number;
-  @Input() entradaId: any;
-  @Input() EntradaEdit: any;
+  @Output() data: EventEmitter<TransaccionEntrada> = new EventEmitter<TransaccionEntrada>();
 
   constructor(
-    private router: Router,
     private entradasHelper: EntradaHelper,
     private pUpManager: PopUpManager,
     private fb: FormBuilder,
@@ -279,12 +271,9 @@ export class ElaboracionPropiaComponent implements OnInit {
     this.vigencia = new Date().getFullYear();
   }
 
-  /**
-   * Método para enviar registro
-   */
+// Método para enviar registro
   async onSubmit() {
     if (this.validar) {
-      this.registrando = true;
       await this.postSoporteNuxeo([this.fileDocumento]);
 
       const detalle = {
@@ -297,26 +286,12 @@ export class ElaboracionPropiaComponent implements OnInit {
 
       const transaccion = <TransaccionEntrada>{
         Observacion: this.observacionForm.value.observacionCtrl,
-        Detalle: JSON.stringify(detalle),
+        Detalle: detalle,
         FormatoTipoMovimientoId: 'ENT_EP',
         SoporteMovimientoId: this.idDocumento,
       };
 
-      this.entradasHelper.postEntrada(transaccion).subscribe((res: any) => {
-        if (res !== null) {
-          this.registrando = false;
-          (Swal as any).fire({
-            type: 'success',
-            title: this.translate.instant('GLOBAL.movimientos.entradas.registroTtlOk', { CONSECUTIVO: res.Consecutivo }),
-            text: this.translate.instant('GLOBAL.movimientos.entradas.registroTxtOk', { CONSECUTIVO: res.Consecutivo }),
-            showConfirmButton: false,
-            timer: 2000,
-          });
-          this.router.navigate(['/pages/entradas']);
-        } else {
-          this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.entradas.registroFail'));
-        }
-      });
+      this.data.emit(transaccion);
     } else {
       this.pUpManager.showErrorAlert('No ha llenado todos los campos! No es posible hacer el registro.');
     }

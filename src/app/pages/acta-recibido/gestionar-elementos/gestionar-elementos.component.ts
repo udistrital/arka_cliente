@@ -57,6 +57,7 @@ export class GestionarElementosComponent implements OnInit {
   file: any;
   submitted: boolean = true;
   sizeSoporte: number;
+  cce: string = 'https://colombiacompra.gov.co/clasificador-de-bienes-y-servicios';
 
   private checkAnterior: number = undefined;
   private estadoShift: boolean = false;
@@ -250,7 +251,7 @@ export class GestionarElementosComponent implements OnInit {
       ],
       ValorResidual: [
         {
-          value: el.ValorResidual * 100 / el.ValorTotal,
+          value: el.ValorResidual * 1000 / (el.ValorTotal * 10),
           disabled: (!el.SubgrupoCatalogoId.Amortizacion && !el.SubgrupoCatalogoId.Depreciacion) || disabled,
         },
         {

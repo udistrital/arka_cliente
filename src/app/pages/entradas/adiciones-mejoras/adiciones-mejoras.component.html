@@ -1,4 +1,4 @@
-<div [nbSpinner]="registrando">
+<div>
 <!-- FORMULARIO -->
 <nb-stepper #stepper orientation="horizontal">
 
@@ -11,7 +11,7 @@
           <label>{{'GLOBAL.tipo_contrato' | translate}}</label>
           <select class="form-control" (change)="changeSelectTipoContrato($event)">
             <option value="">--{{ 'GLOBAL.seleccionar' | translate }}--</option>
-            <option *ngFor="let tipo of tipos" [(value)]="tipo.Id">{{tipo.Nombre}}</option>
+            <option *ngFor="let tipo of tipos" [(value)]="tipo.Id">{{tipo.TipoContrato}}</option>
           </select>
         </div>
         <div class="form-group col-sm">
@@ -120,13 +120,6 @@
               <option disabled selected>{{'GLOBAL.seleccionar' | translate}}...</option>
               <option *ngFor="let item of soportes" value="{{ item.Id }}" selected>{{ item.Consecutivo }}</option>
             </select>
-          </div>
-        </div>
-        <div class="form-group col-sm">
-          <label>{{'GLOBAL.proveedor' | translate}}</label>
-          <div class="input-group">
-            <input nbInput type="text" shape="semi-round" placeholder="{{'GLOBAL.razon_social' | translate}}"
-              class="form-control" value="{{proveedor}}" [readonly]="true" />
           </div>
         </div>
         <div class="form-group col-sm">

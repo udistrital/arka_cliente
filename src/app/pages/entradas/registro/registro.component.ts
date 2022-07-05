@@ -1,69 +1,97 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { LocalDataSource } from 'ng2-smart-table';
-import { ActaRecibido, ActaRecibidoUbicacion } from '../../../@core/data/models/acta_recibido/acta_recibido';
-import { Tercero } from '../../../@core/data/models/terceros';
 import { PopUpManager } from '../../../managers/popUpManager';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
-import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
 import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
-import { ListService } from '../../../@core/store/services/list.service';
-import { Store } from '@ngrx/store';
-import { IAppState } from '../../../@core/store/app.state';
 import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
+import { TransaccionEntrada } from '../../../@core/data/models/entrada/entrada';
+import { SmartTableService } from '../../../@core/data/SmartTableService';
 
 @Component({
   selector: 'ngx-registro',
   templateUrl: './registro.component.html',
   styleUrls: ['./registro.component.scss'],
 })
-export class RegistroComponent implements OnInit {
 
-  mostrar: boolean = false;
+export class RegistroComponent implements OnInit {
 
   // Datos Tabla
   source: LocalDataSource;
+  settings: any;
   tiposDeEntradas: any;
   // Acta de recibido
   actaSeleccionada: string;
-  settings: any;
   opcionEntrada: string = '';
-  movimientoId: number;
+  title: string;
+  spinner: string;
 
   @Input() ActaParaEditar: any;
-  @Input() entradaId: any;
-  @Input() EntradaEdit: any;
-
-  private terceros: Partial<Tercero>[];
-  private actas: any[];
+  @Input() EntradaId: number;
+  @Output() volver: EventEmitter<boolean> = new EventEmitter<boolean>();
 
   constructor(
     private actaRecibidoHelper: ActaRecibidoHelper,
     private entradasHelper: EntradaHelper,
     private pUpManager: PopUpManager,
     private translate: TranslateService,
-    private listService: ListService,
-    private store: Store<IAppState>,
-    private tercerosHelper: TercerosHelper,
-
-  ) {
+    private tabla: SmartTableService) {
     this.source = new LocalDataSource();
     this.actaSeleccionada = '';
+    this.translate.onLangChange.subscribe((event: LangChangeEvent) => { });
   }
 
   ngOnInit() {
-    if (this.EntradaEdit === true) {
-       this.cargarTiposDeEntradas();
-    }
-    this.loadTablaSettings();
-    this.loadActas();
-    this.listService.findClases();
-    this.listService.findImpuestoIVA();
-    this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
+    if (this.EntradaId && this.ActaParaEditar) {
+      this.title = this.translate.instant('GLOBAL.movimientos.entradas.editarTtl');
+      this.cargarTiposDeEntradas();
+    } else {
+      this.title = this.translate.instant('GLOBAL.registrar_entrada');
       this.loadTablaSettings();
-    });
-    this.loadTerceros();
-    this.actaSeleccionada = this.EntradaEdit ? this.EntradaEdit.ActaRecibidoId : '';
-    this.movimientoId = this.EntradaEdit ? this.EntradaEdit.Id : '';
+      this.loadActas();
+    }
+    this.actaSeleccionada = this.EntradaId && this.ActaParaEditar ? this.ActaParaEditar : '';
+  }
+
+  onVolver() {
+    const update = this.EntradaId && this.ActaParaEditar;
+    if (update && !this.opcionEntrada) {
+      this.volver.emit(false);
+    } else if (update) {
+      this.opcionEntrada = '';
+    } else if (!update && this.opcionEntrada) {
+      this.opcionEntrada = '';
+    } else if (!update && this.actaSeleccionada) {
+      this.actaSeleccionada = '';
+    } else {
+      this.volver.emit(false);
+    }
+  }
+
+  onSubmit(entrada: TransaccionEntrada) {
+    if (entrada.Detalle) {
+      this.spinner = this.EntradaId ? 'Actualizando Entrada' : 'Registrando Entrada';
+      entrada.Id = this.EntradaId ? this.EntradaId : 0;
+      this.entradasHelper.postEntrada(entrada, entrada.Id, false).subscribe((res: any) => {
+        if (res.Detalle) {
+          const consecutivo = JSON.parse(res.Detalle).consecutivo;
+          this.pUpManager.showAlertWithOptions(this.getOptionsRegistro(consecutivo));
+          this.volver.emit(true);
+          this.spinner = '';
+        } else {
+          this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.entradas.registroFail'));
+        }
+      });
+    }
+
+  }
+
+  private getOptionsRegistro(consecutivo: string) {
+    const modo = this.EntradaId && this.ActaParaEditar ? 'update' : 'registro';
+    return {
+      type: 'success',
+      title: this.translate.instant('GLOBAL.movimientos.entradas.' + modo + 'TtlOk', { CONSECUTIVO: consecutivo }),
+      text: this.translate.instant('GLOBAL.movimientos.entradas.' + modo + 'TxtOk', { CONSECUTIVO: consecutivo }),
+    };
   }
 
   loadTablaSettings() {
@@ -91,6 +119,7 @@ export class RegistroComponent implements OnInit {
         FechaCreacion: {
           title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.FechaCreacionHeader'),
           width: '70',
+          valuePrepareFunction: this.tabla.formatDate,
           filter: {
             type: 'daterange',
             config: {
@@ -103,6 +132,7 @@ export class RegistroComponent implements OnInit {
         FechaVistoBueno: {
           title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.FechaVistoBuenoHeader'),
           width: '70',
+          valuePrepareFunction: this.tabla.formatDate,
           filter: {
             type: 'daterange',
             config: {
@@ -141,42 +171,18 @@ export class RegistroComponent implements OnInit {
   }
 
   loadActas(): void {
+    this.spinner = 'Cargando actas aceptadas';
     this.actaRecibidoHelper.getAllActasRecibidoByEstado(['Aceptada']).subscribe(res => {
-      if (Array.isArray(res) && res.length !== 0) {
-        const data = <Array<any>>res;
-        this.actas = data;
+      this.spinner = '';
+      if (res && res.length) {
         this.source.load(res);
-        this.mostrar = true;
+        this.spinner = '';
       }
     });
   }
 
-  private loadTerceros(): void {
-    this.tercerosHelper.getTerceros().subscribe(terceros => {
-      this.terceros = terceros;
-      this.mostrarData();
-      // console.log({terceros: this.terceros});
-    });
-  }
-
-  private mostrarData(): void {
-    if (!this.mostrar
-      && this.actas && this.actas.length
-      && this.terceros && this.terceros.length) {
-      this.source.load(this.actas.map(acta => {
-        const buscar = (tercero: Tercero) => tercero.Id === acta.RevisorId;
-        let nombre = '';
-        if (this.terceros.some(buscar)) {
-          nombre = this.terceros.find(buscar).NombreCompleto;
-        }
-        acta.RevisorId = nombre;
-        return acta;
-      }));
-      this.mostrar = true;
-    }
-  }
-
   onCustom(event) {
+    this.spinner = 'Cargando tipos de entradas';
     this.actaRecibidoHelper.getTransaccionActa(event.data.Id, true).subscribe(res => {
       res.ActaRecibido.TipoActaId.Id === 1 ?
         this.entradasHelper.getTiposEntradaByOrden(1).subscribe(res_ => {
@@ -185,10 +191,12 @@ export class RegistroComponent implements OnInit {
           this.tiposDeEntradas = res__;
         });
       this.actaSeleccionada = `${event.data.Id}`;
+      this.spinner = '';
     });
   }
 
   cargarTiposDeEntradas() {
+    this.spinner = 'Cargando tipos de entradas';
     this.actaRecibidoHelper.getTransaccionActa(this.ActaParaEditar, true).subscribe(res => {
       res.ActaRecibido.TipoActaId.Id === 1 ?
         this.entradasHelper.getTiposEntradaByOrden(1).subscribe(res_ => {
@@ -196,7 +204,7 @@ export class RegistroComponent implements OnInit {
         }) : this.entradasHelper.getTiposEntradaByOrden(2).subscribe(res__ => {
           this.tiposDeEntradas = res__;
         });
-      this.actaSeleccionada = this.ActaParaEditar;
+      this.spinner = '';
     });
   }
 }

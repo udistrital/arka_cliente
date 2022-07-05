@@ -5,8 +5,27 @@
   {{ subtitle }}
 </mat-card-subtitle>
 <mat-card-content [nbSpinner]="loading">
-  <ngx-comprobante *ngIf="showForm" (valid)="setValidness($event)" [(ajusteInfo)]="ajusteData" [modo]="modoForm">
-  </ngx-comprobante>
+  <mat-vertical-stepper #stepper>
+    <mat-step label="{{'GLOBAL.razonRechazo' | translate}}"
+      *ngIf="formComprobante && formComprobante.get('razon').value !== ''">
+      <form [formGroup]="formComprobante">
+        <div class="row">
+          <div class="col">
+            <mat-form-field appearance="outline" style="width: 90%;">
+              <mat-label>{{'GLOBAL.observaciones' | translate}}</mat-label>
+              <textarea matInput rows="5" formControlName="razon"
+                placeholder="{{'GLOBAL.Acta_Recibido.RegistroActa.Observaciones2' | translate}}">
+            </textarea>
+            </mat-form-field>
+          </div>
+        </div>
+      </form>
+    </mat-step>
+    <mat-step label="{{'GLOBAL.Comprobante_Contable.Titulo' | translate}}">
+      <ngx-comprobante *ngIf="showForm" (valid)="setValidness($event)" [(ajusteInfo)]="ajusteData" [modo]="modoForm">
+      </ngx-comprobante>
+    </mat-step>
+  </mat-vertical-stepper>
 </mat-card-content>
 <mat-card-actions *ngIf="modoCrud !== 'ver'">
   <div class="justify-content-center" style="padding-bottom: 3rem;">

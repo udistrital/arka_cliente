@@ -3,6 +3,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { SalidasComponent } from './salidas.component';
 import { RegistroSalidasComponent } from './registro-salidas/registro-salidas.component';
 import { ConsultaSalidasComponent } from './consulta-salidas/consulta-salidas.component';
+import { AuthGuard } from '../../@core/_guards/auth.guard';
 
 const routes: Routes = [{
   path: '',
@@ -11,16 +12,31 @@ const routes: Routes = [{
     {
       path: 'registro_salidas',
       component: RegistroSalidasComponent,
+      canActivate: [AuthGuard],
     },
     {
       path: 'consulta_salidas',
       component: ConsultaSalidasComponent,
       data: { modo: 'consulta' },
+      canActivate: [AuthGuard],
+    },
+    {
+      path: 'consulta_salidas/:id',
+      component: ConsultaSalidasComponent,
+      data: { modo: 'consulta' },
+      canActivate: [AuthGuard],
     },
     {
       path: 'aprobar_salidas',
       component: ConsultaSalidasComponent,
       data: { modo: 'revision' },
+      canActivate: [AuthGuard],
+    },
+    {
+      path: 'aprobar_salidas/:id',
+      component: ConsultaSalidasComponent,
+      data: { modo: 'revision' },
+      canActivate: [AuthGuard],
     },
   ],
 },

@@ -1,7 +1,10 @@
 import { Subject } from 'rxjs';
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { TranslateService } from '@ngx-translate/core';
+
 import { environment } from './../../../environments/environment';
+import { PopUpManager } from '../../managers/popUpManager';
 import { RolUsuario_t } from './models/roles/rol_usuario';
 
 const httpOptions = {
@@ -23,17 +26,22 @@ export class UserService {
   private tokenData: any;
   private terceroId: number = 0;
 
-  constructor(private http: HttpClient) {
+  constructor(
+    private http: HttpClient,
+    private translate: TranslateService,
+    private pUpManager: PopUpManager,
+  ) {
     if (window.localStorage.getItem('id_token') !== null && window.localStorage.getItem('id_token') !== undefined) {
       const id_token = window.localStorage.getItem('id_token').split('.');
       const payload = JSON.parse(atob(id_token[1]));
       this.tokenData = payload;
       window.localStorage.setItem('usuario', payload.sub);
-      // this.roles = [RolUsuario_t.Secretaria];
-      // this.roles = [RolUsuario_t.Proveedor];
-      // this.roles = [RolUsuario_t.Contratista];
-      // this.roles = [RolUsuario_t.Admin];
-      // this.roles = [RolUsuario_t.Revisor];
+      // DESCOMENTAR SOLO PARA PRUEBAS:
+      // this.roles.push(RolUsuario_t.Secretaria);
+      // this.roles.push(RolUsuario_t.Proveedor);
+      // this.roles.push(RolUsuario_t.Contratista);
+      // this.roles.push(RolUsuario_t.Admin);
+      // this.roles.push(RolUsuario_t.Revisor);
       this.roles = (payload && payload.role && payload.role.length) ? payload.role : [] ;
       // console.log({'Roles': this.roles});
       // this.http.get(path + 'persona/?query=Usuario:' + payload.sub, httpOptions)
@@ -97,14 +105,25 @@ export class UserService {
    *
    * ... Una vez se arregle, comentar/eliminar el .filter
    */
-  getStringRolesUrl(separador: string = ','): string {
-    return this.roles
-    .filter(rol => !rol.includes('/'))
-    .join(separador).replace('/', '%2F');
-  }
 
   public getPersonaId(): number {
     return this.terceroId;
+  }
+
+  public TerceroValido(): boolean {
+    if (!this.getPersonaId()) {
+      this.pUpManager.showAlertWithOptions({
+        title: this.translate.instant('GLOBAL.error'),
+        text: this.translate.instant('GLOBAL.Errores.errorTercero'),
+        type: 'error',
+        showCancelButton: false,
+        confirmButtonColor: '#3085d6',
+        confirmButtonText: this.translate.instant('GLOBAL.cerrar'),
+      });
+      return false;
+    } else {
+      return true;
+    }
   }
 
   public getUser() {

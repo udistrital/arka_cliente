@@ -1,16 +1,10 @@
-import { Component, OnInit, Input, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, ElementRef, Output, EventEmitter } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { Elemento } from '../../../@core/data/models/acta_recibido/elemento';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
 import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
-import { PopUpManager } from '../../../managers/popUpManager';
-import { NuxeoService } from '../../../@core/utils/nuxeo.service';
 import { TranslateService } from '@ngx-translate/core';
-import { DocumentoService } from '../../../@core/data/documento.service';
 import { SafeResourceUrl, DomSanitizer } from '@angular/platform-browser';
 import { SoporteActaProveedor } from '../../../@core/data/models/acta_recibido/soporte_acta';
-import { Router, NavigationExtras } from '@angular/router';
-import Swal from 'sweetalert2';
 import { TransaccionEntrada } from '../../../@core/data/models/entrada/entrada';
 
 @Component({
@@ -18,6 +12,7 @@ import { TransaccionEntrada } from '../../../@core/data/models/entrada/entrada';
   templateUrl: './reposicion.component.html',
   styleUrls: ['./reposicion.component.scss'],
 })
+
 export class ReposicionComponent implements OnInit {
 
   elementoForm: FormGroup;
@@ -34,21 +29,20 @@ export class ReposicionComponent implements OnInit {
   idDocumento: number;
   fileDocumento: any;
   validar: boolean = false;
-  formatoTipoMovimiento: any;
   proveedor: string;
   fechaFactura: string;
   checked: boolean;
-  registrando: boolean;
 
-   @ViewChild('file') fileInput: ElementRef;
-   @Input() actaRecibidoId: Number;
-  @Input() entradaId: any;
-  @Input() EntradaEdit: any;
+  @ViewChild('file') fileInput: ElementRef;
+  @Input() actaRecibidoId: Number;
+  @Output() data: EventEmitter<TransaccionEntrada> = new EventEmitter<TransaccionEntrada>();
 
-  constructor(private router: Router, private fb: FormBuilder, private  actasHelper: ActaRecibidoHelper, private  entradasHelper: EntradaHelper,
-    private nuxeoService: NuxeoService, private translate: TranslateService, private documentoService: DocumentoService,
-    private pUpManager: PopUpManager,
-    private sanitization: DomSanitizer ) {
+  constructor(
+    private fb: FormBuilder,
+    private  actasHelper: ActaRecibidoHelper,
+    private  entradasHelper: EntradaHelper,
+    private sanitization: DomSanitizer,
+    private translate: TranslateService) {
     this.elementos = [];
     this.soportes = new Array<SoporteActaProveedor>();
     this.proveedor = '';
@@ -141,12 +135,10 @@ export class ReposicionComponent implements OnInit {
   onObservacionSubmit() {
     this.validar = true;
   }
-    /**
-   * Método para enviar registro
-   */
+
+//  Método para enviar registro
   async onSubmit() {
     if (this.encargado.length !== 0 && this.validar === true) {
-      this.registrando = true;
       const detalle = {
         acta_recibido_id: +this.actaRecibidoId,
         placa_id: this.placa,
@@ -155,25 +147,12 @@ export class ReposicionComponent implements OnInit {
 
       const transaccion = <TransaccionEntrada>{
         Observacion: this.observacionForm.value.observacionCtrl,
-        Detalle: JSON.stringify(detalle),
+        Detalle: detalle,
         FormatoTipoMovimientoId: 'ENT_RP',
         SoporteMovimientoId: this.idDocumento,
       };
 
-      this.entradasHelper.postEntrada(transaccion).subscribe((res: any) => {
-        if (res !== null) {
-          this.registrando = false;
-          (Swal as any).fire({
-            type: 'success',
-            title: this.translate.instant('GLOBAL.movimientos.entradas.registroTtlOk', { CONSECUTIVO: res.Consecutivo }),
-            text: this.translate.instant('GLOBAL.movimientos.entradas.registroTxtOk', { CONSECUTIVO: res.Consecutivo }),
-            showConfirmButton: true,
-          });
-          this.router.navigate(['/pages/entradas']);
-        } else {
-          this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.entradas.registroFail'));
-        }
-      });
+      this.data.emit(transaccion);
     }
   }
 }

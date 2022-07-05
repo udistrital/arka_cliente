@@ -77,7 +77,7 @@ export class AperturaKardexComponent implements OnInit {
       Metodo_Valoracion: ['', Validators.required],
       Cantidad_Minima: ['', Validators.required],
       Cantidad_Maxima: ['', Validators.required],
-      Observaciones: ['', Validators.required],
+      Observaciones: [''],
     });
   }
 

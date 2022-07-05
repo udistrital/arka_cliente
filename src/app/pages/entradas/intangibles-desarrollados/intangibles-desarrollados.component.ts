@@ -1,28 +1,23 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { Validators, FormGroup, FormBuilder } from '@angular/forms';
 import { OrdenadorGasto } from '../../../@core/data/models/entrada/ordenador_gasto';
-import { Router, NavigationExtras } from '@angular/router';
 import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
 import { PopUpManager } from '../../../managers/popUpManager';
-import { NuxeoService } from '../../../@core/utils/nuxeo.service';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-import { DocumentoService } from '../../../@core/data/documento.service';
 import { TranslateService } from '@ngx-translate/core';
 import { SoporteActaProveedor } from '../../../@core/data/models/acta_recibido/soporte_acta';
-import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
 import { TerceroCriterioJefe, TerceroCriterioPlanta } from '../../../@core/data/models/terceros_criterio';
 import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
 import {Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
 import { TransaccionEntrada } from '../../../@core/data/models/entrada/entrada';
-import { TipoEntrada } from '../../../@core/data/models/entrada/tipo_entrada';
-import Swal from 'sweetalert2';
 
 @Component({
   selector: 'ngx-intangibles-desarrollados',
   templateUrl: './intangibles-desarrollados.component.html',
   styleUrls: ['./intangibles-desarrollados.component.scss'],
 })
+
 export class IntangiblesDesarrolladosComponent implements OnInit {
   soporteForm: FormGroup;
   observacionForm: FormGroup;
@@ -48,26 +43,18 @@ export class IntangiblesDesarrolladosComponent implements OnInit {
   soportes: Array<SoporteActaProveedor>;
   proveedor: string;
 
-  formatoTipoMovimiento: any;
-  registrando: boolean;
-
   cargando_proveedores: boolean = true;
   cargando_supervisores: boolean = true;
   cargando_ordenadores: boolean = true;
 
   @Input() actaRecibidoId: Number;
-  @Input() entradaId: any;
-  @Input() EntradaEdit: any;
+  @Output() data: EventEmitter<TransaccionEntrada> = new EventEmitter<TransaccionEntrada>();
 
   constructor(
-    private router: Router,
     private entradasHelper: EntradaHelper,
     private pUpManager: PopUpManager,
-    private actaRecibidoHelper: ActaRecibidoHelper,
     private fb: FormBuilder,
-    private nuxeoService: NuxeoService,
     private sanitization: DomSanitizer,
-    private documentoService: DocumentoService,
     private tercerosHelper: TercerosHelper,
     private translate: TranslateService) {
     this.ordenadores = new Array<OrdenadorGasto>();
@@ -233,12 +220,10 @@ changeSolicitante(event) {
   getVigencia() {
     this.vigencia = new Date().getFullYear();
   }
-  /**
-   * Método para enviar registro
-   */
+
+// Método para enviar registro
   async onSubmit() {
     if (this.validar) {
-      this.registrando = true;
       const detalle = {
         acta_recibido_id: +this.actaRecibidoId,
         vigencia: this.ordenadorForm.value.vigenciaCtrl,
@@ -248,25 +233,12 @@ changeSolicitante(event) {
 
       const transaccion = <TransaccionEntrada>{
         Observacion: this.observacionForm.value.observacionCtrl,
-        Detalle: JSON.stringify(detalle),
+        Detalle: detalle,
         FormatoTipoMovimientoId: 'ENT_ID',
         SoporteMovimientoId: this.idDocumento,
       };
 
-      this.entradasHelper.postEntrada(transaccion).subscribe((res: any) => {
-        if (res !== null) {
-          this.registrando = false;
-          (Swal as any).fire({
-            type: 'success',
-            title: this.translate.instant('GLOBAL.movimientos.entradas.registroTtlOk', { CONSECUTIVO: res.Consecutivo }),
-            text: this.translate.instant('GLOBAL.movimientos.entradas.registroTxtOk', { CONSECUTIVO: res.Consecutivo }),
-            showConfirmButton: true,
-          });
-          this.router.navigate(['/pages/entradas']);
-        } else {
-          this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.entradas.registroFail'));
-        }
-      });
+      this.data.emit(transaccion);
     } else {
       this.pUpManager.showErrorAlert('No ha llenado todos los campos! No es posible hacer el registro.');
     }

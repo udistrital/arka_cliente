@@ -1,24 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { LocalDataSource } from 'ng2-smart-table';
-import { Router } from '@angular/router';
-import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
-import { Entrada } from '../../../@core/data/models/entrada/entrada';
-import { Contrato } from '../../../@core/data/models/entrada/contrato';
-import { Supervisor } from '../../../@core/data/models/entrada/supervisor';
-import { OrdenadorGasto } from '../../../@core/data/models/entrada/ordenador_gasto';
-import { TipoEntrada } from '../../../@core/data/models/entrada/tipo_entrada';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
-import { NuxeoService } from '../../../@core/utils/nuxeo.service';
-import { DocumentoService } from '../../../@core/data/documento.service';
-import { SalidaHelper } from '../../../helpers/salidas/salidasHelper';
-import { Store } from '@ngrx/store';
-import { IAppState } from '../../../@core/store/app.state';
-import { ListService } from '../../../@core/store/services/list.service';
-import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
-import { parse } from 'path';
-import { combineLatest } from 'rxjs';
-import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
 import { BodegaConsumoHelper } from '../../../helpers/bodega_consumo/bodegaConsumoHelper';
+import { SmartTableService } from '../../../@core/data/SmartTableService';
 
 @Component({
   selector: 'ngx-consulta-kardex',
@@ -28,18 +12,8 @@ import { BodegaConsumoHelper } from '../../../helpers/bodega_consumo/bodegaConsu
 export class ConsultaKardexComponent implements OnInit {
 
   source: LocalDataSource;
-  entradas: Array<Entrada>;
   detalle: boolean;
-  actaRecibidoId: number;
-  consecutivoEntrada: string;
-  entradaEspecifica: Entrada;
-  contrato: Contrato;
   settings: any;
-  documentoId: boolean;
-  salidaId: string;
-  Proveedores: any;
-  Dependencias: any;
-  Sedes: any;
   cargandoListaKardex: boolean;
 
   Metodos: any[] = [
@@ -61,16 +35,9 @@ export class ConsultaKardexComponent implements OnInit {
   kardex: any;
   elemento: any;
   constructor(
-    private router: Router,
-    private salidasHelper: SalidaHelper,
     private translate: TranslateService,
-    private nuxeoService: NuxeoService,
-    private documentoService: DocumentoService,
-    private store: Store<IAppState>,
-    private Actas_Recibido: ActaRecibidoHelper,
     private BodegaConsumoService: BodegaConsumoHelper,
-    private listService: ListService,
-    private terceros: TercerosHelper,
+    private tabla: SmartTableService,
   ) {
     this.source = new LocalDataSource();
     this.detalle = false;
@@ -135,10 +102,7 @@ export class ConsultaKardexComponent implements OnInit {
         FechaCreacion: {
           title: this.translate.instant('GLOBAL.fecha_creacion'),
           width: '70px',
-          valuePrepareFunction: (value: any) => {
-            const date = value.split('T');
-            return date[0];
-          },
+          valuePrepareFunction: this.tabla.formatDate,
           filter: {
             type: 'daterange',
             config: {

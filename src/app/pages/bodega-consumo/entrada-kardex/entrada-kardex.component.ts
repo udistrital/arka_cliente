@@ -81,7 +81,7 @@ export class EntradaKardexComponent implements OnInit {
     this.listService.findEstadosMovimiento();
     this.loadLists();
     this.form_apertura = this.fb.group({
-      Observaciones: ['', Validators.required],
+      Observaciones: [''],
     });
   }
 

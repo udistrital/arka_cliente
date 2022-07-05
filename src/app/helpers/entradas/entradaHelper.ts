@@ -90,16 +90,17 @@ export class EntradaHelper {
      * @param entradaData object to save in the DB
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
      */
-    public postEntrada(entradaData: Partial<TransaccionEntrada>, entradaId: number = 0) {
+    public postEntrada(entradaData: Partial<TransaccionEntrada>, entradaId: number = 0, aprobar: boolean = false) {
 //          console.log("mira el numero", entradaId);
         return this.dispMvtos.movimientosPermitidos().pipe(
-         switchMap(disp => iif(() => disp, this.postEntradaFinal(entradaData, entradaId))),
+         switchMap(disp => iif(() => disp, this.postEntradaFinal(entradaData, entradaId, aprobar))),
         );
     }
 
-    private postEntradaFinal(entradaData: Partial<TransaccionEntrada>, entradaId: number) {
+    private postEntradaFinal(entradaData: Partial<TransaccionEntrada>, entradaId: number, aprobar: boolean) {
         this.rqManager.setPath('ARKA_SERVICE');
-        return this.rqManager.post('entrada?entradaId=' + entradaId, entradaData).pipe(
+        const query = 'entrada?entradaId=' + entradaId + (aprobar ? '&aprobar=true' : '');
+        return this.rqManager.post(query, entradaData).pipe(
             map(
                 (res) => {
                     if (res['Type'] === 'error') {
@@ -119,7 +120,7 @@ export class EntradaHelper {
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
      */
     public getEntradas(tramiteOnly: boolean) {
-        const query = 'movimiento?limit=-1&query=FormatoTipoMovimientoId__CodigoAbreviacion__in:' +
+        const query = 'movimiento?sortby=FechaCreacion&order=desc&limit=-1&query=FormatoTipoMovimientoId__CodigoAbreviacion__in:' +
             'ENT_TR|ENT_RP|ENT_CM|ENT_PPA|ENT_EP|ENT_DN|ENT_SI|ENT_CE|ENT_BEP|ENT_IA|ENT_ID|ENT_AM|ENT_ADQ' +
             (tramiteOnly ? ',EstadoMovimientoId__Nombre:Entrada En Trámite' : '');
         this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
@@ -408,7 +409,7 @@ export class EntradaHelper {
     public getTiposEntradaByOrden(NumeroOrden) {
         this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
         return this.rqManager.get('formato_tipo_movimiento?query=Activo:true,NumeroOrden:' +
-            NumeroOrden + '&fields=CodigoAbreviacion&sortby=Id&order=asc&limit=-1').pipe(
+            NumeroOrden + '&fields=CodigoAbreviacion&sortby=Nombre&order=asc&limit=-1').pipe(
                 map(
                     (res) => {
                         if (res === 'error') {
@@ -468,17 +469,18 @@ export class EntradaHelper {
     }
 
     public getTiposContrato() {
-        const tipos = [
-            {
-                Nombre: 'Orden de servicios',
-                Id: 14,
-            },
-            {
-                Nombre: 'Orden de compra',
-                Id: 15,
-            },
-        ];
-        return tipos;
+        this.rqManager.setPath('UNIDADES_SERVICE');
+        return this.rqManager.get('tipo_contrato?fields=Id,TipoContrato&sortby=TipoContrato&order=asc&limit=-1').pipe(
+            map(
+                (res) => {
+                    if (res === 'error') {
+                        this.pUpManager.showErrorAlert('No se pudo consultar los contratos');
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
     }
 
 }

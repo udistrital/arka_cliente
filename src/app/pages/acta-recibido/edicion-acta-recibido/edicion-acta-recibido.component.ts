@@ -167,7 +167,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
     this.errores = new Map<string, boolean>();
     this.Acta = new TransaccionActaRecibido;
     this.initForms();
-    this.actaRegistrada = this.estadoActa === 'Registrada' ? true : false;
+    this.actaRegistrada = this.estadoActa === 'Registrada';
   }
 
   private async initForms() {
@@ -196,9 +196,8 @@ export class EdicionActaRecibidoComponent implements OnInit {
       'Elementos',
     ].map(seccion => this.permisosRoles_EstadoSeccion(this.estadoActa, seccion))
       .map(permisosSeccion => {
-        return this.confService.getAccion(permisosSeccion.PuedenModificar) ? Permiso.Modificar : (
-          this.confService.getAccion(permisosSeccion.PuedenVer) ? Permiso.Ver : Permiso.Ninguno
-        );
+        return this.confService.getAccion(permisosSeccion.PuedenModificar) ? Permiso.Modificar :
+          this.confService.getAccion(permisosSeccion.PuedenVer) ? Permiso.Ver : Permiso.Ninguno;
       });
 
     // Guardar permisos requeridos para cada parte del componente
@@ -246,8 +245,8 @@ export class EdicionActaRecibidoComponent implements OnInit {
 
     // Pueden enviar a Validacion
     const envioValidar =
-      this.confService.getAccion('edicionActaRecibidoCambioARevision')
-      && ['En Elaboracion', 'En Modificacion']
+      !!this.confService.getAccion('edicionActaRecibidoCambioARevision') &&
+      ['En Elaboración', 'En Modificación']
         .some(est => this.estadoActa === est);
 
     this.accion.envHabilitado = envioProveedor || envioValidar;
@@ -464,7 +463,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
                 contratista.Tercero.Id === transaccion_.UltimoEstado.PersonaAsignadaId;
               return this.Contratistas.some(criterio) ? this.Contratistas.find(criterio) : '';
             })(),
-            disabled: !this.getPermisoEditar(this.permisos.Acta),
+            disabled: !this.confService.getAccion('edicionActaAuxI'),
           }, ar ? [Validators.required, this.validarTercero()] : [],
         ],
         Proveedor: [
@@ -886,25 +885,9 @@ export class EdicionActaRecibidoComponent implements OnInit {
     });
   }
 
-  revisorValido(): boolean {
-    if (!this.userService.getPersonaId()) {
-      (Swal as any).fire({
-        title: this.translate.instant('GLOBAL.error'),
-        text: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.ErrorRevisorMsg'),
-        type: 'error',
-        showCancelButton: false,
-        confirmButtonColor: '#3085d6',
-        confirmButtonText: 'Ok',
-      });
-      return false;
-    } else {
-      return true;
-    }
-  }
-
   // Guardar Cambios ?
   Revisar_Totales2() {
-    if (!this.revisorValido()) {
+    if (!this.userService.TerceroValido()) {
       return;
     }
     (Swal as any).fire({

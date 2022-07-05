@@ -1,6 +1,11 @@
 <div class="card-2" *ngIf="Modo === 'agregar'">
   <form [formGroup]="formElementos.get('archivo')">
     <mat-card>
+      <div class="cce">
+        <a mat-flat-button [attr.href]="cce" target="_blank" color="accent">
+          {{'GLOBAL.Acta_Recibido.CapturarElementos.CCE' | translate }}
+        </a>
+      </div>
       <mat-card-title>{{'GLOBAL.Acta_Recibido.CapturarElementos.CargaMasivaTitle' | translate }}</mat-card-title>
       <mat-card-content>
         <div class="row">

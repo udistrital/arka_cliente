@@ -1,15 +1,12 @@
-import { Component, OnInit, Input, ViewChild } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, Output, EventEmitter } from '@angular/core';
 import { Validators, FormBuilder, FormGroup } from '@angular/forms';
-import { Router, NavigationExtras } from '@angular/router';
 import { NbStepperComponent } from '@nebular/theme';
 import { PopUpManager } from '../../../managers/popUpManager';
-import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
 import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
 import { Contrato } from '../../../@core/data/models/entrada/contrato';
 import { OrdenadorGasto } from '../../../@core/data/models/entrada/ordenador_gasto';
 import { SoporteActaProveedor } from '../../../@core/data/models/acta_recibido/soporte_acta';
 import { Supervisor } from '../../../@core/data/models/entrada/supervisor';
-import Swal from 'sweetalert2';
 import { isObject } from 'rxjs/internal-compatibility';
 import { Soporte } from '../soporteHelper';
 import { TransaccionEntrada } from '../../../@core/data/models/entrada/entrada';
@@ -20,6 +17,7 @@ import { TranslateService } from '@ngx-translate/core';
   templateUrl: './extranjero.component.html',
   styleUrls: ['./extranjero.component.scss'],
 })
+
 export class ExtranjeroComponent implements OnInit {
 
   // Formularios
@@ -39,44 +37,34 @@ export class ExtranjeroComponent implements OnInit {
   contratoEspecifico: Contrato; // Contrato Seleccionado
   private contratoInput: string; // Número de Contrato
   soportes: Array<SoporteActaProveedor>; // Soportes
-  proveedor: string;
   fechaFactura: string;
   divisas: string;
   validar: boolean;
-  registrando: boolean;
   private opcionTipoContrato: string;
   private opcionvigencia: string;
-
-  private formatoTipoMovimiento: any;
 
   @ViewChild('stepper') stepper: NbStepperComponent;
 
   @Input() actaRecibidoId: number;
-  @Input() entradaId: any;
-  @Input() EntradaEdit: any;
+  @Output() data: EventEmitter<TransaccionEntrada> = new EventEmitter<TransaccionEntrada>();
 
   constructor(
-    private router: Router,
     private pUpManager: PopUpManager,
     private entradasHelper: EntradaHelper,
-    private actaRecibidoHelper: ActaRecibidoHelper,
     private fb: FormBuilder,
     private soporteHelper: Soporte,
-    private translate: TranslateService,
   ) {
     this.tipoContratoSelect = false;
     this.vigenciaSelect = false;
     this.contratos = new Array<Contrato>();
     this.contratoEspecifico = new Contrato;
     this.soportes = new Array<SoporteActaProveedor>();
-    this.proveedor = '';
     this.fechaFactura = '';
     this.validar = false;
     this.iniciarContrato();
   }
 
   ngOnInit() {
-    this.getFormatoEntrada();
     this.getDivisas();
     this.contratoForm = this.fb.group({
       contratoCtrl: ['', [
@@ -114,20 +102,14 @@ export class ExtranjeroComponent implements OnInit {
     });
   }
 
-  private getFormatoEntrada() {
-    this.entradasHelper.getFormatoEntradaByName('Compra en el Extranjero').subscribe(res => {
-      if (res !== null) {
-        this.formatoTipoMovimiento = res;
-      }
-    });
-  }
-
   /**
    * Método para obtener el año en curso
    */
   private getVigencia() {
     this.vigencia = new Date().getFullYear();
-    this.tipos = this.entradasHelper.getTiposContrato();
+    this.entradasHelper.getTiposContrato().subscribe((res: any) => {
+      this.tipos = res;
+    });
   }
 
   private loadContratos(): void {
@@ -223,9 +205,8 @@ export class ExtranjeroComponent implements OnInit {
         if (existe) {
           this.loadContratoEspecifico();
           this.soporteHelper.cargarSoporte(this.actaRecibidoId).then(info => {
-            this.fechaFactura = info.fecha,
-            this.soportes = info.soportes,
-            this.proveedor = info.proveedor;
+            this.fechaFactura = info.fecha;
+            this.soportes = info.soportes;
           });
         } else {
           this.stepper.previous();
@@ -240,18 +221,13 @@ export class ExtranjeroComponent implements OnInit {
     this.validar = true;
   }
 
-  /**
-   * Método para enviar registro
-   */
+// Método para enviar registro
   onSubmit() {
     if (this.validar) {
-      this.registrando = true;
       const detalle = {
         acta_recibido_id: +this.actaRecibidoId,
         contrato_id: +this.contratoEspecifico.NumeroContratoSuscrito,
         vigencia_contrato: this.contratoForm.value.vigenciaCtrl,
-        tipo_contrato: this.opcionTipoContrato === '14' ? 'Orden de Servicios' :
-        this.opcionTipoContrato === '15' ? 'Orden de Compra' : '',
         num_reg_importacion: this.facturaForm.value.regImportCtrl,
         divisa: this.facturaForm.value.divisaCtrl,
         TRM: this.facturaForm.value.trmCtrl,
@@ -259,25 +235,12 @@ export class ExtranjeroComponent implements OnInit {
 
       const transaccion = <TransaccionEntrada>{
         Observacion: this.observacionForm.value.observacionCtrl,
-        Detalle: JSON.stringify(detalle),
+        Detalle: detalle,
         FormatoTipoMovimientoId: 'ENT_CE',
         SoporteMovimientoId: 0,
       };
 
-      this.entradasHelper.postEntrada(transaccion).subscribe((res: any) => {
-        if (res !== null) {
-          this.registrando = false;
-          (Swal as any).fire({
-            type: 'success',
-            title: this.translate.instant('GLOBAL.movimientos.entradas.registroTtlOk', { CONSECUTIVO: res.Consecutivo }),
-            text: this.translate.instant('GLOBAL.movimientos.entradas.registroTxtOk', { CONSECUTIVO: res.Consecutivo }),
-            showConfirmButton: true,
-          });
-          this.router.navigate(['/pages/entradas']);
-        } else {
-          this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.entradas.registroFail'));
-        }
-      });
+      this.data.emit(transaccion);
     } else {
       this.pUpManager.showErrorAlert('No ha llenado todos los campos! No es posible hacer el registro.');
     }

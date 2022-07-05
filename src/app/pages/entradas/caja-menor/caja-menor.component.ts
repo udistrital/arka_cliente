@@ -1,24 +1,17 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { Validators, FormGroup, FormBuilder } from '@angular/forms';
 import { OrdenadorGasto } from '../../../@core/data/models/entrada/ordenador_gasto';
-import { Router, NavigationExtras } from '@angular/router';
 import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
 import { PopUpManager } from '../../../managers/popUpManager';
-import { NuxeoService } from '../../../@core/utils/nuxeo.service';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-import { DocumentoService } from '../../../@core/data/documento.service';
 import { TranslateService } from '@ngx-translate/core';
 import { SoporteActaProveedor } from '../../../@core/data/models/acta_recibido/soporte_acta';
-import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
 import { TransaccionEntrada } from '../../../@core/data/models/entrada/entrada';
-import { TipoEntrada } from '../../../@core/data/models/entrada/tipo_entrada';
 import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
 import { TerceroCriterioJefe, TerceroCriterioPlanta } from '../../../@core/data/models/terceros_criterio';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
-import Swal from 'sweetalert2';
 import { Soporte } from '../soporteHelper';
-
 
 @Component({
   selector: 'ngx-caja-menor',
@@ -31,7 +24,6 @@ export class CajaMenorComponent implements OnInit {
   ordenadorForm: FormGroup;
   supervisorForm: FormGroup;
   facturaForm: FormGroup;
-
 
   Supervisores: TerceroCriterioPlanta[];
   supervisoresFiltrados: Observable<TerceroCriterioPlanta[]>;
@@ -50,28 +42,19 @@ export class CajaMenorComponent implements OnInit {
   uidDocumento: string;
   idDocumento: number;
   soportes: Array<SoporteActaProveedor>;
-  proveedor: string;
   fechaFactura: string;
-  registrando: boolean;
 
-  formatoTipoMovimiento: any;
-  cargando_proveedores: boolean = true;
   cargando_supervisores: boolean = true;
   cargando_ordenadores: boolean = true;
 
   @Input() actaRecibidoId: number;
-  @Input() entradaId: any;
-  @Input() EntradaEdit: any;
+  @Output() data: EventEmitter<TransaccionEntrada> = new EventEmitter<TransaccionEntrada>();
 
   constructor(
-    private router: Router,
     private entradasHelper: EntradaHelper,
     private pUpManager: PopUpManager,
-    private actaRecibidoHelper: ActaRecibidoHelper,
     private fb: FormBuilder,
-    private nuxeoService: NuxeoService,
     private sanitization: DomSanitizer,
-    private documentoService: DocumentoService,
     private tercerosHelper: TercerosHelper,
     private translate: TranslateService,
     private soporteHelper: Soporte) {
@@ -81,10 +64,8 @@ export class CajaMenorComponent implements OnInit {
     this.supervisorId = 0;
     this.validar = false;
     this.soportes = new Array<SoporteActaProveedor>();
-    this.proveedor = '';
     this.fechaFactura = '';
   }
-
 
   ngOnInit() {
     this.soporteForm = this.fb.group({
@@ -95,7 +76,7 @@ export class CajaMenorComponent implements OnInit {
     });
     this.ordenadorForm = this.fb.group({
       ordenadorCtrl: ['', Validators.required],
-      vigenciaCtrl: ['', Validators.required],
+      // vigenciaCtrl: ['', Validators.required],
     });
     this.supervisorForm = this.fb.group({
       supervisorCtrl: ['', Validators.required],
@@ -230,9 +211,8 @@ export class CajaMenorComponent implements OnInit {
   }
   loadSoporte(): void {
     this.soporteHelper.cargarSoporte(this.actaRecibidoId).then(info => {
-      this.fechaFactura = info.fecha,
-      this.soportes = info.soportes,
-      this.proveedor = info.proveedor;
+      this.fechaFactura = info.fecha;
+      this.soportes = info.soportes;
     });
   }
   onObservacionSubmit() {
@@ -255,22 +235,18 @@ export class CajaMenorComponent implements OnInit {
     const soporteId: string = event.target.options[event.target.options.selectedIndex].value;
     for (const i in this.soportes) {
       if (this.soportes[i].Id.toString() === soporteId) {
-        this.proveedor = this.soportes[i].Proveedor.NomProveedor;
         const date = this.soportes[i].FechaSoporte.toString().split('T');
         this.fechaFactura = date[0];
       }
     }
   }
 
-  /**
-   * Método para enviar registro
-   */
+  // Método para enviar registro
   async onSubmit() {
     if (this.validar) {
-      this.registrando = true;
       const detalle = {
         acta_recibido_id: +this.actaRecibidoId,
-        vigencia: this.ordenadorForm.value.vigenciaCtrl,
+        // vigencia: this.ordenadorForm.value.vigenciaCtrl,
         supervisor: this.supervisorForm.value.supervisorCtrl.TerceroPrincipal.Id,
         ordenador_gasto_id: this.ordenadorForm.value.ordenadorCtrl.TerceroPrincipal.Id,
         // solicitante_id: +this.supervisorId,
@@ -278,25 +254,12 @@ export class CajaMenorComponent implements OnInit {
 
       const transaccion = <TransaccionEntrada>{
         Observacion: this.observacionForm.value.observacionCtrl,
-        Detalle: JSON.stringify(detalle),
+        Detalle: detalle,
         FormatoTipoMovimientoId: 'ENT_CM',
         SoporteMovimientoId: this.idDocumento,
       };
 
-      this.entradasHelper.postEntrada(transaccion).subscribe((res: any) => {
-        if (res !== null) {
-          this.registrando = false;
-          (Swal as any).fire({
-            type: 'success',
-            title: this.translate.instant('GLOBAL.movimientos.entradas.registroTtlOk', { CONSECUTIVO: res.Consecutivo }),
-            text: this.translate.instant('GLOBAL.movimientos.entradas.registroTxtOk', { CONSECUTIVO: res.Consecutivo }),
-            showConfirmButton: true,
-          });
-          this.router.navigate(['/pages/entradas']);
-        } else {
-          this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.entradas.registroFail'));
-        }
-      });
+      this.data.emit(transaccion);
     } else {
       this.pUpManager.showErrorAlert('No ha llenado todos los campos! No es posible hacer el registro.');
     }

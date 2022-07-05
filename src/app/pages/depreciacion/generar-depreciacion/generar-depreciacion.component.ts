@@ -31,7 +31,7 @@ export class GenerarDepreciacionComponent implements OnInit {
   @Input() modoCrud: string; // create | get | review | update
   @Input() depreciacionId: number = 0;
   @Input() refDate: Date;
-  @Input() tipo: string;
+  tipo: string = 'cierres';
 
   constructor(
     private pUpManager: PopUpManager,
@@ -67,7 +67,11 @@ export class GenerarDepreciacionComponent implements OnInit {
         this.movimiento = res.Movimiento;
         this.consecutivo = res.Movimiento && res.Movimiento.Detalle ? JSON.parse(res.Movimiento.Detalle).Consecutivo : '';
         this.fillForm(res.Movimiento);
-        this.trContable = res.TrContable.simulacro;
+        this.trContable = {
+          rechazo: '',
+          movimientos: res.TransaccionContable.movimientos,
+          concepto: res.TransaccionContable.Concepto,
+        };
       }
     });
   }
@@ -146,7 +150,7 @@ export class GenerarDepreciacionComponent implements OnInit {
             const rechazo = result2.value[0];
             const detalle = JSON.parse(this.movimiento.Detalle);
             detalle.RazonRechazo = rechazo;
-            this.movimiento.EstadoMovimientoId = this.estadosMovimiento.find(st => st.Nombre === 'Depr Rechazada');
+            this.movimiento.EstadoMovimientoId = this.estadosMovimiento.find(st => st.Nombre === 'Cierre Rechazado');
             this.movimiento.Detalle = JSON.stringify(detalle);
             this.updateDepreciacion();
           }
@@ -200,39 +204,55 @@ export class GenerarDepreciacionComponent implements OnInit {
       FechaCorte,
       Observaciones: obs,
       RazonRechazo: this.formDepreciacion.controls.razon.value,
-      Tipo: this.tipo === 'depreciacion' ? 'Depreciación' : this.tipo === 'amortizacion' ? 'Amortizacion' : '',
     };
 
     if (this.modoCrud === 'create' || this.modoCrud === 'update') {
       this.depreciacionHelper.postSolicitud(data).subscribe((res: any) => {
         this.loading = false;
-        if (!res.trContable) {
+        if (!res.Error && res.TransaccionContable && !res.TransaccionContable.movimientos) {
           this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.' + this.tipo + '.errorVacio'));
-        } else if (res.trContable.errorTransaccion !== '') {
+        } else if (res.Error !== '') {
           this.submitted = true;
           this.showForm = false;
-          this.pUpManager.showErrorAlert(res.trContable.errorTransaccion);
+          this.pUpManager.showErrorAlert(res.TransaccionContable.errorTransaccion);
         } else {
+          this.trContable = {
+            rechazo: '',
+            movimientos: res.TransaccionContable.movimientos,
+            concepto: res.TransaccionContable.Concepto,
+          };
           this.formDepreciacion.disable();
           this.submitted = true;
           this.accion.emit(true);
           this.consecutivo = res.Movimiento && res.Movimiento.Detalle ? JSON.parse(res.Movimiento.Detalle).Consecutivo : '';
-          this.alertSuccess(res.trContable.simulacro, false);
+          this.alertSuccess(res.TransaccionContable, false);
         }
       });
     } else if (this.modoCrud === 'review') {
       this.depreciacionHelper.putAprobacion(this.depreciacionId).subscribe((res: any) => {
         this.loading = false;
-        if (!res.trContable) {
+        if (!res.Error && res.TransaccionContable && !res.TransaccionContable.movimientos) {
           this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.' + this.tipo + '.errorVacio'));
-        } else if (res.trContable.errorTransaccion !== '') {
+        } else if (res.Error !== '') {
           this.submitted = true;
           this.showForm = false;
-          this.pUpManager.showErrorAlert(res.trContable.errorTransaccion);
+          this.pUpManager.showErrorAlert(res.TransaccionContable.errorTransaccion);
         } else {
+
+          this.trContable = {
+            rechazo: '',
+            movimientos: res.TransaccionContable.movimientos,
+            concepto: res.TransaccionContable.Concepto,
+          };
+          this.formDepreciacion.disable();
           this.submitted = true;
           this.accion.emit(true);
-          this.alertSuccess(res.trContable.resultadoTransaccion, false);
+          this.consecutivo = res.Movimiento && res.Movimiento.Detalle ? JSON.parse(res.Movimiento.Detalle).Consecutivo : '';
+
+
+          this.submitted = true;
+          this.accion.emit(true);
+          this.alertSuccess(res.TransaccionContable, false);
         }
       });
     }

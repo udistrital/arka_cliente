@@ -18,12 +18,12 @@ export const permisosSeccionesActas = [
         PuedenVer: 'edicionActaSeccActaEstRegistradaVer',
       },
       {
-        Estado: 'En Elaboracion',
+        Estado: 'En Elaboración',
         PuedenModificar: 'edicionActaSeccActaEstElaboracionEditar',
         PuedenVer: 'edicionActaSeccActaEstElaboracionVer',
       },
       {
-        Estado: 'En Modificacion',
+        Estado: 'En Modificación',
         PuedenModificar: 'edicionActaSeccActaEstModificacionEditar',
         PuedenVer: 'edicionActaSeccActaEstModificacionVer',
       },
@@ -43,12 +43,12 @@ export const permisosSeccionesActas = [
         PuedenVer: 'edicionActaSeccElementosEstRegistradaVer',
       },
       {
-        Estado: 'En Elaboracion',
+        Estado: 'En Elaboración',
         PuedenModificar: 'edicionActaSeccElementosEstElaboracionEditar',
         PuedenVer: 'edicionActaSeccElementosEstElaboracionVer',
       },
       {
-        Estado: 'En Modificacion',
+        Estado: 'En Modificación',
         PuedenModificar: 'edicionActaSeccElementosEstModificacionEditar',
         PuedenVer: 'edicionActaSeccElementosEstModificacionVer',
       },

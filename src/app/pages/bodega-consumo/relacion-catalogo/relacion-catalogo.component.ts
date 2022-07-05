@@ -81,6 +81,9 @@ export class RelacionCatalogoComponent implements OnInit {
         ],
       },
       columns: {
+        Codigo: {
+          title: this.translate.instant('GLOBAL.codigo'),
+        },
         Nombre: {
           title: this.translate.instant('GLOBAL.nombre'),
           valuePrepareFunction: (value: any) => {
@@ -93,42 +96,6 @@ export class RelacionCatalogoComponent implements OnInit {
             return value;
           },
         },
-        /*
-        // Estas columnas pueden ser innecesarias/irrelevantes
-        // Considerar si deberían eliminarse
-        FechaInicio: {
-          title: 'Fecha de Inicio',
-          width: '70px',
-          valuePrepareFunction: (value: any) => {
-            const date = value.split('T');
-            return date[0];
-          },
-          filter: {
-            type: 'daterange',
-            config: {
-              daterange: {
-                format: 'yyyy/mm/dd',
-              },
-            },
-          },
-        },
-        FechaFin: {
-          title: 'Fecha de Finalizacion',
-          width: '70px',
-          valuePrepareFunction: (value: any) => {
-            const date = value.split('T');
-            return date[0];
-          },
-          filter: {
-            type: 'daterange',
-            config: {
-              daterange: {
-                format: 'yyyy/mm/dd',
-              },
-            },
-          },
-        },
-        // */
       },
     };
   }

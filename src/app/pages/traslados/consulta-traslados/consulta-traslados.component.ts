@@ -4,6 +4,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { LocalDataSource } from 'ng2-smart-table';
 import { ConfiguracionService } from '../../../@core/data/configuracion.service';
 import { EstadoMovimiento } from '../../../@core/data/models/entrada/entrada';
+import { UserService } from '../../../@core/data/users.service';
 import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
 import { TrasladosHelper } from '../../../helpers/movimientos/trasladosHelper';
 import { PopUpManager } from '../../../managers/popUpManager';
@@ -13,11 +14,12 @@ import { PopUpManager } from '../../../managers/popUpManager';
   templateUrl: './consulta-traslados.component.html',
   styleUrls: ['./consulta-traslados.component.scss'],
 })
+
 export class ConsultaTrasladosComponent implements OnInit {
 
   settings: any;
-  modo: string = 'consulta'; // 'revision'
-  modoCrud: string; // registrar // editar // ver // revisar // confirmar
+  modo: string; // 'consulta' || 'confirmacion' || 'revision';
+  modoCrud: string; // 'registrar' || 'ver' || 'editar' || 'confirmar' || 'revisar';
   source: LocalDataSource;
   estadosMovimiento: Array<EstadoMovimiento>;
   mostrar: boolean;
@@ -34,6 +36,7 @@ export class ConsultaTrasladosComponent implements OnInit {
     private trasladosHelper: TrasladosHelper,
     private pUpManager: PopUpManager,
     private confService: ConfiguracionService,
+    private userService: UserService,
   ) { }
 
   ngOnInit() {
@@ -49,7 +52,7 @@ export class ConsultaTrasladosComponent implements OnInit {
   }
 
   loadTraslados(): void {
-    this.trasladosHelper.getTraslados(this.modo === 'revision').subscribe(res => {
+    this.trasladosHelper.getTraslados(this.modo === 'confirmacion', this.modo === 'revision').subscribe(res => {
       if (res.length) {
         res.forEach(salida => {
           salida.EstadoMovimientoId = this.estadosMovimiento.find(estado =>
@@ -78,7 +81,6 @@ export class ConsultaTrasladosComponent implements OnInit {
     } else {
       this.loadTraslados();
     }
-    // this.volver();
   }
 
   public onRegister() {
@@ -89,15 +91,21 @@ export class ConsultaTrasladosComponent implements OnInit {
   public onEdit(event) {
     this.filaSeleccionada = event.data;
     if (this.modo === 'consulta') {
-      if (event.data.EstadoMovimientoId === 'Traslado Aprobado') {
-        this.modoCrud = 'confirmar';
-        this.trasladoId = event.data.Id;
-      } else if (event.data.EstadoMovimientoId === 'Traslado Rechazado') {
-        this.modoCrud = 'editar';
-        this.trasladoId = event.data.Id;
+      if (event.data.EstadoMovimientoId === 'Traslado Rechazado' || event.data.EstadoMovimientoId === 'Traslado Por Confirmar') {
+        const usuario = this.userService.getPersonaId();
+        if (usuario && event.data && event.data.FuncionarioOrigen &&
+          event.data.FuncionarioOrigen.Id && event.data.FuncionarioOrigen.Id === usuario) {
+          this.modoCrud = 'editar';
+          this.trasladoId = event.data.Id;
+        } else {
+          this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.traslados.consulta.errorPermisoEditar'));
+        }
       } else {
         this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.traslados.consulta.errorEditar'));
       }
+    } else if (this.modo === 'confirmacion') {
+      this.modoCrud = 'confirmar';
+      this.trasladoId = event.data.Id;
     } else if (this.modo === 'revision') {
       this.modoCrud = 'revisar';
       this.trasladoId = event.data.Id;
@@ -133,20 +141,24 @@ export class ConsultaTrasladosComponent implements OnInit {
             selectText: this.translate.instant('GLOBAL.seleccionar') + '...',
             list: [
               {
-                value: this.estadosMovimiento.find(status => status.Nombre === 'Traslado En Trámite').Nombre,
+                value: this.estadosMovimiento.find(status => status.Nombre === 'Traslado Por Confirmar').Nombre,
                 title: this.translate.instant(estadoSelect + 'tramite'),
               },
               {
-                value: this.estadosMovimiento.find(status => status.Nombre === 'Traslado Aprobado').Nombre,
-                title: this.translate.instant(estadoSelect + 'aprobado'),
+                value: this.estadosMovimiento.find(status => status.Nombre === 'Traslado Confirmado').Nombre,
+                title: this.translate.instant(estadoSelect + 'confirmado'),
               },
               {
                 value: this.estadosMovimiento.find(status => status.Nombre === 'Traslado Rechazado').Nombre,
                 title: this.translate.instant(estadoSelect + 'rechazado'),
               },
               {
-                value: this.estadosMovimiento.find(status => status.Nombre === 'Traslado Confirmado').Nombre,
-                title: this.translate.instant(estadoSelect + 'confirmado'),
+                value: this.estadosMovimiento.find(status => status.Nombre === 'Traslado Aprobado').Nombre,
+                title: this.translate.instant(estadoSelect + 'aprobado'),
+              },
+              {
+                value: this.estadosMovimiento.find(status => status.Nombre === 'Traslado Anulado').Nombre,
+                title: this.translate.instant(estadoSelect + 'anulado'),
               },
             ],
           },
@@ -157,17 +169,17 @@ export class ConsultaTrasladosComponent implements OnInit {
     this.settings = {
       hideSubHeader: false,
       noDataMessage: this.translate.instant('GLOBAL.traslados.consulta.' +
-        (this.modo === 'consulta' ? 'noTrasladosView' : 'noTrasladosReview')),
+        (this.modo === 'consulta' ? 'noTrasladosView' : this.modo === 'revision' ? 'noTrasladosReview' : 'noTrasladosConfirm')),
       actions: {
         columnTitle: this.translate.instant('GLOBAL.Acciones'),
         position: 'right',
         delete: this.modo === 'consulta',
         edit: true,
-        add: this.confService.getAccion('registrarTraslado') !== undefined,
+        add: !!this.confService.getAccion('registrarTraslado'),
       },
       add: {
         addButtonContent: '<i class="fas" title="' + t.registrar + '" aria-label="' + t.registrar + '">'
-        + this.translate.instant('GLOBAL.crear_nuevo') + '</i>',
+          + this.translate.instant('GLOBAL.crear_nuevo') + '</i>',
       },
       edit: {
         editButtonContent: '<i class="fas fa-edit" title="' + t.edit + '" aria-label="' + t.edit + '"></i>',
@@ -196,25 +208,19 @@ export class ConsultaTrasladosComponent implements OnInit {
             },
           },
         },
-        FuncionarioDestino: {
-          title: this.translate.instant('GLOBAL.funcionarioDestino'),
-          valuePrepareFunction: (value: any) => {
-            if (value !== null) {
-              return value;
-            } else {
-              return '';
-            }
-          },
-        },
         FuncionarioOrigen: {
           title: this.translate.instant('GLOBAL.funcionarioOrigen'),
           valuePrepareFunction: (value: any) => {
-            if (value !== null) {
-              return value;
-            } else {
-              return '';
-            }
+            return value ? value.NombreCompleto : '';
           },
+          filterFunction: this.filterFunction,
+        },
+        FuncionarioDestino: {
+          title: this.translate.instant('GLOBAL.funcionarioDestino'),
+          valuePrepareFunction: (value: any) => {
+            return value ? value.NombreCompleto : '';
+          },
+          filterFunction: this.filterFunction,
         },
         Ubicacion: {
           title: this.translate.instant('GLOBAL.ubicacion'),
@@ -229,5 +235,17 @@ export class ConsultaTrasladosComponent implements OnInit {
         ...columns,
       },
     };
+  }
+
+  private filterFunction(cell?: any, search?: string): boolean {
+    if (cell && search.length) {
+      if (cell && cell.NombreCompleto) {
+        if ((cell.NombreCompleto.toUpperCase()).indexOf(search.toUpperCase()) > -1) {
+          return true;
+        }
+      }
+    } else {
+      return false;
+    }
   }
 }

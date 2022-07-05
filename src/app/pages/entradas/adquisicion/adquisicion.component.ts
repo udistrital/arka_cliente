@@ -1,5 +1,5 @@
-import { Component, OnInit, Input, ViewChild, ɵConsole } from '@angular/core';
-import { Validators, FormBuilder, FormGroup, AbstractControl, ValidatorFn } from '@angular/forms';
+import { Component, OnInit, Input, ViewChild, EventEmitter, Output } from '@angular/core';
+import { Validators, FormBuilder, FormGroup } from '@angular/forms';
 import { PopUpManager } from '../../../managers/popUpManager';
 import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
 import { Contrato } from '../../../@core/data/models/entrada/contrato';
@@ -7,11 +7,7 @@ import { TransaccionEntrada } from '../../../@core/data/models/entrada/entrada';
 import { OrdenadorGasto } from '../../../@core/data/models/entrada/ordenador_gasto';
 import { Supervisor } from '../../../@core/data/models/entrada/supervisor';
 import { SoporteActa } from '../../../@core/data/models/acta_recibido/soporte_acta';
-import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
-import { TipoEntrada } from '../../../@core/data/models/entrada/tipo_entrada';
-import { Router, NavigationExtras } from '@angular/router';
 import { NbStepperComponent } from '@nebular/theme';
-import Swal from 'sweetalert2';
 import { isObject } from 'rxjs/internal-compatibility';
 import { Soporte } from '../soporteHelper';
 import { TranslateService } from '@ngx-translate/core';
@@ -46,23 +42,22 @@ export class AdquisicionComponent implements OnInit {
   // Soportes
   soportes: Array<SoporteActa>;
   factura: SoporteActa;
-  observaciones: string;
   validar: boolean;
   // Selects
   opcionTipoContrato: string;
   opcionvigencia: string;
-  registrando: boolean;
-
-  formatoTipoMovimiento: any;
 
   @ViewChild('stepper') stepper: NbStepperComponent;
 
   @Input() actaRecibidoId: number;
-  @Input() entradaId: any;
-  @Input() EntradaEdit: any;
+  @Output() data: EventEmitter<TransaccionEntrada> = new EventEmitter<TransaccionEntrada>();
 
-  constructor(private router: Router, private entradasHelper: EntradaHelper, private actaRecibidoHelper: ActaRecibidoHelper,
-    private pUpManager: PopUpManager, private fb: FormBuilder, private soporteHelper: Soporte, private translate: TranslateService) {
+  constructor(
+    private entradasHelper: EntradaHelper,
+    private pUpManager: PopUpManager,
+    private fb: FormBuilder,
+    private soporteHelper: Soporte,
+    private translate: TranslateService) {
     this.checked = false;
     this.tipoContratoSelect = false;
     this.vigenciaSelect = false;
@@ -211,45 +206,29 @@ export class AdquisicionComponent implements OnInit {
    */
   getVigencia() {
     this.vigencia = new Date().getFullYear();
-    this.tipos = this.entradasHelper.getTiposContrato();
+    this.entradasHelper.getTiposContrato().subscribe((res: any) => {
+      this.tipos = res;
+    });
   }
 
-  /**
-   * Método para enviar registro
-   */
+  // Método para enviar registro
   onSubmit() {
     if (this.validar) {
-      this.registrando = true;
       const detalle = {
         acta_recibido_id: +this.actaRecibidoId,
         contrato_id: +this.contratoEspecifico.NumeroContratoSuscrito,
         vigencia_contrato: this.contratoForm.value.vigenciaCtrl,
-        tipo_contrato: this.opcionTipoContrato === '14' ? 'Orden de Servicios' :
-          this.opcionTipoContrato === '15' ? 'Orden de Compra' : '',
         factura: this.factura ? this.factura.Id : 0,
       };
 
       const transaccion = <TransaccionEntrada>{
         Observacion: this.observacionForm.value.observacionCtrl,
-        Detalle: JSON.stringify(detalle),
+        Detalle: detalle,
         FormatoTipoMovimientoId: 'ENT_ADQ',
         SoporteMovimientoId: 0,
       };
 
-      this.entradasHelper.postEntrada(transaccion).subscribe((res: any) => {
-        if (res !== null) {
-          this.registrando = false;
-          (Swal as any).fire({
-            type: 'success',
-            title: this.translate.instant('GLOBAL.movimientos.entradas.registroTtlOk', { CONSECUTIVO: res.Consecutivo }),
-            text: this.translate.instant('GLOBAL.movimientos.entradas.registroTxtOk', { CONSECUTIVO: res.Consecutivo }),
-            showConfirmButton: true,
-          });
-          this.router.navigate(['/pages/entradas']);
-        } else {
-          this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.entradas.registroFail'));
-        }
-      });
+      this.data.emit(transaccion);
     } else {
       this.pUpManager.showErrorAlert('No ha llenado todos los campos! No es posible hacer el registro.');
     }

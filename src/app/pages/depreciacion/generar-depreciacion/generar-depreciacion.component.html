@@ -25,14 +25,14 @@
           </div>
         </form>
       </mat-step>
-      <mat-step label="{{'GLOBAL.depreciacion.informacion' | translate}}">
+      <mat-step label="{{'GLOBAL.cierres.informacion' | translate}}">
         <form [formGroup]="formDepreciacion">
           <div class="row">
             <div class="col">
               <mat-form-field appearance="outline">
                 <mat-label>{{'GLOBAL.fechaCorte' | translate}}</mat-label>
                 <input matInput [matDatepicker]="fecha" [min]="refDate" [max]="maxDate" formControlName="fecha"
-                  placeholder="{{'GLOBAL.depreciacion.infoFechaCorte' | translate}}">
+                  placeholder="{{'GLOBAL.cierres.infoFechaCorte' | translate}}">
                 <mat-datepicker-toggle matSuffix [for]="fecha"></mat-datepicker-toggle>
                 <mat-datepicker #fecha></mat-datepicker>
                 <mat-error>* {{'GLOBAL.Errores.ErrorFecha' | translate}}</mat-error>
@@ -53,7 +53,9 @@
         </form>
       </mat-step>
       <mat-step *ngIf="trContable" label="{{'GLOBAL.trContable' | translate}}">
-        <ngx-ver-comprobante [consecutivo]="consecutivo" [transaccion]="trContable"></ngx-ver-comprobante>
+        <ngx-comprobante [ajusteInfo]="trContable" [modo]="'get'" [consecutivo]="consecutivo" [fecha]="trContable.fecha"
+          [concepto]="trContable.concepto">
+        </ngx-comprobante>
       </mat-step>
     </mat-vertical-stepper>
 

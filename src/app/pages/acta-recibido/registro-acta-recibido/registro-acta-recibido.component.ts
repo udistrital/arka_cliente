@@ -546,27 +546,8 @@ export class RegistroActaRecibidoComponent implements OnInit {
     return elementosActa;
   }
 
-  // Posible TODO: Esta función también se repite en los componentes
-  // edición-acta-recibido y verificacion-acta-recibido
-  // por tanto se podría dejar en un servicio aparte
-  revisorValido(): boolean {
-    if (!this.userService.getPersonaId()) {
-      (Swal as any).fire({
-        title: this.translate.instant('GLOBAL.error'),
-        text: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.ErrorRevisorMsg'),
-        type: 'error',
-        showCancelButton: false,
-        confirmButtonColor: '#3085d6',
-        confirmButtonText: 'Ok',
-      });
-      return false;
-    } else {
-      return true;
-    }
-  }
-
   Revisar_Totales() {
-    if (!this.revisorValido()) {
+    if (!this.userService.TerceroValido()) {
       return;
     }
     (Swal as any).fire({

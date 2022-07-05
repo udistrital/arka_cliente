@@ -1,4 +1,4 @@
-<div [nbSpinner]="registrando">
+<div>
 <!-- FORMULARIO -->
 <nb-stepper #stepper orientation="horizontal">
 
@@ -7,14 +7,6 @@
     <h5>{{'GLOBAL.ordenador_gasto' | translate}}</h5>
     <form [formGroup]="ordenadorForm" class="step-container">
       <div class="row" [nbSpinner]="cargando_ordenadores">
-        <div class="form-group col-sm">
-          <label>{{'GLOBAL.vigencia' | translate}}</label>
-          <div class="input-group">
-            <input nbInput shape="semi-round" placeholder="{{'GLOBAL.placeholder_fecha' | translate}}"
-              formControlName="vigenciaCtrl" class="form-control" [nbDatepicker]="formpicker" required>
-            <nb-datepicker  #formpicker></nb-datepicker>
-          </div>
-        </div>
         <div class="form-group col-sm">
           <label>{{'GLOBAL.nombres' | translate}}</label>
           <div class="input-group">
@@ -91,13 +83,6 @@
               <option disabled selected>{{'GLOBAL.seleccionar' | translate}}...</option>
               <option *ngFor="let item of soportes" value="{{ item.Id }}" selected>{{ item.Consecutivo }}</option>
             </select>
-          </div>
-        </div>
-        <div class="form-group col-sm">
-          <label>{{'GLOBAL.proveedor' | translate}}</label>
-          <div class="input-group">
-            <input nbInput type="text" shape="semi-round" placeholder="{{'GLOBAL.razon_social' | translate}}"
-              class="form-control" value="{{proveedor}}" [readonly]="true" />
           </div>
         </div>
         <div class="form-group col-sm">

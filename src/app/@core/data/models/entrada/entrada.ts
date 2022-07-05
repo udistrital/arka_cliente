@@ -11,8 +11,6 @@ export class Entrada {
     TipoEntradaId: TipoEntrada;
     ActaRecibidoId: number;
     ContratoId: number;
-    ElementoId: number; // REVISAR
-    DocumentoContableId: number; // REVISAR
     Consecutivo: string;
     Vigencia: string;
     OrdenadorId: number;
@@ -56,7 +54,7 @@ export class TrMovimiento extends Movimiento {
 export class TransaccionEntrada {
     Id: number;
     Observacion: string;
-    Detalle: string;
+    Detalle: any;
     FormatoTipoMovimientoId: string;
     SoporteMovimientoId: number;
 }

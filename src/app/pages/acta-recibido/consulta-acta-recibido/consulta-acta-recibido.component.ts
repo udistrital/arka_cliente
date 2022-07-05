@@ -17,6 +17,16 @@ import { HistoricoActa } from '../../../@core/data/models/acta_recibido/historic
 import { EstadoActa, EstadoActa_t } from '../../../@core/data/models/acta_recibido/estado_acta';
 import { permisosSeccionesActas } from '../../acta-recibido/edicion-acta-recibido/reglas';
 
+const ORDEN_ESTADOS: EstadoActa_t[] = [
+  EstadoActa_t.Registrada,
+  EstadoActa_t.EnElaboracion,
+  EstadoActa_t.EnModificacion,
+  EstadoActa_t.EnVerificacion,
+  EstadoActa_t.Aceptada,
+  EstadoActa_t.AsociadoEntrada,
+  EstadoActa_t.Anulada,
+];
+
 @Component({
   selector: 'ngx-consulta-acta-recibido',
   templateUrl: './consulta-acta-recibido.component.html',
@@ -103,11 +113,14 @@ export class ConsultaActaRecibidoComponent implements OnInit {
   // (Si se llega a implementar, esta función sería innecesaria y se podría eliminar)
   private calculaRevisores(actas) {
 
-    const estadosAceptada = ['Aceptada', 'Asociada a Entrada'];
+    const estadosAceptada: EstadoActa_t[] = [
+      EstadoActa_t.Aceptada,
+      EstadoActa_t.AsociadoEntrada,
+    ];
 
     const data = actas.map(acta => {
       let aceptada = '';
-      if (estadosAceptada.some(est => acta.Estado === est)) {
+      if (estadosAceptada.some(est => acta.EstadoActaId.Id === est)) {
         aceptada = acta.RevisorId;
       }
       acta.AceptadaPor = aceptada;
@@ -128,7 +141,7 @@ export class ConsultaActaRecibidoComponent implements OnInit {
         columnTitle: this.translate.instant('GLOBAL.Acciones'),
         position: 'right',
         delete: !!this.confService.getAccion('anularActaRecibido'),
-        add: !!this.confService.getAccion('crearActaRecibido'),
+        add: !!this.confService.getRoute('/pages/acta_recibido/registro_acta_recibido'),
       },
       add: {
         addButtonContent: '<i class="fas" title="' + f.registrar + '" aria-label="' + f.registrar + '">' +
@@ -214,24 +227,23 @@ export class ConsultaActaRecibidoComponent implements OnInit {
             return value;
           },
         },
-        Estado: {
+        EstadoActaId: {
           title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.EstadoHeader'),
-          valuePrepareFunction: (value: any) => {
-            return value;
+          valuePrepareFunction: (value: EstadoActa) => {
+            return this.traducirEstado(value.Id);
+          },
+          filterFunction: (actual: EstadoActa, requerido: string) => {
+            return actual.CodigoAbreviacion === requerido;
           },
           filter: {
             type: 'list',
             config: {
-              selectText: 'Select...',
-              list: [
-                { value: 'Registrada', title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.Registrada') },
-                { value: 'En Elaboracion', title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.Elaboracion') },
-                { value: 'En Modificacion', title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.Modificacion') },
-                { value: 'En Verificacion', title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.Verificacion') },
-                { value: 'Aceptada', title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.Aceptada') },
-                { value: 'Asociada a Entrada', title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.Asociada') },
-                { value: 'Anulada', title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.Anulada') },
-              ],
+              selectText: this.translate.instant('GLOBAL.seleccione'),
+              list: ORDEN_ESTADOS.map((estado: EstadoActa_t) => {
+                const value = EstadoActa_t[estado];
+                const title = this.traducirEstado(estado);
+                return {value, title};
+              }),
             },
           },
         },
@@ -291,18 +303,18 @@ export class ConsultaActaRecibidoComponent implements OnInit {
   }
 
   onEdit(event): void {
-    // console.log({'event.data': event.data});
     let editarActa = false;
     let validarActa: boolean;
 
-    switch (event.data.Estado.toString()) {
-      case 'En verificacion':
-      case 'Registrada':
-      case 'En Elaboracion':
-      case 'En Modificacion':
-      case 'Aceptada':
+    const estId = event.data.EstadoActaId.Id;
+    switch (estId) {
+      case EstadoActa_t.EnVerificacion:
+      case EstadoActa_t.Registrada:
+      case EstadoActa_t.EnElaboracion:
+      case EstadoActa_t.EnModificacion:
+      case EstadoActa_t.Aceptada:
         this.actaSeleccionada = `${event.data.Id}`;
-        this.estadoActaSeleccionada = `${event.data.Estado}`;
+        this.estadoActaSeleccionada = this.traducirEstado(estId);
         this.accion = '';
         editarActa = true;
         break;
@@ -320,7 +332,7 @@ export class ConsultaActaRecibidoComponent implements OnInit {
       }
     }
 
-    validarActa = event.data.Estado.toString() === 'En verificacion';
+    validarActa = event.data.EstadoActaId.Id === EstadoActa_t.EnVerificacion;
     this.editarActa = editarActa && !validarActa;
     this.validarActa = validarActa;
     // console.log({'this.estadoActaSeleccionada':this.estadoActaSeleccionada});
@@ -341,13 +353,13 @@ export class ConsultaActaRecibidoComponent implements OnInit {
   }
 
   onDelete(event): void {
-    switch (event.data.Estado) {
+    switch (event.data.EstadoActaId.Id) {
 
-      case 'Registrada':
-      case 'En Elaboracion':
-      case 'En Modificacion':
-      case 'En Verificacion':
-      case 'Aceptada':
+      case EstadoActa_t.EnVerificacion:
+      case EstadoActa_t.Registrada:
+      case EstadoActa_t.EnElaboracion:
+      case EstadoActa_t.EnModificacion:
+      case EstadoActa_t.Aceptada:
         (Swal as any).fire({
           title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.DialogoAnularTitulo', { 'ACTA': event.data.Id }),
           text: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.DialogoAnularMsg', { 'ACTA': event.data.Id }),
@@ -382,8 +394,10 @@ export class ConsultaActaRecibidoComponent implements OnInit {
       default:
         (Swal as any).fire({
           title: this.translate.instant('GLOBAL.error'),
-          text: this.translate.instant('GLOBAL.Acta_Recibido.ErrorAnularMsg',
-            { ACTA: event.data.Id, ESTADO: event.data.Estado }),
+          text: this.translate.instant('GLOBAL.Acta_Recibido.ErrorAnularMsg', {
+            ACTA: event.data.Id,
+            ESTADO: this.traducirEstado(event.data.EstadoActaId.Id),
+          }),
           type: 'error',
           showCancelButton: false,
           confirmButtonColor: '#3085d6',
@@ -410,4 +424,8 @@ export class ConsultaActaRecibidoComponent implements OnInit {
     return new Date(Date.parse(date.toString())).toLocaleDateString('es-CO');
   }
 
+  traducirEstado(estado: EstadoActa_t): string {
+    return this.translate
+      .instant('GLOBAL.Acta_Recibido.EstadosActa.' + EstadoActa_t[estado]);
+  }
 }

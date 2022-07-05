@@ -20,17 +20,18 @@ export class CrudTrasladoComponent implements OnInit {
   formatoTraslado: FormatoTipoMovimiento;
   estadosMovimiento: Array<EstadoMovimiento>;
   showForm: boolean;
-  modoForm: string; // create | get | update
+  modoForm: string; // 'create' || 'get' || 'put'
   title: string;
   subtitle: string;
   boton: string;
+  botonR: string;
   consecutivo: string = '';
   loading: boolean;
   submitted: boolean;
   rechazo: string = '';
   trContable: any;
   movimiento: Movimiento;
-  @Input() modoCrud: string = 'registrar' || 'ver' || 'editar' || 'revisar' || 'aprobar';
+  @Input() modoCrud: string = 'registrar' || 'ver' || 'editar' || 'confirmar' || 'revisar';
   @Input() trasladoId: number = 0;
   @Output() accion: EventEmitter<boolean> = new EventEmitter<boolean>();
 
@@ -51,7 +52,7 @@ export class CrudTrasladoComponent implements OnInit {
     if (this.modoCrud === 'registrar') {
       this.modoForm = 'create';
       this.showForm = true;
-    } else if (this.modoCrud !== 'editar') {
+    } else if (this.modoCrud !== 'editar' && this.trasladoId) {
       this.getTraslado(this.trasladoId);
       this.modoForm = 'get';
     } else if (this.trasladoId) {
@@ -62,6 +63,7 @@ export class CrudTrasladoComponent implements OnInit {
     this.title = this.translate.instant('GLOBAL.traslados.' + this.modoCrud + '.title');
     this.subtitle = this.translate.instant('GLOBAL.traslados.' + this.modoCrud + '.subtitle');
     this.boton = this.translate.instant('GLOBAL.traslados.' + this.modoCrud + '.accion');
+    this.botonR = this.translate.instant('GLOBAL.traslados.' + this.modoCrud + '.accionR');
   }
 
   getTraslado(trasladoId: number) {
@@ -73,7 +75,8 @@ export class CrudTrasladoComponent implements OnInit {
         const rechazo = detalle ? detalle.RazonRechazo : '';
         this.consecutivo = detalle ? detalle.Consecutivo : '';
         if (res.TrContable) {
-          this.trContable = res.TrContable;
+          this.trasladoData.trContable = res.TrContable;
+          this.trasladoData.trContable.consecutivo = this.consecutivo;
         }
         this.trasladoData.origen = res.FuncionarioOrigen;
         this.trasladoData.destino = res.FuncionarioDestino;
@@ -141,7 +144,7 @@ export class CrudTrasladoComponent implements OnInit {
   }
 
   public confirm(rechazar: boolean = false) {
-    const sfx = this.modoCrud !== 'revisar' ? '' : rechazar ? 'R' : 'A';
+    const sfx = (this.modoCrud !== 'editar' && this.modoCrud !== 'confirmar' && this.modoCrud !== 'revisar') ? '' : rechazar ? 'R' : 'A';
     const title = this.translate.instant('GLOBAL.traslados.' + this.modoCrud + '.confrmTtl' + sfx);
     const text = this.translate.instant('GLOBAL.traslados.' + this.modoCrud + '.confrmTxt' + sfx);
     (Swal as any).fire({
@@ -173,12 +176,13 @@ export class CrudTrasladoComponent implements OnInit {
       const Ubicacion = val.controls.ubicacion.value.ubicacion;
       const Observacion = val.controls.observaciones.value.observaciones;
       const estadoId =
-        (this.modoCrud === 'registrar' || this.modoCrud === 'editar') ? 'Traslado En Trámite' :
-          (rechazar) ? 'Traslado Rechazado' :
-            (this.modoCrud === 'revisar') ? 'Traslado Aprobado' :
-              (this.modoCrud === 'confirmar') ? 'Traslado Confirmado' : '';
+        (this.modoCrud === 'registrar' || (this.modoCrud === 'editar' && !rechazar)) ? 'Traslado Por Confirmar' :
+          (this.modoCrud === 'editar' && rechazar) ? 'Traslado Anulado' :
+            (rechazar) ? 'Traslado Rechazado' :
+              (this.modoCrud === 'confirmar') ? 'Traslado Confirmado' :
+                (this.modoCrud === 'revisar') ? 'Traslado Aprobado' : '';
       const RazonRechazo = (this.rechazo) ? this.rechazo :
-        estadoId === 'Traslado En Trámite' ? val.controls.rechazo.value.razon : '';
+        estadoId === 'Traslado Por Confirmar' ? val.controls.rechazo.value.razon : '';
 
       const detalle = <DetalleTraslado>{
         FuncionarioOrigen,
@@ -204,10 +208,10 @@ export class CrudTrasladoComponent implements OnInit {
       };
       if (this.modoCrud === 'registrar') {
         this.postTraslado(movimiento);
-      } else if (this.modoCrud === 'confirmar') {
-        this.confirmarTraslado(movimiento);
-      } else {
+      } else if (this.modoCrud !== 'revisar' || rechazar) {
         this.updateTraslado(movimiento, rechazar);
+      } else {
+        this.aprobarTraslado(movimiento);
       }
     }
 
@@ -225,7 +229,7 @@ export class CrudTrasladoComponent implements OnInit {
     });
   }
 
-  private confirmarTraslado(movimiento) {
+  private aprobarTraslado(movimiento) {
     this.trasladosHelper.aprobarTraslado(movimiento).subscribe((res: any) => {
       this.alertSuccess(false, JSON.parse(res.movimiento.Detalle).Consecutivo);
       this.trContable = res.trContable;
@@ -233,7 +237,7 @@ export class CrudTrasladoComponent implements OnInit {
   }
 
   private alertSuccess(rechazar: boolean, consecutivo: string) {
-    const sfx = this.modoCrud !== 'revisar' ? '' : rechazar ? 'R' : 'A';
+    const sfx = (this.modoCrud !== 'editar' && this.modoCrud !== 'confirmar' && this.modoCrud !== 'revisar') ? '' : rechazar ? 'R' : 'A';
     const title = this.translate.instant('GLOBAL.traslados.' + this.modoCrud + '.successTtl' + sfx);
     const text = this.translate.instant('GLOBAL.traslados.' + this.modoCrud + '.successTxt' + sfx, { CONSECUTIVO: consecutivo });
     const options = {

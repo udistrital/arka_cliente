@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
+import { AuthGuard } from '../../@core/_guards/auth.guard';
 import { ConsultaDepreciacionComponent } from './consulta-depreciacion/consulta-depreciacion.component';
 import { DepreciacionComponent } from './depreciacion.component';
 
@@ -8,24 +9,16 @@ const routes: Routes = [{
   component: DepreciacionComponent,
   children: [
     {
-      path: 'depreciacion/consulta',
+      path: 'consultar',
       component: ConsultaDepreciacionComponent,
-      data: { modo: 'consulta', tipo: 'depreciacion' },
+      data: { modo: 'consulta' },
+      canActivate: [AuthGuard],
     },
     {
-      path: 'depreciacion/revision',
+      path: 'revisar',
       component: ConsultaDepreciacionComponent,
-      data: { modo: 'revision', tipo: 'depreciacion' },
-    },
-    {
-      path: 'amortizacion/consulta',
-      component: ConsultaDepreciacionComponent,
-      data: { modo: 'consulta', tipo: 'amortizacion'  },
-    },
-    {
-      path: 'amortizacion/revision',
-      component: ConsultaDepreciacionComponent,
-      data: { modo: 'revision', tipo: 'amortizacion' },
+      data: { modo: 'revision' },
+      canActivate: [AuthGuard],
     },
   ],
 }];

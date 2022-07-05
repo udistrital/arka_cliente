@@ -1,44 +1,69 @@
-<div class="col-lg-12">
+<div class="col-lg-12" [nbSpinner]="spinner" [nbSpinnerMessage]="spinner">
   <nb-card>
     <nb-card-header>
-      <h1>{{'GLOBAL.registrar_entrada' | translate}}</h1>
+      <h1>{{title}}</h1>
     </nb-card-header>
-    <nb-card-body [nbSpinner]="!mostrar">
+    <nb-card-body>
 
       <p class="h4 pb-4" *ngIf="actaSeleccionada === ''">{{'GLOBAL.mensaje_registrar_entrada' | translate}}</p>
 
       <ng2-smart-table [settings]="settings" [source]="source" (custom)="onCustom($event)"
         *ngIf="actaSeleccionada === ''"></ng2-smart-table>
 
-      <p class="h4 pb-4" *ngIf="actaSeleccionada != ''">{{'GLOBAL.mensaje_seleccionar_entrada' | translate}}</p>
+      <div *ngIf="!opcionEntrada && actaSeleccionada">
+        <p class="h4 pb-4">{{'GLOBAL.mensaje_seleccionar_entrada' | translate}}</p>
+        <h5>{{'GLOBAL.tipo_entrada' | translate}}</h5>
+        <mat-select class="form-control mb-4" style="height: auto;" [(ngModel)]="opcionEntrada">
+          <mat-option value="">--{{ 'GLOBAL.seleccionar' | translate }}--</mat-option>
+          <mat-option *ngFor="let entrada of tiposDeEntradas" [value]="entrada.CodigoAbreviacion">
+            {{ 'GLOBAL.movimientos.tipo.'+entrada.CodigoAbreviacion+'.nombre' | translate }}
+          </mat-option>
+        </mat-select>
+      </div>
 
-      <h5 *ngIf="actaSeleccionada != ''">{{'GLOBAL.tipo_entrada' | translate}}</h5>
+      <div *ngIf="opcionEntrada" [ngSwitch]="opcionEntrada">
+        <h3 class="pt-4 pb-2">{{'GLOBAL.movimientos.tipo.' + opcionEntrada + '.descripcion' | translate}}</h3>
+        <p class="font-weight-bold font-italic pb-2">
+          {{ 'GLOBAL.Acta_Recibido.id_forma1' | translate : {ID: actaSeleccionada} }}</p>
 
-      <select class="form-control mb-4" [(ngModel)]="opcionEntrada" *ngIf="actaSeleccionada != '' || EntradaEdit" >
-        <option value="" selected>{{ 'GLOBAL.seleccionar' | translate }} ...</option>
-        <option *ngFor="let entrada of tiposDeEntradas" [value]="entrada.CodigoAbreviacion">
-          {{ 'GLOBAL.movimientos.tipo.'+entrada.CodigoAbreviacion+'.nombre' | translate }}
-        </option>
-      </select>
+        <ngx-adiciones-mejoras *ngSwitchCase="'ENT_AM'" [actaRecibidoId]="actaSeleccionada"
+          (data)="onSubmit($event)"></ngx-adiciones-mejoras>
+        <ngx-adquisicion *ngSwitchCase="'ENT_ADQ'" [actaRecibidoId]="actaSeleccionada"
+          (data)="onSubmit($event)"></ngx-adquisicion>
+        <ngx-caja-menor *ngSwitchCase="'ENT_CM'" [actaRecibidoId]="actaSeleccionada"
+          (data)="onSubmit($event)"></ngx-caja-menor>
+        <ngx-extranjero *ngSwitchCase="'ENT_CE'" [actaRecibidoId]="actaSeleccionada"
+          (data)="onSubmit($event)"></ngx-extranjero>
+        <ngx-donacion *ngSwitchCase="'ENT_DN'" [actaRecibidoId]="actaSeleccionada"
+          (data)="onSubmit($event)"></ngx-donacion>
+        <ngx-elaboracion-propia *ngSwitchCase="'ENT_EP'" [actaRecibidoId]="actaSeleccionada"
+          (data)="onSubmit($event)"></ngx-elaboracion-propia>
+        <ngx-intangibles-adquiridos *ngSwitchCase="'ENT_IA'" [actaRecibidoId]="actaSeleccionada"
+          (data)="onSubmit($event)"></ngx-intangibles-adquiridos>
+        <ngx-intangibles-desarrollados *ngSwitchCase="'ENT_ID'" [actaRecibidoId]="actaSeleccionada"
+          (data)="onSubmit($event)"></ngx-intangibles-desarrollados>
+        <ngx-aprovechamientos *ngSwitchCase="'ENT_PPA'" [actaRecibidoId]="actaSeleccionada"
+          (data)="onSubmit($event)"></ngx-aprovechamientos>
+        <ngx-provisional *ngSwitchCase="'ENT_BEP'" [actaRecibidoId]="actaSeleccionada"
+          (data)="onSubmit($event)"></ngx-provisional>
+        <ngx-reposicion *ngSwitchCase="'ENT_RP'" [actaRecibidoId]="actaSeleccionada"
+          (data)="onSubmit($event)"></ngx-reposicion>
+        <ngx-sobrante *ngSwitchCase="'ENT_SI'" [actaRecibidoId]="actaSeleccionada"
+          (data)="onSubmit($event)"></ngx-sobrante>
+        <ngx-terceros *ngSwitchCase="'ENT_TR'" [actaRecibidoId]="actaSeleccionada"
+          (data)="onSubmit($event)"></ngx-terceros>
 
-      <h3 *ngIf="opcionEntrada" class="pt-4 pb-2">{{'GLOBAL.movimientos.tipo.' + opcionEntrada + '.descripcion' | translate}}</h3>
-      <p *ngIf="opcionEntrada" class="font-weight-bold font-italic pb-2">{{ 'GLOBAL.Acta_Recibido.id_forma1' | translate : {ID: actaSeleccionada} }}</p>
-
-      <ngx-adquisicion *ngIf="opcionEntrada === 'ENT_ADQ'" [actaRecibidoId]="actaSeleccionada"></ngx-adquisicion>
-      <ngx-reposicion *ngIf="opcionEntrada === 'ENT_RP'" [actaRecibidoId]="actaSeleccionada"></ngx-reposicion>
-      <ngx-elaboracion-propia *ngIf="opcionEntrada === 'ENT_EP'" [actaRecibidoId]="actaSeleccionada"></ngx-elaboracion-propia>
-      <ngx-donacion *ngIf="opcionEntrada === 'ENT_DN'" [actaRecibidoId]="actaSeleccionada"></ngx-donacion>
-      <ngx-aprovechamientos *ngIf="opcionEntrada === 'ENT_PPA'" [actaRecibidoId]="actaSeleccionada"></ngx-aprovechamientos>
-      <ngx-sobrante *ngIf="opcionEntrada === 'ENT_SI'" [actaRecibidoId]="actaSeleccionada"></ngx-sobrante>
-      <ngx-extranjero *ngIf="opcionEntrada === 'ENT_CE'" [actaRecibidoId]="actaSeleccionada"></ngx-extranjero>
-      <ngx-terceros *ngIf="opcionEntrada === 'ENT_TR'" [actaRecibidoId]="actaSeleccionada"></ngx-terceros>
-      <ngx-caja-menor *ngIf="opcionEntrada === 'ENT_CM'" [actaRecibidoId]="actaSeleccionada"></ngx-caja-menor>
-      <ngx-adiciones-mejoras *ngIf="opcionEntrada === 'ENT_AM'" [actaRecibidoId]="actaSeleccionada"></ngx-adiciones-mejoras>
-      <ngx-intangibles-adquiridos *ngIf="opcionEntrada === 'ENT_IA'" [actaRecibidoId]="actaSeleccionada"></ngx-intangibles-adquiridos>
-      <ngx-provisional *ngIf="opcionEntrada === 'ENT_BEP'" [actaRecibidoId]="actaSeleccionada"></ngx-provisional>
-      <ngx-intangibles-desarrollados *ngIf="opcionEntrada === 'ENT_ID'" [actaRecibidoId]="actaSeleccionada"></ngx-intangibles-desarrollados>
+        <div>
+          <h3 class="pt-4 pb-2">{{'GLOBAL.elementosAsociadosActa' | translate}}</h3>
+          <ngx-gestionar-elementos style="padding-top: 1rem;" *ngIf="opcionEntrada" [ActaRecibidoId]="actaSeleccionada" [Modo]="'ver'"></ngx-gestionar-elementos>
+        </div>
+      </div>
 
     </nb-card-body>
-    <ngx-gestionar-elementos *ngIf="opcionEntrada" [ActaRecibidoId]="actaSeleccionada" [Modo]="'ver'"></ngx-gestionar-elementos>
+    <mat-card-actions style="padding-left: 1rem;">
+      <button mat-flat-button color="primary" class="float-left text-uppercase" (click)="onVolver()">
+        {{'GLOBAL.volver' | translate}}
+      </button>
+    </mat-card-actions>
   </nb-card>
 </div>

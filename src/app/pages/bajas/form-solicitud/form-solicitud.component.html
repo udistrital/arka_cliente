@@ -251,6 +251,11 @@
             placeholder="{{'GLOBAL.resolucion' | translate }}">
         </div>
         <div class="form-group col-sm">
+          <label class="label">{{'GLOBAL.dependencia' | translate}}</label>
+          <input type="text" class="form-control" formControlName="dependencia" style="width: 100%;"
+            placeholder="{{'GLOBAL.dependencia' | translate }}">
+        </div>
+        <div class="form-group col-sm">
           <label class="label">{{'GLOBAL.bajas.consulta.fechaRevC' | translate}}</label>
           <input type="text" class="form-control" formControlName="fecha" style="width: 100%;"
             placeholder="{{'GLOBAL.bajas.consulta.fechaRevC' | translate }}">
@@ -285,8 +290,21 @@
           <button mat-flat-button color="primary" matStepperPrevious class="float-left text-uppercase">
             {{'GLOBAL.anterior' | translate}}
           </button>
+          <button mat-flat-button color="primary" matStepperNext class="float-right text-uppercase" *ngIf="trContable">
+            {{'GLOBAL.siguiente' | translate}}
+          </button>
         </div>
       </div>
     </form>
+  </mat-step>
+  <mat-step label="{{'GLOBAL.Comprobante_Contable.Titulo' | translate}}" *ngIf="trContable">
+    <ngx-comprobante [ajusteInfo]="trContable" [modo]="'get'" [consecutivo]="trContable.consecutivo"
+      [fecha]="trContable.Fecha" [concepto]="trContable.Concepto">
+    </ngx-comprobante>
+    <div class="form-group col-sm" style="padding: 1rem 0 0 0;">
+      <button mat-flat-button color="primary" matStepperPrevious class="float-left text-uppercase">
+        {{'GLOBAL.anterior' | translate}}
+      </button>
+    </div>
   </mat-step>
 </mat-vertical-stepper>

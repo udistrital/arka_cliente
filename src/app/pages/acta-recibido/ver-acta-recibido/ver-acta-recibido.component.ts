@@ -1,16 +1,14 @@
-import { Component, OnInit, ViewChild, ViewChildren, QueryList, Input } from '@angular/core';
-import { Observable, Subscription } from 'rxjs';
-import { Router } from '@angular/router';
+import { Component, OnInit, ViewChild, Input } from '@angular/core';
+import { Observable } from 'rxjs';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup, FormControl, FormArray, AbstractControl } from '@angular/forms';
 import { NuxeoService } from '../../../@core/utils/nuxeo.service';
-import { MatTable } from '@angular/material';
 import 'hammerjs';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
 import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
 import { ActaRecibido } from '../../../@core/data/models/acta_recibido/acta_recibido';
 import { TerceroCriterioContratista, TerceroCriterioProveedor } from '../../../@core/data/models/terceros_criterio';
 import { Elemento } from '../../../@core/data/models/acta_recibido/elemento';
-import { TipoBien } from '../../../@core/data/models/acta_recibido/tipo_bien';
 import { SoporteActa } from '../../../@core/data/models/acta_recibido/soporte_acta';
 import { EstadoActa_t } from '../../../@core/data/models/acta_recibido/estado_acta';
 import { EstadoElemento } from '../../../@core/data/models/acta_recibido/estado_elemento';
@@ -35,15 +33,13 @@ import { CompleterData, CompleterService } from 'ng2-completer';
   templateUrl: './ver-acta-recibido.component.html',
   styleUrls: ['./ver-acta-recibido.component.scss'],
 })
+
 export class VerActaRecibidoComponent implements OnInit {
 
   Verificar_tabla: boolean[];
   // Mensajes de error
   errMess: any;
   estadoActa: string = '';
-
-  // Decorador para renderizar los cambios en las tablas de elementos
-  @ViewChildren(MatTable) _matTable: QueryList<MatTable<any>>;
 
   // Variables de Formulario
   firstForm: FormGroup;
@@ -57,15 +53,11 @@ export class VerActaRecibidoComponent implements OnInit {
   @Input('Id_Acta') _ActaId: number;
   @Input() Modo: string = 'ver';
   Estados_Acta: any;
-  Tipos_Bien: any;
   Estados_Elemento: any;
 
   // Modelos
 
-  Unidades: any;
   Acta: TransaccionActaRecibido;
-  Ubicaciones: any;
-  Tarifas_Iva: any;
   Dependencias: any;
   Sedes: any;
   bandera: boolean;
@@ -93,7 +85,7 @@ export class VerActaRecibidoComponent implements OnInit {
     private listService: ListService,
     private userService: UserService,
     private completerService: CompleterService,
-  ) {
+    private route: ActivatedRoute) {
     this.Contratistas = [];
     this.Proveedores = [];
   }
@@ -125,18 +117,12 @@ export class VerActaRecibidoComponent implements OnInit {
       this.store.select((state) => state).subscribe((list) => {
         this.Estados_Acta = list.listEstadosActa[0],
           this.Estados_Elemento = list.listEstadosElemento[0],
-          this.Tipos_Bien = list.listTipoBien[0],
-          this.Unidades = list.listUnidades[0],
-          this.Tarifas_Iva = list.listIVA[0],
           this.Dependencias = list.listDependencias[0],
           this.Sedes = list.listSedes[0],
-          this.Ubicaciones = list.listUbicaciones[0],
           this.dataService3 = this.completerService.local(this.Dependencias, 'Nombre', 'Nombre'),
 
-          (this.Sedes && this.Sedes.length > 0 && this.Dependencias && this.Dependencias.length > 0 &&
-            this.Tarifas_Iva && this.Tarifas_Iva.length > 0 && this.Unidades && this.Unidades.length &&
-            this.Tipos_Bien && this.Tipos_Bien.length > 0 && this.Estados_Elemento &&
-            this.Estados_Elemento.length > 0 && this.Ubicaciones && this.Ubicaciones.length > 0 &&
+          (this.Sedes && this.Sedes.length && this.Dependencias && this.Dependencias.length &&
+            this.Estados_Elemento &&  this.Estados_Elemento.length &&
             this.Estados_Acta && this.Estados_Acta.length > 0) ? resolve() : null;
       });
     });
@@ -162,13 +148,24 @@ export class VerActaRecibidoComponent implements OnInit {
 
   private loadActa(): Promise<void> {
     return new Promise<void>(resolve => {
-      this.Actas_Recibido.getTransaccionActa(this._ActaId, false).toPromise().then(res => {
-        this.Acta.UltimoEstado = res.UltimoEstado;
-        this.estadoActa = this.Acta.UltimoEstado.EstadoActaId.Nombre;
-        this.Acta.ActaRecibido = res.ActaRecibido;
-        this.Acta.SoportesActa = res.SoportesActa;
-        resolve();
-      });
+      if (this._ActaId) {
+        this.Actas_Recibido.getTransaccionActa(this._ActaId, false).toPromise().then(res => {
+          this.Acta.UltimoEstado = res.UltimoEstado;
+          this.estadoActa = this.Acta.UltimoEstado.EstadoActaId.Nombre;
+          this.Acta.ActaRecibido = res.ActaRecibido;
+          this.Acta.SoportesActa = res.SoportesActa;
+          resolve();
+        });
+      } else if (!this._ActaId && this.route.snapshot.paramMap.get('id')) {
+        this._ActaId = +this.route.snapshot.paramMap.get('id');
+        this.Actas_Recibido.getTransaccionActa(this._ActaId, false).toPromise().then(res => {
+          this.Acta.UltimoEstado = res.UltimoEstado;
+          this.estadoActa = this.Acta.UltimoEstado.EstadoActaId.Nombre;
+          this.Acta.ActaRecibido = res.ActaRecibido;
+          this.Acta.SoportesActa = res.SoportesActa;
+          resolve();
+        });
+      }
     });
   }
 
@@ -499,25 +496,9 @@ export class VerActaRecibidoComponent implements OnInit {
     return elementosActa;
   }
 
-  revisorValido(): boolean {
-    if (!this.userService.getPersonaId()) {
-      (Swal as any).fire({
-        title: this.translate.instant('GLOBAL.error'),
-        text: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.ErrorRevisorMsg'),
-        type: 'error',
-        showCancelButton: false,
-        confirmButtonColor: '#3085d6',
-        confirmButtonText: 'Ok',
-      });
-      return false;
-    } else {
-      return true;
-    }
-  }
-
   // Validar Acta? (Aprobar?)
   Revisar_Totales() {
-    if (!this.revisorValido()) {
+    if (!this.userService.TerceroValido()) {
       return;
     }
 
@@ -539,7 +520,7 @@ export class VerActaRecibidoComponent implements OnInit {
 
   // Rechazar Acta?
   Revisar_Totales2() {
-    if (!this.revisorValido()) {
+    if (!this.userService.TerceroValido()) {
       return;
     }
 
