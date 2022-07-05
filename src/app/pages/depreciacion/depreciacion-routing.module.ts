@@ -9,27 +9,15 @@ const routes: Routes = [{
   component: DepreciacionComponent,
   children: [
     {
-      path: 'depreciacion/consulta',
+      path: 'consultar',
       component: ConsultaDepreciacionComponent,
-      data: { modo: 'consulta', tipo: 'depreciacion' },
+      data: { modo: 'consulta' },
       canActivate: [AuthGuard],
     },
     {
-      path: 'depreciacion/revision',
+      path: 'revisar',
       component: ConsultaDepreciacionComponent,
-      data: { modo: 'revision', tipo: 'depreciacion' },
-      canActivate: [AuthGuard],
-    },
-    {
-      path: 'amortizacion/consulta',
-      component: ConsultaDepreciacionComponent,
-      data: { modo: 'consulta', tipo: 'amortizacion'  },
-      canActivate: [AuthGuard],
-    },
-    {
-      path: 'amortizacion/revision',
-      component: ConsultaDepreciacionComponent,
-      data: { modo: 'revision', tipo: 'amortizacion' },
+      data: { modo: 'revision' },
       canActivate: [AuthGuard],
     },
   ],

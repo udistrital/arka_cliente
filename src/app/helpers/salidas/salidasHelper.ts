@@ -89,10 +89,10 @@ export class SalidaHelper {
         );
     }
 
-    public editarSalida(salidasData, salidaId: number = 0) {
+    public editarSalida(salidasData, salidaId: number, rechazar: boolean = false) {
         this.rqManager.setPath('ARKA_SERVICE');
-        const url = 'salida';
-        return this.rqManager.put2(url, salidasData, salidaId).pipe(
+        const endpoint = salidaId + '?rechazar=' + rechazar;
+        return this.rqManager.put2('salida', salidasData, endpoint).pipe(
             map(
                 (res) => {
                     if (res['Type'] === 'error') {
@@ -196,7 +196,7 @@ export class SalidaHelper {
      */
     public getEntradasSinSalida() {
         this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
-        return this.rqManager.get('movimiento?query=EstadoMovimientoId__Nombre:Entrada Aprobada&limit=-1').pipe(
+        return this.rqManager.get('movimiento?sortby=FechaCreacion&order=desc&query=EstadoMovimientoId__Nombre:Entrada Aprobada&limit=-1').pipe(
             map(
                 (res) => {
                     if (res === 'error') {

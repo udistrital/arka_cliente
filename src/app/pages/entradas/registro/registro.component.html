@@ -52,10 +52,14 @@
           (data)="onSubmit($event)"></ngx-sobrante>
         <ngx-terceros *ngSwitchCase="'ENT_TR'" [actaRecibidoId]="actaSeleccionada"
           (data)="onSubmit($event)"></ngx-terceros>
+
+        <div>
+          <h3 class="pt-4 pb-2">{{'GLOBAL.elementosAsociadosActa' | translate}}</h3>
+          <ngx-gestionar-elementos style="padding-top: 1rem;" *ngIf="opcionEntrada" [ActaRecibidoId]="actaSeleccionada" [Modo]="'ver'"></ngx-gestionar-elementos>
+        </div>
       </div>
 
     </nb-card-body>
-    <!-- <ngx-gestionar-elementos style="padding-top: 1rem;" *ngIf="opcionEntrada" [ActaRecibidoId]="actaSeleccionada" [Modo]="'ver'"></ngx-gestionar-elementos> -->
     <mat-card-actions style="padding-left: 1rem;">
       <button mat-flat-button color="primary" class="float-left text-uppercase" (click)="onVolver()">
         {{'GLOBAL.volver' | translate}}

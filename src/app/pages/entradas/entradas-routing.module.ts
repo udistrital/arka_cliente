@@ -15,7 +15,19 @@ const routes: Routes = [{
       canActivate: [AuthGuard],
     },
     {
+      path: 'consulta_entrada/:id',
+      component: ConsultaEntradaComponent,
+      data: { modo: 'consulta' },
+      canActivate: [AuthGuard],
+    },
+    {
       path: 'aprobar_entrada',
+      component: ConsultaEntradaComponent,
+      data: { modo: 'revision' },
+      canActivate: [AuthGuard],
+    },
+    {
+      path: 'aprobar_entrada/:id',
       component: ConsultaEntradaComponent,
       data: { modo: 'revision' },
       canActivate: [AuthGuard],

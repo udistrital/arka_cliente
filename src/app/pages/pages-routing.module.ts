@@ -4,6 +4,7 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { PagesComponent } from './pages.component';
 import { NotFoundComponent } from './miscellaneous/not-found/not-found.component';
 import { AuthGuard } from '../@core/_guards/auth.guard';
+import { CanLoadChildren } from '../@core/_guards/children.guard';
 
 const routes: Routes = [{
   path: '',
@@ -16,7 +17,7 @@ const routes: Routes = [{
     {
       path: 'acta_recibido',
       loadChildren: './acta-recibido/acta-recibido.module#ActaRecibidoModule',
-      canActivate: [AuthGuard],
+      canLoad: [CanLoadChildren],
     },
     {
       path: 'catalogo',
@@ -26,21 +27,16 @@ const routes: Routes = [{
     {
       path: 'entradas',
       loadChildren: './entradas/entradas.module#EntradasModule',
-      canActivate: [AuthGuard],
+      canLoad: [CanLoadChildren],
     },
     {
       path: 'salidas',
       loadChildren: './salidas/salidas.module#SalidasModule',
-      canActivate: [AuthGuard],
+      canLoad: [CanLoadChildren],
     },
     {
       path: 'reportes',
       loadChildren: './reportes/reportes.module#ReportesModule',
-      canActivate: [AuthGuard],
-    },
-    {
-      path: 'catalogo_bienes',
-      loadChildren: './catalogo-bienes/catalogo-bienes.module#CatalogoBienesModule',
       canActivate: [AuthGuard],
     },
     {
@@ -74,7 +70,7 @@ const routes: Routes = [{
       canActivate: [AuthGuard],
     },
     {
-      path: 'mediciones_posteriores',
+      path: 'cierres',
       loadChildren: './depreciacion/depreciacion.module#DepreciacionModule',
       canActivate: [AuthGuard],
     },

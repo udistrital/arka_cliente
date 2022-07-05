@@ -14,6 +14,13 @@ export class TerceroCriterioPlanta {
     TipoVinculacion: number;
 }
 
+export class Supervisor {
+    Id: number;
+    Nombre: string;
+    Cargo: string;
+    SedeSupervisor: string;
+}
+
 export class TerceroCriterioJefe {
     Cargo: number;
     DependenciaId: number;

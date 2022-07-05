@@ -120,7 +120,7 @@ export class EntradaHelper {
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
      */
     public getEntradas(tramiteOnly: boolean) {
-        const query = 'movimiento?limit=-1&query=FormatoTipoMovimientoId__CodigoAbreviacion__in:' +
+        const query = 'movimiento?sortby=FechaCreacion&order=desc&limit=-1&query=FormatoTipoMovimientoId__CodigoAbreviacion__in:' +
             'ENT_TR|ENT_RP|ENT_CM|ENT_PPA|ENT_EP|ENT_DN|ENT_SI|ENT_CE|ENT_BEP|ENT_IA|ENT_ID|ENT_AM|ENT_ADQ' +
             (tramiteOnly ? ',EstadoMovimientoId__Nombre:Entrada En Trámite' : '');
         this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');

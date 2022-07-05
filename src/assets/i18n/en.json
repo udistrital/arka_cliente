@@ -234,30 +234,14 @@
           }
         }
       },
-      "medicionesPosteriores": {
-        "name": "Mediciones Posteriores",
+      "cierres": {
+        "name": "Cierres",
         "children": {
-          "depreciacion": {
-            "name": "Depreciación",
-            "children": {
-              "consultarDepreciacion": {
-                "name": "Consultar Depreciación"
-              },
-              "aprobarDepreciacion": {
-                "name": "Aprobar Depreciación"
-              }
-            }
+          "consultaCierres": {
+            "name": "Consultar Cierres"
           },
-          "amortizacion": {
-            "name": "Amortización",
-            "children": {
-              "consultarAmortizacion": {
-                "name": "Consultar Amortización"
-              },
-              "aprobarAmortizacion": {
-                "name": "Aprobar Amortización"
-              }
-            }
+          "aprobarCierres": {
+            "name": "Aprobar Cierres"
           }
         }
       }
@@ -421,7 +405,6 @@
         "Registrada": "Receipt Certificate N° {{ID}} has been succesfully registered",
         "RegistradaTitleNO": "Unregistered Certificate",
         "RegistradaNO": "The Certificate hasn't been succesfully registered, try again later",
-        "ErrorRevisorMsg": "The assigned Assistant II is not registered in the Third-Party Database. Please grab a registered Assistant II and Try Again",
         "BotonRegistro": "Register Receipt",
         "SizeSoporte":"Máx size: {{ SIZE }} MB",
         "ErrorSizeSoporteTitle":"Invalid file",
@@ -474,6 +457,15 @@
         "VerificacionButton": "Send to Verification",
         "EnviarProveedorButton": "Send to Supplier",
         "EnviarContratistaButton": "Send to Assistant I"
+      },
+      "EstadosActa": {
+        "Aceptada": "Accepted",
+        "Anulada": "Voided",
+        "AsociadoEntrada": "Associated to Entry",
+        "EnElaboracion": "Editing",
+        "EnModificacion": "Modifying",
+        "EnVerificacion": "Verifying",
+        "Registrada": "Created"
       },
       "DetalleActa": {
         "Title": "Receipt Certificate Detail",
@@ -882,12 +874,12 @@
     "regresar": "back",
     "operacion_exitosa": "Successful Operation",
     "consultar_entrada": "View Entries",
-    "consultar_salida" : "View Outputs",
     "mensaje_consulta_entrada": "List of entries made. To see the detail of the entry press the action icon located on the right side of the table.",
     "consecutivo": "Consecutive",
     "fecha_entrada": "Entry Date",
     "tipo_entrada": "Entry Type",
     "estado_entrada": "Entry Status",
+    "estadoSalida": "Estado Salida",
     "detalle": "Detail",
     "seleccionar": "Select",
     "no_data_entradas": "No associated entries found.",
@@ -904,9 +896,11 @@
     "placeholder_tipo_bien": "Type of Asset",
     "tipo_movimiento": "Tipo de Movimiento",
     "elementos_asociados": "Elementos Asociados",
+    "elementosAsociadosActa": "Elementos Asociados al Acta",
     "cantidad": "Quantity",
     "cantidadMax": "Maximum Quantity",
     "marca": "Brand Name",
+    "seleccione": "Choose...",
     "serie": "Serie",
     "unidad_medida": "Measured Unit",
     "valor_unitario": "Unit Value",
@@ -924,6 +918,8 @@
     "funcionarioDestino": "recipient Civil Servant",
     "razonRechazo": "Denial reason",
     "resolucion": "Resolution number",
+    "entradaAsociada": "Entrada Asociada",
+    "ultimaModificacion": "Última Modificación",
 
     "movimientos": {
       "estadoTramite": "Awaiting review",
@@ -957,6 +953,12 @@
       },
       "salidas": {
         "nuevaSalida": "Register a new issue",
+        "consultaTtl": "Consultar Salidas",
+        "revisionTtl": "Revisar Salidas",
+        "consultaStl": "En la siguiente tabla se listan las salidas realizadas, seleccione una para ver la informacion asociada.",
+        "revisionStl": "En la siguiente tabla se listan las salidas pendientes por ser revisadas, seleccione una para realizar la revisión.",
+        "detalleSalidaTtl": "Detalle salida",
+        "revisarSalidaTtl": "Revisar salida {{CONSECUTIVO}}",
         "noSalidasView": "There are no issues to view",
         "noSalidasReview": "There are no entries to review",
         "accionRevision": "Review Entry",
@@ -1091,14 +1093,15 @@
 
     "salidas": {
       "titulo_registrar": "Register Output",
+      "titulo_editar": "Editar Salida",
       "elementos": "Elements",
       "exitoRegistroSolicitudTtl": "Solicitud Registrada",
       "exitoRegistroSolicitudTxt": "La solicitud {{CONSECUTIVO}} ha sido registrada correctamente.",
       "exito_registro_titulo": "Output Recorded",
       "exito_registro_texto": "La solicitud {{CONSECUTIVO}} ha sido aprobada correctamente.",
       "salida_instruccion": "Select an entry from the following list",
-      "consulta_salida_info": "Select an output from the following list",
-      "detalle_salida": "Output Detail"
+      "detalle_salida": "Output Detail",
+      "errorEditar": "No se puede editar esta salida."
     },
 
     "Existencias": "Stock",
@@ -1490,141 +1493,73 @@
       "informacion": "Request details",
       "infoComite": "Comitee Approval information"
     },
-    "depreciacion": {
+    "cierres": {
       "consulta": {
-        "title": "Consulta de liquidación de depreciación",
-        "subtitle": "A continuación se listan las depreciaciones liquidadas, seleccione una de las opciones para ver más detalles",
-        "noReview": "No hay depreciaciones por aprobar",
-        "noView": "No hay depreciaciones por consultar",
+        "title": "Lista de cierres del sistema",
+        "subtitle": "A continuación se listan los cierres realizados, seleccione una de las opciones para ver más detalles",
+        "noReview": "No hay cierres por aprobar",
+        "noView": "A la fecha so se han realizado cierres",
         "solicitante": "Solicitante",
         "accionEdit": "Editar Solicitud",
         "estado": "Estado",
         "espera": "En Espera",
-        "nuevo": "Generar nueva depreciación",
-        "errorEditar": "No se puede editar esta depreciación"
+        "nuevo": "Generar nuevo cierre",
+        "errorEditar": "No se puede editar este cierre"
       },
       "revision": {
-        "title": "Registrar Revisión de Contabilidad",
+        "title": "Registrar Revisión de cierre",
         "subtitle": "Seleccione una depreciación para ver los detalles y registrar la revisión"
       },
       "create": {
-        "title": "Generar liquidación de depreciación",
+        "title": "Generar cierre",
         "subtitle": "Por favor ingrese la información solicitada en el siguiente formulario",
-        "accion": "Generar Depreciación",
-        "confrmTtl": "Registrar Depreciación",
-        "confrmTxt": "¿Desea registrar la liquidación de depreciación a la fecha de corte suministrada?",
-        "successTtl": "Depreciación Generada",
-        "successTxt": "La liquidación de la depreciación ha sido generada correctamente",
-        "errTxt:": "Hubo un error al registrar la solicitud de baja de bienes"
+        "accion": "Registrar Cierre",
+        "confrmTtl": "Registrar Cierre",
+        "confrmTxt": "¿Desea iniciar el proceso de cierre a la fecha de corte suministrada?",
+        "successTtl": "Cierre Generado",
+        "successTxt": "El proceso de cierre del sistema se ha generado correctamente",
+        "errTxt:": "Hubo un error al registrar el cierre del sistema"
       },
       "update": {
-        "title": "Editar Liquidación de Depreciación",
-        "subtitle": "Revise las razones de rechazo de la solicitud y haga las respectivas modificaciones",
-        "accion": "Actualizar depreciación",
-        "confrmTtl": "Actualizar depreciación",
-        "confrmTxt": "¿Desea actualizar la liquidación de depreciación?",
-        "successTtl": "Depreciación Actualizada",
-        "successTxt": "La depreciación se ha actualizado"
+        "title": "Editar Cierre",
+        "subtitle": "Revise las razones de rechazo del cierre y haga las respectivas modificaciones",
+        "accion": "Actualizar cierre",
+        "confrmTtl": "Actualizar Cierre",
+        "confrmTxt": "¿Desea actualizar los detalles del proceso de cierre?",
+        "successTtl": "Cierre Actualizado",
+        "successTxt": "Los detalles del proceso de cierre han sido actualizados"
       },
       "review": {
-        "title": "Revisar Liquidación de Depreciación",
-        "subtitle": "Revise los detalles de la liquidación y realice la aprobación o el rechazo de la misma",
-        "accion": "Aprobar Depreciación",
-        "accionR": "Rechazar Depreciación",
-        "accionEdit": "Realizar Revisión",
-        "confrmTtlA": "Aprobar Liquidación de Depreciación",
-        "confrmTxtA": "¿Desea aprobar la depreciación con la información suministrada?",
-        "confrmTtlR": "Rechazar Depreciación",
+        "title": "Revisar Cierre",
+        "subtitle": "Revise los detalles del cierre y realice la aprobación o el rechazo de la misma",
+        "accion": "Aprobar Cierre",
+        "accionR": "Rechazar Cierre",
+        "accionEdit": "Registrar Revisión",
+        "confrmTtlA": "Aprobar Cierre",
+        "confrmTxtA": "¿Desea aprobar el cierre con la información suministrada?",
+        "confrmTtlR": "Rechazar Cierre",
         "confrmRechazoTtl": "Motivo de rechazo",
-        "confrmRechazoTtx": "Indique la razón por la que esta liquidación será rechazada",
-        "confrmTxtR": "¿Desea rechazar la depreciación?",
-        "successTtlA": "Depreciación Aprobada",
-        "successTxtA": "La depreciación ha sido aprobada",
-        "successTtlR": "Depreciación Rechazada",
-        "successTxtR": "La depreciación ha sido rechazada"
+        "confrmRechazoTtx": "Indique la razón por la que este cierre será rechazado",
+        "confrmTxtR": "¿Desea rechazar el cierre?",
+        "successTtlA": "Cierre Aprobado",
+        "successTxtA": "El cierre ha sido aprobado",
+        "successTtlR": "Cierre Rechazada",
+        "successTxtR": "El proceso de cierre ha sido rechazada"
       },
       "get": {
-        "title": "Detalle Liquidación de Depreciación",
-        "subtitle": "En el siguiente formulario se muestra el detalle de la asociado a la depreciación"
+        "title": "Detalle Cierre",
+        "subtitle": "En el siguiente formulario se muestra el detalle de la asociado al cierre"
       },
       "estados": {
-        "tramite": "Generada",
-        "rechazado": "Rechazada",
-        "aprobado": "Aprobada"
+        "tramite": "En Curso",
+        "rechazado": "Rechazado",
+        "aprobado": "Aprobado"
       },
-      "errorVacio": "No hay elementos a depreciar a la fecha de corte indicada",
-      "errorEnCurso": "Existe una depreciación pendiente por ser aprobada",
+      "errorVacio": "No hay elementos para realizar el cierre a la fecha de corte indicada",
+      "errorEnCurso": "Existe un cierre en curso pendiente de ser finalizado",
       "errorBj": "El elemento ya tiene una solicitud de baja vigente",
       "informacion": "Información General",
-      "infoFechaCorte": "Fecha hasta la que se liquidará la depreciación"
-    },
-    "amortizacion": {
-      "consulta": {
-        "title": "Consulta de liquidación de amortización",
-        "subtitle": "A continuación se listan las amortizaciones liquidadas, seleccione una de las opciones para ver más detalles",
-        "noReview": "No hay amortizaciones por aprobar",
-        "noView": "No hay amortizaciones por consultar",
-        "solicitante": "Solicitante",
-        "accionEdit": "Editar Solicitud",
-        "estado": "Estado",
-        "espera": "En Espera",
-        "nuevo": "Generar nueva amortización",
-        "errorEditar": "No se puede editar esta amortización"
-      },
-      "revision": {
-        "title": "Registrar Revisión de Contabilidad",
-        "subtitle": "Seleccione una amortización para ver los detalles y registrar la revisión"
-      },
-      "create": {
-        "title": "Generar liquidación de amortización",
-        "subtitle": "Por favor ingrese la información solicitada en el siguiente formulario",
-        "accion": "Generar Amortización",
-        "confrmTtl": "Registrar Amortización",
-        "confrmTxt": "¿Desea registrar la liquidación de amortización a la fecha de corte suministrada?",
-        "successTtl": "Amortización Generada",
-        "successTxt": "La liquidación de la amortización ha sido generada correctamente",
-        "errTxt:": "Hubo un error al generar la amortización"
-      },
-      "update": {
-        "title": "Editar Liquidación de Amortización",
-        "subtitle": "Revise las razones de rechazo de la solicitud y haga las respectivas modificaciones",
-        "accion": "Actualizar amortización",
-        "confrmTtl": "Actualizar amortización",
-        "confrmTxt": "¿Desea actualizar la liquidación de amortización?",
-        "successTtl": "Amortización Actualizada",
-        "successTxt": "La amortización se ha actualizado"
-      },
-      "review": {
-        "title": "Revisar Liquidación de Amortización",
-        "subtitle": "Revise los detalles de la liquidación y realice la aprobación o el rechazo de la misma",
-        "accion": "Aprobar Amortización",
-        "accionR": "Rechazar Amortización",
-        "accionEdit": "Realizar Revisión",
-        "confrmTtlA": "Aprobar Liquidación de Amortización",
-        "confrmTxtA": "¿Desea aprobar la amortización con la información suministrada?",
-        "confrmTtlR": "Rechazar Amortización",
-        "confrmRechazoTtl": "Motivo de rechazo",
-        "confrmRechazoTtx": "Indique la razón por la que esta liquidación será rechazada",
-        "confrmTxtR": "¿Desea rechazar la amortización?",
-        "successTtlA": "Amortización Aprobada",
-        "successTxtA": "La amortización ha sido aprobada",
-        "successTtlR": "Amortización Rechazada",
-        "successTxtR": "La amortización ha sido rechazada"
-      },
-      "get": {
-        "title": "Detalle Liquidación de Amortización",
-        "subtitle": "En el siguiente formulario se muestra el detalle de la asociado a la amortización"
-      },
-      "estados": {
-        "tramite": "Generada",
-        "rechazado": "Rechazada",
-        "aprobado": "Aprobada"
-      },
-      "errorVacio": "No hay elementos a amortizar a la fecha de corte indicada",
-      "errorEnCurso": "Existe una amortización pendiente por ser aprobada",
-      "errorBj": "El elemento ya tiene una solicitud de baja vigente",
-      "informacion": "Información General",
-      "infoFechaCorte": "Fecha hasta la que se liquidará la amortización"
+      "infoFechaCorte": "Fecha hasta la que se realizará el cierre"
     },
     "ajuste-auto": {
       "consultaTtl": "Ajustes automáticos",

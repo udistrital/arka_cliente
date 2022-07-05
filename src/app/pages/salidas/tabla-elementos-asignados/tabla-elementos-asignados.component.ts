@@ -2,7 +2,6 @@ import { Component, OnInit, ViewChild, Input, HostListener } from '@angular/core
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { FormControl } from '@angular/forms';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
-import Swal from 'sweetalert2';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
@@ -10,11 +9,9 @@ import { ElementoActa } from '../../../@core/data/models/acta_recibido/elemento'
 import { PopUpManager } from '../../../managers/popUpManager';
 import { Router } from '@angular/router';
 import { SalidaHelper } from '../../../helpers/salidas/salidasHelper';
-import { isArray } from 'util';
 import { MatCheckbox } from '@angular/material';
 import { ElementoMovimientosArka, EstadoMovimiento, FormatoTipoMovimiento } from '../../../@core/data/models/entrada/entrada';
 import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
-import { MovimientosHelper } from '../../../helpers/movimientos/movimientosHelper';
 export const CONSUMO = 'Consumo';
 
 @Component({
@@ -22,25 +19,24 @@ export const CONSUMO = 'Consumo';
   templateUrl: './tabla-elementos-asignados.component.html',
   styleUrls: ['./tabla-elementos-asignados.component.scss'],
 })
+
 export class TablaElementosAsignadosComponent implements OnInit {
 
+  mode: string = 'determinate';
+  baseI18n: string = 'GLOBAL.movimientos.';
   actaRecibidoId: number;
-  formulario: boolean;
   entradaId: string;
   selected = new FormControl(0);
   estadoShift: boolean;
   JefeOficinaId: number;
   mostrar: boolean;
-  mode: string = 'determinate';
   checkTodos: boolean = false;
   checkParcial: boolean = false;
   displayedColumns: string[];
   displayedColumnsDev: string[];
   private checkAnterior: number = undefined;
-  counter = 0;
   basePaginasD: number = 0;
   basePaginasC: number = 0;
-  elementosActa: any;
 
   @ViewChild('paginatorD') paginatorD: MatPaginator;
   @ViewChild('paginatorC') paginatorC: MatPaginator;
@@ -62,85 +58,90 @@ export class TablaElementosAsignadosComponent implements OnInit {
   sourceConsumo: MatTableDataSource<any>;
   devolutivoSeleccionados: boolean;
   consumoSeleccionados: boolean;
-  salida: any;
+  submitted: boolean;
   @ViewChild('checkTodoInput') checkDummy: MatCheckbox;
 
-  constructor(private translate: TranslateService,
+  @HostListener('window:keydown', ['$event'])
+  handleKeyDown(event: KeyboardEvent) {
+    if (event.shiftKey) {
+      this.estadoShift = true;
+    }
+  }
+  @HostListener('window:keyup', ['$event'])
+  handleKeyUp() {
+    this.estadoShift = false;
+  }
+
+  constructor(
+    private translate: TranslateService,
     private router: Router,
     private actaRecibidoHelper: ActaRecibidoHelper,
     private salidasHelper: SalidaHelper,
     private pUpManager: PopUpManager,
-    private entradasHelper: EntradaHelper,
-    private movimientosHelper: MovimientosHelper) {
-    this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
-    });
+    private entradasHelper: EntradaHelper) {
   }
 
   ngOnInit() {
-    this.loadElementos();
+    this.translate.onLangChange.subscribe((event: LangChangeEvent) => { });
+    if (!this.edicionSalida && this.actaRecibidoId) {
+      this.loadElementos();
+    } else if (this.edicionSalida && this.salida_id) {
+      this.loadSalida();
+    }
+
     this.getJefeAlmacen();
     this.setColumnas();
     this.getFormatoBodega();
     this.getFormatoFuncionario();
 
-    if (this.edicionSalida) {
-    this.movimientosHelper.getElementosMovimientoById(this.salida_id).subscribe(res => {
-        if (res !== null) {
-            this.elementosActa = res;
-        }
-    });
+  }
 
+  private loadSalida() {
     this.salidasHelper.getSalida(this.salida_id).subscribe(res => {
-        if (res !== null) {
-            this.salida = res;
-        }
+      if (res && res.Elementos && res.Elementos.length && res.Salida) {
+        this.loadTablas(res.Elementos, res.Salida.Sede, res.Salida.Dependencia, res.Salida.Ubicacion, res.Salida.Funcionario);
+      } else {
+        this.pUpManager.showErrorAlert(this.translate.instant(this.baseI18n + 'salidas.errorElementos'));
+      }
     });
-}
-
   }
 
   private loadElementos() {
     this.actaRecibidoHelper.getElementosActa(this.actaRecibidoId).toPromise().then(res => {
       if (res && res.length > 0) {
-        res.forEach(el => {
-          el.Funcionario = '',
-            el.Sede = '',
-            el.Dependencia = '',
-            el.Ubicacion = '',
-            el.SubgrupoCatalogoId.ValorResidual =
-              (el.SubgrupoCatalogoId.Depreciacion || el.SubgrupoCatalogoId.Amortizacion) ? el.SubgrupoCatalogoId.ValorResidual * 100 : 0,
-            el.SubgrupoCatalogoId.VidaUtil =
-              (el.SubgrupoCatalogoId.Depreciacion || el.SubgrupoCatalogoId.Amortizacion) ? el.SubgrupoCatalogoId.VidaUtil : 0,
-            el.Combinado = el.SubgrupoCatalogoId.SubgrupoId.Id ?
-              el.SubgrupoCatalogoId.SubgrupoId.Codigo + ' - ' + el.SubgrupoCatalogoId.SubgrupoId.Nombre : '';
-        });
-
-        if (this.edicionSalida) {
-            this.salidasHelper.getSalida(this.salida_id).subscribe(res1 => {
-                const elementosConsumo = res.filter(el => el.SubgrupoCatalogoId.TipoBienId.Nombre === CONSUMO).
-                filter(el => res1.Elementos.some(sal => sal.ElementoActaId === el.Id));
-                const elementosDevolutivo = res.filter(el => el.SubgrupoCatalogoId.TipoBienId.Nombre !== CONSUMO).
-                filter(el => res1.Elementos.some(sal => sal.ElementoActaId === el.Id));
-                this.sourceDevolutivo = new MatTableDataSource<ElementoActa>(elementosDevolutivo);
-                this.sourceConsumo = new MatTableDataSource<ElementoActa>(elementosConsumo);
-            });
-        } else {
-            const elementosConsumo = res.filter(el => el.SubgrupoCatalogoId.TipoBienId.Nombre === CONSUMO);
-            const elementosDevolutivo = res.filter(el => el.SubgrupoCatalogoId.TipoBienId.Nombre !== CONSUMO);
-            this.sourceDevolutivo = new MatTableDataSource<ElementoActa>(elementosDevolutivo);
-            this.sourceConsumo = new MatTableDataSource<ElementoActa>(elementosConsumo);
-        }
-
-        this.sourceDevolutivo.paginator = this.paginatorD;
-        this.sourceDevolutivo.sort = this.sortD;
-        this.sourceConsumo.paginator = this.paginatorC;
-        this.sourceConsumo.sort = this.sortC;
-
+        this.loadTablas(res, '', '', '', '');
       } else {
-        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.salidas.errorElementos'));
+        this.pUpManager.showErrorAlert(this.translate.instant(this.baseI18n + 'salidas.errorElementos'));
       }
     });
+  }
+
+  private loadTablas(elementos: any[], sede: any, dependencia: any, ubicacion: any, funcionario: any) {
+
+    elementos.forEach(el => {
+      if (!this.salida_id) {
+        el.ElementoActaId = el.Id;
+      }
+      el.Funcionario = funcionario;
+      el.Sede = sede;
+      el.Dependencia = dependencia;
+      el.Ubicacion = ubicacion;
+      el.ValorResidual = !el.SubgrupoCatalogoId.Depreciacion && !el.SubgrupoCatalogoId.Amortizacion ? 0 :
+        this.salida_id ? el.ValorResidual : el.SubgrupoCatalogoId.ValorResidual * 100;
+      el.VidaUtil = !el.SubgrupoCatalogoId.Depreciacion && !el.SubgrupoCatalogoId.Amortizacion ? 0 :
+        this.salida_id ? el.VidaUtil : el.SubgrupoCatalogoId.VidaUtil;
+    });
+
+    const elementosConsumo = elementos.filter(el => el.SubgrupoCatalogoId.TipoBienId.Nombre === CONSUMO);
+    const elementosDevolutivo = elementos.filter(el => el.SubgrupoCatalogoId.TipoBienId.Nombre !== CONSUMO);
+    this.sourceDevolutivo = new MatTableDataSource<ElementoActa>(elementosDevolutivo);
+    this.sourceConsumo = new MatTableDataSource<ElementoActa>(elementosConsumo);
+    this.sourceDevolutivo.paginator = this.paginatorD;
+    this.sourceDevolutivo.sort = this.sortD;
+    this.sourceConsumo.paginator = this.paginatorC;
+    this.sourceConsumo.sort = this.sortC;
     this.mostrar = true;
+
   }
 
   private getJefeAlmacen() {
@@ -157,16 +158,6 @@ export class TablaElementosAsignadosComponent implements OnInit {
     });
     this.checkAnterior = undefined;
     this.refrescaCheckTotal(source);
-  }
-  @HostListener('window:keydown', ['$event'])
-  handleKeyDown(event: KeyboardEvent) {
-    if (event.shiftKey) {
-      this.estadoShift = true;
-    }
-  }
-  @HostListener('window:keyup', ['$event'])
-  handleKeyUp() {
-    this.estadoShift = false;
   }
 
   tabChange() {
@@ -195,7 +186,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
   refrescaCheckTotal(source) {
     let checkTodos = false;
     let checkParcial = false;
-    if (source && isArray(source.data) && source.data.length) {
+    if (source && source.data && source.data.length) {
       if (source.data.every(elem => elem.seleccionado)) {
         // console.log('todos');
         checkTodos = true;
@@ -262,44 +253,58 @@ export class TablaElementosAsignadosComponent implements OnInit {
     source.data[index].seleccionado = false;
   }
 
-  checkElementosAsignados() {
-    const alertControlado = !this.sourceDevolutivo.data.length ? false :
-      this.sourceDevolutivo.data.every(el => el.Funcionario.Id && el.Ubicacion.Id) ? false : true;
-    const alertConsumo = !this.sourceConsumo.data.length ? false :
-      this.sourceConsumo.data.every(el => el.Funcionario.Id && el.Ubicacion.Id) ? false : true;
+  public checkElementosAsignados() {
+    const alertControlado = this.sourceDevolutivo.data.length &&
+      this.sourceDevolutivo.data.some(el => !el.Funcionario.Id || !el.Ubicacion.Id);
+    const alertConsumo = this.sourceConsumo.data.length &&
+      this.sourceConsumo.data.some(el => !el.Funcionario.Id || !el.Ubicacion.Id);
     const elementos = this.sourceConsumo.data.concat(this.sourceDevolutivo.data);
-    const alertResidual = elementos.some(el => (el.SubgrupoCatalogoId.ValorResidual > 100 || el.SubgrupoCatalogoId.ValorResidual < 0));
-    const alertVidaUtil = elementos.some(el => (el.SubgrupoCatalogoId.VidaUtil > 100 || el.SubgrupoCatalogoId.VidaUtil < 0));
-    const alert = (alertControlado && alertConsumo) ? 'GLOBAL.movimientos.alerta_ambos' :
-      (alertConsumo) ? 'GLOBAL.movimientos.alerta_consumo' :
-        (alertControlado) ? 'GLOBAL.movimientos.alerta_controlado' :
-          (alertResidual) ? 'GLOBAL.movimientos.alertaResidual' :
-            (alertVidaUtil) ? 'GLOBAL.movimientos.alertaVida' : null;
-    alert ? (Swal as any).fire({
-      title: this.translate.instant('GLOBAL.movimientos.alerta_descargue'),
-      text: this.translate.instant(alert),
-      type: 'warning',
-    }) : this.onSubmit();
+    const alertResidual = elementos.some(el => (el.ValorResidual > 100 || el.ValorResidual < 0));
+    const alertVidaUtil = elementos.some(el => (el.VidaUtil > 100 || el.VidaUtil < 0));
+    const alert = (alertControlado && alertConsumo) ? this.baseI18n + 'alerta_ambos' :
+      (alertConsumo) ? this.baseI18n + 'alerta_consumo' :
+        (alertControlado) ? this.baseI18n + 'alerta_controlado' :
+          (alertResidual) ? this.baseI18n + 'alertaResidual' :
+            (alertVidaUtil) ? this.baseI18n + 'alertaVida' : '';
+
+    if (alert) {
+      this.pUpManager.showAlertWithOptions(this.getOptionsErrorDescargue(alert));
+    } else if (!this.submitted) {
+      this.onSubmit();
+    }
+
   }
 
-  private crearElemento(elementoActa) {
-    const elemento = new ElementoMovimientosArka;
-    elemento.Activo = true;
-    elemento.ElementoActaId = elementoActa.Id;
-    elemento.SaldoCantidad = elementoActa.Cantidad;
-    elemento.SaldoValor = elementoActa.ValorTotal;
-    elemento.Unidad = elementoActa.Cantidad;
-    elemento.ValorUnitario = elementoActa.ValorTotal / elementoActa.Cantidad;
-    elemento.ValorTotal = elementoActa.ValorTotal;
-    elemento.VidaUtil = elementoActa.SubgrupoCatalogoId.VidaUtil;
-    elemento.ValorResidual = elementoActa.ValorTotal * elementoActa.SubgrupoCatalogoId.ValorResidual / 100;
-    if (this.edicionSalida) {
-        const found = this.elementosActa.find(element => element.ElementoActaId === elemento.ElementoActaId);
-        if (found) {
-           elemento.Id = found.Id;
-        }
-    }
-    return elemento;
+  private crearElemento(elementoActa): ElementoMovimientosArka {
+    return <ElementoMovimientosArka>{
+      Id: !this.salida_id ? 0 : elementoActa.Id,
+      ElementoActaId: elementoActa.ElementoActaId,
+      Activo: true,
+      SaldoCantidad: elementoActa.Cantidad,
+      SaldoValor: elementoActa.ValorTotal,
+      Unidad: elementoActa.Cantidad,
+      ValorUnitario: elementoActa.ValorTotal / elementoActa.Cantidad,
+      VidaUtil: elementoActa.VidaUtil,
+      ValorTotal: elementoActa.ValorTotal,
+      ValorResidual: this.getValorResidual(elementoActa.ValorTotal, elementoActa.ValorResidual),
+    };
+
+  }
+
+  private getValorResidual(valorTotal: number, valorResidual: number): number {
+    const decimalesT = valorTotal.toString().split('.').length > 1 ? valorTotal.toString().split('.')[1].length : 0;
+    const decimalesR = valorResidual.toString().split('.').length > 1 ? valorResidual.toString().split('.')[1].length : 0;
+    const valorTotal_ = valorTotal * Math.pow(10, decimalesT + 1);
+    const valorResidual_ = valorResidual * Math.pow(10, decimalesR + 1);
+    return valorTotal_ * valorResidual_ / Math.pow(10, decimalesT + decimalesR + 4);
+  }
+
+  private createDetalle(funcionario: number, ubicacion: number): string {
+    const detalle = {
+      funcionario,
+      ubicacion,
+    };
+    return JSON.stringify(detalle);
   }
 
   private getFormatoBodega() {
@@ -319,24 +324,20 @@ export class TablaElementosAsignadosComponent implements OnInit {
   }
 
   private salidaBodega() {
-    const elementosBodega = this.sourceConsumo.data.filter(el =>
+
+    const elementosBodega = this.sourceConsumo.data.filter((el) =>
       el.Ubicacion.Nombre === 'SECCION ALMACEN GENERAL E INVENTARIOS' &&
       el.Funcionario.Id === this.JefeOficinaId,
     );
 
-    if (elementosBodega.length > 0) {
-      const detalle = {
-        ubicacion: elementosBodega[0].Ubicacion.Id,
-        funcionario: this.JefeOficinaId,
-      };
-
+    if (elementosBodega.length) {
       const Salida = {
         Salida: {
-          Observacion: 'Salida Automatica para Bodega de Consumo',
-          Detalle: JSON.stringify(detalle),
+          Observacion: 'Salida automatica para Bodega de Consumo',
+          Detalle: this.createDetalle(this.JefeOficinaId, elementosBodega[0].Ubicacion.Id),
           Activo: true,
           MovimientoPadreId: {
-            Id: parseFloat(this.entradaId),
+            Id: +this.entradaId,
           },
           FormatoTipoMovimientoId: {
             Id: this.formatoMovimientoBodega.Id,
@@ -360,19 +361,14 @@ export class TablaElementosAsignadosComponent implements OnInit {
     if (this.sourceDevolutivo.data.length > 0) {
       const obs = 'Salida con elementos Devolutivos o de Consumo Controlado asignados a funcionario.';
       const datos_agrupados2 = this.sourceDevolutivo.data.reduce((accumulator, currentValue) => {
-        const detalle = {
-          funcionario: currentValue.Funcionario.Id,
-          ubicacion: currentValue.Ubicacion.Id,
-        };
         const val = currentValue.Funcionario.Id + '-' + currentValue.Ubicacion.Id;
         accumulator[val] = accumulator[val] || {
           Salida: {
             Observacion: this.getObservacion(obs, currentValue.Observaciones),
-            Detalle: JSON.stringify(detalle),
+            Detalle: this.createDetalle(currentValue.Funcionario.Id, currentValue.Ubicacion.Id),
             Activo: true,
-            Id: this.salida_id,
             MovimientoPadreId: {
-              Id: parseFloat(this.entradaId),
+              Id: +this.entradaId,
             },
             FormatoTipoMovimientoId: {
               Id: this.formatoMovimientoFuncionario.Id,
@@ -403,18 +399,14 @@ export class TablaElementosAsignadosComponent implements OnInit {
     if (elementosAsignados.length > 0) {
       const datos_agrupados2 = elementosAsignados.reduce((accumulator, currentValue) => {
         if (currentValue.Funcionario.Id) {
-          const detalle = {
-            funcionario: currentValue.Funcionario.Id,
-            ubicacion: currentValue.Ubicacion.Id,
-          };
           const val = currentValue.Funcionario.Id + '-' + currentValue.Ubicacion.Id;
           accumulator[val] = accumulator[val] || {
             Salida: {
               Observacion: this.getObservacion(obs, currentValue.Observaciones),
-              Detalle: JSON.stringify(detalle),
+              Detalle: this.createDetalle(currentValue.Funcionario.Id, currentValue.Ubicacion.Id),
               Activo: true,
               MovimientoPadreId: {
-                Id: parseFloat(this.entradaId),
+                Id: +this.entradaId,
               },
               FormatoTipoMovimientoId: {
                 Id: this.formatoMovimientoFuncionario.Id,
@@ -458,73 +450,68 @@ export class TablaElementosAsignadosComponent implements OnInit {
       }
     }
 
-    const idsalida = this.salida_id;
-    if (this.edicionSalida) {
-       const consecutivo = this.salida.Salida.Consecutivo;
-       Salidas.Salidas.forEach(function(element) {
-          element.Salida.Id = Number(idsalida);
-          const x = JSON.parse(element.Salida.Detalle);
-          x.consecutivo = consecutivo;
-          element.Salida.Detalle = JSON.stringify(x);
-       });
+    if (Salidas.Salidas.length) {
+      this.pUpManager.showAlertWithOptions(this.optionsConfirm).then((result) => {
+        if (result.value) {
+          this.submitted = true;
+          if (this.edicionSalida) {
+            this.salidasHelper.editarSalida(Salidas, this.salida_id, false).subscribe((res: any) => {
+              this.getOptionsSuccess(res.trSalida.Salidas);
+            });
+          } else {
+            this.salidasHelper.registrarSalida(Salidas).subscribe((res: any) => {
+              this.getOptionsSuccess(res.trSalida.Salidas);
+            });
+          }
+        }
+      });
     }
 
-    (Swal as any).fire({
-      title: this.translate.instant('GLOBAL.movimientos.salidas.registroConfrmTtl'),
-      text: this.translate.instant('GLOBAL.movimientos.salidas.registroConfrmTxt'),
+  }
+
+  private getOptionsSuccess(salidas: any[]) {
+    if (salidas && salidas.length) {
+      const length = salidas.length;
+      const s = length > 1 ? 's' : '';
+      const consecutivo0 = JSON.parse(salidas[0].Salida.Detalle).consecutivo;
+      const consecutivoF = JSON.parse(salidas[length - 1].Salida.Detalle).consecutivo;
+      const title = this.translate.instant(this.baseI18n + 'salidas.registroTtlOk', { S: s });
+      const text = this.translate.instant(this.baseI18n + 'salidas.registroTxtOk' +
+        (length > 1 ? 'Varios' : ''), { N: length, CONSECUTIVO0: consecutivo0, CONSECUTIVOF: consecutivoF });
+
+      const options = {
+        type: 'success',
+        title,
+        text,
+        showConfirmButton: true,
+      };
+      this.pUpManager.showAlertWithOptions(options);
+      this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+        this.router.navigateByUrl('/pages/salidas/consulta_salidas');
+      });
+    }
+  }
+
+  get optionsConfirm(): any {
+    return {
+      title: this.translate.instant(this.baseI18n + 'salidas.registroConfrmTtl'),
+      text: this.translate.instant(this.baseI18n + 'salidas.registroConfrmTxt'),
       type: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
-      confirmButtonText: 'Si',
-      cancelButtonText: 'No',
-    }).then((result) => {
-      if (result.value) {
-        if (this.edicionSalida) {
-          this.salidasHelper.editarSalida(Salidas, this.salida_id).subscribe((res: any) => {
-            if (res.trSalida.Salidas && res.trSalida.Salidas.length) {
-              const length = res.trSalida.Salidas.length;
-              const s = length > 1 ? 's' : '';
-              const consecutivo0 = JSON.parse(res.trSalida.Salidas[0].Salida.Detalle).consecutivo;
-              const consecutivoF = JSON.parse(res.trSalida.Salidas[length - 1].Salida.Detalle).consecutivo;
-              const title = this.translate.instant('GLOBAL.movimientos.salidas.registroTtlOk', { S: s });
-              const text = this.translate.instant('GLOBAL.movimientos.salidas.registroTxtOk' +
-                (length > 1 ? 'Varios' : ''), { N: length, CONSECUTIVO0: consecutivo0, CONSECUTIVOF: consecutivoF });
+      confirmButtonText: this.translate.instant('GLOBAL.si'),
+      cancelButtonText: this.translate.instant('GLOBAL.no'),
+    };
+  }
 
-              const options = {
-                type: 'success',
-                title,
-                text,
-                showConfirmButton: true,
-              };
-              this.pUpManager.showAlertWithOptions(options);
-              this.router.navigate(['/pages/salidas/consulta_salidas']);
-            }
-          });
-        } else {
-          this.salidasHelper.registrarSalida(Salidas).subscribe((res: any) => {
-            if (res.trSalida.Salidas && res.trSalida.Salidas.length) {
-              const length = res.trSalida.Salidas.length;
-              const s = length > 1 ? 's' : '';
-              const consecutivo0 = JSON.parse(res.trSalida.Salidas[0].Salida.Detalle).consecutivo;
-              const consecutivoF = JSON.parse(res.trSalida.Salidas[length - 1].Salida.Detalle).consecutivo;
-              const title = this.translate.instant('GLOBAL.movimientos.salidas.registroTtlOk', { S: s });
-              const text = this.translate.instant('GLOBAL.movimientos.salidas.registroTxtOk' +
-                (length > 1 ? 'Varios' : ''), { N: length, CONSECUTIVO0: consecutivo0, CONSECUTIVOF: consecutivoF });
 
-              const options = {
-                type: 'success',
-                title,
-                text,
-                showConfirmButton: true,
-              };
-              this.pUpManager.showAlertWithOptions(options);
-              this.router.navigate(['/pages/salidas/consulta_salidas']);
-            }
-          });
-        }
-      }
-    });
+  private getOptionsErrorDescargue(alert: string): any {
+    return {
+      title: this.translate.instant(this.baseI18n + 'alerta_descargue'),
+      text: this.translate.instant(alert),
+      type: 'warning',
+    };
   }
 
   private getObservacion(min: string, custom: string) {
