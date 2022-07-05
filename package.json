@@ -89,7 +89,7 @@
     "ngx-currency": "^2.0.0",
     "ngx-echarts": "^4.1.1",
     "ngx-moment": "^3.4.0",
-    "node-sass": "^4.14.1",
+    "node-sass": "^7.0.0",
     "normalize.css": "6.0.0",
     "nuxeo": "^3.18.0",
     "oidc-auth": "^0.6.0",
