@@ -84,8 +84,15 @@ export class ConsultaTrasladosComponent implements OnInit {
   }
 
   public onRegister() {
-    this.modoCrud = 'registrar';
-    this.trasladoId = 0;
+    const query = 'Nombre__in:cierreEnCurso,Valor:true';
+    this.confService.getAllParametro(query).subscribe(res => {
+      if (res && res.length) {
+        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.cierres.alertaEnCurso'));
+      } else {
+        this.modoCrud = 'registrar';
+        this.trasladoId = 0;
+      }
+    });
   }
 
   public onEdit(event) {
@@ -95,8 +102,15 @@ export class ConsultaTrasladosComponent implements OnInit {
         const usuario = this.userService.getPersonaId();
         if (usuario && event.data && event.data.FuncionarioOrigen &&
           event.data.FuncionarioOrigen.Id && event.data.FuncionarioOrigen.Id === usuario) {
-          this.modoCrud = 'editar';
-          this.trasladoId = event.data.Id;
+          const query = 'Nombre__in:cierreEnCurso,Valor:true';
+          this.confService.getAllParametro(query).subscribe(res => {
+            if (res && res.length) {
+              this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.cierres.alertaEnCurso'));
+            } else {
+              this.modoCrud = 'editar';
+              this.trasladoId = event.data.Id;
+            }
+          });
         } else {
           this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.traslados.consulta.errorPermisoEditar'));
         }
@@ -104,11 +118,29 @@ export class ConsultaTrasladosComponent implements OnInit {
         this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.traslados.consulta.errorEditar'));
       }
     } else if (this.modo === 'confirmacion') {
-      this.modoCrud = 'confirmar';
-      this.trasladoId = event.data.Id;
+      const query = 'Nombre__in:cierreEnCurso,Valor:true';
+      this.confService.getAllParametro(query).subscribe(res => {
+        if (res && res.length) {
+          this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.cierres.alertaEnCurso'));
+        } else {
+          this.modoCrud = 'confirmar';
+          this.trasladoId = event.data.Id;
+        }
+      });
     } else if (this.modo === 'revision') {
-      this.modoCrud = 'revisar';
-      this.trasladoId = event.data.Id;
+      const query = 'Nombre__in:modificandoCuentas|cierreEnCurso,Valor:true';
+      this.confService.getAllParametro(query).subscribe(res => {
+        if (res && res.length) {
+          if (res[0].Nombre === 'cierreEnCurso') {
+            this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.cierres.alertaEnCurso'));
+          } else {
+            this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.cuentas.alerta_modificacion'));
+          }
+        } else {
+          this.modoCrud = 'revisar';
+          this.trasladoId = event.data.Id;
+        }
+      });
     }
   }
 
