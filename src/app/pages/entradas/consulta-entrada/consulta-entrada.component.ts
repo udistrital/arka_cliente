@@ -108,7 +108,7 @@ export class ConsultaEntradaComponent implements OnInit {
 
   confirmSubmit(aprobar: boolean) {
     if (!this.submitted && this.movimiento && this.movimiento.EstadoMovimientoId &&
-        this.movimiento.EstadoMovimientoId.Nombre === 'Entrada En Trámite') {
+      this.movimiento.EstadoMovimientoId.Nombre === 'Entrada En Trámite') {
       this.pUpManager.showAlertWithOptions(this.getOptionsRevision(aprobar))
         .then((result) => {
           if (result.value) {
@@ -171,13 +171,31 @@ export class ConsultaEntradaComponent implements OnInit {
 
   onEdit(event) {
     if (this.modo === 'revision') {
-      this.router.navigateByUrl('/pages/entradas/aprobar_entrada/' + event.data.Id);
+      const query = 'Nombre__in:modificandoCuentas|cierreEnCurso,Valor:true';
+      this.confService.getAllParametro(query).subscribe(res => {
+        if (res && res.length) {
+          if (res[0].Nombre === 'cierreEnCurso') {
+            this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.cierres.alertaEnCurso'));
+          } else {
+            this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.cuentas.alerta_modificacion'));
+          }
+        } else {
+          this.router.navigateByUrl('/pages/entradas/aprobar_entrada/' + event.data.Id);
+        }
+      });
     } else if (event.data.EstadoMovimientoId === 'Entrada Rechazada') {
-      this.mostrar = false;
-      this.actaRecibidoId = +`${event.data.ActaRecibidoId}`;
-      this.filaSeleccionada = event.data;
-      this.entradaId = event.data.Id;
-      this.updateEntrada = true;
+      const query = 'Nombre__in:cierreEnCurso,Valor:true';
+      this.confService.getAllParametro(query).subscribe(res => {
+        if (res && res.length) {
+          this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.cierres.alertaEnCurso'));
+        } else {
+          this.mostrar = false;
+          this.actaRecibidoId = +`${event.data.ActaRecibidoId}`;
+          this.filaSeleccionada = event.data;
+          this.entradaId = event.data.Id;
+          this.updateEntrada = true;
+        }
+      });
     } else {
       this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.entradas.errorEditar'));
     }
@@ -200,8 +218,15 @@ export class ConsultaEntradaComponent implements OnInit {
   }
 
   onRegister() {
-    this.updateEntrada = true;
-    this.mostrar = false;
+    const query = 'Nombre__in:cierreEnCurso,Valor:true'
+    this.confService.getAllParametro(query).subscribe(res => {
+      if (res && res.length) {
+        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.cierres.alertaEnCurso'));
+      } else {
+        this.updateEntrada = true;
+        this.mostrar = false;
+      }
+    });
   }
 
   loadTablaSettings() {
