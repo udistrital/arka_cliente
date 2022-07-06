@@ -218,7 +218,7 @@ export class ConsultaEntradaComponent implements OnInit {
   }
 
   onRegister() {
-    const query = 'Nombre__in:cierreEnCurso,Valor:true'
+    const query = 'Nombre__in:cierreEnCurso,Valor:true';
     this.confService.getAllParametro(query).subscribe(res => {
       if (res && res.length) {
         this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.cierres.alertaEnCurso'));

@@ -61,19 +61,6 @@ export class SalidaHelper {
         );
     }
 
-    /**
-    * Entrada Post
-    * If the response has errors in the OAS API it should show a popup message with an error.
-    * If the response suceed, it returns the data of the updated object.
-    * @param entradaData object to save in the DB
-    * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
-    */
-    public postSalida(salidaId: number) {
-        return this.dispMvtos.movimientosPermitidos().pipe(
-            switchMap(disp => iif( () => disp, this.registrarSalida([], salidaId) )),
-        );
-    }
-
     public registrarSalida(salidasData, salidaId: number = 0) {
         this.rqManager.setPath('ARKA_SERVICE');
         return this.rqManager.post('salida?salidaId=' + salidaId, salidasData).pipe(
