@@ -42,34 +42,67 @@ export class ConsultaBajasComponent implements OnInit {
     this.route.data.subscribe(data => {
       if (data && data.modo !== null && data.modo !== undefined) {
         this.modo = data.modo;
+        if (this.modo === 'aprobacion') {
+          const query = 'Nombre__in:modificandoCuentas|cierreEnCurso,Valor:true';
+          this.confService.getAllParametro(query).subscribe(res => {
+            if (res && res.length) {
+              if (res[0].Nombre === 'cierreEnCurso') {
+                this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.cierres.alertaEnCurso'));
+              } else {
+                this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.cuentas.alerta_modificacion'));
+              }
+            } else {
+              this.loadEstados();
+            }
+          });
+        } else {
+          this.loadEstados();
+        }
       }
     });
     this.source = new LocalDataSource();
-    this.loadEstados();
     this.title = this.translate.instant('GLOBAL.bajas.' + this.modo + '.title');
     this.subtitle = this.translate.instant('GLOBAL.bajas.' + this.modo + '.subtitle');
   }
 
   public onRegister() {
-    this.modoCrud = 'registrar';
-    this.bajaId = 0;
+    const query = 'Nombre__in:cierreEnCurso,Valor:true';
+    this.confService.getAllParametro(query).subscribe(res => {
+      if (res && res.length) {
+        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.cierres.alertaEnCurso'));
+      } else {
+        this.modoCrud = 'registrar';
+        this.bajaId = 0;
+      }
+    });
   }
 
   public onEdit(event) {
     this.filaSeleccionada = event.data;
     if (this.modo === 'consulta') {
       if (event.data.EstadoMovimientoId === 'Baja Rechazada') {
-        this.modoCrud = 'editar';
-        this.bajaId = event.data.Id;
+        const query = 'Nombre__in:cierreEnCurso,Valor:true';
+        this.confService.getAllParametro(query).subscribe(res => {
+          if (res && res.length) {
+            this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.cierres.alertaEnCurso'));
+          } else {
+            this.modoCrud = 'editar';
+            this.bajaId = event.data.Id;
+          }
+        });
       } else {
         this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.bajas.consulta.errorEditar'));
       }
     } else if (this.modo === 'revision') {
-      this.modoCrud = 'revisar';
-      this.bajaId = event.data.Id;
-    } else if (this.modo === 'aprobacion') {
-      this.modoCrud = 'aprobar';
-      this.bajaId = event.data.Id;
+      const query = 'Nombre__in:cierreEnCurso,Valor:true';
+      this.confService.getAllParametro(query).subscribe(res => {
+        if (res && res.length) {
+          this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.cierres.alertaEnCurso'));
+        } else {
+          this.modoCrud = 'revisar';
+          this.bajaId = event.data.Id;
+        }
+      });
     }
   }
 
