@@ -82,26 +82,32 @@ export class CrudCuentasComponent implements OnInit {
     const type = 'warning';
     (Swal as any).fire({ title, text, type, showCancelButton: true }).then(res => {
       if (res.value) {
+        this.estado_cargado = false;
         if (this.modificando_cuentas) {
           this.estadoAsignacionContable.Valor = 'false';
         } else {
           this.estadoAsignacionContable.Valor = 'true';
         }
-        this.estado_cargado = false;
-        this.confService.setParametro(this.estadoAsignacionContable).subscribe(res2 => {
-          this.refrescaEstadoSesionContable(<Parametro><any>res2);
-          this.estado_cargado = true;
-          (Swal as any).fire({
-            title: this.translate.instant('GLOBAL.Actualizado'),
-            html: this.estadoAsignacionContable.Valor === 'true' ?
-              this.translate.instant('GLOBAL.cuentas.iniciar_edicion_aviso') :
-              this.translate.instant('GLOBAL.cuentas.terminar_edicion_aviso'),
-            timer: 2000,
-            timerProgressBar: true,
-          }).then((result) => {
-            if (result.dismiss === Swal.DismissReason.timer) {
-            }
-          });
+        const query = 'Nombre__in:cierreEnCurso,Valor:true';
+        this.confService.getAllParametro(query).subscribe(res_ => {
+          if (res_ && res_.length) {
+            this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.cierres.alertaEnCursoCuentas'));
+            this.estado_cargado = true;
+          } else {
+            this.confService.setParametro(this.estadoAsignacionContable).subscribe(res__ => {
+              this.refrescaEstadoSesionContable(<Parametro><any>res__);
+              this.estado_cargado = true;
+              (Swal as any).fire({
+                title: this.translate.instant('GLOBAL.Actualizado'),
+                html: this.estadoAsignacionContable.Valor === 'true' ?
+                  this.translate.instant('GLOBAL.cuentas.iniciar_edicion_aviso') :
+                  this.translate.instant('GLOBAL.cuentas.terminar_edicion_aviso'),
+              }).then((result) => {
+                if (result.dismiss === Swal.DismissReason.timer) {
+                }
+              });
+            });
+          }
         });
       }
     });

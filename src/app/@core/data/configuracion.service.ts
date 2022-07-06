@@ -48,6 +48,15 @@ export class ConfiguracionService {
     }));
   }
 
+  getAllParametro(query: string) {
+    const endpoint = 'parametro?query=Aplicacion__Nombre:' + this.app + ',' + query;
+    return this.get(endpoint).pipe(map(res => {
+      if (res) {
+        return res;
+      }
+    }));
+  }
+
   setParametro(parametro: Parametro) {
     return this.put('parametro', parametro);
   }
