@@ -4,7 +4,6 @@ import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
 import { DepreciacionHelper } from '../../../helpers/movimientos/depreciacionHelper';
 import { PopUpManager } from '../../../managers/popUpManager';
 import Swal from 'sweetalert2';
-import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
 
 @Component({
   selector: 'ngx-generar-depreciacion',
@@ -35,7 +34,6 @@ export class GenerarDepreciacionComponent implements OnInit {
     private translate: TranslateService,
     private fb: FormBuilder,
     private depreciacionHelper: DepreciacionHelper,
-    private entradasHelper: EntradaHelper,
   ) {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { });
     this.maxDate = new Date();
