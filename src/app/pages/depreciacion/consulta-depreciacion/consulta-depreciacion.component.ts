@@ -94,9 +94,16 @@ export class ConsultaDepreciacionComponent implements OnInit {
   public onRegister() {
     const allowed = this.depreciaciones.some(d => d.EstadoMovimientoId !== 'Cierre Aprobado');
     if (!allowed) {
-      this.depreciacionId = 0;
-      this.continuar = true;
-      this.modoCrud = 'create';
+      const query = 'Nombre__in:modificandoCuentas,Valor:true';
+      this.confService.getAllParametro(query).subscribe(res => {
+        if (res && res.length) {
+          this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.cuentas.alerta_modificacion'));
+        } else {
+          this.depreciacionId = 0;
+          this.continuar = true;
+          this.modoCrud = 'create';
+        }
+      });
     } else {
       this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.' + this.tipo + '.errorEnCurso'));
     }
@@ -106,9 +113,16 @@ export class ConsultaDepreciacionComponent implements OnInit {
     this.filaSeleccionada = event.data;
     if (this.modo === 'consulta') {
       if (event.data.EstadoMovimientoId === 'Cierre Rechazado') {
-        this.modoCrud = 'update';
-        this.continuar = true;
-        this.depreciacionId = event.data.Id;
+        const query = 'Nombre__in:modificandoCuentas,Valor:true';
+        this.confService.getAllParametro(query).subscribe(res => {
+          if (res && res.length) {
+            this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.cuentas.alerta_modificacion'));
+          } else {
+            this.modoCrud = 'update';
+            this.continuar = true;
+            this.depreciacionId = event.data.Id;
+          }
+        });
       } else {
         this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.' + this.tipo + '.consulta.errorEditar'));
       }

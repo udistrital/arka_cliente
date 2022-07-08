@@ -159,14 +159,13 @@ export class ConsultaKardexComponent implements OnInit {
   loadSalidas(): void {
     this.cargandoListaKardex = true;
 
-    this.BodegaConsumoService.getAperturasKardex().subscribe(res1 => {
-      if (Object.keys(res1[0]).length !== 0) {
-        res1.forEach(element => {
+    this.BodegaConsumoService.getAperturasKardex().subscribe(res => {
+      if (res && res.length) {
+        res.forEach(element => {
           const met = this.Metodos.find(x => x.Id === element.MetodoValoracion);
           element.MetodoValoracion = met;
         });
-        // console.log(res1);
-        this.source.load(res1);
+        this.source.load(res);
       }
       this.cargandoListaKardex = false;
     });
