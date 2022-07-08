@@ -1494,6 +1494,8 @@
       "infoComite": "Comitee Approval information"
     },
     "cierres": {
+      "alertaEnCurso": "Proceso de cierre en curso. No se permiten realizar movimientos. Intente más tarde.",
+      "alertaEnCursoCuentas": "Proceso de cierre en curso. No se permite modificar cuentas contables.",
       "consulta": {
         "title": "Lista de cierres del sistema",
         "subtitle": "A continuación se listan los cierres realizados, seleccione una de las opciones para ver más detalles",

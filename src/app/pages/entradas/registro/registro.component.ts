@@ -82,7 +82,6 @@ export class RegistroComponent implements OnInit {
         }
       });
     }
-
   }
 
   private getOptionsRegistro(consecutivo: string) {

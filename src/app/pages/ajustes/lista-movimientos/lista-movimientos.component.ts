@@ -53,15 +53,26 @@ export class ListaMovimientosComponent implements OnInit {
   }
 
   loadActas(): void {
-    this.spinner = 'Cargando Actas';
-    this.title = this.translate.instant('GLOBAL.ajustes.registrar.accion');
-    this.subtitle = this.translate.instant('GLOBAL.ajuste-auto.sugActa');
-    this.actaRecibidoHelper.getAllActasRecibidoByEstado(['Asociada a Entrada']).subscribe(res => {
-      if (res.length) {
-        this.actas.load(res);
-        this.spinner = '';
+    const query = 'Nombre__in:modificandoCuentas|cierreEnCurso,Valor:true';
+    this.confService.getAllParametro(query).subscribe(res => {
+      if (res && res.length) {
+        if (res[0].Nombre === 'cierreEnCurso') {
+          this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.cierres.alertaEnCurso'));
+        } else {
+          this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.cuentas.alerta_modificacion'));
+        }
+      } else {
+        this.spinner = 'Cargando Actas';
+        this.title = this.translate.instant('GLOBAL.ajustes.registrar.accion');
+        this.subtitle = this.translate.instant('GLOBAL.ajuste-auto.sugActa');
+        this.actaRecibidoHelper.getAllActasRecibidoByEstado(['Asociada a Entrada']).subscribe(res_ => {
+          if (res_.length) {
+            this.actas.load(res);
+            this.spinner = '';
+          }
+          this.crear = true;
+        });
       }
-      this.crear = true;
     });
   }
 
