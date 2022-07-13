@@ -169,7 +169,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
   }
 
   private async initForms() {
-    const data = [this.loadLists(), this.loadProveedores(), this.loadContratistas(), this.cargaActa()];
+    const data = [this.loadLists(), this.cargaActa()];
     await Promise.all(data);
     this.Cargar_Formularios(this.Acta);
     this.actaCargada = true;
@@ -280,33 +280,28 @@ export class EdicionActaRecibidoComponent implements OnInit {
     return new Promise<void>(resolve => {
       this.Actas_Recibido.getTransaccionActa(this._Acta_Id, false).subscribe(async Acta => {
         this.Acta = Acta;
+        // console.log('acta:', this.Acta);
+        Promise.all([
+          this.loadProveedores('', this.Acta.UltimoEstado.ProveedorId),
+          this.loadContratistas('', this.Acta.UltimoEstado.PersonaAsignadaId),
+        ]);
         resolve();
       });
     });
   }
 
-  private loadContratistas(query: string = ''): Promise<void> {
-    if (query === '') {
-      return new Promise<void>(resolve => {
-        resolve();
-      });
-    }
+  private loadContratistas(query: string = '', id: number= 0): Promise<void> {
     return new Promise<void>(resolve => {
-      this.tercerosHelper.getTercerosByCriterio('contratista', 0, query).toPromise().then(res => {
+      this.tercerosHelper.getTercerosByCriterio('contratista', id, query).toPromise().then(res => {
         this.Contratistas = res;
         resolve();
       });
     });
   }
 
-  private loadProveedores(query: string = ''): Promise<void> {
-    if (query === '') {
-      return new Promise<void>(resolve => {
-        resolve();
-      });
-    }
+  private loadProveedores(query: string = '', id: number= 0): Promise<void> {
     return new Promise<void>(resolve => {
-      this.tercerosHelper.getTercerosByCriterio('proveedor', 0, query).toPromise().then(res => {
+      this.tercerosHelper.getTercerosByCriterio('proveedor', id, query).toPromise().then(res => {
         this.Proveedores = res;
         resolve();
       });
@@ -336,7 +331,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
   }
   muestraContratista(contr: TerceroCriterioContratista): string {
     if (contr && contr.Identificacion) {
-      return contr.Identificacion.Numero + ' - ' + contr.Tercero.NombreCompleto;
+      return contr.Identificacion.TipoDocumentoId.CodigoAbreviacion + ':' + contr.Identificacion.Numero + ' - ' + contr.Tercero.NombreCompleto;
     } else {
       if (contr) {
         return contr.Tercero.NombreCompleto;
@@ -349,7 +344,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
   }
   muestraProveedor(prov: Partial<TerceroCriterioProveedor>): string {
     if (prov) {
-      const str = prov.Identificacion ? prov.Identificacion.Numero + ' - ' : '';
+      const str = prov.Identificacion ? prov.Identificacion.TipoDocumentoId.CodigoAbreviacion + ':' + prov.Identificacion.Numero + ' - ' : '';
       return str + prov.Tercero.NombreCompleto;
     }
   }

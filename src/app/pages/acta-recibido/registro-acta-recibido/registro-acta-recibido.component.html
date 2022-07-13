@@ -15,10 +15,10 @@
                   <label>{{'GLOBAL.Acta_Recibido.ContratistaAsignado' | translate}}</label>
                   <input matInput type="text" class="form-control"
                     placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : minLength} }}" formControlName="Contratista"
-                    [matAutocomplete]="autoContratista" />
+                    [matAutocomplete]="autoContratista" (keyup.enter)="filtroContratistas()"/>
                   <mat-autocomplete #autoContratista="matAutocomplete" [displayWith]="muestraContratista"
                     (optionSelected)="usarLocalStorage()">
-                    <mat-option *ngFor="let contr of contratistasFiltrados | async" [value]="contr">
+                    <mat-option *ngFor="let contr of Contratistas" [value]="contr">
                       {{muestraContratista(contr)}}
                     </mat-option>
                   </mat-autocomplete>
@@ -36,10 +36,10 @@
                   <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Proveedor' | translate}}</label>
                   <input matInput type="text" class="form-control"
                     placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : minLength} }}" formControlName="Proveedor"
-                    [matAutocomplete]="autoProveedor" />
+                    [matAutocomplete]="autoProveedor" (keyup.enter)="filtroProveedores()" />
                   <mat-autocomplete #autoProveedor="matAutocomplete" [displayWith]="muestraProveedor"
                     (optionSelected)="usarLocalStorage()">
-                    <mat-option *ngFor="let prov of proveedoresFiltrados | async" [value]="prov">
+                    <mat-option *ngFor="let prov of Proveedores" [value]="prov">
                       {{muestraProveedor(prov)}}
                     </mat-option>
                   </mat-autocomplete>

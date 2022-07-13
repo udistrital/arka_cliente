@@ -66,8 +66,8 @@ export class VerActaRecibidoComponent implements OnInit {
   sedeDependencia: any;
   elementos: any;
   totales: any;
-  contratistasFiltrados: Observable<TerceroCriterioContratista[]>;
-  proveedoresFiltrados: Observable<Partial<TerceroCriterioProveedor>[]>;
+  contratistaId: number;
+  proveedorId: number;
   UbicacionesFiltradas: any;
   dataService3: CompleterData;
   minLength: number = 4;
@@ -107,7 +107,7 @@ export class VerActaRecibidoComponent implements OnInit {
   }
 
   async loadDependencias() {
-    const data = [this.loadLists(), this.loadProveedores(), this.loadContratistas(), this.loadActa()];
+    const data = [this.loadLists(), this.loadActa()];
     await Promise.all(data);
     this.Cargar_Formularios(this.Acta);
   }
@@ -128,18 +128,28 @@ export class VerActaRecibidoComponent implements OnInit {
     });
   }
 
-  private loadProveedores(): Promise<void> {
+  private loadProveedores(query: string = '', id: number= 0): Promise<void> {
+    if (id === 0) {
+      return new Promise<void>(resolve => {
+        resolve();
+      });
+    }
     return new Promise<void>(resolve => {
-      this.tercerosHelper.getTercerosByCriterio('proveedor').toPromise().then(res => {
+      this.tercerosHelper.getTercerosByCriterio('proveedor', id, query).toPromise().then(res => {
         this.Proveedores = res;
         resolve();
       });
     });
   }
 
-  private loadContratistas(): Promise<void> {
+  private loadContratistas(query: string= '', id: number= 0): Promise<void> {
+    if (id === 0) {
+      return new Promise<void>(resolve => {
+        resolve();
+      });
+    }
     return new Promise<void>(resolve => {
-      this.tercerosHelper.getTercerosByCriterio('contratista').toPromise().then(res => {
+      this.tercerosHelper.getTercerosByCriterio('contratista', id, query).toPromise().then(res => {
         this.Contratistas = res;
         resolve();
       });
@@ -150,10 +160,14 @@ export class VerActaRecibidoComponent implements OnInit {
     return new Promise<void>(resolve => {
       if (this._ActaId) {
         this.Actas_Recibido.getTransaccionActa(this._ActaId, false).toPromise().then(res => {
+          // console.log('respuesta acta', res);
           this.Acta.UltimoEstado = res.UltimoEstado;
           this.estadoActa = this.Acta.UltimoEstado.EstadoActaId.Nombre;
+          this.proveedorId = this.Acta.UltimoEstado.ProveedorId;
+          this.contratistaId = this.Acta.UltimoEstado.PersonaAsignadaId;
           this.Acta.ActaRecibido = res.ActaRecibido;
           this.Acta.SoportesActa = res.SoportesActa;
+          Promise.all([this.loadProveedores('', this.proveedorId), this.loadContratistas('', this.contratistaId)]);
           resolve();
         });
       } else if (!this._ActaId && this.route.snapshot.paramMap.get('id')) {
@@ -161,39 +175,35 @@ export class VerActaRecibidoComponent implements OnInit {
         this.Actas_Recibido.getTransaccionActa(this._ActaId, false).toPromise().then(res => {
           this.Acta.UltimoEstado = res.UltimoEstado;
           this.estadoActa = this.Acta.UltimoEstado.EstadoActaId.Nombre;
+          this.proveedorId = this.Acta.UltimoEstado.ProveedorId;
+          this.contratistaId = this.Acta.UltimoEstado.PersonaAsignadaId;
           this.Acta.ActaRecibido = res.ActaRecibido;
           this.Acta.SoportesActa = res.SoportesActa;
+          Promise.all([this.loadProveedores('', this.proveedorId), this.loadContratistas('', this.contratistaId)]);
           resolve();
         });
       }
     });
   }
 
-  private filtroProveedores(nombre: string): Partial<TerceroCriterioProveedor>[] {
-    // console.log('filtroProveedores');
-    if (nombre.length >= 4 && Array.isArray(this.Proveedores)) {
-      const valorFiltrado = nombre.toLowerCase();
-      return this.Proveedores.filter(prov => this.muestraProveedor(prov).toLowerCase().includes(valorFiltrado));
-    } else return [];
+  private async filtroProveedores() {
+    await this.loadProveedores(this.firstForm.get('Formulario1').get('Proveedor').value);
   }
 
   muestraProveedor(prov: Partial<TerceroCriterioProveedor>): string {
     if (prov) {
-      const str = prov.Identificacion ? prov.Identificacion.Numero + ' - ' : '';
+      const str = prov.Identificacion ? prov.Identificacion.TipoDocumentoId.CodigoAbreviacion + ':' + prov.Identificacion.Numero + ' - ' : '';
       return str + prov.Tercero.NombreCompleto;
     }
   }
 
-  private filtroContratistas(nombre: string): TerceroCriterioContratista[] {
-    if (nombre.length >= 4 && Array.isArray(this.Contratistas)) {
-      const valorFiltrado = nombre.toLowerCase();
-      return this.Contratistas.filter(contr => this.muestraContratista(contr).toLowerCase().includes(valorFiltrado));
-    } else return [];
+  private async filtroContratistas() {
+    await this.loadContratistas(this.firstForm.get('Formulario1').get('Contratista').value);
   }
 
   muestraContratista(contr: TerceroCriterioContratista): string {
     if (contr && contr.Identificacion) {
-      return contr.Identificacion.Numero + ' - ' + contr.Tercero.NombreCompleto;
+      return contr.Identificacion.TipoDocumentoId.CodigoAbreviacion + ':' + contr.Identificacion.Numero + ' - ' + contr.Tercero.NombreCompleto;
     } else {
       if (contr) {
         return contr.Tercero.NombreCompleto;
@@ -280,7 +290,6 @@ export class VerActaRecibidoComponent implements OnInit {
         }],
       }),
     });
-    this.initTerceros();
     this.carga_agregada = true;
   }
 
@@ -323,20 +332,6 @@ export class VerActaRecibidoComponent implements OnInit {
         resolve();
       });
     });
-  }
-
-  private initTerceros() {
-    this.proveedoresFiltrados = this.firstForm.get('Formulario1').get('Proveedor').valueChanges.pipe(
-      startWith(''),
-      map(val => typeof val === 'string' ? val : this.muestraProveedor(val)),
-      map(nombre => this.filtroProveedores(nombre)),
-    );
-
-    this.contratistasFiltrados = this.firstForm.get('Formulario1').get('Contratista').valueChanges.pipe(
-      startWith(''),
-      map(val => typeof val === 'string' ? val : this.muestraContratista(val)),
-      map(nombre => this.filtroContratistas(nombre)),
-    );
   }
 
   downloadFile(index: any) {
