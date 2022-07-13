@@ -44,9 +44,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
   searchStr2: string[];
   searchStr3: string;
   private Contratistas: TerceroCriterioContratista[];
-  contratistasFiltrados: Observable<TerceroCriterioContratista[]>;
   private Proveedores: Partial<TerceroCriterioProveedor>[];
-  proveedoresFiltrados: Observable<Partial<TerceroCriterioProveedor>[]>;
 
   // Mensajes de error
   errMess: any;
@@ -171,7 +169,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
   }
 
   private async initForms() {
-    const data = [this.loadLists(), this.loadProveedores(), this.loadContratistas(), this.cargaActa()];
+    const data = [this.loadLists(), this.cargaActa()];
     await Promise.all(data);
     this.Cargar_Formularios(this.Acta);
     this.actaCargada = true;
@@ -282,23 +280,28 @@ export class EdicionActaRecibidoComponent implements OnInit {
     return new Promise<void>(resolve => {
       this.Actas_Recibido.getTransaccionActa(this._Acta_Id, false).subscribe(async Acta => {
         this.Acta = Acta;
+        // console.log('acta:', this.Acta);
+        Promise.all([
+          this.loadProveedores('', this.Acta.UltimoEstado.ProveedorId),
+          this.loadContratistas('', this.Acta.UltimoEstado.PersonaAsignadaId),
+        ]);
         resolve();
       });
     });
   }
 
-  private loadContratistas(): Promise<void> {
+  private loadContratistas(query: string = '', id: number= 0): Promise<void> {
     return new Promise<void>(resolve => {
-      this.tercerosHelper.getTercerosByCriterio('contratista').toPromise().then(res => {
+      this.tercerosHelper.getTercerosByCriterio('contratista', id, query).toPromise().then(res => {
         this.Contratistas = res;
         resolve();
       });
     });
   }
 
-  private loadProveedores(): Promise<void> {
+  private loadProveedores(query: string = '', id: number= 0): Promise<void> {
     return new Promise<void>(resolve => {
-      this.tercerosHelper.getTercerosByCriterio('proveedor').toPromise().then(res => {
+      this.tercerosHelper.getTercerosByCriterio('proveedor', id, query).toPromise().then(res => {
         this.Proveedores = res;
         resolve();
       });
@@ -323,16 +326,12 @@ export class EdicionActaRecibidoComponent implements OnInit {
     });
   }
 
-  private filtroContratistas(nombre: string): TerceroCriterioContratista[] {
-    if (nombre.length >= 4 && Array.isArray(this.Contratistas)) {
-      const valorFiltrado = nombre.toLowerCase();
-      return this.Contratistas.filter(contr => this.muestraContratista(contr).toLowerCase().includes(valorFiltrado));
-    } else return [];
+  private async filtroContratistas() {
+    await this.loadContratistas(this.firstForm.get('Formulario1').get('Contratista').value);
   }
   muestraContratista(contr: TerceroCriterioContratista): string {
-    // console.log(contr);
     if (contr && contr.Identificacion) {
-      return contr.Identificacion.Numero + ' - ' + contr.Tercero.NombreCompleto;
+      return contr.Identificacion.TipoDocumentoId.CodigoAbreviacion + ':' + contr.Identificacion.Numero + ' - ' + contr.Tercero.NombreCompleto;
     } else {
       if (contr) {
         return contr.Tercero.NombreCompleto;
@@ -340,16 +339,12 @@ export class EdicionActaRecibidoComponent implements OnInit {
     }
   }
 
-  private filtroProveedores(nombre: string): Partial<TerceroCriterioProveedor>[] {
-    // console.log('filtroProveedores');
-    if (nombre.length >= 4 && Array.isArray(this.Proveedores)) {
-      const valorFiltrado = nombre.toLowerCase();
-      return this.Proveedores.filter(prov => this.muestraProveedor(prov).toLowerCase().includes(valorFiltrado));
-    } else return [];
+  private async filtroProveedores() {
+    await this.loadProveedores(this.firstForm.get('Formulario1').get('Proveedor').value);
   }
   muestraProveedor(prov: Partial<TerceroCriterioProveedor>): string {
     if (prov) {
-      const str = prov.Identificacion ? prov.Identificacion.Numero + ' - ' : '';
+      const str = prov.Identificacion ? prov.Identificacion.TipoDocumentoId.CodigoAbreviacion + ':' + prov.Identificacion.Numero + ' - ' : '';
       return str + prov.Tercero.NombreCompleto;
     }
   }
@@ -413,7 +408,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
             value: Soporte.Consecutivo,
             disabled: !this.getPermisoEditar(this.permisos.Acta),
           },
-          { validators:  !ar || this.actaRegistrada ? [] : [Validators.required] },
+          { validators: !ar || this.actaRegistrada ? [] : [Validators.required] },
         ],
         Fecha_Factura: [
           {
@@ -482,22 +477,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
       }),
     }, { validators: this.checkValidness });
 
-    this.initTerceros();
     this.carga_agregada = true;
-  }
-
-  private initTerceros() {
-    this.proveedoresFiltrados = this.firstForm.get('Formulario1').get('Proveedor').valueChanges.pipe(
-      startWith(''),
-      map(val => typeof val === 'string' ? val : this.muestraProveedor(val)),
-      map(nombre => this.filtroProveedores(nombre)),
-    );
-
-    this.contratistasFiltrados = this.firstForm.get('Formulario1').get('Contratista').valueChanges.pipe(
-      startWith(''),
-      map(val => typeof val === 'string' ? val : this.muestraContratista(val)),
-      map(nombre => this.filtroContratistas(nombre)),
-    );
   }
 
   async getSedeDepencencia(ubicacionId: number): Promise<void> {
@@ -798,7 +778,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
 
     actaRecibido.Id = +this._Acta_Id;
     actaRecibido.Activo = true;
-    actaRecibido.TipoActaId = <TipoActa>{Id: this.Acta.ActaRecibido.TipoActaId.Id};
+    actaRecibido.TipoActaId = <TipoActa>{ Id: this.Acta.ActaRecibido.TipoActaId.Id };
 
     return actaRecibido;
   }
@@ -833,7 +813,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
     soporteActa.Consecutivo = form2.get('Consecutivo').value;
     soporteActa.DocumentoId = this.idDocumento[index];
     soporteActa.FechaSoporte = form2.get('Fecha_Factura').value ? form2.get('Fecha_Factura').value : null;
-    soporteActa.ActaRecibidoId = <ActaRecibido>{Id: +this._Acta_Id};
+    soporteActa.ActaRecibidoId = <ActaRecibido>{ Id: +this._Acta_Id };
     soporteActa.Activo = true;
 
     return soporteActa;
@@ -862,8 +842,8 @@ export class EdicionActaRecibidoComponent implements OnInit {
       elemento.ValorIva = parseFloat(datos.ValorIva);
       elemento.ValorFinal = parseFloat(datos.ValorTotal);
       elemento.SubgrupoCatalogoId = subgrupo ? subgrupo : null;
-      elemento.EstadoElementoId = <EstadoElemento>{Id: 1};
-      elemento.ActaRecibidoId = <ActaRecibido>{Id: +this._Acta_Id};
+      elemento.EstadoElementoId = <EstadoElemento>{ Id: 1 };
+      elemento.ActaRecibidoId = <ActaRecibido>{ Id: +this._Acta_Id };
       elemento.Activo = true;
 
       elementosActa.push(elemento);
