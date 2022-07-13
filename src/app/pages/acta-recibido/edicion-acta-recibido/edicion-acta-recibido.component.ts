@@ -292,7 +292,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
 
   private loadContratistas(query: string = '', id: number= 0): Promise<void> {
     return new Promise<void>(resolve => {
-      if (id) {
+      if (id || query) {
         this.tercerosHelper.getTercerosByCriterio('contratista', id, query).toPromise().then(res => {
           this.Contratistas = res;
           resolve();
@@ -305,7 +305,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
 
   private loadProveedores(query: string = '', id: number= 0): Promise<void> {
     return new Promise<void>(resolve => {
-      if (id) {
+      if (id || query) {
         this.tercerosHelper.getTercerosByCriterio('proveedor', id, query).toPromise().then(res => {
           this.Proveedores = res;
           resolve();
