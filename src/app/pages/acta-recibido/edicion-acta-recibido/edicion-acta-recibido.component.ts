@@ -44,9 +44,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
   searchStr2: string[];
   searchStr3: string;
   private Contratistas: TerceroCriterioContratista[];
-  contratistasFiltrados: Observable<TerceroCriterioContratista[]>;
   private Proveedores: Partial<TerceroCriterioProveedor>[];
-  proveedoresFiltrados: Observable<Partial<TerceroCriterioProveedor>[]>;
 
   // Mensajes de error
   errMess: any;
@@ -287,18 +285,28 @@ export class EdicionActaRecibidoComponent implements OnInit {
     });
   }
 
-  private loadContratistas(): Promise<void> {
+  private loadContratistas(query:string=''): Promise<void> {
+    if(query==''){
+      return new Promise<void>(resolve => {
+        resolve();
+      });
+    };
     return new Promise<void>(resolve => {
-      this.tercerosHelper.getTercerosByCriterio('contratista').toPromise().then(res => {
+      this.tercerosHelper.getTercerosByCriterio('contratista',0,query).toPromise().then(res => {
         this.Contratistas = res;
         resolve();
       });
     });
   }
 
-  private loadProveedores(): Promise<void> {
+  private loadProveedores(query:string=''): Promise<void> {
+    if(query==''){
+      return new Promise<void>(resolve => {
+        resolve();
+      });
+    };
     return new Promise<void>(resolve => {
-      this.tercerosHelper.getTercerosByCriterio('proveedor').toPromise().then(res => {
+      this.tercerosHelper.getTercerosByCriterio('proveedor',0,query).toPromise().then(res => {
         this.Proveedores = res;
         resolve();
       });
@@ -323,14 +331,10 @@ export class EdicionActaRecibidoComponent implements OnInit {
     });
   }
 
-  private filtroContratistas(nombre: string): TerceroCriterioContratista[] {
-    if (nombre.length >= 4 && Array.isArray(this.Contratistas)) {
-      const valorFiltrado = nombre.toLowerCase();
-      return this.Contratistas.filter(contr => this.muestraContratista(contr).toLowerCase().includes(valorFiltrado));
-    } else return [];
+  private async filtroContratistas() {
+    await this.loadContratistas(this.firstForm.get('Formulario1').get('Contratista').value);
   }
   muestraContratista(contr: TerceroCriterioContratista): string {
-    // console.log(contr);
     if (contr && contr.Identificacion) {
       return contr.Identificacion.Numero + ' - ' + contr.Tercero.NombreCompleto;
     } else {
@@ -340,12 +344,8 @@ export class EdicionActaRecibidoComponent implements OnInit {
     }
   }
 
-  private filtroProveedores(nombre: string): Partial<TerceroCriterioProveedor>[] {
-    // console.log('filtroProveedores');
-    if (nombre.length >= 4 && Array.isArray(this.Proveedores)) {
-      const valorFiltrado = nombre.toLowerCase();
-      return this.Proveedores.filter(prov => this.muestraProveedor(prov).toLowerCase().includes(valorFiltrado));
-    } else return [];
+  private async filtroProveedores() {
+    await this.loadProveedores(this.firstForm.get('Formulario1').get('Proveedor').value) ;
   }
   muestraProveedor(prov: Partial<TerceroCriterioProveedor>): string {
     if (prov) {
@@ -482,22 +482,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
       }),
     }, { validators: this.checkValidness });
 
-    this.initTerceros();
     this.carga_agregada = true;
-  }
-
-  private initTerceros() {
-    this.proveedoresFiltrados = this.firstForm.get('Formulario1').get('Proveedor').valueChanges.pipe(
-      startWith(''),
-      map(val => typeof val === 'string' ? val : this.muestraProveedor(val)),
-      map(nombre => this.filtroProveedores(nombre)),
-    );
-
-    this.contratistasFiltrados = this.firstForm.get('Formulario1').get('Contratista').valueChanges.pipe(
-      startWith(''),
-      map(val => typeof val === 'string' ? val : this.muestraContratista(val)),
-      map(nombre => this.filtroContratistas(nombre)),
-    );
   }
 
   async getSedeDepencencia(ubicacionId: number): Promise<void> {
