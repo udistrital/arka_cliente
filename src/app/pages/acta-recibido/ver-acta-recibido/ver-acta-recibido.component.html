@@ -15,7 +15,7 @@
                   <input matInput type="text" placeholder="{{'GLOBAL.Acta_Recibido.ContratistaAsignado' | translate }}"
                     class="form-control" formControlName="Contratista" [matAutocomplete]="autoContratista">
                     <mat-autocomplete #autoContratista="matAutocomplete" [displayWith]="muestraContratista">
-                      <mat-option *ngFor="let contr of contratistasFiltrados | async" [value]="contr">
+                      <mat-option *ngFor="let contr of Contratista" [value]="contr">
                         {{muestraContratista(contr)}}
                       </mat-option>
                     </mat-autocomplete>
@@ -26,7 +26,7 @@
                 <input matInput type="text" class="form-control"
                 formControlName="Proveedor" [matAutocomplete]="autoProveedor">
                 <mat-autocomplete #autoProveedor="matAutocomplete" [displayWith]="muestraProveedor">
-                  <mat-option *ngFor="let prov of proveedoresFiltrados | async" [value]="prov">
+                  <mat-option *ngFor="let prov of Proveedores" [value]="prov">
                     {{muestraProveedor(prov)}}
                   </mat-option>
                 </mat-autocomplete>
