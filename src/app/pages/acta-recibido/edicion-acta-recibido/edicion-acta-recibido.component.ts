@@ -285,28 +285,28 @@ export class EdicionActaRecibidoComponent implements OnInit {
     });
   }
 
-  private loadContratistas(query:string=''): Promise<void> {
-    if(query==''){
+  private loadContratistas(query: string = ''): Promise<void> {
+    if (query === '') {
       return new Promise<void>(resolve => {
         resolve();
       });
-    };
+    }
     return new Promise<void>(resolve => {
-      this.tercerosHelper.getTercerosByCriterio('contratista',0,query).toPromise().then(res => {
+      this.tercerosHelper.getTercerosByCriterio('contratista', 0, query).toPromise().then(res => {
         this.Contratistas = res;
         resolve();
       });
     });
   }
 
-  private loadProveedores(query:string=''): Promise<void> {
-    if(query==''){
+  private loadProveedores(query: string = ''): Promise<void> {
+    if (query === '') {
       return new Promise<void>(resolve => {
         resolve();
       });
-    };
+    }
     return new Promise<void>(resolve => {
-      this.tercerosHelper.getTercerosByCriterio('proveedor',0,query).toPromise().then(res => {
+      this.tercerosHelper.getTercerosByCriterio('proveedor', 0, query).toPromise().then(res => {
         this.Proveedores = res;
         resolve();
       });
@@ -345,7 +345,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
   }
 
   private async filtroProveedores() {
-    await this.loadProveedores(this.firstForm.get('Formulario1').get('Proveedor').value) ;
+    await this.loadProveedores(this.firstForm.get('Formulario1').get('Proveedor').value);
   }
   muestraProveedor(prov: Partial<TerceroCriterioProveedor>): string {
     if (prov) {
@@ -413,7 +413,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
             value: Soporte.Consecutivo,
             disabled: !this.getPermisoEditar(this.permisos.Acta),
           },
-          { validators:  !ar || this.actaRegistrada ? [] : [Validators.required] },
+          { validators: !ar || this.actaRegistrada ? [] : [Validators.required] },
         ],
         Fecha_Factura: [
           {
@@ -783,7 +783,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
 
     actaRecibido.Id = +this._Acta_Id;
     actaRecibido.Activo = true;
-    actaRecibido.TipoActaId = <TipoActa>{Id: this.Acta.ActaRecibido.TipoActaId.Id};
+    actaRecibido.TipoActaId = <TipoActa>{ Id: this.Acta.ActaRecibido.TipoActaId.Id };
 
     return actaRecibido;
   }
@@ -818,7 +818,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
     soporteActa.Consecutivo = form2.get('Consecutivo').value;
     soporteActa.DocumentoId = this.idDocumento[index];
     soporteActa.FechaSoporte = form2.get('Fecha_Factura').value ? form2.get('Fecha_Factura').value : null;
-    soporteActa.ActaRecibidoId = <ActaRecibido>{Id: +this._Acta_Id};
+    soporteActa.ActaRecibidoId = <ActaRecibido>{ Id: +this._Acta_Id };
     soporteActa.Activo = true;
 
     return soporteActa;
@@ -847,8 +847,8 @@ export class EdicionActaRecibidoComponent implements OnInit {
       elemento.ValorIva = parseFloat(datos.ValorIva);
       elemento.ValorFinal = parseFloat(datos.ValorTotal);
       elemento.SubgrupoCatalogoId = subgrupo ? subgrupo : null;
-      elemento.EstadoElementoId = <EstadoElemento>{Id: 1};
-      elemento.ActaRecibidoId = <ActaRecibido>{Id: +this._Acta_Id};
+      elemento.EstadoElementoId = <EstadoElemento>{ Id: 1 };
+      elemento.ActaRecibidoId = <ActaRecibido>{ Id: +this._Acta_Id };
       elemento.Activo = true;
 
       elementosActa.push(elemento);
