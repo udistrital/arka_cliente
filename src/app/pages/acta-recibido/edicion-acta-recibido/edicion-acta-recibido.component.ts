@@ -702,7 +702,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
     if (siguienteEtapa) {
       nuevoEstado = (this.estadoActa === 'Registrada') ? EstadoActa_t.EnElaboracion : EstadoActa_t.EnVerificacion;
     } else {
-      nuevoEstado = this.Estados_Acta.find(estado => estado.Nombre === this.estadoActa).Id; // el nuevo estado es el mismo
+      nuevoEstado = this.Acta.UltimoEstado.EstadoActaId.Id; // el nuevo estado es el mismo
     }
 
     transaccionActa.UltimoEstado = this.generarEstadoActa(nuevoEstado);
