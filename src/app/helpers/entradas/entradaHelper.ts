@@ -1,7 +1,6 @@
 import { RequestManager } from '../../managers/requestManager';
 import { Injectable } from '@angular/core';
-import { map, switchMap } from 'rxjs/operators';
-import { iif } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { PopUpManager } from '../../managers/popUpManager';
 import { TranslateService } from '@ngx-translate/core';
 import { DisponibilidadMovimientosService } from '../../@core/data/disponibilidad-movimientos.service';
@@ -90,12 +89,7 @@ export class EntradaHelper {
      * @param entradaData object to save in the DB
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
      */
-    public postEntrada(entradaData: Partial<TransaccionEntrada>, entradaId: number = 0, aprobar: boolean = false) {
-        return this.dispMvtos.movimientosPermitidos().pipe(
-         switchMap(disp => iif(() => disp, this.postEntradaFinal(entradaData, entradaId, aprobar))),
-        );
-    }
-    private postEntradaFinal(entradaData: Partial<TransaccionEntrada>, entradaId: number, aprobar: boolean) {
+    public postEntrada(entradaData: Partial<TransaccionEntrada>, entradaId: number, aprobar: boolean) {
         this.rqManager.setPath('ARKA_SERVICE');
         const query = 'entrada?entradaId=' + entradaId + (aprobar ? '&aprobar=true' : '');
         return this.rqManager.post(query, entradaData).pipe(

@@ -91,11 +91,15 @@ export class TercerosHelper {
      * @param criterio El tipo de tercero que se necesita, ejemplo: "funcionarioPlanta" u "ordenadores del gasto"
      * @param idTercero De especificarse, adicionalmente filtra por ese ID
      */
-    public getTercerosByCriterio(criterio: string, idTercero: number = 0) {
+    public getTercerosByCriterio(criterio: string, idTercero: number = 0, query: string= '') {
         this.rqManager.setPath('TERCEROS_MID_SERVICE');
         let path = 'tipo/' + criterio;
         if (idTercero > 0) {
             path += '/' + idTercero;
+        } else {
+            if (query !== '') {
+                path += '?query=' + query;
+            }
         }
         return this.rqManager.get(path).pipe(
             map(

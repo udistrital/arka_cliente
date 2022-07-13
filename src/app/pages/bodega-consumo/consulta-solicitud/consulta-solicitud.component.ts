@@ -64,8 +64,8 @@ export class ConsultaSolicitudComponent implements OnInit {
     this.bodegaHelper.getSolicitudesBodega(this.Editar).subscribe(res => {
       if (res.length) {
         this.source.load(res);
-        this.mostrar = true;
       }
+      this.mostrar = true;
     });
   }
 

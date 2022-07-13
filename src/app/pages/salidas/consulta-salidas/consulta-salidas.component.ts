@@ -95,14 +95,32 @@ export class ConsultaSalidasComponent implements OnInit {
 
   onEdit(event) {
     if (this.modo === 'revision') {
-      this.router.navigateByUrl('/pages/salidas/aprobar_salidas/' + event.data.Id);
+      const query = 'Nombre__in:modificandoCuentas|cierreEnCurso,Valor:true';
+      this.confService.getAllParametro(query).subscribe(res => {
+        if (res && res.length) {
+          if (res[0].Nombre === 'cierreEnCurso') {
+            this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.cierres.alertaEnCurso'));
+          } else {
+            this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.cuentas.alerta_modificacion'));
+          }
+        } else {
+          this.router.navigateByUrl('/pages/salidas/aprobar_salidas/' + event.data.Id);
+        }
+      });
     } else {
       const estado = this.estadosMovimiento.find(st => st.Nombre === 'Salida Rechazada').Id;
       if (event.data.EstadoMovimientoId === estado) {
-        this.salidaId = `${event.data.Id}`;
-        this.editarSalida = true;
-        this.filaSeleccionada = event.data;
-        this.cargarSalida();
+        const query = 'Nombre__in:cierreEnCurso,Valor:true';
+        this.confService.getAllParametro(query).subscribe(res => {
+          if (res && res.length) {
+            this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.cierres.alertaEnCurso'));
+          } else {
+            this.salidaId = `${event.data.Id}`;
+            this.editarSalida = true;
+            this.filaSeleccionada = event.data;
+            this.cargarSalida();
+          }
+        });
       } else {
         this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.salidas.errorEditar'));
       }
@@ -110,7 +128,14 @@ export class ConsultaSalidasComponent implements OnInit {
   }
 
   onRegister() {
-    this.router.navigate(['/pages/salidas/registro_salidas']);
+    const query = 'Nombre__in:cierreEnCurso,Valor:true';
+    this.confService.getAllParametro(query).subscribe(res => {
+      if (res && res.length) {
+        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.cierres.alertaEnCurso'));
+      } else {
+        this.router.navigate(['/pages/salidas/registro_salidas']);
+      }
+    });
   }
 
   onVolver() {
@@ -146,7 +171,7 @@ export class ConsultaSalidasComponent implements OnInit {
   private onSubmitRevision(aprobar: boolean) {
     if (aprobar) {
       this.spinner = 'Actualizando salida y generando transacción contable';
-      this.salidasHelper.postSalida(this.movimiento.Id).toPromise().then((res: any) => {
+      this.salidasHelper.registrarSalida([], this.movimiento.Id).toPromise().then((res: any) => {
         this.spinner = '';
         if (res && res.errorTransaccion === '') {
           const obj = JSON.parse(res.movimientoArka.Detalle);
@@ -273,6 +298,15 @@ export class ConsultaSalidasComponent implements OnInit {
           title: this.translate.instant('GLOBAL.entradaAsociada'),
           valuePrepareFunction: (value: any) => {
             return value && value.Detalle && JSON.parse(value.Detalle) ? JSON.parse(value.Detalle).consecutivo : '';
+          },
+          filterFunction(cell?: any, search?: string): boolean {
+            if (cell && search.length) {
+              const consecutivo = cell.Detalle && JSON.parse(cell.Detalle) ? JSON.parse(cell.Detalle).consecutivo : '';
+              if (consecutivo && consecutivo.indexOf(search.toUpperCase()) > -1) {
+                return true;
+              }
+            }
+            return false;
           },
         },
         Funcionario: {

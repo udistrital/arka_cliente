@@ -343,7 +343,7 @@ export class ConsultaActaRecibidoComponent implements OnInit {
   }
 
   seleccionarActa(event): void {
-    // console.log(event.data.Estado)
+    // console.log(event.data);
     this.actaSeleccionada = `${event.data.Id}`;
     this.estadoActaSeleccionada = 'Ver';
     this.accion = 'Ver';

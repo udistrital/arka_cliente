@@ -8,7 +8,7 @@ import { Ng2SmartTableModule } from 'ng2-smart-table';
 import { MatPaginatorModule, MatSortModule, MatTableModule } from '@angular/material';
 import { ThemeModule } from '../../@theme/theme.module';
 import { GenerarDepreciacionComponent } from './generar-depreciacion/generar-depreciacion.component';
-import { EntradasModule } from '../entradas/entradas.module';
+import { AjustesModule } from '../ajustes/ajustes.module';
 
 @NgModule({
   declarations: [
@@ -24,7 +24,7 @@ import { EntradasModule } from '../entradas/entradas.module';
     MatPaginatorModule,
     MatSortModule,
     Ng2SmartTableModule,
-    EntradasModule,
+    AjustesModule,
   ],
 })
 export class DepreciacionModule { }

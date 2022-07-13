@@ -216,7 +216,7 @@ export class TiposBienComponent implements OnInit {
   }
   private recargarlista() {
     this.router.navigateByUrl('/RefrshComponent', {skipLocationChange: true}).then(
-      () => this.router.navigate(['/pages/catalogo_bienes/tipos_bien']));
+      () => this.router.navigate(['/pages/catalogo/tipos_bien']));
   }
   private succesOp(text) {
     this.pupmanager.showSuccessAlert(text);

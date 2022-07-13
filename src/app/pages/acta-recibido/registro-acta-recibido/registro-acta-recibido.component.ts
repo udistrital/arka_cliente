@@ -187,20 +187,23 @@ export class RegistroActaRecibidoComponent implements OnInit {
     });
   }
 
-  private loadContratistas(): Promise<void> {
+  private loadContratistas(query: string = ''): Promise<void> {
+    if (query === '') {
+      return new Promise<void>(resolve => {
+        resolve();
+      });
+    }
     return new Promise<void>(resolve => {
-      this.tercerosHelper.getTercerosByCriterio('contratista').toPromise().then(res => {
+      this.tercerosHelper.getTercerosByCriterio('contratista', 0, query).toPromise().then(res => {
         this.Contratistas = res;
         resolve();
       });
     });
   }
-  private filtroContratistas(nombre: string): TerceroCriterioContratista[] {
-    if (nombre.length >= 4 && Array.isArray(this.Contratistas)) {
-      const valorFiltrado = nombre.toLowerCase();
-      return this.Contratistas.filter(contr => this.muestraContratista(contr).toLowerCase().includes(valorFiltrado));
-    } else return [];
+  private async filtroContratistas() {
+    await this.loadContratistas(this.firstForm.get('Formulario1').get('Contratista').value);
   }
+
   muestraContratista(contr: TerceroCriterioContratista): string {
     if (contr && contr.Identificacion && contr.Tercero) {
       return contr.Identificacion.Numero + ' - ' + contr.Tercero.NombreCompleto;
@@ -208,27 +211,22 @@ export class RegistroActaRecibidoComponent implements OnInit {
       return contr.Tercero.NombreCompleto;
     }
   }
-  private cambiosContratista(control: AbstractControl): Observable<Partial<TerceroCriterioContratista>[]> {
-    return control.valueChanges
-      .pipe(
-        startWith(''),
-        map(val => typeof val === 'string' ? val : this.muestraContratista(val)),
-        map(nombre => this.filtroContratistas(nombre)),
-      );
-  }
-  private loadProveedores(): Promise<void> {
+
+  private loadProveedores(query: string = ''): Promise<void> {
+    if (query === '') {
+      return new Promise<void>(resolve => {
+        resolve();
+      });
+    }
     return new Promise<void>(resolve => {
-      this.tercerosHelper.getTercerosByCriterio('proveedor').toPromise().then(res => {
+      this.tercerosHelper.getTercerosByCriterio('proveedor', 0, query).toPromise().then(res => {
         this.Proveedores = res;
         resolve();
       });
     });
   }
-  private filtroProveedores(nombre: string): Partial<TerceroCriterioProveedor>[] {
-    if (nombre.length >= 4 && Array.isArray(this.Proveedores)) {
-      const valorFiltrado = nombre.toLowerCase();
-      return this.Proveedores.filter(prov => this.muestraProveedor(prov).toLowerCase().includes(valorFiltrado));
-    } else return [];
+  private async filtroProveedores() {
+    await this.loadProveedores(this.firstForm.get('Formulario1').get('Proveedor').value);
   }
   muestraProveedor(prov: Partial<TerceroCriterioProveedor>): string {
     if (prov && prov.Identificacion && prov.Tercero) {
@@ -236,14 +234,6 @@ export class RegistroActaRecibidoComponent implements OnInit {
     } else if (prov && prov.Tercero) {
       return prov.Tercero.NombreCompleto;
     }
-  }
-  private cambiosProveedor(control: AbstractControl): Observable<Partial<TerceroCriterioProveedor>[]> {
-    return control.valueChanges
-      .pipe(
-        startWith(''),
-        map(val => typeof val === 'string' ? val : this.muestraProveedor(val)),
-        map(nombre => this.filtroProveedores(nombre)),
-      );
   }
 
   download(index) {
@@ -326,8 +316,6 @@ export class RegistroActaRecibidoComponent implements OnInit {
           Datos_Adicionales: [transaccion_.Formulario3.Datos_Adicionales],
         }),
       }, { validators: this.checkValidness });
-    this.proveedoresFiltrados = this.cambiosProveedor(this.firstForm.get('Formulario1').get('Proveedor'));
-    this.contratistasFiltrados = this.cambiosContratista(this.firstForm.get('Formulario1').get('Contratista'));
     this.Traer_Relacion_Ubicaciones(transaccion_.Formulario1.Ubicacion);
   }
 
@@ -340,8 +328,6 @@ export class RegistroActaRecibidoComponent implements OnInit {
       Contratista: ['', !ae ? [Validators.required, this.validarTercero()] : []],
       Proveedor: ['', [this.validarTercero()]],
     });
-    this.contratistasFiltrados = this.cambiosContratista(form1.get('Contratista'));
-    this.proveedoresFiltrados = this.cambiosProveedor(form1.get('Proveedor'));
     return form1;
   }
 
@@ -546,27 +532,8 @@ export class RegistroActaRecibidoComponent implements OnInit {
     return elementosActa;
   }
 
-  // Posible TODO: Esta función también se repite en los componentes
-  // edición-acta-recibido y verificacion-acta-recibido
-  // por tanto se podría dejar en un servicio aparte
-  revisorValido(): boolean {
-    if (!this.userService.getPersonaId()) {
-      (Swal as any).fire({
-        title: this.translate.instant('GLOBAL.error'),
-        text: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.ErrorRevisorMsg'),
-        type: 'error',
-        showCancelButton: false,
-        confirmButtonColor: '#3085d6',
-        confirmButtonText: 'Ok',
-      });
-      return false;
-    } else {
-      return true;
-    }
-  }
-
   Revisar_Totales() {
-    if (!this.revisorValido()) {
+    if (!this.userService.TerceroValido()) {
       return;
     }
     (Swal as any).fire({
