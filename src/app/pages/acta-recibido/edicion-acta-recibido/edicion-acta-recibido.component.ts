@@ -301,10 +301,14 @@ export class EdicionActaRecibidoComponent implements OnInit {
 
   private loadProveedores(query: string = '', id: number= 0): Promise<void> {
     return new Promise<void>(resolve => {
-      this.tercerosHelper.getTercerosByCriterio('proveedor', id, query).toPromise().then(res => {
-        this.Proveedores = res;
+      if (id) {
+        this.tercerosHelper.getTercerosByCriterio('proveedor', id, query).toPromise().then(res => {
+          this.Proveedores = res;
+          resolve();
+        });
+      } else {
         resolve();
-      });
+      }
     });
   }
 
