@@ -292,19 +292,27 @@ export class EdicionActaRecibidoComponent implements OnInit {
 
   private loadContratistas(query: string = '', id: number= 0): Promise<void> {
     return new Promise<void>(resolve => {
-      this.tercerosHelper.getTercerosByCriterio('contratista', id, query).toPromise().then(res => {
-        this.Contratistas = res;
+      if (id || query) {
+        this.tercerosHelper.getTercerosByCriterio('contratista', id, query).toPromise().then(res => {
+          this.Contratistas = res;
+          resolve();
+        });
+      } else {
         resolve();
-      });
+      }
     });
   }
 
   private loadProveedores(query: string = '', id: number= 0): Promise<void> {
     return new Promise<void>(resolve => {
-      this.tercerosHelper.getTercerosByCriterio('proveedor', id, query).toPromise().then(res => {
-        this.Proveedores = res;
+      if (id || query) {
+        this.tercerosHelper.getTercerosByCriterio('proveedor', id, query).toPromise().then(res => {
+          this.Proveedores = res;
+          resolve();
+        });
+      } else {
         resolve();
-      });
+      }
     });
   }
 
@@ -702,7 +710,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
     if (siguienteEtapa) {
       nuevoEstado = (this.estadoActa === 'Registrada') ? EstadoActa_t.EnElaboracion : EstadoActa_t.EnVerificacion;
     } else {
-      nuevoEstado = this.Estados_Acta.find(estado => estado.Nombre === this.estadoActa).Id; // el nuevo estado es el mismo
+      nuevoEstado = this.Acta.UltimoEstado.EstadoActaId.Id; // el nuevo estado es el mismo
     }
 
     transaccionActa.UltimoEstado = this.generarEstadoActa(nuevoEstado);
