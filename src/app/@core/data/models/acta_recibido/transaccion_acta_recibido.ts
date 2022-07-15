@@ -9,4 +9,3 @@ export class TransaccionActaRecibido {
     SoportesActa: Array<SoporteActa>;
     Elementos: Array<Elemento>;
 }
-

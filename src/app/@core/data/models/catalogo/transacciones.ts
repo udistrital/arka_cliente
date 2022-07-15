@@ -1,14 +1,14 @@
-import { CatalogoID } from './catalogo';
-import { SubgrupoID, Grupo, Subgrupo } from './jerarquia';
+import { Subgrupo } from './jerarquia';
 import { Detalle } from './detalle'; // TODO: Eliminar una vez se actualice la API
+import { BaseId } from '../base';
 
 export class GrupoTransaccion {
-  Catalogo: CatalogoID;
+  Catalogo: BaseId;
   Subgrupo: Subgrupo;
 }
 
 export class SubgrupoTransaccion {
-  SubgrupoPadre: SubgrupoID;
+  SubgrupoPadre: BaseId;
   SubgrupoHijo: Subgrupo;
 }
 

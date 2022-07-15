@@ -1,6 +1,7 @@
-export class Supervisor {
+import { BaseId } from '../base';
+
+export class Supervisor extends BaseId {
     Nombre: string;
-    Id: number;
     DocumentoIdentificacion: number;
     Cargo: string;
     Sede: string;

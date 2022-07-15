@@ -1,13 +1,9 @@
-import { CatalogoID, Catalogo } from './catalogo';
 import { Detalle } from './detalle';
 import { TipoBienID } from '../acta_recibido/tipo_bien';
 import { TipoNivelID } from './tipo_nivel';
+import { BaseId } from '../base';
 
-export class SubgrupoID {
-  Id: number;
-}
-
-export class SubgrupoComun extends SubgrupoID {
+export class SubgrupoComun extends BaseId {
   Codigo: string;
   Nombre: string;
   Descripcion: string;
@@ -21,43 +17,12 @@ export class Subgrupo extends SubgrupoComun {
 }
 
 export class Grupo extends SubgrupoComun {
-  Catalogo: CatalogoID;
-  // TipoBienId: TipoBien;
-}
-
-export class Clase extends Subgrupo {
-  Detalle: Detalle;
-}
-
-// A eliminar ?
-export class Grupo2 extends Grupo {
-  DetalleId: number;
-  Depreciacion: boolean;
-  Valorizacion: boolean;
-  Amortizacion: boolean;
-  TipoBienId: TipoBienID;
-  VidaUtil: number;
-  ValorResidual: number;
-}
-
-// A eliminar ?
-export class SubgrupoComun2 extends SubgrupoID {
-  Nombre: string;
-  Descripcion: string;
-  Activo: boolean;
-}
-
-// A eliminar ?
-export class Grupo3 extends SubgrupoComun2 {
-  Catalogo: Catalogo;
-}
-
-// A eliminar ?
-export class Subgrupo1 extends SubgrupoComun2 {
-  Grupo: Grupo;
-}
-
-// A eliminar ?
-export class Subgrupo2 extends SubgrupoComun2 {
-  Subgrupo1: Subgrupo1;
+  Catalogo: BaseId;
+  DetalleId?: number;
+  Depreciacion?: boolean;
+  Valorizacion?: boolean;
+  Amortizacion?: boolean;
+  TipoBienId?: TipoBienID;
+  VidaUtil?: number;
+  ValorResidual?: number;
 }

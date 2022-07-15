@@ -1,6 +1,7 @@
 import { EspacioFisico } from './ubicacion/espacio_fisico';
 import { Tercero, DatosIdentificacion } from './terceros';
 import { Dependencia } from './oikos';
+import { BaseId } from './base';
 
 /**
  * Estructura retornada por
@@ -14,8 +15,7 @@ export class TerceroCriterioPlanta {
     TipoVinculacion: number;
 }
 
-export class Supervisor {
-    Id: number;
+export class Supervisor extends BaseId {
     Nombre: string;
     Cargo: string;
     SedeSupervisor: string;

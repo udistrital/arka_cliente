@@ -1,15 +1,12 @@
+import { Base } from '../base';
 import { ActaRecibido } from './acta_recibido';
 import { Proveedor } from './Proveedor';
 
-export class SoporteActa {
-    Id: number;
+export class SoporteActa extends Base {
     Consecutivo: string;
     DocumentoId: number;
     FechaSoporte: Date;
     ActaRecibidoId: ActaRecibido;
-    Activo: boolean;
-    FechaCreacion: Date;
-    FechaModificacion: Date;
 }
 
 export class Ubicacion {
@@ -19,13 +16,9 @@ export class Ubicacion {
     Estado: string;
 }
 
-export class SoporteActaProveedor {
-    Id: number;
+export class SoporteActaProveedor extends Base {
     Consecutivo: string;
     Proveedor: Proveedor; // CAMBIAR POR MODELO CUANDO SE PUEDA CONSULTAR
     FechaSoporte: Date;
     ActaRecibidoId: ActaRecibido;
-    Activo: boolean;
-    FechaCreacion: Date;
-    FechaModificacion: Date;
 }

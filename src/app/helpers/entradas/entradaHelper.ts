@@ -82,6 +82,13 @@ export class EntradaHelper {
         );
     }
 
+    /**
+     * Entrada Post
+     * If the response has errors in the OAS API it should show a popup message with an error.
+     * If the response suceed, it returns the data of the updated object.
+     * @param entradaData object to save in the DB
+     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
+     */
     public postEntrada(entradaData: Partial<TransaccionEntrada>, entradaId: number, aprobar: boolean) {
         this.rqManager.setPath('ARKA_SERVICE');
         const query = 'entrada?entradaId=' + entradaId + (aprobar ? '&aprobar=true' : '');
@@ -191,48 +198,6 @@ export class EntradaHelper {
      * If the response is successs, it returns the object's data.
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
      */
-    public getTipoEntradaByAcronimo(acronimo) {
-        this.rqManager.setPath('MOVIMIENTOS_KRONOS_SERVICE');
-        return this.rqManager.get('tipo_movimiento?query=Acronimo:' + acronimo + '&limit=-1').pipe(
-            map(
-                (res) => {
-                    if (res === 'error') {
-                        this.pUpManager.showErrorAlert('No se pudo consultar el contrato contratos');
-                        return undefined;
-                    }
-                    return res;
-                },
-            ),
-        );
-    }
-
-    /**
-     * Entradas Get
-     * If the response has errors in the OAS API it should show a popup message with an error.
-     * If the response is successs, it returns the object's data.
-     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
-     */
-    public getTipoEntradaByAcronimoAndNombre(acronimo, nombre) {
-        this.rqManager.setPath('MOVIMIENTOS_KRONOS_SERVICE');
-        return this.rqManager.get('tipo_movimiento?query=Acronimo:' + acronimo + ',Nombre:' + nombre).pipe(
-            map(
-                (res) => {
-                    if (res === 'error' || !Array.isArray(res) || res.length === 0) {
-                        this.pUpManager.showErrorAlert('Tipo de entrada no registrado en Kronos');
-                        return undefined;
-                    }
-                    return res[0];
-                },
-            ),
-        );
-    }
-
-    /**
-     * Entradas Get
-     * If the response has errors in the OAS API it should show a popup message with an error.
-     * If the response is successs, it returns the object's data.
-     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
-     */
     public getFormatoEntradaByName(nombre) {
         this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
         return this.rqManager.get('formato_tipo_movimiento?query=Nombre:' + nombre + '&limit=-1').pipe(
@@ -248,7 +213,6 @@ export class EntradaHelper {
         );
     }
 
-
     /**
      * Entradas Get
      * If the response has errors in the OAS API it should show a popup message with an error.
@@ -262,48 +226,6 @@ export class EntradaHelper {
                 (res) => {
                     if (res === 'error') {
                         this.pUpManager.showErrorAlert('No se pudo consultar el encargado del elemento');
-                        return undefined;
-                    }
-                    return res;
-                },
-            ),
-        );
-    }
-
-    /**
-     * EntradaByActa Get
-     * If the response has errors in the OAS API it should show a popup message with an error.
-     * If the response is successs, it returns the object's data.
-     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
-     */
-    public getEntradaByActa(acta_recibido_id) {
-        this.rqManager.setPath('ARKA_SERVICE');
-        return this.rqManager.get('entrada/movimientos/' + acta_recibido_id).pipe(
-            map(
-                (res) => {
-                    if (res === 'error') {
-                        this.pUpManager.showErrorAlert('No se pudieron consultar los movimientos asociados');
-                        return undefined;
-                    }
-                    return res;
-                },
-            ),
-        );
-    }
-
-    /**
-     * anularMovimientosByEntrada Get
-     * If the response has errors in the OAS API it should show a popup message with an error.
-     * If the response is successs, it returns the object's data.
-     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
-     */
-    public anularMovimientosByEntrada(entrada_id) {
-        this.rqManager.setPath('ARKA_SERVICE');
-        return this.rqManager.get('entrada/anular/' + entrada_id).pipe(
-            map(
-                (res) => {
-                    if (res === 'error') {
-                        this.pUpManager.showErrorAlert('No se pudieron anular los movimientos asociados');
                         return undefined;
                     }
                     return res;

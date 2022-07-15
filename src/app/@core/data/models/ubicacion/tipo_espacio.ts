@@ -1,4 +1,5 @@
-export class TipoEspacio {
-    Id: number;
+import { BaseId } from '../base';
+
+export class TipoEspacio extends BaseId {
     Nombre: string;
 }

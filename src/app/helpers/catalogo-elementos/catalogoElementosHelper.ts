@@ -121,68 +121,6 @@ export class CatalogoElementosHelper {
     }
 
     /**
-     * Actas de Recibido Get
-     * If the response has errors in the OAS API it should show a popup message with an error.
-     * If the response is successs, it returns the object's data.
-     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
-     */
-    public getGrupo() {
-        this.rqManager.setPath('CATALOGO_ELEMENTOS_SERVICE');
-        return this.rqManager.get('subgrupo_catalogo?query=Activo:True').pipe(
-            map(
-                (res) => {
-                    if (res === 'error') {
-                        this.pUpManager.showErrorAlert('No se pudo consultar los grupos');
-                        return undefined;
-                    }
-                    return res;
-                },
-            ),
-        );
-    }
-    /**
-     * Elementos Acta Get
-     * If the response has errors in the OAS API it should show a popup message with an error.
-     * If the response is successs, it returns the object's data.
-     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
-     */
-    public getGrupoById(grupoId) {
-        this.rqManager.setPath('CATALOGO_ELEMENTOS_SERVICE');
-        return this.rqManager.get('subgrupo_catalogo?query=SubgrupoId.Id:' + grupoId + ',Activo:True').pipe(
-            map(
-                (res) => {
-                    if (res === 'error') {
-                        this.pUpManager.showErrorAlert('No se pudo consultar los elementos');
-                        return undefined;
-                    }
-                    return res;
-                },
-            ),
-        );
-    }
-    /**
-     * Elementos Acta Get
-     * If the response has errors in the OAS API it should show a popup message with an error.
-     * If the response is successs, it returns the object's data.
-     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
-     */
-    public getGrupoTransaccionById(grupoId) {
-        this.rqManager.setPath('CATALOGO_ELEMENTOS_SERVICE');
-        return this.rqManager.get('tr_grupo/' + grupoId + '').pipe(
-            map(
-                (res) => {
-                    if (res === 'error') {
-                        this.pUpManager.showErrorAlert('No se pudo consultar los elementos');
-                        return undefined;
-                    }
-                    return res;
-                },
-            ),
-        );
-    }
-
-
-    /**
      * Transaccion Acta Post
      * If the response has errors in the OAS API it should show a popup message with an error.
      * If the response is successs, it returns the object's data.
@@ -237,47 +175,6 @@ export class CatalogoElementosHelper {
                 (res) => {
                     if (res['Type'] === 'error') {
                         this.pUpManager.showErrorAlert('No se pudo borrar el grupo');
-                        return undefined;
-                    }
-                    return res;
-                },
-            ),
-        );
-    }
-
-    /**
-     * Actas de Recibido Get
-     * If the response has errors in the OAS API it should show a popup message with an error.
-     * If the response is successs, it returns the object's data.
-     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
-     */
-    public getSubgrupo() {
-        this.rqManager.setPath('CATALOGO_ELEMENTOS_SERVICE');
-        return this.rqManager.get('subgrupo_subgrupo?query=Activo:True').pipe(
-            map(
-                (res) => {
-                    if (res === 'error') {
-                        this.pUpManager.showErrorAlert('No se pudo consultar las actas de recibido');
-                        return undefined;
-                    }
-                    return res;
-                },
-            ),
-        );
-    }
-    /**
-     * Elementos Acta Get
-     * If the response has errors in the OAS API it should show a popup message with an error.
-     * If the response is successs, it returns the object's data.
-     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
-     */
-    public getSubgrupoById(subgrupoId) {
-        this.rqManager.setPath('CATALOGO_ELEMENTOS_SERVICE');
-        return this.rqManager.get('tr_subgrupo/' + subgrupoId).pipe(
-            map(
-                (res) => {
-                    if (res === 'error') {
-                        this.pUpManager.showErrorAlert('No se pudo consultar los elementos');
                         return undefined;
                     }
                     return res;
@@ -638,26 +535,6 @@ export class CatalogoElementosHelper {
     }
 
     /**
-     * Catalogo Get
-     * If the response has errors in the OAS API it should show a popup message with an error.
-     * If the response is successs, it returns the object's data.
-     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
-     */
-    public getSubgrupoTipoBien(subgrupo) {
-        this.rqManager.setPath('CATALOGO_ELEMENTOS_SERVICE');
-        return this.rqManager.get('tr_catalogo/tipo_de_bien/' + subgrupo + '').pipe(
-            map(
-                (res) => {
-                    if (res === 'error') {
-                        this.pUpManager.showErrorAlert('No se pudo consultar el catálogo de bienes');
-                        return undefined;
-                    }
-                    return res;
-                },
-            ),
-        );
-    }
-    /**
      * Subgrupo Get
      * If the response has errors in the OAS API it should show a popup message with an error.
      * If the response is successs, it returns the object's data.
@@ -678,6 +555,7 @@ export class CatalogoElementosHelper {
             ),
         );
     }
+
     /**
      * Subgrupo Get
      * If the response has errors in the OAS API it should show a popup message with an error.

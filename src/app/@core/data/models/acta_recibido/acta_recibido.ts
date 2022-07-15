@@ -1,20 +1,13 @@
+import { Base } from '../base';
 import { EspacioFisico } from '../ubicacion/espacio_fisico';
 import { TipoActa } from './tipo_acta';
 
-export class ActaRecibido {
-    Id: number;
-    Activo: boolean;
+export class ActaRecibido extends Base {
     TipoActaId: TipoActa;
-    FechaModificacion: Date;
-    FechaCreacion: Date;
 }
 
-export class ActaRecibidoUbicacion {
-    Activo: boolean;
-    FechaCreacion: Date;
-    FechaModificacion: Date;
+export class ActaRecibidoUbicacion extends Base {
     FechaVistoBueno: Date;
-    Id: number;
     Observaciones: string;
     RevisorId: number;
     UbicacionId: EspacioFisico;

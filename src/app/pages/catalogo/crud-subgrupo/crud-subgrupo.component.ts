@@ -1,4 +1,4 @@
-import { Grupo2, Subgrupo, SubgrupoComun, SubgrupoID } from '../../../@core/data/models/catalogo/jerarquia';
+import { Grupo, Subgrupo, SubgrupoComun } from '../../../@core/data/models/catalogo/jerarquia';
 import { Detalle } from '../../../@core/data/models/catalogo/detalle';
 import { TipoNivelID, Nivel_t } from '../../../@core/data/models/catalogo/tipo_nivel';
 import { NivelHelper as nh } from '../../../@core/utils/niveles.helper';
@@ -9,6 +9,7 @@ import { FORM_SUBGRUPO, FORM_SUBGRUPO_DETALLE } from './form-subgrupo';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/catalogoElementosHelper';
 import Swal from 'sweetalert2';
+import { BaseId } from '../../../@core/data/models/base';
 
 @Component({
   selector: 'ngx-crud-subgrupo',
@@ -95,7 +96,7 @@ export class CrudSubgrupoComponent implements OnInit, OnChanges {
     } else if (this.subgrupo.TipoNivelId.Id === Nivel_t.Clase) {
 
       this.catalogoElementosService.getDetalleSubgrupo(this.subgrupo.Id).toPromise().then(res => {
-        const clase = new Grupo2;
+        const clase = new Grupo;
 
         clase.Id = this.subgrupo.Id;
         clase.Activo = this.subgrupo.Activo;
@@ -190,7 +191,7 @@ export class CrudSubgrupoComponent implements OnInit, OnChanges {
     subgrupoHijo.TipoNivelId = <TipoNivelID>{ Id: nivel };
     trSubrupo.SubgrupoHijo = subgrupoHijo;
 
-    trSubrupo.SubgrupoPadre = <SubgrupoID>{ 'Id': this.subgrupo.Id };
+    trSubrupo.SubgrupoPadre = <BaseId>{ Id: this.subgrupo.Id };
 
     this.catalogoElementosService.postSubgrupo(trSubrupo).toPromise()
       .then((res: any) => {

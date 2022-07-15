@@ -1,9 +1,7 @@
-export class TipoActa {
-    Id: number;
+import { Base } from '../base';
+
+export class TipoActa extends Base {
     Nombre: string;
     Descripcion: string;
     CodigoAbreviacion: string;
-    Activo: boolean;
-    FechaCreacion: Date;
-    FechaModificacion: Date;
 }

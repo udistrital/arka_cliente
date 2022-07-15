@@ -1,11 +1,8 @@
 import { SubgrupoComun } from './jerarquia';
 import { TipoBien } from '../acta_recibido/tipo_bien';
+import { BaseId } from '../base';
 
-export class DetalleID {
-  Id: number;
-}
-
-export class Detalle extends DetalleID {
+export class Detalle extends BaseId {
   Depreciacion: boolean;
   Valorizacion: boolean;
   Amortizacion: boolean;

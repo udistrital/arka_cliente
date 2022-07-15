@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import { mergeMap } from 'rxjs/operators';
-import { Documento } from '../../@core/data/models/documento';
+import { Documento } from '../../@core/data/models/documento/documento';
 import { RequestManager } from '../../managers/requestManager';
 import { PopUpManager } from '../../managers/popUpManager';
 

@@ -48,10 +48,10 @@ export class RequestManager {
    * @returns Observable<any>
    */
   get(endpoint, params?) {
-    const queryParams = new HttpParams();
+    let queryParams = new HttpParams();
     if (params) {
       for (const [key, value] of Object.entries(params)) {
-        queryParams.append(key, value + '');
+        queryParams = queryParams.set(key, value + '');
       }
 
     }
