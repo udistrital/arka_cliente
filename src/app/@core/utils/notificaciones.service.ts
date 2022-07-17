@@ -56,8 +56,11 @@ export class NotificacionesService {
     connect() {
         if (this.autenticacion.live() && production) {
             this.payload = this.autenticacion.getPayload();
-            this.roles = (JSON.parse(atob(localStorage.getItem('id_token').split('.')[1])).role).filter((data: any) => (data.indexOf('/') === -1));
-            this.messagesSubject = webSocket(`${NOTIFICACION_SERVICE}?id=${this.payload.sub}&profiles=${this.roles}`);
+            let wsUrl = `${NOTIFICACION_SERVICE}?id=${this.payload.sub}`;
+            if (this.payload.role && this.payload.role.length) {
+                wsUrl += `&profiles=${this.payload.role.filter((data: any) => (data.indexOf('/') === -1))}`;
+            }
+            this.messagesSubject = webSocket(wsUrl);
             this.messagesSubject
                 .pipe(
                     map((msn) => {
