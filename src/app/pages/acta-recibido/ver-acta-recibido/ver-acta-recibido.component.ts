@@ -61,8 +61,8 @@ export class VerActaRecibidoComponent implements OnInit {
   Dependencias: any;
   Sedes: any;
   bandera: boolean;
-  private Proveedores: Partial<TerceroCriterioProveedor>[];
-  private Contratistas: TerceroCriterioContratista[];
+  Proveedores: Partial<TerceroCriterioProveedor>[];
+  Contratistas: TerceroCriterioContratista[];
   sedeDependencia: any;
   elementos: any;
   totales: any;
@@ -187,7 +187,7 @@ export class VerActaRecibidoComponent implements OnInit {
   }
 
   private async filtroProveedores() {
-    await this.loadProveedores(this.firstForm.get('Formulario1').get('Proveedor').value);
+    await this.loadProveedores(this.controlProveedor.value);
   }
 
   muestraProveedor(prov: Partial<TerceroCriterioProveedor>): string {
@@ -198,7 +198,7 @@ export class VerActaRecibidoComponent implements OnInit {
   }
 
   private async filtroContratistas() {
-    await this.loadContratistas(this.firstForm.get('Formulario1').get('Contratista').value);
+    await this.loadContratistas(this.controlContratista.value);
   }
 
   muestraContratista(contr: TerceroCriterioContratista): string {
@@ -336,7 +336,7 @@ export class VerActaRecibidoComponent implements OnInit {
 
   downloadFile(index: any) {
 
-    const id_documento = (this.firstForm.get('Formulario2') as FormArray).at(index).get('Soporte').value;
+    const id_documento = (this.controlSoportes as FormArray).at(index).get('Soporte').value;
 
     const filesToGet = [
       {
@@ -372,7 +372,7 @@ export class VerActaRecibidoComponent implements OnInit {
     const nuevoEstado = aceptar ? EstadoActa_t.Aceptada : EstadoActa_t.EnModificacion;
     transaccionActa.UltimoEstado = this.generarEstadoActa(nuevoEstado, aceptar);
 
-    const Soportes: SoporteActa[] = (this.firstForm.get('Formulario2') as FormArray).controls
+    const Soportes: SoporteActa[] = (this.controlSoportes as FormArray).controls
       .map((soporte, index) => this.generarSoporte(soporte, index));
 
     transaccionActa.SoportesActa = Soportes;
@@ -423,10 +423,10 @@ export class VerActaRecibidoComponent implements OnInit {
 
   private generarEstadoActa(Estado: number, aceptar: boolean): HistoricoActa {
 
-    const proveedor = this.firstForm.get('Formulario1.Proveedor').value;
-    const ubicacionId = this.firstForm.get('Formulario1.Ubicacion').value;
-    const contratista = this.firstForm.get('Formulario1.Contratista').value;
-    const observaciones = this.firstForm.get('Formulario3.Datos_Adicionales').value;
+    const proveedor = this.controlProveedor.value;
+    const ubicacionId = this.controlUbicacion.value;
+    const contratista = this.controlContratista.value;
+    const observaciones = this.controlDatosAdicionales.value;
     const historico = new HistoricoActa();
 
     historico.Id = null;
@@ -542,8 +542,8 @@ export class VerActaRecibidoComponent implements OnInit {
           },
         ]).then((result2) => {
           if (result2.value) {
-            const obs = this.firstForm.get('Formulario3').get('Datos_Adicionales').value;
-            this.firstForm.get('Formulario3').get('Datos_Adicionales').setValue(
+            const obs = this.controlDatosAdicionales.value;
+            this.controlDatosAdicionales.setValue(
               obs + ' // Razón de rechazo: ' + result2.value,
               );
             this.onFirstSubmit(false);
@@ -556,6 +556,30 @@ export class VerActaRecibidoComponent implements OnInit {
 
   eventoTotales(event) {
     this.totales = event;
+  }
+
+  get controlDatosBasicos() {
+    return this.firstForm.get('Formulario1');
+  }
+  get controlContratista() {
+    return this.controlDatosBasicos.get('Contratista');
+  }
+  get controlProveedor() {
+    return this.controlDatosBasicos.get('Proveedor');
+  }
+  get controlUbicacion() {
+    return this.controlDatosBasicos.get('Ubicacion');
+  }
+
+  get controlSoportes() {
+    return this.firstForm.get('Formulario2');
+  }
+
+  get controlForm3() {
+    return this.firstForm.get('Formulario3');
+  }
+  get controlDatosAdicionales() {
+    return this.controlForm3.get('Datos_Adicionales');
   }
 
 }

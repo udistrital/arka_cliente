@@ -15,7 +15,7 @@
                   <input matInput type="text" placeholder="{{'GLOBAL.Acta_Recibido.ContratistaAsignado' | translate }}"
                     class="form-control" formControlName="Contratista" [matAutocomplete]="autoContratista">
                     <mat-autocomplete #autoContratista="matAutocomplete" [displayWith]="muestraContratista">
-                      <mat-option *ngFor="let contr of Contratista" [value]="contr">
+                      <mat-option *ngFor="let contr of Contratistas" [value]="contr">
                         {{muestraContratista(contr)}}
                       </mat-option>
                     </mat-autocomplete>
@@ -62,7 +62,7 @@
           <nb-card-header>{{'GLOBAL.Acta_Recibido.VerificacionActa.SoporteTitle' | translate}}</nb-card-header>
           <nb-card-body>
             <mat-tab-group [selectedIndex]="selected.value" (selectedIndexChange)="selected.setValue($event)">
-              <mat-tab *ngFor="let soporte of firstForm.get('Formulario2')['controls']; let i = index" [formGroupName]="i">
+              <mat-tab *ngFor="let soporte of controlSoportes['controls']; let i = index" [formGroupName]="i">
                 <ng-template mat-tab-label>
                   {{'GLOBAL.Acta_Recibido.VerificacionActa.SoporteSubTitle' | translate}} &nbsp; {{i + 1}}
                 </ng-template>

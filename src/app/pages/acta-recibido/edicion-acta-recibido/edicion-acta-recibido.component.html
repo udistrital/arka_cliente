@@ -23,13 +23,13 @@
                           </mat-option>
                         </mat-autocomplete>
                         <p class="campo"
-                          *ngIf="firstForm.get('Formulario1.Contratista').errors && firstForm.get('Formulario1.Contratista').errors.required">
+                          *ngIf="controlContratista.hasError('required')">
                           {{'GLOBAL.Errores.ErrorRequerido' | translate}}</p>
                         <p class="campo"
-                          *ngIf="firstForm.get('Formulario1.Contratista').errors && firstForm.get('Formulario1.Contratista').errors.errorLongitudMinima">
+                          *ngIf="controlContratista.hasError('errorLongitudMinima')">
                           {{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : minLength} }}</p>
                         <p class="campo"
-                          *ngIf="firstForm.get('Formulario1.Contratista').errors && firstForm.get('Formulario1.Contratista').errors.terceroNoValido">
+                          *ngIf="controlContratista.hasError('terceroNoValido')">
                           {{'GLOBAL.Errores.ErrorTercero' | translate}}</p>
                     </div>
                     <div class="form-group col-sm">
@@ -43,13 +43,13 @@
                         </mat-option>
                       </mat-autocomplete>
                       <p class="campo"
-                        *ngIf="firstForm.get('Formulario1.Proveedor').errors && firstForm.get('Formulario1.Proveedor').errors.required">
+                        *ngIf="controlProveedor.hasError('required') ">
                         {{'GLOBAL.Errores.ErrorRequerido' | translate}}</p>
                       <p class="campo"
-                        *ngIf="firstForm.get('Formulario1.Proveedor').errors && firstForm.get('Formulario1.Proveedor').errors.errorLongitudMinima">
+                        *ngIf="controlProveedor.hasError('errorLongitudMinima')">
                         {{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : minLength} }}</p>
                       <p class="campo"
-                        *ngIf="firstForm.get('Formulario1.Proveedor').errors && firstForm.get('Formulario1.Proveedor').errors.terceroNoValido">
+                        *ngIf="controlProveedor.hasError('terceroNoValido')">
                         {{'GLOBAL.Errores.ErrorTercero' | translate}}</p>
                     </div>
                 </div>
@@ -60,7 +60,7 @@
                       (selectionChange)="Traer_Relacion_Ubicaciones();">
                       <mat-option *ngFor="let sede of Sedes" [(value)]="sede.Id">{{sede.Nombre}}</mat-option>
                     </mat-select>
-                    <p class="campo" *ngIf="firstForm.get('Formulario1').get('Sede').invalid">
+                    <p class="campo" *ngIf="controlSede.invalid">
                       {{'GLOBAL.Errores.ErrorRequerido' | translate}}</p>
                   </div>
                   <div class="form-group col-sm">
@@ -71,7 +71,7 @@
                       [minSearchLength]="3" [clearUnselected]="true" (blur)="Traer_Relacion_Ubicaciones()"
                       placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : minLength} }}">
                     </ng2-completer>
-                    <p class="campo" *ngIf="firstForm.get('Formulario1').get('Dependencia').invalid">
+                    <p class="campo" *ngIf="controlDependencia.invalid">
                       {{'GLOBAL.Errores.ErrorRequerido' | translate}}</p>
                   </div>
                   <div class="form-group col-sm">
@@ -80,14 +80,14 @@
                       <mat-option *ngFor="let ubicacion of UbicacionesFiltradas" [(value)]="ubicacion.Id">{{ubicacion.Nombre}}
                       </mat-option>
                     </mat-select>
-                    <p class="campo" *ngIf="firstForm.get('Formulario1').get('Ubicacion').invalid">
+                    <p class="campo" *ngIf="controlUbicacion.invalid">
                       {{'GLOBAL.Errores.ErrorRequerido' | translate}}</p>
                   </div>
                 </div>
 
               </nb-card-body>
               <nb-card-footer>
-                <button nbButton matStepperNext [disabled]="!firstForm.get('Formulario1').valid"
+                <button nbButton matStepperNext [disabled]="controlDatosBasicos.invalid"
                   class="float-right">{{'GLOBAL.Acta_Recibido.EdicionActa.SiguienteButton' | translate}}</button>
               </nb-card-footer>
             </nb-card>
@@ -101,12 +101,12 @@
                 (animationDone)="tab()">
 
                   <!-- cada soporte -->
-                  <mat-tab *ngFor="let soporte of firstForm.get('Formulario2')['controls']; let i = index"
+                  <mat-tab *ngFor="let soporte of controlSoportes['controls']; let i = index"
                     [formGroupName]="i">
                     <ng-template mat-tab-label>
                       {{'GLOBAL.Acta_Recibido.EdicionActa.SoporteSubTitle' | translate}} &nbsp; {{i + 1}} &nbsp; &nbsp;
                       &nbsp; &nbsp;<em class="fas fa-window-close" (click)="removeTab(i)"
-                      *ngIf="getPermisoEditar(permisos.Acta) && firstForm.get('Formulario2').value.length > 1"></em>
+                      *ngIf="getPermisoEditar(permisos.Acta) && controlSoportes.value.length > 1"></em>
                     </ng-template>
                     <div>
 
@@ -134,11 +134,11 @@
                                     <input matInput [matDatepicker]="fecha" [min]="minDate" [max]="maxDate" formControlName="Fecha_Factura">
                                     <mat-datepicker-toggle matSuffix [for]="fecha"></mat-datepicker-toggle>
                                     <mat-datepicker #fecha></mat-datepicker>
-                                    <mat-error *ngIf="soporte.get('Fecha_Factura').errors && (soporte.get('Fecha_Factura').errors.required
-                                        && !soporte.get('Fecha_Factura').errors.matDatepickerParse)">
+                                    <mat-error *ngIf="soporte.get('Fecha_Factura').hasError('required')
+                                        && !soporte.get('Fecha_Factura').hasError('matDatepickerParse')">
                                       * {{'GLOBAL.Errores.ErrorRequerido' | translate}}</mat-error>
-                                    <mat-error *ngIf="soporte.get('Fecha_Factura').errors && (soporte.get('Fecha_Factura').errors.matDatepickerParse
-                                      || soporte.get('Fecha_Factura').errors.matDatepickerMax || soporte.get('Fecha_Factura').errors.matDatepickerMin)">
+                                    <mat-error *ngIf="soporte.get('Fecha_Factura').hasError('matDatepickerParse')
+                                      || soporte.get('Fecha_Factura').hasError('matDatepickerMax') || soporte.get('Fecha_Factura').hasError('matDatepickerMin')">
                                       * {{'GLOBAL.Errores.ErrorFecha' | translate}}</mat-error>
                                   </mat-form-field>
                                 </div>
@@ -265,7 +265,7 @@
                     {{'GLOBAL.Acta_Recibido.EdicionActa.AnteriorButton' | translate}}
                   </button>
                   <button nbButton matStepperNext
-                    [disabled]="!firstForm.get('Formulario1').valid || !firstForm.get('Formulario2').valid"
+                    [disabled]="controlDatosBasicos.invalid || controlSoportes.invalid"
                     class="float-right">{{'GLOBAL.Acta_Recibido.EdicionActa.SiguienteButton' | translate}}
                   </button>
                 </div>
@@ -286,7 +286,7 @@
                   <button nbButton matStepperPrevious>
                     {{'GLOBAL.Acta_Recibido.EdicionActa.AnteriorButton' | translate}}</button>
                   <button nbButton matStepperNext
-                    [disabled]="!firstForm.get('Formulario1').valid || !firstForm.get('Formulario2').valid || !DatosElementos || DatosElementos.length === 0 || !validarElementos"
+                    [disabled]="controlDatosBasicos.invalid || controlSoportes.invalid || !DatosElementos || DatosElementos.length === 0 || !validarElementos"
                     class="float-right">{{'GLOBAL.Acta_Recibido.EdicionActa.SiguienteButton' | translate}}</button>
                 </div>
               </nb-card-footer>
@@ -321,7 +321,7 @@
                       class="form-control" formControlName="Datos_Adicionales">
                     </textarea>
                   </div>
-                    <p class="campo" *ngIf="firstForm.get('Formulario3').get('Datos_Adicionales').invalid">
+                    <p class="campo" *ngIf="controlDatosAdicionales.invalid">
                       {{'GLOBAL.Errores.ErrorRequerido' | translate}}</p>
                 </div>
               </nb-card-body>
@@ -331,8 +331,8 @@
                     {{'GLOBAL.Acta_Recibido.EdicionActa.AnteriorButton' | translate}}
                   </button>
                   <button nbButton (click)="Revisar_Totales2()" *ngIf="getPermisoEditar(permisos.Acta) || getPermisoEditar(permisos.Elementos)"
-                    [disabled]="!firstForm.get('Formulario1').valid || !firstForm.get('Formulario2').valid
-                    || !firstForm.get('Formulario3').valid || (this.estadoActa === 'Aceptada' && errores.size > 0)" class="float-right">
+                    [disabled]="controlDatosBasicos.invalid || controlSoportes.invalid
+                    || controlForm3.invalid || (this.estadoActa === 'Aceptada' && errores.size > 0)" class="float-right">
                     {{'GLOBAL.Acta_Recibido.EdicionActa.GuardarCambiosButton' | translate}}
                   </button>
                 </div>
@@ -343,7 +343,7 @@
             <button mat-icon-button type="button" *ngIf="errores && (errores.size > 0)" [nbPopover]="erroresTemplate" nbPopoverTrigger="hover">
                 <span class="fas fa-exclamation-triangle fa-2x"></span>
               </button>
-              <button nbButton (click)="Revisar_Totales3(1)" *ngIf="accion.envHabilitado && firstForm.get('Formulario1.Proveedor').value" [disabled]="this.errores.size > 0">
+              <button nbButton (click)="Revisar_Totales3(1)" *ngIf="accion.envHabilitado && controlProveedor.value" [disabled]="this.errores.size > 0">
                 {{ accion.envTexto }}
               </button>
               <button nbButton (click)="Revisar_Totales3(2)" *ngIf="accion.envContratistaHabilitado" [disabled]="this.errores.size > 0">

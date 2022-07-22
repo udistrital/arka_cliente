@@ -38,9 +38,9 @@ import { EstadoElemento } from '../../../@core/data/models/acta_recibido/estado_
 export class RegistroActaRecibidoComponent implements OnInit {
 
   protected dataService3: CompleterData;
-  private Contratistas: TerceroCriterioContratista[];
+  Contratistas: TerceroCriterioContratista[];
   contratistasFiltrados: Observable<Partial<TerceroCriterioContratista>[]>;
-  private Proveedores: Partial<TerceroCriterioProveedor>[];
+  Proveedores: Partial<TerceroCriterioProveedor>[];
   proveedoresFiltrados: Observable<Partial<TerceroCriterioProveedor>[]>;
 
   // Mensajes de error
@@ -200,8 +200,8 @@ export class RegistroActaRecibidoComponent implements OnInit {
       });
     });
   }
-  private async filtroContratistas() {
-    await this.loadContratistas(this.firstForm.get('Formulario1').get('Contratista').value);
+  async filtroContratistas() {
+    await this.loadContratistas(this.controlContratista.value);
   }
 
   muestraContratista(contr: TerceroCriterioContratista): string {
@@ -225,8 +225,8 @@ export class RegistroActaRecibidoComponent implements OnInit {
       });
     });
   }
-  private async filtroProveedores() {
-    await this.loadProveedores(this.firstForm.get('Formulario1').get('Proveedor').value);
+  async filtroProveedores() {
+    await this.loadProveedores(this.controlProveedor.value);
   }
   muestraProveedor(prov: Partial<TerceroCriterioProveedor>): string {
     if (prov && prov.Identificacion && prov.Tercero) {
@@ -256,7 +256,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
           file.url = this.cleanURL(file.urlTemp);
           file.IdDocumento = 13; // tipo de documento (API documentos_crud)
           file.file = event.target.files[0];
-          (this.firstForm.get('Formulario2') as FormArray).at(index).get('Soporte').setValue(file.name);
+          (this.controlSoportes as FormArray).at(index).get('Soporte').setValue(file.name);
           this.fileDocumento[index] = file;
         } else {
           (Swal as any).fire({
@@ -272,7 +272,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
   }
 
   clearFile(index) {
-    (this.firstForm.get('Formulario2') as FormArray).at(index).get('Soporte').setValue('');
+    (this.controlSoportes as FormArray).at(index).get('Soporte').setValue('');
     this.fileDocumento.splice(index, 1);
   }
 
@@ -349,22 +349,22 @@ export class RegistroActaRecibidoComponent implements OnInit {
 
   tab() {
     if (this.cargarTab) {
-      this.selectedTab = this.firstForm.get('Formulario2').value.length - 1;
+      this.selectedTab = this.controlSoportes.value.length - 1;
       this.cargarTab = false;
     }
   }
 
   addTab($event) {
-    if ($event === this.firstForm.get('Formulario2').value.length && !this.cargarTab) {
-      (this.firstForm.get('Formulario2') as FormArray).push(this.Formulario_2);
-      this.selectedTab = this.firstForm.get('Formulario2').value.length;
+    if ($event === this.controlSoportes.value.length && !this.cargarTab) {
+      (this.controlSoportes as FormArray).push(this.Formulario_2);
+      this.selectedTab = this.controlSoportes.value.length;
       this.cargarTab = true;
     }
   }
 
   removeTab(i: number) {
     this.selectedTab = i - 1;
-    (this.firstForm.get('Formulario2') as FormArray).removeAt(i);
+    (this.controlSoportes as FormArray).removeAt(i);
     this.fileDocumento.splice(i, 1);
   }
 
@@ -559,9 +559,9 @@ export class RegistroActaRecibidoComponent implements OnInit {
   }
 
   Traer_Relacion_Ubicaciones(loadInicial: string) {
-    const sede = this.firstForm.get('Formulario1').get('Sede').value;
-    const dependencia = this.firstForm.get('Formulario1').get('Dependencia').value;
-    if (this.firstForm.get('Formulario1').get('Sede').valid && this.firstForm.get('Formulario1').get('Dependencia').valid &&
+    const sede = this.controlSede.value;
+    const dependencia = this.controlDependencia.value;
+    if (this.controlSede.valid && this.controlDependencia.valid &&
       sede !== undefined && dependencia !== undefined && this.Sedes && this.Dependencias) {
       this.UbicacionesFiltradas = [];
       const transaccion: any = {};
@@ -596,6 +596,36 @@ export class RegistroActaRecibidoComponent implements OnInit {
       control.get('Formulario3').valid);
     errors ? this.errores.set('formularios', true) : this.errores.delete('formularios');
     return errors ? { formularios: true } : null;
+  }
+
+  get controlDatosBasicos() {
+    return this.firstForm.get('Formulario1');
+  }
+  get controlContratista() {
+    return this.controlDatosBasicos.get('Contratista');
+  }
+  get controlProveedor() {
+    return this.controlDatosBasicos.get('Proveedor');
+  }
+  get controlSede() {
+    return this.controlDatosBasicos.get('Sede');
+  }
+  get controlDependencia() {
+    return this.controlDatosBasicos.get('Dependencia');
+  }
+  get controlUbicacion() {
+    return this.controlDatosBasicos.get('Ubicacion');
+  }
+
+  get controlSoportes() {
+    return this.firstForm.get('Formulario2');
+  }
+
+  get controlForm3() {
+    return this.firstForm.get('Formulario3');
+  }
+  get controlDatosAdicionales() {
+    return this.controlForm3.get('Datos_Adicionales');
   }
 
 }

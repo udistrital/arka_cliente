@@ -23,13 +23,13 @@
                     </mat-option>
                   </mat-autocomplete>
                   <p class="campo"
-                    *ngIf="firstForm.get('Formulario1.Contratista').errors && firstForm.get('Formulario1.Contratista').errors.required">
+                    *ngIf="controlContratista.hasError('required')">
                     {{'GLOBAL.placeholder' | translate}}</p>
                   <p class="campo"
-                    *ngIf="firstForm.get('Formulario1.Contratista').errors && firstForm.get('Formulario1.Contratista').errors.errorLongitudMinima">
+                    *ngIf="controlContratista.hasError('errorLongitudMinima')">
                     {{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : minLength} }}</p>
                   <p class="campo"
-                    *ngIf="firstForm.get('Formulario1.Contratista').errors && firstForm.get('Formulario1.Contratista').errors.terceroNoValido">
+                    *ngIf="controlContratista.hasError('terceroNoValido')">
                     {{'GLOBAL.Errores.ErrorTercero' | translate}}</p>
                 </div>
                 <div class="form-group col-sm">
@@ -44,10 +44,10 @@
                     </mat-option>
                   </mat-autocomplete>
                   <p class="campo"
-                    *ngIf="firstForm.get('Formulario1.Proveedor').errors && firstForm.get('Formulario1.Proveedor').errors.errorLongitudMinima">
+                    *ngIf="controlProveedor.hasError('errorLongitudMinima')">
                     {{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : minLength} }}</p>
                   <p class="campo"
-                    *ngIf="firstForm.get('Formulario1.Proveedor').errors && firstForm.get('Formulario1.Proveedor').errors.terceroNoValido">
+                    *ngIf="controlProveedor.hasError('terceroNoValido')">
                     {{'GLOBAL.Errores.ErrorTercero' | translate}}</p>
                 </div>
               </div>
@@ -59,7 +59,7 @@
                     (selectionChange)="usarLocalStorage(); Traer_Relacion_Ubicaciones()">
                     <mat-option *ngFor="let sede of Sedes" [(value)]="sede.Id">{{sede.Nombre}}</mat-option>
                   </mat-select>
-                  <p class="campo" *ngIf="firstForm.get('Formulario1').get('Sede').invalid">
+                  <p class="campo" *ngIf="controlSede.invalid">
                     {{'GLOBAL.placeholder' | translate}}</p>
                 </div>
                 <div class="form-group col-sm">
@@ -70,7 +70,7 @@
                     (change)="usarLocalStorage(); Traer_Relacion_Ubicaciones();"
                     placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : minLength} }}">
                   </ng2-completer>
-                  <p class="campo" *ngIf="firstForm.get('Formulario1').get('Dependencia').invalid">
+                  <p class="campo" *ngIf="controlDependencia.invalid">
                     {{'GLOBAL.placeholder' | translate}}</p>
                 </div>
                 <div class="form-group col-sm">
@@ -80,13 +80,13 @@
                       {{ubicacion.Nombre}}
                     </mat-option>
                   </mat-select>
-                  <p class="campo" *ngIf="firstForm.get('Formulario1').get('Ubicacion').invalid">
+                  <p class="campo" *ngIf="controlUbicacion.invalid">
                     {{'GLOBAL.placeholder' | translate}}</p>
                 </div>
               </div>
             </nb-card-body>
             <nb-card-footer>
-              <button nbButton matStepperNext class="float-right" [disabled]="!firstForm.get('Formulario1').valid">
+              <button nbButton matStepperNext class="float-right" [disabled]="controlDatosBasicos.invalid">
                 {{'GLOBAL.Acta_Recibido.RegistroActa.SiguienteButton' | translate}}</button>
             </nb-card-footer>
           </nb-card>
@@ -100,11 +100,11 @@
                 (animationDone)="tab()">
 
                 <!-- cada soporte   -->
-                <mat-tab *ngFor="let soporte of firstForm.get('Formulario2')['controls']; let i = index" [formGroupName]="i">
+                <mat-tab *ngFor="let soporte of controlSoportes['controls']; let i = index" [formGroupName]="i">
                   <ng-template mat-tab-label>
                     {{'GLOBAL.Acta_Recibido.RegistroActa.SoporteSubTitle' | translate}} &nbsp; {{i + 1}} &nbsp; &nbsp;
                     &nbsp; &nbsp;<em class="fas fa-window-close" (click)="removeTab(i); usarLocalStorage()"
-                      *ngIf="firstForm.get('Formulario2').value.length > 1"></em>
+                      *ngIf="controlSoportes.value.length > 1"></em>
                   </ng-template>
                   <div>
                     <nb-card>
@@ -251,11 +251,11 @@
                   {{'GLOBAL.Acta_Recibido.RegistroActa.AnteriorButton' | translate}}
                 </button>
                 <button nbButton *ngIf="tipoActa === 'regular'" (click)="Revisar_Totales()"
-                  [disabled]="!firstForm.get('Formulario1').valid || !firstForm.get('Formulario2').valid" class="float-right">
+                  [disabled]="controlDatosBasicos.invalid || controlSoportes.invalid" class="float-right">
                   {{'GLOBAL.Acta_Recibido.RegistroActa.BotonRegistro' | translate}}
                 </button>
                 <button nbButton matStepperNext *ngIf="tipoActa === 'especial'" class="float-right"
-                  [disabled]="!firstForm.get('Formulario1').valid || !firstForm.get('Formulario2').valid">
+                  [disabled]="controlDatosBasicos.invalid || controlSoportes.invalid">
                   {{'GLOBAL.Acta_Recibido.RegistroActa.SiguienteButton' | translate}}
                 </button>
               </div>
@@ -274,7 +274,7 @@
                   {{'GLOBAL.Acta_Recibido.RegistroActa.AnteriorButton' | translate}}
                 </button>
                 <button nbButton matStepperNext class="float-right"
-                  [disabled]="!firstForm.get('Formulario1').valid || !firstForm.get('Formulario2').valid || !DatosElementos || DatosElementos.length === 0 || !validarElementos">
+                  [disabled]="controlDatosBasicos.invalid || controlSoportes.invalid || !DatosElementos || DatosElementos.length === 0 || !validarElementos">
                   {{'GLOBAL.Acta_Recibido.RegistroActa.SiguienteButton' | translate}}
                 </button>
               </div>
@@ -310,7 +310,7 @@
                     class="form-control" formControlName="Datos_Adicionales" (keyup)="usarLocalStorage()">
                   </textarea>
                 </div>
-                <p class="campo" *ngIf="firstForm.get('Formulario3').get('Datos_Adicionales').invalid">
+                <p class="campo" *ngIf="controlDatosAdicionales.invalid">
                   {{'GLOBAL.placeholder' | translate}}</p>
               </div>
             </nb-card-body>

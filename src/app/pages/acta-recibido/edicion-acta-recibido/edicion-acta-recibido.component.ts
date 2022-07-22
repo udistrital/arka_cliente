@@ -43,8 +43,8 @@ export class EdicionActaRecibidoComponent implements OnInit {
   searchStr: string;
   searchStr2: string[];
   searchStr3: string;
-  private Contratistas: TerceroCriterioContratista[];
-  private Proveedores: Partial<TerceroCriterioProveedor>[];
+  Contratistas: TerceroCriterioContratista[];
+  Proveedores: Partial<TerceroCriterioProveedor>[];
 
   // Mensajes de error
   errMess: any;
@@ -334,8 +334,8 @@ export class EdicionActaRecibidoComponent implements OnInit {
     });
   }
 
-  private async filtroContratistas() {
-    await this.loadContratistas(this.firstForm.get('Formulario1').get('Contratista').value);
+  async filtroContratistas() {
+    await this.loadContratistas(this.controlContratista.value);
   }
   muestraContratista(contr: TerceroCriterioContratista): string {
     if (contr && contr.Identificacion) {
@@ -347,8 +347,8 @@ export class EdicionActaRecibidoComponent implements OnInit {
     }
   }
 
-  private async filtroProveedores() {
-    await this.loadProveedores(this.firstForm.get('Formulario1').get('Proveedor').value);
+  async filtroProveedores() {
+    await this.loadProveedores(this.controlProveedor.value);
   }
   muestraProveedor(prov: Partial<TerceroCriterioProveedor>): string {
     if (prov) {
@@ -530,9 +530,9 @@ export class EdicionActaRecibidoComponent implements OnInit {
   }
 
   Traer_Relacion_Ubicaciones(sede, dependencia) {
-    sede = (sede) ? sede : this.firstForm.get('Formulario1').get('Sede').value;
-    dependencia = (dependencia) ? dependencia : this.firstForm.get('Formulario1').get('Dependencia').value;
-    if (this.firstForm.get('Formulario1').get('Sede').valid && this.firstForm.get('Formulario1').get('Dependencia').valid &&
+    sede = (sede) ? sede : this.controlSede.value;
+    dependencia = (dependencia) ? dependencia : this.controlDependencia.value;
+    if (this.controlSede.valid && this.controlDependencia.valid &&
       sede !== undefined && dependencia !== undefined && this.Sedes && this.Dependencias) {
       this.UbicacionesFiltradas = [];
       this.carga_agregada ? this.firstForm.patchValue({ Formulario1: { Ubicacion: '' } }) : null;
@@ -611,7 +611,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
           file.url = this.cleanURL(file.urlTemp);
           file.IdDocumento = 13; // tipo de documento (API documentos_crud)
           file.file = event.target.files[0];
-          (this.firstForm.get('Formulario2') as FormArray).at(index).get('Soporte').setValue(file.name);
+          (this.controlSoportes as FormArray).at(index).get('Soporte').setValue(file.name);
           this.fileDocumento[index] = file;
           this.idDocumento[index] = undefined;
 
@@ -622,8 +622,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
             type: 'warning',
           });
         }
-        // console.log(file);
-        // console.log(this.fileDocumento);
 
       } else {
         this.pUpManager.showErrorAlert('error' + this.translate.instant('GLOBAL.error'));
@@ -631,7 +629,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
     }
   }
   clearFile(index) {
-    (this.firstForm.get('Formulario2') as FormArray).at(index).get('Soporte').setValue('');
+    (this.controlSoportes as FormArray).at(index).get('Soporte').setValue('');
     this.fileDocumento[index] = undefined;
     this.idDocumento[index] = undefined;
   }
@@ -641,28 +639,28 @@ export class EdicionActaRecibidoComponent implements OnInit {
   }
 
   addSoportes() {
-    (this.firstForm.get('Formulario2') as FormArray).push(this.Formulario_2);
+    (this.controlSoportes as FormArray).push(this.Formulario_2);
     this.SoporteElementosValidos.push(false);
   }
 
   tab() {
     if (this.cargarTab) {
-      this.selectedTab = this.firstForm.get('Formulario2').value.length - 1;
+      this.selectedTab = this.controlSoportes.value.length - 1;
       this.cargarTab = false;
     }
   }
 
   addTab($event) {
-    if ($event === this.firstForm.get('Formulario2').value.length && !this.cargarTab) {
-      (this.firstForm.get('Formulario2') as FormArray).push(this.Formulario_2);
-      this.selectedTab = this.firstForm.get('Formulario2').value.length;
+    if ($event === this.controlSoportes.value.length && !this.cargarTab) {
+      (this.controlSoportes as FormArray).push(this.Formulario_2);
+      this.selectedTab = this.controlSoportes.value.length;
       this.cargarTab = true;
     }
   }
 
   removeTab(i: number) {
     this.selectedTab = i - 1;
-    (this.firstForm.get('Formulario2') as FormArray).removeAt(i);
+    (this.controlSoportes as FormArray).removeAt(i);
     this.fileDocumento.splice(i, 1);
     this.idDocumento.splice(i, 1);
   }
@@ -716,7 +714,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
     transaccionActa.UltimoEstado = this.generarEstadoActa(nuevoEstado);
     transaccionActa.Elementos = this.generarElementos();
 
-    const Soportes: SoporteActa[] = (this.firstForm.get('Formulario2') as FormArray).controls
+    const Soportes: SoporteActa[] = (this.controlSoportes as FormArray).controls
       .map((soporte, index) => this.generarSoporte(soporte, index));
 
     transaccionActa.SoportesActa = Soportes;
@@ -744,9 +742,9 @@ export class EdicionActaRecibidoComponent implements OnInit {
           timer: 2000,
         });
         if (siguienteEtapa) {
-          const cedulaprov = this.firstForm.get('Formulario1.Proveedor').value && this.firstForm.get('Formulario1.Proveedor').value.Identificacion ?
-            this.firstForm.get('Formulario1.Proveedor').value.Identificacion.Numero : '';
-          const cedularev = this.firstForm.get('Formulario1.Contratista').value.Identificacion.Numero;
+          const cedulaprov = this.controlProveedor.value && this.controlProveedor.value.Identificacion ?
+            this.controlProveedor.value.Identificacion.Numero : '';
+          const cedularev = this.controlContratista.value.Identificacion.Numero;
           if (enviara === 1) {
             this.EnviarEmail(cedulaprov);
             this.EnviarEmail(cedularev);
@@ -794,10 +792,10 @@ export class EdicionActaRecibidoComponent implements OnInit {
   private generarEstadoActa(Estado: number): HistoricoActa {
 
     const ae = this.Acta.ActaRecibido.TipoActaId.Id === 2;
-    const proveedor = this.firstForm.get('Formulario1.Proveedor').value;
-    const ubicacionId = this.firstForm.get('Formulario1.Ubicacion').value;
-    const contratista = this.firstForm.get('Formulario1.Contratista').value;
-    const observaciones = this.firstForm.get('Formulario3.Datos_Adicionales').value;
+    const proveedor = this.controlProveedor.value;
+    const ubicacionId = this.controlUbicacion.value;
+    const contratista = this.controlContratista.value;
+    const observaciones = this.controlDatosAdicionales.value;
     const historico = new HistoricoActa;
 
     historico.Id = null;
@@ -947,6 +945,36 @@ export class EdicionActaRecibidoComponent implements OnInit {
       control.get('Formulario3').valid);
     errors ? this.errores.set('formularios', true) : this.errores.delete('formularios');
     return errors ? { formularios: true } : null;
+  }
+
+  get controlDatosBasicos() {
+    return this.firstForm.get('Formulario1');
+  }
+  get controlContratista() {
+    return this.controlDatosBasicos.get('Contratista');
+  }
+  get controlProveedor() {
+    return this.controlDatosBasicos.get('Proveedor');
+  }
+  get controlSede() {
+    return this.controlDatosBasicos.get('Sede');
+  }
+  get controlDependencia() {
+    return this.controlDatosBasicos.get('Dependencia');
+  }
+  get controlUbicacion() {
+    return this.controlDatosBasicos.get('Ubicacion');
+  }
+
+  get controlSoportes() {
+    return this.firstForm.get('Formulario2');
+  }
+
+  get controlForm3() {
+    return this.firstForm.get('Formulario3');
+  }
+  get controlDatosAdicionales() {
+    return this.controlForm3.get('Datos_Adicionales');
   }
 
 }
