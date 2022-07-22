@@ -138,6 +138,9 @@ export class VerActaRecibidoComponent implements OnInit {
       this.tercerosHelper.getTercerosByCriterio('proveedor', id, query).toPromise().then(res => {
         this.Proveedores = res;
         resolve();
+      }, (reason) => {
+        resolve();
+        this.Proveedores = [];
       });
     });
   }
@@ -151,6 +154,9 @@ export class VerActaRecibidoComponent implements OnInit {
     return new Promise<void>(resolve => {
       this.tercerosHelper.getTercerosByCriterio('contratista', id, query).toPromise().then(res => {
         this.Contratistas = res;
+        resolve();
+      }, (reason) => {
+        this.Contratistas = [];
         resolve();
       });
     });

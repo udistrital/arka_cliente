@@ -303,6 +303,7 @@ export class ConsultaActaRecibidoComponent implements OnInit {
   }
 
   onEdit(event): void {
+    // console.log({event})
     let editarActa = false;
     let validarActa: boolean;
 
@@ -344,12 +345,11 @@ export class ConsultaActaRecibidoComponent implements OnInit {
   }
 
   seleccionarActa(event): void {
-    // console.log(event.data);
+    // console.log({event});
     this.actaSeleccionada = `${event.data.Id}`;
     this.estadoActaSeleccionada = 'Ver';
     this.accion = 'Ver';
     this.verActa = true;
-    // console.log('1')
   }
 
   onDelete(event): void {
