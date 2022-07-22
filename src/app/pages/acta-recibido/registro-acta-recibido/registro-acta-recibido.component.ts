@@ -16,7 +16,6 @@ import { HistoricoActa } from '../../../@core/data/models/acta_recibido/historic
 import { TransaccionActaRecibido } from '../../../@core/data/models/acta_recibido/transaccion_acta_recibido';
 import Swal from 'sweetalert2';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
-import { CompleterService, CompleterData } from 'ng2-completer';
 import { Store } from '@ngrx/store';
 import { IAppState } from '../../../@core/store/app.state';
 import { ListService } from '../../../@core/store/services/list.service';
@@ -25,7 +24,6 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { DocumentoService } from '../../../@core/data/documento.service';
 import { UserService } from '../../../@core/data/users.service';
 import { AbstractControl } from '@angular/forms/src/model';
-import { map, startWith } from 'rxjs/operators';
 import { isObject } from 'rxjs/internal-compatibility';
 import { TipoActa } from '../../../@core/data/models/acta_recibido/tipo_acta';
 import { EstadoElemento } from '../../../@core/data/models/acta_recibido/estado_elemento';
@@ -37,7 +35,6 @@ import { EstadoElemento } from '../../../@core/data/models/acta_recibido/estado_
 })
 export class RegistroActaRecibidoComponent implements OnInit {
 
-  protected dataService3: CompleterData;
   Contratistas: TerceroCriterioContratista[];
   contratistasFiltrados: Observable<Partial<TerceroCriterioContratista>[]>;
   Proveedores: Partial<TerceroCriterioProveedor>[];
@@ -96,7 +93,6 @@ export class RegistroActaRecibidoComponent implements OnInit {
     private fb: FormBuilder,
     private Actas_Recibido: ActaRecibidoHelper,
     private tercerosHelper: TercerosHelper,
-    private completerService: CompleterService,
     private store: Store<IAppState>,
     private listService: ListService,
     private pUpManager: PopUpManager,
@@ -180,8 +176,8 @@ export class RegistroActaRecibidoComponent implements OnInit {
         list.listSedes[0] && list.listDependencias[0] && list.listEstadosActa[0] ? (
           this.Sedes = list.listSedes[0],
           this.Dependencias = list.listDependencias[0],
+          this.Dependencias.sort((a, b) => a.Nombre.toLowerCase().localeCompare(b.Nombre.toLowerCase())),
           this.Estados_Acta = list.listEstadosActa[0],
-          this.dataService3 = this.completerService.local(this.Dependencias, 'Nombre', 'Nombre'),
           resolve()) : null;
       });
     });
@@ -553,28 +549,30 @@ export class RegistroActaRecibidoComponent implements OnInit {
   }
 
   usarLocalStorage(event$) {
-    this.tipoActa === 'especial' ?
-    sessionStorage.setItem('Formulario_Acta_Especial', JSON.stringify(this.firstForm.value)) :
-    sessionStorage.setItem('Formulario_Registro', JSON.stringify(this.firstForm.value));
+    const datos = this.firstForm.value;
+    // console.debug('usarLocalStorage', {datos})
+    sessionStorage
+      .setItem(this.tipoActa === 'especial' ? 'Formulario_Acta_Especial' : 'Formulario_Registro',
+        JSON.stringify(datos));
   }
 
   Traer_Relacion_Ubicaciones(loadInicial: string) {
     const sede = this.controlSede.value;
     const dependencia = this.controlDependencia.value;
-    if (this.controlSede.valid && this.controlDependencia.valid &&
-      sede !== undefined && dependencia !== undefined && this.Sedes && this.Dependencias) {
-      this.UbicacionesFiltradas = [];
-      const transaccion: any = {};
-      transaccion.Sede = this.Sedes.find((x) => x.Id === parseFloat(sede));
-      transaccion.Dependencia = this.Dependencias.find((x) => x.Nombre === dependencia);
-      if (transaccion.Sede !== undefined && transaccion.Dependencia !== undefined) {
-        this.Actas_Recibido.postRelacionSedeDependencia(transaccion).subscribe((res: any) => {
-          if (isObject(res[0].Relaciones)) {
-            this.firstForm.patchValue({ Formulario1: { Ubicacion: loadInicial ? loadInicial : '' } });
-            this.UbicacionesFiltradas = res[0].Relaciones;
-          }
-        });
-      }
+    // console.debug('Traer_Relacion_Ubicaciones', {sede, dependencia});
+    this.UbicacionesFiltradas = [];
+    if (sede && dependencia) {
+      const transaccion = {
+        Sede: this.Sedes.find((x) => x.Id === parseFloat(sede)),
+        Dependencia: this.Dependencias.find((x) => x.Nombre === dependencia),
+      };
+      // console.debug({transaccion});
+      this.Actas_Recibido.postRelacionSedeDependencia(transaccion).subscribe((res: any) => {
+        if (isObject(res[0].Relaciones)) {
+          this.firstForm.patchValue({ Formulario1: { Ubicacion: loadInicial ? loadInicial : '' } });
+          this.UbicacionesFiltradas = res[0].Relaciones;
+        }
+      });
     }
   }
 

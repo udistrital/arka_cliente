@@ -64,12 +64,10 @@
                 </div>
                 <div class="form-group col-sm">
                   <label id="lbl-dependencia">{{'GLOBAL.Acta_Recibido.RegistroActa.Dependencia' | translate}}</label>
-                  <ng2-completer style="border: 0rem" inputClass="form-control" nbInput
-                    (keyup)="Traer_Relacion_Ubicaciones()" [datasource]="dataService3"
-                    formControlName="Dependencia" [minSearchLength]="2"
-                    (change)="usarLocalStorage(); Traer_Relacion_Ubicaciones();"
-                    placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : minLength} }}">
-                  </ng2-completer>
+                  <mat-select type="text" class="form-control" formControlName="Dependencia"
+                  (selectionChange)="usarLocalStorage(); Traer_Relacion_Ubicaciones();">
+                    <mat-option *ngFor="let dep of Dependencias" [value]="dep.Nombre">{{dep.Nombre}}</mat-option>
+                  </mat-select>
                   <p class="campo" *ngIf="controlDependencia.invalid">
                     {{'GLOBAL.placeholder' | translate}}</p>
                 </div>
