@@ -1,3 +1,6 @@
-<p>
-  autocompleter works!
-</p>
+<input type="text" matInput class="form-control"
+[matAutocomplete]="auto" [formControl]="control">
+<mat-autocomplete #auto="matAutocomplete" [displayWith]="showOption">
+  <mat-option *ngFor="let val of filteredOptions | async" [value]="val">{{val.name}}
+  </mat-option>
+</mat-autocomplete>
