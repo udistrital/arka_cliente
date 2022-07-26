@@ -1,5 +1,5 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { AbstractControl } from '@angular/forms';
+import { Component, EventEmitter, forwardRef, Input, OnInit, Output } from '@angular/core';
+import { AbstractControl, ControlValueAccessor, FormControl, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { debounceTime, map, startWith } from 'rxjs/operators';
 
@@ -12,16 +12,27 @@ interface AutocompleterOption {
   selector: 'ngx-autocompleter',
   templateUrl: './autocompleter.component.html',
   styleUrls: ['./autocompleter.component.scss'],
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => AutocompleterComponent),
+      multi: true,
+    },
+  ],
 })
-class AutocompleterComponent implements OnInit {
+class AutocompleterComponent implements OnInit, ControlValueAccessor {
+
+  onChange: (_: any) => void;
+  onTouched: () => void;
 
   filteredOptions: Observable<AutocompleterOption[]>;
 
-  @Input() control: AbstractControl;
+  control = new FormControl();
   @Input() options: AutocompleterOption[];
-
-  @Input() value: AutocompleterOption;
-  @Output() valueChanges = new EventEmitter<AutocompleterOption>();
+  @Input()
+  set disabled(disabled: boolean) {
+    this.setDisabledState(disabled);
+  }
 
   constructor() { }
 
@@ -32,6 +43,17 @@ class AutocompleterComponent implements OnInit {
       map(value => typeof value === 'string' ? value : value.text),
       map(name => name ? this.filter(name) : this.options.slice()),
     );
+
+    this.control.valueChanges
+    .pipe(
+      debounceTime(250),
+    )
+    .subscribe(val => {
+      // console.debug({val});
+      if (val.value) {
+        this.onChange(val);
+      }
+    })
   }
 
   private filter(name: string): AutocompleterOption[] {
@@ -43,6 +65,24 @@ class AutocompleterComponent implements OnInit {
     return (option && option.name)? option.name : '';
   }
 
+  writeValue(obj: AutocompleterOption): void {
+    if (obj.value) {
+      this.control.setValue(obj);
+    }
+  }
+  registerOnChange(fn: (_: any) => void): void {
+    this.onChange = fn;
+  }
+  registerOnTouched(fn: () => void): void {
+    this.onTouched = fn;
+  }
+  setDisabledState(isDisabled: boolean): void {
+    if (isDisabled) {
+      this.control.disable();
+    } else {
+      this.control.enable();
+    }
+  }
 }
 
 export {

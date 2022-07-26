@@ -185,7 +185,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
     });
   }
   private preparaSedes(sedes: any) {
-    console.debug({sedes});
+    // console.debug({sedes});
     sedes.sort((a, b) => a.Nombre.toLowerCase().localeCompare(b.Nombre.toLowerCase()));
     this.Sedes = sedes;
   }
@@ -336,9 +336,6 @@ export class RegistroActaRecibidoComponent implements OnInit {
 
   private configEvents(){
     this.controlDependencia.valueChanges
-    .pipe(
-      debounceTime(400),
-    )
     .subscribe((change) => {
       console.debug({change});
       this.Traer_Relacion_Ubicaciones();

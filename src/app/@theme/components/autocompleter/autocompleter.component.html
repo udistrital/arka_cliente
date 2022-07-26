@@ -1,5 +1,5 @@
-<input type="text" matInput class="form-control"
-[matAutocomplete]="auto" [formControl]="control">
+<input type="text" class="form-control" [formControl]="control"
+matInput [matAutocomplete]="auto" [matAutocompleteDisabled]="disabled" [disabled]="disabled">
 <mat-autocomplete #auto="matAutocomplete" [displayWith]="showOption">
   <mat-option *ngFor="let val of filteredOptions | async" [value]="val">{{val.name}}
   </mat-option>
