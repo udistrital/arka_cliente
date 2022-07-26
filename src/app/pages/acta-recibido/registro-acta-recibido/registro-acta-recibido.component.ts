@@ -19,6 +19,7 @@ import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { Store } from '@ngrx/store';
 import { IAppState } from '../../../@core/store/app.state';
 import { ListService } from '../../../@core/store/services/list.service';
+import { AutocompleterOption } from '../../../@theme/components';
 import { PopUpManager } from '../../../managers/popUpManager';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { DocumentoService } from '../../../@core/data/documento.service';
@@ -27,6 +28,7 @@ import { AbstractControl } from '@angular/forms/src/model';
 import { isObject } from 'rxjs/internal-compatibility';
 import { TipoActa } from '../../../@core/data/models/acta_recibido/tipo_acta';
 import { EstadoElemento } from '../../../@core/data/models/acta_recibido/estado_elemento';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
   selector: 'ngx-registro-acta-recibido',
@@ -71,6 +73,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
   UbicacionesFiltradas: any;
   Sedes: any;
   Dependencias: any;
+  Dependencias2: AutocompleterOption[];
   DatosTotales: any;
   Totales: Array<any>;
   fileDocumento: any[];
@@ -189,6 +192,10 @@ export class RegistroActaRecibidoComponent implements OnInit {
   private preparaDependencias(dependencias: any) {
     dependencias.sort((a, b) => a.Nombre.toLowerCase().localeCompare(b.Nombre.toLowerCase()));
     this.Dependencias = dependencias;
+    this.Dependencias2 = dependencias.map((dep) => { return {
+      value: dep.Id,
+      name: dep.Nombre,
+    }});
   }
 
   private loadContratistas(query: string = ''): Promise<void> {
@@ -284,14 +291,17 @@ export class RegistroActaRecibidoComponent implements OnInit {
     return this.sanitization.bypassSecurityTrustUrl(oldURL);
   }
 
+  // Si se quieren descartar los datos
   Cargar_Formularios() {
     this.firstForm = this.fb.group({
       Formulario1: this.Formulario_1,
       Formulario2: this.fb.array([this.Formulario_2]),
       Formulario3: this.Formulario_3,
     }, { validators: this.checkValidness });
+    this.configEvents();
   }
 
+  // Si se quieren usar los datos en cache
   Cargar_Formularios2(transaccion_: any) {
     const ae = this.tipoActa === 'especial';
     const Form2 = this.fb.array([]);
@@ -321,6 +331,18 @@ export class RegistroActaRecibidoComponent implements OnInit {
         }),
       }, { validators: this.checkValidness });
     this.Traer_Relacion_Ubicaciones(transaccion_.Formulario1.Ubicacion);
+    this.configEvents();
+  }
+
+  private configEvents(){
+    this.controlDependencia.valueChanges
+    .pipe(
+      debounceTime(400),
+    )
+    .subscribe((change) => {
+      console.debug({change});
+      this.Traer_Relacion_Ubicaciones();
+    });
   }
 
   get Formulario_1(): FormGroup {
@@ -564,20 +586,20 @@ export class RegistroActaRecibidoComponent implements OnInit {
         JSON.stringify(datos));
   }
 
-  Traer_Relacion_Ubicaciones(loadInicial: string) {
-    const sede = this.controlSede.value;
-    const dependencia = this.controlDependencia.value;
-    // console.debug('Traer_Relacion_Ubicaciones', {sede, dependencia});
+  Traer_Relacion_Ubicaciones(loadInicial: string = '') {
+    const sede = this.controlSede;
+    const dependencia = this.controlDependencia;
+    // console.debug({sede: sede.value, dependencia: dependencia.value});
     this.UbicacionesFiltradas = [];
-    if (sede && dependencia) {
+    if (sede.value && dependencia.value && dependencia.value.value) {
       const transaccion = {
-        Sede: this.Sedes.find((x) => x.Id === parseFloat(sede)),
-        Dependencia: this.Dependencias.find((x) => x.Nombre === dependencia),
+        Sede: this.Sedes.find((x) => x.Id === parseFloat(sede.value)),
+        Dependencia: this.Dependencias.find((x) => x.Id === dependencia.value.value),
       };
       // console.debug({transaccion});
       this.Actas_Recibido.postRelacionSedeDependencia(transaccion).subscribe((res: any) => {
         if (isObject(res[0].Relaciones)) {
-          this.firstForm.patchValue({ Formulario1: { Ubicacion: loadInicial ? loadInicial : '' } });
+          this.controlUbicacion.patchValue(loadInicial)
           this.UbicacionesFiltradas = res[0].Relaciones;
         }
       });
