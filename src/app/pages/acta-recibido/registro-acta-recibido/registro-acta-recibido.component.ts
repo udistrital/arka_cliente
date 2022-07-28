@@ -192,7 +192,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
   }
 
   private loadContratistas(query: string = ''): Promise<void> {
-    if (query === '') {
+    if (query.length < 4 || !query.length) {
       return new Promise<void>(resolve => {
         resolve();
       });
@@ -217,7 +217,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
   }
 
   private loadProveedores(query: string = ''): Promise<void> {
-    if (query === '') {
+    if (query.length < 4 || !query.length) {
       return new Promise<void>(resolve => {
         resolve();
       });
@@ -327,6 +327,17 @@ export class RegistroActaRecibidoComponent implements OnInit {
     .subscribe((form: any) => {
       // console.debug({form});
       this.actualizarStorage();
+    });
+
+    this.controlContratista.valueChanges
+    .pipe(debounceTime(200), distinctUntilChanged())
+    .subscribe((contratista: any) => {
+      this.filtroContratistas();
+    });
+    this.controlProveedor.valueChanges
+    .pipe(debounceTime(200), distinctUntilChanged())
+    .subscribe((contratista: any) => {
+      this.filtroProveedores();
     });
 
     this.controlSede.valueChanges
