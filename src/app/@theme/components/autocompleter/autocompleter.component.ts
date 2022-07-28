@@ -28,7 +28,7 @@ class AutocompleterComponent implements OnInit, ControlValueAccessor {
   filteredOptions: Observable<AutocompleterOption[]>;
 
   control = new FormControl();
-  @Input() options: AutocompleterOption[];
+  @Input() options: AutocompleterOption[] = [];
   @Input()
   set disabled(disabled: boolean) {
     this.setDisabledState(disabled);
@@ -53,16 +53,16 @@ class AutocompleterComponent implements OnInit, ControlValueAccessor {
       if (val.value) {
         this.onChange(val);
       }
-    })
+    });
   }
 
   private filter(name: string): AutocompleterOption[] {
     return this.options
-    .filter(val => val.name.toLowerCase().includes(name.toLowerCase()))
+    .filter(val => val.name.toLowerCase().includes(name.toLowerCase()));
   }
 
   showOption(option: AutocompleterOption): string {
-    return (option && option.name)? option.name : '';
+    return (option && option.name) ? option.name : '';
   }
 
   writeValue(obj: AutocompleterOption): void {

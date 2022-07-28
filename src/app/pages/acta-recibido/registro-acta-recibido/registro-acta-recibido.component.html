@@ -10,14 +10,14 @@
         <mat-step label="{{'GLOBAL.Acta_Recibido.RegistroActa.DatosTitle' | translate}}" formGroupName="Formulario1">
           <nb-card>
             <nb-card-body class="bla">
+
               <div class="row" *ngIf="tipoActa === 'regular'">
                 <div class="form-group col-sm">
                   <label>{{'GLOBAL.Acta_Recibido.ContratistaAsignado' | translate}}</label>
                   <input matInput type="text" class="form-control"
                     placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : minLength} }}" formControlName="Contratista"
                     [matAutocomplete]="autoContratista" (keyup.enter)="filtroContratistas()"/>
-                  <mat-autocomplete #autoContratista="matAutocomplete" [displayWith]="muestraContratista"
-                    (optionSelected)="usarLocalStorage()">
+                  <mat-autocomplete #autoContratista="matAutocomplete" [displayWith]="muestraContratista">
                     <mat-option *ngFor="let contr of Contratistas" [value]="contr">
                       {{muestraContratista(contr)}}
                     </mat-option>
@@ -37,8 +37,7 @@
                   <input matInput type="text" class="form-control"
                     placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : minLength} }}" formControlName="Proveedor"
                     [matAutocomplete]="autoProveedor" (keyup.enter)="filtroProveedores()" />
-                  <mat-autocomplete #autoProveedor="matAutocomplete" [displayWith]="muestraProveedor"
-                    (optionSelected)="usarLocalStorage()">
+                  <mat-autocomplete #autoProveedor="matAutocomplete" [displayWith]="muestraProveedor">
                     <mat-option *ngFor="let prov of Proveedores" [value]="prov">
                       {{muestraProveedor(prov)}}
                     </mat-option>
@@ -55,9 +54,8 @@
               <div class="row">
                 <div class="form-group col-sm">
                   <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Sede' | translate}}</label>
-                  <mat-select type="text" class="form-control" formControlName="Sede"
-                    (selectionChange)="usarLocalStorage(); Traer_Relacion_Ubicaciones()">
-                    <mat-option *ngFor="let sede of Sedes" [(value)]="sede.Id">{{sede.Nombre}}</mat-option>
+                  <mat-select class="form-control" formControlName="Sede">
+                    <mat-option *ngFor="let sede of Sedes" [value]="sede.Id">{{sede.Nombre}}</mat-option>
                   </mat-select>
                   <p class="campo" *ngIf="controlSede.invalid">
                     {{'GLOBAL.placeholder' | translate}}</p>
@@ -71,8 +69,8 @@
                 </div>
                 <div class="form-group col-sm">
                   <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Ubicacion' | translate}}</label>
-                  <mat-select type="text" class="form-control" formControlName="Ubicacion" (selectionChange)="usarLocalStorage()">
-                    <mat-option *ngFor="let ubicacion of UbicacionesFiltradas" [(value)]="ubicacion.Id">
+                  <mat-select class="form-control" formControlName="Ubicacion">
+                    <mat-option *ngFor="let ubicacion of Ubicaciones" [value]="ubicacion.Id">
                       {{ubicacion.Nombre}}
                     </mat-option>
                   </mat-select>
@@ -92,14 +90,14 @@
         <mat-step label="{{'GLOBAL.Acta_Recibido.RegistroActa.SoporteTitle' | translate}}" formArrayName="Formulario2">
           <nb-card [nbSpinner]="cargarTab">
             <nb-card-body style="padding-bottom: 0">
-              <mat-tab-group [(selectedIndex)]="selectedTab" animationDuration="500ms" (selectedIndexChange)="addTab($event)"
+              <mat-tab-group [(selectedIndex)]="selectedTab" animationDuration="200ms" (selectedIndexChange)="addTab($event)"
                 (animationDone)="tab()">
 
                 <!-- cada soporte   -->
-                <mat-tab *ngFor="let soporte of controlSoportes['controls']; let i = index" [formGroupName]="i">
+                <mat-tab *ngFor="let soporte of controlSoportes.controls; let i = index" [formGroupName]="i">
                   <ng-template mat-tab-label>
                     {{'GLOBAL.Acta_Recibido.RegistroActa.SoporteSubTitle' | translate}} &nbsp; {{i + 1}} &nbsp; &nbsp;
-                    &nbsp; &nbsp;<em class="fas fa-window-close" (click)="removeTab(i); usarLocalStorage()"
+                    &nbsp; &nbsp;<em class="fas fa-window-close" (click)="removeTab(i)"
                       *ngIf="controlSoportes.value.length > 1"></em>
                   </ng-template>
                   <div>
@@ -112,16 +110,15 @@
                               <div class="input-group">
                                 <input nbInput type="text"
                                   placeholder="{{'GLOBAL.Acta_Recibido.RegistroActa.SeleccioneFiltro' | translate}}"
-                                  class="form-control" formControlName="Consecutivo" (keyup)="usarLocalStorage()">
+                                  class="form-control" formControlName="Consecutivo">
                               </div>
                             </div>
                             <div class="form-group col-sm">
                               <label>{{'GLOBAL.Acta_Recibido.RegistroActa.FechaSoporte' | translate}}</label>
                               <div class="input-group">
                                 <mat-form-field appearance="outline">
-                                  <mat-label></mat-label>
                                   <input matInput [matDatepicker]="fecha" [min]="minDate" [max]="maxDate"
-                                    formControlName="FechaSoporte" (dateChange)="usarLocalStorage($event)">
+                                    formControlName="FechaSoporte">
                                   <mat-datepicker-toggle matSuffix [for]="fecha"></mat-datepicker-toggle>
                                   <mat-datepicker #fecha></mat-datepicker>
                                   <mat-error>* {{'GLOBAL.Errores.ErrorFecha' | translate}}</mat-error>
@@ -303,7 +300,7 @@
                 <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Observaciones' | translate}}</label>
                 <div class="input-group">
                   <textarea rows="5" placeholder="{{'GLOBAL.Acta_Recibido.RegistroActa.Observaciones2' | translate}}"
-                    class="form-control" formControlName="Datos_Adicionales" (keyup)="usarLocalStorage()">
+                    class="form-control" formControlName="Datos_Adicionales">
                   </textarea>
                 </div>
                 <p class="campo" *ngIf="controlDatosAdicionales.invalid">

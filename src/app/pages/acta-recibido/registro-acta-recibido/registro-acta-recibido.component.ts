@@ -29,6 +29,8 @@ import { isObject } from 'rxjs/internal-compatibility';
 import { TipoActa } from '../../../@core/data/models/acta_recibido/tipo_acta';
 import { EstadoElemento } from '../../../@core/data/models/acta_recibido/estado_elemento';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { ActaValidators } from '../validators';
+import { CommonActas } from '../shared';
 
 @Component({
   selector: 'ngx-registro-acta-recibido',
@@ -54,9 +56,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
   @ViewChild('fform') firstFormDirective;
   tipoActa: string = 'regular';
   selectedTab: number = 0;
-  Datos: any;
   index;
-  selected = new FormControl(0);
   // Tablas parametricas
 
   Estados_Acta: any;
@@ -65,15 +65,12 @@ export class RegistroActaRecibidoComponent implements OnInit {
 
   // Modelos
   Acta: ActaRecibido;
-  // Elementos__Soporte: Array<any>;
   Soportes_Acta: Array<SoporteActa>;
   Historico_Acta: HistoricoActa;
-  // Proveedores: any;
-  Ubicaciones: any;
-  UbicacionesFiltradas: any;
-  Sedes: any;
-  Dependencias: any;
-  Dependencias2: AutocompleterOption[];
+  Ubicaciones: any[] = [];
+  Sedes: any[] = [];
+  Dependencias: any[] = [];
+  Dependencias2: AutocompleterOption[] = [];
   DatosTotales: any;
   Totales: Array<any>;
   fileDocumento: any[];
@@ -110,6 +107,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
     this.fileDocumento = [];
     this.idDocumento = [];
     this.errores = new Map<string, boolean>();
+    this.firstForm = this.baseForm;
   }
 
   ngOnInit() {
@@ -119,60 +117,56 @@ export class RegistroActaRecibidoComponent implements OnInit {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
     });
     this.route.data.subscribe(data => {
-      if (data && data.tipoActa !== null && data.tipoActa !== undefined) {
+      if (data && data.tipoActa) {
         this.tipoActa = data.tipoActa;
       }
+      this.initForms();
     });
-    this.initForms();
     if (!this.userService.getPersonaId()) {
       this.errores.set('terceros', true);
     }
   }
 
   private async initForms() {
-    const ae = this.tipoActa === 'especial';
-    const data = [this.loadLists(), this.loadProveedores(), this.loadContratistas()];
-    if ((!ae && sessionStorage.Formulario_Registro == null) || (ae && sessionStorage.Formulario_Acta_Especial == null)) {
-      await Promise.all(data);
-      this.Cargar_Formularios();
-    } else {
-      const formulario = JSON.parse(!ae ? sessionStorage.Formulario_Registro : sessionStorage.Formulario_Acta_Especial);
-      (Swal as any).fire({
-        type: 'warning',
-        title: 'Registro sin completar',
-        text: 'Existe un registro nuevo sin terminar, que desea hacer?',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#3085d6',
-        confirmButtonText: 'Seguir con anterior',
-        cancelButtonText: 'Nuevo Registro, se eliminara el registro anterior',
-      }).then(async (result) => {
-        if (result.value) {
-          await Promise.all(data);
-          this.Cargar_Formularios2(formulario);
-        } else {
-          (Swal as any).fire({
-            type: 'warning',
-            title: 'Ultima Palabra?',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#3085d6',
-            confirmButtonText: 'Si, Nuevo Registro',
-            cancelButtonText: 'No, Usar Anterior',
-          }).then(async (result2) => {
-            if (result2.value) {
-              sessionStorage.removeItem(!ae ? 'Formulario_Registro' : 'Formulario_Acta_Especial');
-              await Promise.all(data);
-              this.Cargar_Formularios();
-            } else {
-              await Promise.all(data);
-              this.Cargar_Formularios2(formulario);
-            }
-          });
-        }
-      });
+    await Promise.all([this.loadLists(), this.loadProveedores(), this.loadContratistas()]);
+    const values = this.formValuesFromStorage;
+    if (values) {
+      if (await this.retomarValores()) {
+        this.llenarFormularios(values);
+      } else {
+        this.limpiarStorage();
+      }
     }
+    this.setFormValidators();
+    this.setFormEvents();
   }
+
+  private async retomarValores(): Promise<boolean> {
+    let result = await (Swal as any).fire({
+      type: 'warning',
+      title: 'Registro sin completar',
+      text: 'Existe un registro nuevo sin terminar, que desea hacer?',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Seguir con anterior',
+      cancelButtonText: 'Nuevo Registro, se eliminara el registro anterior',
+    });
+    if (result.value) {
+      return true;
+    }
+    result = await (Swal as any).fire({
+      type: 'warning',
+      title: 'Ultima Palabra?',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Si, Nuevo Registro',
+      cancelButtonText: 'No, Usar Anterior',
+    });
+    return !result.value;
+  }
+
   public loadLists(): Promise<void> {
     return new Promise<void>(async (resolve) => {
       this.store.select((state) => state).subscribe(list => {
@@ -193,9 +187,9 @@ export class RegistroActaRecibidoComponent implements OnInit {
     dependencias.sort((a, b) => a.Nombre.toLowerCase().localeCompare(b.Nombre.toLowerCase()));
     this.Dependencias = dependencias;
     this.Dependencias2 = dependencias.map((dep) => { return {
-      value: dep.Id,
-      name: dep.Nombre,
-    }});
+        value: dep.Id,
+        name: dep.Nombre,
+    }; });
   }
 
   private loadContratistas(query: string = ''): Promise<void> {
@@ -267,7 +261,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
           file.url = this.cleanURL(file.urlTemp);
           file.IdDocumento = 13; // tipo de documento (API documentos_crud)
           file.file = event.target.files[0];
-          (this.controlSoportes as FormArray).at(index).get('Soporte').setValue(file.name);
+          this.controlSoportes.at(index).get('Soporte').setValue(file.name);
           this.fileDocumento[index] = file;
         } else {
           (Swal as any).fire({
@@ -283,7 +277,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
   }
 
   clearFile(index) {
-    (this.controlSoportes as FormArray).at(index).get('Soporte').setValue('');
+    this.controlSoportes.at(index).get('Soporte').setValue('');
     this.fileDocumento.splice(index, 1);
   }
 
@@ -291,70 +285,66 @@ export class RegistroActaRecibidoComponent implements OnInit {
     return this.sanitization.bypassSecurityTrustUrl(oldURL);
   }
 
-  // Si se quieren descartar los datos
-  Cargar_Formularios() {
-    this.firstForm = this.fb.group({
-      Formulario1: this.Formulario_1,
-      Formulario2: this.fb.array([this.Formulario_2]),
-      Formulario3: this.Formulario_3,
-    }, { validators: this.checkValidness });
-    this.configEvents();
-  }
-
   // Si se quieren usar los datos en cache
-  Cargar_Formularios2(transaccion_: any) {
-    const ae = this.tipoActa === 'especial';
-    const Form2 = this.fb.array([]);
-    for (const Soporte of transaccion_.Formulario2) {
-      const Formulario__2 = this.fb.group({
-        Consecutivo: [Soporte.Consecutivo],
-        FechaSoporte: [Soporte.FechaSoporte ? new Date(Soporte.FechaSoporte.toString().split('Z')[0]) : ''],
-        Soporte: ['', Validators.required],
-      });
-      this.fileDocumento.push(undefined);
-      Form2.push(Formulario__2);
+  private llenarFormularios(transaccion_: any) {
+    if (transaccion_.Formulario2 && transaccion_.Formulario2.length) {
+      let diff = transaccion_.Formulario2.length - this.controlSoportes.length
+      while (diff-- > 0) {
+        this.controlSoportes.push(this.newSoporte);
+      }
     }
-
-    this.firstForm = this.fb.group({
-      Formulario1: this.fb.group({
-        Sede: [transaccion_.Formulario1.Sede, ae ? [Validators.required] : []],
-        Dependencia: [transaccion_.Formulario1.Dependencia, ae ? [Validators.required] : []],
-        Ubicacion: [transaccion_.Formulario1.Ubicacion, ae ? [Validators.required] : []],
-        Contratista: [transaccion_.Formulario1.Contratista.Tercero ? transaccion_.Formulario1.Contratista : '',
-          !ae ? [Validators.required, this.validarTercero()] : []],
-        Proveedor: [transaccion_.Formulario1.Proveedor.Tercero ? transaccion_.Formulario1.Proveedor : '',
-          [this.validarTercero()]],
-        }),
-        Formulario2: Form2,
-        Formulario3: this.fb.group({
-          Datos_Adicionales: [transaccion_.Formulario3.Datos_Adicionales],
-        }),
-      }, { validators: this.checkValidness });
-    this.Traer_Relacion_Ubicaciones(transaccion_.Formulario1.Ubicacion);
-    this.configEvents();
+    this.firstForm.setValue(transaccion_);
   }
 
-  private configEvents(){
+  private get baseForm() {
+    return this.fb.group({
+      Formulario1: this.fb.group({
+        Contratista: [''],
+        Proveedor: ['', [ActaValidators.validarTercero]],
+        Sede: [''],
+        Dependencia: [''],
+        Ubicacion: [''],
+      }),
+      Formulario2: this.fb.array([this.newSoporte]),
+      Formulario3: this.fb.group({
+        Datos_Adicionales: [''],
+      }),
+    }, {
+      validators: this.checkValidness,
+    });
+  }
+
+  private setFormValidators() {
+    this.controlSede.setValidators(this.ae ? [Validators.required] : []);
+    this.controlDependencia.setValidators(this.ae ? [Validators.required] : []);
+    this.controlUbicacion.setValidators(this.ae ? [Validators.required] : []);
+    this.controlContratista.setValidators(this.ae ? [] : [Validators.required, ActaValidators.validarTercero] );
+  }
+
+  private setFormEvents() {
+    // Ante cualquier cambio en el formulario
+    this.firstForm.valueChanges
+    .pipe(debounceTime(200))
+    .subscribe((form: any) => {
+      // console.debug({form});
+      this.actualizarStorage();
+    });
+
+    this.controlSede.valueChanges
+    .pipe(debounceTime(200), distinctUntilChanged())
+    .subscribe((sedeChange: any) => {
+      // console.debug({sedeChange});
+      this.Traer_Relacion_Ubicaciones();
+    });
     this.controlDependencia.valueChanges
-    .subscribe((change) => {
-      console.debug({change});
+    .pipe(debounceTime(200), distinctUntilChanged())
+    .subscribe((dependenciaChange: any) => {
+      // console.debug({dependenciaChange});
       this.Traer_Relacion_Ubicaciones();
     });
   }
 
-  get Formulario_1(): FormGroup {
-    const ae = this.tipoActa === 'especial';
-    const form1 = this.fb.group({
-      Sede: ['', ae ? [Validators.required] : []],
-      Dependencia: ['', ae ? [Validators.required] : []],
-      Ubicacion: ['', ae ? [Validators.required] : []],
-      Contratista: ['', !ae ? [Validators.required, this.validarTercero()] : []],
-      Proveedor: ['', [this.validarTercero()]],
-    });
-    return form1;
-  }
-
-  get Formulario_2(): FormGroup {
+  get newSoporte(): FormGroup {
     const form2 = this.fb.group({
       Consecutivo: [''],
       FechaSoporte: [''],
@@ -362,12 +352,6 @@ export class RegistroActaRecibidoComponent implements OnInit {
     });
     this.fileDocumento.push(undefined);
     return form2;
-  }
-
-  get Formulario_3(): FormGroup {
-    return this.fb.group({
-      Datos_Adicionales: [''],
-    });
   }
 
   tab() {
@@ -379,7 +363,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
 
   addTab($event) {
     if ($event === this.controlSoportes.value.length && !this.cargarTab) {
-      (this.controlSoportes as FormArray).push(this.Formulario_2);
+      this.controlSoportes.push(this.newSoporte);
       this.selectedTab = this.controlSoportes.value.length;
       this.cargarTab = true;
     }
@@ -387,7 +371,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
 
   removeTab(i: number) {
     this.selectedTab = i - 1;
-    (this.controlSoportes as FormArray).removeAt(i);
+    this.controlSoportes.removeAt(i);
     this.fileDocumento.splice(i, 1);
   }
 
@@ -429,30 +413,23 @@ export class RegistroActaRecibidoComponent implements OnInit {
     !this.validarElementos ? this.errores.set('clases', true) : this.errores.delete('clases');
   }
 
-  async asyncForEach(array, callback) {
-    for (let index = 0; index < array.length; index++) {
-      await callback(array[index], index, array);
-    }
-  }
-
   async onFirstSubmit() {
     this.Registrando = true;
-    const ae = this.tipoActa === 'especial';
     const start = async () => {
-      await this.asyncForEach(this.fileDocumento, async (file) => {
+      await CommonActas.asyncForEach(this.fileDocumento, async (file) => {
         await this.postSoporteNuxeo([file]);
       });
     };
     await start();
     const transaccionActa = new TransaccionActaRecibido();
 
-    this.Datos = this.firstForm.value;
+    const Datos = this.firstForm.value;
     transaccionActa.ActaRecibido = this.generarActa();
-    transaccionActa.UltimoEstado = this.generarEstadoActa(this.Datos, ae ? EstadoActa_t.Aceptada : EstadoActa_t.Registrada);
+    transaccionActa.UltimoEstado = this.generarEstadoActa(Datos, this.ae ? EstadoActa_t.Aceptada : EstadoActa_t.Registrada);
     transaccionActa.Elementos = <Elemento[]>[];
-    ae ? transaccionActa.Elementos = this.generarElementos() : null;
+    this.ae ? transaccionActa.Elementos = this.generarElementos() : null;
 
-    const Soportes: SoporteActa[] = this.Datos.Formulario2
+    const Soportes: SoporteActa[] = Datos.Formulario2
       .map((soporte, index) => this.generarSoporte(soporte, index));
     transaccionActa.SoportesActa = Soportes;
 
@@ -465,7 +442,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
           showConfirmButton: false,
           timer: 4000,
         });
-        sessionStorage.removeItem(!ae ? 'Formulario_Registro' : 'Formulario_Acta_Especial');
+        this.limpiarStorage();
         this.router.navigate(['/pages/acta_recibido/consulta_acta_recibido']);
         this.Registrando = false;
       } else {
@@ -479,7 +456,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
   }
 
   private generarActa(): ActaRecibido {
-    const ta = this.tipoActa === 'especial' ? 2 : 1;
+    const ta = this.ae ? 2 : 1;
 
     const actaRecibido = new ActaRecibido;
     actaRecibido.Id = null;
@@ -492,13 +469,12 @@ export class RegistroActaRecibidoComponent implements OnInit {
   private generarEstadoActa(Datos: any, Estado: number): HistoricoActa {
 
     const historico = new HistoricoActa;
-    const ae = this.tipoActa === 'especial';
 
     historico.Id = null;
     historico.ProveedorId = Datos.Formulario1.Proveedor ? Datos.Formulario1.Proveedor.Tercero.Id : null;
     historico.UbicacionId = Datos.Formulario1.Ubicacion ? Datos.Formulario1.Ubicacion : null;
     historico.RevisorId = this.userService.getPersonaId();
-    historico.PersonaAsignadaId = ae ? this.userService.getPersonaId() : Datos.Formulario1.Contratista.Tercero.Id;
+    historico.PersonaAsignadaId = this.ae ? this.userService.getPersonaId() : Datos.Formulario1.Contratista.Tercero.Id;
     historico.Observaciones = null;
     historico.FechaVistoBueno = null;
     historico.ActaRecibidoId = new ActaRecibido;
@@ -523,7 +499,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
   }
 
   private generarElementos(): Array<Elemento> {
-    const ee = this.tipoActa === 'especial' ? 2 : 1;
+    const ee = this.ae ? 2 : 1;
     const elementosActa = new Array<Elemento>();
 
     if (this.DatosElementos && this.DatosElementos.length > 0) {
@@ -575,19 +551,26 @@ export class RegistroActaRecibidoComponent implements OnInit {
     });
   }
 
-  usarLocalStorage(event$) {
+  actualizarStorage() { // PUT-POST
     const datos = this.firstForm.value;
-    // console.debug('usarLocalStorage', {datos})
     sessionStorage
-      .setItem(this.tipoActa === 'especial' ? 'Formulario_Acta_Especial' : 'Formulario_Registro',
-        JSON.stringify(datos));
+      .setItem(this.keyStorage, JSON.stringify(datos));
+  }
+  private get formValuesFromStorage() { // GET
+    const source = sessionStorage.getItem(this.keyStorage);
+    return source ? JSON.parse(source) : undefined;
+  }
+  private limpiarStorage() { // DELETE
+    sessionStorage.removeItem(this.keyStorage);
+  }
+  private get keyStorage() {
+    return this.ae ? 'Formulario_Acta_Especial' : 'Formulario_Registro';
   }
 
-  Traer_Relacion_Ubicaciones(loadInicial: string = '') {
+  Traer_Relacion_Ubicaciones() {
     const sede = this.controlSede;
     const dependencia = this.controlDependencia;
     // console.debug({sede: sede.value, dependencia: dependencia.value});
-    this.UbicacionesFiltradas = [];
     if (sede.value && dependencia.value && dependencia.value.value) {
       const transaccion = {
         Sede: this.Sedes.find((x) => x.Id === parseFloat(sede.value)),
@@ -595,23 +578,12 @@ export class RegistroActaRecibidoComponent implements OnInit {
       };
       // console.debug({transaccion});
       this.Actas_Recibido.postRelacionSedeDependencia(transaccion).subscribe((res: any) => {
-        if (isObject(res[0].Relaciones)) {
-          this.controlUbicacion.patchValue(loadInicial)
-          this.UbicacionesFiltradas = res[0].Relaciones;
+        const relaciones = res[0].Relaciones;
+        if (isObject(relaciones)) {
+          this.Ubicaciones = relaciones;
         }
       });
     }
-  }
-
-  private validarTercero(): ValidatorFn {
-    return (control: AbstractControl): ValidationErrors | null => {
-      const valor = control.value;
-      const checkStringLength = typeof (valor) === 'string' && valor.length < 4 && valor !== '' ? true : false;
-      const checkInvalidString = typeof (valor) === 'string' && valor !== '' ? true : false;
-      const checkInvalidTercero = typeof (valor) === 'object' && !valor.Tercero ? true : false;
-      return checkStringLength ? { errorLongitudMinima: true } :
-        checkInvalidString || checkInvalidTercero ? { terceroNoValido: true } : null;
-    };
   }
 
   private checkValidness: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
@@ -621,6 +593,10 @@ export class RegistroActaRecibidoComponent implements OnInit {
       control.get('Formulario3').valid);
     errors ? this.errores.set('formularios', true) : this.errores.delete('formularios');
     return errors ? { formularios: true } : null;
+  }
+
+  get ae() {
+    return this.tipoActa === 'especial';
   }
 
   get controlDatosBasicos() {
@@ -643,7 +619,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
   }
 
   get controlSoportes() {
-    return this.firstForm.get('Formulario2');
+    return this.firstForm.get('Formulario2') as FormArray;
   }
 
   get controlForm3() {
