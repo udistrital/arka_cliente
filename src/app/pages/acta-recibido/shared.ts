@@ -6,4 +6,19 @@ export class CommonActas {
     }
   }
 
+  static preparaSedes(sedes: any) {
+    return sedes.sort((a, b) => a.Nombre.toLowerCase().localeCompare(b.Nombre.toLowerCase()));
+  }
+
+  static preparaDependencias(dependencias: any) {
+    return dependencias.sort((a, b) => a.Nombre.toLowerCase().localeCompare(b.Nombre.toLowerCase()));
+  }
+
+  static convierteDependencias(dependencias: any) {
+    return dependencias.map((dep) => { return {
+      value: dep.Id,
+      name: dep.Nombre,
+    }; });
+  }
+
 }

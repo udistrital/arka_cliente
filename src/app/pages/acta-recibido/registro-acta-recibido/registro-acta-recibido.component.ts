@@ -170,25 +170,13 @@ export class RegistroActaRecibidoComponent implements OnInit {
     return new Promise<void>(async (resolve) => {
       this.store.select((state) => state).subscribe(list => {
         list.listSedes[0] && list.listDependencias[0] && list.listEstadosActa[0] ? (
-          this.preparaSedes(list.listSedes[0]),
-          this.preparaDependencias(list.listDependencias[0]),
+          this.Sedes = CommonActas.preparaSedes(list.listSedes[0]),
+          this.Dependencias = CommonActas.preparaDependencias(list.listDependencias[0]),
+          this.Dependencias2 = CommonActas.convierteDependencias(this.Dependencias),
           this.Estados_Acta = list.listEstadosActa[0],
           resolve()) : null;
       });
     });
-  }
-  private preparaSedes(sedes: any) {
-    // console.debug({sedes});
-    sedes.sort((a, b) => a.Nombre.toLowerCase().localeCompare(b.Nombre.toLowerCase()));
-    this.Sedes = sedes;
-  }
-  private preparaDependencias(dependencias: any) {
-    dependencias.sort((a, b) => a.Nombre.toLowerCase().localeCompare(b.Nombre.toLowerCase()));
-    this.Dependencias = dependencias;
-    this.Dependencias2 = dependencias.map((dep) => { return {
-        value: dep.Id,
-        name: dep.Nombre,
-    }; });
   }
 
   private loadContratistas(query: string = ''): Promise<void> {
