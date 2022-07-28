@@ -24,7 +24,7 @@
                   </mat-autocomplete>
                   <p class="campo"
                     *ngIf="controlContratista.hasError('required')">
-                    {{'GLOBAL.placeholder' | translate}}</p>
+                    {{'GLOBAL.Errores.ErrorRequerido' | translate}}</p>
                   <p class="campo"
                     *ngIf="controlContratista.hasError('errorLongitudMinima')">
                     {{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : minLength} }}</p>
@@ -36,12 +36,15 @@
                   <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Proveedor' | translate}}</label>
                   <input matInput type="text" class="form-control"
                     placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : minLength} }}" formControlName="Proveedor"
-                    [matAutocomplete]="autoProveedor" (keyup.enter)="filtroProveedores()" />
+                    [matAutocomplete]="autoProveedor" (keyup.enter)="filtroProveedores()">
                   <mat-autocomplete #autoProveedor="matAutocomplete" [displayWith]="muestraProveedor">
                     <mat-option *ngFor="let prov of Proveedores" [value]="prov">
                       {{muestraProveedor(prov)}}
                     </mat-option>
                   </mat-autocomplete>
+                  <p class="campo"
+                    *ngIf="controlProveedor.hasError('required') ">
+                    {{'GLOBAL.Errores.ErrorRequerido' | translate}}</p>
                   <p class="campo"
                     *ngIf="controlProveedor.hasError('errorLongitudMinima')">
                     {{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : minLength} }}</p>
@@ -78,6 +81,7 @@
                     {{'GLOBAL.placeholder' | translate}}</p>
                 </div>
               </div>
+
             </nb-card-body>
             <nb-card-footer>
               <button nbButton matStepperNext class="float-right" [disabled]="controlDatosBasicos.invalid">
@@ -93,7 +97,7 @@
               <mat-tab-group [(selectedIndex)]="selectedTab" animationDuration="200ms" (selectedIndexChange)="addTab($event)"
                 (animationDone)="tab()">
 
-                <!-- cada soporte   -->
+                <!-- cada soporte -->
                 <mat-tab *ngFor="let soporte of controlSoportes.controls; let i = index" [formGroupName]="i">
                   <ng-template mat-tab-label>
                     {{'GLOBAL.Acta_Recibido.RegistroActa.SoporteSubTitle' | translate}} &nbsp; {{i + 1}} &nbsp; &nbsp;
@@ -101,6 +105,8 @@
                       *ngIf="controlSoportes.value.length > 1"></em>
                   </ng-template>
                   <div>
+
+                    <!-- Datos básicos del Soporte -->
                     <nb-card>
                       <nb-card-body>
                         <div class="row">
@@ -125,8 +131,8 @@
                                 </mat-form-field>
                               </div>
                             </div>
-
                           </div>
+
                           <div class="col">
                             <div class="form-group col-sm">
                               <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Soporte' | translate}}</label>
@@ -170,9 +176,11 @@
                               </nb-card>
                             </div>
                           </div>
+
                         </div>
                       </nb-card-body>
                     </nb-card>
+
                   </div>
                 </mat-tab>
                 <mat-tab>
@@ -256,6 +264,7 @@
           </nb-card>
         </mat-step>
 
+        <!-- Elementos asociados al Soporte -->
         <mat-step *ngIf="tipoActa === 'especial'" label="{{'GLOBAL.Acta_Recibido.RegistroActa.ElementosTitle' | translate}}">
           <nb-card>
             <ngx-gestionar-elementos [Modo]="'agregar'" (DatosTotales)="eventoTotales($event)"
@@ -275,6 +284,7 @@
           </nb-card>
         </mat-step>
 
+        <!-- Resumen, Validación, Envío, Guardar -->
         <mat-step *ngIf="tipoActa === 'especial'" label="{{'GLOBAL.Acta_Recibido.RegistroActa.DatosAdicionales' | translate}}" formGroupName="Formulario3">
           <nb-card>
             <nb-card-body>
@@ -321,21 +331,23 @@
               {{'GLOBAL.Acta_Recibido.RegistroActa.BotonRegistro' | translate}}
             </button>
           </div>
+
         </mat-step>
 
       </mat-vertical-stepper>
     </form>
   </nb-card-body>
+</nb-card>
 
-  <ng-template #erroresTemplate>
-    <nb-card>
-      <nb-card-body>
-        {{ 'GLOBAL.Acta_Recibido.Errores.Mensaje' | translate }}
-        <ul>
-          <li *ngIf="errores.get('terceros')">{{ 'GLOBAL.Acta_Recibido.Errores.Terceros' | translate }}</li>
-          <li *ngIf="errores.get('formularios')">{{ 'GLOBAL.Acta_Recibido.Errores.Formularios' | translate }}</li>
-          <li *ngIf="errores.get('clases')">{{ 'GLOBAL.Acta_Recibido.Errores.Clases' | translate }}</li>
-        </ul>
-      </nb-card-body>
-    </nb-card>
-  </ng-template>
+<ng-template #erroresTemplate>
+  <nb-card>
+    <nb-card-body>
+      {{ 'GLOBAL.Acta_Recibido.Errores.Mensaje' | translate }}
+      <ul>
+        <li *ngIf="errores.get('terceros')">{{ 'GLOBAL.Acta_Recibido.Errores.Terceros' | translate }}</li>
+        <li *ngIf="errores.get('formularios')">{{ 'GLOBAL.Acta_Recibido.Errores.Formularios' | translate }}</li>
+        <li *ngIf="errores.get('clases')">{{ 'GLOBAL.Acta_Recibido.Errores.Clases' | translate }}</li>
+      </ul>
+    </nb-card-body>
+  </nb-card>
+</ng-template>

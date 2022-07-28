@@ -48,7 +48,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
 
   // Mensajes de error
   errMess: any;
-  private sub: Subscription;
   errores: Map<string, boolean>;
 
   // Decorador para renderizar los cambios en las tablas de elementos

@@ -46,7 +46,6 @@ export class RegistroActaRecibidoComponent implements OnInit {
 
   // Mensajes de error
   errMess: any;
-  private sub: Subscription;
 
   // Decorador para renderizar los cambios en las tablas de elementos
   @ViewChildren(MatTable) _matTable: QueryList<MatTable<any>>;
