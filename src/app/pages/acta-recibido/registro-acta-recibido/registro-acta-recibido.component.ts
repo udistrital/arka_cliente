@@ -178,12 +178,10 @@ export class RegistroActaRecibidoComponent implements OnInit {
   }
 
   private loadContratistas(query: string = ''): Promise<void> {
-    if (query.length < 4 || !query.length) {
-      return new Promise<void>(resolve => {
-        resolve();
-      });
-    }
     return new Promise<void>(resolve => {
+      if (!query.length || query.length < this.minLength) {
+        resolve();
+      } else
       this.tercerosHelper.getTercerosByCriterio('contratista', 0, query).toPromise().then(res => {
         this.Contratistas = res;
         resolve();
@@ -196,12 +194,10 @@ export class RegistroActaRecibidoComponent implements OnInit {
   muestraContratista = CommonActas.muestraContratista;
 
   private loadProveedores(query: string = ''): Promise<void> {
-    if (query.length < 4 || !query.length) {
-      return new Promise<void>(resolve => {
-        resolve();
-      });
-    }
     return new Promise<void>(resolve => {
+      if (!query.length || query.length < this.minLength)
+        resolve();
+      else
       this.tercerosHelper.getTercerosByCriterio('proveedor', 0, query).toPromise().then(res => {
         this.Proveedores = res;
         resolve();
