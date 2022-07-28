@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewChildren, QueryList, Input } from '@angular/core';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, FormArray, ValidatorFn, AbstractControl, ValidationErrors } from '@angular/forms';
 import { NuxeoService } from '../../../@core/utils/nuxeo.service';
@@ -31,6 +32,7 @@ import { isObject } from 'rxjs/internal-compatibility';
 import { TipoActa } from '../../../@core/data/models/acta_recibido/tipo_acta';
 import { EstadoElemento } from '../../../@core/data/models/acta_recibido/estado_elemento';
 import { ActaValidators } from '../validators';
+import { CommonActas } from '../shared';
 
 @Component({
   selector: 'ngx-edicion-acta-recibido',
@@ -157,7 +159,8 @@ export class EdicionActaRecibidoComponent implements OnInit {
   private async initForms() {
     const data = [this.loadLists(), this.cargaActa()];
     await Promise.all(data);
-    this.Cargar_Formularios(this.Acta);
+    await this.Cargar_Formularios(this.Acta);
+    this.setFormEvents();
   }
   // Los permisos en cada sección dependen del estado del acta y del rol.
   cargaPermisos() {
@@ -274,7 +277,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
 
   private loadContratistas(query: string = '', id: number= 0): Promise<void> {
     return new Promise<void>(resolve => {
-      if (id || query.length >= this.minLength) {
+      if (id || (query.length && query.length >= this.minLength)) {
         this.tercerosHelper.getTercerosByCriterio('contratista', id, query).toPromise().then(res => {
           this.Contratistas = res;
           resolve();
@@ -287,7 +290,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
 
   private loadProveedores(query: string = '', id: number= 0): Promise<void> {
     return new Promise<void>(resolve => {
-      if (id || query) {
+      if (id || (query.length && query.length >= this.minLength)) {
         this.tercerosHelper.getTercerosByCriterio('proveedor', id, query).toPromise().then(res => {
           this.Proveedores = res;
           resolve();
@@ -301,17 +304,17 @@ export class EdicionActaRecibidoComponent implements OnInit {
   private loadLists(): Promise<void> {
     return new Promise<void>(async (resolve) => {
       this.store.select((state) => state).subscribe(list => {
-        this.Sedes = list.listSedes[0],
-          this.Dependencias = list.listDependencias[0],
-          this.Estados_Acta = list.listEstadosActa[0],
-          this.Estados_Elemento = list.listEstadosElemento[0],
-          this.dataService3 = this.completerService.local(this.Dependencias, 'Nombre', 'Nombre'),
-          !this.userService.getPersonaId() ? this.errores.set('terceros', true) : null,
+        this.Sedes = CommonActas.preparaSedes(list.listSedes[0]),
+        this.Dependencias = CommonActas.preparaDependencias(list.listDependencias[0]),
+        this.Estados_Acta = list.listEstadosActa[0],
+        this.Estados_Elemento = list.listEstadosElemento[0],
+        this.dataService3 = this.completerService.local(this.Dependencias, 'Nombre', 'Nombre'),
+        !this.userService.getPersonaId() ? this.errores.set('terceros', true) : null,
 
-          (this.Sedes && this.Sedes.length > 0 && this.Dependencias && this.Dependencias.length > 0 &&
-            this.Estados_Elemento && this.Estados_Elemento.length > 0 &&
-            this.Estados_Acta && this.Estados_Acta.length > 0 &&
-            this.Estados_Elemento && this.Estados_Elemento.length > 0) ? resolve() : null;
+        (this.Sedes && this.Sedes.length > 0 && this.Dependencias && this.Dependencias.length > 0 &&
+          this.Estados_Elemento && this.Estados_Elemento.length > 0 &&
+          this.Estados_Acta && this.Estados_Acta.length > 0 &&
+          this.Estados_Elemento && this.Estados_Elemento.length > 0) ? resolve() : null;
       });
     });
   }
@@ -319,31 +322,12 @@ export class EdicionActaRecibidoComponent implements OnInit {
   async filtroContratistas() {
     await this.loadContratistas(this.controlContratista.value);
   }
-  muestraContratista(contr: TerceroCriterioContratista): string {
-    if (contr && contr.Identificacion) {
-      return contr.Identificacion.TipoDocumentoId.CodigoAbreviacion + ':' + contr.Identificacion.Numero + ' - ' + contr.Tercero.NombreCompleto;
-    } else {
-      if (contr) {
-        return contr.Tercero.NombreCompleto;
-      }
-    }
-  }
+  muestraContratista = CommonActas.muestraContratista;
 
   async filtroProveedores() {
     await this.loadProveedores(this.controlProveedor.value);
   }
-  muestraProveedor(prov: Partial<TerceroCriterioProveedor>): string {
-    if (prov) {
-      const str = prov.Identificacion ? prov.Identificacion.TipoDocumentoId.CodigoAbreviacion + ':' + prov.Identificacion.Numero + ' - ' : '';
-      return str + prov.Tercero.NombreCompleto;
-    }
-  }
-
-  async asyncForEach(array, callback) {
-    for (let index = 0; index < array.length; index++) {
-      await callback(array[index], index, array);
-    }
-  }
+  muestraProveedor = CommonActas.muestraProveedor;
 
   EnviarEmail(cedula: String) {
 
@@ -625,6 +609,19 @@ export class EdicionActaRecibidoComponent implements OnInit {
     this.SoporteElementosValidos.push(false);
   }
 
+  private setFormEvents() {
+    this.controlContratista.valueChanges
+    .pipe(debounceTime(200), distinctUntilChanged())
+    .subscribe((contratista: any) => {
+      this.filtroContratistas();
+    });
+    this.controlProveedor.valueChanges
+    .pipe(debounceTime(200), distinctUntilChanged())
+    .subscribe((contratista: any) => {
+      this.filtroProveedores();
+    });
+  }
+
   tab() {
     if (this.cargarTab) {
       this.selectedTab = this.controlSoportes.value.length - 1;
@@ -678,7 +675,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
     const filestoPost = this.fileDocumento.filter(file => file !== undefined);
     this.guardando = true;
     const start = async () => {
-      await this.asyncForEach(filestoPost, async (file) => {
+      await CommonActas.asyncForEach(filestoPost, async (file) => {
         await this.postSoporteNuxeo([file]);
       });
     };

@@ -1,3 +1,5 @@
+import { TerceroCriterioContratista, TerceroCriterioProveedor } from '../../@core/data/models/terceros_criterio';
+
 export class CommonActas {
 
   static async asyncForEach(array, callback) {
@@ -7,10 +9,16 @@ export class CommonActas {
   }
 
   static preparaSedes(sedes: any) {
+    if (!(sedes && sedes.length)) {
+      return [];
+    }
     return sedes.sort((a, b) => a.Nombre.toLowerCase().localeCompare(b.Nombre.toLowerCase()));
   }
 
   static preparaDependencias(dependencias: any) {
+    if (!(dependencias && dependencias.length)) {
+      return [];
+    }
     return dependencias.sort((a, b) => a.Nombre.toLowerCase().localeCompare(b.Nombre.toLowerCase()));
   }
 
@@ -19,6 +27,23 @@ export class CommonActas {
       value: dep.Id,
       name: dep.Nombre,
     }; });
+  }
+
+  static muestraContratista(contr: TerceroCriterioContratista): string {
+    if (contr && contr.Identificacion) {
+      return contr.Identificacion.TipoDocumentoId.CodigoAbreviacion + ':' + contr.Identificacion.Numero + ' - ' + contr.Tercero.NombreCompleto;
+    } else {
+      if (contr) {
+        return contr.Tercero.NombreCompleto;
+      }
+    }
+  }
+
+  static muestraProveedor(prov: Partial<TerceroCriterioProveedor>): string {
+    if (prov) {
+      const str = prov.Identificacion ? prov.Identificacion.TipoDocumentoId.CodigoAbreviacion + ':' + prov.Identificacion.Numero + ' - ' : '';
+      return str + prov.Tercero.NombreCompleto;
+    }
   }
 
 }

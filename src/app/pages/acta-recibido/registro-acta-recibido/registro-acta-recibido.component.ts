@@ -195,14 +195,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
   async filtroContratistas() {
     await this.loadContratistas(this.controlContratista.value);
   }
-
-  muestraContratista(contr: TerceroCriterioContratista): string {
-    if (contr && contr.Identificacion && contr.Tercero) {
-      return contr.Identificacion.Numero + ' - ' + contr.Tercero.NombreCompleto;
-    } else if (contr && contr.Tercero) {
-      return contr.Tercero.NombreCompleto;
-    }
-  }
+  muestraContratista = CommonActas.muestraContratista;
 
   private loadProveedores(query: string = ''): Promise<void> {
     if (query.length < 4 || !query.length) {
@@ -220,16 +213,9 @@ export class RegistroActaRecibidoComponent implements OnInit {
   async filtroProveedores() {
     await this.loadProveedores(this.controlProveedor.value);
   }
-  muestraProveedor(prov: Partial<TerceroCriterioProveedor>): string {
-    if (prov && prov.Identificacion && prov.Tercero) {
-      return prov.Identificacion.Numero + ' - ' + prov.Tercero.NombreCompleto;
-    } else if (prov && prov.Tercero) {
-      return prov.Tercero.NombreCompleto;
-    }
-  }
+  muestraProveedor = CommonActas.muestraProveedor;
 
   download(index) {
-
     const new_tab = window.open(this.fileDocumento[index].urlTemp, this.fileDocumento[index].urlTemp, '_blank');
     new_tab.onload = () => {
       new_tab.location = this.fileDocumento[index].urlTemp;
@@ -275,7 +261,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
   // Si se quieren usar los datos en cache
   private llenarFormularios(transaccion_: any) {
     if (transaccion_.Formulario2 && transaccion_.Formulario2.length) {
-      let diff = transaccion_.Formulario2.length - this.controlSoportes.length
+      let diff = transaccion_.Formulario2.length - this.controlSoportes.length;
       while (diff-- > 0) {
         this.controlSoportes.push(this.newSoporte);
       }

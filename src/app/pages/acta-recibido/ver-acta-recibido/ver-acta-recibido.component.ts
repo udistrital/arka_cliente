@@ -1,5 +1,4 @@
 import { Component, OnInit, ViewChild, Input } from '@angular/core';
-import { Observable } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup, FormControl, FormArray, AbstractControl } from '@angular/forms';
 import { NuxeoService } from '../../../@core/utils/nuxeo.service';
@@ -24,9 +23,9 @@ import { ListService } from '../../../@core/store/services/list.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { UserService } from '../../../@core/data/users.service';
 import { TipoActa } from '../../../@core/data/models/acta_recibido/tipo_acta';
-import { map, startWith } from 'rxjs/operators';
 import { isObject } from 'util';
 import { CompleterData, CompleterService } from 'ng2-completer';
+import { CommonActas } from '../shared';
 
 @Component({
   selector: 'ngx-ver-acta-recibido',
@@ -192,30 +191,8 @@ export class VerActaRecibidoComponent implements OnInit {
     });
   }
 
-  private async filtroProveedores() {
-    await this.loadProveedores(this.controlProveedor.value);
-  }
-
-  muestraProveedor(prov: Partial<TerceroCriterioProveedor>): string {
-    if (prov) {
-      const str = prov.Identificacion ? prov.Identificacion.TipoDocumentoId.CodigoAbreviacion + ':' + prov.Identificacion.Numero + ' - ' : '';
-      return str + prov.Tercero.NombreCompleto;
-    }
-  }
-
-  private async filtroContratistas() {
-    await this.loadContratistas(this.controlContratista.value);
-  }
-
-  muestraContratista(contr: TerceroCriterioContratista): string {
-    if (contr && contr.Identificacion) {
-      return contr.Identificacion.TipoDocumentoId.CodigoAbreviacion + ':' + contr.Identificacion.Numero + ' - ' + contr.Tercero.NombreCompleto;
-    } else {
-      if (contr) {
-        return contr.Tercero.NombreCompleto;
-      }
-    }
-  }
+  muestraProveedor = CommonActas.muestraProveedor;
+  muestraContratista = CommonActas.muestraContratista;
 
   T_V(valor: string): string {
     return this.cp.transform(valor);
