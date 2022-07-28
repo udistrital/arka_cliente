@@ -1,7 +1,7 @@
-import { Component, OnInit, ViewChild, ViewChildren, QueryList, Input } from '@angular/core';
-import { Subscription, Observable } from 'rxjs';
+import { Component, OnInit, ViewChildren, QueryList } from '@angular/core';
+import { Observable, scheduled, asyncScheduler } from 'rxjs';
 import { Router, ActivatedRoute } from '@angular/router';
-import { FormBuilder, FormGroup, Validators, FormControl, FormArray, ValidatorFn, ValidationErrors } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, FormArray, ValidatorFn, ValidationErrors } from '@angular/forms';
 import { NuxeoService } from '../../../@core/utils/nuxeo.service';
 import { MatTable } from '@angular/material';
 import 'hammerjs';
@@ -28,7 +28,7 @@ import { AbstractControl } from '@angular/forms/src/model';
 import { isObject } from 'rxjs/internal-compatibility';
 import { TipoActa } from '../../../@core/data/models/acta_recibido/tipo_acta';
 import { EstadoElemento } from '../../../@core/data/models/acta_recibido/estado_elemento';
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, mergeAll } from 'rxjs/operators';
 import { ActaValidators } from '../validators';
 import { CommonActas } from '../shared';
 
@@ -52,10 +52,8 @@ export class RegistroActaRecibidoComponent implements OnInit {
 
   // Variables de Formulario
   firstForm: FormGroup;
-  @ViewChild('fform') firstFormDirective;
   tipoActa: string = 'regular';
   selectedTab: number = 0;
-  index;
   // Tablas parametricas
 
   Estados_Acta: any;
@@ -314,16 +312,13 @@ export class RegistroActaRecibidoComponent implements OnInit {
       this.filtroProveedores();
     });
 
-    this.controlSede.valueChanges
-    .pipe(debounceTime(200), distinctUntilChanged())
-    .subscribe((sedeChange: any) => {
-      // console.debug({sedeChange});
-      this.Traer_Relacion_Ubicaciones();
-    });
-    this.controlDependencia.valueChanges
-    .pipe(debounceTime(200), distinctUntilChanged())
-    .subscribe((dependenciaChange: any) => {
-      // console.debug({dependenciaChange});
+    scheduled([ // Porque merge está deprecado
+      this.controlSede.valueChanges,
+      this.controlDependencia.valueChanges,
+    ], asyncScheduler)
+    .pipe(mergeAll(), debounceTime(200), distinctUntilChanged())
+    .subscribe((change: any) => {
+      // console.debug({change});
       this.Traer_Relacion_Ubicaciones();
     });
   }
@@ -565,6 +560,8 @@ export class RegistroActaRecibidoComponent implements OnInit {
         const relaciones = res[0].Relaciones;
         if (isObject(relaciones)) {
           this.Ubicaciones = relaciones;
+        } else {
+          this.Ubicaciones = [];
         }
       });
     }
