@@ -1,8 +1,6 @@
-import { Component, OnInit, ViewChild, ViewChildren, QueryList, Input } from '@angular/core';
-import { Subscription, Observable } from 'rxjs';
-import { map, startWith } from 'rxjs/operators';
-import { Router, ActivatedRoute } from '@angular/router';
-import { FormBuilder, FormGroup, Validators, FormControl, FormArray, ValidatorFn, AbstractControl, ValidationErrors } from '@angular/forms';
+import { Component, OnInit, ViewChildren, QueryList, Input } from '@angular/core';
+import { Router } from '@angular/router';
+import { FormBuilder, FormGroup, Validators, FormArray, ValidatorFn, AbstractControl, ValidationErrors } from '@angular/forms';
 import { NuxeoService } from '../../../@core/utils/nuxeo.service';
 import { MatTable } from '@angular/material';
 import 'hammerjs';
@@ -32,6 +30,7 @@ import { permisosSeccionesActas } from './reglas';
 import { isObject } from 'rxjs/internal-compatibility';
 import { TipoActa } from '../../../@core/data/models/acta_recibido/tipo_acta';
 import { EstadoElemento } from '../../../@core/data/models/acta_recibido/estado_elemento';
+import { ActaValidators } from '../validators';
 
 @Component({
   selector: 'ngx-edicion-acta-recibido',
@@ -40,9 +39,6 @@ import { EstadoElemento } from '../../../@core/data/models/acta_recibido/estado_
 })
 export class EdicionActaRecibidoComponent implements OnInit {
 
-  searchStr: string;
-  searchStr2: string[];
-  searchStr3: string;
   Contratistas: TerceroCriterioContratista[];
   Proveedores: Partial<TerceroCriterioProveedor>[];
 
@@ -55,10 +51,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
 
   // Variables de Formulario
   firstForm: FormGroup;
-  @ViewChild('fform') firstFormDirective;
   carga_agregada: boolean;
-  index;
-  selected = new FormControl(0);
   _Acta_Id: number;
   fileDocumento: any[] = [];
   idDocumento: any[] = [];
@@ -72,9 +65,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
       // console.log('ok');
     }
     // console.log(this._Acta_Id);
-
   }
-
 
   @Input('estado') estadoActa: string;
   actaRegistrada: boolean;
@@ -93,9 +84,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
   dataService3: CompleterData;
   guardando: boolean = false;
   sedeDependencia: any;
-  private actaCargada: boolean = false;
   private SoporteElementosValidos: Array<boolean>;
-  private elementosValidos: boolean = false;
   validarElementos: boolean;
   Acta: TransaccionActaRecibido;
   totales: any;
@@ -127,7 +116,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
   constructor(
     private translate: TranslateService,
     private router: Router,
-    private route: ActivatedRoute,
     private fb: FormBuilder,
     private Actas_Recibido: ActaRecibidoHelper,
     private tercerosHelper: TercerosHelper,
@@ -148,7 +136,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
     this.errores = new Map<string, boolean>();
     this.fileDocumento = [];
     this.idDocumento = [];
-    this.searchStr2 = new Array<string>();
     this.DatosElementos = new Array<any>();
   }
 
@@ -171,7 +158,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
     const data = [this.loadLists(), this.cargaActa()];
     await Promise.all(data);
     this.Cargar_Formularios(this.Acta);
-    this.actaCargada = true;
   }
   // Los permisos en cada sección dependen del estado del acta y del rol.
   cargaPermisos() {
@@ -269,9 +255,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
     const validar = estadosAntesDeRevision
       .some(est => this.estadoActa === est);
     this.validarElementos = validar;
-    if (!validar) {
-      this.elementosValidos = true;
-    }
     // console.log({elemValiudos: this.elementosValidos});
   }
 
@@ -291,7 +274,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
 
   private loadContratistas(query: string = '', id: number= 0): Promise<void> {
     return new Promise<void>(resolve => {
-      if (id || query) {
+      if (id || query.length >= this.minLength) {
         this.tercerosHelper.getTercerosByCriterio('contratista', id, query).toPromise().then(res => {
           this.Contratistas = res;
           resolve();
@@ -466,7 +449,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
               return this.Contratistas.some(criterio) ? this.Contratistas.find(criterio) : '';
             })(),
             disabled: !this.confService.getAccion('edicionActaAuxI'),
-          }, ar ? [Validators.required, this.validarTercero()] : [],
+          }, ar ? [Validators.required, ActaValidators.validarTercero] : [],
         ],
         Proveedor: [
           {
@@ -475,7 +458,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
                 proveedor.Tercero.Id === transaccion_.UltimoEstado.ProveedorId),
             disabled: !this.getPermisoEditar(this.permisos.Acta),
           },
-          { validators: !ar ? [] : this.actaRegistrada ? [this.validarTercero()] : [Validators.required, this.validarTercero()] },
+          { validators: !ar ? [] : this.actaRegistrada ? [ActaValidators.validarTercero] : [Validators.required, ActaValidators.validarTercero] },
         ],
       }),
       Formulario2: Form2,
@@ -610,7 +593,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
           file.url = this.cleanURL(file.urlTemp);
           file.IdDocumento = 13; // tipo de documento (API documentos_crud)
           file.file = event.target.files[0];
-          (this.controlSoportes as FormArray).at(index).get('Soporte').setValue(file.name);
+          this.controlSoportes.at(index).get('Soporte').setValue(file.name);
           this.fileDocumento[index] = file;
           this.idDocumento[index] = undefined;
 
@@ -628,7 +611,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
     }
   }
   clearFile(index) {
-    (this.controlSoportes as FormArray).at(index).get('Soporte').setValue('');
+    this.controlSoportes.at(index).get('Soporte').setValue('');
     this.fileDocumento[index] = undefined;
     this.idDocumento[index] = undefined;
   }
@@ -638,7 +621,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
   }
 
   addSoportes() {
-    (this.controlSoportes as FormArray).push(this.Formulario_2);
+    this.controlSoportes.push(this.Formulario_2);
     this.SoporteElementosValidos.push(false);
   }
 
@@ -651,7 +634,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
 
   addTab($event) {
     if ($event === this.controlSoportes.value.length && !this.cargarTab) {
-      (this.controlSoportes as FormArray).push(this.Formulario_2);
+      this.controlSoportes.push(this.Formulario_2);
       this.selectedTab = this.controlSoportes.value.length;
       this.cargarTab = true;
     }
@@ -659,7 +642,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
 
   removeTab(i: number) {
     this.selectedTab = i - 1;
-    (this.controlSoportes as FormArray).removeAt(i);
+    this.controlSoportes.removeAt(i);
     this.fileDocumento.splice(i, 1);
     this.idDocumento.splice(i, 1);
   }
@@ -713,7 +696,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
     transaccionActa.UltimoEstado = this.generarEstadoActa(nuevoEstado);
     transaccionActa.Elementos = this.generarElementos();
 
-    const Soportes: SoporteActa[] = (this.controlSoportes as FormArray).controls
+    const Soportes: SoporteActa[] = this.controlSoportes.controls
       .map((soporte, index) => this.generarSoporte(soporte, index));
 
     transaccionActa.SoportesActa = Soportes;
@@ -926,17 +909,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
     this.totales = event;
   }
 
-  private validarTercero(): ValidatorFn {
-    return (control: AbstractControl): ValidationErrors | null => {
-      const valor = control.value;
-      const checkStringLength = valor && typeof (valor) === 'string' && valor.length < 4 && valor !== '' ? true : false;
-      const checkInvalidString = valor && typeof (valor) === 'string' && valor !== '' ? true : false;
-      const checkInvalidTercero = valor && typeof (valor) === 'object' && !valor.Tercero ? true : false;
-      return checkStringLength ? { errorLongitudMinima: true } :
-        checkInvalidString || checkInvalidTercero ? { terceroNoValido: true } : null;
-    };
-  }
-
   private checkValidness: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
     const errors = !(
       control.get('Formulario1').valid &&
@@ -966,7 +938,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
   }
 
   get controlSoportes() {
-    return this.firstForm.get('Formulario2');
+    return this.firstForm.get('Formulario2') as FormArray;
   }
 
   get controlForm3() {

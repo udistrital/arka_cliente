@@ -4,9 +4,9 @@ export class ActaValidators {
 
   static validarTercero(control: AbstractControl): ValidationErrors | null {
     const valor = control.value;
-    const checkStringLength = typeof (valor) === 'string' && valor.length < 4 && valor !== '';
-    const checkInvalidString = typeof (valor) === 'string' && valor !== '';
-    const checkInvalidTercero = typeof (valor) === 'object' && !valor.Tercero;
+    const checkStringLength = valor && typeof (valor) === 'string' && valor.length < 4 && valor !== '';
+    const checkInvalidString = valor && typeof (valor) === 'string' && valor !== '';
+    const checkInvalidTercero = valor && typeof (valor) === 'object' && !valor.Tercero;
     return checkStringLength ? { errorLongitudMinima: true } :
       checkInvalidString || checkInvalidTercero ? { terceroNoValido: true } : null;
   }

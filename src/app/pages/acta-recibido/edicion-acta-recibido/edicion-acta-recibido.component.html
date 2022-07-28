@@ -4,7 +4,7 @@
     <label>{{'GLOBAL.Acta_Recibido.ConsultaActas.EstadoHeader' | translate}}: {{estadoActa}}</label>
   </nb-card-header>
   <nb-card-body [nbSpinner]="!firstForm || guardando || validarElementos === undefined">
-    <form *ngIf="firstForm" [formGroup]="firstForm" #fform="ngForm" class="step-container">
+    <form *ngIf="firstForm" [formGroup]="firstForm" class="step-container">
       <mat-vertical-stepper [linear]="true" #stepper>
 
         <!-- Datos iniciales -->
@@ -15,7 +15,8 @@
               <div class="row" *ngIf="Acta.ActaRecibido.TipoActaId.Id === 1">
                 <div class="form-group col-sm">
                   <label>{{'GLOBAL.Acta_Recibido.ContratistaAsignado' | translate}}</label>
-                  <input matInput type="text" class="form-control" placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : minLength} }}"
+                  <input matInput type="text" class="form-control"
+                    placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : minLength} }}"
                     formControlName="Contratista" [matAutocomplete]="autoContratista" (keyup.enter)="filtroContratistas()">
                   <mat-autocomplete #autoContratista="matAutocomplete" [displayWith]="muestraContratista">
                     <mat-option *ngFor="let contr of Contratistas " [value]="contr">
@@ -35,8 +36,8 @@
                 <div class="form-group col-sm">
                   <label>{{'GLOBAL.Acta_Recibido.EdicionActa.Proveedor' | translate}}</label>
                   <input matInput type="text" class="form-control"
-                  placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : minLength} }}"
-                  formControlName="Proveedor" [matAutocomplete]="autoProveedor" (keyup.enter)="filtroProveedores()">
+                    placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : minLength} }}"
+                    formControlName="Proveedor" [matAutocomplete]="autoProveedor" (keyup.enter)="filtroProveedores()">
                   <mat-autocomplete #autoProveedor="matAutocomplete" [displayWith]="muestraProveedor">
                     <mat-option *ngFor="let prov of Proveedores" [value]="prov">
                       {{muestraProveedor(prov)}}
@@ -102,7 +103,7 @@
               (animationDone)="tab()">
 
                 <!-- cada soporte -->
-                <mat-tab *ngFor="let soporte of controlSoportes['controls']; let i = index"
+                <mat-tab *ngFor="let soporte of controlSoportes.controls; let i = index"
                   [formGroupName]="i">
                   <ng-template mat-tab-label>
                     {{'GLOBAL.Acta_Recibido.EdicionActa.SoporteSubTitle' | translate}} &nbsp; {{i + 1}} &nbsp; &nbsp;
