@@ -58,28 +58,23 @@
               <div class="row">
                 <div class="form-group col-sm">
                   <label>{{'GLOBAL.Acta_Recibido.EdicionActa.Sede' | translate}}</label>
-                  <mat-select type="text" class="form-control" formControlName="Sede"
-                    (selectionChange)="Traer_Relacion_Ubicaciones();">
-                    <mat-option *ngFor="let sede of Sedes" [(value)]="sede.Id">{{sede.Nombre}}</mat-option>
+                  <mat-select class="form-control" formControlName="Sede">
+                    <mat-option *ngFor="let sede of Sedes" [value]="sede.Id">{{sede.Nombre}}</mat-option>
                   </mat-select>
                   <p class="campo" *ngIf="controlSede.invalid">
                     {{'GLOBAL.Errores.ErrorRequerido' | translate}}</p>
                 </div>
                 <div class="form-group col-sm">
                   <label>{{'GLOBAL.Acta_Recibido.EdicionActa.Dependencia' | translate}}</label>
-                  <ng2-completer style="border: 0rem" inputClass="form-control" nbInput [datasource]="dataService3"
-                    formControlName="Dependencia"
-                    (change)="Traer_Relacion_Ubicaciones()" [disableInput]="!getPermisoEditar(permisos.Acta)"
-                    [minSearchLength]="3" [clearUnselected]="true" (blur)="Traer_Relacion_Ubicaciones()"
-                    placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : minLength} }}">
-                  </ng2-completer>
+                  <ngx-autocompleter [options]="Dependencias2" formControlName="Dependencia">
+                  </ngx-autocompleter>
                   <p class="campo" *ngIf="controlDependencia.invalid">
                     {{'GLOBAL.Errores.ErrorRequerido' | translate}}</p>
                 </div>
                 <div class="form-group col-sm">
                   <label>{{'GLOBAL.Acta_Recibido.EdicionActa.Ubicacion' | translate}}</label>
                   <mat-select type="text" class="form-control" formControlName="Ubicacion">
-                    <mat-option *ngFor="let ubicacion of UbicacionesFiltradas" [(value)]="ubicacion.Id">{{ubicacion.Nombre}}
+                    <mat-option *ngFor="let ubicacion of Ubicaciones" [value]="ubicacion.Id">{{ubicacion.Nombre}}
                     </mat-option>
                   </mat-select>
                   <p class="campo" *ngIf="controlUbicacion.invalid">
@@ -132,7 +127,6 @@
                               <label>{{'GLOBAL.Acta_Recibido.EdicionActa.FechaSoporte' | translate}}</label>
                               <div class="input-group">
                                 <mat-form-field appearance="outline">
-                                  <mat-label></mat-label>
                                   <input matInput [matDatepicker]="fecha" [min]="minDate" [max]="maxDate" formControlName="Fecha_Factura">
                                   <mat-datepicker-toggle matSuffix [for]="fecha"></mat-datepicker-toggle>
                                   <mat-datepicker #fecha></mat-datepicker>
