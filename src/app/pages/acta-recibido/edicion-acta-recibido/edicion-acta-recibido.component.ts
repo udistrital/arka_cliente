@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChildren, QueryList, Input } from '@angular/core';
+import { Component, OnInit, ViewChildren, QueryList, Input, Output, EventEmitter } from '@angular/core';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, FormArray, ValidatorFn, AbstractControl, ValidationErrors } from '@angular/forms';
@@ -71,6 +71,12 @@ export class EdicionActaRecibidoComponent implements OnInit {
     }
     // console.log(this._Acta_Id);
   }
+
+  /**
+   * Para notificar que hubo un cambio en el acta
+   * y por lo tanto es necesario recargar la lista
+   */
+  @Output() cambio = new EventEmitter();
 
   estadoLocalizado: string = '';
   Estados_Acta: any;
@@ -741,6 +747,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
           showConfirmButton: false,
           timer: 2000,
         });
+        this.cambio.emit(undefined);
         if (siguienteEtapa) {
           const cedulaprov = this.controlProveedor.value && this.controlProveedor.value.Identificacion ?
             this.controlProveedor.value.Identificacion.Numero : '';

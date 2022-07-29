@@ -44,6 +44,8 @@ export class ConsultaActaRecibidoComponent implements OnInit {
   accion: string;
   actas2: any;
   mostrar: boolean;
+  recargar: boolean;
+  user: string;
   permisos: {
     Acta: Permiso,
     Elementos: Permiso,
@@ -86,10 +88,12 @@ export class ConsultaActaRecibidoComponent implements OnInit {
 
   ngOnInit() {
     // const estados = ['Registrada', 'Anulada'];
-    const usuario = this.userService.getUserMail();
-
-    // this.actaRecibidoHelper.getActasRecibidoPorEstados(estados).subscribe((res: any) => {
-    this.actaRecibidoHelper.getActasRecibidoUsuario(usuario).subscribe((res: any) => {
+    this.user = this.userService.getUserMail();
+    this.cargarActas();
+  }
+  cargarActas(limit: number = 10, offset: number = 0) {
+    this.mostrar = false;
+    this.actaRecibidoHelper.getActasRecibidoUsuario(this.user).subscribe((res: any) => {
       // console.log(res);
       if (Array.isArray(res) && res.length !== 0) {
         res = this.calculaRevisores(res);
@@ -398,6 +402,10 @@ export class ConsultaActaRecibidoComponent implements OnInit {
   }
 
   onBack() {
+    if (this.recargar) {
+      this.recargar = false;
+      this.cargarActas();
+    }
     this.initialiseInvites();
     this.editarActa = false;
     this.verActa = false;
