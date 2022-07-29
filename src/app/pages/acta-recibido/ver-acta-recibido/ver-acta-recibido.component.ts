@@ -87,6 +87,8 @@ export class VerActaRecibidoComponent implements OnInit {
     private route: ActivatedRoute) {
     this.Contratistas = [];
     this.Proveedores = [];
+    this.Verificar_tabla = new Array<boolean>();
+    this.Acta = new TransaccionActaRecibido;
   }
 
   ngOnInit() {
@@ -101,13 +103,10 @@ export class VerActaRecibidoComponent implements OnInit {
     this.listService.findUnidades();
     this.listService.findImpuestoIVA();
     this.loadDependencias();
-    this.Verificar_tabla = new Array<boolean>();
-    this.Acta = new TransaccionActaRecibido;
   }
 
   async loadDependencias() {
-    const data = [this.loadLists(), this.loadActa()];
-    await Promise.all(data);
+    await Promise.all([this.loadLists(), this.loadActa()]);
     this.Cargar_Formularios(this.Acta);
   }
 
@@ -164,7 +163,7 @@ export class VerActaRecibidoComponent implements OnInit {
   private loadActa(): Promise<void> {
     return new Promise<void>(resolve => {
       if (this._ActaId) {
-        this.Actas_Recibido.getTransaccionActa(this._ActaId, false).toPromise().then(res => {
+        this.Actas_Recibido.getTransaccionActa(this._ActaId, false).toPromise().then(async (res) => {
           // console.log('respuesta acta', res);
           this.Acta.UltimoEstado = res.UltimoEstado;
           this.estadoActa = this.Acta.UltimoEstado.EstadoActaId.Nombre;
@@ -172,19 +171,19 @@ export class VerActaRecibidoComponent implements OnInit {
           this.contratistaId = this.Acta.UltimoEstado.PersonaAsignadaId;
           this.Acta.ActaRecibido = res.ActaRecibido;
           this.Acta.SoportesActa = res.SoportesActa;
-          Promise.all([this.loadProveedores('', this.proveedorId), this.loadContratistas('', this.contratistaId)]);
+          await Promise.all([this.loadProveedores('', this.proveedorId), this.loadContratistas('', this.contratistaId)]);
           resolve();
         });
       } else if (!this._ActaId && this.route.snapshot.paramMap.get('id')) {
         this._ActaId = +this.route.snapshot.paramMap.get('id');
-        this.Actas_Recibido.getTransaccionActa(this._ActaId, false).toPromise().then(res => {
+        this.Actas_Recibido.getTransaccionActa(this._ActaId, false).toPromise().then(async (res) => {
           this.Acta.UltimoEstado = res.UltimoEstado;
           this.estadoActa = this.Acta.UltimoEstado.EstadoActaId.Nombre;
           this.proveedorId = this.Acta.UltimoEstado.ProveedorId;
           this.contratistaId = this.Acta.UltimoEstado.PersonaAsignadaId;
           this.Acta.ActaRecibido = res.ActaRecibido;
           this.Acta.SoportesActa = res.SoportesActa;
-          Promise.all([this.loadProveedores('', this.proveedorId), this.loadContratistas('', this.contratistaId)]);
+          await Promise.all([this.loadProveedores('', this.proveedorId), this.loadContratistas('', this.contratistaId)]);
           resolve();
         });
       }

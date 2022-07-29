@@ -266,7 +266,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
       this.Actas_Recibido.getTransaccionActa(this._Acta_Id, false).subscribe(async Acta => {
         this.Acta = Acta;
         // console.log('acta:', this.Acta);
-        Promise.all([
+        await Promise.all([
           this.loadProveedores('', this.Acta.UltimoEstado.ProveedorId),
           this.loadContratistas('', this.Acta.UltimoEstado.PersonaAsignadaId),
         ]);
