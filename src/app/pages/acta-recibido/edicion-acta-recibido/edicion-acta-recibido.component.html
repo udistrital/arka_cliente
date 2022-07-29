@@ -1,7 +1,7 @@
 <nb-card>
   <nb-card-header>
 	  <h2>{{'GLOBAL.Acta_Recibido.EdicionActa.TitleId' | translate: {ID: _Acta_Id} }}</h2>
-    <label>{{'GLOBAL.Acta_Recibido.ConsultaActas.EstadoHeader' | translate}}: {{estadoActa}}</label>
+    <label>{{'GLOBAL.Acta_Recibido.ConsultaActas.EstadoHeader' | translate: {STATE: estadoLocalizado} }}</label>
   </nb-card-header>
   <nb-card-body [nbSpinner]="!firstForm || guardando || validarElementos === undefined">
     <form *ngIf="firstForm" [formGroup]="firstForm" class="step-container">
@@ -12,7 +12,7 @@
           <nb-card>
             <nb-card-body>
 
-              <div class="row" *ngIf="Acta.ActaRecibido.TipoActaId.Id === 1">
+              <div class="row" *ngIf="actaRegular">
                 <div class="form-group col-sm">
                   <label>{{'GLOBAL.Acta_Recibido.ContratistaAsignado' | translate}}</label>
                   <input matInput type="text" class="form-control"
@@ -117,7 +117,7 @@
                       <nb-card-body>
                         <div class="row">
 
-                          <div class="col" *ngIf="Acta.ActaRecibido.TipoActaId.Id === 1">
+                          <div class="col" *ngIf="actaRegular">
                             <div class="form-group col-sm">
                               <label>{{'GLOBAL.Acta_Recibido.EdicionActa.Consecutivo' | translate}}</label>
                               <div class="input-group">
@@ -205,7 +205,7 @@
                     <nb-card>
                       <nb-card-body>
                         <div class="row">
-                          <div class="col" *ngIf="Acta.ActaRecibido.TipoActaId.Id === 1">
+                          <div class="col" *ngIf="actaRegular">
                             <div class="form-group col-sm">
                               <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Consecutivo' | translate}}</label>
                               <div class="input-group">
@@ -332,17 +332,18 @@
                 <button nbButton matStepperPrevious>
                   {{'GLOBAL.Acta_Recibido.EdicionActa.AnteriorButton' | translate}}
                 </button>
-                <button nbButton (click)="Revisar_Totales2()" *ngIf="getPermisoEditar(permisos.Acta) || getPermisoEditar(permisos.Elementos)"
+                <button nbButton class="float-right" (click)="Revisar_Totales2()"
+                  *ngIf="getPermisoEditar(permisos.Acta) || getPermisoEditar(permisos.Elementos)"
                   [disabled]="controlDatosBasicos.invalid || controlSoportes.invalid
-                  || controlForm3.invalid || (this.estadoActa === 'Aceptada' && errores.size > 0)" class="float-right">
+                  || controlForm3.invalid || (this.actaAceptada && errores.size > 0)">
                   {{'GLOBAL.Acta_Recibido.EdicionActa.GuardarCambiosButton' | translate}}
                 </button>
               </div>
             </nb-card-footer>
           </nb-card>
 
-        <div *ngIf="accion.envContratistaHabilitado || accion.envHabilitado" class="botones">
-          <button mat-icon-button type="button" *ngIf="errores && (errores.size > 0)" [nbPopover]="erroresTemplate" nbPopoverTrigger="hover">
+          <div *ngIf="accion.envContratistaHabilitado || accion.envHabilitado" class="botones">
+            <button mat-icon-button type="button" *ngIf="errores && (errores.size > 0)" [nbPopover]="erroresTemplate" nbPopoverTrigger="hover">
               <span class="fas fa-exclamation-triangle fa-2x"></span>
             </button>
             <button nbButton (click)="Revisar_Totales3(1)" *ngIf="accion.envHabilitado && controlProveedor.value" [disabled]="this.errores.size > 0">

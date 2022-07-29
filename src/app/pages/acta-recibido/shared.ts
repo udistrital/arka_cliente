@@ -1,3 +1,4 @@
+import { EstadoActa_t } from '../../@core/data/models/acta_recibido/estado_acta';
 import { TerceroCriterioContratista, TerceroCriterioProveedor } from '../../@core/data/models/terceros_criterio';
 
 export class CommonActas {
@@ -44,6 +45,10 @@ export class CommonActas {
       const str = prov.Identificacion ? prov.Identificacion.TipoDocumentoId.CodigoAbreviacion + ':' + prov.Identificacion.Numero + ' - ' : '';
       return str + prov.Tercero.NombreCompleto;
     }
+  }
+
+  static i18nEstado(estado: EstadoActa_t): string {
+    return 'GLOBAL.Acta_Recibido.EstadosActa.' + EstadoActa_t[estado];
   }
 
 }

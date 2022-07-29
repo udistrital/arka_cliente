@@ -29,7 +29,7 @@ import { UserService } from '../../../@core/data/users.service';
 import { RolUsuario_t as Rol, PermisoUsuario_t as Permiso } from '../../../@core/data/models/roles/rol_usuario';
 import { permisosSeccionesActas } from './reglas';
 import { isObject } from 'rxjs/internal-compatibility';
-import { TipoActa } from '../../../@core/data/models/acta_recibido/tipo_acta';
+import { Acta_t, TipoActa } from '../../../@core/data/models/acta_recibido/tipo_acta';
 import { EstadoElemento } from '../../../@core/data/models/acta_recibido/estado_elemento';
 import { ActaValidators } from '../validators';
 import { CommonActas } from '../shared';
@@ -69,8 +69,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
     // console.log(this._Acta_Id);
   }
 
-  @Input('estado') estadoActa: string;
-  actaRegistrada: boolean;
+  estadoLocalizado: string = '';
   Estados_Acta: any;
   Estados_Elemento: any;
 
@@ -88,7 +87,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
   sedeDependencia: any;
   private SoporteElementosValidos: Array<boolean>;
   validarElementos: boolean;
-  Acta: TransaccionActaRecibido;
+  trActa: TransaccionActaRecibido;
   totales: any;
   minLength: number = 4;
   cargarTab: boolean;
@@ -131,6 +130,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
     private documentoService: DocumentoService,
     private userService: UserService,
   ) {
+    this.errores = new Map<string, boolean>();
     this.maxDate = new Date();
     this.minDate = new Date(-1);
     this.Contratistas = [];
@@ -148,18 +148,17 @@ export class EdicionActaRecibidoComponent implements OnInit {
     this.listService.findSedes();
     this.listService.findEstadosActa();
     this.listService.findEstadosElemento();
-    this.defineSiHayQueValidarElementosParaEnviar();
-    this.cargaPermisos();
-    this.errores = new Map<string, boolean>();
-    this.Acta = new TransaccionActaRecibido;
     this.initForms();
-    this.actaRegistrada = this.estadoActa === 'Registrada';
   }
 
   private async initForms() {
     const data = [this.loadLists(), this.cargaActa()];
     await Promise.all(data);
-    await this.Cargar_Formularios(this.Acta);
+    this.cargaPermisos();
+    this.defineSiHayQueValidarElementosParaEnviar();
+    this.estadoLocalizado = this.translate
+      .instant(CommonActas.i18nEstado(this.estadoActa));
+    await this.Cargar_Formularios();
     this.setFormEvents();
   }
   // Los permisos en cada sección dependen del estado del acta y del rol.
@@ -195,7 +194,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
 
   // Devuelve un objeto en que el nombre de cada propiedad es un permiso, y
   // los valores de cada propiedad son los roles que tienen dicho permiso.
-  private permisosRoles_EstadoSeccion(estado: string, seccion: string) {
+  private permisosRoles_EstadoSeccion(estado: EstadoActa_t, seccion: string) {
     let PuedenModificar: string = '';
     let PuedenVer: string = '';
 
@@ -226,13 +225,13 @@ export class EdicionActaRecibidoComponent implements OnInit {
     // Pueden enviar a Proveedor
     const envioProveedor =
       this.confService.getAccion('edicionActaRecibidoCambioAElaboracion')
-      && ['Registrada']
+      && [EstadoActa_t.Registrada]
         .some(est => this.estadoActa === est);
 
     // Pueden enviar a Validacion
     const envioValidar =
       !!this.confService.getAccion('edicionActaRecibidoCambioARevision') &&
-      ['En Elaboración', 'En Modificación']
+      [EstadoActa_t.EnElaboracion, EstadoActa_t.EnModificacion]
         .some(est => this.estadoActa === est);
 
     this.accion.envHabilitado = envioProveedor || envioValidar;
@@ -251,9 +250,9 @@ export class EdicionActaRecibidoComponent implements OnInit {
     // Estados de Actas que requieren que los elementos
     // tengan sus clases asignadas
     const estadosAntesDeRevision = [
-      'En Elaboracion',
-      'En Modificacion',
-      'Aceptada',
+      EstadoActa_t.EnElaboracion,
+      EstadoActa_t.EnModificacion,
+      EstadoActa_t.Aceptada,
     ];
     const validar = estadosAntesDeRevision
       .some(est => this.estadoActa === est);
@@ -264,11 +263,11 @@ export class EdicionActaRecibidoComponent implements OnInit {
   private cargaActa(): Promise<void> {
     return new Promise<void>(resolve => {
       this.Actas_Recibido.getTransaccionActa(this._Acta_Id, false).subscribe(async Acta => {
-        this.Acta = Acta;
-        // console.log('acta:', this.Acta);
+        this.trActa = Acta;
+        // console.log('acta:', this.trActa);
         await Promise.all([
-          this.loadProveedores('', this.Acta.UltimoEstado.ProveedorId),
-          this.loadContratistas('', this.Acta.UltimoEstado.PersonaAsignadaId),
+          this.loadProveedores('', this.trActa.UltimoEstado.ProveedorId),
+          this.loadContratistas('', this.trActa.UltimoEstado.PersonaAsignadaId),
         ]);
         resolve();
       });
@@ -366,13 +365,14 @@ export class EdicionActaRecibidoComponent implements OnInit {
 
   }
 
-  async Cargar_Formularios(transaccion_: TransaccionActaRecibido) {
+  async Cargar_Formularios() {
 
+    const transaccion_ = this.trActa;
     if (transaccion_.UltimoEstado.UbicacionId) {
       await this.getSedeDepencencia(transaccion_.UltimoEstado.UbicacionId);
     }
 
-    const ar = transaccion_.ActaRecibido.TipoActaId.Id === 1;
+    const ar = this.actaRegular;
     const Form2 = this.fb.array([]);
     transaccion_.SoportesActa.forEach((Soporte, index) => {
       const formulario2 = this.fb.group({
@@ -685,9 +685,9 @@ export class EdicionActaRecibidoComponent implements OnInit {
     transaccionActa.ActaRecibido = this.generarActa();
     let nuevoEstado: EstadoActa_t;
     if (siguienteEtapa) {
-      nuevoEstado = (this.estadoActa === 'Registrada') ? EstadoActa_t.EnElaboracion : EstadoActa_t.EnVerificacion;
+      nuevoEstado = this.actaRegistrada ? EstadoActa_t.EnElaboracion : EstadoActa_t.EnVerificacion;
     } else {
-      nuevoEstado = this.Acta.UltimoEstado.EstadoActaId.Id; // el nuevo estado es el mismo
+      nuevoEstado = this.estadoActa; // el nuevo estado es el mismo
     }
 
     transaccionActa.UltimoEstado = this.generarEstadoActa(nuevoEstado);
@@ -705,7 +705,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
           const L10n_base = 'GLOBAL.Acta_Recibido.EdicionActa.';
           titulo = L10n_base + 'VerificadaTitle2';
           idTitulo = { id: res.ActaRecibido.Id };
-          descripcion = L10n_base + ((this.estadoActa === 'Registrada') ? 'Verificada3' : 'Verificada2');
+          descripcion = L10n_base + (this.actaRegistrada ? 'Verificada3' : 'Verificada2');
           idDescripcion = { id: res.ActaRecibido.Id };
         } else {
           titulo = 'GLOBAL.Acta_Recibido.EdicionActa.ModificadaTitle';
@@ -763,14 +763,14 @@ export class EdicionActaRecibidoComponent implements OnInit {
 
     actaRecibido.Id = +this._Acta_Id;
     actaRecibido.Activo = true;
-    actaRecibido.TipoActaId = <TipoActa>{ Id: this.Acta.ActaRecibido.TipoActaId.Id };
+    actaRecibido.TipoActaId = <TipoActa>{ Id: this.tipoActa };
 
     return actaRecibido;
   }
 
   private generarEstadoActa(Estado: number): HistoricoActa {
 
-    const ae = this.Acta.ActaRecibido.TipoActaId.Id === 2;
+    const ae = this.actaEspecial;
     const proveedor = this.controlProveedor.value;
     const ubicacionId = this.controlUbicacion.value;
     const contratista = this.controlContratista.value;
@@ -881,7 +881,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
     const L10n_base = 'GLOBAL.Acta_Recibido.EdicionActa.';
     const codigoL10n_titulo = L10n_base + 'DatosVeridicosTitle';
     let codigoL10n_desc = '';
-    if (this.estadoActa !== 'Registrada') {
+    if (!this.actaRegistrada) {
       codigoL10n_desc = L10n_base + 'DatosVeridicos2';
     } else {
       codigoL10n_desc = L10n_base + ((enviara === 1) ? 'DatosVeridicos3' : 'DatosVeridicos4');
@@ -913,6 +913,25 @@ export class EdicionActaRecibidoComponent implements OnInit {
       control.get('Formulario3').valid);
     errors ? this.errores.set('formularios', true) : this.errores.delete('formularios');
     return errors ? { formularios: true } : null;
+  }
+
+  get tipoActa() {
+    return this.trActa.ActaRecibido.TipoActaId.Id;
+  }
+  get actaRegular() {
+    return this.tipoActa === Acta_t.Regular;
+  }
+  get actaEspecial() {
+    return this.tipoActa === Acta_t.Especial;
+  }
+  get estadoActa() {
+    return this.trActa.UltimoEstado.EstadoActaId.Id;
+  }
+  get actaRegistrada() {
+    return this.estadoActa === EstadoActa_t.Registrada;
+  }
+  get actaAceptada() {
+    return this.estadoActa === EstadoActa_t.Aceptada;
   }
 
   get controlDatosBasicos() {

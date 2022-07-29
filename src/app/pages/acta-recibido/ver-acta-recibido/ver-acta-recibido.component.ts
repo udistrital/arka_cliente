@@ -10,7 +10,7 @@ import { TerceroCriterioContratista, TerceroCriterioProveedor } from '../../../@
 import { Elemento } from '../../../@core/data/models/acta_recibido/elemento';
 import { SoporteActa } from '../../../@core/data/models/acta_recibido/soporte_acta';
 import { EstadoActa_t } from '../../../@core/data/models/acta_recibido/estado_acta';
-import { EstadoElemento } from '../../../@core/data/models/acta_recibido/estado_elemento';
+import { EstadoElemento, EstadoElemento_t } from '../../../@core/data/models/acta_recibido/estado_elemento';
 import { HistoricoActa } from '../../../@core/data/models/acta_recibido/historico_acta';
 import { TransaccionActaRecibido } from '../../../@core/data/models/acta_recibido/transaccion_acta_recibido';
 import Swal from 'sweetalert2';
@@ -22,7 +22,7 @@ import { IAppState } from '../../../@core/store/app.state';
 import { ListService } from '../../../@core/store/services/list.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { UserService } from '../../../@core/data/users.service';
-import { TipoActa } from '../../../@core/data/models/acta_recibido/tipo_acta';
+import { Acta_t, TipoActa } from '../../../@core/data/models/acta_recibido/tipo_acta';
 import { isObject } from 'util';
 import { CompleterData, CompleterService } from 'ng2-completer';
 import { CommonActas } from '../shared';
@@ -162,11 +162,11 @@ export class VerActaRecibidoComponent implements OnInit {
 
   private loadActa(): Promise<void> {
     return new Promise<void>(resolve => {
-      if (this._ActaId) {
+      const finish = async () => {
         this.Actas_Recibido.getTransaccionActa(this._ActaId, false).toPromise().then(async (res) => {
           // console.log('respuesta acta', res);
           this.Acta.UltimoEstado = res.UltimoEstado;
-          this.estadoActa = this.Acta.UltimoEstado.EstadoActaId.Nombre;
+          this.estadoActa = this.translate.instant(CommonActas.i18nEstado(this.Acta.UltimoEstado.EstadoActaId.Id));
           this.proveedorId = this.Acta.UltimoEstado.ProveedorId;
           this.contratistaId = this.Acta.UltimoEstado.PersonaAsignadaId;
           this.Acta.ActaRecibido = res.ActaRecibido;
@@ -174,18 +174,12 @@ export class VerActaRecibidoComponent implements OnInit {
           await Promise.all([this.loadProveedores('', this.proveedorId), this.loadContratistas('', this.contratistaId)]);
           resolve();
         });
+      };
+      if (this._ActaId) {
+        finish();
       } else if (!this._ActaId && this.route.snapshot.paramMap.get('id')) {
         this._ActaId = +this.route.snapshot.paramMap.get('id');
-        this.Actas_Recibido.getTransaccionActa(this._ActaId, false).toPromise().then(async (res) => {
-          this.Acta.UltimoEstado = res.UltimoEstado;
-          this.estadoActa = this.Acta.UltimoEstado.EstadoActaId.Nombre;
-          this.proveedorId = this.Acta.UltimoEstado.ProveedorId;
-          this.contratistaId = this.Acta.UltimoEstado.PersonaAsignadaId;
-          this.Acta.ActaRecibido = res.ActaRecibido;
-          this.Acta.SoportesActa = res.SoportesActa;
-          await Promise.all([this.loadProveedores('', this.proveedorId), this.loadContratistas('', this.contratistaId)]);
-          resolve();
-        });
+        finish();
       }
     });
   }
@@ -397,7 +391,7 @@ export class VerActaRecibidoComponent implements OnInit {
 
     actaRecibido.Id = +this._ActaId;
     actaRecibido.Activo = true;
-    actaRecibido.TipoActaId = <TipoActa>{ Id: this.Acta.ActaRecibido.TipoActaId.Id };
+    actaRecibido.TipoActaId = <TipoActa>{ Id: this.tipoActa };
 
     return actaRecibido;
   }
@@ -442,7 +436,7 @@ export class VerActaRecibidoComponent implements OnInit {
   private generarElementos(aceptar: boolean): Array<Elemento> {
 
     const elementosActa = new Array<Elemento>();
-    const estadoId = aceptar ? 2 : 1;
+    const estadoId = aceptar ? EstadoElemento_t.Verificado : EstadoElemento_t.Registrado;
 
     for (const datos of this.elementos) {
 
@@ -538,6 +532,13 @@ export class VerActaRecibidoComponent implements OnInit {
 
   eventoTotales(event) {
     this.totales = event;
+  }
+
+  get tipoActa() {
+    return this.Acta.ActaRecibido.TipoActaId.Id;
+  }
+  get actaRegular() {
+    return this.tipoActa === Acta_t.Regular;
   }
 
   get controlDatosBasicos() {

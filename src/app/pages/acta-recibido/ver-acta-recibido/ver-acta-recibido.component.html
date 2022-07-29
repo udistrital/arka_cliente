@@ -1,6 +1,6 @@
 <nb-card>
   <nb-card-header><h2>{{'GLOBAL.Acta_Recibido.VerificacionActa.TitleId' | translate: {ID: _ActaId} }}</h2>
-  <label>{{'GLOBAL.Acta_Recibido.ConsultaActas.EstadoHeader' | translate}}: {{this.estadoActa}}</label>
+  <label>{{'GLOBAL.Acta_Recibido.ConsultaActas.EstadoHeader' | translate: {STATE: estadoActa} }}</label>
   </nb-card-header>
   <nb-card-body [nbSpinner]="!carga_agregada">
     <form [formGroup]="firstForm" #fform="ngForm" class="step-container" *ngIf="firstForm">
@@ -8,7 +8,7 @@
         <nb-card formGroupName="Formulario1">
           <nb-card-header>{{'GLOBAL.Acta_Recibido.VerificacionActa.DatosTitle' | translate}}</nb-card-header>
           <nb-card-body>
-            <div class="row" *ngIf="Acta.ActaRecibido.TipoActaId.Id === 1">
+            <div class="row" *ngIf="actaRegular">
               <div class="form-group col-sm">
                 <label>{{'GLOBAL.Acta_Recibido.ContratistaAsignado' | translate}}</label>
                 <div class="input-group">
@@ -70,7 +70,7 @@
                   <nb-card>
                     <nb-card-body>
                       <div class="row">
-                        <div class="col" *ngIf="Acta.ActaRecibido.TipoActaId.Id === 1">
+                        <div class="col" *ngIf="actaRegular">
                           <div class="form-group col-sm">
                             <label>{{'GLOBAL.Acta_Recibido.DetalleActa.Consecutivo' | translate}}</label>
                             <div class="input-group">
