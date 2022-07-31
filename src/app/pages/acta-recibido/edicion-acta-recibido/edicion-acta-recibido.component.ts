@@ -45,7 +45,10 @@ const FECHA_MINIMA = new Date('1945');
 export class EdicionActaRecibidoComponent implements OnInit {
 
   Contratistas: TerceroCriterioContratista[];
+  cargandoContratistas: boolean;
   Proveedores: Partial<TerceroCriterioProveedor>[];
+  cargandoProveedores: boolean;
+  spinnerSize = 20;
 
   // Mensajes de error
   errMess: any;
@@ -271,17 +274,13 @@ export class EdicionActaRecibidoComponent implements OnInit {
     return new Promise<void>(resolve => {
       this.Actas_Recibido.getTransaccionActa(this._Acta_Id, false).subscribe(async Acta => {
         this.trActa = Acta;
-        // console.log('acta:', this.trActa);
-        await Promise.all([
-          this.loadProveedores('', this.trActa.UltimoEstado.ProveedorId),
-          this.loadContratistas('', this.trActa.UltimoEstado.PersonaAsignadaId),
-        ]);
         resolve();
       });
     });
   }
 
   private queryContratistas(query: string = '', id: number= 0) {
+    this.cargandoContratistas = true;
     return this.tercerosHelper.getTercerosByCriterio('contratista', id, query);
   }
   private loadContratistas(query: string = '', id: number= 0): Promise<void> {
@@ -289,6 +288,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
       if (id || (query.length && query.length >= this.minLength)) {
         this.queryContratistas(query, id).toPromise().then(res => {
           this.Contratistas = res;
+          this.cargandoContratistas = false;
           resolve();
         });
       } else {
@@ -298,6 +298,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
   }
 
   private queryProveedores(query: string = '', id: number= 0) {
+    this.cargandoProveedores = true;
     return this.tercerosHelper.getTercerosByCriterio('proveedor', id, query);
   }
   private loadProveedores(query: string = '', id: number= 0): Promise<void> {
@@ -305,6 +306,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
       if (id || (query.length && query.length >= this.minLength)) {
         this.queryProveedores(query, id).toPromise().then(res => {
           this.Proveedores = res;
+          this.cargandoProveedores = false;
           resolve();
         });
       } else {
@@ -632,7 +634,10 @@ export class EdicionActaRecibidoComponent implements OnInit {
       filter(query => query.length && query.length >= this.minLength),
       switchMap(d => this.queryContratistas(d)),
     )
-    .subscribe(data => this.Contratistas = data);
+    .subscribe(data => {
+      this.Contratistas = data;
+      this.cargandoContratistas = false;
+    });
 
     this.controlProveedor.valueChanges
     .pipe(
@@ -640,7 +645,10 @@ export class EdicionActaRecibidoComponent implements OnInit {
       filter(query => query.length && query.length >= this.minLength),
       switchMap(d => this.queryProveedores(d)),
     )
-    .subscribe(data => this.Proveedores = data);
+    .subscribe(data => {
+      this.Proveedores = data;
+      this.cargandoProveedores = false;
+    });
 
     merge(
       this.controlSede.valueChanges,

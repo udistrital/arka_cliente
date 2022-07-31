@@ -14,7 +14,10 @@
 
               <div class="row" *ngIf="actaRegular">
                 <div class="form-group col-sm">
-                  <label>{{'GLOBAL.Acta_Recibido.ContratistaAsignado' | translate}}</label>
+                  <div class="d-flex">
+                    <label>{{'GLOBAL.Acta_Recibido.ContratistaAsignado' | translate}}</label>
+                    <mat-spinner *ngIf="cargandoContratistas" [diameter]="spinnerSize"></mat-spinner>
+                  </div>
                   <input matInput type="text" class="form-control"
                     placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : minLength} }}"
                     formControlName="Contratista" [matAutocomplete]="autoContratista">
@@ -34,7 +37,10 @@
                     {{'GLOBAL.Errores.ErrorTercero' | translate}}</p>
                 </div>
                 <div class="form-group col-sm">
-                  <label>{{'GLOBAL.Acta_Recibido.EdicionActa.Proveedor' | translate}}</label>
+                  <div class="d-flex">
+                    <label>{{'GLOBAL.Acta_Recibido.EdicionActa.Proveedor' | translate}}</label>
+                    <mat-spinner *ngIf="cargandoProveedores" class="loading" [diameter]="spinnerSize"></mat-spinner>
+                  </div>
                   <input matInput type="text" class="form-control"
                     placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : minLength} }}"
                     formControlName="Proveedor" [matAutocomplete]="autoProveedor">

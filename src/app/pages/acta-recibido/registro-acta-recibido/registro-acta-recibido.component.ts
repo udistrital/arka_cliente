@@ -40,9 +40,10 @@ import { CommonActas } from '../shared';
 export class RegistroActaRecibidoComponent implements OnInit {
 
   Contratistas: TerceroCriterioContratista[];
-  contratistasFiltrados: Observable<Partial<TerceroCriterioContratista>[]>;
+  cargandoContratistas: boolean;
   Proveedores: Partial<TerceroCriterioProveedor>[];
-  proveedoresFiltrados: Observable<Partial<TerceroCriterioProveedor>[]>;
+  cargandoProveedores: boolean;
+  spinnerSize = 20;
 
   // Mensajes de error
   errMess: any;
@@ -125,7 +126,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
   }
 
   private async initForms() {
-    await Promise.all([this.loadLists(), this.loadProveedores(), this.loadContratistas()]);
+    await Promise.all([this.loadLists()]);
     const values = this.formValuesFromStorage;
     if (values) {
       if (await this.retomarValores()) {
@@ -178,34 +179,14 @@ export class RegistroActaRecibidoComponent implements OnInit {
   }
 
   private queryContratistas(query: string = '') {
+    this.cargandoContratistas = true;
     return this.tercerosHelper.getTercerosByCriterio('contratista', 0, query);
-  }
-  private loadContratistas(query: string = ''): Promise<void> {
-    return new Promise<void>(resolve => {
-      if (!query.length || query.length < this.minLength) {
-        resolve();
-      } else
-      this.queryContratistas(query).toPromise().then(res => {
-        this.Contratistas = res;
-        resolve();
-      });
-    });
   }
   muestraContratista = CommonActas.muestraContratista;
 
   private queryProveedores(query: string = '') {
+    this.cargandoProveedores = true;
     return this.tercerosHelper.getTercerosByCriterio('proveedor', 0, query);
-  }
-  private loadProveedores(query: string = ''): Promise<void> {
-    return new Promise<void>(resolve => {
-      if (!query.length || query.length < this.minLength)
-        resolve();
-      else
-      this.queryProveedores(query).toPromise().then(res => {
-        this.Proveedores = res;
-        resolve();
-      });
-    });
   }
   muestraProveedor = CommonActas.muestraProveedor;
 
@@ -303,7 +284,10 @@ export class RegistroActaRecibidoComponent implements OnInit {
       filter(query => query.length && query.length >= this.minLength),
       switchMap(d => this.queryContratistas(d)),
     )
-    .subscribe(data => this.Contratistas = data);
+    .subscribe(data => {
+      this.Contratistas = data;
+      this.cargandoContratistas = false;
+    });
 
     this.controlProveedor.valueChanges
     .pipe(
@@ -311,7 +295,10 @@ export class RegistroActaRecibidoComponent implements OnInit {
       filter(query => query.length && query.length >= this.minLength),
       switchMap(d => this.queryProveedores(d)),
     )
-    .subscribe(data => this.Proveedores = data);
+    .subscribe(data => {
+      this.Proveedores = data;
+      this.cargandoProveedores = false;
+    });
 
     scheduled([ // Porque merge está deprecado
       this.controlSede.valueChanges,
