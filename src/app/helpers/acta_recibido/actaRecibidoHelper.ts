@@ -539,6 +539,9 @@ export class ActaRecibidoHelper {
                             this.pUpManager.showErrorAlert('No se pudieron cargar los parametros generales');
                             return undefined;
                         }
+                        if (Array.isArray(res) && res.length && Object.keys(res[0]).length === 0 ) {
+                            res = [];
+                        }
                         return res;
                     },
                 ),
