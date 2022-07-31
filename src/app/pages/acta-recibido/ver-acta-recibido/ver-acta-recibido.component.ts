@@ -273,39 +273,26 @@ export class VerActaRecibidoComponent implements OnInit {
 
     return new Promise<void>(resolve => {
       this.Actas_Recibido.getSedeDependencia(ubicacionId).toPromise().then(res => {
-
-        const espacioFisico = res[0].EspacioFisicoId.CodigoAbreviacion.replace(/[0-9]/g, '');
-        const _dependencia = res[0].DependenciaId.Id;
-
-        const sede = (() => {
-          const criterio = x => x && x.CodigoAbreviacion === espacioFisico.toString();
-          if (this.Sedes.some(criterio)) {
-            return this.Sedes.find(criterio);
+        const relacion = res[0];
+        if (relacion) {
+          const espacioFisico = relacion.EspacioFisicoId.CodigoAbreviacion.replace(/[0-9]/g, '');
+          const Sede = this.Sedes.find(x => x && x.CodigoAbreviacion === espacioFisico.toString());
+          const Dependencia = relacion.DependenciaId;
+          // console.debug({relacion, Sede, Dependencia});
+          if (Sede && Dependencia) {
+            const transaccion = {Sede, Dependencia};
+            // console.debug({transaccion});
+            this.Actas_Recibido.postRelacionSedeDependencia(transaccion).subscribe((res_: any) => {
+              if (isObject(res_[0].Relaciones)) {
+                this.UbicacionesFiltradas = res_[0].Relaciones;
+              }
+              resolve();
+            });
+            this.sedeDependencia = { sede: Sede.Id, dependencia: Dependencia.Nombre };
+          } else {
+            resolve();
           }
-          return '';
-        })();
-
-        const dependencia = (() => {
-          const criterio = x => _dependencia && x.Id === _dependencia;
-          if (this.Dependencias.some(criterio)) {
-            return this.Dependencias.find(criterio);
-          }
-          return '';
-        })();
-
-        const transaccion: any = {};
-        transaccion.Sede = this.Sedes.find((x) => x.Id === sede.Id);
-        transaccion.Dependencia = this.Dependencias.find((x) => x.Id === dependencia.Id);
-
-        this.Actas_Recibido.postRelacionSedeDependencia(transaccion).subscribe((res_: any) => {
-          if (isObject(res_[0].Relaciones)) {
-            this.UbicacionesFiltradas = res_[0].Relaciones;
-          }
-        });
-
-        this.sedeDependencia = { sede: sede.Id, dependencia: dependencia.Nombre };
-
-        resolve();
+        }
       });
     });
   }
