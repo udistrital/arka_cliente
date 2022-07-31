@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChildren, QueryList, Input, Output, EventEmitter } from '@angular/core';
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, filter, switchMap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, FormArray, ValidatorFn, AbstractControl, ValidationErrors } from '@angular/forms';
 import { NuxeoService } from '../../../@core/utils/nuxeo.service';
@@ -281,10 +281,13 @@ export class EdicionActaRecibidoComponent implements OnInit {
     });
   }
 
+  private queryContratistas(query: string = '', id: number= 0) {
+    return this.tercerosHelper.getTercerosByCriterio('contratista', id, query);
+  }
   private loadContratistas(query: string = '', id: number= 0): Promise<void> {
     return new Promise<void>(resolve => {
       if (id || (query.length && query.length >= this.minLength)) {
-        this.tercerosHelper.getTercerosByCriterio('contratista', id, query).toPromise().then(res => {
+        this.queryContratistas(query, id).toPromise().then(res => {
           this.Contratistas = res;
           resolve();
         });
@@ -294,10 +297,13 @@ export class EdicionActaRecibidoComponent implements OnInit {
     });
   }
 
+  private queryProveedores(query: string = '', id: number= 0) {
+    return this.tercerosHelper.getTercerosByCriterio('proveedor', id, query);
+  }
   private loadProveedores(query: string = '', id: number= 0): Promise<void> {
     return new Promise<void>(resolve => {
       if (id || (query.length && query.length >= this.minLength)) {
-        this.tercerosHelper.getTercerosByCriterio('proveedor', id, query).toPromise().then(res => {
+        this.queryProveedores(query, id).toPromise().then(res => {
           this.Proveedores = res;
           resolve();
         });
@@ -325,14 +331,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
     });
   }
 
-  async filtroContratistas() {
-    await this.loadContratistas(this.controlContratista.value);
-  }
   muestraContratista = CommonActas.muestraContratista;
-
-  async filtroProveedores() {
-    await this.loadProveedores(this.controlProveedor.value);
-  }
   muestraProveedor = CommonActas.muestraProveedor;
 
   EnviarEmail(cedula: String) {
@@ -628,15 +627,20 @@ export class EdicionActaRecibidoComponent implements OnInit {
     // .subscribe(form => console.debug({form}));
 
     this.controlContratista.valueChanges
-    .pipe(debounceTime(200), distinctUntilChanged())
-    .subscribe((contratista: any) => {
-      this.filtroContratistas();
-    });
+    .pipe(
+      debounceTime(200), distinctUntilChanged(),
+      filter(query => query.length && query.length >= this.minLength),
+      switchMap(d => this.queryContratistas(d)),
+    )
+    .subscribe(data => this.Contratistas = data);
+
     this.controlProveedor.valueChanges
-    .pipe(debounceTime(200), distinctUntilChanged())
-    .subscribe((contratista: any) => {
-      this.filtroProveedores();
-    });
+    .pipe(
+      debounceTime(200), distinctUntilChanged(),
+      filter(query => query.length && query.length >= this.minLength),
+      switchMap(d => this.queryProveedores(d)),
+    )
+    .subscribe(data => this.Proveedores = data);
 
     merge(
       this.controlSede.valueChanges,

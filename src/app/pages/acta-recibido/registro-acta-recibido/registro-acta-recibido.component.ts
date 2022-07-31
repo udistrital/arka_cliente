@@ -28,7 +28,7 @@ import { AbstractControl } from '@angular/forms/src/model';
 import { isObject } from 'rxjs/internal-compatibility';
 import { TipoActa } from '../../../@core/data/models/acta_recibido/tipo_acta';
 import { EstadoElemento } from '../../../@core/data/models/acta_recibido/estado_elemento';
-import { debounceTime, distinctUntilChanged, mergeAll } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, filter, mergeAll, switchMap } from 'rxjs/operators';
 import { ActaValidators } from '../validators';
 import { CommonActas } from '../shared';
 
@@ -177,35 +177,35 @@ export class RegistroActaRecibidoComponent implements OnInit {
     });
   }
 
+  private queryContratistas(query: string = '') {
+    return this.tercerosHelper.getTercerosByCriterio('contratista', 0, query);
+  }
   private loadContratistas(query: string = ''): Promise<void> {
     return new Promise<void>(resolve => {
       if (!query.length || query.length < this.minLength) {
         resolve();
       } else
-      this.tercerosHelper.getTercerosByCriterio('contratista', 0, query).toPromise().then(res => {
+      this.queryContratistas(query).toPromise().then(res => {
         this.Contratistas = res;
         resolve();
       });
     });
   }
-  async filtroContratistas() {
-    await this.loadContratistas(this.controlContratista.value);
-  }
   muestraContratista = CommonActas.muestraContratista;
 
+  private queryProveedores(query: string = '') {
+    return this.tercerosHelper.getTercerosByCriterio('proveedor', 0, query);
+  }
   private loadProveedores(query: string = ''): Promise<void> {
     return new Promise<void>(resolve => {
       if (!query.length || query.length < this.minLength)
         resolve();
       else
-      this.tercerosHelper.getTercerosByCriterio('proveedor', 0, query).toPromise().then(res => {
+      this.queryProveedores(query).toPromise().then(res => {
         this.Proveedores = res;
         resolve();
       });
     });
-  }
-  async filtroProveedores() {
-    await this.loadProveedores(this.controlProveedor.value);
   }
   muestraProveedor = CommonActas.muestraProveedor;
 
@@ -298,15 +298,20 @@ export class RegistroActaRecibidoComponent implements OnInit {
     });
 
     this.controlContratista.valueChanges
-    .pipe(debounceTime(200), distinctUntilChanged())
-    .subscribe((contratista: any) => {
-      this.filtroContratistas();
-    });
+    .pipe(
+      debounceTime(200), distinctUntilChanged(),
+      filter(query => query.length && query.length >= this.minLength),
+      switchMap(d => this.queryContratistas(d)),
+    )
+    .subscribe(data => this.Contratistas = data);
+
     this.controlProveedor.valueChanges
-    .pipe(debounceTime(200), distinctUntilChanged())
-    .subscribe((contratista: any) => {
-      this.filtroProveedores();
-    });
+    .pipe(
+      debounceTime(200), distinctUntilChanged(),
+      filter(query => query.length && query.length >= this.minLength),
+      switchMap(d => this.queryProveedores(d)),
+    )
+    .subscribe(data => this.Proveedores = data);
 
     scheduled([ // Porque merge está deprecado
       this.controlSede.valueChanges,
