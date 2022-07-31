@@ -13,8 +13,8 @@
     [Id_Acta]="actaSeleccionada" Modo="ver"></ngx-ver-acta-recibido>
 
   <!-- escritura -->
-  <ngx-edicion-acta-recibido *ngIf="editarActa" [estado]="estadoActaSeleccionada"
-    [Id_Acta]="actaSeleccionada"></ngx-edicion-acta-recibido>
+  <ngx-edicion-acta-recibido *ngIf="editarActa"
+    [Id_Acta]="actaSeleccionada" (cambio)="recargar=true"></ngx-edicion-acta-recibido>
 
   <!-- "lectura" (+ checkboxes) -->
   <ngx-ver-acta-recibido *ngIf="validarActa"

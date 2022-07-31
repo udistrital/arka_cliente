@@ -1,3 +1,8 @@
+export enum EstadoElemento_t {
+    Registrado = 1,
+    Verificado,
+}
+
 export class EstadoElemento {
     Id: number;
     Nombre: string;

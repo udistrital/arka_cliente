@@ -10,44 +10,52 @@
         <mat-step label="{{'GLOBAL.Acta_Recibido.RegistroActa.DatosTitle' | translate}}" formGroupName="Formulario1">
           <nb-card>
             <nb-card-body class="bla">
+
               <div class="row" *ngIf="tipoActa === 'regular'">
                 <div class="form-group col-sm">
-                  <label>{{'GLOBAL.Acta_Recibido.ContratistaAsignado' | translate}}</label>
+                  <div class="d-flex">
+                    <label>{{'GLOBAL.Acta_Recibido.ContratistaAsignado' | translate}}</label>
+                    <mat-spinner *ngIf="cargandoContratistas" [diameter]="spinnerSize"></mat-spinner>
+                  </div>
                   <input matInput type="text" class="form-control"
-                    placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : minLength} }}" formControlName="Contratista"
-                    [matAutocomplete]="autoContratista" (keyup.enter)="filtroContratistas()"/>
-                  <mat-autocomplete #autoContratista="matAutocomplete" [displayWith]="muestraContratista"
-                    (optionSelected)="usarLocalStorage()">
+                    placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : minLength} }}"
+                    formControlName="Contratista" [matAutocomplete]="autoContratista">
+                  <mat-autocomplete #autoContratista="matAutocomplete" [displayWith]="muestraContratista">
                     <mat-option *ngFor="let contr of Contratistas" [value]="contr">
                       {{muestraContratista(contr)}}
                     </mat-option>
                   </mat-autocomplete>
                   <p class="campo"
-                    *ngIf="firstForm.get('Formulario1.Contratista').errors && firstForm.get('Formulario1.Contratista').errors.required">
-                    {{'GLOBAL.placeholder' | translate}}</p>
+                    *ngIf="controlContratista.hasError('required')">
+                    {{'GLOBAL.Errores.ErrorRequerido' | translate}}</p>
                   <p class="campo"
-                    *ngIf="firstForm.get('Formulario1.Contratista').errors && firstForm.get('Formulario1.Contratista').errors.errorLongitudMinima">
+                    *ngIf="controlContratista.hasError('errorLongitudMinima')">
                     {{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : minLength} }}</p>
                   <p class="campo"
-                    *ngIf="firstForm.get('Formulario1.Contratista').errors && firstForm.get('Formulario1.Contratista').errors.terceroNoValido">
+                    *ngIf="controlContratista.hasError('terceroNoValido')">
                     {{'GLOBAL.Errores.ErrorTercero' | translate}}</p>
                 </div>
                 <div class="form-group col-sm">
-                  <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Proveedor' | translate}}</label>
+                  <div class="d-flex">
+                    <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Proveedor' | translate}}</label>
+                    <mat-spinner *ngIf="cargandoProveedores" class="loading" [diameter]="spinnerSize"></mat-spinner>
+                  </div>
                   <input matInput type="text" class="form-control"
-                    placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : minLength} }}" formControlName="Proveedor"
-                    [matAutocomplete]="autoProveedor" (keyup.enter)="filtroProveedores()" />
-                  <mat-autocomplete #autoProveedor="matAutocomplete" [displayWith]="muestraProveedor"
-                    (optionSelected)="usarLocalStorage()">
+                    placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : minLength} }}"
+                    formControlName="Proveedor" [matAutocomplete]="autoProveedor">
+                  <mat-autocomplete #autoProveedor="matAutocomplete" [displayWith]="muestraProveedor">
                     <mat-option *ngFor="let prov of Proveedores" [value]="prov">
                       {{muestraProveedor(prov)}}
                     </mat-option>
                   </mat-autocomplete>
                   <p class="campo"
-                    *ngIf="firstForm.get('Formulario1.Proveedor').errors && firstForm.get('Formulario1.Proveedor').errors.errorLongitudMinima">
+                    *ngIf="controlProveedor.hasError('required') ">
+                    {{'GLOBAL.Errores.ErrorRequerido' | translate}}</p>
+                  <p class="campo"
+                    *ngIf="controlProveedor.hasError('errorLongitudMinima')">
                     {{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : minLength} }}</p>
                   <p class="campo"
-                    *ngIf="firstForm.get('Formulario1.Proveedor').errors && firstForm.get('Formulario1.Proveedor').errors.terceroNoValido">
+                    *ngIf="controlProveedor.hasError('terceroNoValido')">
                     {{'GLOBAL.Errores.ErrorTercero' | translate}}</p>
                 </div>
               </div>
@@ -55,38 +63,34 @@
               <div class="row">
                 <div class="form-group col-sm">
                   <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Sede' | translate}}</label>
-                  <mat-select type="text" class="form-control" formControlName="Sede"
-                    (selectionChange)="usarLocalStorage(); Traer_Relacion_Ubicaciones()">
-                    <mat-option *ngFor="let sede of Sedes" [(value)]="sede.Id">{{sede.Nombre}}</mat-option>
+                  <mat-select class="form-control" formControlName="Sede">
+                    <mat-option *ngFor="let sede of Sedes" [value]="sede.Id">{{sede.Nombre}}</mat-option>
                   </mat-select>
-                  <p class="campo" *ngIf="firstForm.get('Formulario1').get('Sede').invalid">
+                  <p class="campo" *ngIf="controlSede.invalid">
                     {{'GLOBAL.placeholder' | translate}}</p>
                 </div>
                 <div class="form-group col-sm">
                   <label id="lbl-dependencia">{{'GLOBAL.Acta_Recibido.RegistroActa.Dependencia' | translate}}</label>
-                  <ng2-completer style="border: 0rem" inputClass="form-control" nbInput
-                    (keyup)="Traer_Relacion_Ubicaciones()" [datasource]="dataService3"
-                    formControlName="Dependencia" [minSearchLength]="2"
-                    (change)="usarLocalStorage(); Traer_Relacion_Ubicaciones();"
-                    placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : minLength} }}">
-                  </ng2-completer>
-                  <p class="campo" *ngIf="firstForm.get('Formulario1').get('Dependencia').invalid">
+                  <ngx-autocompleter [options]="Dependencias2" formControlName="Dependencia">
+                  </ngx-autocompleter>
+                  <p class="campo" *ngIf="controlDependencia.invalid">
                     {{'GLOBAL.placeholder' | translate}}</p>
                 </div>
                 <div class="form-group col-sm">
                   <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Ubicacion' | translate}}</label>
-                  <mat-select type="text" class="form-control" formControlName="Ubicacion" (selectionChange)="usarLocalStorage()">
-                    <mat-option *ngFor="let ubicacion of UbicacionesFiltradas" [(value)]="ubicacion.Id">
+                  <mat-select class="form-control" formControlName="Ubicacion">
+                    <mat-option *ngFor="let ubicacion of Ubicaciones" [value]="ubicacion.Id">
                       {{ubicacion.Nombre}}
                     </mat-option>
                   </mat-select>
-                  <p class="campo" *ngIf="firstForm.get('Formulario1').get('Ubicacion').invalid">
+                  <p class="campo" *ngIf="controlUbicacion.invalid">
                     {{'GLOBAL.placeholder' | translate}}</p>
                 </div>
               </div>
+
             </nb-card-body>
             <nb-card-footer>
-              <button nbButton matStepperNext class="float-right" [disabled]="!firstForm.get('Formulario1').valid">
+              <button nbButton matStepperNext class="float-right" [disabled]="controlDatosBasicos.invalid">
                 {{'GLOBAL.Acta_Recibido.RegistroActa.SiguienteButton' | translate}}</button>
             </nb-card-footer>
           </nb-card>
@@ -96,17 +100,19 @@
         <mat-step label="{{'GLOBAL.Acta_Recibido.RegistroActa.SoporteTitle' | translate}}" formArrayName="Formulario2">
           <nb-card [nbSpinner]="cargarTab">
             <nb-card-body style="padding-bottom: 0">
-              <mat-tab-group [(selectedIndex)]="selectedTab" animationDuration="500ms" (selectedIndexChange)="addTab($event)"
+              <mat-tab-group [(selectedIndex)]="selectedTab" animationDuration="200ms" (selectedIndexChange)="addTab($event)"
                 (animationDone)="tab()">
 
-                <!-- cada soporte   -->
-                <mat-tab *ngFor="let soporte of firstForm.get('Formulario2')['controls']; let i = index" [formGroupName]="i">
+                <!-- cada soporte -->
+                <mat-tab *ngFor="let soporte of controlSoportes.controls; let i = index" [formGroupName]="i">
                   <ng-template mat-tab-label>
                     {{'GLOBAL.Acta_Recibido.RegistroActa.SoporteSubTitle' | translate}} &nbsp; {{i + 1}} &nbsp; &nbsp;
-                    &nbsp; &nbsp;<em class="fas fa-window-close" (click)="removeTab(i); usarLocalStorage()"
-                      *ngIf="firstForm.get('Formulario2').value.length > 1"></em>
+                    &nbsp; &nbsp;<em class="fas fa-window-close" (click)="removeTab(i)"
+                      *ngIf="controlSoportes.value.length > 1"></em>
                   </ng-template>
                   <div>
+
+                    <!-- Datos básicos del Soporte -->
                     <nb-card>
                       <nb-card-body>
                         <div class="row">
@@ -116,24 +122,23 @@
                               <div class="input-group">
                                 <input nbInput type="text"
                                   placeholder="{{'GLOBAL.Acta_Recibido.RegistroActa.SeleccioneFiltro' | translate}}"
-                                  class="form-control" formControlName="Consecutivo" (keyup)="usarLocalStorage()">
+                                  class="form-control" formControlName="Consecutivo">
                               </div>
                             </div>
                             <div class="form-group col-sm">
                               <label>{{'GLOBAL.Acta_Recibido.RegistroActa.FechaSoporte' | translate}}</label>
                               <div class="input-group">
                                 <mat-form-field appearance="outline">
-                                  <mat-label></mat-label>
                                   <input matInput [matDatepicker]="fecha" [min]="minDate" [max]="maxDate"
-                                    formControlName="FechaSoporte" (dateChange)="usarLocalStorage($event)">
+                                    formControlName="FechaSoporte">
                                   <mat-datepicker-toggle matSuffix [for]="fecha"></mat-datepicker-toggle>
                                   <mat-datepicker #fecha></mat-datepicker>
                                   <mat-error>* {{'GLOBAL.Errores.ErrorFecha' | translate}}</mat-error>
                                 </mat-form-field>
                               </div>
                             </div>
-
                           </div>
+
                           <div class="col">
                             <div class="form-group col-sm">
                               <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Soporte' | translate}}</label>
@@ -177,9 +182,11 @@
                               </nb-card>
                             </div>
                           </div>
+
                         </div>
                       </nb-card-body>
                     </nb-card>
+
                   </div>
                 </mat-tab>
                 <mat-tab>
@@ -251,11 +258,11 @@
                   {{'GLOBAL.Acta_Recibido.RegistroActa.AnteriorButton' | translate}}
                 </button>
                 <button nbButton *ngIf="tipoActa === 'regular'" (click)="Revisar_Totales()"
-                  [disabled]="!firstForm.get('Formulario1').valid || !firstForm.get('Formulario2').valid" class="float-right">
+                  [disabled]="controlDatosBasicos.invalid || controlSoportes.invalid" class="float-right">
                   {{'GLOBAL.Acta_Recibido.RegistroActa.BotonRegistro' | translate}}
                 </button>
                 <button nbButton matStepperNext *ngIf="tipoActa === 'especial'" class="float-right"
-                  [disabled]="!firstForm.get('Formulario1').valid || !firstForm.get('Formulario2').valid">
+                  [disabled]="controlDatosBasicos.invalid || controlSoportes.invalid">
                   {{'GLOBAL.Acta_Recibido.RegistroActa.SiguienteButton' | translate}}
                 </button>
               </div>
@@ -263,6 +270,7 @@
           </nb-card>
         </mat-step>
 
+        <!-- Elementos asociados al Soporte -->
         <mat-step *ngIf="tipoActa === 'especial'" label="{{'GLOBAL.Acta_Recibido.RegistroActa.ElementosTitle' | translate}}">
           <nb-card>
             <ngx-gestionar-elementos [Modo]="'agregar'" (DatosTotales)="eventoTotales($event)"
@@ -274,7 +282,7 @@
                   {{'GLOBAL.Acta_Recibido.RegistroActa.AnteriorButton' | translate}}
                 </button>
                 <button nbButton matStepperNext class="float-right"
-                  [disabled]="!firstForm.get('Formulario1').valid || !firstForm.get('Formulario2').valid || !DatosElementos || DatosElementos.length === 0 || !validarElementos">
+                  [disabled]="controlDatosBasicos.invalid || controlSoportes.invalid || !DatosElementos || DatosElementos.length === 0 || !validarElementos">
                   {{'GLOBAL.Acta_Recibido.RegistroActa.SiguienteButton' | translate}}
                 </button>
               </div>
@@ -282,6 +290,7 @@
           </nb-card>
         </mat-step>
 
+        <!-- Resumen, Validación, Envío, Guardar -->
         <mat-step *ngIf="tipoActa === 'especial'" label="{{'GLOBAL.Acta_Recibido.RegistroActa.DatosAdicionales' | translate}}" formGroupName="Formulario3">
           <nb-card>
             <nb-card-body>
@@ -307,10 +316,10 @@
                 <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Observaciones' | translate}}</label>
                 <div class="input-group">
                   <textarea rows="5" placeholder="{{'GLOBAL.Acta_Recibido.RegistroActa.Observaciones2' | translate}}"
-                    class="form-control" formControlName="Datos_Adicionales" (keyup)="usarLocalStorage()">
+                    class="form-control" formControlName="Datos_Adicionales">
                   </textarea>
                 </div>
-                <p class="campo" *ngIf="firstForm.get('Formulario3').get('Datos_Adicionales').invalid">
+                <p class="campo" *ngIf="controlDatosAdicionales.invalid">
                   {{'GLOBAL.placeholder' | translate}}</p>
               </div>
             </nb-card-body>
@@ -328,21 +337,23 @@
               {{'GLOBAL.Acta_Recibido.RegistroActa.BotonRegistro' | translate}}
             </button>
           </div>
+
         </mat-step>
 
       </mat-vertical-stepper>
     </form>
   </nb-card-body>
+</nb-card>
 
-  <ng-template #erroresTemplate>
-    <nb-card>
-      <nb-card-body>
-        {{ 'GLOBAL.Acta_Recibido.Errores.Mensaje' | translate }}
-        <ul>
-          <li *ngIf="errores.get('terceros')">{{ 'GLOBAL.Acta_Recibido.Errores.Terceros' | translate }}</li>
-          <li *ngIf="errores.get('formularios')">{{ 'GLOBAL.Acta_Recibido.Errores.Formularios' | translate }}</li>
-          <li *ngIf="errores.get('clases')">{{ 'GLOBAL.Acta_Recibido.Errores.Clases' | translate }}</li>
-        </ul>
-      </nb-card-body>
-    </nb-card>
-  </ng-template>
+<ng-template #erroresTemplate>
+  <nb-card>
+    <nb-card-body>
+      {{ 'GLOBAL.Acta_Recibido.Errores.Mensaje' | translate }}
+      <ul>
+        <li *ngIf="errores.get('terceros')">{{ 'GLOBAL.Acta_Recibido.Errores.Terceros' | translate }}</li>
+        <li *ngIf="errores.get('formularios')">{{ 'GLOBAL.Acta_Recibido.Errores.Formularios' | translate }}</li>
+        <li *ngIf="errores.get('clases')">{{ 'GLOBAL.Acta_Recibido.Errores.Clases' | translate }}</li>
+      </ul>
+    </nb-card-body>
+  </nb-card>
+</ng-template>

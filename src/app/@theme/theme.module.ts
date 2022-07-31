@@ -118,6 +118,7 @@ import { NbDateFnsDateModule } from '@nebular/date-fns';
 import { NbSecurityModule } from '@nebular/security';
 
 import {
+  AutocompleterComponent,
   FooterComponent,
   HeaderComponent,
   SearchInputComponent,
@@ -203,6 +204,7 @@ const NB_MODULES = [
 ];
 
 const COMPONENTS = [
+  AutocompleterComponent,
   SwitcherComponent,
   LayoutDirectionSwitcherComponent,
   ThemeSwitcherComponent,
