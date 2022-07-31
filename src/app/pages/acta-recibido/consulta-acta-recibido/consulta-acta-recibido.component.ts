@@ -3,19 +3,14 @@ import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { LocalDataSource } from 'ng2-smart-table';
 import { NavigationEnd, Router } from '@angular/router';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
-import { PopUpManager } from '../../../managers/popUpManager';
 import { ConsultaActaRecibido } from '../../../@core/data/models/acta_recibido/consulta_actas';
 import Swal from 'sweetalert2';
-import { Store } from '@ngrx/store';
-import { IAppState } from '../../../@core/store/app.state';
-import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
 import { ConfiguracionService } from '../../../@core/data/configuracion.service';
 import { UserService } from '../../../@core/data/users.service';
-import { RolUsuario_t as Rol, PermisoUsuario_t as Permiso } from '../../../@core/data/models/roles/rol_usuario';
+import { PermisoUsuario_t as Permiso } from '../../../@core/data/models/roles/rol_usuario';
 import { TransaccionActaRecibido } from '../../../@core/data/models/acta_recibido/transaccion_acta_recibido';
-import { HistoricoActa } from '../../../@core/data/models/acta_recibido/historico_acta';
 import { EstadoActa, EstadoActa_t } from '../../../@core/data/models/acta_recibido/estado_acta';
-import { permisosSeccionesActas } from '../../acta-recibido/edicion-acta-recibido/reglas';
+import { CommonActas } from '../shared';
 
 const ORDEN_ESTADOS: EstadoActa_t[] = [
   EstadoActa_t.Registrada,
@@ -35,7 +30,6 @@ const ORDEN_ESTADOS: EstadoActa_t[] = [
 export class ConsultaActaRecibidoComponent implements OnInit {
 
   actaSeleccionada: string;
-  estadoActaSeleccionada: string;
 
   editarActa: boolean = false;
   verActa: boolean = false;
@@ -50,6 +44,8 @@ export class ConsultaActaRecibidoComponent implements OnInit {
   accion: string;
   actas2: any;
   mostrar: boolean;
+  recargar: boolean;
+  user: string;
   permisos: {
     Acta: Permiso,
     Elementos: Permiso,
@@ -57,12 +53,11 @@ export class ConsultaActaRecibidoComponent implements OnInit {
       Acta: Permiso.Ninguno,
       Elementos: Permiso.Ninguno,
     };
-  constructor(private translate: TranslateService,
+
+  constructor(
+    private translate: TranslateService,
     private router: Router,
     private actaRecibidoHelper: ActaRecibidoHelper,
-    private store: Store<IAppState>,
-    private terceroshelper: TercerosHelper,
-    private pUpManager: PopUpManager,
     private confService: ConfiguracionService,
     private userService: UserService,
   ) {
@@ -82,23 +77,23 @@ export class ConsultaActaRecibidoComponent implements OnInit {
     this.source = new LocalDataSource(); // create the source
     this.actas = new Array<ConsultaActaRecibido>();
 
-
   }
   initialiseInvites() {
     // Set default values and re-fetch any data you need.
     // this.ngOnInit();
     this.actaSeleccionada = '';
-    this.estadoActaSeleccionada = '';
     this.accion = '';
     // console.log('1')
   }
 
   ngOnInit() {
     // const estados = ['Registrada', 'Anulada'];
-    const usuario = this.userService.getUserMail();
-
-    // this.actaRecibidoHelper.getActasRecibidoPorEstados(estados).subscribe((res: any) => {
-    this.actaRecibidoHelper.getActasRecibidoUsuario(usuario).subscribe((res: any) => {
+    this.user = this.userService.getUserMail();
+    this.cargarActas();
+  }
+  cargarActas(limit: number = 10, offset: number = 0) {
+    this.mostrar = false;
+    this.actaRecibidoHelper.getActasRecibidoUsuario(this.user).subscribe((res: any) => {
       // console.log(res);
       if (Array.isArray(res) && res.length !== 0) {
         res = this.calculaRevisores(res);
@@ -228,7 +223,7 @@ export class ConsultaActaRecibidoComponent implements OnInit {
           },
         },
         EstadoActaId: {
-          title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.EstadoHeader'),
+          title: this.translate.instant('GLOBAL.estado'),
           valuePrepareFunction: (value: EstadoActa) => {
             return this.traducirEstado(value.Id);
           },
@@ -303,6 +298,7 @@ export class ConsultaActaRecibidoComponent implements OnInit {
   }
 
   onEdit(event): void {
+    // console.log({event})
     let editarActa = false;
     let validarActa: boolean;
 
@@ -314,7 +310,6 @@ export class ConsultaActaRecibidoComponent implements OnInit {
       case EstadoActa_t.EnModificacion:
       case EstadoActa_t.Aceptada:
         this.actaSeleccionada = `${event.data.Id}`;
-        this.estadoActaSeleccionada = this.traducirEstado(estId);
         this.accion = '';
         editarActa = true;
         break;
@@ -344,12 +339,10 @@ export class ConsultaActaRecibidoComponent implements OnInit {
   }
 
   seleccionarActa(event): void {
-    // console.log(event.data);
+    // console.log({event});
     this.actaSeleccionada = `${event.data.Id}`;
-    this.estadoActaSeleccionada = 'Ver';
     this.accion = 'Ver';
     this.verActa = true;
-    // console.log('1')
   }
 
   onDelete(event): void {
@@ -409,9 +402,11 @@ export class ConsultaActaRecibidoComponent implements OnInit {
   }
 
   onBack() {
-    this.actaSeleccionada = '';
-    this.estadoActaSeleccionada = '';
-    this.accion = '';
+    if (this.recargar) {
+      this.recargar = false;
+      this.cargarActas();
+    }
+    this.initialiseInvites();
     this.editarActa = false;
     this.verActa = false;
     this.validarActa = false;
@@ -425,7 +420,6 @@ export class ConsultaActaRecibidoComponent implements OnInit {
   }
 
   traducirEstado(estado: EstadoActa_t): string {
-    return this.translate
-      .instant('GLOBAL.Acta_Recibido.EstadosActa.' + EstadoActa_t[estado]);
+    return this.translate.instant(CommonActas.i18nEstado(estado));
   }
 }

@@ -355,7 +355,7 @@
         "RevisorHeader":"Último Revisor",
         "ModificadaPor": "Modificada Por",
         "AceptadaPor": "Aceptada Por",
-        "EstadoHeader":"Estado Actual",
+        "EstadoHeader":"Estado Actual: {{STATE}}",
         "UbicacionHeader":"Ubicación",
         "ObservacionesHeader":"Observaciones",
         "Registrada":"Registrada",

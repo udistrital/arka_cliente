@@ -1,3 +1,4 @@
+import { EstadoActa_t } from '../../../@core/data/models/acta_recibido/estado_acta';
 import { RolUsuario_t as Rol } from '../../../@core/data/models/roles/rol_usuario';
 
 // Se podría reescribir esta parte como
@@ -13,22 +14,22 @@ export const permisosSeccionesActas = [
     Seccion: 'Acta',
     Permisos: [
       {
-        Estado: 'Registrada',
+        Estado: EstadoActa_t.Registrada,
         PuedenModificar: 'edicionActaSeccActaEstRegistradaEditar',
         PuedenVer: 'edicionActaSeccActaEstRegistradaVer',
       },
       {
-        Estado: 'En Elaboración',
+        Estado: EstadoActa_t.EnElaboracion,
         PuedenModificar: 'edicionActaSeccActaEstElaboracionEditar',
         PuedenVer: 'edicionActaSeccActaEstElaboracionVer',
       },
       {
-        Estado: 'En Modificación',
+        Estado: EstadoActa_t.EnModificacion,
         PuedenModificar: 'edicionActaSeccActaEstModificacionEditar',
         PuedenVer: 'edicionActaSeccActaEstModificacionVer',
       },
       {
-        Estado: 'Aceptada',
+        Estado: EstadoActa_t.Aceptada,
         PuedenModificar: 'edicionActaSeccActaEstAceptadaEditar',
         PuedenVer: 'edicionActaSeccActaEstAceptadaVer',
       },
@@ -38,22 +39,22 @@ export const permisosSeccionesActas = [
     Seccion: 'Elementos',
     Permisos: [
       {
-        Estado: 'Registrada',
+        Estado: EstadoActa_t.Registrada,
         PuedenModificar: 'edicionActaSeccElementosEstRegistradaEditar',
         PuedenVer: 'edicionActaSeccElementosEstRegistradaVer',
       },
       {
-        Estado: 'En Elaboración',
+        Estado: EstadoActa_t.EnElaboracion,
         PuedenModificar: 'edicionActaSeccElementosEstElaboracionEditar',
         PuedenVer: 'edicionActaSeccElementosEstElaboracionVer',
       },
       {
-        Estado: 'En Modificación',
+        Estado: EstadoActa_t.EnModificacion,
         PuedenModificar: 'edicionActaSeccElementosEstModificacionEditar',
         PuedenVer: 'edicionActaSeccElementosEstModificacionVer',
       },
       {
-        Estado: 'Aceptada',
+        Estado: EstadoActa_t.Aceptada,
         PuedenModificar: 'edicionActaSeccElementosEstAceptadaEditar',
         PuedenVer: 'edicionActaSeccElementosEstAceptadaVer',
       },

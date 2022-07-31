@@ -1,5 +1,4 @@
 import { Component, OnInit, ViewChild, Input } from '@angular/core';
-import { Observable } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup, FormControl, FormArray, AbstractControl } from '@angular/forms';
 import { NuxeoService } from '../../../@core/utils/nuxeo.service';
@@ -11,7 +10,7 @@ import { TerceroCriterioContratista, TerceroCriterioProveedor } from '../../../@
 import { Elemento } from '../../../@core/data/models/acta_recibido/elemento';
 import { SoporteActa } from '../../../@core/data/models/acta_recibido/soporte_acta';
 import { EstadoActa_t } from '../../../@core/data/models/acta_recibido/estado_acta';
-import { EstadoElemento } from '../../../@core/data/models/acta_recibido/estado_elemento';
+import { EstadoElemento, EstadoElemento_t } from '../../../@core/data/models/acta_recibido/estado_elemento';
 import { HistoricoActa } from '../../../@core/data/models/acta_recibido/historico_acta';
 import { TransaccionActaRecibido } from '../../../@core/data/models/acta_recibido/transaccion_acta_recibido';
 import Swal from 'sweetalert2';
@@ -23,10 +22,10 @@ import { IAppState } from '../../../@core/store/app.state';
 import { ListService } from '../../../@core/store/services/list.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { UserService } from '../../../@core/data/users.service';
-import { TipoActa } from '../../../@core/data/models/acta_recibido/tipo_acta';
-import { map, startWith } from 'rxjs/operators';
+import { Acta_t, TipoActa } from '../../../@core/data/models/acta_recibido/tipo_acta';
 import { isObject } from 'util';
 import { CompleterData, CompleterService } from 'ng2-completer';
+import { CommonActas } from '../shared';
 
 @Component({
   selector: 'ngx-ver-acta-recibido',
@@ -61,8 +60,8 @@ export class VerActaRecibidoComponent implements OnInit {
   Dependencias: any;
   Sedes: any;
   bandera: boolean;
-  private Proveedores: Partial<TerceroCriterioProveedor>[];
-  private Contratistas: TerceroCriterioContratista[];
+  Proveedores: Partial<TerceroCriterioProveedor>[];
+  Contratistas: TerceroCriterioContratista[];
   sedeDependencia: any;
   elementos: any;
   totales: any;
@@ -88,6 +87,8 @@ export class VerActaRecibidoComponent implements OnInit {
     private route: ActivatedRoute) {
     this.Contratistas = [];
     this.Proveedores = [];
+    this.Verificar_tabla = new Array<boolean>();
+    this.Acta = new TransaccionActaRecibido;
   }
 
   ngOnInit() {
@@ -102,13 +103,10 @@ export class VerActaRecibidoComponent implements OnInit {
     this.listService.findUnidades();
     this.listService.findImpuestoIVA();
     this.loadDependencias();
-    this.Verificar_tabla = new Array<boolean>();
-    this.Acta = new TransaccionActaRecibido;
   }
 
   async loadDependencias() {
-    const data = [this.loadLists(), this.loadActa()];
-    await Promise.all(data);
+    await Promise.all([this.loadLists(), this.loadActa()]);
     this.Cargar_Formularios(this.Acta);
   }
 
@@ -138,6 +136,9 @@ export class VerActaRecibidoComponent implements OnInit {
       this.tercerosHelper.getTercerosByCriterio('proveedor', id, query).toPromise().then(res => {
         this.Proveedores = res;
         resolve();
+      }, (reason) => {
+        resolve();
+        this.Proveedores = [];
       });
     });
   }
@@ -152,64 +153,39 @@ export class VerActaRecibidoComponent implements OnInit {
       this.tercerosHelper.getTercerosByCriterio('contratista', id, query).toPromise().then(res => {
         this.Contratistas = res;
         resolve();
+      }, (reason) => {
+        this.Contratistas = [];
+        resolve();
       });
     });
   }
 
   private loadActa(): Promise<void> {
     return new Promise<void>(resolve => {
-      if (this._ActaId) {
-        this.Actas_Recibido.getTransaccionActa(this._ActaId, false).toPromise().then(res => {
+      const finish = async () => {
+        this.Actas_Recibido.getTransaccionActa(this._ActaId, false).toPromise().then(async (res) => {
           // console.log('respuesta acta', res);
           this.Acta.UltimoEstado = res.UltimoEstado;
-          this.estadoActa = this.Acta.UltimoEstado.EstadoActaId.Nombre;
+          this.estadoActa = this.translate.instant(CommonActas.i18nEstado(this.Acta.UltimoEstado.EstadoActaId.Id));
           this.proveedorId = this.Acta.UltimoEstado.ProveedorId;
           this.contratistaId = this.Acta.UltimoEstado.PersonaAsignadaId;
           this.Acta.ActaRecibido = res.ActaRecibido;
           this.Acta.SoportesActa = res.SoportesActa;
-          Promise.all([this.loadProveedores('', this.proveedorId), this.loadContratistas('', this.contratistaId)]);
+          await Promise.all([this.loadProveedores('', this.proveedorId), this.loadContratistas('', this.contratistaId)]);
           resolve();
         });
+      };
+      if (this._ActaId) {
+        finish();
       } else if (!this._ActaId && this.route.snapshot.paramMap.get('id')) {
         this._ActaId = +this.route.snapshot.paramMap.get('id');
-        this.Actas_Recibido.getTransaccionActa(this._ActaId, false).toPromise().then(res => {
-          this.Acta.UltimoEstado = res.UltimoEstado;
-          this.estadoActa = this.Acta.UltimoEstado.EstadoActaId.Nombre;
-          this.proveedorId = this.Acta.UltimoEstado.ProveedorId;
-          this.contratistaId = this.Acta.UltimoEstado.PersonaAsignadaId;
-          this.Acta.ActaRecibido = res.ActaRecibido;
-          this.Acta.SoportesActa = res.SoportesActa;
-          Promise.all([this.loadProveedores('', this.proveedorId), this.loadContratistas('', this.contratistaId)]);
-          resolve();
-        });
+        finish();
       }
     });
   }
 
-  private async filtroProveedores() {
-    await this.loadProveedores(this.firstForm.get('Formulario1').get('Proveedor').value);
-  }
-
-  muestraProveedor(prov: Partial<TerceroCriterioProveedor>): string {
-    if (prov) {
-      const str = prov.Identificacion ? prov.Identificacion.TipoDocumentoId.CodigoAbreviacion + ':' + prov.Identificacion.Numero + ' - ' : '';
-      return str + prov.Tercero.NombreCompleto;
-    }
-  }
-
-  private async filtroContratistas() {
-    await this.loadContratistas(this.firstForm.get('Formulario1').get('Contratista').value);
-  }
-
-  muestraContratista(contr: TerceroCriterioContratista): string {
-    if (contr && contr.Identificacion) {
-      return contr.Identificacion.TipoDocumentoId.CodigoAbreviacion + ':' + contr.Identificacion.Numero + ' - ' + contr.Tercero.NombreCompleto;
-    } else {
-      if (contr) {
-        return contr.Tercero.NombreCompleto;
-      }
-    }
-  }
+  muestraProveedor = CommonActas.muestraProveedor;
+  muestraContratista = CommonActas.muestraContratista;
 
   T_V(valor: string): string {
     return this.cp.transform(valor);
@@ -336,7 +312,7 @@ export class VerActaRecibidoComponent implements OnInit {
 
   downloadFile(index: any) {
 
-    const id_documento = (this.firstForm.get('Formulario2') as FormArray).at(index).get('Soporte').value;
+    const id_documento = (this.controlSoportes as FormArray).at(index).get('Soporte').value;
 
     const filesToGet = [
       {
@@ -372,7 +348,7 @@ export class VerActaRecibidoComponent implements OnInit {
     const nuevoEstado = aceptar ? EstadoActa_t.Aceptada : EstadoActa_t.EnModificacion;
     transaccionActa.UltimoEstado = this.generarEstadoActa(nuevoEstado, aceptar);
 
-    const Soportes: SoporteActa[] = (this.firstForm.get('Formulario2') as FormArray).controls
+    const Soportes: SoporteActa[] = (this.controlSoportes as FormArray).controls
       .map((soporte, index) => this.generarSoporte(soporte, index));
 
     transaccionActa.SoportesActa = Soportes;
@@ -415,7 +391,7 @@ export class VerActaRecibidoComponent implements OnInit {
 
     actaRecibido.Id = +this._ActaId;
     actaRecibido.Activo = true;
-    actaRecibido.TipoActaId = <TipoActa>{ Id: this.Acta.ActaRecibido.TipoActaId.Id };
+    actaRecibido.TipoActaId = <TipoActa>{ Id: this.tipoActa };
 
     return actaRecibido;
   }
@@ -423,10 +399,10 @@ export class VerActaRecibidoComponent implements OnInit {
 
   private generarEstadoActa(Estado: number, aceptar: boolean): HistoricoActa {
 
-    const proveedor = this.firstForm.get('Formulario1.Proveedor').value;
-    const ubicacionId = this.firstForm.get('Formulario1.Ubicacion').value;
-    const contratista = this.firstForm.get('Formulario1.Contratista').value;
-    const observaciones = this.firstForm.get('Formulario3.Datos_Adicionales').value;
+    const proveedor = this.controlProveedor.value;
+    const ubicacionId = this.controlUbicacion.value;
+    const contratista = this.controlContratista.value;
+    const observaciones = this.controlDatosAdicionales.value;
     const historico = new HistoricoActa();
 
     historico.Id = null;
@@ -460,7 +436,7 @@ export class VerActaRecibidoComponent implements OnInit {
   private generarElementos(aceptar: boolean): Array<Elemento> {
 
     const elementosActa = new Array<Elemento>();
-    const estadoId = aceptar ? 2 : 1;
+    const estadoId = aceptar ? EstadoElemento_t.Verificado : EstadoElemento_t.Registrado;
 
     for (const datos of this.elementos) {
 
@@ -542,8 +518,8 @@ export class VerActaRecibidoComponent implements OnInit {
           },
         ]).then((result2) => {
           if (result2.value) {
-            const obs = this.firstForm.get('Formulario3').get('Datos_Adicionales').value;
-            this.firstForm.get('Formulario3').get('Datos_Adicionales').setValue(
+            const obs = this.controlDatosAdicionales.value;
+            this.controlDatosAdicionales.setValue(
               obs + ' // Razón de rechazo: ' + result2.value,
               );
             this.onFirstSubmit(false);
@@ -556,6 +532,37 @@ export class VerActaRecibidoComponent implements OnInit {
 
   eventoTotales(event) {
     this.totales = event;
+  }
+
+  get tipoActa() {
+    return this.Acta.ActaRecibido.TipoActaId.Id;
+  }
+  get actaRegular() {
+    return this.tipoActa === Acta_t.Regular;
+  }
+
+  get controlDatosBasicos() {
+    return this.firstForm.get('Formulario1');
+  }
+  get controlContratista() {
+    return this.controlDatosBasicos.get('Contratista');
+  }
+  get controlProveedor() {
+    return this.controlDatosBasicos.get('Proveedor');
+  }
+  get controlUbicacion() {
+    return this.controlDatosBasicos.get('Ubicacion');
+  }
+
+  get controlSoportes() {
+    return this.firstForm.get('Formulario2');
+  }
+
+  get controlForm3() {
+    return this.firstForm.get('Formulario3');
+  }
+  get controlDatosAdicionales() {
+    return this.controlForm3.get('Datos_Adicionales');
   }
 
 }
