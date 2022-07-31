@@ -481,26 +481,22 @@ export class EdicionActaRecibidoComponent implements OnInit {
   private async getSedeDepencencia(ubicacionId: number): Promise<void> {
 
     return new Promise<void>(resolve => {
-      this.Actas_Recibido.getSedeDependencia(ubicacionId).toPromise().then(res => {
-        // console.debug({relacion: res});
+      this.Actas_Recibido.getSedeDependencia(ubicacionId).toPromise().then(async res => {
         const relacion = res[0];
-        const dependencia = {
-          name: relacion.DependenciaId.Nombre,
-          value: relacion.DependenciaId.Id,
-        };
-
-        const espacioFisico = res[0].EspacioFisicoId.CodigoAbreviacion.replace(/[0-9]/g, '');
-        const sede = (() => {
-          const criterio = x => x && x.CodigoAbreviacion === espacioFisico.toString();
-          if (this.Sedes.some(criterio)) {
-            return this.Sedes.find(criterio);
+        // console.debug({res, relacion});
+        if (relacion) {
+          const dependencia = {
+            name: relacion.DependenciaId.Nombre,
+            value: relacion.DependenciaId.Id,
+          };
+          const espacioFisico = relacion.EspacioFisicoId.CodigoAbreviacion.replace(/[0-9]/g, '');
+          const sede = this.Sedes.find(x => x && x.CodigoAbreviacion === espacioFisico.toString());
+          // console.debug({sede});
+          if (sede) {
+            await this.Traer_Relacion_Ubicaciones(sede.Id, dependencia.value);
           }
-          return '';
-        })();
-
-        this.Traer_Relacion_Ubicaciones(sede.Id, dependencia.value);
-
-        this.sedeDependencia = { sede: sede.Id, dependencia };
+          this.sedeDependencia = { sede: sede.Id, dependencia };
+        }
         resolve();
       });
     });
