@@ -1,4 +1,4 @@
-<mat-vertical-stepper [nbSpinner]="!load" [linear]="modo !== 'get'" #stepper>
+<mat-vertical-stepper [nbSpinnerMessage]="spinner" [nbSpinner]="spinner" [linear]="modo !== 'get'" #stepper>
   <mat-step [stepControl]="formBaja.get('rechazo')" *ngIf="formBaja && formBaja.get('rechazo.razon').value !== ''"
     label="{{'GLOBAL.razonRechazo' | translate}}">
     <form [formGroup]="formBaja.get('rechazo')">
@@ -121,7 +121,7 @@
               placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 5} }}" [matAutocomplete]="auto">
             <mat-autocomplete #auto="matAutocomplete" [displayWith]="muestraDependencia"
               (optionSelected)="getDetalleElemento(getActualIndex(rowIndex))">
-              <mat-option *ngFor="let item of dependencias" [value]="item">
+              <mat-option *ngFor="let item of elementosFiltrados" [value]="item">
                 {{item.Placa}}
               </mat-option>
             </mat-autocomplete>

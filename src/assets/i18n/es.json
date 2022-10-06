@@ -45,7 +45,7 @@
             "name": "Asignación de Cuentas"
           },
           "tipos_bien": {
-            "name": "Tipos de bien"
+            "name": "Tipos de Bien"
           }
         }
       },
@@ -1265,7 +1265,7 @@
         "error_desactivacion": "La entrada no ha sido inhabilitada correctamente"
       },
       "tiposBien": {
-        "title": "Administrar tipos de bien y servicios",
+        "title": "Administrar tipos de Bienes y Servicios",
         "subtitle": "Seleccione un tipo de bien o servicio para cambiar su estado",
         "title_activacion": "Habilitar Tipo de Bien o Servicio",
         "title_desactivacion": "Inhabilitar Tipo de Bien o Servicio",
