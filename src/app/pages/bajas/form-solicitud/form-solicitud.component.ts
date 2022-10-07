@@ -1,18 +1,20 @@
 import { Component, OnInit, Output, EventEmitter, ViewChild, Input } from '@angular/core';
-import { combineLatest, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { FormBuilder, FormGroup, Validators, ValidatorFn, AbstractControl, ValidationErrors, FormArray } from '@angular/forms';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
-import { debounceTime, distinctUntilChanged, map, startWith, switchMap } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
 import { MatPaginator, MatTableDataSource } from '@angular/material';
 import { BajasHelper } from '../../../helpers/bajas/bajasHelper';
 import { MovimientosHelper } from '../../../helpers/movimientos/movimientosHelper';
-import { FormatoTipoMovimiento, Movimiento } from '../../../@core/data/models/entrada/entrada';
+import { FormatoTipoMovimiento } from '../../../@core/data/models/entrada/entrada';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { PopUpManager } from '../../../managers/popUpManager';
 import { UserService } from '../../../@core/data/users.service';
 import { NuxeoService } from '../../../@core/utils/nuxeo.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { DocumentoService } from '../../../@core/data/documento.service';
+import { TrasladosHelper } from '../../../helpers/movimientos/trasladosHelper';
+import { isObject } from 'util';
 
 const SIZE_SOPORTE = 5;
 
@@ -22,18 +24,19 @@ const SIZE_SOPORTE = 5;
   styleUrls: ['./form-solicitud.component.scss'],
 })
 export class FormSolicitudComponent implements OnInit {
-  dependencias: any;
+  elementos = [];
+  elementosFiltrados: any[];
   formBaja: FormGroup;
   ubicacionesFiltradas: any = [];
   dataSource: MatTableDataSource<any>;
   tiposBaja: FormatoTipoMovimiento[];
   sizeSoporte: number;
   @ViewChild('paginator') paginator: MatPaginator;
-  load: boolean;
+  spinner: string = '';
   bajaId: number;
   trContable: any;
   @Output() valid = new EventEmitter<boolean>();
-  @Input() modo: string = 'create'; // get | update
+  @Input() modo: string = 'create' || 'get' || 'update';
   @Input() bajaInfo: any;
   @Output() bajaInfoChange: EventEmitter<any> = new EventEmitter<any>();
   displayedColumns: string[];
@@ -47,9 +50,9 @@ export class FormSolicitudComponent implements OnInit {
     private pUpManager: PopUpManager,
     private nuxeoService: NuxeoService,
     private userService: UserService,
+    private trasladosHelper: TrasladosHelper,
     private documentoService: DocumentoService,
   ) {
-    this.load = false;
     this.bajaId = 0;
     this.sizeSoporte = SIZE_SOPORTE;
     this.displayedColumns = ['acciones', 'placa', 'nombre', 'subgrupo', 'tipoBien', 'entrada', 'salida',
@@ -60,8 +63,19 @@ export class FormSolicitudComponent implements OnInit {
 
   ngOnInit() {
     this.buildForm();
-    this.getTiposBaja();
+    this.init();
     this.getSolicitante();
+  }
+
+  private async init() {
+    this.spinner = 'Cargando Inventario';
+    const data = [this.loadInventario(), this.getTiposBaja()];
+    await Promise.all(data);
+    if (this.modo !== 'create') {
+      this.loadValues(this.bajaInfo);
+    } else {
+      this.spinner = '';
+    }
   }
 
   private getSolicitante() {
@@ -91,9 +105,6 @@ export class FormSolicitudComponent implements OnInit {
         {
           value: '',
           disabled,
-        },
-        {
-          validators: [Validators.required],
         },
       ],
       nombre: [
@@ -296,9 +307,6 @@ export class FormSolicitudComponent implements OnInit {
               value: element,
               disabled,
             },
-            {
-              validators: [Validators.required],
-            },
           ],
           nombre: [
             {
@@ -375,7 +383,7 @@ export class FormSolicitudComponent implements OnInit {
 
     const observaciones = values.observaciones;
     this.formBaja.get('observaciones').patchValue({ observaciones });
-    this.load = true;
+    this.spinner = '';
   }
 
   addElemento() {
@@ -397,21 +405,30 @@ export class FormSolicitudComponent implements OnInit {
 
   private cambiosPlaca(valueChanges: Observable<any>) {
     valueChanges.pipe(
-      startWith(''),
       debounceTime(250),
       distinctUntilChanged(),
-      switchMap((val) => this.loadPlacas(val)),
+      map(val => typeof val === 'string' ? val : this.muestraPlaca(val)),
     ).subscribe((response: any) => {
-      this.dependencias = response.queryOptions && response.queryOptions.length && response.queryOptions[0].Id ? response.queryOptions : [];
+      this.elementosFiltrados = this.filtroPlaca(response);
     });
+  }
+
+  private filtroPlaca(nombre: string): any[] {
+    if (this.elementos.length && nombre.length > 0) {
+      return this.elementos.filter(el => el.Placa.includes(nombre));
+    } else {
+      return this.elementos;
+    }
   }
 
   public getDetalleElemento(index: number) {
     const value = this.formBaja.controls.elementos.value[index].placa.Id;
+    this.spinner = 'Consultando detalle del elemento';
     this.bajasHelper.getDetalleElemento(value).subscribe(res => {
+      this.spinner = '';
       const salidaOk = res.Historial && res.Historial.Salida.EstadoMovimientoId.Nombre === 'Salida Aprobada';
       const noTraslado = res.Historial &&
-        (!res.Historial.Traslados || res.Historial.Traslados[0].EstadoMovimientoId.Nombre === 'Traslado Confirmado');
+        (!res.Historial.Traslados || res.Historial.Traslados[0].EstadoMovimientoId.Nombre === 'Traslado Aprobado');
       const noBaja = res.Historial && !res.Historial.Baja;
       const assignable = res.Id && salidaOk && noTraslado && noBaja;
       if (assignable) {
@@ -451,33 +468,46 @@ export class FormSolicitudComponent implements OnInit {
       .pipe(debounceTime(250))
       .subscribe(() => {
         this.valid.emit(this.formBaja.valid);
-        if (this.formBaja.valid && this.load) {
+        if (this.formBaja.valid) {
           this.bajaInfoChange.emit(this.formBaja);
         }
       });
   }
 
   private getTiposBaja() {
-    const query = 'limit=-1&query=CodigoAbreviacion__istartswith:BJ_';
-    this.movimientosHelper.getAllFormatoMovimiento(query).subscribe((res: any) => {
-      this.tiposBaja = res;
-      this.modo !== 'create' ? this.loadValues(this.bajaInfo) : this.load = true;
+    return new Promise<void>(resolve => {
+      const query = 'limit=-1&query=CodigoAbreviacion__istartswith:BJ_';
+      this.movimientosHelper.getAllFormatoMovimiento(query).subscribe((res: any) => {
+        this.tiposBaja = res;
+        resolve();
+      });
     });
+  }
+
+  private loadInventario(): Promise<void> {
+    return new Promise<void>(resolve => {
+      if (this.modo !== 'get') {
+        this.trasladosHelper.getInventarioTercero().subscribe((res: any) => {
+          if (res.Elementos.length) {
+            this.elementos = res.Elementos;
+            this.elementosFiltrados = res.Elementos;
+          } else if (this.modo === 'create') {
+            this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.traslados.registrar.noElementos'));
+          }
+          resolve();
+        });
+      } else {
+        resolve();
+      }
+    });
+  }
+
+  public muestraPlaca(field): string {
+    return field && field.Placa ? field.Placa : '';
   }
 
   public muestraDependencia(field) {
     return field ? field.Placa : '';
-  }
-
-  private loadPlacas(text: string) {
-    const queryOptions$ = text.length > 4 ?
-      this.bajasHelper.getElementos(text) :
-      new Observable((obs) => { obs.next([{}]); });
-    return combineLatest([queryOptions$]).pipe(
-      map(([queryOptions_$]) => ({
-        queryOptions: queryOptions_$,
-      })),
-    );
   }
 
   onInputFileDocumento(event) {
@@ -546,21 +576,16 @@ export class FormSolicitudComponent implements OnInit {
     }
   }
 
-  private validateObjectCompleter(): ValidatorFn {
-    return (control: AbstractControl): ValidationErrors | null => {
-      const valor = control.value;
-      const checkStringLength = typeof (valor) === 'string' && valor.length < 4 && valor !== '';
-      const checkInvalidString = typeof (valor) === 'string' && valor !== '';
-      const checkInvalidObject = typeof (valor) === 'object' && !valor.Id;
-      return checkStringLength ? { errorLongitudMinima: true } :
-        ((checkInvalidString || checkInvalidObject) ? { dependenciaNoValido: true } : null);
-    };
-  }
-
   private validateElementos(): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
-      const elementos = control.value.length && control.value.every(el => el.id);
-      return elementos ? null : { errorNoElementos: true };
+      const noFilas = !control.value.length;
+      const noSeleccionado = !noFilas && !control.value.every(el => el.placa ? isObject(el.placa) : el.id);
+      const duplicados = !noSeleccionado && control.value.map(el => el.id)
+        .some((element, index) => {
+          return control.value.map(el => el.id).indexOf(element) !== index;
+        });
+
+      return (noFilas || noSeleccionado) ? { errorNoElementos: true } : duplicados ? { errorDuplicados: true } : null;
     };
   }
 
