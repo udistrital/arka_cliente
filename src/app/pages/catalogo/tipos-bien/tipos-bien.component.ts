@@ -1,14 +1,10 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
 import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
 import { LocalDataSource } from 'ng2-smart-table';
 import { PopUpManager } from '../../../managers/popUpManager';
-import Swal from 'sweetalert2';
 import { TipoBien } from '../../../@core/data/models/acta_recibido/tipo_bien';
 import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/catalogoElementosHelper';
-import { checkAndUpdateBinding } from '@angular/core/src/view/util';
-import { flattenStyles } from '@angular/platform-browser/src/dom/dom_renderer';
-import { isObject } from 'util';
+import { SmartTableService } from '../../../@core/data/SmartTableService';
 
 @Component({
   selector: 'ngx-tipos-bien',
@@ -20,45 +16,53 @@ export class TiposBienComponent implements OnInit {
   spinner: boolean = false;
   updating: boolean;
   settings: any;
-  TiposBien: LocalDataSource;
-  source: LocalDataSource;
-  registrar: boolean= false;
-  nuevo: boolean= false;
+  source: LocalDataSource = new LocalDataSource();
   tipo_bien: TipoBien;
-  @Output() eventChange = new EventEmitter();
+
   constructor(
     private translate: TranslateService,
     private catalogoHelper: CatalogoElementosHelper,
-    private router: Router,
     private pupmanager: PopUpManager,
-  ) {
-
-    this.source = new LocalDataSource();
-    this.TiposBien = new LocalDataSource();
-    this.loadTiposBien();
-  }
+    private tabla: SmartTableService,
+  ) { }
 
   ngOnInit() {
     this.loadTiposBien();
     this.loadTablasSettings();
-    this.mostrar = false;
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
     });
   }
 
-  loadTiposBien(): void {
-    this.catalogoHelper.getAllTiposBien().subscribe(res => {
-      if (Array.isArray(res) && res.length !== 0) {
+  private loadTiposBien(): void {
+    const query = 'limit=-1&sortby=Activo&order=desc';
+    this.catalogoHelper.getAllTiposBien(query).subscribe(res => {
+      if (res && res.length !== 0) {
         this.spinner = true;
-        this.TiposBien.load(res);
         this.source.load(res);
-        // this.source.setSort([{ field: 'Orden', direction: 'desc' }]);
       }
     });
   }
 
+  public handleForm(event) {
+    const basei18n = 'GLOBAL.parametros.tiposBien.';
+    if (event.Id) {
+      this.catalogoHelper.putTipoBien(event).toPromise()
+        .then((res: any) => {
+          if (res) {
+            this.succesOp(basei18n + 'actualizacion_succes');
+          }
+        });
+    } else {
+      this.catalogoHelper.postTipoBien(event).toPromise()
+        .then((res: any) => {
+          if (res) {
+            this.succesOp(basei18n + 'registro_succes');
+          }
+        });
+    }
+  }
+
   loadTablasSettings() {
-    // console.log(this.source);
     const f = {
       registrar: this.translate.instant('GLOBAL.registrar_nueva_salida'),
       editar: this.translate.instant('GLOBAL.Acta_Recibido.EdicionActa.Title'),
@@ -78,148 +82,82 @@ export class TiposBienComponent implements OnInit {
       },
       add: {
         addButtonContent: '<i class="fas" title="' + f.registrar + '" aria-label="' + f.registrar + '">'
-        + this.translate.instant('GLOBAL.crear_nuevo') + '</i>',
+          + this.translate.instant('GLOBAL.crear_nuevo') + '</i>',
       },
       mode: 'external',
       columns: {
-        Id: {
-          title: this.translate.instant('GLOBAL.consecutivo'),
-          width: '40px',
-          valuePrepareFunction: (value: any) => {
-            return value;
-          },
-        },
         Nombre: {
           title: this.translate.instant('GLOBAL.Nombre'),
           width: '170px',
-          valuePrepareFunction: (value: any) => {
-            return value;
-          },
+          valuePrepareFunction: this.tabla.toUpperCase,
         },
-        Tipo_bien_padre: {
-          title: this.translate.instant('GLOBAL.parametros.tiposBien.bien_padre'),
-          width: '120px',
+        TipoBienPadreId: {
+          title: this.translate.instant('GLOBAL.Nombre'),
+          width: '170px',
           valuePrepareFunction: (value: any) => {
-            return value ? value.Nombre : this.translate.instant('GLOBAL.n/a');
+            return this.tabla.prepareFunctionObject('Nombre', value);
           },
-        },
-        NecesitaPlaca: {
-          width: '100px',
-          title: this.translate.instant('GLOBAL.parametros.tiposBien.necesita_placa'),
-          valuePrepareFunction: (value: any) => {
-            return value ? this.translate.instant('GLOBAL.si') : this.translate.instant('GLOBAL.no');
-          },
-        },
-        NecesitaPoliza: {
-          width: '100px',
-          title: this.translate.instant('GLOBAL.parametros.tiposBien.necesita_poliza'),
-          valuePrepareFunction: (value: any) => {
-            return value ? this.translate.instant('GLOBAL.si') : this.translate.instant('GLOBAL.no');
-          },
-        },
-        FechaCreacion: {
-          title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.FechaCreacionHeader'),
-          width: '110px',
-          valuePrepareFunction: (value: any) => {
-            const date = value.split('T');
-            return date[0];
+          filterFunction: (cell?: any, search?: string): boolean => {
+            return this.tabla.filterFunctionObject('Nombre', cell, search);
           },
         },
         FechaModificacion: {
           title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.FechaModificacionHeader'),
           width: '110px',
-          valuePrepareFunction: (value: any) => {
-            const date = value.split('T');
-            return date[0];
-          },
+          valuePrepareFunction: this.tabla.formatDate,
+        },
+        NecesitaPlaca: {
+          width: '80px',
+          title: this.translate.instant('GLOBAL.parametros.tiposBien.necesita_placa'),
+          valuePrepareFunction: this.tabla.boolToText,
+        },
+        NecesitaPoliza: {
+          width: '80px',
+          title: this.translate.instant('GLOBAL.parametros.tiposBien.necesita_poliza'),
+          valuePrepareFunction: this.tabla.boolToText,
+        },
+        BodegaConsumo: {
+          width: '80px',
+          title: this.translate.instant('GLOBAL.parametros.tiposBien.necesita_poliza'),
+          valuePrepareFunction: this.tabla.boolToText,
         },
         Descripcion: {
           title: this.translate.instant('GLOBAL.observaciones'),
-          valuePrepareFunction: (value: any) => {
-            return value.toUpperCase();
-          },
+          valuePrepareFunction: this.tabla.toUpperCase,
         },
-        Orden: {
-          title: this.translate.instant('GLOBAL.parametros.tiposBien.numeroOrden'),
-          width: '170px',
+        LimiteInferior: {
+          title: this.translate.instant('GLOBAL.observaciones'),
+        },
+        LimiteSuperior: {
+          title: this.translate.instant('GLOBAL.observaciones'),
         },
         Activo: {
           width: '100px',
           title: this.translate.instant('GLOBAL.activo'),
-          valuePrepareFunction: (value: any) => {
-            return value ? this.translate.instant('GLOBAL.si') : this.translate.instant('GLOBAL.no');
-          },
+          valuePrepareFunction: this.tabla.boolToText,
         },
       },
     };
   }
 
   ActualizarTipoBien(event) {
-    this.nuevo = false;
-    this.tipo_bien  = event.data;
+    this.tipo_bien = event.data;
     this.mostrar = true;
+    // console.log(event)
   }
+
   onRegister() {
-    this.nuevo = true;
     this.tipo_bien = new TipoBien();
     this.mostrar = true;
   }
-  Registrar() {
-    const mensajeconf = {
-      type: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085D6',
-      cancelButtonColor: '#D33',
-      confirmButtonText: 'Si',
-      cancelButtonText: 'No',
-    };
-    let mensaje;
-    if (this.nuevo) {
-      mensaje = {
-        ...mensajeconf,
-        title: this.translate.instant('GLOBAL.parametros.tiposBien.registro_title'),
-        text: this.translate.instant('GLOBAL.parametros.tiposBien.registro_text'),
-      };
-    } else {
-      mensaje = {
-        ...mensajeconf,
-        title: this.translate.instant('GLOBAL.parametros.tiposBien.actualizacion_title'),
-        text: this.translate.instant('GLOBAL.parametros.tiposBien.actualizacion_text'),
-      };
-    }
-    (Swal as any).fire(mensaje).then((willDelete) => {
-      if (willDelete.value) {
-        let text;
-        // console.log(this.tipo_bien);
-        if (this.nuevo) {
-          text = this.translate.instant('GLOBAL.parametros.tiposBien.registro_succes');
-          this.catalogoHelper.postTipoBien(this.tipo_bien).toPromise()
-          .then((res: any) => {
-            if (res) {
-              this.succesOp(text);
-            }
-          });
-        } else {
-          text = this.translate.instant('GLOBAL.parametros.tiposBien.actualizacion_succes');
-          this.tipo_bien.Tipo_bien_padre = this.tipo_bien.Tipo_bien_padre ? this.tipo_bien.Tipo_bien_padre : null;
-          this.catalogoHelper.putTipoBien(this.tipo_bien).toPromise()
-          .then((res: any) => {
-            if (res) {
-              this.succesOp(text);
-            }
-          });
-        }
 
-
-      }
-    });
-  }
   private recargarlista() {
-    this.router.navigateByUrl('/RefrshComponent', {skipLocationChange: true}).then(
-      () => this.router.navigate(['/pages/catalogo/tipos_bien']));
+    this.source.empty();
+    this.loadTiposBien();
   }
+
   private succesOp(text) {
-    this.pupmanager.showSuccessAlert(text);
+    this.pupmanager.showSuccessAlert(this.translate.instant(text));
     this.recargarlista();
     this.mostrar = false;
   }

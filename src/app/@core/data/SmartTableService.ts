@@ -1,7 +1,17 @@
 import { Injectable } from '@angular/core';
+import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
 
-@Injectable()
+@Injectable({
+    providedIn: 'root',
+})
 export class SmartTableService {
+
+    constructor(
+        private translate: TranslateService,
+    ) {
+        this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
+        });
+    }
 
     public formatDate(value: Date) {
         if (value) {
@@ -11,6 +21,14 @@ export class SmartTableService {
         } else {
             return '';
         }
+    }
+
+    public prepareFunctionObject(key: string, value?: any): string {
+        if (!value || !value[key]) {
+            return '';
+        }
+
+        return value[key];
     }
 
     public filterFunctionObject(key: string, cell?: any, search?: string): boolean {
@@ -24,5 +42,20 @@ export class SmartTableService {
         return false;
     }
 
+    public toUpperCase(value: string) {
+        if (value) {
+            return value.toUpperCase();
+        } else {
+            return '';
+        }
+    }
+
+    public boolToText(value: boolean) {
+        if (value) {
+            return 'SÍ'; // this.translate.instant('GLOBAL.si')
+        } else {
+            return 'NO'; // this.translate.instant('GLOBAL.no');
+        }
+    }
 }
 

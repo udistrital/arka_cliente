@@ -706,9 +706,9 @@ export class CatalogoElementosHelper {
  * If the response is successs, it returns the object's data.
  * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
  */
-    public getAllTiposBien() {
+    public getAllTiposBien(query: string) {
         this.rqManager.setPath('CATALOGO_ELEMENTOS_SERVICE');
-        return this.rqManager.get('tipo_bien?limit=-1&sortby=Activo,Orden&order=desc,asc').pipe(
+        return this.rqManager.get('tipo_bien?' +  query).pipe(
             map(
                 (res) => {
                     if (res === 'error') {
@@ -748,9 +748,9 @@ export class CatalogoElementosHelper {
  * If the response is successs, it returns the object's data.
  * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
  */
- public putTipoBien(TipodeBien) {
+ public putTipoBien(tipoBien) {
     this.rqManager.setPath('CATALOGO_ELEMENTOS_SERVICE');
-    return this.rqManager.put('tipo_bien', TipodeBien).pipe(
+    return this.rqManager.put('tipo_bien', tipoBien).pipe(
         map(
             (res) => {
                 if (res) {
