@@ -1287,7 +1287,11 @@
         "actualizacion_title":"Actualización tipo de bien o servicio",
         "necesita_placa":"Requiere placa",
         "necesita_poliza":"Requiere póliza",
-        "bien_padre":"Bien padre",
+        "tipoBienPadre":"Tipo Bien padre",
+        "umbralInferior": "Umbral Inferior (UVT)",
+        "umbralSuperior": "Umbral Superior (UVT)",
+        "bodegaConsumo": "Bodega de Consumo",
+        "errorRango": "Ingrese un rango válido",
         "registro_text":"¿Desea registrar los datos ingresados?",
         "actualizacion_text": "¿Desea actualizar los datos ingresados?"
       },

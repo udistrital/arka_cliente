@@ -9,6 +9,7 @@ import { FORM_SUBGRUPO, FORM_SUBGRUPO_DETALLE } from './form-subgrupo';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/catalogoElementosHelper';
 import Swal from 'sweetalert2';
+import { PopUpManager } from '../../../managers/popUpManager';
 
 @Component({
   selector: 'ngx-crud-subgrupo',
@@ -30,7 +31,7 @@ export class CrudSubgrupoComponent implements OnInit, OnChanges {
   constructor(
     private translate: TranslateService,
     private catalogoElementosService: CatalogoElementosHelper,
-  ) {
+    private pUpManager: PopUpManager) {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
       this.construirForm();
     });
@@ -56,10 +57,13 @@ export class CrudSubgrupoComponent implements OnInit, OnChanges {
   }
 
   loadOptionsCatalogo(): void {
-    this.catalogoElementosService.getTipoBien().toPromise().then(res => {
-      if (res !== null) {
+    const query = 'limit=-1&query=Activo:true,TipoBienPadreId__isnull:true';
+    this.catalogoElementosService.getAllTiposBien(query).toPromise().then(res => {
+      if (res && res.length) {
         this.tiposBien = res;
         this.construirForm();
+      } else {
+        this.pUpManager.showErrorAlert('No hay tipos de bien que puedan asignarse a la clase.');
       }
     });
   }

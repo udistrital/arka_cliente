@@ -19,8 +19,8 @@ import { FormCuentasComponent } from './form-cuentas/form-cuentas.component';
 import { RegistroCatalogoComponent } from './registro-catalogo/registro-catalogo.component';
 import { RegistroElementosComponent } from './registro-elementos/registro-elementos.component';
 import { TiposBienComponent } from './tipos-bien/tipos-bien.component';
-import { RegistroTipoBienComponent } from './tipos-bien/registro-tipo-bien/registro-tipo-bien.component';
 import { CrudCatalogoComponent } from './crud-catalogo/crud-catalogo.component';
+import { FormTipoBienComponent } from './form-tipo-bien/form-tipo-bien.component';
 
 @NgModule({
   imports: [
@@ -43,9 +43,9 @@ import { CrudCatalogoComponent } from './crud-catalogo/crud-catalogo.component';
     FormCuentasComponent,
     RegistroCatalogoComponent,
     RegistroElementosComponent,
-    RegistroTipoBienComponent,
     TiposBienComponent,
     ...routedComponents,
+    FormTipoBienComponent,
   ],
   providers: [
     CatalogoElementosHelper,

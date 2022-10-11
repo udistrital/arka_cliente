@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { RegistroTipoBienComponent } from './registro-tipo-bien.component';
+import { FormTipoBienComponent } from './form-tipo-bien.component';
 
-describe('RegistroTipoBienComponent', () => {
-  let component: RegistroTipoBienComponent;
-  let fixture: ComponentFixture<RegistroTipoBienComponent>;
+describe('FormTipoBienComponent', () => {
+  let component: FormTipoBienComponent;
+  let fixture: ComponentFixture<FormTipoBienComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ RegistroTipoBienComponent ],
+      declarations: [ FormTipoBienComponent ],
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(RegistroTipoBienComponent);
+    fixture = TestBed.createComponent(FormTipoBienComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
