@@ -92,7 +92,7 @@ export class TiposBienComponent implements OnInit {
           valuePrepareFunction: this.tabla.toUpperCase,
         },
         TipoBienPadreId: {
-          title: this.translate.instant('GLOBAL.Nombre'),
+          title: this.translate.instant('GLOBAL.parametros.tiposBien.tipoBienPadre'),
           width: '170px',
           valuePrepareFunction: (value: any) => {
             return this.tabla.prepareFunctionObject('Nombre', value);
@@ -118,18 +118,18 @@ export class TiposBienComponent implements OnInit {
         },
         BodegaConsumo: {
           width: '80px',
-          title: this.translate.instant('GLOBAL.parametros.tiposBien.necesita_poliza'),
+          title: this.translate.instant('GLOBAL.parametros.tiposBien.bodegaConsumo'),
           valuePrepareFunction: this.tabla.boolToText,
         },
         Descripcion: {
-          title: this.translate.instant('GLOBAL.observaciones'),
+          title: this.translate.instant('GLOBAL.Descripcion'),
           valuePrepareFunction: this.tabla.toUpperCase,
         },
         LimiteInferior: {
-          title: this.translate.instant('GLOBAL.observaciones'),
+          title: this.translate.instant('GLOBAL.parametros.tiposBien.umbralInferior'),
         },
         LimiteSuperior: {
-          title: this.translate.instant('GLOBAL.observaciones'),
+          title: this.translate.instant('GLOBAL.parametros.tiposBien.umbralSuperior'),
         },
         Activo: {
           width: '100px',
