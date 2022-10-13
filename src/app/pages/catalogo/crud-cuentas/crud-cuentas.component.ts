@@ -20,7 +20,7 @@ export class CrudCuentasComponent implements OnInit {
   uid_1: Subgrupo;
   infoCuentas: any[];
 
-  cargando: boolean;
+  spinner: string;
   valid: boolean;
   estado_cargado: boolean;
   cuentasNuevas: any[];
@@ -40,7 +40,7 @@ export class CrudCuentasComponent implements OnInit {
     private pUpManager: PopUpManager,
   ) {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { });
-    this.cargando = true;
+    this.spinner = '';
     this.puede_editar = false;
     this.modificando_cuentas = false;
     this.catalogos = new Array<Catalogo>();
@@ -114,6 +114,7 @@ export class CrudCuentasComponent implements OnInit {
   }
 
   loadCatalogos() {
+    this.spinner = 'Cargando catálogos';
     this.catalogoElementosService.getCatalogo().subscribe((res) => {
       if (res !== null) {
         const data = <Array<Catalogo>>res;
@@ -122,7 +123,7 @@ export class CrudCuentasComponent implements OnInit {
             this.catalogos.push(data[datos]);
           }
         }
-        this.cargando = false;
+        this.spinner = '';
       }
     });
   }
@@ -142,9 +143,9 @@ export class CrudCuentasComponent implements OnInit {
     if (event.TipoNivelId.Id === Nivel_t.Clase) {
       if (this.uid_1 === undefined || this.uid_1.Id !== event.Id) {
         this.uid_1 = event;
-        this.cargando = true;
+        this.spinner = 'Cargando Cuentas Contables';
         this.catalogoElementosService.getCuentasContables(event.Id).subscribe(res => {
-          this.cargando = false;
+          this.spinner = '';
           if (res.length) {
             this.infoCuentas = res;
             this.cuentasNuevas = [];
@@ -187,11 +188,11 @@ export class CrudCuentasComponent implements OnInit {
     this.pUpManager.showAlertWithOptions(opt)
       .then((willDelete) => {
         if (willDelete.value) {
-          this.cargando = true;
+          this.spinner = 'Actualizando cuentas contables';
           this.catalogoElementosService.putTransaccionCuentasSubgrupo(this.cuentasPendientes, this.uid_1.Id)
             .subscribe((res: any) => {
+              this.spinner = '';
               if (res.length) {
-                this.cargando = false;
                 this.cuentasNuevas = res;
                 const opt_: any = {
                   title: this.translate.instant('GLOBAL.Actualizado'),
