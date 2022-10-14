@@ -19,7 +19,8 @@ import { Detalle } from '../../../@core/data/models/catalogo/detalle';
 import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/catalogoElementosHelper';
-import { ParametrosGobierno } from '../../../@core/data/models/parametros_gobierno/parametros_gobierno';
+import { ParametrosHelper } from '../../../helpers/parametros/parametrosHelper';
+import { PopUpManager } from '../../../managers/popUpManager';
 
 const SIZE_SOPORTE = 1;
 
@@ -67,6 +68,7 @@ export class GestionarElementosComponent implements OnInit {
   private basePaginas: number = 0;
   clases: any;
   clasesFiltradas: any[];
+  UVT: number;
 
   constructor(
     private fb: FormBuilder,
@@ -76,6 +78,8 @@ export class GestionarElementosComponent implements OnInit {
     private listService: ListService,
     private confService: ConfiguracionService,
     private catalogoHelper: CatalogoElementosHelper,
+    private parametrosHelper: ParametrosHelper,
+    private pUpManager: PopUpManager,
   ) {
     this.Totales = new DatosLocales();
     this.sizeSoporte = SIZE_SOPORTE;
@@ -105,8 +109,12 @@ export class GestionarElementosComponent implements OnInit {
   }
 
   private async initForms() {
-    await this.loadElementos();
-    await this.loadLists();
+    const uvt = await this.loadUVT();
+    if (!uvt) {
+      this.pUpManager.showErrorAlert('No se pudo consultar el valor del UVT. Contacte soporte');
+      return;
+    }
+
     await Promise.all([this.loadLists(), this.loadElementos(), this.loadTiposBienPadre()]);
     this.submitForm(this.formElementos.get('elementos').valueChanges);
     if (this.ajustes) {
@@ -469,6 +477,24 @@ export class GestionarElementosComponent implements OnInit {
         });
       } else {
         resolve();
+      }
+    });
+  }
+
+  private loadUVT(): Promise<boolean> {
+    return new Promise<boolean>(resolve => {
+      if (this.Modo === 'agregar' || this.Modo === 'ajustar') {
+        const payload = 'limit=1&sortby=Id&order=desc&query=Activo:true,ParametroId__CodigoAbreviacion:UVT,PeriodoId__Nombre:';
+        this.parametrosHelper.getAllParametroPeriodo(payload + new Date().getFullYear() + '&fields=Valor').subscribe(res => {
+          if (res.Data && res.Data.length && res.Data[0].Valor) {
+            this.UVT = JSON.parse(res.Data[0].Valor).Valor;
+            resolve(true);
+          } else {
+            resolve(false);
+          }
+        });
+      } else {
+        resolve(true);
       }
     });
   }
