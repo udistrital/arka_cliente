@@ -130,8 +130,14 @@
         <th id="col-bien-nombre" mat-header-cell *matHeaderCellDef mat-sort-header>
           {{'GLOBAL.Acta_Recibido.CapturarElementos.TipoBienHeader' | translate }} </th>
         <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="getActualIndex(rowIndex)">
-          <mat-form-field appearance="outline" class="valores">
-            <input matInput type="text" formControlName="TipoBienId">
+          <mat-form-field appearance="outline" style="width: 250px;">
+            <input matInput type="text" formControlName="TipoBienId" (blur)="onBlurClase(getActualIndex(rowIndex))"
+              placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}" [matAutocomplete]="autoTipoBien">
+            <mat-autocomplete #autoTipoBien="matAutocomplete" [displayWith]="muestraTipoBien">
+              <mat-option *ngFor="let tipoBien of tiposBienFiltrados" [value]="tipoBien">
+                {{muestraTipoBien(tipoBien)}}
+              </mat-option>
+            </mat-autocomplete>
           </mat-form-field>
         </td>
         <td mat-footer-cell *matFooterCellDef></td>

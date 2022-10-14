@@ -16,8 +16,9 @@ import { ListService } from '../../../@core/store/services/list.service';
 import { NuxeoService } from '../../../@core/utils/nuxeo.service';
 import { Subgrupo } from '../../../@core/data/models/catalogo/jerarquia';
 import { Detalle } from '../../../@core/data/models/catalogo/detalle';
-import { debounceTime, distinctUntilChanged, map, startWith } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
+import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/catalogoElementosHelper';
 import { ParametrosGobierno } from '../../../@core/data/models/parametros_gobierno/parametros_gobierno';
 
 const SIZE_SOPORTE = 1;
@@ -58,6 +59,8 @@ export class GestionarElementosComponent implements OnInit {
   submitted: boolean = true;
   sizeSoporte: number;
   cce: string = 'https://colombiacompra.gov.co/clasificador-de-bienes-y-servicios';
+  tiposBien: any[];
+  tiposBienFiltrados: any[];
 
   private checkAnterior: number = undefined;
   private estadoShift: boolean = false;
@@ -72,6 +75,7 @@ export class GestionarElementosComponent implements OnInit {
     private store: Store<IAppState>,
     private listService: ListService,
     private confService: ConfiguracionService,
+    private catalogoHelper: CatalogoElementosHelper,
   ) {
     this.Totales = new DatosLocales();
     this.sizeSoporte = SIZE_SOPORTE;
@@ -103,6 +107,7 @@ export class GestionarElementosComponent implements OnInit {
   private async initForms() {
     await this.loadElementos();
     await this.loadLists();
+    await Promise.all([this.loadLists(), this.loadElementos(), this.loadTiposBienPadre()]);
     this.submitForm(this.formElementos.get('elementos').valueChanges);
     if (this.ajustes) {
       this.cuentasMov(this.ajustes);
@@ -204,7 +209,7 @@ export class GestionarElementosComponent implements OnInit {
           disabled,
         },
         {
-          validators: [Validators.min( min ? el.Descuento + 1 : 0.00)],
+          validators: [Validators.min(min ? el.Descuento + 1 : 0.00)],
         },
       ],
       Subtotal: [
@@ -240,13 +245,16 @@ export class GestionarElementosComponent implements OnInit {
           disabled: disabled || !this.mostrarClase,
         },
         {
-          validators: [Validators.required, this.validarCompleter('Id')],
+          validators: [Validators.required, this.validarTipoBien('SubgrupoId', 'Id')],
         },
       ],
       TipoBienId: [
         {
-          value: el.SubgrupoCatalogoId.TipoBienId.Nombre,
-          disabled: true,
+          value: '',
+          disabled,
+        },
+        {
+          validators: [this.validarTipoBien('Id')],
         },
       ],
       ValorResidual: [
@@ -270,6 +278,7 @@ export class GestionarElementosComponent implements OnInit {
     });
 
     this.cambiosClase(formEl.get('SubgrupoCatalogoId'));
+    this.cambiosTipoBien(formEl.get('TipoBienId'));
     this.cambiosValores(formEl.get('Cantidad'));
     this.cambiosValores(formEl.get('ValorUnitario'));
     this.cambiosValores(formEl.get('Descuento'));
@@ -330,7 +339,6 @@ export class GestionarElementosComponent implements OnInit {
 
   public fillClase(index) {
     const clase = (this.formElementos.get('elementos') as FormArray).at(index).get('SubgrupoCatalogoId').value;
-    (this.formElementos.get('elementos') as FormArray).at(index).patchValue({ TipoBienId: clase.TipoBienId.Nombre });
     this.setCantidad(index, clase.TipoBienId.NecesitaPlaca);
   }
 
@@ -350,12 +358,22 @@ export class GestionarElementosComponent implements OnInit {
   private cambiosClase(control: AbstractControl) {
     control.valueChanges
       .pipe(
-        startWith(''),
         debounceTime(250),
         distinctUntilChanged(),
         map(val => typeof val === 'string' ? val : this.muestraClase(val)),
       ).subscribe((response: any) => {
         this.clasesFiltradas = this.filtroCuentas(response);
+      });
+  }
+
+  private cambiosTipoBien(control: AbstractControl) {
+    control.valueChanges
+      .pipe(
+        debounceTime(250),
+        distinctUntilChanged(),
+        map(val => typeof val === 'string' ? val : this.muestraTipoBien(val)),
+      ).subscribe((response: any) => {
+        this.tiposBienFiltrados = this.filtroTipoBien(response);
       });
   }
 
@@ -411,8 +429,20 @@ export class GestionarElementosComponent implements OnInit {
     }
   }
 
+  private filtroTipoBien(nombre): any[] {
+    if (this.tiposBien && nombre.length > 3) {
+      return this.tiposBien.filter(contr => this.muestraTipoBien(contr).toLowerCase().includes(nombre.toLowerCase()));
+    } else {
+      return [];
+    }
+  }
+
   public muestraClase(clase): string {
     return clase && clase.SubgrupoId.Id ? clase.SubgrupoId.Codigo + ' - ' + clase.SubgrupoId.Nombre : '';
+  }
+
+  public muestraTipoBien(clase): string {
+    return clase && clase.Id ? clase.Nombre : '';
   }
 
   private loadLists(): Promise<void> {
@@ -426,6 +456,20 @@ export class GestionarElementosComponent implements OnInit {
             this.Tarifas_Iva && this.Tarifas_Iva.length > 0 &&
             this.clases && this.clases.length > 0) ? resolve() : null;
       });
+    });
+  }
+
+  private loadTiposBienPadre(): Promise<void> {
+    return new Promise<void>(resolve => {
+      if (this.Modo === 'agregar' || this.Modo === 'ajustar') {
+        const query = 'limit=-1&query=Activo:true,TipoBienPadreId__isnull:false&fields=Id,Nombre,TipoBienPadreId';
+        this.catalogoHelper.getAllTiposBien(query).subscribe(res => {
+          resolve();
+          this.tiposBien = res;
+        });
+      } else {
+        resolve();
+      }
     });
   }
 
@@ -489,7 +533,6 @@ export class GestionarElementosComponent implements OnInit {
       (this.formElementos.get('elementos') as FormArray).at(idx).patchValue(
         {
           SubgrupoCatalogoId: clase,
-          TipoBienId: clase.TipoBienId.Nombre,
         },
         {
           emitEvent: false,
@@ -901,13 +944,29 @@ export class GestionarElementosComponent implements OnInit {
     return form;
   }
 
-  private validarCompleter(key: string): ValidatorFn {
+  private validarTipoBien(key: string, key2: string = ''): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
-      const valor = control.value;
-      const checkMinLength = typeof (valor) === 'string' && valor.length && valor.length < 4;
-      const checkInvalidTercero = (valor && typeof (valor) === 'object' && valor.SubgrupoId && valor.SubgrupoId[key] === 0) ||
-        (typeof (valor) === 'string' && valor.length >= 4);
-      return checkMinLength ? { errMinLength: true } : checkInvalidTercero ? { errSelected: true } : null;
+
+      if (control.parent && !control.hasError('required')) {
+
+        const valor = control.value;
+        const checkMinLength = valor.length && valor.length < 4;
+        const checkInvalidTercero = (!valor[key] &&
+          (valor[key] && key2) ? !valor[key][key2] : false) || (typeof (valor) === 'string' && valor.length >= 4);
+
+        if (checkMinLength) {
+          return { errMinLength: true };
+        } else if (checkInvalidTercero) {
+          return { errSelected: true };
+        } else if (
+          control.parent.get('TipoBienId').value &&
+          control.parent.get('TipoBienId').valid &&
+          control.parent.get('SubgrupoCatalogoId').valid &&
+          control.parent.get('SubgrupoCatalogoId').value.TipoBienId.Id !==
+          control.parent.get('TipoBienId').value.TipoBienPadreId.Id) {
+          return { errorTipoBien: true };
+        }
+      }
     };
   }
 

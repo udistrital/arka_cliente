@@ -495,7 +495,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
           if (sede) {
             await this.Traer_Relacion_Ubicaciones(sede.Id, dependencia.value);
           }
-          this.sedeDependencia = { sede: sede.Id, dependencia };
+          this.sedeDependencia = { sede: sede ? sede.Id : 0 , dependencia };
         }
         resolve();
       });
