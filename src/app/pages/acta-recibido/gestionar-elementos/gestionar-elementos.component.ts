@@ -16,8 +16,8 @@ import { ListService } from '../../../@core/store/services/list.service';
 import { NuxeoService } from '../../../@core/utils/nuxeo.service';
 import { Subgrupo } from '../../../@core/data/models/catalogo/jerarquia';
 import { Detalle } from '../../../@core/data/models/catalogo/detalle';
-import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
-import { Observable } from 'rxjs';
+import { debounceTime, distinctUntilChanged, map, switchMap } from 'rxjs/operators';
+import { combineLatest, Observable } from 'rxjs';
 import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/catalogoElementosHelper';
 import { ParametrosHelper } from '../../../helpers/parametros/parametrosHelper';
 import { PopUpManager } from '../../../managers/popUpManager';
@@ -67,7 +67,6 @@ export class GestionarElementosComponent implements OnInit {
   private estadoShift: boolean = false;
   private basePaginas: number = 0;
   clases: any;
-  clasesFiltradas: any[];
   UVT: number;
 
   constructor(
@@ -88,7 +87,6 @@ export class GestionarElementosComponent implements OnInit {
   ngOnInit() {
     this.listService.findUnidades();
     this.listService.findImpuestoIVA();
-    this.listService.findClases();
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
     });
     this.createForm();
@@ -368,9 +366,9 @@ export class GestionarElementosComponent implements OnInit {
       .pipe(
         debounceTime(250),
         distinctUntilChanged(),
-        map(val => typeof val === 'string' ? val : this.muestraClase(val)),
+        switchMap((val) => this.loadClases(val)),
       ).subscribe((response: any) => {
-        this.clasesFiltradas = this.filtroCuentas(response);
+        this.clases = response.queryOptions[0].Id ? response.queryOptions : [];
       });
   }
 
@@ -383,6 +381,17 @@ export class GestionarElementosComponent implements OnInit {
       ).subscribe((response: any) => {
         this.tiposBienFiltrados = this.filtroTipoBien(response);
       });
+  }
+
+  private loadClases(text: string) {
+    const queryOptions$ = text.length > 3 ?
+      this.catalogoHelper.getAllDetalleSubgrupo('limit=-1&fields=SubgrupoId,TipoBienId&compuesto=' + text) :
+      new Observable((obs) => { obs.next([{}]); });
+    return combineLatest([queryOptions$]).pipe(
+      map(([queryOptions_$]) => ({
+        queryOptions: queryOptions_$,
+      })),
+    );
   }
 
   private cambiosValores(control: AbstractControl) {
@@ -429,14 +438,6 @@ export class GestionarElementosComponent implements OnInit {
     return total > 0 ? total : 0;
   }
 
-  private filtroCuentas(nombre): any[] {
-    if (this.clases && nombre.length > 3) {
-      return this.clases.filter(contr => this.muestraClase(contr).toLowerCase().includes(nombre.toLowerCase()));
-    } else {
-      return [];
-    }
-  }
-
   private filtroTipoBien(nombre): any[] {
     if (this.tiposBien && nombre.length > 3) {
       return this.tiposBien.filter(contr => this.muestraTipoBien(contr).toLowerCase().includes(nombre.toLowerCase()));
@@ -446,23 +447,21 @@ export class GestionarElementosComponent implements OnInit {
   }
 
   public muestraClase(clase): string {
-    return clase && clase.SubgrupoId.Id ? clase.SubgrupoId.Codigo + ' - ' + clase.SubgrupoId.Nombre : '';
+    return clase && clase.SubgrupoId && clase.SubgrupoId.Id ? (clase.SubgrupoId.Codigo + ' - ' + clase.SubgrupoId.Nombre) : '';
   }
 
-  public muestraTipoBien(clase): string {
-    return clase && clase.Id ? clase.Nombre : '';
+  public muestraTipoBien(tb): string {
+    return tb && tb.Id ? tb.Nombre : '';
   }
 
   private loadLists(): Promise<void> {
     return new Promise<void>(async (resolve) => {
       this.store.select((state) => state).subscribe(list => {
-        this.unidades = list.listUnidades[0],
-          this.Tarifas_Iva = list.listIVA[0],
-          this.clases = list.listClases[0],
-
-          (this.unidades && this.unidades.length > 0 &&
-            this.Tarifas_Iva && this.Tarifas_Iva.length > 0 &&
-            this.clases && this.clases.length > 0) ? resolve() : null;
+        if (list.listUnidades && list.listUnidades.length && list.listIVA && list.listIVA.length) {
+          this.unidades = list.listUnidades[0];
+          this.Tarifas_Iva = list.listIVA[0];
+          resolve();
+        }
       });
     });
   }
@@ -470,7 +469,8 @@ export class GestionarElementosComponent implements OnInit {
   private loadTiposBienPadre(): Promise<void> {
     return new Promise<void>(resolve => {
       if (this.Modo === 'agregar' || this.Modo === 'ajustar') {
-        const query = 'limit=-1&query=Activo:true,TipoBienPadreId__isnull:false&fields=Id,Nombre,TipoBienPadreId';
+        const query = 'limit=-1&query=Activo:true,TipoBienPadreId__isnull:false'
+          + '&fields=Id,Nombre,TipoBienPadreId,LimiteInferior,LimiteSuperior,NecesitaPlaca';
         this.catalogoHelper.getAllTiposBien(query).subscribe(res => {
           resolve();
           this.tiposBien = res;
@@ -484,8 +484,9 @@ export class GestionarElementosComponent implements OnInit {
   private loadUVT(): Promise<boolean> {
     return new Promise<boolean>(resolve => {
       if (this.Modo === 'agregar' || this.Modo === 'ajustar') {
-        const payload = 'limit=1&sortby=Id&order=desc&query=Activo:true,ParametroId__CodigoAbreviacion:UVT,PeriodoId__Nombre:';
-        this.parametrosHelper.getAllParametroPeriodo(payload + new Date().getFullYear() + '&fields=Valor').subscribe(res => {
+        const payload = 'limit=1&sortby=Id&order=desc&query=Activo:true,ParametroId__CodigoAbreviacion:UVT,'
+          + 'PeriodoId__Nombre:' + new Date().getFullYear() + '&fields=Valor';
+        this.parametrosHelper.getAllParametroPeriodo(payload).subscribe(res => {
           if (res.Data && res.Data.length && res.Data[0].Valor) {
             this.UVT = JSON.parse(res.Data[0].Valor).Valor;
             resolve(true);

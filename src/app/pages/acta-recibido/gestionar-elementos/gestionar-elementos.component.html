@@ -60,7 +60,7 @@
             placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}" formControlName="clase"
             [matAutocomplete]="autoClase">
           <mat-autocomplete #autoClase="matAutocomplete" [displayWith]="muestraClase" (optionSelected)="setClase()">
-            <mat-option *ngFor="let clase of clasesFiltradas" [value]="clase">
+            <mat-option *ngFor="let clase of clases" [value]="clase">
               {{muestraClase(clase)}}
             </mat-option>
           </mat-autocomplete>
@@ -116,7 +116,7 @@
               placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}" [matAutocomplete]="autoSubgrupo">
             <mat-autocomplete #autoSubgrupo="matAutocomplete" [displayWith]="muestraClase"
               (optionSelected)="fillClase(getActualIndex(rowIndex))">
-              <mat-option *ngFor="let clase of clasesFiltradas" [value]="clase">
+              <mat-option *ngFor="let clase of clases" [value]="clase">
                 {{muestraClase(clase)}}
               </mat-option>
             </mat-autocomplete>
