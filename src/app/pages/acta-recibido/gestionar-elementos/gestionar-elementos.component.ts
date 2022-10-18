@@ -2,11 +2,9 @@ import { Component, OnInit, ViewChild, ElementRef, Input, Output, EventEmitter, 
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { AbstractControl, FormArray, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
-import Swal from 'sweetalert2';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource, MatTable } from '@angular/material/table';
-import { TipoBien } from '../../../@core/data/models/acta_recibido/tipo_bien';
 import { DatosLocales } from './datos_locales';
 import { ElementoActa } from '../../../@core/data/models/acta_recibido/elemento';
 import { Store } from '@ngrx/store';
@@ -14,8 +12,6 @@ import { IAppState } from '../../../@core/store/app.state';
 import { ConfiguracionService } from '../../../@core/data/configuracion.service';
 import { ListService } from '../../../@core/store/services/list.service';
 import { NuxeoService } from '../../../@core/utils/nuxeo.service';
-import { Subgrupo } from '../../../@core/data/models/catalogo/jerarquia';
-import { Detalle } from '../../../@core/data/models/catalogo/detalle';
 import { debounceTime, distinctUntilChanged, map, switchMap } from 'rxjs/operators';
 import { combineLatest, Observable } from 'rxjs';
 import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/catalogoElementosHelper';
@@ -662,11 +658,7 @@ export class GestionarElementosComponent implements OnInit {
         if (file.size < this.sizeSoporte * 1024000) {
           this.formElementos.get('archivo').setValue(file);
         } else {
-          (Swal as any).fire({
-            title: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.Tamaño_title'),
-            text: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.Tamaño_placeholder'),
-            type: 'warning',
-          });
+          this.pUpManager.showAlertWithOptions(this.optionsFileChange);
         }
       }
     }
@@ -687,11 +679,7 @@ export class GestionarElementosComponent implements OnInit {
     this.actaRecibidoHelper.postArchivo(formModel).subscribe((res: any) => {
       if (res !== null) {
         if (res.Mensaje !== undefined) {
-          (Swal as any).fire({
-            type: 'success',
-            title: this.translate.instant('GLOBAL.error'),
-            text: this.translate.instant('GLOBAL.Errores.' + res.Mensaje),
-          });
+          this.pUpManager.showAlertWithOptions(this.optionsErrPlantilla(res.Mensaje));
           this.clearFile();
         } else {
           this.cuentasMov(res.Elementos);
@@ -699,29 +687,17 @@ export class GestionarElementosComponent implements OnInit {
           this.submitted = true;
           const validacion = this.validarCargaMasiva(res.Elementos);
           if (validacion.valid) {
-            (Swal as any).fire({
-              type: 'success',
-              title: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.ElementosCargadosTitleOK'),
-              text: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.ElementosCargadosTextOK'),
-            });
+            this.pUpManager.showAlertWithOptions(this.optionsCargaMasivaOk);
             this.ErroresCarga = validacion.cont_err.toString();
           } else {
-            (Swal as any).fire({
-              type: 'warning',
-              title: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.ValidacionCargaMasivaTitle'),
-              text: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.ValidacionCargaMasivaText', { cantidad: validacion.cont_err }),
-            });
+            this.pUpManager.showAlertWithOptions(this.optionsCargaMasivaErr(validacion.cont_err));
             this.ErroresCarga = '';
           }
           this.clearFile();
         }
 
       } else {
-        (Swal as any).fire({
-          type: 'error',
-          title: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.ElementosCargadosTitleNO'),
-          text: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.ElementosCargadosTextNO'),
-        });
+        this.pUpManager.showAlertWithOptions(this.optionsNoCargaMasiva);
         this.clearFile();
       }
       this.cargando = false;
@@ -775,16 +751,12 @@ export class GestionarElementosComponent implements OnInit {
       this.readThis();
     };
     if (this.dataSource.data.length) {
-      (Swal as any).fire({
-        title: this.translate.instant('GLOBAL.Advertencia'),
-        text: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.AvisoSobreescritura', { CANT: this.dataSource.data.length }),
-        type: 'warning',
-        showCancelButton: true,
-      }).then(res => {
-        if (res.value) {
-          cargar();
-        }
-      });
+      this.pUpManager.showAlertWithOptions(this.optionsPreCargaMasiva(this.dataSource.data.length))
+        .then(res => {
+          if (res.value) {
+            cargar();
+          }
+        });
     } else {
       cargar();
     }
@@ -811,17 +783,13 @@ export class GestionarElementosComponent implements OnInit {
   }
 
   addElemento() {
-    const subgrupo = new Detalle;
     const data = new ElementoActa;
-    subgrupo.SubgrupoId = <Subgrupo>{ Id: 0 };
-    subgrupo.TipoBienId = new TipoBien;
 
     data.Cantidad = 0;
     data.Nombre = '';
     data.Descuento = 0;
     data.Marca = '';
     data.Serie = '';
-    data.SubgrupoCatalogoId = subgrupo;
     data.Subtotal = 0;
     data.UnidadMedida = 13;
     data.ValorIva = 0;
@@ -834,38 +802,22 @@ export class GestionarElementosComponent implements OnInit {
 
   borraSeleccionados() {
     if (this.selected.length) {
-      (Swal as any).fire({
-        title: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.EliminarVariosElementosTitle', { cantidad: this.selected.length }),
-        text: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.EliminarVariosElementosText', { cantidad: this.selected.length }),
-        type: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Si',
-        cancelButtonText: 'No',
-      }).then((result) => {
-        if (result.value) {
-          this._deleteElemento(null, true);
-        }
-      });
+      this.pUpManager.showAlertWithOptions(this.optionsDeleteElementos(this.selected.length))
+        .then((result) => {
+          if (result.value) {
+            this._deleteElemento(null, true);
+          }
+        });
     }
   }
 
   deleteElemento(index: number) {
-    (Swal as any).fire({
-      title: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.EliminarElementosTitle'),
-      text: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.EliminarElementosText'),
-      type: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Si',
-      cancelButtonText: 'No',
-    }).then((result) => {
-      if (result.value) {
-        this._deleteElemento(index, false);
-      }
-    });
+    this.pUpManager.showAlertWithOptions(this.optionsDeleteElemento)
+      .then((result) => {
+        if (result.value) {
+          this._deleteElemento(index, false);
+        }
+      });
   }
 
   private _deleteElemento(index: number, selected: boolean) {
@@ -1013,6 +965,81 @@ export class GestionarElementosComponent implements OnInit {
           }
         }
       }
+    };
+  }
+
+  get optionsFileChange() {
+    return {
+      title: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.Tamaño_title'),
+      text: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.Tamaño_placeholder'),
+      type: 'warning',
+    };
+  }
+
+  private optionsErrPlantilla(mensaje) {
+    return {
+      type: 'success',
+      title: this.translate.instant('GLOBAL.error'),
+      text: this.translate.instant('GLOBAL.Errores.' + mensaje),
+    };
+  }
+
+  get optionsCargaMasivaOk() {
+    return {
+      type: 'success',
+      title: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.ElementosCargadosTitleOK'),
+      text: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.ElementosCargadosTextOK'),
+    };
+  }
+
+  private optionsCargaMasivaErr(num) {
+    return {
+      type: 'warning',
+      title: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.ValidacionCargaMasivaTitle'),
+      text: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.ValidacionCargaMasivaText', { cantidad: num }),
+    };
+  }
+
+  private optionsPreCargaMasiva(CANT) {
+    return {
+      title: this.translate.instant('GLOBAL.Advertencia'),
+      text: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.AvisoSobreescritura', { CANT }),
+      type: 'warning',
+      showCancelButton: true,
+    };
+  }
+
+  private optionsDeleteElementos(cantidad) {
+    return {
+      title: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.EliminarVariosElementosTitle', { cantidad }),
+      text: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.EliminarVariosElementosText', { cantidad }),
+      type: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Si',
+      cancelButtonText: 'No',
+    };
+  }
+
+  get optionsDeleteElemento() {
+    return {
+      title: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.EliminarElementosTitle'),
+      text: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.EliminarElementosText'),
+      type: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Si',
+      cancelButtonText: 'No',
+    };
+  }
+
+  get optionsNoCargaMasiva() {
+    return {
+      type: 'error',
+      title: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.ElementosCargadosTitleNO'),
+      text: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.ElementosCargadosTextNO'),
     };
   }
 
