@@ -114,8 +114,7 @@
           <mat-form-field appearance="outline" style="width: 250px;">
             <input matInput type="text" formControlName="SubgrupoCatalogoId" (blur)="onBlurClase(getActualIndex(rowIndex))"
               placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}" [matAutocomplete]="autoSubgrupo">
-            <mat-autocomplete #autoSubgrupo="matAutocomplete" [displayWith]="muestraClase"
-              (optionSelected)="fillClase(getActualIndex(rowIndex))">
+            <mat-autocomplete #autoSubgrupo="matAutocomplete" [displayWith]="muestraClase">
               <mat-option *ngFor="let clase of clases" [value]="clase">
                 {{muestraClase(clase)}}
               </mat-option>

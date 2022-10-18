@@ -428,7 +428,8 @@ export class VerActaRecibidoComponent implements OnInit {
     for (const datos of this.elementos) {
 
       const elemento = new Elemento;
-      const subgrupo = datos.SubgrupoCatalogoId.SubgrupoId.Id;
+      const subgrupo = datos.SubgrupoCatalogoId ? datos.SubgrupoCatalogoId.SubgrupoId.Id : null;
+      const tipoBien = datos.TipoBienId ? datos.TipoBienId.Id : null;
 
       elemento.Id = datos.Id;
       elemento.Nombre = datos.Nombre;
@@ -444,6 +445,7 @@ export class VerActaRecibidoComponent implements OnInit {
       elemento.ValorIva = parseFloat(datos.ValorIva);
       elemento.ValorFinal = parseFloat(datos.ValorTotal);
       elemento.SubgrupoCatalogoId = subgrupo ? subgrupo : null;
+      elemento.TipoBienId = tipoBien ? tipoBien : null;
       elemento.EstadoElementoId = <EstadoElemento>{ Id: estadoId };
       elemento.ActaRecibidoId = <ActaRecibido>{ Id: +this._ActaId };
       elemento.Activo = true;

@@ -109,11 +109,12 @@ export class GestionarElementosComponent implements OnInit {
   private async initForms() {
     const uvt = await this.loadUVT();
     if (!uvt) {
-      this.pUpManager.showErrorAlert('No se pudo consultar el valor del UVT. Contacte soporte');
+      this.pUpManager.showErrorAlert('No se pudo consultar el valor del UVT. Intente más tarde o contacte soporte');
       return;
     }
 
-    await Promise.all([this.loadLists(), this.loadElementos(), this.loadTiposBienPadre()]);
+    await this.loadTiposBienHijos();
+    await Promise.all([this.loadLists(), this.loadElementos()]);
     this.submitForm(this.formElementos.get('elementos').valueChanges);
     if (this.ajustes) {
       this.cuentasMov(this.ajustes);
@@ -145,8 +146,11 @@ export class GestionarElementosComponent implements OnInit {
 
   private fillElemento(el: ElementoActa) {
     const disabled = this.Modo === 'verificar' || this.Modo === 'ver';
-    const placa = el.SubgrupoCatalogoId.TipoBienId.Id && el.SubgrupoCatalogoId.TipoBienId.NecesitaPlaca;
     const min = el.Descuento > 0 && el.Descuento > el.ValorUnitario;
+    const placa = !el.SubgrupoCatalogoId ? false :
+      this.checkPlacaSubgrupoTipoBien(el.SubgrupoCatalogoId.TipoBienId.Id,
+        el.TipoBienId && el.TipoBienId.Id ? el.TipoBienId.Id : 0, el.ValorUnitario);
+
     const formEl = this.fb.group({
       Id: [el.Id],
       Seleccionado: [
@@ -173,10 +177,10 @@ export class GestionarElementosComponent implements OnInit {
       Cantidad: [
         {
           value: el.Cantidad,
-          disabled: disabled || (placa && el.Cantidad === 1),
+          disabled: disabled,
         },
         {
-          validators: placa ? [Validators.required, Validators.min(1), Validators.max(1)] : [Validators.required, Validators.min(1)],
+          validators: [Validators.required, Validators.min(1)].concat(placa ? Validators.max(1) : []),
         },
       ],
       Marca: [
@@ -251,12 +255,12 @@ export class GestionarElementosComponent implements OnInit {
           disabled: disabled || !this.mostrarClase,
         },
         {
-          validators: [Validators.required, this.validarTipoBien('SubgrupoId', 'Id')],
+          validators: [Validators.required, this.validarTipoBien('Id')],
         },
       ],
       TipoBienId: [
         {
-          value: '',
+          value: el.TipoBienId ? el.TipoBienId : '',
           disabled,
         },
         {
@@ -266,7 +270,7 @@ export class GestionarElementosComponent implements OnInit {
       ValorResidual: [
         {
           value: el.ValorResidual * 1000 / (el.ValorTotal * 10),
-          disabled: (!el.SubgrupoCatalogoId.Amortizacion && !el.SubgrupoCatalogoId.Depreciacion) || disabled,
+          disabled: disabled ? disabled : el.SubgrupoCatalogoId ? !el.SubgrupoCatalogoId.Amortizacion && !el.SubgrupoCatalogoId.Depreciacion : true,
         },
         {
           validators: this.Modo === 'ajustar' ? [Validators.required, Validators.min(0), Validators.max(100.01)] : [],
@@ -275,7 +279,7 @@ export class GestionarElementosComponent implements OnInit {
       VidaUtil: [
         {
           value: el.VidaUtil,
-          disabled: (!el.SubgrupoCatalogoId.Amortizacion && !el.SubgrupoCatalogoId.Depreciacion) || disabled,
+          disabled: disabled ? disabled : el.SubgrupoCatalogoId ? !el.SubgrupoCatalogoId.Amortizacion && !el.SubgrupoCatalogoId.Depreciacion : true,
         },
         {
           validators: this.Modo === 'ajustar' ? [Validators.required, Validators.min(0), Validators.max(100)] : [],
@@ -285,10 +289,14 @@ export class GestionarElementosComponent implements OnInit {
 
     this.cambiosClase(formEl.get('SubgrupoCatalogoId'));
     this.cambiosTipoBien(formEl.get('TipoBienId'));
+
+    this.cambiosValores(formEl.get('SubgrupoCatalogoId'));
+    this.cambiosValores(formEl.get('TipoBienId'));
     this.cambiosValores(formEl.get('Cantidad'));
     this.cambiosValores(formEl.get('ValorUnitario'));
     this.cambiosValores(formEl.get('Descuento'));
     this.cambiosValores(formEl.get('PorcentajeIvaId'));
+
     this.setValidation(formEl);
 
     return formEl;
@@ -327,6 +335,7 @@ export class GestionarElementosComponent implements OnInit {
         ValorTotal: el.get('ValorTotal').value,
         PorcentajeIvaId: el.get('PorcentajeIvaId').value,
         ValorIva: el.get('ValorIva').value,
+        TipoBienId: el.get('TipoBienId').value,
         SubgrupoCatalogoId: el.get('SubgrupoCatalogoId').value,
         Placa: el.get('Placa').value,
         ValorResidual: el.get('ValorResidual').value,
@@ -343,21 +352,29 @@ export class GestionarElementosComponent implements OnInit {
     }
   }
 
-  public fillClase(index) {
-    const clase = (this.formElementos.get('elementos') as FormArray).at(index).get('SubgrupoCatalogoId').value;
-    this.setCantidad(index, clase.TipoBienId.NecesitaPlaca);
+  private checkPlacaSubgrupo(tipoBienPadre: number, valorUnitario: number): boolean {
+    const placa = this.tiposBien.filter(tb => tb.TipoBienPadreId.Id === tipoBienPadre)
+      .find(tb_ => tb_.LimiteInferior <= (valorUnitario / this.UVT) && valorUnitario / this.UVT < tb_.LimiteSuperior);
+    return placa && placa.NecesitaPlaca;
   }
 
-  private setCantidad(index: number, placa: boolean) {
-    if (placa) {
-      (this.formElementos.get('elementos') as FormArray).at(index).patchValue({ Cantidad: 1 });
-      (this.formElementos.get('elementos') as FormArray).at(index).get('Cantidad').disable();
-      (this.formElementos.get('elementos') as FormArray).at(index).get('Cantidad')
-        .setValidators([Validators.required, Validators.min(1), Validators.max(1)]);
+  private checkPlacaSubgrupoTipoBien(tipoBienPadre: number, tipoBienHijo: number, valorUnitario: number): boolean {
+    if (!tipoBienHijo) {
+      return this.checkPlacaSubgrupo(tipoBienPadre, valorUnitario);
     } else {
-      (this.formElementos.get('elementos') as FormArray).at(index).get('Cantidad').enable();
-      (this.formElementos.get('elementos') as FormArray).at(index).get('Cantidad').setValidators([Validators.required, Validators.min(1)]);
-      (this.formElementos.get('elementos') as FormArray).at(index).get('Cantidad').updateValueAndValidity();
+      const placa = this.tiposBien.filter(tb => tb.Id === tipoBienHijo && tb.NecesitaPlaca)
+        .find(tb_ => tb_.LimiteInferior <= (valorUnitario / this.UVT) && valorUnitario / this.UVT < tb_.LimiteSuperior);
+      return placa && placa.NecesitaPlaca;
+    }
+  }
+
+  private setCantidad(control: any, placa: boolean) {
+    if (placa) {
+      control.get('Cantidad').setValidators([Validators.required, Validators.min(1), Validators.max(1)]);
+      control.get('Cantidad').updateValueAndValidity();
+    } else {
+      control.get('Cantidad').setValidators([Validators.required, Validators.min(1)]);
+      control.get('Cantidad').updateValueAndValidity();
     }
   }
 
@@ -368,7 +385,7 @@ export class GestionarElementosComponent implements OnInit {
         distinctUntilChanged(),
         switchMap((val) => this.loadClases(val)),
       ).subscribe((response: any) => {
-        this.clases = response.queryOptions[0].Id ? response.queryOptions : [];
+        this.clases = response.queryOptions.length && response.queryOptions[0].SubgrupoId ? response.queryOptions : [];
       });
   }
 
@@ -385,7 +402,7 @@ export class GestionarElementosComponent implements OnInit {
 
   private loadClases(text: string) {
     const queryOptions$ = text.length > 3 ?
-      this.catalogoHelper.getAllDetalleSubgrupo('limit=-1&fields=SubgrupoId,TipoBienId&compuesto=' + text) :
+      this.catalogoHelper.getAllDetalleSubgrupo('limit=-1&fields=Id,SubgrupoId,TipoBienId&compuesto=' + text) :
       new Observable((obs) => { obs.next([{}]); });
     return combineLatest([queryOptions$]).pipe(
       map(([queryOptions_$]) => ({
@@ -401,25 +418,34 @@ export class GestionarElementosComponent implements OnInit {
         distinctUntilChanged(),
       ).subscribe(() => {
 
-        const cant = control.parent.get('Cantidad').value;
-        const unit = control.parent.get('ValorUnitario').value;
-        const dsc = control.parent.get('Descuento').value;
-        const iva = control.parent.get('PorcentajeIvaId').value;
+        const control_ = control.parent;
+        const cant = control_.get('Cantidad').value;
+        const unit = control_.get('ValorUnitario').value;
+        const dsc = control_.get('Descuento').value;
+        const iva = control_.get('PorcentajeIvaId').value;
 
         const subt = this.getSubtotal(cant, unit, dsc);
         const vIva = this.getIva(subt, iva);
         const total = this.getTotal(subt, vIva);
 
-        control.parent.get('Subtotal').patchValue(subt);
-        control.parent.get('ValorIva').patchValue(vIva);
-        control.parent.get('ValorTotal').patchValue(total);
+        control_.get('Subtotal').patchValue(subt);
+        control_.get('ValorIva').patchValue(vIva);
+        control_.get('ValorTotal').patchValue(total);
 
         if (dsc > 0 && dsc > unit) {
-          control.parent.get('Descuento').setErrors({ errMin: true });
+          control_.get('Descuento').setErrors({ errMin: true });
         } else {
-          control.parent.get('Descuento').clearValidators();
-          control.parent.get('Descuento').updateValueAndValidity();
+          control_.get('Descuento').clearValidators();
+          control_.get('Descuento').updateValueAndValidity();
         }
+
+        const clase = control_.get('SubgrupoCatalogoId');
+        const tipoBien = control_.get('TipoBienId');
+        if (clase.valid && tipoBien.valid) {
+          this.setCantidad(control.parent,
+            this.checkPlacaSubgrupoTipoBien(clase.value.TipoBienId.Id, tipoBien.value && tipoBien.value.Id ? tipoBien.value.Id : 0, unit));
+        }
+
       });
   }
 
@@ -439,7 +465,7 @@ export class GestionarElementosComponent implements OnInit {
   }
 
   private filtroTipoBien(nombre): any[] {
-    if (this.tiposBien && nombre.length > 3) {
+    if (this.tiposBien && nombre.length > 1) {
       return this.tiposBien.filter(contr => this.muestraTipoBien(contr).toLowerCase().includes(nombre.toLowerCase()));
     } else {
       return [];
@@ -466,18 +492,14 @@ export class GestionarElementosComponent implements OnInit {
     });
   }
 
-  private loadTiposBienPadre(): Promise<void> {
+  private loadTiposBienHijos(): Promise<void> {
     return new Promise<void>(resolve => {
-      if (this.Modo === 'agregar' || this.Modo === 'ajustar') {
-        const query = 'limit=-1&query=Activo:true,TipoBienPadreId__isnull:false'
-          + '&fields=Id,Nombre,TipoBienPadreId,LimiteInferior,LimiteSuperior,NecesitaPlaca';
-        this.catalogoHelper.getAllTiposBien(query).subscribe(res => {
-          resolve();
-          this.tiposBien = res;
-        });
-      } else {
+      const query = 'limit=-1&query=Activo:true,TipoBienPadreId__isnull:false,TipoBienPadreId__Activo:true'
+        + '&fields=Id,Nombre,TipoBienPadreId,LimiteInferior,LimiteSuperior,NecesitaPlaca';
+      this.catalogoHelper.getAllTiposBien(query).subscribe(res => {
         resolve();
-      }
+        this.tiposBien = res;
+      });
     });
   }
 
@@ -557,15 +579,13 @@ export class GestionarElementosComponent implements OnInit {
   public setClase() {
     const clase = this.formElementos.get('clase.clase').value;
     this.selected.forEach((idx) => {
-      (this.formElementos.get('elementos') as FormArray).at(idx).patchValue(
+      const control = (this.formElementos.get('elementos') as FormArray).at(idx);
+      control.patchValue(
         {
           SubgrupoCatalogoId: clase,
-        },
-        {
-          emitEvent: false,
+          TipoBienId: null,
         },
       );
-      this.setCantidad(idx, clase.TipoBienId.NecesitaPlaca);
     });
 
   }
@@ -971,27 +991,26 @@ export class GestionarElementosComponent implements OnInit {
     return form;
   }
 
-  private validarTipoBien(key: string, key2: string = ''): ValidatorFn {
+  private validarTipoBien(key: string): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
 
-      if (control.parent && !control.hasError('required')) {
+      if (control.parent && !control.hasError('required') && control.value) {
 
         const valor = control.value;
-        const checkMinLength = valor.length && valor.length < 4;
-        const checkInvalidTercero = (!valor[key] &&
-          (valor[key] && key2) ? !valor[key][key2] : false) || (typeof (valor) === 'string' && valor.length >= 4);
+        const checkMinLength = valor.length < 4;
+        const checkInvalidObject = !valor[key] || valor.length >= 4;
 
         if (checkMinLength) {
           return { errMinLength: true };
-        } else if (checkInvalidTercero) {
+        } else if (checkInvalidObject) {
           return { errSelected: true };
-        } else if (
-          control.parent.get('TipoBienId').value &&
-          control.parent.get('TipoBienId').valid &&
-          control.parent.get('SubgrupoCatalogoId').valid &&
-          control.parent.get('SubgrupoCatalogoId').value.TipoBienId.Id !==
-          control.parent.get('TipoBienId').value.TipoBienPadreId.Id) {
-          return { errorTipoBien: true };
+        } else {
+          const tb = control.parent.get('TipoBienId');
+          const sg = control.parent.get('SubgrupoCatalogoId');
+          if ((tb.valid && tb.value && sg.valid && sg.value.TipoBienId.Id !== tb.value.TipoBienPadreId.Id) ||
+            (sg.value.TipoBienId && !this.tiposBien.find(tb_ => tb_.TipoBienPadreId.Id === sg.value.TipoBienId.Id))) {
+            return { errorTipoBien: true };
+          }
         }
       }
     };

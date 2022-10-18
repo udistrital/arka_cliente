@@ -847,7 +847,8 @@ export class EdicionActaRecibidoComponent implements OnInit {
     for (const datos of this.DatosElementos) {
 
       const elemento = new Elemento;
-      const subgrupo = datos.SubgrupoCatalogoId.SubgrupoId.Id;
+      const subgrupo = datos.SubgrupoCatalogoId ? datos.SubgrupoCatalogoId.SubgrupoId.Id : null;
+      const tipoBien = datos.TipoBienId ? datos.TipoBienId.Id : null;
 
       elemento.Id = datos.Id;
       elemento.Nombre = datos.Nombre;
@@ -863,6 +864,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
       elemento.ValorIva = parseFloat(datos.ValorIva);
       elemento.ValorFinal = parseFloat(datos.ValorTotal);
       elemento.SubgrupoCatalogoId = subgrupo ? subgrupo : null;
+      elemento.TipoBienId = tipoBien ? tipoBien : null;
       elemento.EstadoElementoId = <EstadoElemento>{ Id: 1 };
       elemento.ActaRecibidoId = <ActaRecibido>{ Id: +this._Acta_Id };
       elemento.Activo = true;

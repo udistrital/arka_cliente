@@ -474,6 +474,8 @@ export class RegistroActaRecibidoComponent implements OnInit {
       for (const datos of this.DatosElementos) {
 
         const elemento = new Elemento;
+        const subgrupo = datos.SubgrupoCatalogoId ? datos.SubgrupoCatalogoId.SubgrupoId.Id : null;
+        const tipoBien = datos.TipoBienId ? datos.TipoBienId.Id : null;
 
         elemento.Id = null;
         elemento.Nombre = datos.Nombre;
@@ -488,7 +490,8 @@ export class RegistroActaRecibidoComponent implements OnInit {
         elemento.PorcentajeIvaId = parseInt(datos.PorcentajeIvaId, 10);
         elemento.ValorIva = parseFloat(datos.ValorIva);
         elemento.ValorFinal = parseFloat(datos.ValorTotal);
-        elemento.SubgrupoCatalogoId = datos.SubgrupoCatalogoId.SubgrupoId.Id;
+        elemento.SubgrupoCatalogoId = subgrupo ? subgrupo : null;
+        elemento.TipoBienId = tipoBien ? tipoBien : null;
         elemento.EstadoElementoId = <EstadoElemento>{Id: ee};
         elemento.ActaRecibidoId = new ActaRecibido;
         elemento.Activo = true;
