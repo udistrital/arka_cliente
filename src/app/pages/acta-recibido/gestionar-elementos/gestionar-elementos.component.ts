@@ -125,7 +125,7 @@ export class GestionarElementosComponent implements OnInit {
     this.dataSource.sort = this.sort;
     this.formElementos = this.fb.group({
       archivo: ['', Validators.required],
-      clase: this.clase,
+      masivo: this.masivo,
       elementos: this.fb.array([]),
     });
   }
@@ -300,6 +300,7 @@ export class GestionarElementosComponent implements OnInit {
 
   private setValidation(form: FormGroup) {
     form.get('SubgrupoCatalogoId').markAsTouched();
+    form.get('TipoBienId').markAsTouched();
     form.get('Nombre').markAsTouched();
     form.get('Cantidad').markAsTouched();
     form.get('UnidadMedida').markAsTouched();
@@ -573,17 +574,29 @@ export class GestionarElementosComponent implements OnInit {
   }
 
   public setClase() {
-    const clase = this.formElementos.get('clase.clase').value;
+    const clase = this.formElementos.get('masivo.clase').value;
     this.selected.forEach((idx) => {
       const control = (this.formElementos.get('elementos') as FormArray).at(idx);
       control.patchValue(
         {
           SubgrupoCatalogoId: clase,
-          TipoBienId: null,
         },
       );
+      control.get('TipoBienId').updateValueAndValidity();
     });
+  }
 
+  public setTipoBien() {
+    const tb = this.formElementos.get('masivo.tipoBien').value;
+    this.selected.forEach((idx) => {
+      const control = (this.formElementos.get('elementos') as FormArray).at(idx);
+      control.patchValue(
+        {
+          TipoBienId: tb,
+        },
+      );
+      control.get('SubgrupoCatalogoId').updateValueAndValidity();
+    });
   }
 
   get selected() {
@@ -596,13 +609,6 @@ export class GestionarElementosComponent implements OnInit {
       }, []);
 
     return idxs;
-  }
-
-  public onBlurClase(index: number) {
-    const clase = (this.formElementos.get('elementos') as FormArray).at(index).get('SubgrupoCatalogoId').value;
-    if (!clase.SubgrupoId) {
-      (this.formElementos.get('elementos') as FormArray).at(index).patchValue({ TipoBienId: '' });
-    }
   }
 
   TraerPlantilla() {
@@ -868,7 +874,7 @@ export class GestionarElementosComponent implements OnInit {
         });
       this.checkTodos = true;
       this.checkParcial = false;
-      this.formElementos.get('clase.clase').enable();
+      this.enableGlobal(true);
     } else {
       (this.formElementos.get('elementos') as FormArray).controls
         .filter((el) => (el.get('Seleccionado').value))
@@ -881,7 +887,7 @@ export class GestionarElementosComponent implements OnInit {
         });
       this.checkTodos = false;
       this.checkParcial = false;
-      this.formElementos.get('clase.clase').disable();
+      this.enableGlobal(false);
     }
 
     this.checkAnterior = undefined;
@@ -911,9 +917,9 @@ export class GestionarElementosComponent implements OnInit {
 
   private enableGlobal(value) {
     if (value) {
-      this.formElementos.get('clase.clase').enable();
+      this.formElementos.get('masivo').enable();
     } else if (!this.selected.length) {
-      this.formElementos.get('clase.clase').disable();
+      this.formElementos.get('masivo').disable();
     }
   }
 
@@ -929,9 +935,15 @@ export class GestionarElementosComponent implements OnInit {
       });
   }
 
-  get clase(): FormGroup {
+  get masivo(): FormGroup {
     const form = this.fb.group({
       clase: [
+        {
+          value: '',
+          disabled: true,
+        },
+      ],
+      tipoBien: [
         {
           value: '',
           disabled: true,
@@ -940,17 +952,17 @@ export class GestionarElementosComponent implements OnInit {
     });
 
     this.cambiosClase(form.get('clase'));
+    this.cambiosTipoBien(form.get('tipoBien'));
     return form;
   }
 
   private validarTipoBien(key: string): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
 
-      if (control.parent && !control.hasError('required') && control.value) {
-
+      if (control.parent && !control.hasError('required')) {
         const valor = control.value;
-        const checkMinLength = valor.length < 4;
-        const checkInvalidObject = !valor[key] || valor.length >= 4;
+        const checkMinLength = valor && valor.length < 4;
+        const checkInvalidObject = valor && (!valor[key] || valor.length >= 4);
 
         if (checkMinLength) {
           return { errMinLength: true };
@@ -959,8 +971,8 @@ export class GestionarElementosComponent implements OnInit {
         } else {
           const tb = control.parent.get('TipoBienId');
           const sg = control.parent.get('SubgrupoCatalogoId');
-          if ((tb.valid && tb.value && sg.valid && sg.value.TipoBienId.Id !== tb.value.TipoBienPadreId.Id) ||
-            (sg.value.TipoBienId && !this.tiposBien.find(tb_ => tb_.TipoBienPadreId.Id === sg.value.TipoBienId.Id))) {
+          if ((sg.value.TipoBienId && !this.tiposBien.find(tb_ => (tb_.TipoBienPadreId.Id === sg.value.TipoBienId.Id && tb_.LimiteInferior))) ||
+            (tb.valid && tb.value && sg.valid && sg.value.TipoBienId.Id !== tb.value.TipoBienPadreId.Id)) {
             return { errorTipoBien: true };
           }
         }
@@ -968,6 +980,7 @@ export class GestionarElementosComponent implements OnInit {
     };
   }
 
+  // Alerts
   get optionsFileChange() {
     return {
       title: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.Tamaño_title'),
