@@ -33,4 +33,20 @@ export class ParametrosHelper {
     public getParametroDebito() {
         return 344;
     }
+
+    public getAllParametroPeriodo(payload: string) {
+        this.rqManager.setPath('PARAMETROS_SERVICE');
+        return this.rqManager.get('parametro_periodo?' + payload).pipe(
+            map(
+                (res) => {
+                    if (res === 'error') {
+                        this.pUpManager.showErrorAlert('No se pudo consultar los parámetros');
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
+
 }

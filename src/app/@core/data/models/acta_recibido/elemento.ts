@@ -1,8 +1,6 @@
 import { TipoBien } from './tipo_bien';
 import { EstadoElemento } from './estado_elemento';
-import { SoporteActa } from './soporte_acta';
 import { UnidadMedida } from '../unidad_medida/unidad_medida';
-import { ParametrosGobierno } from '../parametros_gobierno/parametros_gobierno';
 import { ActaRecibido } from './acta_recibido';
 import { Detalle } from '../catalogo/detalle';
 
@@ -21,6 +19,7 @@ export class Elemento {
     ValorIva: number;
     ValorFinal: number;
     SubgrupoCatalogoId: number; // Remplazar por modelo cuando este disponoble
+    TipoBienId: number;
     EstadoElementoId: EstadoElemento;
     EspacioFisicoId: number;
     ActaRecibidoId: ActaRecibido;
@@ -57,10 +56,11 @@ export class ElementoActa {
     Subtotal: number;
     Descuento: number;
     ValorTotal: number;
-    PorcentajeIvaId: ParametrosGobierno;
+    PorcentajeIvaId: number;
     ValorIva: number;
     ValorFinal: number;
     SubgrupoCatalogoId: Detalle;
+    TipoBienId: TipoBien;
     EstadoElementoId: EstadoElemento;
     EspacioFisicoId: number;
     ActaRecibidoId: ActaRecibido;
