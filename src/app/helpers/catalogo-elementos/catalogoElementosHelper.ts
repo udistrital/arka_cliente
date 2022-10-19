@@ -678,6 +678,21 @@ export class CatalogoElementosHelper {
             ),
         );
     }
+
+    public getAllDetalleSubgrupo(payload: string) {
+        this.rqManager.setPath('CATALOGO_ELEMENTOS_SERVICE');
+        return this.rqManager.get('detalle_subgrupo?' + payload).pipe(
+            map(
+                (res) => {
+                    if (res === 'error') {
+                        this.pUpManager.showErrorAlert('No se pudo consultar la lista de clases');
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
     /**
      * Subgrupo Get
      * If the response has errors in the OAS API it should show a popup message with an error.

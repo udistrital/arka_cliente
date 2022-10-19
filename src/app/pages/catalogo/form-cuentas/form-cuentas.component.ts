@@ -1,11 +1,10 @@
 import { Component, OnInit, Input, Output, EventEmitter, OnChanges } from '@angular/core';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
-import 'style-loader!angular2-toaster/toaster.css';
 import { Store } from '@ngrx/store';
 import { IAppState } from '../../../@core/store/app.state';
 import { ListService } from '../../../@core/store/services/list.service';
-import { AbstractControl, FormArray, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
-import { debounceTime, distinctUntilChanged, map, startWith } from 'rxjs/operators';
+import { AbstractControl, FormArray, FormBuilder, FormGroup, ValidationErrors, ValidatorFn } from '@angular/forms';
+import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 
 @Component({
@@ -65,38 +64,49 @@ export class FormCuentasComponent implements OnInit, OnChanges {
 
   private builForm(): Promise<void> {
     return new Promise<void>(resolve => {
-      const ent = this.cuentasInfo.filter(cf => (cf.SubtipoMovimientoId.CodigoAbreviacion.includes('ENT_') &&
-        cf.SubtipoMovimientoId.CodigoAbreviacion !== 'ENT_KDX'))
-        .map((elem) => (elem = this.cuentasMov(elem.Id, elem.SubtipoMovimientoId, elem.CuentaDebitoId, elem.CuentaCreditoId)));
 
-      const sal = this.cuentasInfo.filter(cf => cf.SubtipoMovimientoId.CodigoAbreviacion === 'SAL')
-        .map((elem) => (elem = this.cuentasMov(elem.Id, elem.SubtipoMovimientoId, elem.CuentaDebitoId, elem.CuentaCreditoId)));
+      const ent_ = this.cuentasInfo.filter(cf => (cf.SubtipoMovimientoId.CodigoAbreviacion.includes('ENT_')))
+        .reduce((acc, curr) => {
+          const { SubtipoMovimientoId } = curr;
+          acc[SubtipoMovimientoId.CodigoAbreviacion] =
+            acc[SubtipoMovimientoId.CodigoAbreviacion] ? acc[SubtipoMovimientoId.CodigoAbreviacion] : [];
+          acc[SubtipoMovimientoId.CodigoAbreviacion].push(curr);
+          return acc;
+        }, {});
 
-      const bj = this.cuentasInfo.filter(cf => cf.SubtipoMovimientoId.CodigoAbreviacion === 'BJ_HT')
-        .map((elem) => (elem = this.cuentasMov(elem.Id, elem.SubtipoMovimientoId, elem.CuentaDebitoId, elem.CuentaCreditoId)));
-
-      const depr = this.cuentasInfo.filter(cf => cf.SubtipoMovimientoId.CodigoAbreviacion === 'DEP')
-        .map((elem) => (elem = this.cuentasMov(elem.Id, elem.SubtipoMovimientoId, elem.CuentaDebitoId, elem.CuentaCreditoId)));
-
-      const amt = this.cuentasInfo.filter(cf => cf.SubtipoMovimientoId.CodigoAbreviacion === 'AMT')
-        .map((elem) => (elem = this.cuentasMov(elem.Id, elem.SubtipoMovimientoId, elem.CuentaDebitoId, elem.CuentaCreditoId)));
+      const ent = Object.values(ent_).map(cf => (this.formArrayCuentasMovimiento(cf)));
+      const salida = this.formArrayCuentasMovimiento(this.cuentasInfo.filter(cf => (cf.SubtipoMovimientoId.CodigoAbreviacion.includes('SAL'))));
+      const baja = this.formArrayCuentasMovimiento(this.cuentasInfo.filter(cf => (cf.SubtipoMovimientoId.CodigoAbreviacion.includes('BJ_HT'))));
+      const depreciacion = this.formArrayCuentasMovimiento(this.cuentasInfo.filter(cf => (cf.SubtipoMovimientoId.CodigoAbreviacion.includes('DEP'))));
+      const amortizacion = this.formArrayCuentasMovimiento(this.cuentasInfo.filter(cf => (cf.SubtipoMovimientoId.CodigoAbreviacion.includes('AMT'))));
 
       this.formCuentas = this.fb.group({
         entradas: this.fb.array(ent),
-        salida: sal[0],
-        baja: bj[0],
-        mediciones: depr.length ? depr[0] : amt.length ? amt[0] : [],
+        salida,
+        baja,
+        mediciones: depreciacion ? depreciacion : amortizacion ? amortizacion : [],
       });
+
       resolve();
     });
   }
 
-  private cuentasMov(id: number, movId: any, db: any, cr: any): FormGroup {
+  private formArrayCuentasMovimiento(cuentas: any): FormGroup {
+    const form = this.fb.group({
+      cuentaEspecifica: this.fb.array(
+        cuentas.map(cta =>
+          this.formGroupCuentasTipoBienMovimiento(cta.Id, cta.SubtipoMovimientoId, cta.CuentaDebitoId, cta.CuentaCreditoId, cta.TipoBienId))),
+    });
+    return form;
+  }
+
+  private formGroupCuentasTipoBienMovimiento(id: number, movId: any, db: any, cr: any, tb: any): FormGroup {
     const disabled = !this.escritura;
     const form = this.fb.group({
-      id: [id],
-      tipoMovimientoId: [movId],
-      debito: [
+      Id: [id],
+      SubtipoMovimientoId: [movId],
+      TipoBienId: [tb],
+      CuentaDebitoId: [
         {
           value: db,
           disabled,
@@ -105,7 +115,7 @@ export class FormCuentasComponent implements OnInit, OnChanges {
           validators: [this.validarCompleter('Id')],
         },
       ],
-      credito: [
+      CuentaCreditoId: [
         {
           value: cr,
           disabled,
@@ -117,8 +127,8 @@ export class FormCuentasComponent implements OnInit, OnChanges {
     });
     // form.get('credito').markAsTouched();
     // form.get('debito').markAsTouched();
-    this.cambiosCuenta(form.get('debito'));
-    this.cambiosCuenta(form.get('credito'));
+    this.cambiosCuenta(form.get('CuentaDebitoId'));
+    this.cambiosCuenta(form.get('CuentaCreditoId'));
     return form;
   }
 
@@ -143,103 +153,106 @@ export class FormCuentasComponent implements OnInit, OnChanges {
       });
   }
 
-  public setGeneral(index: number, salida: boolean) {
-    if (index !== null && !salida) {
-      const global = (this.formCuentas.get('entradas') as FormArray).at(index).value.debito;
-      (this.formCuentas.get('entradas') as FormArray).controls
-        .forEach(ctr => {
-          ctr.patchValue({ debito: global });
-          ctr.markAsDirty();
-        });
-      this.formCuentas.get('salida').patchValue({ credito: global });
-      this.formCuentas.get('salida').markAsDirty();
-    } else if (salida && index === null) {
-      const global = this.formCuentas.get('salida').value.credito;
-      (this.formCuentas.get('entradas') as FormArray).controls
-        .forEach(ctr => {
-          ctr.patchValue({ debito: global });
-          ctr.markAsDirty();
-        });
+  public setGeneral(i: number, j: number) {
+    if (i !== null && j !== null) {
+      const global = ((this.formCuentas.get('entradas') as FormArray).at(i)
+        .get('cuentaEspecifica') as FormArray).at(j).value.CuentaDebitoId;
+      this.patchGeneral(global);
+    } else if (i !== null && j === null) {
+      const global = (this.formCuentas.get('salida.cuentaEspecifica') as FormArray).at(i).value.CuentaCreditoId;
+      this.patchGeneral(global);
     }
+    return;
+  }
+
+  private patchGeneral(value: any) {
+    (this.formCuentas.get('entradas') as FormArray).controls
+      .map((mov_: FormGroup) => (mov_.controls.cuentaEspecifica as FormArray).controls)
+      .reduce((acc, curr) => acc.concat(curr), [])
+      .forEach(ctr => {
+        ctr.patchValue({ CuentaDebitoId: value });
+        ctr.markAsDirty();
+      });
+
+    (this.formCuentas.get('salida.cuentaEspecifica') as FormArray).controls
+      .reduce((acc, curr) => acc.concat(curr), [])
+      .forEach(ctr => {
+        ctr.patchValue({ CuentaCreditoId: value });
+        ctr.markAsDirty();
+      });
+    return;
   }
 
   private generarTr() {
-    const changed = (this.formCuentas.get('entradas') as FormArray).controls
-      .filter((elem) => !elem.pristine &&
-        elem.get('credito').valid && elem.get('credito').value &&
-        elem.get('debito').valid && elem.get('debito').value)
-      .map((elem) => ({
-        CuentaDebitoId: elem.value.debito.Id,
-        CuentaCreditoId: elem.value.credito.Id,
-        SubtipoMovimientoId: elem.value.tipoMovimientoId.Id,
-        Id: elem.value.id,
+    const salidas = this.formToTransaction((this.formCuentas.get('salida.cuentaEspecifica') as FormArray).controls);
+    const bajas = this.formToTransaction((this.formCuentas.get('baja.cuentaEspecifica') as FormArray).controls);
+    const mediciones = this.formToTransaction((this.formCuentas.get('mediciones.cuentaEspecifica') as FormArray).controls);
+    const entradas = this.formToTransaction((this.formCuentas.get('entradas') as FormArray).controls
+      .filter(mov => !mov.pristine)
+      .map((mov_: FormGroup) => (mov_.controls.cuentaEspecifica as FormArray).controls)
+      .reduce((acc, curr) => acc.concat(curr), []));
+
+    return entradas.concat(salidas).concat(bajas).concat(mediciones);
+  }
+
+  private formToTransaction(form: any) {
+    return form
+      .filter(mbc => !mbc.pristine && mbc.valid && mbc.get('CuentaCreditoId').value && mbc.get('CuentaDebitoId').value)
+      .map(s => s.value)
+      .map((cmtb) => ({
+        Id: cmtb.Id,
+        CuentaDebitoId: cmtb.CuentaDebitoId.Id,
+        CuentaCreditoId: cmtb.CuentaCreditoId.Id,
+        SubtipoMovimientoId: cmtb.SubtipoMovimientoId.Id,
+        TipoBienId: { Id: cmtb.TipoBienId.Id },
       }));
-
-    if (!this.formCuentas.get('salida').pristine &&
-      this.formCuentas.get('salida.credito').valid && this.formCuentas.get('salida.credito').value &&
-      this.formCuentas.get('salida.debito').valid && this.formCuentas.get('salida.debito').value) {
-      const value = {
-        CuentaDebitoId: this.formCuentas.get('salida').value.debito.Id,
-        CuentaCreditoId: this.formCuentas.get('salida').value.credito.Id,
-        SubtipoMovimientoId: this.formCuentas.get('salida').value.tipoMovimientoId.Id,
-        Id: this.formCuentas.get('salida').value.id,
-      };
-      changed.push(value);
-    }
-
-    if (!this.formCuentas.get('baja').pristine &&
-      this.formCuentas.get('baja.credito').valid && this.formCuentas.get('baja.credito').value &&
-      this.formCuentas.get('baja.debito').valid && this.formCuentas.get('baja.debito').value) {
-      const value = {
-        CuentaDebitoId: this.formCuentas.get('baja').value.debito.Id,
-        CuentaCreditoId: this.formCuentas.get('baja').value.credito.Id,
-        SubtipoMovimientoId: this.formCuentas.get('baja').value.tipoMovimientoId.Id,
-        Id: this.formCuentas.get('baja').value.id,
-      };
-      changed.push(value);
-    }
-
-    if (!this.formCuentas.get('mediciones').pristine &&
-      this.formCuentas.get('mediciones.credito').valid && this.formCuentas.get('mediciones.credito').value &&
-      this.formCuentas.get('mediciones.debito').valid && this.formCuentas.get('mediciones.debito').value) {
-      const value = {
-        CuentaDebitoId: this.formCuentas.get('mediciones').value.debito.Id,
-        CuentaCreditoId: this.formCuentas.get('mediciones').value.credito.Id,
-        SubtipoMovimientoId: this.formCuentas.get('mediciones').value.tipoMovimientoId.Id,
-        Id: this.formCuentas.get('mediciones').value.id,
-      };
-      changed.push(value);
-    }
-
-    return changed;
   }
 
   private updateForm() {
     this.cuentasNuevas.forEach(cta => {
-      const index = (this.formCuentas.get('entradas') as FormArray).controls
-        .map((elem) => ({ SubtipoMovimientoId: elem.value.tipoMovimientoId.Id }))
-        .findIndex(ct => ct.SubtipoMovimientoId === cta.SubtipoMovimientoId);
-      if (index > -1) {
-        (this.formCuentas.get('entradas') as FormArray).at(index).patchValue({ id: cta.Id });
-        (this.formCuentas.get('entradas') as FormArray).at(index).markAsPristine();
-      } else if (this.formCuentas.get('mediciones').value &&
-        this.formCuentas.get('mediciones').value.tipoMovimientoId.Id === cta.SubtipoMovimientoId) {
-        this.formCuentas.get('mediciones').patchValue({ id: cta.Id });
-        this.formCuentas.get('mediciones').markAsPristine();
-      } else if (this.formCuentas.get('salida').value.tipoMovimientoId.Id === cta.SubtipoMovimientoId) {
-        this.formCuentas.get('salida').patchValue({ id: cta.Id });
-        this.formCuentas.get('salida').markAsPristine();
-      } else if (this.formCuentas.get('baja').value.tipoMovimientoId.Id === cta.SubtipoMovimientoId) {
-        this.formCuentas.get('baja').patchValue({ id: cta.Id });
-        this.formCuentas.get('baja').markAsPristine();
+
+      const salida_ = this.findForm((this.formCuentas.get('salida.cuentaEspecifica') as FormArray).controls, cta);
+      if (salida_) {
+        this.patchForm(salida_, cta.Id);
+        return;
       }
+
+      const mediciones_ = this.findForm((this.formCuentas.get('mediciones.cuentaEspecifica') as FormArray).controls, cta);
+      if (mediciones_) {
+        this.patchForm(mediciones_, cta.Id);
+        return;
+      }
+
+      const baja_ = this.findForm((this.formCuentas.get('baja.cuentaEspecifica') as FormArray).controls, cta);
+      if (baja_) {
+        this.patchForm(baja_, cta.Id);
+        return;
+      }
+
+      const entrada_ = this.findForm((this.formCuentas.get('entradas') as FormArray).controls
+        .map((mov_: FormGroup) => (mov_.controls.cuentaEspecifica as FormArray).controls), cta);
+      if (entrada_) {
+        this.patchForm(entrada_, cta.Id);
+        return;
+      }
+
     });
+  }
+
+  private patchForm(form: any, Id: number) {
+    form.patchValue({ Id });
+    form.markAsPristine();
+  }
+
+  private findForm(controls: any, cuenta: any): any {
+    return controls
+      .reduce((acc, curr) => acc.concat(curr), [])
+      .find(c_ => c_.value.SubtipoMovimientoId.Id === cuenta.SubtipoMovimientoId && c_.value.TipoBienId.Id === cuenta.TipoBienId.Id);
   }
 
   private cambiosCuenta(control: AbstractControl) {
     control.valueChanges
       .pipe(
-        startWith(''),
         debounceTime(250),
         distinctUntilChanged(),
         map(val => typeof val === 'string' ? val : this.muestraCuenta(val)),
