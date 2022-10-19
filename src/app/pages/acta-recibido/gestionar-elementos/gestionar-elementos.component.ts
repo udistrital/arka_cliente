@@ -113,7 +113,7 @@ export class GestionarElementosComponent implements OnInit {
     await Promise.all([this.loadLists(), this.loadElementos()]);
     this.submitForm(this.formElementos.get('elementos').valueChanges);
     if (this.ajustes) {
-      this.cuentasMov(this.ajustes);
+      this.fillForm(this.ajustes);
     } else {
       this.emit();
     }
@@ -130,7 +130,7 @@ export class GestionarElementosComponent implements OnInit {
     });
   }
 
-  private cuentasMov(elementos: ElementoActa[]) {
+  private fillForm(elementos: ElementoActa[]) {
     elementos.forEach((element, idx) => {
       (this.formElementos.get('elementos') as FormArray).push(this.fillElemento(element));
       this.dataSource.data = this.dataSource.data.concat({});
@@ -293,12 +293,12 @@ export class GestionarElementosComponent implements OnInit {
     this.cambiosValores(formEl.get('Descuento'));
     this.cambiosValores(formEl.get('PorcentajeIvaId'));
 
-    this.setValidation(formEl);
+    this.touchForm(formEl);
 
     return formEl;
   }
 
-  private setValidation(form: FormGroup) {
+  private touchForm(form: FormGroup) {
     form.get('SubgrupoCatalogoId').markAsTouched();
     form.get('TipoBienId').markAsTouched();
     form.get('Nombre').markAsTouched();
@@ -307,6 +307,29 @@ export class GestionarElementosComponent implements OnInit {
     form.get('ValorUnitario').markAsTouched();
     form.get('Descuento').markAsTouched();
     form.get('PorcentajeIvaId').markAsTouched();
+  }
+
+  private checkPlacaSubgrupo(tipoBienPadre: number, valorUnitario: number): boolean {
+    const placa = this.tiposBien.filter(tb => tb.TipoBienPadreId.Id === tipoBienPadre)
+      .find(tb_ => tb_.LimiteInferior <= (valorUnitario / this.UVT) && valorUnitario / this.UVT < tb_.LimiteSuperior);
+    return placa && placa.NecesitaPlaca;
+  }
+
+  private checkPlacaSubgrupoTipoBien(tipoBienPadre: number, tipoBienHijo: number, valorUnitario: number): boolean {
+    if (!tipoBienHijo) {
+      return this.checkPlacaSubgrupo(tipoBienPadre, valorUnitario);
+    } else {
+      const placa = this.tiposBien.filter(tb => tb.Id === tipoBienHijo && tb.NecesitaPlaca)
+        .find(tb_ => tb_.LimiteInferior <= (valorUnitario / this.UVT) && valorUnitario / this.UVT < tb_.LimiteSuperior);
+      return placa && placa.NecesitaPlaca;
+    }
+  }
+
+  // Event emission
+  private emit() {
+    this.ElementosValidos.emit(this.Modo === 'verificar' ? this.checkTodos : this.formElementos.get('elementos').valid);
+    this.DatosEnviados.emit(this.elementos_);
+    this.getTotales();
   }
 
   private submitForm(statusChanges: Observable<any>) {
@@ -349,30 +372,85 @@ export class GestionarElementosComponent implements OnInit {
     }
   }
 
-  private checkPlacaSubgrupo(tipoBienPadre: number, valorUnitario: number): boolean {
-    const placa = this.tiposBien.filter(tb => tb.TipoBienPadreId.Id === tipoBienPadre)
-      .find(tb_ => tb_.LimiteInferior <= (valorUnitario / this.UVT) && valorUnitario / this.UVT < tb_.LimiteSuperior);
-    return placa && placa.NecesitaPlaca;
+  // Totales
+  private getTotales() {
+    this.Totales.Subtotal = this.getTotales_('Subtotal');
+    this.Totales.ValorIva = this.getTotales_('ValorIva');
+    this.Totales.ValorTotal = this.getTotales_('ValorTotal');
+    this.DatosTotales.emit(this.Totales);
   }
 
-  private checkPlacaSubgrupoTipoBien(tipoBienPadre: number, tipoBienHijo: number, valorUnitario: number): boolean {
-    if (!tipoBienHijo) {
-      return this.checkPlacaSubgrupo(tipoBienPadre, valorUnitario);
-    } else {
-      const placa = this.tiposBien.filter(tb => tb.Id === tipoBienHijo && tb.NecesitaPlaca)
-        .find(tb_ => tb_.LimiteInferior <= (valorUnitario / this.UVT) && valorUnitario / this.UVT < tb_.LimiteSuperior);
-      return placa && placa.NecesitaPlaca;
+  private getIva(tarifa: number, subtotal: number) {
+    const iva = tarifa * subtotal / 100;
+    return iva > 0 ? iva : 0;
+  }
+
+  private getSubtotal(cant: number, unit: number, dsc: number) {
+    const subtotal = cant * (unit - dsc);
+    return subtotal > 0 ? subtotal : 0;
+  }
+
+  private getTotal(subt: number, iva: number) {
+    const total = subt + iva;
+    return total > 0 ? total : 0;
+  }
+
+  private getTotales_(control: string) {
+    const total = (this.formElementos.get('elementos') as FormArray).controls
+      .map((elem) => (elem = elem.get(control).value))
+      .reduce((acc, value) => (acc + value), 0);
+    return total;
+  }
+
+  // Tabla
+  private ReglasColumnas() {
+    this.mostrarClase = !!this.confService.getAccion('mostrarAsignacionCatalogo');
+    const cols = ['Acciones'];
+    if (this.mostrarClase) {
+      cols.push('SubgrupoCatalogoId', 'TipoBienId');
+    }
+    if (this.placa) {
+      cols.push('Placa');
+    }
+    cols.push('Nombre', 'Cantidad', 'Marca', 'Serie', 'UnidadMedida', 'ValorUnitario',
+      'Descuento', 'Subtotal', 'PorcentajeIvaId', 'ValorIva', 'ValorTotal');
+    if (this.Modo === 'ajustar' || this.ajustes) {
+      cols.push('ValorResidual', 'VidaUtil');
+    }
+    this.displayedColumns = cols;
+  }
+
+  getActualIndex(index: number) {
+    return index + this.paginator.pageSize * this.paginator.pageIndex;
+  }
+
+  applyFilter(filterValue: string) {
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
     }
   }
 
-  private setCantidad(control: any, placa: boolean) {
-    if (placa) {
-      control.get('Cantidad').setValidators([Validators.required, Validators.min(1), Validators.max(1)]);
-      control.get('Cantidad').updateValueAndValidity();
+  cambioPagina(eventoPagina) {
+    this.basePaginas = eventoPagina.pageIndex * eventoPagina.pageSize;
+  }
+
+  // Completers
+  private filtroTipoBien(nombre): any[] {
+    if (this.tiposBien && nombre.length > 1) {
+      return this.tiposBien.filter(contr => this.muestraTipoBien(contr).toLowerCase().includes(nombre.toLowerCase()));
     } else {
-      control.get('Cantidad').setValidators([Validators.required, Validators.min(1)]);
-      control.get('Cantidad').updateValueAndValidity();
+      return [];
     }
+  }
+
+  public muestraClase(clase): string {
+    return clase && clase.SubgrupoId && clase.SubgrupoId.Id ? (clase.SubgrupoId.Codigo + ' - ' + clase.SubgrupoId.Nombre) : '';
+  }
+
+  public muestraTipoBien(tb): string {
+    return tb && tb.Id ? tb.Nombre : '';
   }
 
   private cambiosClase(control: AbstractControl) {
@@ -397,15 +475,15 @@ export class GestionarElementosComponent implements OnInit {
       });
   }
 
-  private loadClases(text: string) {
-    const queryOptions$ = text.length > 3 ?
-      this.catalogoHelper.getAllDetalleSubgrupo('limit=-1&fields=Id,SubgrupoId,TipoBienId&compuesto=' + text) :
-      new Observable((obs) => { obs.next([{}]); });
-    return combineLatest([queryOptions$]).pipe(
-      map(([queryOptions_$]) => ({
-        queryOptions: queryOptions_$,
-      })),
-    );
+  // Validators
+  private setCantidad(control: any, placa: boolean) {
+    if (placa) {
+      control.get('Cantidad').setValidators([Validators.required, Validators.min(1), Validators.max(1)]);
+      control.get('Cantidad').updateValueAndValidity();
+    } else {
+      control.get('Cantidad').setValidators([Validators.required, Validators.min(1)]);
+      control.get('Cantidad').updateValueAndValidity();
+    }
   }
 
   private cambiosValores(control: AbstractControl) {
@@ -446,60 +524,31 @@ export class GestionarElementosComponent implements OnInit {
       });
   }
 
-  private getIva(tarifa: number, subtotal: number) {
-    const iva = tarifa * subtotal / 100;
-    return iva > 0 ? iva : 0;
-  }
+  private validarTipoBien(key: string): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
 
-  private getSubtotal(cant: number, unit: number, dsc: number) {
-    const subtotal = cant * (unit - dsc);
-    return subtotal > 0 ? subtotal : 0;
-  }
+      if (control.parent && !control.hasError('required')) {
+        const valor = control.value;
+        const checkMinLength = valor && valor.length < 4;
+        const checkInvalidObject = valor && (!valor[key] || valor.length >= 4);
 
-  private getTotal(subt: number, iva: number) {
-    const total = subt + iva;
-    return total > 0 ? total : 0;
-  }
-
-  private filtroTipoBien(nombre): any[] {
-    if (this.tiposBien && nombre.length > 1) {
-      return this.tiposBien.filter(contr => this.muestraTipoBien(contr).toLowerCase().includes(nombre.toLowerCase()));
-    } else {
-      return [];
-    }
-  }
-
-  public muestraClase(clase): string {
-    return clase && clase.SubgrupoId && clase.SubgrupoId.Id ? (clase.SubgrupoId.Codigo + ' - ' + clase.SubgrupoId.Nombre) : '';
-  }
-
-  public muestraTipoBien(tb): string {
-    return tb && tb.Id ? tb.Nombre : '';
-  }
-
-  private loadLists(): Promise<void> {
-    return new Promise<void>(async (resolve) => {
-      this.store.select((state) => state).subscribe(list => {
-        if (list.listUnidades && list.listUnidades.length && list.listIVA && list.listIVA.length) {
-          this.unidades = list.listUnidades[0];
-          this.Tarifas_Iva = list.listIVA[0];
-          resolve();
+        if (checkMinLength) {
+          return { errMinLength: true };
+        } else if (checkInvalidObject) {
+          return { errSelected: true };
+        } else {
+          const tb = control.parent.get('TipoBienId');
+          const sg = control.parent.get('SubgrupoCatalogoId');
+          if ((sg.value.TipoBienId && !this.tiposBien.find(tb_ => (tb_.TipoBienPadreId.Id === sg.value.TipoBienId.Id && tb_.LimiteInferior))) ||
+            (tb.valid && tb.value && sg.valid && sg.value.TipoBienId.Id !== tb.value.TipoBienPadreId.Id)) {
+            return { errorTipoBien: true };
+          }
         }
-      });
-    });
+      }
+    };
   }
 
-  private loadTiposBienHijos(): Promise<void> {
-    return new Promise<void>(resolve => {
-      const query = 'limit=-1&query=Activo:true,TipoBienPadreId__isnull:false,TipoBienPadreId__Activo:true'
-        + '&fields=Id,Nombre,TipoBienPadreId,LimiteInferior,LimiteSuperior,NecesitaPlaca';
-      this.catalogoHelper.getAllTiposBien(query).subscribe(res => {
-        resolve();
-        this.tiposBien = res;
-      });
-    });
-  }
-
+  // Consultas
   private loadUVT(): Promise<boolean> {
     return new Promise<boolean>(resolve => {
       if (this.Modo === 'agregar' || this.Modo === 'ajustar') {
@@ -519,10 +568,6 @@ export class GestionarElementosComponent implements OnInit {
     });
   }
 
-  getActualIndex(index: number) {
-    return index + this.paginator.pageSize * this.paginator.pageIndex;
-  }
-
   private loadElementos(): Promise<void> {
     return new Promise<void>(resolve => {
       if (!this.ActaRecibidoId) {
@@ -531,7 +576,7 @@ export class GestionarElementosComponent implements OnInit {
       } else if (this.Modo !== 'ajustar') {
         this.actaRecibidoHelper.getElementosActa(this.ActaRecibidoId).toPromise().then(res => {
           if (res && res.length) {
-            this.cuentasMov(res);
+            this.fillForm(res);
             if (!this.cargando) {
               resolve();
             }
@@ -543,7 +588,7 @@ export class GestionarElementosComponent implements OnInit {
       } else {
         this.actaRecibidoHelper.getElementosActaMov(this.ActaRecibidoId).toPromise().then(res => {
           if (res && res.length) {
-            this.cuentasMov(res);
+            this.fillForm(res);
             if (!this.cargando) {
               resolve();
             }
@@ -556,23 +601,41 @@ export class GestionarElementosComponent implements OnInit {
     });
   }
 
-  private ReglasColumnas() {
-    this.mostrarClase = !!this.confService.getAccion('mostrarAsignacionCatalogo');
-    const cols = ['Acciones'];
-    if (this.mostrarClase) {
-      cols.push('SubgrupoCatalogoId', 'TipoBienId');
-    }
-    if (this.placa) {
-      cols.push('Placa');
-    }
-    cols.push('Nombre', 'Cantidad', 'Marca', 'Serie', 'UnidadMedida', 'ValorUnitario',
-      'Descuento', 'Subtotal', 'PorcentajeIvaId', 'ValorIva', 'ValorTotal');
-    if (this.Modo === 'ajustar' || this.ajustes) {
-      cols.push('ValorResidual', 'VidaUtil');
-    }
-    this.displayedColumns = cols;
+  private loadTiposBienHijos(): Promise<void> {
+    return new Promise<void>(resolve => {
+      const query = 'limit=-1&query=Activo:true,TipoBienPadreId__isnull:false,TipoBienPadreId__Activo:true'
+        + '&fields=Id,Nombre,TipoBienPadreId,LimiteInferior,LimiteSuperior,NecesitaPlaca';
+      this.catalogoHelper.getAllTiposBien(query).subscribe(res => {
+        resolve();
+        this.tiposBien = res;
+      });
+    });
   }
 
+  private loadClases(text: string) {
+    const queryOptions$ = text.length > 3 ?
+      this.catalogoHelper.getAllDetalleSubgrupo('limit=-1&fields=Id,SubgrupoId,TipoBienId&compuesto=' + text) :
+      new Observable((obs) => { obs.next([{}]); });
+    return combineLatest([queryOptions$]).pipe(
+      map(([queryOptions_$]) => ({
+        queryOptions: queryOptions_$,
+      })),
+    );
+  }
+
+  private loadLists(): Promise<void> {
+    return new Promise<void>(async (resolve) => {
+      this.store.select((state) => state).subscribe(list => {
+        if (list.listUnidades && list.listUnidades.length && list.listIVA && list.listIVA.length) {
+          this.unidades = list.listUnidades[0];
+          this.Tarifas_Iva = list.listIVA[0];
+          resolve();
+        }
+      });
+    });
+  }
+
+  // Acciones macro
   public setClase() {
     const clase = this.formElementos.get('masivo.clase').value;
     this.selected.forEach((idx) => {
@@ -599,195 +662,6 @@ export class GestionarElementosComponent implements OnInit {
     });
   }
 
-  get selected() {
-    const idxs = (this.formElementos.get('elementos') as FormArray).controls
-      .reduce(function (acc, curr, index) {
-        if (curr.get('Seleccionado').value) {
-          acc.push(index);
-        }
-        return acc;
-      }, []);
-
-    return idxs;
-  }
-
-  TraerPlantilla() {
-    NuxeoService.nuxeo.header('X-NXDocumentProperties', '*');
-
-    // NuxeoService.nuxeo.request('/id/8e4d5b47-ba37-41dd-b549-4efc1777fef2') // PLANTILLA VIEJA
-    NuxeoService.nuxeo.request('/id/76e0956e-1cbe-45d7-993c-1839fbbf2cfc') // Plantilla nueva
-      .get()
-      .then(function (response) {
-        // console.log(response)
-        response.fetchBlob()
-          .then(function (blob) {
-            // console.log(blob)
-            blob.blob()
-              .then(function (responseblob: Blob) {
-                // console.log(responseblob)
-                const url = window.URL.createObjectURL(responseblob);
-                const plantilla = document.createElement('a');
-                document.body.appendChild(plantilla);
-                plantilla.href = url;
-                plantilla.download = 'plantilla.xlsx';
-                plantilla.click();
-              });
-          })
-          .catch(function (response2) {
-          });
-      })
-      .catch(function (response) {
-      });
-  }
-
-  applyFilter(filterValue: string) {
-    this.dataSource.filter = filterValue.trim().toLowerCase();
-
-    if (this.dataSource.paginator) {
-      this.dataSource.paginator.firstPage();
-    }
-  }
-
-  createForm() {
-    this.form = this.fb.group({
-      archivo: ['', Validators.required],
-    });
-  }
-
-  public onFileChange(event) {
-    if (event.target.files.length > 0) {
-      this.submitted = false;
-      const nombre = event.target.files[0].name;
-      const extension = nombre.split('.').pop();
-      const file = event.target.files[0];
-      if (extension === 'xlsx') {
-        if (file.size < this.sizeSoporte * 1024000) {
-          this.formElementos.get('archivo').setValue(file);
-        } else {
-          this.pUpManager.showAlertWithOptions(this.optionsFileChange);
-        }
-      }
-    }
-  }
-
-  private prepareSave(): any {
-    const input = new FormData();
-    input.append('archivo', this.formElementos.get('archivo').value);
-    return input;
-  }
-
-  readThis(): void {
-
-    this.cargando = true;
-    const formModel: FormData = this.prepareSave();
-    (this.formElementos.get('elementos') as FormArray).controls = [];
-    this.dataSource.data = [];
-    this.actaRecibidoHelper.postArchivo(formModel).subscribe((res: any) => {
-      if (res !== null) {
-        if (res.Mensaje !== undefined) {
-          this.pUpManager.showAlertWithOptions(this.optionsErrPlantilla(res.Mensaje));
-          this.clearFile();
-        } else {
-          this.cuentasMov(res.Elementos);
-          this.formElementos.get('archivo').reset();
-          this.submitted = true;
-          const validacion = this.validarCargaMasiva(res.Elementos);
-          if (validacion.valid) {
-            this.pUpManager.showAlertWithOptions(this.optionsCargaMasivaOk);
-            this.ErroresCarga = validacion.cont_err.toString();
-          } else {
-            this.pUpManager.showAlertWithOptions(this.optionsCargaMasivaErr(validacion.cont_err));
-            this.ErroresCarga = '';
-          }
-          this.clearFile();
-        }
-
-      } else {
-        this.pUpManager.showAlertWithOptions(this.optionsNoCargaMasiva);
-        this.clearFile();
-      }
-      this.cargando = false;
-    });
-  }
-
-  validarCargaMasiva(elementos: any[]): { valid: boolean, cont_err: number } {
-    let valido = true;
-    let conteo = 0;
-
-    for (const elemento of elementos) {
-      let errorfila = '';
-      if (!this.Tarifas_Iva.some((tarifa) => +tarifa.Tarifa === elemento.PorcentajeIvaId)) {
-        valido = false;
-        conteo++;
-      }
-      if (!this.unidades.some((unidad) => +unidad.Id === elemento.UnidadMedida)) {
-        valido = false;
-        conteo++;
-        errorfila = errorfila + 'UnidadMedida,';
-      }
-      if (!elemento.Nombre) {
-        valido = false;
-        conteo++;
-        errorfila = errorfila + 'Nombre,';
-      }
-      if (!elemento.Marca) {
-        valido = false;
-        conteo++;
-      }
-      if (!elemento.Serie) {
-        valido = false;
-        conteo++;
-      }
-      if (!elemento.Cantidad) {
-        valido = false;
-        conteo++;
-      }
-    }
-    return { valid: valido, cont_err: conteo };
-  }
-
-  clearFile() {
-    this.formElementos.get('archivo').setValue('');
-  }
-
-  onSubmit() {
-    const cargar = () => {
-      this.checkAnterior = undefined;
-      this.basePaginas = 0;
-      this.readThis();
-    };
-    if (this.dataSource.data.length) {
-      this.pUpManager.showAlertWithOptions(this.optionsPreCargaMasiva(this.dataSource.data.length))
-        .then(res => {
-          if (res.value) {
-            cargar();
-          }
-        });
-    } else {
-      cargar();
-    }
-  }
-
-  private emit() {
-    this.ElementosValidos.emit(this.Modo === 'verificar' ? this.checkTodos : this.formElementos.get('elementos').valid);
-    this.DatosEnviados.emit(this.elementos_);
-    this.getTotales();
-  }
-
-  private getTotales() {
-    this.Totales.Subtotal = this.getTotales_('Subtotal');
-    this.Totales.ValorIva = this.getTotales_('ValorIva');
-    this.Totales.ValorTotal = this.getTotales_('ValorTotal');
-    this.DatosTotales.emit(this.Totales);
-  }
-
-  private getTotales_(control: string) {
-    const total = (this.formElementos.get('elementos') as FormArray).controls
-      .map((elem) => (elem = elem.get(control).value))
-      .reduce((acc, value) => (acc + value), 0);
-    return total;
-  }
-
   addElemento() {
     const data = new ElementoActa;
 
@@ -804,6 +678,18 @@ export class GestionarElementosComponent implements OnInit {
 
     (this.formElementos.get('elementos') as FormArray).push(this.fillElemento(data));
     this.dataSource.data = this.dataSource.data.concat({});
+  }
+
+  get selected() {
+    const idxs = (this.formElementos.get('elementos') as FormArray).controls
+      .reduce(function (acc, curr, index) {
+        if (curr.get('Seleccionado').value) {
+          acc.push(index);
+        }
+        return acc;
+      }, []);
+
+    return idxs;
   }
 
   borraSeleccionados() {
@@ -893,10 +779,6 @@ export class GestionarElementosComponent implements OnInit {
     this.checkAnterior = undefined;
   }
 
-  cambioPagina(eventoPagina) {
-    this.basePaginas = eventoPagina.pageIndex * eventoPagina.pageSize;
-  }
-
   setCasilla(fila: number, checked: any) {
     this.enableGlobal(checked.checked);
     fila += this.basePaginas;
@@ -956,28 +838,154 @@ export class GestionarElementosComponent implements OnInit {
     return form;
   }
 
-  private validarTipoBien(key: string): ValidatorFn {
-    return (control: AbstractControl): ValidationErrors | null => {
+  // Carga masiva
+  createForm() {
+    this.form = this.fb.group({
+      archivo: ['', Validators.required],
+    });
+  }
 
-      if (control.parent && !control.hasError('required')) {
-        const valor = control.value;
-        const checkMinLength = valor && valor.length < 4;
-        const checkInvalidObject = valor && (!valor[key] || valor.length >= 4);
+  TraerPlantilla() {
+    NuxeoService.nuxeo.header('X-NXDocumentProperties', '*');
 
-        if (checkMinLength) {
-          return { errMinLength: true };
-        } else if (checkInvalidObject) {
-          return { errSelected: true };
+    // NuxeoService.nuxeo.request('/id/8e4d5b47-ba37-41dd-b549-4efc1777fef2') // PLANTILLA VIEJA
+    NuxeoService.nuxeo.request('/id/76e0956e-1cbe-45d7-993c-1839fbbf2cfc') // Plantilla nueva
+      .get()
+      .then(function (response) {
+        // console.log(response)
+        response.fetchBlob()
+          .then(function (blob) {
+            // console.log(blob)
+            blob.blob()
+              .then(function (responseblob: Blob) {
+                // console.log(responseblob)
+                const url = window.URL.createObjectURL(responseblob);
+                const plantilla = document.createElement('a');
+                document.body.appendChild(plantilla);
+                plantilla.href = url;
+                plantilla.download = 'plantilla.xlsx';
+                plantilla.click();
+              });
+          })
+          .catch(function (response2) {
+          });
+      })
+      .catch(function (response) {
+      });
+  }
+
+  public onFileChange(event) {
+    if (event.target.files.length > 0) {
+      this.submitted = false;
+      const nombre = event.target.files[0].name;
+      const extension = nombre.split('.').pop();
+      const file = event.target.files[0];
+      if (extension === 'xlsx') {
+        if (file.size < this.sizeSoporte * 1024000) {
+          this.formElementos.get('archivo').setValue(file);
         } else {
-          const tb = control.parent.get('TipoBienId');
-          const sg = control.parent.get('SubgrupoCatalogoId');
-          if ((sg.value.TipoBienId && !this.tiposBien.find(tb_ => (tb_.TipoBienPadreId.Id === sg.value.TipoBienId.Id && tb_.LimiteInferior))) ||
-            (tb.valid && tb.value && sg.valid && sg.value.TipoBienId.Id !== tb.value.TipoBienPadreId.Id)) {
-            return { errorTipoBien: true };
-          }
+          this.pUpManager.showAlertWithOptions(this.optionsFileChange);
         }
       }
+    }
+  }
+
+  private prepareSave(): any {
+    const input = new FormData();
+    input.append('archivo', this.formElementos.get('archivo').value);
+    return input;
+  }
+
+  readThis(): void {
+
+    this.cargando = true;
+    const formModel: FormData = this.prepareSave();
+    (this.formElementos.get('elementos') as FormArray).controls = [];
+    this.dataSource.data = [];
+    this.actaRecibidoHelper.postArchivo(formModel).subscribe((res: any) => {
+      if (res !== null) {
+        if (res.Mensaje !== undefined) {
+          this.pUpManager.showAlertWithOptions(this.optionsErrPlantilla(res.Mensaje));
+          this.clearFile();
+        } else {
+          this.fillForm(res.Elementos);
+          this.formElementos.get('archivo').reset();
+          this.submitted = true;
+          const validacion = this.validarCargaMasiva(res.Elementos);
+          if (validacion.valid) {
+            this.pUpManager.showAlertWithOptions(this.optionsCargaMasivaOk);
+            this.ErroresCarga = validacion.cont_err.toString();
+          } else {
+            this.pUpManager.showAlertWithOptions(this.optionsCargaMasivaErr(validacion.cont_err));
+            this.ErroresCarga = '';
+          }
+          this.clearFile();
+        }
+
+      } else {
+        this.pUpManager.showAlertWithOptions(this.optionsNoCargaMasiva);
+        this.clearFile();
+      }
+      this.cargando = false;
+    });
+  }
+
+  validarCargaMasiva(elementos: any[]): { valid: boolean, cont_err: number } {
+    let valido = true;
+    let conteo = 0;
+
+    for (const elemento of elementos) {
+      let errorfila = '';
+      if (!this.Tarifas_Iva.some((tarifa) => +tarifa.Tarifa === elemento.PorcentajeIvaId)) {
+        valido = false;
+        conteo++;
+      }
+      if (!this.unidades.some((unidad) => +unidad.Id === elemento.UnidadMedida)) {
+        valido = false;
+        conteo++;
+        errorfila = errorfila + 'UnidadMedida,';
+      }
+      if (!elemento.Nombre) {
+        valido = false;
+        conteo++;
+        errorfila = errorfila + 'Nombre,';
+      }
+      if (!elemento.Marca) {
+        valido = false;
+        conteo++;
+      }
+      if (!elemento.Serie) {
+        valido = false;
+        conteo++;
+      }
+      if (!elemento.Cantidad) {
+        valido = false;
+        conteo++;
+      }
+    }
+    return { valid: valido, cont_err: conteo };
+  }
+
+  clearFile() {
+    this.formElementos.get('archivo').setValue('');
+  }
+
+  onSubmitCargaMasiva() {
+    const cargar = () => {
+      this.checkAnterior = undefined;
+      this.basePaginas = 0;
+      this.readThis();
     };
+    if (this.dataSource.data.length) {
+      this.pUpManager.showAlertWithOptions(this.optionsPreCargaMasiva(this.dataSource.data.length))
+        .then(res => {
+          if (res.value) {
+            cargar();
+          }
+        });
+    } else {
+      cargar();
+    }
   }
 
   // Alerts
