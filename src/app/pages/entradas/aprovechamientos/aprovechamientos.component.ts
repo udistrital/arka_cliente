@@ -1,13 +1,14 @@
 import { Component, OnInit, ViewChild, Input, Output, EventEmitter } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NbStepperComponent } from '@nebular/theme';
-import { TerceroCriterioPlanta } from '../../../@core/data/models/terceros_criterio';
+import { Supervisor, TerceroCriterioPlanta } from '../../../@core/data/models/terceros_criterio';
 import { PopUpManager } from '../../../managers/popUpManager';
 import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import { TransaccionEntrada } from '../../../@core/data/models/entrada/entrada';
 import { TranslateService } from '@ngx-translate/core';
+import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
 
 @Component({
   selector: 'ngx-aprovechamientos',
@@ -20,15 +21,16 @@ export class AprovechamientosComponent implements OnInit {
   fechaForm: FormGroup;
   supervisorForm: FormGroup;
   observacionForm: FormGroup;
+  flag = true;
+  dependenciaSupervisor: String;
 
   // Validadores
-  vigenciaSelect: boolean;
 
   validar: boolean = false;
   cargando_supervisores: boolean = true;
 
-  private Supervisores: TerceroCriterioPlanta[];
-  supervisoresFiltrados: Observable<TerceroCriterioPlanta[]>;
+  private Supervisores: Supervisor[];
+  supervisoresFiltrados: Observable<Supervisor[]>;
 
   @ViewChild('stepper') stepper: NbStepperComponent;
 
@@ -36,12 +38,13 @@ export class AprovechamientosComponent implements OnInit {
   @Output() data: EventEmitter<TransaccionEntrada> = new EventEmitter<TransaccionEntrada>();
 
   constructor(
+    private entradasHelper: EntradaHelper,
     private tercerosHelper: TercerosHelper,
     private pUpManager: PopUpManager,
     private fb: FormBuilder,
     private translate: TranslateService) {
-    this.vigenciaSelect = false;
     this.validar = false;
+    this.dependenciaSupervisor = '';
   }
 
   ngOnInit() {
@@ -57,23 +60,23 @@ export class AprovechamientosComponent implements OnInit {
     this.loadSupervisores();
   }
 
-  private filtroSupervisores(nombre: string): TerceroCriterioPlanta[] {
+  private filtroSupervisores(nombre: string): Supervisor[] {
     // if (nombre.length >= 4 ) {
     const valorFiltrado = nombre.toLowerCase();
-    return this.Supervisores.filter(sup => sup.TerceroPrincipal.NombreCompleto.toLowerCase().includes(valorFiltrado));
+    return this.Supervisores.filter(sup => sup.Nombre.toLowerCase().includes(valorFiltrado));
     // } else return [];
   }
 
 
   private loadSupervisores(): void {
-    this.tercerosHelper.getTercerosByCriterio('funcionarioPlanta').subscribe(res => {
+    this.entradasHelper.getSupervisores('supervisor_contrato?limit=-1').subscribe(res => {
       if (Array.isArray(res)) {
         this.Supervisores = res;
         this.supervisoresFiltrados = this.supervisorForm.get('supervisorCtrl').valueChanges
-          .pipe(
-            startWith(''),
-            map(val => typeof val === 'string' ? val : this.muestraSupervisor(val)),
-            map(nombre => this.filtroSupervisores(nombre)),
+        .pipe(
+          startWith(''),
+          map(val => typeof val === 'string' ? val : this.muestraSupervisor(val)),
+          map(nombre => this.filtroSupervisores(nombre)),
           );
         // console.log({supervisores: this.Supervisores});
         this.cargando_supervisores = false;
@@ -81,24 +84,28 @@ export class AprovechamientosComponent implements OnInit {
     });
   }
 
-  muestraSupervisor(sup: TerceroCriterioPlanta): string {
-    if (sup.TerceroPrincipal !== undefined) {
-      return sup.TerceroPrincipal.NombreCompleto;
+  muestraSupervisor(sup: Supervisor): string {
+    if (sup.Nombre !== undefined) {
+      return sup.Nombre;
     } else {
       return '';
     }
   }
 
   datosSupervisor(param: string): string {
-    const supervisorSeleccionado: TerceroCriterioPlanta = <TerceroCriterioPlanta>this.supervisorForm.value.supervisorCtrl;
-    // console.log({supervisorSeleccionado});
-    if (supervisorSeleccionado && supervisorSeleccionado.Sede) {
+    const supervisorSeleccionado: Supervisor = <Supervisor>this.supervisorForm.value.supervisorCtrl;
+    if (supervisorSeleccionado ) {
+      if (this.flag) {
+        this.flag = false;
+        this.entradasHelper.getDependenciaSupervisor('dependencia_SIC', supervisorSeleccionado.DependenciaSupervisor).subscribe(res => {
+          if (Array.isArray(res)) {
+            this.dependenciaSupervisor = res[0].ESFDEPENCARGADA;
+          }
+        });
+      }
       switch (param) {
         case 'sede':
-          return supervisorSeleccionado.Sede.Nombre;
-
-        case 'dependencia':
-          return supervisorSeleccionado.Dependencia.Nombre;
+          return supervisorSeleccionado.SedeSupervisor;
 
         default:
           return '';
@@ -116,8 +123,7 @@ export class AprovechamientosComponent implements OnInit {
     if (this.validar) {
       const detalle = {
         acta_recibido_id: +this.actaRecibidoId,
-        vigencia: this.fechaForm.value.fechaCtrl,
-        supervisor: this.supervisorForm.value.supervisorCtrl.TerceroPrincipal.Id,
+        supervisor: this.supervisorForm.value.supervisorCtrl.Id,
       };
 
       const transaccion = <TransaccionEntrada>{
