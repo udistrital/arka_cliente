@@ -49,7 +49,7 @@ export class FormTipoBienComponent implements OnInit, OnChanges {
           disabled: false,
         },
         {
-          validators: [Validators.required, Validators.maxLength(20)],
+          validators: [Validators.required, Validators.maxLength(40)],
         },
       ],
       Descripcion: [
