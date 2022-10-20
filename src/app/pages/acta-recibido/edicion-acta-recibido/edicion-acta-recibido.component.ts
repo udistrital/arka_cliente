@@ -503,22 +503,15 @@ export class EdicionActaRecibidoComponent implements OnInit {
   }
 
   private async Traer_Relacion_Ubicaciones(
-  sede: number = this.controlSede.value,
-  dependencia: number = this.controlDependencia.value.value) {
-    // console.debug('Traer_Relacion_Ubicaciones', {sede, dependencia});
+    sede: number = this.controlSede.value,
+    dependencia: number = this.controlDependencia.value.value) {
+
     if (sede && dependencia) {
-      const transaccion = {
-        Sede: this.Sedes.find((x) => x.Id === sede),
-        Dependencia: this.Dependencias.find((x) => x.Id === dependencia),
-      };
-      // console.debug({transaccion});
-      this.Actas_Recibido.postRelacionSedeDependencia(transaccion).subscribe((res: any) => {
-        const relaciones = res[0].Relaciones;
-        if (isObject(relaciones)) {
-          this.Ubicaciones = relaciones;
-        } else {
-          this.Ubicaciones = [];
-        }
+      const sede_ = this.Sedes.find((x) => x.Id === sede);
+      const payload = 'fields=Id,EspacioFisicoId&query=DependenciaId__Id:' + dependencia +
+        ',EspacioFisicoId__CodigoAbreviacion__icontains:' + sede_.CodigoAbreviacion;
+      this.Actas_Recibido.getAllAsignacionEspacioFisicoDependencia(payload).subscribe((res: any) => {
+        this.Ubicaciones = res;
       });
     }
   }

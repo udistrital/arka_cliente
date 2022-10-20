@@ -72,11 +72,13 @@ export class RegistroComponent implements OnInit {
       this.spinner = this.EntradaId ? 'Actualizando Entrada' : 'Registrando Entrada';
       entrada.Id = this.EntradaId ? this.EntradaId : 0;
       this.entradasHelper.postEntrada(entrada, entrada.Id, false).subscribe((res: any) => {
-        if (res.Detalle) {
-          const consecutivo = JSON.parse(res.Detalle).consecutivo;
+        this.spinner = '';
+        if (res.Error) {
+          this.pUpManager.showErrorAlert(res.Error);
+        } else if (res.Movimiento.Id) {
+          const consecutivo = JSON.parse(res.Movimiento.Detalle).consecutivo;
           this.pUpManager.showAlertWithOptions(this.getOptionsRegistro(consecutivo));
           this.volver.emit(true);
-          this.spinner = '';
         } else {
           this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.entradas.registroFail'));
         }
