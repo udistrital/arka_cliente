@@ -551,6 +551,26 @@ export class ActaRecibidoHelper {
             return of(new EspacioFisico()).pipe(map(o => JSON.stringify(o)));
         }
     }
+
+    public getAllAsignacionEspacioFisicoDependencia(payload) {
+        this.rqManager.setPath('OIKOS_SERVICE');
+        return this.rqManager.get('asignacion_espacio_fisico_dependencia?' + payload).pipe(
+            map(
+                (res) => {
+                    if (res['Type'] === 'error') {
+                        this.pUpManager.showErrorAlert('No se pudieron cargar los parametros generales');
+                        return undefined;
+                    }
+                    if (res.length && !res[0].Id ) {
+                        res = [];
+                    }
+                    return res;
+                },
+            ),
+        );
+
+    }
+
     /**
      * Elementos get
      * Conversion Archivo Post
