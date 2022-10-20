@@ -201,18 +201,18 @@
     <div class="row">
       <div class="col">
         <p class="text-uppercase"><strong>{{'GLOBAL.supervisor' | translate }}:</strong>
-          {{ Supervisor?.TerceroPrincipal?.NombreCompleto }}</p>
+          {{ Supervisor.Nombre }}</p>
       </div>
       <div class="col">
         <p class="text-uppercase"><strong>{{'GLOBAL.dependencia' | translate }}:</strong>
-          {{ Supervisor?.Dependencia?.Nombre}}</p>
+          {{ dependenciaSupervisor}}</p>
       </div>
     </div>
 
     <div class="row">
       <div class="col">
         <p class="text-uppercase"><strong>{{'GLOBAL.ordenador_gasto' | translate }}:</strong>
-          {{ Ordenador?.TerceroPrincipal?.NombreCompleto }}</p>
+          {{ Ordenador?.NombreOrdenador }}</p>
       </div>
     </div>
   </div>
@@ -409,11 +409,11 @@
   <div *ngIf="entradaEspecifica.TipoEntradaId.Nombre === 'Partes por Aprovechamientos'" class="row">
     <div class="col">
       <p class="text-uppercase"><strong>{{'GLOBAL.supervisor' | translate }}:</strong>
-        {{ Supervisor?.TerceroPrincipal?.NombreCompleto }}</p>
+        {{ Supervisor.Nombre }}</p>
     </div>
     <div class="col">
       <p class="text-uppercase"><strong>{{'GLOBAL.dependencia' | translate }}:</strong>
-        {{ Supervisor?.Dependencia?.Nombre}}</p>
+        {{dependenciaSupervisor}}</p>
     </div>
   </div>
 

@@ -24,6 +24,8 @@ export class DetalleEntradaComponent implements OnInit {
   encargado: any;
   Placa: any;
   Supervisor: any;
+  flagDependencia = true;
+  dependenciaSupervisor: string;
   Ordenador: any;
   documentoId: boolean;
   entradaId: number;
@@ -66,6 +68,16 @@ export class DetalleEntradaComponent implements OnInit {
 
     if (this.detalleEntrada.supervisor) {
       this.Supervisor = this.detalleEntrada.supervisor;
+      if (this.Supervisor.DependenciaSupervisor) {
+        if (this.flagDependencia) {
+          this.flagDependencia = false
+          this.entradasHelper.getDependenciaSupervisor('dependencia_SIC', this.Supervisor.DependenciaSupervisor).subscribe(res => {
+            if (Array.isArray(res)) {
+              this.dependenciaSupervisor = res[0].ESFDEPENCARGADA;
+            }
+          });
+        }
+      }
     }
 
     if (this.detalleEntrada.ordenador) {

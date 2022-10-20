@@ -5,6 +5,7 @@ import { PopUpManager } from '../../managers/popUpManager';
 import { TranslateService } from '@ngx-translate/core';
 import { DisponibilidadMovimientosService } from '../../@core/data/disponibilidad-movimientos.service';
 import { TransaccionEntrada } from '../../@core/data/models/entrada/entrada';
+import { StringMap } from '@angular/core/src/render3/jit/compiler_facade_interface';
 
 @Injectable({
     providedIn: 'root',
@@ -53,6 +54,64 @@ export class EntradaHelper {
                 (res) => {
                     if (res === 'error') {
                         this.pUpManager.showErrorAlert('No se pudo consultar el contrato contratos');
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
+
+    public getOrdenadores(criterio: string, query: string= '') {
+        this.rqManager.setPath('UNIDADES_SERVICE');
+        let path = criterio;
+        if (query !== '') {
+            path += '?query=' + query;
+        }
+        return this.rqManager.get(path).pipe(
+            map(
+                (res) => {
+                    if (res === 'error' || !Array.isArray(res)) {
+                        this.pUpManager.showErrorAlert('No se encontro ningun tercero que pueda ejercer como supervisor');
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
+
+    public getSupervisores(criterio: string, query: string= '') {
+        this.rqManager.setPath('UNIDADES_SERVICE');
+        let path = criterio;
+        if (query !== '') {
+            path += '?query=' + query;
+        }
+        return this.rqManager.get(path).pipe(
+            map(
+                (res) => {
+                    if (res === 'error' || !Array.isArray(res)) {
+                        this.pUpManager.showErrorAlert('No se encontro ningun tercero que pueda ejercer como supervisor');
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
+
+    public getDependenciaSupervisor(dependencia: string, query: string= '') {
+        this.rqManager.setPath('UNIDADES_SERVICE');
+        let path = dependencia;
+        if (query !== '') {
+            path += '?query=ESFCODIGODEP:' + query;
+        }
+        console.log(path)
+        return this.rqManager.get(path).pipe(
+            map(
+                (res) => {
+                    if (res === 'error' || !Array.isArray(res)) {
+                        this.pUpManager.showErrorAlert('No se encontro ninguna dependencia');
                         return undefined;
                     }
                     return res;

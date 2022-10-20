@@ -19,6 +19,13 @@ export class Supervisor {
     Nombre: string;
     Cargo: string;
     SedeSupervisor: string;
+    DependenciaSupervisor: string
+}
+
+export class Ordenador {
+    Id: number;
+    NombreOrdenador: string;
+    RolOrdenador: string;
 }
 
 export class TerceroCriterioJefe {

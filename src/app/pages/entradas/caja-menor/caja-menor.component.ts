@@ -8,7 +8,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { SoporteActaProveedor } from '../../../@core/data/models/acta_recibido/soporte_acta';
 import { TransaccionEntrada } from '../../../@core/data/models/entrada/entrada';
 import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
-import { TerceroCriterioJefe, TerceroCriterioPlanta } from '../../../@core/data/models/terceros_criterio';
+import { Ordenador, Supervisor, TerceroCriterioJefe, TerceroCriterioPlanta } from '../../../@core/data/models/terceros_criterio';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
 import { Soporte } from '../soporteHelper';
@@ -24,11 +24,14 @@ export class CajaMenorComponent implements OnInit {
   ordenadorForm: FormGroup;
   supervisorForm: FormGroup;
   facturaForm: FormGroup;
+  flag = true;
+  dependenciaSupervisor: String;
 
-  Supervisores: TerceroCriterioPlanta[];
-  supervisoresFiltrados: Observable<TerceroCriterioPlanta[]>;
-  Ordenadores: TerceroCriterioJefe[];
-  ordenadoresFiltrados: Observable<TerceroCriterioJefe[]>;
+  //Supervisores: TerceroCriterioPlanta[];
+  Supervisores: Supervisor[]
+  supervisoresFiltrados: Observable<Supervisor[]>;
+  Ordenadores: Ordenador[];
+  ordenadoresFiltrados: Observable<Ordenador[]>;
 
   ordenadores: Array<OrdenadorGasto>;
   solicitanteSelect: boolean;
@@ -65,6 +68,7 @@ export class CajaMenorComponent implements OnInit {
     this.validar = false;
     this.soportes = new Array<SoporteActaProveedor>();
     this.fechaFactura = '';
+    this.dependenciaSupervisor = '';
   }
 
   ngOnInit() {
@@ -126,14 +130,14 @@ export class CajaMenorComponent implements OnInit {
   }
   // -------------------------SUPERVISORES--------------------------------------------------------
   loadSupervisores(): void {
-    this.tercerosHelper.getTercerosByCriterio('funcionarioPlanta').subscribe(res => {
+    this.entradasHelper.getSupervisores('supervisor_contrato?limit=-1').subscribe(res => {
       if (Array.isArray(res)) {
         this.Supervisores = res;
         this.supervisoresFiltrados = this.supervisorForm.get('supervisorCtrl').valueChanges
-          .pipe(
-            startWith(''),
-            map(val => typeof val === 'string' ? val : this.muestraSupervisor(val)),
-            map(nombre => this.filtroSupervisores(nombre)),
+        .pipe(
+          startWith(''),
+          map(val => typeof val === 'string' ? val : this.muestraSupervisor(val)),
+          map(nombre => this.filtroSupervisores(nombre)),
           );
         // console.log({supervisores: this.Supervisores});
         this.cargando_supervisores = false;
@@ -141,32 +145,36 @@ export class CajaMenorComponent implements OnInit {
     });
   }
   datosSupervisor(param: string): string {
-    const supervisorSeleccionado: TerceroCriterioPlanta = <TerceroCriterioPlanta>this.supervisorForm.value.supervisorCtrl;
+    const supervisorSeleccionado: Supervisor = <Supervisor>this.supervisorForm.value.supervisorCtrl;
     // console.log({supervisorSeleccionado});
     if (supervisorSeleccionado) {
+      if (this.flag) {
+        this.flag = false
+        this.entradasHelper.getDependenciaSupervisor('dependencia_SIC', supervisorSeleccionado.DependenciaSupervisor).subscribe(res => {
+          if (Array.isArray(res)) {
+            this.dependenciaSupervisor = res[0].ESFDEPENCARGADA;
+          }
+        });
+      }
       switch (param) {
         case 'sede':
-          return supervisorSeleccionado.Sede.Nombre;
-
-        case 'dependencia':
-          return supervisorSeleccionado.Dependencia.Nombre;
-
+          return supervisorSeleccionado.SedeSupervisor;
         default:
           return '';
       }
     }
     return '';
   }
-  filtroSupervisores(nombre: string): TerceroCriterioPlanta[] {
+  filtroSupervisores(nombre: string): Supervisor[] {
     // if (nombre.length >= 4 ) {
     const valorFiltrado = nombre.toLowerCase();
-    return this.Supervisores.filter(sup => sup.TerceroPrincipal.NombreCompleto.toLowerCase().includes(valorFiltrado));
+    return this.Supervisores.filter(sup => sup.Nombre.toLowerCase().includes(valorFiltrado));
     // } else return [];
   }
 
-  muestraSupervisor(sup: TerceroCriterioPlanta): string {
-    if (sup.TerceroPrincipal !== undefined) {
-      return sup.TerceroPrincipal.NombreCompleto;
+  muestraSupervisor(sup: Supervisor): string {
+    if (sup.Nombre !== undefined) {
+      return sup.Nombre;
     } else {
       return '';
     }
@@ -174,7 +182,7 @@ export class CajaMenorComponent implements OnInit {
 
   // -------------------------------------ORDENADORES---------------------------------------------------
   loadOrdenadores(): void {
-    this.tercerosHelper.getTercerosByCriterio('ordenadoresGasto').subscribe(res => {
+    this.entradasHelper.getOrdenadores('ordenadores').subscribe(res => {
       if (Array.isArray(res)) {
         this.Ordenadores = res;
         this.ordenadoresFiltrados = this.ordenadorForm.get('ordenadorCtrl').valueChanges
@@ -188,16 +196,16 @@ export class CajaMenorComponent implements OnInit {
       }
     });
   }
-  filtroOrdenadores(nombre: string): TerceroCriterioJefe[] {
+  filtroOrdenadores(nombre: string): Ordenador[] {
     // if (nombre.length >= 4 ) {
     const valorFiltrado = nombre.toLowerCase();
-    return this.Ordenadores.filter(sup => sup.TerceroPrincipal.NombreCompleto.toLowerCase().includes(valorFiltrado));
+    return this.Ordenadores.filter(sup => sup.NombreOrdenador.toLowerCase().includes(valorFiltrado));
     // } else return [];
   }
 
-  muestraOrdenador(ord: TerceroCriterioJefe): string {
-    if (ord.TerceroPrincipal !== undefined) {
-      return ord.TerceroPrincipal.NombreCompleto;
+  muestraOrdenador(ord: Ordenador): string {
+    if (ord.NombreOrdenador !== undefined) {
+      return ord.NombreOrdenador;
     } else {
       return '';
     }
@@ -247,8 +255,8 @@ export class CajaMenorComponent implements OnInit {
       const detalle = {
         acta_recibido_id: +this.actaRecibidoId,
         // vigencia: this.ordenadorForm.value.vigenciaCtrl,
-        supervisor: this.supervisorForm.value.supervisorCtrl.TerceroPrincipal.Id,
-        ordenador_gasto_id: this.ordenadorForm.value.ordenadorCtrl.TerceroPrincipal.Id,
+        supervisor: this.supervisorForm.value.supervisorCtrl.Id,
+        ordenador_gasto_id: this.ordenadorForm.value.ordenadorCtrl.Id,
         // solicitante_id: +this.supervisorId,
       };
 

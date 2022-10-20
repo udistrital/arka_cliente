@@ -9,7 +9,7 @@ import { DocumentoService } from '../../../@core/data/documento.service';
 import { TranslateService } from '@ngx-translate/core';
 import { TransaccionEntrada } from '../../../@core/data/models/entrada/entrada';
 import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
-import { TerceroCriterioJefe, TerceroCriterioPlanta } from '../../../@core/data/models/terceros_criterio';
+import { Ordenador, Supervisor, TerceroCriterioJefe, TerceroCriterioPlanta } from '../../../@core/data/models/terceros_criterio';
 import {Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
 
@@ -25,11 +25,13 @@ export class ElaboracionPropiaComponent implements OnInit {
   observacionForm: FormGroup;
   ordenadorForm: FormGroup;
   supervisorForm: FormGroup;
+  flag = true;
+  dependenciaSupervisor: String;
 
-  Supervisores: TerceroCriterioPlanta[];
-  supervisoresFiltrados: Observable<TerceroCriterioPlanta[]>;
-  Ordenadores: TerceroCriterioJefe[];
-  ordenadoresFiltrados: Observable<TerceroCriterioJefe[]>;
+  Supervisores: Supervisor[];
+  supervisoresFiltrados: Observable<Supervisor[]>;
+  Ordenadores: Ordenador[];
+  ordenadoresFiltrados: Observable<Ordenador[]>;
   contratoForm: FormGroup;
 
   ordenadores: Array<OrdenadorGasto>;
@@ -37,7 +39,6 @@ export class ElaboracionPropiaComponent implements OnInit {
   ordenadorId: number;
   supervisorId: number;
   validar: boolean;
-  vigencia: number;
   fechaSolicitante: string;
   cargoOrdenador: string;
   fileDocumento: any;
@@ -64,6 +65,7 @@ export class ElaboracionPropiaComponent implements OnInit {
     this.ordenadorId = 0;
     this.supervisorId = 0;
     this.validar = false;
+    this.dependenciaSupervisor = '';
   }
 
 
@@ -76,12 +78,10 @@ export class ElaboracionPropiaComponent implements OnInit {
     });
     this.ordenadorForm = this.fb.group({
       ordenadorCtrl: ['', Validators.required],
-      vigenciaCtrl: ['', [Validators.required]],
     });
     this.supervisorForm = this.fb.group({
       supervisorCtrl: ['', Validators.required],
     });
-    this.getVigencia();
     this.loadSupervisores();
     this.loadOrdenadores();
   }
@@ -133,14 +133,14 @@ export class ElaboracionPropiaComponent implements OnInit {
   }
   // -------------------------SUPERVISORES--------------------------------------------------------
   loadSupervisores(): void {
-    this.tercerosHelper.getTercerosByCriterio('funcionarioPlanta').subscribe( res => {
+    this.entradasHelper.getSupervisores('supervisor_contrato?limit=-1').subscribe(res => {
       if (Array.isArray(res)) {
         this.Supervisores = res;
         this.supervisoresFiltrados = this.supervisorForm.get('supervisorCtrl').valueChanges
-          .pipe(
-            startWith(''),
-            map(val => typeof val === 'string' ? val : this.muestraSupervisor(val)),
-            map(nombre => this.filtroSupervisores(nombre)),
+        .pipe(
+          startWith(''),
+          map(val => typeof val === 'string' ? val : this.muestraSupervisor(val)),
+          map(nombre => this.filtroSupervisores(nombre)),
           );
         // console.log({supervisores: this.Supervisores});
         this.cargando_supervisores = false;
@@ -148,32 +148,35 @@ export class ElaboracionPropiaComponent implements OnInit {
     });
   }
   datosSupervisor(param: string): string {
-    const supervisorSeleccionado: TerceroCriterioPlanta = <TerceroCriterioPlanta>this.supervisorForm.value.supervisorCtrl;
-    // console.log({supervisorSeleccionado});
+    const supervisorSeleccionado: Supervisor = <Supervisor>this.supervisorForm.value.supervisorCtrl;
     if (supervisorSeleccionado) {
+      if (this.flag) {
+        this.flag = false
+        this.entradasHelper.getDependenciaSupervisor('dependencia_SIC', supervisorSeleccionado.DependenciaSupervisor).subscribe(res => {
+          if (Array.isArray(res)) {
+            this.dependenciaSupervisor = res[0].ESFDEPENCARGADA;
+          }
+        });
+      }
       switch (param) {
         case 'sede':
-          return supervisorSeleccionado.Sede.Nombre;
-
-        case 'dependencia':
-          return supervisorSeleccionado.Dependencia.Nombre;
-
+          return supervisorSeleccionado.SedeSupervisor;
         default:
           return '';
       }
     }
     return '';
   }
-  filtroSupervisores(nombre: string): TerceroCriterioPlanta[] {
+  filtroSupervisores(nombre: string): Supervisor[] {
     // if (nombre.length >= 4 ) {
       const valorFiltrado = nombre.toLowerCase();
-      return this.Supervisores.filter(sup => sup.TerceroPrincipal.NombreCompleto.toLowerCase().includes(valorFiltrado));
+      return this.Supervisores.filter(sup => sup.Nombre.toLowerCase().includes(valorFiltrado));
     // } else return [];
   }
 
-  muestraSupervisor(sup: TerceroCriterioPlanta): string {
-    if (sup.TerceroPrincipal !== undefined) {
-      return sup.TerceroPrincipal.NombreCompleto;
+  muestraSupervisor(sup: Supervisor): string {
+    if (sup.Nombre !== undefined) {
+      return sup.Nombre;
     }else {
       return '';
     }
@@ -186,7 +189,7 @@ export class ElaboracionPropiaComponent implements OnInit {
     }
   }
   loadOrdenadores(): void {
-    this.tercerosHelper.getTercerosByCriterio('ordenadoresGasto').subscribe( res => {
+    this.entradasHelper.getOrdenadores('ordenadores').subscribe( res => {
       if (Array.isArray(res)) {
         this.Ordenadores = res;
         this.ordenadoresFiltrados = this.ordenadorForm.get('ordenadorCtrl').valueChanges
@@ -200,16 +203,16 @@ export class ElaboracionPropiaComponent implements OnInit {
       }
     });
   }
-  filtroOrdenadores(nombre: string): TerceroCriterioJefe[] {
+  filtroOrdenadores(nombre: string): Ordenador[] {
     // if (nombre.length >= 4 ) {
       const valorFiltrado = nombre.toLowerCase();
-      return this.Ordenadores.filter(sup => sup.TerceroPrincipal.NombreCompleto.toLowerCase().includes(valorFiltrado));
+      return this.Ordenadores.filter(sup => sup.NombreOrdenador.toLowerCase().includes(valorFiltrado));
     // } else return [];
   }
 
-  muestraOrdenador(ord: TerceroCriterioJefe): string {
-    if (ord.TerceroPrincipal !== undefined) {
-      return ord.TerceroPrincipal.NombreCompleto;
+  muestraOrdenador(ord: Ordenador): string {
+    if (ord.NombreOrdenador !== undefined) {
+      return ord.NombreOrdenador;
     }else {
       return '';
     }
@@ -264,13 +267,6 @@ export class ElaboracionPropiaComponent implements OnInit {
     });
   }
 
-  /**
-   * Método para obtener el año en curso
-   */
-  getVigencia() {
-    this.vigencia = new Date().getFullYear();
-  }
-
 // Método para enviar registro
   async onSubmit() {
     if (this.validar) {
@@ -278,9 +274,8 @@ export class ElaboracionPropiaComponent implements OnInit {
 
       const detalle = {
         acta_recibido_id: +this.actaRecibidoId,
-        supervisor: this.supervisorForm.value.supervisorCtrl.TerceroPrincipal.Id,
-        vigencia_ordenador: this.ordenadorForm.value.vigenciaCtrl,
-        ordenador_gasto_id: this.ordenadorForm.value.ordenadorCtrl.TerceroPrincipal.Id,
+        supervisor: this.supervisorForm.value.supervisorCtrl.Id,
+        ordenador_gasto_id: this.ordenadorForm.value.ordenadorCtrl.Id,
         // solicitante_id: +this.supervisorId,
       };
 

@@ -8,21 +8,13 @@
     <form [formGroup]="ordenadorForm" class="step-container">
       <div class="row" [nbSpinner]="cargando_ordenadores">
         <div class="form-group col-sm">
-          <label>{{'GLOBAL.vigencia' | translate}}</label>
-          <div class="input-group">
-            <input nbInput shape="semi-round" placeholder="{{'GLOBAL.placeholder_fecha' | translate}}"
-              formControlName="vigenciaCtrl" class="form-control" [nbDatepicker]="formpicker" required>
-            <nb-datepicker  #formpicker></nb-datepicker>
-          </div>
-        </div>
-        <div class="form-group col-sm">
           <label>{{'GLOBAL.nombres' | translate}}</label>
           <div class="input-group">
             <input matInput type="text" class="form-control" placeholder="Nombre Completo"
             formControlName="ordenadorCtrl" [matAutocomplete]="autoOrdenador"/>
             <mat-autocomplete #autoOrdenador="matAutocomplete" [displayWith]="muestraOrdenador">
               <mat-option *ngFor="let orde of ordenadoresFiltrados | async" [value]="orde">
-                {{orde.TerceroPrincipal.NombreCompleto}}
+                {{orde.NombreOrdenador}}
               </mat-option>
             </mat-autocomplete>
           </div>
@@ -50,7 +42,7 @@
           formControlName="supervisorCtrl" [matAutocomplete]="autoSupervisor"/>
           <mat-autocomplete #autoSupervisor="matAutocomplete" [displayWith]="muestraSupervisor">
             <mat-option *ngFor="let super of supervisoresFiltrados | async" [value]="super">
-              {{super.TerceroPrincipal.NombreCompleto}}
+              {{super.Nombre}}
             </mat-option>
           </mat-autocomplete>
         </div>
@@ -64,7 +56,7 @@
       <div class="form-group col-sm">
         <label>{{'GLOBAL.dependencia' | translate}}</label>
         <div class="input-group">
-          <output defaultValue="Dependencia" class="form-control" [value]="datosSupervisor('dependencia') + '&nbsp;'"></output>
+          <output defaultValue="Dependencia" class="form-control" [value]="dependenciaSupervisor"></output>
         </div>
       </div>
     </div>

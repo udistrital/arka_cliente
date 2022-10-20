@@ -1,7 +1,7 @@
 <div>
 <!-- FORMULARIO -->
 <nb-stepper #stepper orientation="horizontal">
-    <!-- VIGENCIA//CUMPLIMIENTO -->
+    <!-- VIGENCIA//CUMPLIMIENTO
     <nb-step [stepControl]="fechaForm" label="{{'GLOBAL.solicitante' | translate}}">
       <h5>{{'GLOBAL.solicitante' | translate}}</h5>
       <form [formGroup]="fechaForm" class="step-container">
@@ -10,7 +10,7 @@
             <label>{{'GLOBAL.vigencia' | translate}}</label>
             <div class="input-group">
               <input nbInput shape="semi-round" placeholder="{{'GLOBAL.placeholder_fecha' | translate}}"
-                formControlName="fechaCtrl" class="form-control" [nbDatepicker]="formpicker" required>
+                formControlName="fechaCtrl" class="form-control" [nbDatepicker]="formpicker">
               <nb-datepicker  #formpicker></nb-datepicker>
             </div>
           </div>
@@ -20,7 +20,7 @@
             {{'GLOBAL.siguiente' | translate}}</button>
         </div>
       </form>
-    </nb-step>
+    </nb-step> -->
 
   <!-- SUPERVISOR -->
   <nb-step [stepControl]="supervisorForm" label="{{'GLOBAL.supervisor' | translate}}">
@@ -34,7 +34,7 @@
           formControlName="supervisorCtrl" [matAutocomplete]="autoSupervisor"/>
           <mat-autocomplete #autoSupervisor="matAutocomplete" [displayWith]="muestraSupervisor">
             <mat-option *ngFor="let super of supervisoresFiltrados | async" [value]="super">
-              {{super.TerceroPrincipal.NombreCompleto}}
+              {{super.Nombre}}
             </mat-option>
           </mat-autocomplete>
         </div>
@@ -48,7 +48,7 @@
       <div class="form-group col-sm">
         <label>{{'GLOBAL.dependencia' | translate}}</label>
         <div class="input-group">
-          <output defaultValue="Dependencia" class="form-control" [value]="datosSupervisor('dependencia') + '&nbsp;'"></output>
+          <output defaultValue="Dependencia" class="form-control" value="{{dependenciaSupervisor}}"></output>
         </div>
       </div>
     </div>
