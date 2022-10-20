@@ -19,7 +19,7 @@ export class Supervisor {
     Nombre: string;
     Cargo: string;
     SedeSupervisor: string;
-    DependenciaSupervisor: string
+    DependenciaSupervisor: string;
 }
 
 export class Ordenador {

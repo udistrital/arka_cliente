@@ -65,7 +65,6 @@ export class IntangiblesDesarrolladosComponent implements OnInit {
     this.validar = false;
     this.soportes = new Array<SoporteActaProveedor>();
     this.proveedor = '';
-    
   }
 
 
@@ -112,7 +111,7 @@ datosSupervisor(param: string): string {
   // console.log({supervisorSeleccionado});
   if (supervisorSeleccionado) {
     if (this.flag) {
-      this.flag = false
+      this.flag = false;
       this.entradasHelper.getDependenciaSupervisor('dependencia_SIC', supervisorSeleccionado.DependenciaSupervisor).subscribe(res => {
         if (Array.isArray(res)) {
           this.dependenciaSupervisor = res[0].ESFDEPENCARGADA;

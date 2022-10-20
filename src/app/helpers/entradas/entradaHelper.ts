@@ -106,7 +106,6 @@ export class EntradaHelper {
         if (query !== '') {
             path += '?query=ESFCODIGODEP:' + query;
         }
-        console.log(path)
         return this.rqManager.get(path).pipe(
             map(
                 (res) => {

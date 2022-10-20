@@ -96,7 +96,7 @@ export class AprovechamientosComponent implements OnInit {
     const supervisorSeleccionado: Supervisor = <Supervisor>this.supervisorForm.value.supervisorCtrl;
     if (supervisorSeleccionado ) {
       if (this.flag) {
-        this.flag = false
+        this.flag = false;
         this.entradasHelper.getDependenciaSupervisor('dependencia_SIC', supervisorSeleccionado.DependenciaSupervisor).subscribe(res => {
           if (Array.isArray(res)) {
             this.dependenciaSupervisor = res[0].ESFDEPENCARGADA;

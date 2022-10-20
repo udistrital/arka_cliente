@@ -70,7 +70,7 @@ export class DetalleEntradaComponent implements OnInit {
       this.Supervisor = this.detalleEntrada.supervisor;
       if (this.Supervisor.DependenciaSupervisor) {
         if (this.flagDependencia) {
-          this.flagDependencia = false
+          this.flagDependencia = false;
           this.entradasHelper.getDependenciaSupervisor('dependencia_SIC', this.Supervisor.DependenciaSupervisor).subscribe(res => {
             if (Array.isArray(res)) {
               this.dependenciaSupervisor = res[0].ESFDEPENCARGADA;
