@@ -73,12 +73,12 @@ export class ConsultaSalidaEspecificaComponent implements OnInit {
           this.source.load(res.Elementos);
         }
 
-        if (res.trContable) {
-          const fecha = new Date(res.trContable.fecha).toLocaleString();
+        if (res.TransaccionContable) {
+          const fecha = new Date(res.TransaccionContable.Fecha).toLocaleString();
           this.trContable = {
             rechazo: '',
-            movimientos: res.trContable.movimientos,
-            concepto: res.trContable.concepto,
+            movimientos: res.TransaccionContable.movimientos,
+            concepto: res.TransaccionContable.Concepto,
             fecha,
           };
         }
