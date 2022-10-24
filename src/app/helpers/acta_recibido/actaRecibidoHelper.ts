@@ -571,6 +571,25 @@ export class ActaRecibidoHelper {
 
     }
 
+    public getUnidadEjecutora(query: string) {
+        this.rqManager.setPath('PARAMETROS_SERVICE');
+        return this.rqManager.get('parametro/?' + query).pipe(
+            map(
+                (res) => {
+                    if (res['Type'] === 'error') {
+                        this.pUpManager.showErrorAlert('No se pudieron cargar los parametros');
+                        return undefined;
+                    }
+                    if (res.length && !res[0].Id ) {
+                        res = [];
+                    }
+                    return res;
+                },
+            ),
+        );
+
+    }
+
     /**
      * Elementos get
      * Conversion Archivo Post

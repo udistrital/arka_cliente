@@ -70,6 +70,8 @@ export class VerActaRecibidoComponent implements OnInit {
   UbicacionesFiltradas: any;
   dataService3: CompleterData;
   minLength: number = 4;
+  unidadEjecutoraId: any;
+  unidadesEjecutoras: any;
 
   constructor(
     private translate: TranslateService,
@@ -171,6 +173,11 @@ export class VerActaRecibidoComponent implements OnInit {
           this.contratistaId = this.Acta.UltimoEstado.PersonaAsignadaId;
           this.Acta.ActaRecibido = res.ActaRecibido;
           this.Acta.SoportesActa = res.SoportesActa;
+          this.Actas_Recibido.getUnidadEjecutora('query=TipoParametroId__CodigoAbreviacion:UE').subscribe(res1 => {
+            if (res1) {
+              this.unidadesEjecutoras = res1.Data;
+            }
+          });
           await Promise.all([this.loadProveedores('', this.proveedorId), this.loadContratistas('', this.contratistaId)]);
           resolve();
         });
@@ -226,7 +233,7 @@ export class VerActaRecibidoComponent implements OnInit {
       this.Verificar_tabla.push(false);
     }
 
-
+    this.unidadEjecutoraId = this.unidadesEjecutoras.find((e: any) => e.Id === transaccion_.ActaRecibido.UnidadEjecutoraId);
     this.firstForm = this.fb.group({
       Formulario1: this.fb.group({
         Id: [transaccion_.ActaRecibido.Id],
@@ -234,6 +241,7 @@ export class VerActaRecibidoComponent implements OnInit {
           value: this.sedeDependencia ? this.sedeDependencia.sede : '',
           disabled: true,
         }],
+        UnidadEjecutora: this.unidadEjecutoraId,
         Dependencia: [{
           value: this.sedeDependencia ? this.sedeDependencia.dependencia : '',
           disabled: true,
@@ -373,12 +381,12 @@ export class VerActaRecibidoComponent implements OnInit {
   }
 
   private generarActa(): ActaRecibido {
-
     const actaRecibido = new ActaRecibido;
 
     actaRecibido.Id = +this._ActaId;
     actaRecibido.Activo = true;
     actaRecibido.TipoActaId = <TipoActa>{ Id: this.tipoActa };
+    actaRecibido.UnidadEjecutoraId = this.firstForm.value.Formulario1.UnidadEjecutora.Id;
 
     return actaRecibido;
   }
