@@ -97,6 +97,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
   DatosTotales: any;
   guardando: boolean = false;
   sedeDependencia: any;
+  unidadEjecutoraId: any;
   validarElementos: boolean;
   trActa: TransaccionActaRecibido;
   totales: any;
@@ -104,6 +105,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
   cargarTab: boolean;
   selectedTab: number = 0;
   sizeSoporte: number = 5;
+  unidadesEjecutoras: any;
 
   permisos: {
     Acta: Permiso,
@@ -274,6 +276,11 @@ export class EdicionActaRecibidoComponent implements OnInit {
     return new Promise<void>(resolve => {
       this.Actas_Recibido.getTransaccionActa(this._Acta_Id, false).subscribe(async Acta => {
         this.trActa = Acta;
+        this.Actas_Recibido.getUnidadEjecutora('query=TipoParametroId__CodigoAbreviacion:UE').subscribe(res => {
+          if (res) {
+            this.unidadesEjecutoras = res.Data;
+          }
+        });
         resolve();
       });
     });
@@ -421,7 +428,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
       this.fileDocumento.push(undefined);
       this.idDocumento.push(Soporte.DocumentoId);
     });
-
+    this.unidadEjecutoraId = this.unidadesEjecutoras.find((e: any) => e.Id === transaccion_.ActaRecibido.UnidadEjecutoraId);
     const Formulario1 = this.fb.group({
       Id: [transaccion_.ActaRecibido.Id],
       Sede: [
@@ -431,6 +438,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
         },
         { validators: this.actaRegistrada ? [] : [Validators.required] },
       ],
+      UnidadEjecutora: this.unidadEjecutoraId,
       Dependencia: [
         {
           value: this.sedeDependencia ? this.sedeDependencia.dependencia : '',
@@ -725,7 +733,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
       .map((soporte, index) => this.generarSoporte(soporte, index));
 
     transaccionActa.SoportesActa = Soportes;
-
     this.Actas_Recibido.putTransaccionActa(transaccionActa, transaccionActa.ActaRecibido.Id).subscribe((res: any) => {
       if (res !== null) {
         let titulo, descripcion, idTitulo, idDescripcion;
@@ -793,6 +800,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
     actaRecibido.Id = +this._Acta_Id;
     actaRecibido.Activo = true;
     actaRecibido.TipoActaId = <TipoActa>{ Id: this.tipoActa };
+    actaRecibido.UnidadEjecutoraId = this.firstForm.value.Formulario1.UnidadEjecutora.Id;
 
     return actaRecibido;
   }

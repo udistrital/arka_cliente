@@ -5,7 +5,6 @@ import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoH
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
 import { OikosHelper } from '../../../helpers/oikos/oikosHelper';
-import { isObject } from 'rxjs/internal-compatibility';
 import { TerceroCriterioContratista } from '../../../@core/data/models/terceros_criterio';
 import { debounceTime, distinctUntilChanged, map, startWith, switchMap } from 'rxjs/operators';
 import { MatPaginator, MatTableDataSource } from '@angular/material';

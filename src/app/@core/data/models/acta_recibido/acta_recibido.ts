@@ -5,6 +5,7 @@ export class ActaRecibido {
     Id: number;
     Activo: boolean;
     TipoActaId: TipoActa;
+    UnidadEjecutoraId: number;
     FechaModificacion: Date;
     FechaCreacion: Date;
 }

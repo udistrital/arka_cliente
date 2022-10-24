@@ -36,6 +36,18 @@
                     *ngIf="controlContratista.hasError('terceroNoValido')">
                     {{'GLOBAL.Errores.ErrorTercero' | translate}}</p>
                 </div>
+                <div class="form-group col-sm-3">
+                  <div class="d-flex">
+                    <label>{{'GLOBAL.Acta_Recibido.RegistroActa.unidadEjecutora' | translate}}</label>
+                  </div>
+                  <mat-select class="form-control" formControlName="UnidadEjecutora">
+                    <mat-option *ngFor="let unidad of unidadesEjecutoras" [value]="unidad">
+                      {{unidad.Nombre}}
+                    </mat-option>
+                  </mat-select>
+                  <p class="campo" *ngIf="controlUbicacion.invalid">
+                    {{'GLOBAL.placeholder' | translate}}</p>
+                </div>
                 <div class="form-group col-sm">
                   <div class="d-flex">
                     <label>{{'GLOBAL.Acta_Recibido.EdicionActa.Proveedor' | translate}}</label>

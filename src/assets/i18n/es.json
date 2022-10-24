@@ -408,7 +408,8 @@
         "BotonRegistro": "Registrar Acta",
         "SizeSoporte":"Tamaño máximo: {{ SIZE }} MB",
         "ErrorSizeSoporteTitle":"Archivo no permitido",
-        "ErrorSizeSoporteText":"El tamaño del archivo debe ser menor a {{ SIZE }} MB"
+        "ErrorSizeSoporteText":"El tamaño del archivo debe ser menor a {{ SIZE }} MB",
+        "unidadEjecutora": "Unidad Ejecutora"
       },
       "EdicionActa":{
         "Title": "Editar Acta de Recibido",

@@ -44,7 +44,7 @@ export class OikosHelper {
     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
     */
     public getSedes() {
-        const query = 'espacio_fisico?limit=-1&sortby=Nombre&order=asc&query=TipoEspacioFisicoId__CodigoAbreviacion:Tipo_1';
+        const query = 'espacio_fisico?limit=-1&sortby=Nombre&order=asc&query=TipoEspacioFisicoId__Nombre:SEDE';
         this.rqManager.setPath('OIKOS_SERVICE');
         return this.rqManager.get(query).pipe(
             map(

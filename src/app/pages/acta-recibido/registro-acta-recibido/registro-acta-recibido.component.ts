@@ -84,6 +84,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
   totales: any;
   minLength: number = 4;
   sizeSoporte: number = 5;
+  unidadesEjecutoras: any;
 
   constructor(
     private translate: TranslateService,
@@ -106,6 +107,11 @@ export class RegistroActaRecibidoComponent implements OnInit {
     this.idDocumento = [];
     this.errores = new Map<string, boolean>();
     this.firstForm = this.baseForm;
+    this.Actas_Recibido.getUnidadEjecutora('query=TipoParametroId__CodigoAbreviacion:UE').subscribe(res => {
+      if (res) {
+        this.unidadesEjecutoras = res.Data;
+      }
+    });
   }
 
   ngOnInit() {
@@ -248,6 +254,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
     return this.fb.group({
       Formulario1: this.fb.group({
         Contratista: [''],
+        UnidadEjecutora: [''],
         Proveedor: ['', [ActaValidators.validarTercero]],
         Sede: [''],
         Dependencia: [''],
@@ -391,7 +398,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
     const transaccionActa = new TransaccionActaRecibido();
 
     const Datos = this.firstForm.value;
-    transaccionActa.ActaRecibido = this.generarActa();
+    transaccionActa.ActaRecibido = this.generarActa(Datos);
     transaccionActa.UltimoEstado = this.generarEstadoActa(Datos, this.ae ? EstadoActa_t.Aceptada : EstadoActa_t.Registrada);
     transaccionActa.Elementos = <Elemento[]>[];
     this.ae ? transaccionActa.Elementos = this.generarElementos() : null;
@@ -422,13 +429,13 @@ export class RegistroActaRecibidoComponent implements OnInit {
     });
   }
 
-  private generarActa(): ActaRecibido {
+  private generarActa(Datos: any): ActaRecibido {
     const ta = this.ae ? 2 : 1;
-
     const actaRecibido = new ActaRecibido;
     actaRecibido.Id = null;
     actaRecibido.Activo = true;
     actaRecibido.TipoActaId = <TipoActa>{Id: ta};
+    actaRecibido.UnidadEjecutoraId = Datos.Formulario1.UnidadEjecutora;
 
     return actaRecibido;
   }
