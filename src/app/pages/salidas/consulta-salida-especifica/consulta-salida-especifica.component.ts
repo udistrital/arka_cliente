@@ -65,20 +65,15 @@ export class ConsultaSalidaEspecificaComponent implements OnInit {
         this.salida = res.Salida;
 
         if (res.Elementos.length) {
-          res.Elementos.forEach(el => {
-            const sg = el.SubgrupoCatalogoId;
-            el.SubgrupoCatalogoId = sg.SubgrupoId;
-            el.TipoBienId = sg.TipoBienId;
-          });
           this.source.load(res.Elementos);
         }
 
-        if (res.trContable) {
-          const fecha = new Date(res.trContable.fecha).toLocaleString();
+        if (res.TransaccionContable) {
+          const fecha = new Date(res.TransaccionContable.Fecha).toLocaleString();
           this.trContable = {
             rechazo: '',
-            movimientos: res.trContable.movimientos,
-            concepto: res.trContable.concepto,
+            movimientos: res.TransaccionContable.movimientos,
+            concepto: res.TransaccionContable.Concepto,
             fecha,
           };
         }
@@ -120,14 +115,15 @@ export class ConsultaSalidaEspecificaComponent implements OnInit {
         SubgrupoCatalogoId: {
           title: this.translate.instant('GLOBAL.subgrupo.clase.nombre'),
           valuePrepareFunction: (value: any) => {
-            return !value ? '' : value.Codigo ? value.Codigo + ' - ' + value.Nombre : value.Nombre;
+            return (!value || !value.SubgrupoId) ? '' :
+              value.SubgrupoId.Codigo ? (value.SubgrupoId.Codigo + ' - ' + value.SubgrupoId.Nombre) : value.SubgrupoId.Nombre;
           },
           filterFunction: this.filterFunction,
         },
         TipoBienId: {
           title: 'Tipo de Bien',
           valuePrepareFunction: (value: any) => {
-            return value.Nombre;
+            return value ? value.Nombre : '';
           },
           filterFunction: (cell?: any, search?: string): boolean => {
             if (cell && search.length) {
@@ -175,13 +171,13 @@ export class ConsultaSalidaEspecificaComponent implements OnInit {
 
   private filterFunction(cell?: any, search?: string): boolean {
     if (cell && search.length) {
-      if (cell.Codigo && cell.Nombre) {
-        if ((cell.Codigo + ' - ' + cell.Nombre.toUpperCase()).indexOf(search.toUpperCase()) > -1) {
+      if (cell.SubgrupoId && cell.SubgrupoId.Codigo && cell.SubgrupoId.Nombre) {
+        if ((cell.SubgrupoId.Codigo + ' - ' + cell.SubgrupoId.Nombre.toUpperCase()).indexOf(search.toUpperCase()) > -1) {
           return true;
         } else {
           return false;
         }
-      } else if (cell.Nombre) {
+      } else if (cell.SubgrupoId && cell.SubgrupoId.Nombre) {
         if ((cell.Nombre.toUpperCase()).indexOf(search.toUpperCase()) > -1) {
           return true;
         } else {

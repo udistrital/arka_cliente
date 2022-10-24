@@ -144,7 +144,7 @@
 		</form>
 	</mat-step>
 	<mat-step [stepControl]="formCuentas.get('mediciones')" label="{{'GLOBAL.MedicionesPosteriores' | translate}}"
-		*ngIf="formCuentas.get('mediciones').value">
+		*ngIf="formCuentas.get('mediciones.cuentaEspecifica').value?.length">
 		<form [formGroup]="formCuentas.get('mediciones')">
 			<div formArrayName="cuentaEspecifica" class="row">
 				<fieldset>

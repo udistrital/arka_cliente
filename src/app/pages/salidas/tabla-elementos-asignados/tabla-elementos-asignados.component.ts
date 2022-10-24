@@ -1,7 +1,6 @@
 import { Component, OnInit, ViewChild, Input, HostListener } from '@angular/core';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { FormControl } from '@angular/forms';
-import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
@@ -12,7 +11,6 @@ import { SalidaHelper } from '../../../helpers/salidas/salidasHelper';
 import { MatCheckbox } from '@angular/material';
 import { ElementoMovimientosArka, EstadoMovimiento, FormatoTipoMovimiento } from '../../../@core/data/models/entrada/entrada';
 import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
-export const CONSUMO = 'Consumo';
 
 @Component({
   selector: 'ngx-tabla-elementos-asignados',
@@ -24,7 +22,6 @@ export class TablaElementosAsignadosComponent implements OnInit {
 
   mode: string = 'determinate';
   baseI18n: string = 'GLOBAL.movimientos.';
-  actaRecibidoId: number;
   entradaId: string;
   selected = new FormControl(0);
   estadoShift: boolean;
@@ -44,16 +41,11 @@ export class TablaElementosAsignadosComponent implements OnInit {
   @ViewChild(MatSort) sortC: MatSort;
   formatoMovimientoBodega: FormatoTipoMovimiento;
   formatoMovimientoFuncionario: FormatoTipoMovimiento;
-  @Input('actaRecibidoId')
-  set name(acta_id: number) {
-    this.actaRecibidoId = acta_id;
-  }
   @Input('entradaId')
   set name2(entrada_id: string) {
     this.entradaId = entrada_id;
   }
   @Input('salida_id') salida_id: number = 0;
-  @Input('edicionSalida') edicionSalida: boolean = false;
   sourceDevolutivo: MatTableDataSource<any>;
   sourceConsumo: MatTableDataSource<any>;
   devolutivoSeleccionados: boolean;
@@ -75,7 +67,6 @@ export class TablaElementosAsignadosComponent implements OnInit {
   constructor(
     private translate: TranslateService,
     private router: Router,
-    private actaRecibidoHelper: ActaRecibidoHelper,
     private salidasHelper: SalidaHelper,
     private pUpManager: PopUpManager,
     private entradasHelper: EntradaHelper) {
@@ -83,9 +74,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
 
   ngOnInit() {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { });
-    if (!this.edicionSalida && this.actaRecibidoId) {
-      this.loadElementos();
-    } else if (this.edicionSalida && this.salida_id) {
+    if (this.entradaId || this.salida_id) {
       this.loadSalida();
     }
 
@@ -97,51 +86,54 @@ export class TablaElementosAsignadosComponent implements OnInit {
   }
 
   private loadSalida() {
-    this.salidasHelper.getSalida(this.salida_id).subscribe(res => {
-      if (res && res.Elementos && res.Elementos.length && res.Salida) {
-        this.loadTablas(res.Elementos, res.Salida.Sede, res.Salida.Dependencia, res.Salida.Ubicacion, res.Salida.Funcionario);
+    this.salidasHelper.getElementosParaSalida(this.salida_id, +this.entradaId).subscribe(res => {
+      if (res && res.Error) {
+        this.pUpManager.showErrorAlert(res.Error);
+        this.mostrar = true;
+      } else if (res && ((res.Consumo && res.Consumo.length) || (res.Devolutivo && res.Devolutivo.length))) {
+        const salida = res.Salida;
+        this.loadTablas(res.Consumo, res.Devolutivo,
+          salida ? salida.Sede : '', salida ? salida.Dependencia : '',
+          salida ? salida.Ubicacion : '',
+          salida ? salida.Funcionario : '');
       } else {
         this.pUpManager.showErrorAlert(this.translate.instant(this.baseI18n + 'salidas.errorElementos'));
       }
     });
   }
 
-  private loadElementos() {
-    this.actaRecibidoHelper.getElementosActa(this.actaRecibidoId).toPromise().then(res => {
-      if (res && res.length > 0) {
-        this.loadTablas(res, '', '', '', '');
-      } else {
-        this.pUpManager.showErrorAlert(this.translate.instant(this.baseI18n + 'salidas.errorElementos'));
-      }
-    });
-  }
+  private loadTablas(consumo: any[], devolutivos: any[], sede: any, dependencia: any, ubicacion: any, funcionario: any) {
 
-  private loadTablas(elementos: any[], sede: any, dependencia: any, ubicacion: any, funcionario: any) {
-
-    elementos.forEach(el => {
-      if (!this.salida_id) {
-        el.ElementoActaId = el.Id;
-      }
-      el.Funcionario = funcionario;
-      el.Sede = sede;
-      el.Dependencia = dependencia;
-      el.Ubicacion = ubicacion;
-      el.ValorResidual = !el.SubgrupoCatalogoId.Depreciacion && !el.SubgrupoCatalogoId.Amortizacion ? 0 :
-        this.salida_id ? el.ValorResidual : el.SubgrupoCatalogoId.ValorResidual * 100;
-      el.VidaUtil = !el.SubgrupoCatalogoId.Depreciacion && !el.SubgrupoCatalogoId.Amortizacion ? 0 :
-        this.salida_id ? el.VidaUtil : el.SubgrupoCatalogoId.VidaUtil;
+    consumo.forEach(el => {
+      this.fillElemento(el, funcionario, sede, dependencia, ubicacion);
     });
 
-    const elementosConsumo = elementos.filter(el => el.SubgrupoCatalogoId.TipoBienId.Nombre === CONSUMO);
-    const elementosDevolutivo = elementos.filter(el => el.SubgrupoCatalogoId.TipoBienId.Nombre !== CONSUMO);
-    this.sourceDevolutivo = new MatTableDataSource<ElementoActa>(elementosDevolutivo);
-    this.sourceConsumo = new MatTableDataSource<ElementoActa>(elementosConsumo);
+    devolutivos.forEach(el => {
+      this.fillElemento(el, funcionario, sede, dependencia, ubicacion);
+    });
+
+    this.sourceDevolutivo = new MatTableDataSource<ElementoActa>(devolutivos);
+    this.sourceConsumo = new MatTableDataSource<ElementoActa>(consumo);
     this.sourceDevolutivo.paginator = this.paginatorD;
     this.sourceDevolutivo.sort = this.sortD;
     this.sourceConsumo.paginator = this.paginatorC;
     this.sourceConsumo.sort = this.sortC;
     this.mostrar = true;
 
+  }
+
+  private fillElemento(el, funcionario, sede, dependencia, ubicacion) {
+    if (!this.salida_id) {
+      el.ElementoActaId = el.Id;
+    }
+    el.Funcionario = funcionario;
+    el.Sede = sede;
+    el.Dependencia = dependencia;
+    el.Ubicacion = ubicacion;
+    el.ValorResidual = !el.SubgrupoCatalogoId.Depreciacion && !el.SubgrupoCatalogoId.Amortizacion ? 0 :
+      this.salida_id ? el.ValorResidual : el.SubgrupoCatalogoId.ValorResidual * 100;
+    el.VidaUtil = !el.SubgrupoCatalogoId.Depreciacion && !el.SubgrupoCatalogoId.Amortizacion ? 0 :
+      this.salida_id ? el.VidaUtil : el.SubgrupoCatalogoId.VidaUtil;
   }
 
   private getJefeAlmacen() {
@@ -454,7 +446,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
       this.pUpManager.showAlertWithOptions(this.optionsConfirm).then((result) => {
         if (result.value) {
           this.submitted = true;
-          if (this.edicionSalida) {
+          if (this.salida_id) {
             this.salidasHelper.editarSalida(Salidas, this.salida_id, false).subscribe((res: any) => {
               this.getOptionsSuccess(res.trSalida.Salidas);
             });
