@@ -1,9 +1,9 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { SalidasComponent } from './salidas.component';
-import { RegistroSalidasComponent } from './registro-salidas/registro-salidas.component';
 import { ConsultaSalidasComponent } from './consulta-salidas/consulta-salidas.component';
 import { AuthGuard } from '../../@core/_guards/auth.guard';
+import { TablaEntradaAprobadaComponent } from './tabla-entrada-aprobada/tabla-entrada-aprobada.component';
 
 const routes: Routes = [{
   path: '',
@@ -11,7 +11,7 @@ const routes: Routes = [{
   children: [
     {
       path: 'registro_salidas',
-      component: RegistroSalidasComponent,
+      component: TablaEntradaAprobadaComponent,
       canActivate: [AuthGuard],
     },
     {

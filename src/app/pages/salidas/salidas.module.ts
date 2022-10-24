@@ -4,7 +4,6 @@ import { SalidasRoutingModule } from './salidas-routing.module';
 import { SalidasComponent } from './salidas.component';
 import { ThemeModule } from '../../@theme/theme.module';
 import { ConsultaSalidasComponent } from './consulta-salidas/consulta-salidas.component';
-import { RegistroSalidasComponent } from './registro-salidas/registro-salidas.component';
 import { TablaEntradaAprobadaComponent } from './tabla-entrada-aprobada/tabla-entrada-aprobada.component';
 import { FormElementosSeleccionadosComponent } from './form-elementos-seleccionados/form-elementos-seleccionados.component';
 import { TablaElementosAsignadosComponent } from './tabla-elementos-asignados/tabla-elementos-asignados.component';
@@ -30,7 +29,6 @@ import { AjustesModule } from '../ajustes/ajustes.module';
   declarations: [
     SalidasComponent,
     ConsultaSalidasComponent,
-    RegistroSalidasComponent,
     TablaEntradaAprobadaComponent,
     FormElementosSeleccionadosComponent,
     TablaElementosAsignadosComponent,
