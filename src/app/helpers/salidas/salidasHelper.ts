@@ -61,6 +61,22 @@ export class SalidaHelper {
         );
     }
 
+    public getElementosParaSalida(salida: number = 0, entrada: number = 0) {
+        this.rqManager.setPath('ARKA_SERVICE');
+        const payload = 'salida_id=' + salida + '&entrada_id=' + entrada;
+        return this.rqManager.get('salida/elementos?' + payload).pipe(
+            map(
+                (res) => {
+                    if (res === 'error') {
+                        this.pUpManager.showErrorAlert('No se pudo consultar el contrato contratos');
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
+
     public registrarSalida(salidasData, salidaId: number = 0) {
         this.rqManager.setPath('ARKA_SERVICE');
         return this.rqManager.post('salida?salidaId=' + salidaId, salidasData).pipe(
