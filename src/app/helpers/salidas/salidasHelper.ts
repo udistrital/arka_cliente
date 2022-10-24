@@ -68,7 +68,7 @@ export class SalidaHelper {
             map(
                 (res) => {
                     if (res === 'error') {
-                        this.pUpManager.showErrorAlert('No se pudo consultar el contrato contratos');
+                        this.pUpManager.showErrorAlert('Error al consultar los elementos para realizar la respectiva salida.');
                         return undefined;
                     }
                     return res;
