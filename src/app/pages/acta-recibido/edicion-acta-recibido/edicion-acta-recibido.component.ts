@@ -278,9 +278,9 @@ export class EdicionActaRecibidoComponent implements OnInit {
         this.trActa = Acta;
         this.Actas_Recibido.getUnidadEjecutora('query=TipoParametroId__CodigoAbreviacion:UE').subscribe(res => {
           if (res) {
-            this.unidadesEjecutoras = res.Data
+            this.unidadesEjecutoras = res.Data;
           }
-        })
+        });
         resolve();
       });
     });
@@ -428,7 +428,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
       this.fileDocumento.push(undefined);
       this.idDocumento.push(Soporte.DocumentoId);
     });
-    this.unidadEjecutoraId = this.unidadesEjecutoras.find((e: any) => e.Id === transaccion_.ActaRecibido.UnidadEjecutoraId)
+    this.unidadEjecutoraId = this.unidadesEjecutoras.find((e: any) => e.Id === transaccion_.ActaRecibido.UnidadEjecutoraId);
     const Formulario1 = this.fb.group({
       Id: [transaccion_.ActaRecibido.Id],
       Sede: [
@@ -800,7 +800,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
     actaRecibido.Id = +this._Acta_Id;
     actaRecibido.Activo = true;
     actaRecibido.TipoActaId = <TipoActa>{ Id: this.tipoActa };
-    actaRecibido.UnidadEjecutoraId = this.firstForm.value.Formulario1.UnidadEjecutora.Id
+    actaRecibido.UnidadEjecutoraId = this.firstForm.value.Formulario1.UnidadEjecutora.Id;
 
     return actaRecibido;
   }

@@ -173,11 +173,11 @@ export class VerActaRecibidoComponent implements OnInit {
           this.contratistaId = this.Acta.UltimoEstado.PersonaAsignadaId;
           this.Acta.ActaRecibido = res.ActaRecibido;
           this.Acta.SoportesActa = res.SoportesActa;
-          this.Actas_Recibido.getUnidadEjecutora('query=TipoParametroId__CodigoAbreviacion:UE').subscribe(res => {
-            if (res) {
-              this.unidadesEjecutoras = res.Data
+          this.Actas_Recibido.getUnidadEjecutora('query=TipoParametroId__CodigoAbreviacion:UE').subscribe(res1 => {
+            if (res1) {
+              this.unidadesEjecutoras = res1.Data;
             }
-          })
+          });
           await Promise.all([this.loadProveedores('', this.proveedorId), this.loadContratistas('', this.contratistaId)]);
           resolve();
         });
@@ -233,7 +233,7 @@ export class VerActaRecibidoComponent implements OnInit {
       this.Verificar_tabla.push(false);
     }
 
-    this.unidadEjecutoraId = this.unidadesEjecutoras.find((e: any) => e.Id === transaccion_.ActaRecibido.UnidadEjecutoraId)
+    this.unidadEjecutoraId = this.unidadesEjecutoras.find((e: any) => e.Id === transaccion_.ActaRecibido.UnidadEjecutoraId);
     this.firstForm = this.fb.group({
       Formulario1: this.fb.group({
         Id: [transaccion_.ActaRecibido.Id],
@@ -386,7 +386,7 @@ export class VerActaRecibidoComponent implements OnInit {
     actaRecibido.Id = +this._ActaId;
     actaRecibido.Activo = true;
     actaRecibido.TipoActaId = <TipoActa>{ Id: this.tipoActa };
-    actaRecibido.UnidadEjecutoraId = this.firstForm.value.Formulario1.UnidadEjecutora.Id
+    actaRecibido.UnidadEjecutoraId = this.firstForm.value.Formulario1.UnidadEjecutora.Id;
 
     return actaRecibido;
   }

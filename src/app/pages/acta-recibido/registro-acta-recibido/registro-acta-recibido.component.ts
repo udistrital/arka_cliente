@@ -109,9 +109,9 @@ export class RegistroActaRecibidoComponent implements OnInit {
     this.firstForm = this.baseForm;
     this.Actas_Recibido.getUnidadEjecutora('query=TipoParametroId__CodigoAbreviacion:UE').subscribe(res => {
       if (res) {
-        this.unidadesEjecutoras = res.Data
+        this.unidadesEjecutoras = res.Data;
       }
-    })
+    });
   }
 
   ngOnInit() {
