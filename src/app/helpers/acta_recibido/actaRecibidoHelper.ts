@@ -587,6 +587,24 @@ export class ActaRecibidoHelper {
                 },
             ),
         );
+    }
+
+    public getUnidadEjecutoraByID(id: string) {
+        this.rqManager.setPath('PARAMETROS_SERVICE');
+        return this.rqManager.get('parametro/' + id).pipe(
+            map(
+                (res) => {
+                    if (res['Type'] === 'error') {
+                        this.pUpManager.showErrorAlert('No se pudieron cargar los parametros');
+                        return undefined;
+                    }
+                    if (res.length && !res[0].Id ) {
+                        res = [];
+                    }
+                    return res;
+                },
+            ),
+        );
 
     }
 
@@ -609,8 +627,21 @@ export class ActaRecibidoHelper {
                 return res;
             },
         ),
-    );
-}
+    ); }
+
+    public getActaRecibido(id) {
+        this.rqManager.setPath('ACTA_RECIBIDO_SERVICE');
+        return this.rqManager.get('acta_recibido/' + id + '').pipe(
+            map(
+                (res) => {
+                    if (res === 'error') {
+                        this.pUpManager.showErrorAlert('No se pudo consultar los contratos');
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        ); }
     /**
      * Elementos get
      * Conversion Archivo Post

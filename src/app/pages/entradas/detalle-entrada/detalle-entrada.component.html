@@ -22,6 +22,12 @@
         {{ (Proveedor.Numero ? Proveedor.Numero + " - " : "") + Proveedor.NombreCompleto }}</p>
     </div>
   </div>
+  <div class="row">
+    <div class="col" *ngIf="unidadEjecutora">
+      <p><a class="text-uppercase"><strong>{{'GLOBAL.Acta_Recibido.RegistroActa.unidadEjecutora' | translate }}:</strong>
+        {{ unidadEjecutora.Nombre}}</a></p>
+    </div>
+  </div>
 
   <div *ngIf="factura" class="row">
     <div class="col">
