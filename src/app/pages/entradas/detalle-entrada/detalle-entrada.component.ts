@@ -8,6 +8,7 @@ import { Supervisor } from '../../../@core/data/models/entrada/supervisor';
 import { TipoEntrada } from '../../../@core/data/models/entrada/tipo_entrada';
 import { NuxeoService } from '../../../@core/utils/nuxeo.service';
 import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
+import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
 
 @Component({
   selector: 'ngx-detalle-entrada',
@@ -29,10 +30,12 @@ export class DetalleEntradaComponent implements OnInit {
   Ordenador: any;
   documentoId: boolean;
   entradaId: number;
+  unidadEjecutora: any;
   @Input() detalleEntrada: any;
 
   constructor(
     private entradasHelper: EntradaHelper,
+    private actaRecibidoHelper: ActaRecibidoHelper,
     private nuxeoService: NuxeoService,
     private documentoService: DocumentoService) {
     this.entradaEspecifica = new Entrada;
@@ -57,6 +60,16 @@ export class DetalleEntradaComponent implements OnInit {
 
     const detalle = JSON.parse(this.detalleEntrada.movimiento.Detalle);
     this.linkActa = '#/pages/acta_recibido/consulta_acta_recibido/' + detalle.acta_recibido_id;
+
+    this.actaRecibidoHelper.getActaRecibido(detalle.acta_recibido_id).subscribe(res => {
+      if (res) {
+        this.actaRecibidoHelper.getUnidadEjecutoraByID(res.UnidadEjecutoraId).subscribe(res1 => {
+          if (res1.Data) {
+            this.unidadEjecutora = res1.Data;
+          }
+        });
+      }
+    });
 
     if (this.detalleEntrada.proveedor) {
       this.Proveedor = this.detalleEntrada.proveedor;
