@@ -46,6 +46,18 @@
             </div>
 
             <div class="row">
+              <div class="form-group col-sm" *ngIf="!actaRegular">
+                <div class="d-flex">
+                  <label>{{'GLOBAL.Acta_Recibido.RegistroActa.unidadEjecutora' | translate}}</label>
+                </div>
+                <mat-select class="form-control" formControlName="UnidadEjecutora" disabled="true">
+                  <mat-option *ngFor="let unidad of unidadesEjecutoras" [value]="unidad">
+                    {{unidad.Nombre}}
+                  </mat-option>
+                </mat-select>
+                <p class="campo" *ngIf="controlUbicacion.invalid">
+                  {{'GLOBAL.placeholder' | translate}}</p>
+              </div>
               <div class="form-group col-sm">
                 <label>{{'GLOBAL.Acta_Recibido.EdicionActa.Sede' | translate}}</label>
                 <mat-select type="text" class="form-control" formControlName="Sede">
