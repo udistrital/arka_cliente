@@ -173,7 +173,7 @@ export class VerActaRecibidoComponent implements OnInit {
           this.contratistaId = this.Acta.UltimoEstado.PersonaAsignadaId;
           this.Acta.ActaRecibido = res.ActaRecibido;
           this.Acta.SoportesActa = res.SoportesActa;
-          this.Actas_Recibido.getUnidadEjecutora('query=TipoParametroId__CodigoAbreviacion:UE').subscribe(res1 => {
+          this.Actas_Recibido.getUnidadEjecutoraByID('query=TipoParametroId__CodigoAbreviacion:UE').subscribe(res1 => {
             if (res1) {
               this.unidadesEjecutoras = res1.Data;
             }
@@ -281,25 +281,19 @@ export class VerActaRecibidoComponent implements OnInit {
 
     return new Promise<void>(resolve => {
       this.Actas_Recibido.getSedeDependencia(ubicacionId).toPromise().then(res => {
-        const relacion = res[0];
-        if (relacion) {
-          const espacioFisico = relacion.EspacioFisicoId.CodigoAbreviacion.replace(/[0-9]/g, '');
-          const Sede = this.Sedes.find(x => x && x.CodigoAbreviacion === espacioFisico.toString());
-          const Dependencia = relacion.DependenciaId;
-          // console.debug({relacion, Sede, Dependencia});
-          if (Sede && Dependencia) {
-            const transaccion = {Sede, Dependencia};
-            // console.debug({transaccion});
-            this.Actas_Recibido.postRelacionSedeDependencia(transaccion).subscribe((res_: any) => {
-              if (isObject(res_[0].Relaciones)) {
-                this.UbicacionesFiltradas = res_[0].Relaciones;
-              }
+        if (res.length) {
+          const codigoSede = res[0].EspacioFisicoId.CodigoAbreviacion.replace(/\d+$/g, '');
+          const Dependencia = res[0].DependenciaId;
+          const Sede = this.Sedes.find(x => x && x.CodigoAbreviacion === codigoSede);
+          if (codigoSede && Dependencia) {
+            this.Actas_Recibido.getAsignacionesBySedeAndDependencia(codigoSede, Dependencia.Id).subscribe((res_: any) => {
+              this.UbicacionesFiltradas = res_;
+              this.sedeDependencia = { sede: Sede.Id, dependencia: Dependencia.Nombre };
               resolve();
             });
-            this.sedeDependencia = { sede: Sede.Id, dependencia: Dependencia.Nombre };
-          } else {
-            resolve();
           }
+        } else {
+          resolve();
         }
       });
     });

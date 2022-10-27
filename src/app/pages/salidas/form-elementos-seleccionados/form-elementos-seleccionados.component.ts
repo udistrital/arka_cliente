@@ -80,24 +80,18 @@ export class FormElementosSeleccionadosComponent implements OnInit {
     const sede = this.form_salida.get('Sede').valid ? this.form_salida.get('Sede').value : '';
     const dependencia = this.form_salida.get('Dependencia').valid ? this.form_salida.get('Dependencia').value : '';
     this.form_salida.patchValue({ Ubicacion: '' });
+    this.UbicacionesFiltradas = [];
+    this.form_salida.get('Ubicacion').disable();
     if (sede && dependencia) {
-      this.UbicacionesFiltradas = [];
-      const transaccion: any = {};
-      transaccion.Sede = this.Sedes.find((x) => x.Id === parseFloat(sede));
-      transaccion.Dependencia = dependencia;
-      if (transaccion.Sede !== undefined && transaccion.Dependencia !== undefined) {
-        this.Actas_Recibido.postRelacionSedeDependencia(transaccion).subscribe((res: any) => {
-          if (isObject(res[0].Relaciones)) {
-            this.UbicacionesFiltradas = res[0].Relaciones;
-            this.form_salida.get('Ubicacion').enable();
-          } else {
-            this.form_salida.get('Ubicacion').disable();
-          }
+      const sede_ = this.Sedes.find((x) => x.Id === parseFloat(sede));
+      if (sede_) {
+        this.Actas_Recibido.getAsignacionesBySedeAndDependencia(sede_.CodigoAbreviacion, dependencia.Id).subscribe((res: any) => {
+          this.UbicacionesFiltradas = res;
+          if (res.length) {
+          this.form_salida.get('Ubicacion').enable();
+        }
         });
       }
-    } else {
-      this.form_salida.get('Ubicacion').disable();
-      this.UbicacionesFiltradas = [];
     }
   }
 

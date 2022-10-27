@@ -1,10 +1,9 @@
 import { Component, OnInit, ViewChildren, QueryList } from '@angular/core';
-import { Observable, scheduled, asyncScheduler } from 'rxjs';
+import { scheduled, asyncScheduler } from 'rxjs';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, FormArray, ValidatorFn, ValidationErrors } from '@angular/forms';
 import { NuxeoService } from '../../../@core/utils/nuxeo.service';
 import { MatTable } from '@angular/material';
-import 'hammerjs';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
 import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
 import { ActaRecibido } from '../../../@core/data/models/acta_recibido/acta_recibido';
@@ -25,7 +24,6 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { DocumentoService } from '../../../@core/data/documento.service';
 import { UserService } from '../../../@core/data/users.service';
 import { AbstractControl } from '@angular/forms/src/model';
-import { isObject } from 'rxjs/internal-compatibility';
 import { TipoActa } from '../../../@core/data/models/acta_recibido/tipo_acta';
 import { EstadoElemento } from '../../../@core/data/models/acta_recibido/estado_elemento';
 import { debounceTime, distinctUntilChanged, filter, mergeAll, switchMap } from 'rxjs/operators';
@@ -107,7 +105,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
     this.idDocumento = [];
     this.errores = new Map<string, boolean>();
     this.firstForm = this.baseForm;
-    this.Actas_Recibido.getUnidadEjecutora('query=TipoParametroId__CodigoAbreviacion:UE').subscribe(res => {
+    this.Actas_Recibido.getUnidadEjecutoraByID('query=TipoParametroId__CodigoAbreviacion:UE').subscribe(res => {
       if (res) {
         this.unidadesEjecutoras = res.Data;
       }
@@ -547,22 +545,15 @@ export class RegistroActaRecibidoComponent implements OnInit {
   Traer_Relacion_Ubicaciones() {
     const sede = this.controlSede;
     const dependencia = this.controlDependencia;
-    // console.debug({sede: sede.value, dependencia: dependencia.value});
+
     if (sede.value && dependencia.value && dependencia.value.value) {
-      const transaccion = {
-        Sede: this.Sedes.find((x) => x.Id === parseFloat(sede.value)),
-        Dependencia: this.Dependencias.find((x) => x.Id === dependencia.value.value),
-      };
-      // console.debug({transaccion});
-      this.Actas_Recibido.postRelacionSedeDependencia(transaccion).subscribe((res: any) => {
-        const relaciones = res[0].Relaciones;
-        if (isObject(relaciones)) {
-          this.Ubicaciones = relaciones;
-        } else {
-          this.Ubicaciones = [];
-        }
+      const sede_ = this.Sedes.find((x) => x.Id === parseFloat(sede.value));
+      const dependencia_ = dependencia.value.value;
+      this.Actas_Recibido.getAsignacionesBySedeAndDependencia(sede_.CodigoAbreviacion, dependencia_.Id).subscribe((res: any) => {
+        this.Ubicaciones = res;
       });
     }
+
   }
 
   private checkValidness: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {

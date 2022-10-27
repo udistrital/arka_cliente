@@ -104,7 +104,7 @@
                   <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Ubicacion' | translate}}</label>
                   <mat-select class="form-control" formControlName="Ubicacion">
                     <mat-option *ngFor="let ubicacion of Ubicaciones" [value]="ubicacion.Id">
-                      {{ubicacion.Nombre}}
+                      {{ubicacion.EspacioFisicoId.Nombre}}
                     </mat-option>
                   </mat-select>
                   <p class="campo" *ngIf="controlUbicacion.invalid">
