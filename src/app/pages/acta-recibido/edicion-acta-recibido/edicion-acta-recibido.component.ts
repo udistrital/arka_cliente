@@ -276,7 +276,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
     return new Promise<void>(resolve => {
       this.Actas_Recibido.getTransaccionActa(this._Acta_Id, false).subscribe(async Acta => {
         this.trActa = Acta;
-        this.Actas_Recibido.getUnidadEjecutora('query=TipoParametroId__CodigoAbreviacion:UE').subscribe(res => {
+        this.Actas_Recibido.getUnidadEjecutoraByID('query=TipoParametroId__CodigoAbreviacion:UE').subscribe(res => {
           if (res) {
             this.unidadesEjecutoras = res.Data;
           }
@@ -490,22 +490,21 @@ export class EdicionActaRecibidoComponent implements OnInit {
 
     return new Promise<void>(resolve => {
       this.Actas_Recibido.getSedeDependencia(ubicacionId).toPromise().then(async res => {
-        const relacion = res[0];
-        // console.debug({res, relacion});
-        if (relacion) {
+        if (res.length) {
           const dependencia = {
-            name: relacion.DependenciaId.Nombre,
-            value: relacion.DependenciaId.Id,
+            name: res[0].DependenciaId.Nombre,
+            value: res[0].DependenciaId.Id,
           };
-          const espacioFisico = relacion.EspacioFisicoId.CodigoAbreviacion.replace(/[0-9]/g, '');
-          const sede = this.Sedes.find(x => x && x.CodigoAbreviacion === espacioFisico.toString());
-          // console.debug({sede});
+          const codigoSede = res[0].EspacioFisicoId.CodigoAbreviacion.replace(/\d+$/g, '');
+          const sede = this.Sedes.find(x => x && x.CodigoAbreviacion === codigoSede);
           if (sede) {
             await this.Traer_Relacion_Ubicaciones(sede.Id, dependencia.value);
           }
-          this.sedeDependencia = { sede: sede ? sede.Id : 0 , dependencia };
+          this.sedeDependencia = { sede: sede ? sede.Id : 0, dependencia };
         }
+
         resolve();
+
       });
     });
   }

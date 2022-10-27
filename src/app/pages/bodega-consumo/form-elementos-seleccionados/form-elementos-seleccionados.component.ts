@@ -1,7 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import 'hammerjs';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
 import Swal from 'sweetalert2';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
@@ -87,21 +86,15 @@ export class FormElementosSeleccionadosComponent implements OnInit {
     const dependencia = this.form_salida.get('Dependencia').value;
 
     if (this.form_salida.get('Sede').valid || this.form_salida.get('Dependencia').valid) {
-      const transaccion: any = {};
-      transaccion.Sede = this.Sedes.find((x) => x.Id === parseFloat(sede));
-      transaccion.Dependencia = this.Dependencias.find((x) => x.Nombre === dependencia);
-      // console.log(this.Sedes);
-      if (transaccion.Sede !== undefined && transaccion.Dependencia !== undefined) {
-        this.Actas_Recibido.postRelacionSedeDependencia(transaccion).subscribe((res: any) => {
-          // console.log(res)
-          if (Object.keys(res[0]).length !== 0) {
-            this.Ubicaciones = res[0].Relaciones;
-          } else {
-            this.Ubicaciones = undefined;
-          }
+      const sede_ = this.Sedes.find((x) => x.Id === parseFloat(sede));
+      const dependencia_ = this.Dependencias.find((x) => x.Nombre === dependencia);
+      if (sede_ && dependencia_) {
+        this.Actas_Recibido.getAsignacionesBySedeAndDependencia(sede_.CodigoAbreviacion, dependencia_.Id).subscribe((res: any) => {
+          this.Ubicaciones = res;
         });
       }
     }
+
   }
 
   onSeleccionarElemento() {

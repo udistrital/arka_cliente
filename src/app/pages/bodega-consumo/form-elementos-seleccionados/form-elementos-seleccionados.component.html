@@ -36,8 +36,7 @@
             <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Ubicacion' | translate}}</label>
             <select nbInput type="text" class="form-control" formControlName="Ubicacion"
               (click)="Traer_Relacion_Ubicaciones();" required>
-              <option value=""></option>
-              <option *ngFor="let ubicacion of Ubicaciones" [(value)]="ubicacion.Id">{{ubicacion.Nombre}}
+              <option *ngFor="let ubicacion of Ubicaciones" [(value)]="ubicacion.Id">{{ubicacion.EspacioFisicoId.Nombre}}
               </option>
             </select>
           </div>

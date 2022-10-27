@@ -90,21 +90,14 @@ export class FormTrasladoComponent implements OnInit {
   private loadUbicaciones(): Promise<void> {
     return new Promise<void>(resolve => {
       if (this.modo === 'put') {
-        const transaccion = {
-          Sede: this.trasladoInfo.ubicacion.Sede,
-          Dependencia: this.trasladoInfo.ubicacion.Dependencia,
-        };
-        this.Actas_Recibido.postRelacionSedeDependencia(transaccion).subscribe((res: any) => {
-          if (res && res.length && res[0].Relaciones.length) {
-            this.ubicacionesFiltradas = res[0].Relaciones;
-          }
+        const sede = this.trasladoInfo.ubicacion.Sede;
+        const dependencia = this.trasladoInfo.ubicacion.Dependencia;
+        this.Actas_Recibido.getAsignacionesBySedeAndDependencia(sede.CodigoAbreviacion, dependencia.Id).subscribe((res: any) => {
+          this.ubicacionesFiltradas = res;
           resolve();
         });
       } else if (this.modo === 'get') {
-        this.ubicacionesFiltradas = [{
-          Id: this.trasladoInfo.ubicacion.Ubicacion.Id,
-          Nombre: this.trasladoInfo.ubicacion.Ubicacion.EspacioFisicoId.Nombre,
-        }];
+        this.ubicacionesFiltradas = [this.trasladoInfo.ubicacion.Ubicacion];
         resolve();
       } else {
         resolve();
@@ -428,14 +421,10 @@ export class FormTrasladoComponent implements OnInit {
     this.formTraslado.get('ubicacion').patchValue({ ubicacion: '' });
     this.ubicacionesFiltradas = [];
     if (sede && dependencia) {
-      const transaccion: any = {};
-      transaccion.Sede = this.sedes.find((x) => x.Id === parseInt(sede, 10));
-      transaccion.Dependencia = dependencia;
-      if (transaccion.Sede !== undefined && transaccion.Dependencia !== undefined) {
-        this.Actas_Recibido.postRelacionSedeDependencia(transaccion).subscribe((res: any) => {
-          if (res.length && res[0].Relaciones && res[0].Relaciones.length) {
-            this.ubicacionesFiltradas = res[0].Relaciones;
-          }
+      const sede_ = this.sedes.find((x) => x.Id === parseFloat(sede));
+      if (sede_) {
+        this.Actas_Recibido.getAsignacionesBySedeAndDependencia(sede_.CodigoAbreviacion, dependencia.Id).subscribe((res: any) => {
+          this.ubicacionesFiltradas = res;
         });
       }
     }
