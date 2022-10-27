@@ -276,7 +276,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
     return new Promise<void>(resolve => {
       this.Actas_Recibido.getTransaccionActa(this._Acta_Id, false).subscribe(async Acta => {
         this.trActa = Acta;
-        this.Actas_Recibido.getUnidadEjecutoraByID('query=TipoParametroId__CodigoAbreviacion:UE').subscribe(res => {
+        this.Actas_Recibido.getUnidadEjecutoraByID('?query=TipoParametroId__CodigoAbreviacion:UE').subscribe(res => {
           if (res) {
             this.unidadesEjecutoras = res.Data;
           }

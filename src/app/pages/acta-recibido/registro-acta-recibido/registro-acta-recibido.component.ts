@@ -105,7 +105,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
     this.idDocumento = [];
     this.errores = new Map<string, boolean>();
     this.firstForm = this.baseForm;
-    this.Actas_Recibido.getUnidadEjecutoraByID('query=TipoParametroId__CodigoAbreviacion:UE').subscribe(res => {
+    this.Actas_Recibido.getUnidadEjecutoraByID('?query=TipoParametroId__CodigoAbreviacion:UE').subscribe(res => {
       if (res) {
         this.unidadesEjecutoras = res.Data;
       }
