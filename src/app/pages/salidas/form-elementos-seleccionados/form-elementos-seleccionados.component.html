@@ -36,8 +36,7 @@
           <label class="label">{{'GLOBAL.Acta_Recibido.RegistroActa.Dependencia' | translate}}</label>
           <input matInput type="text" formControlName="Dependencia" class="form-control" style="height: auto;"
             placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}" [matAutocomplete]="auto">
-          <mat-autocomplete #auto="matAutocomplete" [displayWith]="muestraDependencia"
-            (optionSelected)="getUbicaciones()">
+          <mat-autocomplete #auto="matAutocomplete" [displayWith]="muestraDependencia">
             <mat-option *ngFor="let item of dependencias" [value]="item">
               {{item.Nombre}}
             </mat-option>
@@ -54,7 +53,7 @@
           <label class="ubicacion">{{'GLOBAL.Acta_Recibido.RegistroActa.Ubicacion' | translate}}</label>
           <mat-select type="text" style="height: auto;" class="form-control ubicacion" formControlName="Ubicacion">
             <mat-option value="">--{{ 'GLOBAL.seleccionar' | translate }}--</mat-option>
-            <mat-option *ngFor="let ubicacion of UbicacionesFiltradas" [(value)]="ubicacion.Id">{{ubicacion.Nombre}}</mat-option>
+            <mat-option *ngFor="let ubicacion of UbicacionesFiltradas" [(value)]="ubicacion.Id">{{ubicacion.EspacioFisicoId.Nombre}}</mat-option>
           </mat-select>
           <p class="error-field ubicacion" *ngIf="!form_salida.get('Ubicacion').valid">
             {{'GLOBAL.Errores.ErrorRequerido' | translate}}</p>

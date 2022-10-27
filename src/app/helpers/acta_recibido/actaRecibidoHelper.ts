@@ -503,53 +503,13 @@ export class ActaRecibidoHelper {
     }
 
     /**
-     * Conversion Archivo Post
-     * If the response has errors in the OAS API it should show a popup message with an error.
-     * If the response is successs, it returns the object's data.
-     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
-     */
-    public postRelacionSedeDependencia(Transaccion) {
-        this.rqManager.setPath('ARKA_SERVICE');
-        return this.rqManager.post2('parametros_soporte/post_asignacion_espacio_fisico_dependencia', Transaccion).pipe(
-            map(
-                (res) => {
-                    if (res['Type'] === 'error') {
-                        this.pUpManager.showErrorAlert('No se pudieron cargar los elementos');
-                        return undefined;
-                    }
-                    return res;
-                },
-            ),
-        );
-    }
-
-    /**
      * Conversion Archivo Get
      * If the response has errors in the OAS API it should show a popup message with an error.
      * If the response is successs, it returns the object's data.
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
      */
     public getSedeDependencia(id) {
-        this.rqManager.setPath('OIKOS_SERVICE');
-        if (id > 0) {
-            return this.rqManager.get('asignacion_espacio_fisico_dependencia?query=Id:' + id).pipe(
-                map(
-                    (res) => {
-                        if (res['Type'] === 'error') {
-                            this.pUpManager.showErrorAlert('No se pudieron cargar los parametros generales');
-                            return undefined;
-                        }
-                        if (Array.isArray(res) && res.length && Object.keys(res[0]).length === 0 ) {
-                            res = [];
-                        }
-                        return res;
-                    },
-                ),
-            );
-
-        } else {
-            return of(new EspacioFisico()).pipe(map(o => JSON.stringify(o)));
-        }
+        return this.getAllAsignacionEspacioFisicoDependencia('query=Id:' + id);
     }
 
     public getAllAsignacionEspacioFisicoDependencia(payload) {
@@ -571,22 +531,14 @@ export class ActaRecibidoHelper {
 
     }
 
-    public getUnidadEjecutora(query: string) {
-        this.rqManager.setPath('PARAMETROS_SERVICE');
-        return this.rqManager.get('parametro/?' + query).pipe(
-            map(
-                (res) => {
-                    if (res['Type'] === 'error') {
-                        this.pUpManager.showErrorAlert('No se pudieron cargar los parametros');
-                        return undefined;
-                    }
-                    if (res.length && !res[0].Id ) {
-                        res = [];
-                    }
-                    return res;
-                },
-            ),
-        );
+    public getAsignacionesBySedeAndDependencia(codigoSede: string, dependenciaId: number) {
+        if (codigoSede && dependenciaId) {
+            const payload = 'fields=Id,EspacioFisicoId&query=DependenciaId__Id:' + dependenciaId +
+                ',EspacioFisicoId__CodigoAbreviacion__istartswith:' + codigoSede;
+            return this.getAllAsignacionEspacioFisicoDependencia(payload);
+        } else {
+            return of(new EspacioFisico()).pipe(map(o => []));
+        }
     }
 
     public getUnidadEjecutoraByID(id: string) {
