@@ -116,9 +116,8 @@ export class EntradaKardexComponent implements OnInit {
     this.Movimiento.Activo = true;
     this.Movimiento.Detalle = JSON.stringify({});
     this.Movimiento.FormatoTipoMovimientoId = this.FormatosKardex.find(x => x.CodigoAbreviacion === 'ENT_KDX');
-    this.Movimiento.EstadoMovimientoId = this.EstadosMovimiento.find(x => x.Nombre === 'Registro Kardex').Id;
+    this.Movimiento.EstadoMovimientoId = this.EstadosMovimiento.find(x => x.Nombre === 'Registro Kardex');
     this.Movimiento.MovimientoPadreId = this.elemento_bodega.MovimientoId;
-    // console.log(this.Movimiento);
 
     this.elemento_bodega.ElementoCatalogoId = this.elemento_catalogo.Id;
     this.elemento_bodega.MovimientoId = this.Movimiento;
@@ -127,9 +126,6 @@ export class EntradaKardexComponent implements OnInit {
     this.elemento_bodega.SaldoValor += ultimo_elemento.SaldoValor;
 
     this.ElementoMovimiento = this.elemento_bodega;
-    // console.log(this.ElementoMovimiento);
-    // console.log({ultimo_elemento, elementos_kardex: this.elementos_kardex});
-    // console.log({Movimiento: this.Movimiento, ElementoMovimiento: this.ElementoMovimiento});
   }
 
   onSubmit2() {
@@ -142,8 +138,6 @@ export class EntradaKardexComponent implements OnInit {
         Elementos: [this.ElementoMovimiento],
       },
     );
-    // console.log({AperturaKardex});
-    // /*
     this.BodegaConsumo.postMovimientoKardex(AperturaKardex).subscribe((res: any) => {
       const opt: any = {
         title: 'Entrada Realizada',
@@ -153,6 +147,5 @@ export class EntradaKardexComponent implements OnInit {
       (Swal as any).fire(opt);
       this.router.navigate(['/pages/bodega_consumo/consulta_kardex']);
     });
-    // */
   }
 }
