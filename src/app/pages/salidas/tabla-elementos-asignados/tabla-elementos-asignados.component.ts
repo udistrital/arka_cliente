@@ -318,7 +318,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
   private salidaBodega() {
 
     const elementosBodega = this.sourceConsumo.data.filter((el) =>
-      el.Ubicacion.Nombre === 'SECCION ALMACEN GENERAL E INVENTARIOS' &&
+      el.Ubicacion.EspacioFisicoId.Nombre === 'SECCION ALMACEN GENERAL E INVENTARIOS' &&
       el.Funcionario.Id === this.JefeOficinaId,
     );
 
@@ -383,7 +383,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
   private salidaConsumoFuncionario() {
 
     const elementosAsignados = this.sourceConsumo.data.filter(el =>
-      el.Ubicacion.Nombre !== 'SECCION ALMACEN GENERAL E INVENTARIOS' ||
+      el.Ubicacion.EspacioFisicoId.Nombre !== 'SECCION ALMACEN GENERAL E INVENTARIOS' ||
       el.Funcionario.Id !== this.JefeOficinaId,
     );
     const obs = 'Salida con elementos de consumo asignados a funcionario.';
