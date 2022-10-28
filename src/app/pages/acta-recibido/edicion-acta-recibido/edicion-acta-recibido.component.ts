@@ -544,6 +544,13 @@ export class EdicionActaRecibidoComponent implements OnInit {
   }
 
   private downloadFile(id_documento: any) {
+    Swal({
+      title: 'Por favor espera, cargando documento',
+      allowOutsideClick: false,
+      onBeforeOpen: () => {
+          Swal.showLoading();
+      },
+  });
     const filesToGet = [
       {
         Id: id_documento,
@@ -558,6 +565,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
             const url = filesResponse[file.Id];
             if (url !== undefined) {
               window.open(url);
+              Swal.close();
             }
           });
         }

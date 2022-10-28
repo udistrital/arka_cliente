@@ -354,6 +354,13 @@ export class RegistroActaRecibidoComponent implements OnInit {
         file.nombre = 'soporte_' + file.IdDocumento + '_acta_recibido';
         file.key = 'soporte_' + file.IdDocumento;
       });
+      Swal({
+        title: 'Por favor espera, registrando acta',
+        allowOutsideClick: false,
+        onBeforeOpen: () => {
+            Swal.showLoading();
+        },
+    });
       this.nuxeoService.getDocumentos$(files, this.documentoService)
         .subscribe(response => {
           if (Object.keys(response).length === files.length) {
@@ -366,6 +373,12 @@ export class RegistroActaRecibidoComponent implements OnInit {
             });
           }
         }, error => {
+          Swal({
+            type: 'error',
+            title: error.status + '',
+            text: this.translate.instant('ERROR.' + error.status),
+            confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
+          });
           reject(error);
         });
     });
