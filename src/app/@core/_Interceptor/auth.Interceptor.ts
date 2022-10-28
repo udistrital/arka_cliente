@@ -6,6 +6,7 @@ import { tap, finalize } from 'rxjs/operators';
 import { PopUpManager } from '../../managers/popUpManager';
 import { TranslateService } from '@ngx-translate/core';
 import { LoaderService } from '../utils/load.service';
+import Swal from 'sweetalert2';
 
 
 @Injectable()
@@ -75,6 +76,12 @@ export class AuthInterceptor implements HttpInterceptor {
         },
           (error: any) => {
             console.info(error);
+            Swal({
+              type: 'error',
+              title: 'Error',
+              text: error.status + ' - ' + error.statusText,
+              confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
+            });
             this.pUpManager.showErrorToast(this.translate.instant(`ERROR.${error['status']}`));
           },
         ),

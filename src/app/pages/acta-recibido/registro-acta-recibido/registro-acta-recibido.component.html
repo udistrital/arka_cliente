@@ -2,7 +2,7 @@
   <nb-card-header>
     <h2>{{'GLOBAL.Acta_Recibido.RegistroActa.Title' | translate}}</h2>
   </nb-card-header>
-  <nb-card-body [nbSpinner]="Registrando || !firstForm">
+  <nb-card-body>
     <form *ngIf="firstForm" [formGroup]="firstForm" #fform="ngForm" class="step-container">
       <mat-vertical-stepper [linear]="true" #stepper>
 
