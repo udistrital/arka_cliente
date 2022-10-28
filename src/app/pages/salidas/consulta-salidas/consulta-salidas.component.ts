@@ -320,11 +320,7 @@ export class ConsultaSalidasComponent implements OnInit {
         Funcionario: {
           title: this.translate.instant('GLOBAL.funcionario'),
           valuePrepareFunction: (value: any) => {
-            if (value !== null) {
-              return value.NombreCompleto;
-            } else {
-              return '';
-            }
+            return this.tabla.prepareFunctionObject('NombreCompleto', value);
           },
           filterFunction: (cell?: any, search?: string): boolean => {
             return this.tabla.filterFunctionObject('NombreCompleto', cell, search);
@@ -333,7 +329,7 @@ export class ConsultaSalidasComponent implements OnInit {
         Sede: {
           title: this.translate.instant('GLOBAL.sede'),
           valuePrepareFunction: (value: any) => {
-            return value && value.Nombre ? value.Nombre : '';
+            return this.tabla.prepareFunctionObject('Nombre', value);
           },
           filterFunction: (cell?: any, search?: string): boolean => {
             return this.tabla.filterFunctionObject('Nombre', cell, search);
@@ -342,7 +338,7 @@ export class ConsultaSalidasComponent implements OnInit {
         Dependencia: {
           title: this.translate.instant('GLOBAL.dependencia'),
           valuePrepareFunction: (value: any) => {
-            return value && value.Nombre ? value.Nombre : '';
+            return this.tabla.prepareFunctionObject('Nombre', value);
           },
           filterFunction: (cell?: any, search?: string): boolean => {
             return this.tabla.filterFunctionObject('Nombre', cell, search);
@@ -351,10 +347,10 @@ export class ConsultaSalidasComponent implements OnInit {
         Ubicacion: {
           title: this.translate.instant('GLOBAL.ubicacion'),
           valuePrepareFunction: (value: any) => {
-            return value && value.Nombre ? value.Nombre : '';
+            return this.tabla.prepareFunctionObject_('EspacioFisicoId', 'Nombre', value);
           },
           filterFunction: (cell?: any, search?: string): boolean => {
-            return this.tabla.filterFunctionObject('Nombre', cell, search);
+            return this.tabla.filterFunctionObject_('EspacioFisicoId', 'Nombre', cell, search);
           },
         },
         ...columns,
