@@ -1,9 +1,8 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { element } from '@angular/core/src/render3';
 import { AbstractControl, FormArray, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { MatPaginator, MatTableDataSource } from '@angular/material';
 import { Store } from '@ngrx/store';
-import { combineLatest, fromEvent, Observable } from 'rxjs';
+import { combineLatest, Observable } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map, startWith, switchMap } from 'rxjs/operators';
 import { IAppState } from '../../../@core/store/app.state';
 import { ListService } from '../../../@core/store/services/list.service';
@@ -42,8 +41,10 @@ export class ComprobanteComponent implements OnInit {
 
   ngOnInit() {
     this.buildForm();
-    this.listService.findPlanCuentasDebito();
-    this.listService.findPlanCuentasCredito();
+    if (this.modo !== 'get') {
+      this.listService.findPlanCuentasDebito();
+      this.listService.findPlanCuentasCredito();
+    }
   }
 
   public loadLists() {
