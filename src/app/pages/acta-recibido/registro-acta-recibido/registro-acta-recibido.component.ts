@@ -105,7 +105,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
     this.idDocumento = [];
     this.errores = new Map<string, boolean>();
     this.firstForm = this.baseForm;
-    this.Actas_Recibido.getUnidadEjecutoraByID('query=TipoParametroId__CodigoAbreviacion:UE').subscribe(res => {
+    this.Actas_Recibido.getUnidadEjecutoraByID('?query=TipoParametroId__CodigoAbreviacion:UE').subscribe(res => {
       if (res) {
         this.unidadesEjecutoras = res.Data;
       }
@@ -545,11 +545,10 @@ export class RegistroActaRecibidoComponent implements OnInit {
   Traer_Relacion_Ubicaciones() {
     const sede = this.controlSede;
     const dependencia = this.controlDependencia;
-
     if (sede.value && dependencia.value && dependencia.value.value) {
       const sede_ = this.Sedes.find((x) => x.Id === parseFloat(sede.value));
       const dependencia_ = dependencia.value.value;
-      this.Actas_Recibido.getAsignacionesBySedeAndDependencia(sede_.CodigoAbreviacion, dependencia_.Id).subscribe((res: any) => {
+      this.Actas_Recibido.getAsignacionesBySedeAndDependencia(sede_.CodigoAbreviacion, dependencia_).subscribe((res: any) => {
         this.Ubicaciones = res;
       });
     }

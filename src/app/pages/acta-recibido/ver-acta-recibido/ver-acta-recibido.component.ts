@@ -173,7 +173,7 @@ export class VerActaRecibidoComponent implements OnInit {
           this.contratistaId = this.Acta.UltimoEstado.PersonaAsignadaId;
           this.Acta.ActaRecibido = res.ActaRecibido;
           this.Acta.SoportesActa = res.SoportesActa;
-          this.Actas_Recibido.getUnidadEjecutoraByID('query=TipoParametroId__CodigoAbreviacion:UE').subscribe(res1 => {
+          this.Actas_Recibido.getUnidadEjecutoraByID('?query=TipoParametroId__CodigoAbreviacion:UE').subscribe(res1 => {
             if (res1) {
               this.unidadesEjecutoras = res1.Data;
             }
