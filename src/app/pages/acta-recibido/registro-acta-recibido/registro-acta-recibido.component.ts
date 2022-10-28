@@ -358,7 +358,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
         title: 'Por favor espera, registrando acta',
         allowOutsideClick: false,
         onBeforeOpen: () => {
-            Swal.showLoading()
+            Swal.showLoading();
         },
     });
       this.nuxeoService.getDocumentos$(files, this.documentoService)

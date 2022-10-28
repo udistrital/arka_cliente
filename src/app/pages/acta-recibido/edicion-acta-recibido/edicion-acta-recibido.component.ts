@@ -548,7 +548,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
       title: 'Por favor espera, cargando documento',
       allowOutsideClick: false,
       onBeforeOpen: () => {
-          Swal.showLoading()
+          Swal.showLoading();
       },
   });
     const filesToGet = [
