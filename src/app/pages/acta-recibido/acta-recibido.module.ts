@@ -12,7 +12,7 @@ import { NbStepperModule } from '@nebular/theme';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatStepperModule } from '@angular/material/stepper';
 import {MatTableModule} from '@angular/material/table';
-import { MatPaginatorModule, MatSortModule } from '@angular/material';
+import { MatIconModule, MatPaginatorModule, MatSortModule } from '@angular/material';
 import { EdicionActaRecibidoComponent } from './edicion-acta-recibido/edicion-acta-recibido.component';
 import { GestionarElementosComponent } from './gestionar-elementos/gestionar-elementos.component';
 import { Ng2CompleterModule } from 'ng2-completer';
@@ -43,6 +43,7 @@ import { VerActaRecibidoComponent } from './ver-acta-recibido/ver-acta-recibido.
     Ng2CompleterModule,
     NbStepperModule,
     MatTabsModule,
+    MatIconModule,
     MatStepperModule,
     MatTableModule,
     MatPaginatorModule,

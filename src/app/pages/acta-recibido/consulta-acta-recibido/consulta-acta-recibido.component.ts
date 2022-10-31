@@ -40,6 +40,12 @@ export class ConsultaActaRecibidoComponent implements OnInit {
   Ubicaciones: any;
   navigationSubscription;
 
+  prev = false;
+  next = true;
+  SizePage: string;
+  limit: number;
+  offset: number;
+
   settings: any;
   accion: string;
   actas2: any;
@@ -53,7 +59,6 @@ export class ConsultaActaRecibidoComponent implements OnInit {
       Acta: Permiso.Ninguno,
       Elementos: Permiso.Ninguno,
     };
-
   constructor(
     private translate: TranslateService,
     private router: Router,
@@ -61,7 +66,9 @@ export class ConsultaActaRecibidoComponent implements OnInit {
     private confService: ConfiguracionService,
     private userService: UserService,
   ) {
-
+    this.limit = 10;
+    this.SizePage = '10';
+    this.offset = 0;
     this.navigationSubscription = this.router.events.subscribe((e: any) => {
       // If it is a NavigationEnd event re-initalise the component
       if (e instanceof NavigationEnd) {
@@ -89,18 +96,48 @@ export class ConsultaActaRecibidoComponent implements OnInit {
   ngOnInit() {
     // const estados = ['Registrada', 'Anulada'];
     this.user = this.userService.getUserMail();
-    this.cargarActas();
+    this.cargarActas(this.limit, this.offset);
   }
-  cargarActas(limit: number = 10, offset: number = 0) {
+
+  cargarActas(limit, offset) {
     this.mostrar = false;
-    this.actaRecibidoHelper.getActasRecibidoUsuario(this.user).subscribe((res: any) => {
-      // console.log(res);
+    this.actaRecibidoHelper.getActasRecibidoUsuario(this.user, limit, offset).subscribe((res: any) => {
       if (Array.isArray(res) && res.length !== 0) {
+        if (res.length < limit) {
+          this.next = false;
+        }
         res = this.calculaRevisores(res);
         this.source.load(res);
+      } else if (res.length === 0) {
+        this.next = false;
+        this.offset -= limit;
       }
       this.mostrar = true;
     });
+  }
+
+  changeItemsPerPage() {
+    this.limit = Number(this.SizePage);
+    this.offset = 0;
+    this.cargarActas(this.limit, this.offset);
+  }
+
+  previousPage() {
+    if (this.prev) {
+      this.offset = this.offset - Number(this.SizePage);
+    }
+
+    if (this.offset === 0) {
+      this.prev = false;
+    }
+    this.cargarActas(this.limit, this.offset);
+    this.next = true;
+  }
+
+  nextPage() {
+    this.offset = this.offset + Number(this.SizePage);
+    this.prev = true;
+    this.cargarActas(this.limit, this.offset);
   }
 
   // TODO: Lo ideal sería que el MID, así como retorna 'FechaVistoBueno'
@@ -131,6 +168,9 @@ export class ConsultaActaRecibidoComponent implements OnInit {
       anular: this.translate.instant('GLOBAL.Acta_Recibido.Anular'),
     };
     this.settings = {
+      pager: {
+        display: false,
+      },
       noDataMessage: 'No se encontraron elementos asociados.',
       actions: {
         columnTitle: this.translate.instant('GLOBAL.Acciones'),
@@ -343,6 +383,7 @@ export class ConsultaActaRecibidoComponent implements OnInit {
     this.actaSeleccionada = `${event.data.Id}`;
     this.accion = 'Ver';
     this.verActa = true;
+    this.router.navigate(['/pages/acta_recibido/consulta_acta_recibido/' + event.data.Id]);
   }
 
   onDelete(event): void {
@@ -404,7 +445,7 @@ export class ConsultaActaRecibidoComponent implements OnInit {
   onBack() {
     if (this.recargar) {
       this.recargar = false;
-      this.cargarActas();
+      this.cargarActas(this.limit, this.offset);
     }
     this.initialiseInvites();
     this.editarActa = false;
