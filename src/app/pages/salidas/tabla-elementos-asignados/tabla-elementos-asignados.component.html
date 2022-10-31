@@ -146,7 +146,7 @@
             </th>
             <td mat-cell *matCellDef="let element; let rowIndex = index">
               <input nbInput disabled type="text" fieldSize="tiny" class="cell"
-                placeholder="{{'GLOBAL.ubicacion' | translate }}" [ngModel]="element.Ubicacion.Nombre">
+                placeholder="{{'GLOBAL.ubicacion' | translate }}" [ngModel]="element.Ubicacion.EspacioFisicoId?.Nombre">
             </td>
           </ng-container>
 
@@ -345,7 +345,7 @@
             <td mat-cell *matCellDef="let element; let rowIndex = index">
               <input nbInput disabled type="text" fieldSize="tiny" class="cell"
                 placeholder="{{'GLOBAL.ubicacion' | translate }}"
-                [ngModel]="element.Ubicacion.Nombre">
+                [ngModel]="element.Ubicacion?.EspacioFisicoId?.Nombre">
             </td>
           </ng-container>
 

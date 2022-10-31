@@ -192,7 +192,7 @@ export class ConsultaDepreciacionComponent implements OnInit {
         position: 'right',
         delete: this.modo === 'consulta',
         edit: true,
-        add: this.modo === 'consulta' && !!this.confService.getAccion('registrarCierre'),
+        add: !!this.confService.getAccion('registrarCierre') && (this.modo === 'consulta'),
       },
       add: {
         addButtonContent: '<i class="fas" title="' + t.registrar + '" aria-label="' + t.registrar + '">'
