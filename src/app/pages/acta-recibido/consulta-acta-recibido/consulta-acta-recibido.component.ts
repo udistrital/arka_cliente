@@ -67,7 +67,7 @@ export class ConsultaActaRecibidoComponent implements OnInit {
     private userService: UserService,
   ) {
     this.limit = 10;
-    this.SizePage = "10"
+    this.SizePage = '10';
     this.offset = 0;
     this.navigationSubscription = this.router.events.subscribe((e: any) => {
       // If it is a NavigationEnd event re-initalise the component
@@ -108,37 +108,36 @@ export class ConsultaActaRecibidoComponent implements OnInit {
         }
         res = this.calculaRevisores(res);
         this.source.load(res);
-      }
-      else if (res.length == 0) {
+      } else if (res.length === 0) {
         this.next = false;
-        this.offset -= limit
+        this.offset -= limit;
       }
       this.mostrar = true;
     });
   }
 
   changeItemsPerPage() {
-    this.limit = Number(this.SizePage)
+    this.limit = Number(this.SizePage);
     this.offset = 0;
-    this.cargarActas(this.limit, this.offset)
+    this.cargarActas(this.limit, this.offset);
   }
 
   previousPage() {
     if (this.prev) {
-      this.offset = this.offset - Number(this.SizePage)
+      this.offset = this.offset - Number(this.SizePage);
     }
 
-    if(this.offset == 0) {
+    if (this.offset === 0) {
       this.prev = false;
     }
-    this.cargarActas(this.limit, this.offset)
+    this.cargarActas(this.limit, this.offset);
     this.next = true;
   }
 
   nextPage() {
-    this.offset = this.offset + Number(this.SizePage)
+    this.offset = this.offset + Number(this.SizePage);
     this.prev = true;
-    this.cargarActas(this.limit, this.offset)
+    this.cargarActas(this.limit, this.offset);
   }
 
   // TODO: Lo ideal sería que el MID, así como retorna 'FechaVistoBueno'
@@ -170,7 +169,7 @@ export class ConsultaActaRecibidoComponent implements OnInit {
     };
     this.settings = {
       pager: {
-        display: false
+        display: false,
       },
       noDataMessage: 'No se encontraron elementos asociados.',
       actions: {
