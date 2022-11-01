@@ -43,8 +43,6 @@ export class ConsultaKardexComponent implements OnInit {
     this.detalle = false;
   }
 
-
-
   ngOnInit() {
     this.loadTablaSettings();
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload

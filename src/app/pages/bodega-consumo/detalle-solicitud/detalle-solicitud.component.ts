@@ -34,6 +34,7 @@ export class DetalleSolicitudComponent implements OnInit {
   form_apertura: FormGroup;
   Detalle_Solicitud: any;
   submitted: boolean;
+  metodo: number;
   @Output() done = new EventEmitter<boolean>();
   @Input('Editar')
   set name4(edit: boolean) {
@@ -273,17 +274,34 @@ export class DetalleSolicitudComponent implements OnInit {
 
   calculoSalidas(Id): Promise<Array<any>> {
     return new Promise<Array<any>>(async (resolve) => {
-      this.BodegaConsumo.getElementosKardex(Id).subscribe((res: any) => {
+      this.BodegaConsumo.getElementosKardex(Id, -1, 0).subscribe((res: any) => {
         const pila = [];
-        for (let i = 0; i < res.length; i++) {
-          if (res[i].MovimientoId.FormatoTipoMovimientoId.CodigoAbreviacion === 'AP_KDX' ||
-              res[i].MovimientoId.FormatoTipoMovimientoId.CodigoAbreviacion === 'ENT_KDX') {
-            for (let j = 0; j < res[i].Unidad; j++) {
-              pila.push(res[i]);
+        const aux = JSON.parse(res[0].MovimientoId.Detalle);
+        this.metodo = aux.Metodo_Valoracion;
+        if (this.metodo === 2) {
+          for (let i = 0; i < res.length; i++) {
+            if (res[i].MovimientoId.FormatoTipoMovimientoId.CodigoAbreviacion === 'AP_KDX' ||
+                res[i].MovimientoId.FormatoTipoMovimientoId.CodigoAbreviacion === 'ENT_KDX') {
+              for (let j = 0; j < res[i].Unidad; j++) {
+                pila.push(res[i]);
+              }
+            } else if (res[i].MovimientoId.FormatoTipoMovimientoId.CodigoAbreviacion === 'SAL_KDX') {
+              for (let j = 0; j < res[i].Unidad; j++) {
+                pila.shift();
+              }
             }
-          } else if (res[i].MovimientoId.FormatoTipoMovimientoId.CodigoAbreviacion === 'SAL_KDX') {
-            for (let j = 0; j < res[i].Unidad; j++) {
-              pila.shift();
+          }
+        } else if (this.metodo === 3) {
+          for (let i = 0; i < res.length; i++) {
+            if (res[i].MovimientoId.FormatoTipoMovimientoId.CodigoAbreviacion === 'AP_KDX' ||
+                res[i].MovimientoId.FormatoTipoMovimientoId.CodigoAbreviacion === 'ENT_KDX') {
+              for (let j = 0; j < res[i].Unidad; j++) {
+                pila.push(res[i]);
+              }
+            } else if (res[i].MovimientoId.FormatoTipoMovimientoId.CodigoAbreviacion === 'SAL_KDX') {
+              for (let j = 0; j < res[i].Unidad; j++) {
+                pila.pop();
+              }
             }
           }
         }
@@ -333,13 +351,18 @@ export class DetalleSolicitudComponent implements OnInit {
           elemento.ElementoCatalogoId = element.ElementoCatalogoId.Id;
           elemento.Unidad = element.CantidadAprobada;
           elemento.ValorTotal = 0;
-          for (let i = 0; i < element.CantidadAprobada; i++) {
-            elemento.ValorTotal += disp[i].ValorUnitario;
+          if (this.metodo === 2) {
+            for (let i = 0; i < element.CantidadAprobada; i++) {
+              elemento.ValorTotal += disp[i].ValorUnitario;
+            }
+          } else if (this.metodo === 3) {
+            for (let i = 0; i < element.CantidadAprobada; i++) {
+              elemento.ValorTotal += disp[disp.length - 1 - i].ValorUnitario;
+            }
           }
           elemento.ValorUnitario = elemento.ValorTotal / element.CantidadAprobada;
           elemento.SaldoCantidad = element.SaldoCantidad - element.CantidadAprobada;
           elemento.SaldoValor = element.SaldoValor - elemento.ValorTotal;
-
           SalidaKardex.Movimiento[0].Elementos.push(elemento);
           this.BodegaConsumo.postResponderSolicitud(SalidaKardex).subscribe((res: any) => {
             if (res) {
