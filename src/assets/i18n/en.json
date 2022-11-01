@@ -1417,7 +1417,8 @@
         "estadoBaja": "Request Status",
         "tipoBaja": "Request reason",
         "espera": "Pending review",
-        "errorEditar": "The request can not be edited"
+        "errorEditar": "The request can not be edited",
+        "errorPermisoEditar": "No tiene permisos para editar esta solicitud."
       },
       "registrar": {
         "title": "Create removal request",
