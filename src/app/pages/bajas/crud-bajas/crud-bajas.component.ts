@@ -3,7 +3,6 @@ import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
 import Swal from 'sweetalert2';
 import { EstadoMovimiento, Movimiento } from '../../../@core/data/models/entrada/entrada';
 import { DetalleBaja, SoporteMovimiento, TrSoporteMovimiento } from '../../../@core/data/models/movimientos_arka/movimientos_arka';
-import { MovimientosHelper } from '../../../helpers/movimientos/movimientosHelper';
 import { PopUpManager } from '../../../managers/popUpManager';
 import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
 import { BajasHelper } from '../../../helpers/bajas/bajasHelper';
@@ -37,7 +36,6 @@ export class CrudBajasComponent implements OnInit {
   constructor(
     private translate: TranslateService,
     private pUpManager: PopUpManager,
-    private movimientosHelper: MovimientosHelper,
     private entradasHelper: EntradaHelper,
     private bajasHelper: BajasHelper,
     private autenticationService: ImplicitAutenticationService,
@@ -66,7 +64,8 @@ export class CrudBajasComponent implements OnInit {
   }
 
   private getBaja(bajaId: number) {
-    this.bajasHelper.getSolicitud(bajaId).subscribe(res => {
+    this.bajasHelper.getOne(bajaId).subscribe(res => {
+      this.checkEditor(res.Funcionario);
       if (res) {
         const detalle = res.Movimiento && res.Movimiento.Detalle ? JSON.parse(res.Movimiento.Detalle) : '';
         this.consecutivo = detalle ? detalle.Consecutivo : '';
@@ -92,46 +91,49 @@ export class CrudBajasComponent implements OnInit {
     });
   }
 
-  public rechazar() {
-    (Swal as any).fire({
-      title: this.translate.instant('GLOBAL.bajas.' + this.modoCrud + '.confrmTtlR'),
-      text: this.translate.instant('GLOBAL.bajas.' + this.modoCrud + '.confrmTxtR'),
-      type: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: this.translate.instant('GLOBAL.si'),
-      cancelButtonText: this.translate.instant('GLOBAL.no'),
-    }).then((result) => {
-      if (result.value) {
-        (Swal as any).mixin({
-          input: 'text',
-          confirmButtonText: this.translate.instant('GLOBAL.Acta_Recibido.VerificacionActa.Rechazar'),
-          showCancelButton: true,
-          progressSteps: ['1'],
-          inputValidator: (value) => {
-            return new Promise<string>((resolve) => {
-              if (!value.length) {
-                resolve(this.translate.instant('GLOBAL.traslados.revisar.confrmRechazoTtx'));
-              } else {
-                resolve('');
-              }
-            });
-          },
-        }).queue([
-          {
-            title: this.translate.instant('GLOBAL.bajas.revisar.confrmRechazoTtl'),
-            text: this.translate.instant('GLOBAL.bajas.revisar.confrmRechazoTtx'),
-          },
-        ]).then((result2) => {
-          if (result2.value) {
-            this.rechazo = result2.value[0];
-            this.buildMovimiento(true);
-          }
-        });
-
+  private checkEditor(funcionario: any) {
+    if (this.modoCrud === 'editar') {
+      const usuario = this.userService.getPersonaId();
+      if (usuario && funcionario && funcionario.Tercero && funcionario.Tercero.Id !== usuario) {
+        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.bajas.consulta.errorPermisoEditar'));
+        this.accion.emit(true);
       }
-    });
+    }
+    return;
+  }
+
+  public rechazar() {
+    this.pUpManager.showAlertWithOptions(this.getOptionsRechazar)
+      .then((result) => {
+        if (result.value) {
+          (Swal as any).mixin({
+            input: 'text',
+            confirmButtonText: this.translate.instant('GLOBAL.Acta_Recibido.VerificacionActa.Rechazar'),
+            showCancelButton: true,
+            progressSteps: ['1'],
+            inputValidator: (value) => {
+              return new Promise<string>((resolve) => {
+                if (!value.length) {
+                  resolve(this.translate.instant('GLOBAL.traslados.revisar.confrmRechazoTtx'));
+                } else {
+                  resolve('');
+                }
+              });
+            },
+          }).queue([
+            {
+              title: this.translate.instant('GLOBAL.bajas.revisar.confrmRechazoTtl'),
+              text: this.translate.instant('GLOBAL.bajas.revisar.confrmRechazoTtx'),
+            },
+          ]).then((result2) => {
+            if (result2.value) {
+              this.rechazo = result2.value[0];
+              this.buildMovimiento(true);
+            }
+          });
+
+        }
+      });
   }
 
   public setValidness(event) {
@@ -139,29 +141,18 @@ export class CrudBajasComponent implements OnInit {
   }
 
   public confirm(rechazar: boolean = false) {
-    const sfx = this.modoCrud !== 'revisar' ? '' : rechazar ? 'R' : 'A';
-    const title = this.translate.instant('GLOBAL.bajas.' + this.modoCrud + '.confrmTtl' + sfx);
-    const text = this.translate.instant('GLOBAL.bajas.' + this.modoCrud + '.confrmTxt' + sfx);
-    (Swal as any).fire({
-      title,
-      text,
-      type: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: this.translate.instant('GLOBAL.si'),
-      cancelButtonText: this.translate.instant('GLOBAL.no'),
-    }).then((result) => {
-      if (result.value) {
-        this.buildMovimiento(rechazar);
-      }
-    });
+    this.pUpManager.showAlertWithOptions(this.getOptionsConfirm(rechazar))
+      .then((result) => {
+        if (result.value) {
+          this.buildMovimiento(rechazar);
+        }
+      });
   }
 
   private async buildMovimiento(rechazar: boolean) {
 
     this.loading = true;
-    const detalle_ = this.movimiento ? <DetalleBaja>JSON.parse(this.movimiento.Detalle) : new(DetalleBaja);
+    const detalle_ = this.movimiento ? <DetalleBaja>JSON.parse(this.movimiento.Detalle) : new (DetalleBaja);
     const ConsecutivoId = detalle_ ? detalle_.ConsecutivoId : 0;
     const Consecutivo = detalle_ ? detalle_.Consecutivo : '';
     const Funcionario = this.bajaData.controls.info.controls.funcionario.value.id;
@@ -282,6 +273,33 @@ export class CrudBajasComponent implements OnInit {
         this.estadosMovimiento = res;
       }
     });
+  }
+
+  private getOptionsConfirm(rechazar: boolean) {
+    const sfx = this.modoCrud !== 'revisar' ? '' : rechazar ? 'R' : 'A';
+    return {
+      title: this.translate.instant('GLOBAL.bajas.' + this.modoCrud + '.confrmTtl' + sfx),
+      text: this.translate.instant('GLOBAL.bajas.' + this.modoCrud + '.confrmTxt' + sfx),
+      type: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: this.translate.instant('GLOBAL.si'),
+      cancelButtonText: this.translate.instant('GLOBAL.no'),
+    };
+  }
+
+  get getOptionsRechazar() {
+    return {
+      title: this.translate.instant('GLOBAL.bajas.' + this.modoCrud + '.confrmTtlR'),
+      text: this.translate.instant('GLOBAL.bajas.' + this.modoCrud + '.confrmTxtR'),
+      type: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: this.translate.instant('GLOBAL.si'),
+      cancelButtonText: this.translate.instant('GLOBAL.no'),
+    };
   }
 
 }

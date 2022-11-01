@@ -1417,7 +1417,8 @@
         "estadoBaja": "Estado Solicitud",
         "tipoBaja": "Tipo Baja",
         "espera": "En Espera",
-        "errorEditar": "No se puede editar esta solicitud"
+        "errorEditar": "No se puede editar esta solicitud",
+        "errorPermisoEditar": "No tiene permisos para editar esta solicitud."
       },
       "registrar": {
         "title": "Solicitar Baja de Bienes",

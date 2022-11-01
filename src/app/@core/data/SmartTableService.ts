@@ -23,6 +23,10 @@ export class SmartTableService {
         }
     }
 
+    public prepareFunctionString(value: any): string {
+        return value ? value : '';
+    }
+
     public prepareFunctionObject(key: string, value?: any): string {
         if (!value || !value[key]) {
             return '';

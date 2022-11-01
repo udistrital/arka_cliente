@@ -226,67 +226,6 @@ export class ListService {
     );
   }
 
-  public findSubgruposConsumo() {
-
-    this.store.select(REDUCER_LIST.Consumo).subscribe(
-      (list: any) => {
-        if (!list || list.length === 0) {
-          this.CatalogoElementos.getClasesTipoBien(1)
-            .subscribe(
-              (res: any[]) => {
-                // console.log(res)
-                this.addList(REDUCER_LIST.Consumo, res);
-              },
-              error => {
-                this.addList(REDUCER_LIST.Consumo, []);
-              },
-            );
-        }
-      },
-    );
-  }
-
-  public findSubgruposConsumoControlado() {
-
-    this.store.select(REDUCER_LIST.ConsumoControlado).subscribe(
-      (list: any) => {
-        if (!list || list.length === 0) {
-          this.CatalogoElementos.getClasesTipoBien(2)
-            .subscribe(
-              (res: any[]) => {
-                // console.log(res)
-                this.addList(REDUCER_LIST.ConsumoControlado, res);
-              },
-              error => {
-                this.addList(REDUCER_LIST.ConsumoControlado, []);
-              },
-            );
-        }
-      },
-    );
-  }
-
-  public findSubgruposDevolutivo() {
-
-    this.store.select(REDUCER_LIST.Devolutivo).subscribe(
-      (list: any) => {
-        if (!list || list.length === 0) {
-          this.CatalogoElementos.getClasesTipoBien(3)
-            .subscribe(
-              (res: any[]) => {
-                // console.log(res)
-
-                this.addList(REDUCER_LIST.Devolutivo, res);
-              },
-              error => {
-                this.addList(REDUCER_LIST.Devolutivo, []);
-              },
-            );
-        }
-      },
-    );
-  }
-
   public findformatosKardex() {
 
     this.store.select(REDUCER_LIST.FormatosKardex).subscribe(
@@ -322,47 +261,6 @@ export class ListService {
               },
               error => {
                 this.addList(REDUCER_LIST.EstadosMovimiento, []);
-              },
-            );
-        }
-      },
-    );
-  }
-
-  public findformatosMovimiento() {
-
-    this.store.select(REDUCER_LIST.FormatosMovimiento).subscribe(
-      (list: any) => {
-        if (!list || list.length === 0) {
-          this.Bajas.getFormatosMovimiento()
-            .subscribe(
-              (res: any[]) => {
-                // console.log(res)
-
-                this.addList(REDUCER_LIST.FormatosMovimiento, res);
-              },
-              error => {
-                this.addList(REDUCER_LIST.FormatosMovimiento, []);
-              },
-            );
-        }
-      },
-    );
-  }
-
-  public findClases() {
-
-    this.store.select(REDUCER_LIST.Clases).subscribe(
-      (list: any) => {
-        if (!list || list.length === 0) {
-          this.CatalogoElementos.getClases()
-            .subscribe(
-              (res: any[]) => {
-                // console.log(res)
-                this.addList(REDUCER_LIST.Clases, res);
-              },
-              error => {
-                this.addList(REDUCER_LIST.Clases, []);
               },
             );
         }
