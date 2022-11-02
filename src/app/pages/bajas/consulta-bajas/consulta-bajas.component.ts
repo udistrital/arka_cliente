@@ -165,7 +165,11 @@ export class ConsultaBajasComponent implements OnInit {
     };
 
     this.bajasHelper.postRevisionComite(data).subscribe((res: any) => {
-      this.alertSuccess(aprobar);
+      if (res.Error) {
+        this.pUpManager.showErrorAlert(res.Error);
+      } else {
+        this.alertSuccess(aprobar);
+      }
     });
   }
 

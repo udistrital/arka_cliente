@@ -3,7 +3,7 @@ import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn,
 import { TranslateService } from '@ngx-translate/core';
 import { combineLatest, Observable } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map, switchMap } from 'rxjs/operators';
-import { OikosHelper } from '../../../helpers/oikos/oikosHelper';
+import { ParametrosHelper } from '../../../helpers/parametros/parametrosHelper';
 
 @Component({
   selector: 'ngx-form-resolucion',
@@ -20,7 +20,7 @@ export class FormResolucionComponent implements OnInit {
   constructor(
     private translate: TranslateService,
     private fb: FormBuilder,
-    private oikosHelper: OikosHelper,
+    private parametros: ParametrosHelper,
   ) {
     this.maxDate = new Date();
   }
@@ -56,14 +56,14 @@ export class FormResolucionComponent implements OnInit {
       distinctUntilChanged(),
       switchMap((val) => this.loadDependencias(val)),
     ).subscribe((response: any) => {
-      this.dependencias = response.queryOptions[0].Id ? response.queryOptions : [];
+      this.dependencias = response.queryOptions;
     });
   }
 
   private loadDependencias(text: string) {
     const queryOptions$ = text.length > 3 ?
-      this.oikosHelper.getDependencias(text) :
-      new Observable((obs) => { obs.next([{}]); });
+      this.parametros.getAllParametro('query=TipoParametroId__CodigoAbreviacion:ER,Nombre__icontains:' + text) :
+      new Observable((obs) => { obs.next([]); });
     return combineLatest([queryOptions$]).pipe(
       map(([queryOptions_$]) => ({
         queryOptions: queryOptions_$,
