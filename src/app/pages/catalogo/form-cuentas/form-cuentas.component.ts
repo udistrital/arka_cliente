@@ -76,15 +76,15 @@ export class FormCuentasComponent implements OnInit, OnChanges {
 
       const ent = Object.values(ent_).map(cf => (this.formArrayCuentasMovimiento(cf)));
       const salida = this.formArrayCuentasMovimiento(this.cuentasInfo.filter(cf => (cf.SubtipoMovimientoId.CodigoAbreviacion.includes('SAL'))));
-      const baja = this.formArrayCuentasMovimiento(this.cuentasInfo.filter(cf => (cf.SubtipoMovimientoId.CodigoAbreviacion.includes('BJ_HT'))));
-      const depreciacion = this.formArrayCuentasMovimiento(this.cuentasInfo.filter(cf => (cf.SubtipoMovimientoId.CodigoAbreviacion.includes('DEP'))));
-      const amortizacion = this.formArrayCuentasMovimiento(this.cuentasInfo.filter(cf => (cf.SubtipoMovimientoId.CodigoAbreviacion.includes('AMT'))));
+      const baja = this.formArrayCuentasMovimiento(this.cuentasInfo.filter(cf => (cf.SubtipoMovimientoId.CodigoAbreviacion === 'BJ_HT')));
+      const mediciones = this.formArrayCuentasMovimiento(this.cuentasInfo
+        .filter(cf => (cf.SubtipoMovimientoId.CodigoAbreviacion === 'DEP' || cf.SubtipoMovimientoId.CodigoAbreviacion === 'AMT')));
 
       this.formCuentas = this.fb.group({
         entradas: this.fb.array(ent),
         salida,
         baja,
-        mediciones: depreciacion ? depreciacion : amortizacion ? amortizacion : [],
+        mediciones,
       });
 
       resolve();
