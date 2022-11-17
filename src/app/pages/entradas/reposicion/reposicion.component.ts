@@ -1,14 +1,14 @@
 import { Component, OnInit, Input, Output, EventEmitter, ViewChild } from '@angular/core';
-import { FormGroup, FormBuilder, Validators, ValidatorFn, AbstractControl, ValidationErrors, FormArray } from '@angular/forms';
-import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
+import { FormGroup, FormArray } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import { TransaccionEntrada } from '../../../@core/data/models/entrada/entrada';
 import { MatPaginator, MatStepper, MatTableDataSource } from '@angular/material';
 import { MovimientosHelper } from '../../../helpers/movimientos/movimientosHelper';
 import { UtilidadesService } from '../../../@core/utils';
-import { debounceTime, distinctUntilChanged, map, switchMap } from 'rxjs/operators';
-import { combineLatest, Observable } from 'rxjs';
+import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 import { PopUpManager } from '../../../managers/popUpManager';
+import { CommonEntradas } from '../CommonEntradas';
 
 @Component({
   selector: 'ngx-reposicion',
@@ -20,7 +20,6 @@ export class ReposicionComponent implements OnInit {
   elementosForm: FormGroup;
   soporteForm: FormGroup;
   observacionForm: FormGroup;
-  validar: boolean = false;
   dataSource: MatTableDataSource<any>;
   displayedColumns: any;
   elementos: any[];
@@ -32,23 +31,18 @@ export class ReposicionComponent implements OnInit {
   @Output() data: EventEmitter<TransaccionEntrada> = new EventEmitter<TransaccionEntrada>();
 
   constructor(
-    private fb: FormBuilder,
+    private common: CommonEntradas,
     private movimientos: MovimientosHelper,
     private utils: UtilidadesService,
     private pUpManager: PopUpManager,
-    private actaRecibidoHelper: ActaRecibidoHelper,
     private translate: TranslateService,
   ) {
-    this.displayedColumns = ['acciones', 'placa', 'entrada', 'fechaEntrada', 'salida', 'fechaSalida'];
+    this.displayedColumns = this.common.columnsElementos;
   }
 
   ngOnInit() {
-    this.elementosForm = this.fb.group({
-      elementos: this.fb.array([], { validators: this.validateElementos() }),
-    });
-    this.observacionForm = this.fb.group({
-      observacionCtrl: ['', Validators.nullValidator],
-    });
+    this.elementosForm = this.common.formElementos;
+    this.observacionForm = this.common.formObservaciones;
     this.dataSource = new MatTableDataSource<any>();
     this.dataSource.paginator = this.paginator;
   }
@@ -59,40 +53,7 @@ export class ReposicionComponent implements OnInit {
   }
 
   get elemento(): FormGroup {
-    const disabled = true;
-    const form = this.fb.group({
-      Id: [0],
-      Placa: [
-        {
-          value: '',
-          disabled: false,
-        },
-      ],
-      entrada: [
-        {
-          value: '',
-          disabled,
-        },
-      ],
-      fechaEntrada: [
-        {
-          value: '',
-          disabled,
-        },
-      ],
-      salida: [
-        {
-          value: '',
-          disabled,
-        },
-      ],
-      fechaSalida: [
-        {
-          value: '',
-          disabled,
-        },
-      ],
-    });
+    const form = this.common.elemento;
     this.cambiosPlaca(form.get('Placa').valueChanges);
     return form;
   }
@@ -142,61 +103,30 @@ export class ReposicionComponent implements OnInit {
     valueChanges.pipe(
       debounceTime(250),
       distinctUntilChanged(),
-      switchMap((val) => this.loadElementos(val)),
+      switchMap((val) => this.common.loadElementos(val)),
     ).subscribe((response: any) => {
       this.elementos = response.queryOptions;
     });
   }
 
-  private loadElementos(text: any) {
-    const queryOptions$ = !text.Placa && text.length > 3 ?
-      this.actaRecibidoHelper.getAllElemento('sortby=Placa&order=desc&limit=-1&fields=Id,Placa&query=Placa__icontains:' + text) :
-      new Observable((obs) => { obs.next([]); });
-    return combineLatest([queryOptions$]).pipe(
-      map(([queryOptions_$]) => ({
-        queryOptions: queryOptions_$,
-      })),
-    );
-  }
-
-  public muestraPlaca(field): string {
-    return field && field.Placa ? field.Placa : '';
-  }
-
-
   onObservacionSubmit() {
-    this.validar = true;
+    this.pUpManager.showAlertWithOptions(this.common.optionsSubmit)
+      .then((result) => {
+        if (result.value) {
+          this.onSubmit();
+        }
+      });
   }
 
   //  Método para enviar registro
   async onSubmit() {
-    if (this.validar === true) {
-      const detalle = {
-        acta_recibido_id: +this.actaRecibidoId,
-        elementos: this.elementosForm.get('elementos').value.map(el => el.Id),
-      };
-
-      const transaccion = <TransaccionEntrada>{
-        Observacion: this.observacionForm.value.observacionCtrl,
-        Detalle: detalle,
-        FormatoTipoMovimientoId: 'ENT_RP',
-      };
-
-      this.data.emit(transaccion);
-    }
-  }
-
-  private validateElementos(): ValidatorFn {
-    return (control: AbstractControl): ValidationErrors | null => {
-      const noFilas = !control.value.length;
-      const noSeleccionado = !noFilas && !control.value.every(el => el.Placa && el.Placa.Id && el.Id);
-      const duplicados = !noSeleccionado && control.value.map(el => el.Id)
-        .some((element, index) => {
-          return control.value.map(el => el.Id).indexOf(element) !== index;
-        });
-
-      return (noFilas || noSeleccionado) ? { errorNoElementos: true } : duplicados ? { errorDuplicados: true } : null;
+    const detalle = {
+      acta_recibido_id: +this.actaRecibidoId,
+      elementos: this.elementosForm.get('elementos').value.map(el => el.Id),
     };
+
+    const transaccion = this.common.crearTransaccionEntrada(this.observacionForm.value.observacionCtrl, detalle, 'ENT_RP', 0);
+    this.data.emit(transaccion);
   }
 
 }

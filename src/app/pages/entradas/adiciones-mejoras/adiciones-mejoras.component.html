@@ -1,5 +1,3 @@
-<div>
-<!-- FORMULARIO -->
 <mat-horizontal-stepper #stepper [linear]=true>
 
     <!-- Elementos que se van a mejorar -->
@@ -30,7 +28,7 @@
             <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="getActualIndex(rowIndex)">
               <input type="text" formControlName="Placa" class="form-control"
                 placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}" [matAutocomplete]="auto">
-              <mat-autocomplete #auto="matAutocomplete" [displayWith]="muestraPlaca"
+              <mat-autocomplete #auto="matAutocomplete" [displayWith]="common.muestraPlaca"
                 (optionSelected)="getDetalleElemento(getActualIndex(rowIndex))">
                 <mat-option *ngFor="let item of elementos" [value]="item">
                   {{item.Placa}}
@@ -233,24 +231,9 @@
       </div>
       <div class="botones-stepper-middle">
         <button mat-flat-button color="primary" matStepperPrevious>{{'GLOBAL.anterior' | translate}}</button>
-        <button mat-flat-button color="primary" (click)="onObservacionSubmit()" matStepperNext>{{'GLOBAL.siguiente' | translate}}</button>
+        <button mat-flat-button color="primary" (click)="onObservacionSubmit()" matStepperNext>{{'GLOBAL.registrar_entrada' | translate}}</button>
       </div>
     </form>
   </mat-step>
 
-  <!-- FINALIZAR -->
-  <mat-step [hidden]="true">
-    <div class="step-container d-flex justify-content-center">
-      <h3>{{'GLOBAL.datos_correctos' | translate}}!</h3>
-    </div>
-    <div class="step-container d-flex justify-content-center">
-      <p>{{'GLOBAL.mensaje_registrar' | translate}}</p>
-    </div>
-    <div class="row float-right">
-      <button mat-flat-button color="primary" [disabled]="!validar" (click)="onSubmit()">
-        {{'GLOBAL.registrar_entrada' | translate}}</button>
-    </div>
-  </mat-step>
-
 </mat-horizontal-stepper>
-</div>

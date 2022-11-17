@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, ViewChild, Output, EventEmitter } from '@angular/core';
-import { Validators, FormBuilder, FormGroup, FormArray, ValidatorFn, AbstractControl, ValidationErrors } from '@angular/forms';
+import { Validators, FormBuilder, FormGroup, FormArray } from '@angular/forms';
 import { PopUpManager } from '../../../managers/popUpManager';
 import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
 import { Contrato } from '../../../@core/data/models/entrada/contrato';
@@ -10,10 +10,11 @@ import { SoporteActaProveedor } from '../../../@core/data/models/acta_recibido/s
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
 import { TranslateService } from '@ngx-translate/core';
 import { MatPaginator, MatStepper, MatTableDataSource } from '@angular/material';
-import { combineLatest, Observable } from 'rxjs';
-import { debounceTime, distinctUntilChanged, map, switchMap } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { UtilidadesService } from '../../../@core/utils';
 import { MovimientosHelper } from '../../../helpers/movimientos/movimientosHelper';
+import { CommonEntradas } from '../CommonEntradas';
 
 @Component({
   selector: 'ngx-adiciones-mejoras',
@@ -43,7 +44,6 @@ export class AdicionesMejorasComponent implements OnInit {
   // Soportes
   soportes: Array<SoporteActaProveedor>;
   fechaFactura: string;
-  validar: boolean;
   dataSource: MatTableDataSource<any>;
   displayedColumns: any;
   elementos: any[];
@@ -58,6 +58,7 @@ export class AdicionesMejorasComponent implements OnInit {
   @Output() data: EventEmitter<TransaccionEntrada> = new EventEmitter<TransaccionEntrada>();
 
   constructor(
+    private common: CommonEntradas,
     private entradasHelper: EntradaHelper,
     private movimientos: MovimientosHelper,
     private actaRecibidoHelper: ActaRecibidoHelper,
@@ -66,14 +67,13 @@ export class AdicionesMejorasComponent implements OnInit {
     private translate: TranslateService,
     private utils: UtilidadesService,
   ) {
-    this.displayedColumns = ['acciones', 'placa', 'entrada', 'fechaEntrada', 'salida', 'fechaSalida'];
+    this.displayedColumns = this.common.columnsElementos;
     this.tipoContratoSelect = false;
     this.vigenciaSelect = false;
     this.contratos = new Array<Contrato>();
     this.contratoEspecifico = new Contrato;
     this.soportes = new Array<SoporteActaProveedor>();
     this.fechaFactura = '';
-    this.validar = false;
     this.iniciarContrato();
   }
 
@@ -81,19 +81,15 @@ export class AdicionesMejorasComponent implements OnInit {
     this.contratoForm = this.fb.group({
       contratoCtrl: ['', [
         Validators.required,
-        Validators.pattern('^[0-9]{2,4}$')],
+        Validators.pattern('^[0-9]{1,4}$')],
       ],
       vigenciaCtrl: ['', [Validators.required]],
     });
     this.facturaForm = this.fb.group({
       facturaCtrl: ['', Validators.required],
     });
-    this.elementosForm = this.fb.group({
-      elementos: this.fb.array([], { validators: this.validateElementos() }),
-    });
-    this.observacionForm = this.fb.group({
-      observacionCtrl: ['', Validators.nullValidator],
-    });
+    this.elementosForm = this.common.formElementos;
+    this.observacionForm = this.common.formObservaciones;
     this.ordenadorForm = this.fb.group({
       ordenadorCtrl: ['', Validators.nullValidator],
     });
@@ -111,40 +107,7 @@ export class AdicionesMejorasComponent implements OnInit {
   }
 
   get elemento(): FormGroup {
-    const disabled = true;
-    const form = this.fb.group({
-      Id: [0],
-      Placa: [
-        {
-          value: '',
-          disabled: false,
-        },
-      ],
-      entrada: [
-        {
-          value: '',
-          disabled,
-        },
-      ],
-      fechaEntrada: [
-        {
-          value: '',
-          disabled,
-        },
-      ],
-      salida: [
-        {
-          value: '',
-          disabled,
-        },
-      ],
-      fechaSalida: [
-        {
-          value: '',
-          disabled,
-        },
-      ],
-    });
+    const form = this.common.elemento;
     this.cambiosPlaca(form.get('Placa').valueChanges);
     return form;
   }
@@ -202,25 +165,10 @@ export class AdicionesMejorasComponent implements OnInit {
     valueChanges.pipe(
       debounceTime(250),
       distinctUntilChanged(),
-      switchMap((val) => this.loadElementos(val)),
+      switchMap((val) => this.common.loadElementos(val)),
     ).subscribe((response: any) => {
       this.elementos = response.queryOptions;
     });
-  }
-
-  private loadElementos(text: any) {
-    const queryOptions$ = !text.Placa && text.length > 3 ?
-      this.actaRecibidoHelper.getAllElemento('sortby=Placa&order=desc&limit=-1&fields=Id,Placa&query=Placa__icontains:' + text) :
-      new Observable((obs) => { obs.next([]); });
-    return combineLatest([queryOptions$]).pipe(
-      map(([queryOptions_$]) => ({
-        queryOptions: queryOptions_$,
-      })),
-    );
-  }
-
-  public muestraPlaca(field): string {
-    return field && field.Placa ? field.Placa : '';
   }
 
   /**
@@ -287,7 +235,12 @@ export class AdicionesMejorasComponent implements OnInit {
   }
 
   onObservacionSubmit() {
-    this.validar = true;
+    this.pUpManager.showAlertWithOptions(this.common.optionsSubmit)
+      .then((result) => {
+        if (result.value) {
+          this.onSubmit();
+        }
+      });
   }
 
   /**
@@ -336,39 +289,16 @@ export class AdicionesMejorasComponent implements OnInit {
 
   // Método para enviar registro
   onSubmit() {
-    if (this.validar) {
-      const detalle = {
-        elementos: this.elementosForm.get('elementos').value.map(el => el.Id),
-        factura: +this.facturaForm.value.facturaCtrl,
-        acta_recibido_id: +this.actaRecibidoId,
-        contrato_id: +this.contratoEspecifico.NumeroContratoSuscrito,
-        vigencia_contrato: this.contratoForm.value.vigenciaCtrl,
-      };
-
-      const transaccion = <TransaccionEntrada>{
-        Observacion: this.observacionForm.value.observacionCtrl,
-        Detalle: detalle,
-        FormatoTipoMovimientoId: 'ENT_AM',
-        SoporteMovimientoId: 0,
-      };
-      this.data.emit(transaccion);
-    } else {
-      this.pUpManager.showErrorAlert('No ha llenado todos los campos! No es posible hacer el registro.');
-    }
-
-  }
-
-  private validateElementos(): ValidatorFn {
-    return (control: AbstractControl): ValidationErrors | null => {
-      const noFilas = !control.value.length;
-      const noSeleccionado = !noFilas && !control.value.every(el => el.Placa && el.Placa.Id && el.Id);
-      const duplicados = !noSeleccionado && control.value.map(el => el.Id)
-        .some((element, index) => {
-          return control.value.map(el => el.Id).indexOf(element) !== index;
-        });
-
-      return (noFilas || noSeleccionado) ? { errorNoElementos: true } : duplicados ? { errorDuplicados: true } : null;
+    const detalle = {
+      elementos: this.elementosForm.get('elementos').value.map(el => el.Id),
+      factura: +this.facturaForm.value.facturaCtrl,
+      acta_recibido_id: +this.actaRecibidoId,
+      contrato_id: +this.contratoEspecifico.NumeroContratoSuscrito,
+      vigencia_contrato: this.contratoForm.value.vigenciaCtrl,
     };
+
+    const transaccion = this.common.crearTransaccionEntrada(this.observacionForm.value.observacionCtrl, detalle, 'ENT_AM', 0);
+    this.data.emit(transaccion);
   }
 
 }

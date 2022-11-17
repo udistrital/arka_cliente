@@ -1,16 +1,16 @@
 import { Component, OnInit, ViewChild, Input, Output, EventEmitter } from '@angular/core';
-import { AbstractControl, FormArray, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Supervisor } from '../../../@core/data/models/terceros_criterio';
 import { PopUpManager } from '../../../managers/popUpManager';
-import { combineLatest, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map, startWith, switchMap } from 'rxjs/operators';
 import { TransaccionEntrada } from '../../../@core/data/models/entrada/entrada';
 import { TranslateService } from '@ngx-translate/core';
 import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
 import { MatPaginator, MatTableDataSource } from '@angular/material';
 import { MovimientosHelper } from '../../../helpers/movimientos/movimientosHelper';
-import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
 import { UtilidadesService } from '../../../@core/utils';
+import { CommonEntradas } from '../CommonEntradas';
 
 @Component({
   selector: 'ngx-aprovechamientos',
@@ -30,7 +30,6 @@ export class AprovechamientosComponent implements OnInit {
   dataSource: MatTableDataSource<any>;
   displayedColumns: any;
   elementos: any[];
-  validar: boolean = false;
   cargando_supervisores: boolean = true;
 
   private Supervisores: Supervisor[];
@@ -42,25 +41,20 @@ export class AprovechamientosComponent implements OnInit {
   @Output() data: EventEmitter<TransaccionEntrada> = new EventEmitter<TransaccionEntrada>();
 
   constructor(
+    private common: CommonEntradas,
     private movimientos: MovimientosHelper,
-    private actaRecibidoHelper: ActaRecibidoHelper,
     private utils: UtilidadesService,
     private entradasHelper: EntradaHelper,
     private pUpManager: PopUpManager,
     private fb: FormBuilder,
     private translate: TranslateService) {
-    this.displayedColumns = ['acciones', 'placa', 'entrada', 'fechaEntrada', 'salida', 'fechaSalida'];
-    this.validar = false;
+    this.displayedColumns = this.common.columnsElementos;
     this.dependenciaSupervisor = '';
   }
 
   ngOnInit() {
-    this.elementosForm = this.fb.group({
-      elementos: this.fb.array([], { validators: this.validateElementos() }),
-    });
-    this.observacionForm = this.fb.group({
-      observacionCtrl: ['', Validators.nullValidator],
-    });
+    this.elementosForm = this.common.formElementos;
+    this.observacionForm = this.common.formObservaciones;
     this.supervisorForm = this.fb.group({
       supervisorCtrl: ['', Validators.required],
     });
@@ -75,40 +69,7 @@ export class AprovechamientosComponent implements OnInit {
   }
 
   get elemento(): FormGroup {
-    const disabled = true;
-    const form = this.fb.group({
-      Id: [0],
-      Placa: [
-        {
-          value: '',
-          disabled: false,
-        },
-      ],
-      entrada: [
-        {
-          value: '',
-          disabled,
-        },
-      ],
-      fechaEntrada: [
-        {
-          value: '',
-          disabled,
-        },
-      ],
-      salida: [
-        {
-          value: '',
-          disabled,
-        },
-      ],
-      fechaSalida: [
-        {
-          value: '',
-          disabled,
-        },
-      ],
-    });
+    const form = this.common.elemento;
     this.cambiosPlaca(form.get('Placa').valueChanges);
     return form;
   }
@@ -166,25 +127,10 @@ export class AprovechamientosComponent implements OnInit {
     valueChanges.pipe(
       debounceTime(250),
       distinctUntilChanged(),
-      switchMap((val) => this.loadElementos(val)),
+      switchMap((val) => this.common.loadElementos(val)),
     ).subscribe((response: any) => {
       this.elementos = response.queryOptions;
     });
-  }
-
-  private loadElementos(text: any) {
-    const queryOptions$ = !text.Placa && text.length > 3 ?
-      this.actaRecibidoHelper.getAllElemento('sortby=Placa&order=desc&limit=-1&fields=Id,Placa&query=Placa__icontains:' + text) :
-      new Observable((obs) => { obs.next([]); });
-    return combineLatest([queryOptions$]).pipe(
-      map(([queryOptions_$]) => ({
-        queryOptions: queryOptions_$,
-      })),
-    );
-  }
-
-  public muestraPlaca(field): string {
-    return field && field.Placa ? field.Placa : '';
   }
 
   private filtroSupervisores(nombre: string): Supervisor[] {
@@ -193,7 +139,6 @@ export class AprovechamientosComponent implements OnInit {
     return this.Supervisores.filter(sup => sup.Nombre.toLowerCase().includes(valorFiltrado));
     // } else return [];
   }
-
 
   private loadSupervisores(): void {
     this.entradasHelper.getSupervisores('supervisor_contrato?limit=-1').subscribe(res => {
@@ -242,43 +187,23 @@ export class AprovechamientosComponent implements OnInit {
   }
 
   onObservacionSubmit() {
-    this.validar = true;
+    this.pUpManager.showAlertWithOptions(this.common.optionsSubmit)
+      .then((result) => {
+        if (result.value) {
+          this.onSubmit();
+        }
+      });
   }
 
   // Método para enviar registro
   onSubmit() {
-    if (this.validar) {
-      const detalle = {
-        acta_recibido_id: +this.actaRecibidoId,
-        elementos: this.elementosForm.get('elementos').value.map(el => el.Id),
-        supervisor: this.supervisorForm.value.supervisorCtrl.Id,
-      };
-
-      const transaccion = <TransaccionEntrada>{
-        Observacion: this.observacionForm.value.observacionCtrl,
-        Detalle: detalle,
-        FormatoTipoMovimientoId: 'ENT_PPA',
-        SoporteMovimientoId: 0,
-      };
-
-      this.data.emit(transaccion);
-    } else {
-      this.pUpManager.showErrorAlert('No ha llenado todos los campos! No es posible hacer el registro.');
-    }
-
-  }
-
-  private validateElementos(): ValidatorFn {
-    return (control: AbstractControl): ValidationErrors | null => {
-      const noFilas = !control.value.length;
-      const noSeleccionado = !noFilas && !control.value.every(el => el.Placa && el.Placa.Id && el.Id);
-      const duplicados = !noSeleccionado && control.value.map(el => el.Id)
-        .some((element, index) => {
-          return control.value.map(el => el.Id).indexOf(element) !== index;
-        });
-
-      return (noFilas || noSeleccionado) ? { errorNoElementos: true } : duplicados ? { errorDuplicados: true } : null;
+    const detalle = {
+      acta_recibido_id: +this.actaRecibidoId,
+      elementos: this.elementosForm.get('elementos').value.map(el => el.Id),
+      supervisor: this.supervisorForm.value.supervisorCtrl.Id,
     };
+    const transaccion = this.common.crearTransaccionEntrada(this.observacionForm.value.observacionCtrl, detalle, 'ENT_PPA', 0);
+    this.data.emit(transaccion);
   }
 
 }
