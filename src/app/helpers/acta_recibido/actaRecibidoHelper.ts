@@ -594,49 +594,8 @@ export class ActaRecibidoHelper {
                     return res;
                 },
             ),
-        ); }
-    /**
-     * Elementos get
-     * Conversion Archivo Post
-     * If the response has errors in the OAS API it should show a popup message with an error.
-     * If the response is successs, it returns the object's data.
-     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
-    */
-   public getElementosByPlaca(placa) {
-    this.rqManager.setPath('ACTA_RECIBIDO_SERVICE');
-    return this.rqManager.get('elemento/?query=Placa__contains:' + placa + ',Activo:true&fields=Placa&limit=-1').pipe(
-        map(
-            (res) => {
-                if (res === 'error') {
-                    this.pUpManager.showErrorAlert('No se pudo consultar los el elemento de esta placa');
-                    return undefined;
-                }
-                return res;
-            },
-        ),
-    );
-}
-/**
-     * Elementos get
-     * Conversion Archivo Post
-     * If the response has errors in the OAS API it should show a popup message with an error.
-     * If the response is successs, it returns the object's data.
-     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
-    */
-   public getElementosByPlaca2(placa) {
-    this.rqManager.setPath('ACTA_RECIBIDO_SERVICE');
-    return this.rqManager.get('elemento/?query=Placa__contains:' + placa + ',Activo:true&fields=Id,Placa&limit=-1').pipe(
-        map(
-            (res) => {
-                if (res === 'error') {
-                    this.pUpManager.showErrorAlert('No se pudo consultar los el elemento de esta placa');
-                    return undefined;
-                }
-                return res;
-            },
-        ),
-    );
-}
+        );
+    }
 
     /**
      * Elementos get
@@ -645,7 +604,7 @@ export class ActaRecibidoHelper {
      * If the response is successs, it returns the object's data.
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
     */
-   public getElementos(placa) {
+public getElementosByPlaca(placa) {
     this.rqManager.setPath('ACTA_RECIBIDO_SERVICE');
     return this.rqManager.get('elemento/?query=Placa__contains:' + placa + ',Activo:true&fields=Placa&limit=-1').pipe(
         map(
