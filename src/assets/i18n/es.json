@@ -934,6 +934,7 @@
         },
         "elementosMejoras": "Lista de elementos que se van a mejorar.",
         "elementosReposicion": "Lista de elementos que se van a reponer.",
+        "elementosAprovechamientos": "Lista de elementos que se van a aprovechar.",
         "noEntradasView": "No se encontraron entradas",
         "noEntradasReview": "No hay entradas pendientes para ser revisadas",
         "noEntradasAprobadas": "No hay entradas aprobadas pendientes por asociar a salida",

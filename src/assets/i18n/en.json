@@ -933,6 +933,7 @@
         },
         "elementosMejoras": "Lista de elementos que se van a mejorar.",
         "elementosReposicion": "Lista de elementos que se van a reponer.",
+        "elementosAprovechamientos": "Lista de elementos que se van a aprovechar.",
         "noEntradasView": "There are no entries to view",
         "noEntradasReview": "There are no entries to review",
         "noEntradasAprobadas": "There are no entries to create an issue",
