@@ -117,18 +117,7 @@ export class ReposicionComponent implements OnInit {
 
   loadSoporte(): void {
     this.actasHelper.getSoporte(this.actaRecibidoId).subscribe(res => {
-      if (res !== null) {
-        for (const index in res) {
-          if (res.hasOwnProperty(index)) {
-            const soporte = new SoporteActaProveedor;
-            soporte.Id = res[index].Id;
-            soporte.Consecutivo = res[index].Consecutivo;
-            soporte.Proveedor = res[index].ProveedorId;
-            soporte.FechaSoporte = res[index].FechaSoporte;
-            this.soportes.push(soporte);
-          }
-        }
-      }
+      this.soportes = res;
     });
   }
 

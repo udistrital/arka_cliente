@@ -105,3 +105,25 @@ mat-card {
   text-align: right;
   margin: 0 auto;
 }
+
+button[mat-flat-button] {
+  text-transform: uppercase;
+}
+
+.boton-stepper-initial {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}
+
+.botones-stepper-middle {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.boton-stepper-final {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+}

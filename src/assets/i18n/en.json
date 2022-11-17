@@ -928,6 +928,11 @@
       "estadoAprobado": "Approved",
       "estadoRechazo": "Rejected",
       "entradas": {
+        "errores": {
+          "elementoSinBaja": "El elemento no se puede reponer porque no ha sido dado de baja."
+        },
+        "elementosMejoras": "Lista de elementos que se van a mejorar.",
+        "elementosReposicion": "Lista de elementos que se van a reponer.",
         "noEntradasView": "There are no entries to view",
         "noEntradasReview": "There are no entries to review",
         "noEntradasAprobadas": "There are no entries to create an issue",
