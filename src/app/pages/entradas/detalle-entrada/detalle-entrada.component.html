@@ -23,9 +23,9 @@
     </div>
   </div>
   <div class="row">
-    <div class="col" *ngIf="unidadEjecutora">
-      <p><a class="text-uppercase"><strong>{{'GLOBAL.Acta_Recibido.RegistroActa.unidadEjecutora' | translate }}:</strong>
-        {{ unidadEjecutora.Nombre}}</a></p>
+    <div class="col">
+      <p class="text-uppercase"><strong>{{'GLOBAL.Acta_Recibido.RegistroActa.unidadEjecutora' | translate }}:</strong>
+        {{ entradaEspecifica?.unidadEjecutora?.Nombre }}</p>
     </div>
   </div>
 
@@ -141,16 +141,6 @@
       <div class="col">
         <p class="text-uppercase"><strong>{{'GLOBAL.Cargo' | translate }}:</strong>
           capturar</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- REPOSICIÓN -->
-  <div *ngIf="entradaEspecifica.TipoEntradaId.Nombre === 'Reposición'">
-    <div class="row">
-      <div class="col">
-        <p class="text-uppercase"><strong>{{'GLOBAL.Placa' | translate }}:</strong>
-          {{Placa}}</p>
       </div>
     </div>
   </div>
@@ -442,4 +432,8 @@
       <mat-icon>cloud_download</mat-icon>
     </button>
   </div>
+
+  <ng2-smart-table [settings]="settings" [source]="source" *ngIf="source?.data?.length">
+  </ng2-smart-table>
+
 </div>

@@ -18,6 +18,7 @@ export class Entrada {
     TasaRepresentativaMercado: number;
     Divisa: string;
     EstadoMovimientoId: number;
+    UnidadEjecutora: any;
 }
 
 export class Movimiento {

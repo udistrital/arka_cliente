@@ -27,6 +27,15 @@ export class SmartTableService {
         return value ? value : '';
     }
 
+    public prepareFunctionCurrency(value: any): string {
+        const value_ = value ? Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP' }).format(value) : '';
+        return '<p class="currency">' + value_ + '</p>';
+    }
+
+    public prepareFunctionParse(value: string, key: string): string {
+        return value && JSON.parse(value) ? JSON.parse(value)[key] : '';
+    }
+
     public prepareFunctionObject(key: string, value?: any): string {
         if (!value || !value[key]) {
             return '';
