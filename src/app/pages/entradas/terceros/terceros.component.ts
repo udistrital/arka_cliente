@@ -137,20 +137,7 @@ export class TercerosComponent implements OnInit {
 
   loadSoporte(): void {
     this.actaRecibidoHelper.getSoporte(this.actaRecibidoId).subscribe(res => {
-      if (res !== null) {
-        for (const index in res) {
-          if (res.hasOwnProperty(index)) {
-            const soporte = new SoporteActaProveedor;
-            soporte.Id = res[index].Id;
-            soporte.Consecutivo = res[index].Consecutivo;
-            soporte.Proveedor = res[index].ProveedorId;
-            soporte.FechaSoporte = res[index].FechaSoporte;
-            this.soportes.push(soporte);
-          }
-        }
-        const date = this.soportes[0].FechaSoporte.toString().split('T');
-        this.fechaFactura = date[0];
-      }
+      this.soportes = res;
     });
   }
 

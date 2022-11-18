@@ -65,7 +65,7 @@ export class ListaMovimientosComponent implements OnInit {
         this.spinner = 'Cargando Actas';
         this.title = this.translate.instant('GLOBAL.ajustes.registrar.accion');
         this.subtitle = this.translate.instant('GLOBAL.ajuste-auto.sugActa');
-        this.actaRecibidoHelper.getAllActasRecibidoByEstado(['Asociada a Entrada']).subscribe(res_ => {
+        this.actaRecibidoHelper.getAllActasRecibidoByEstado(['Asociada a Entrada'], -1, 0).subscribe(res_ => {
           if (res_.length) {
             this.actas.load(res);
             this.spinner = '';

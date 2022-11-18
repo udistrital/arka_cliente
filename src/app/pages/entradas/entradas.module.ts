@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ThemeModule } from '../../@theme/theme.module';
 import { ActaRecibidoModule } from '../acta-recibido/acta-recibido.module';
 import { AjustesModule } from '../ajustes/ajustes.module';
-import { EntradasRoutingModule, routedComponents } from './entradas-routing.module';
+import { EntradasRoutingModule } from './entradas-routing.module';
 import { EntradasComponent } from './entradas.component';
 import { ReposicionComponent } from './reposicion/reposicion.component';
 import { ElaboracionPropiaComponent } from './elaboracion-propia/elaboracion-propia.component';
@@ -24,6 +24,7 @@ import { ProvisionalComponent } from './provisional/provisional.component';
 import { IntangiblesDesarrolladosComponent } from './intangibles-desarrollados/intangibles-desarrollados.component';
 import { VerComprobanteComponent } from './ver-comprobante/ver-comprobante.component';
 import { DetalleEntradaComponent } from './detalle-entrada/detalle-entrada.component';
+import { CommonEntradas } from './CommonEntradas';
 
 @NgModule({
   declarations: [
@@ -59,6 +60,9 @@ import { DetalleEntradaComponent } from './detalle-entrada/detalle-entrada.compo
   exports: [
     VerComprobanteComponent,
     DetalleEntradaComponent,
+  ],
+  providers: [
+    CommonEntradas,
   ],
 })
 export class EntradasModule { }

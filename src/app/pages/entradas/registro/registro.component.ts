@@ -173,7 +173,7 @@ export class RegistroComponent implements OnInit {
 
   loadActas(): void {
     this.spinner = 'Cargando actas aceptadas';
-    this.actaRecibidoHelper.getAllActasRecibidoByEstado(['Aceptada']).subscribe(res => {
+    this.actaRecibidoHelper.getAllActasRecibidoByEstado(['Aceptada'], -1, 0).subscribe(res => {
       this.spinner = '';
       if (res && res.length) {
         this.source.load(res);

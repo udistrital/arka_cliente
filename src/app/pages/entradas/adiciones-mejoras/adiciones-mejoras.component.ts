@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, ViewChild, Output, EventEmitter } from '@angular/core';
-import { Validators, FormBuilder, FormGroup } from '@angular/forms';
+import { Validators, FormBuilder, FormGroup, FormArray } from '@angular/forms';
 import { PopUpManager } from '../../../managers/popUpManager';
 import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
 import { Contrato } from '../../../@core/data/models/entrada/contrato';
@@ -8,9 +8,13 @@ import { OrdenadorGasto } from '../../../@core/data/models/entrada/ordenador_gas
 import { Supervisor } from '../../../@core/data/models/entrada/supervisor';
 import { SoporteActaProveedor } from '../../../@core/data/models/acta_recibido/soporte_acta';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
-import { NbStepperComponent } from '@nebular/theme';
-import { isObject } from 'rxjs/internal-compatibility';
 import { TranslateService } from '@ngx-translate/core';
+import { MatPaginator, MatStepper, MatTableDataSource } from '@angular/material';
+import { Observable } from 'rxjs';
+import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
+import { UtilidadesService } from '../../../@core/utils';
+import { MovimientosHelper } from '../../../helpers/movimientos/movimientosHelper';
+import { CommonEntradas } from '../CommonEntradas';
 
 @Component({
   selector: 'ngx-adiciones-mejoras',
@@ -21,6 +25,7 @@ import { TranslateService } from '@ngx-translate/core';
 export class AdicionesMejorasComponent implements OnInit {
 
   // Formularios
+  elementosForm: FormGroup;
   contratoForm: FormGroup;
   facturaForm: FormGroup;
   observacionForm: FormGroup;
@@ -36,34 +41,39 @@ export class AdicionesMejorasComponent implements OnInit {
   contratos: Array<Contrato>;
   // Contrato Seleccionado
   contratoEspecifico: Contrato;
-  // Número de Contrato
-  contratoInput: string;
   // Soportes
   soportes: Array<SoporteActaProveedor>;
   fechaFactura: string;
-  validar: boolean;
+  dataSource: MatTableDataSource<any>;
+  displayedColumns: any;
+  elementos: any[];
   // Selects
   opcionTipoContrato: string;
   opcionvigencia: string;
 
-  @ViewChild('stepper') stepper: NbStepperComponent;
+  @ViewChild('stepper') stepper: MatStepper;
+  @ViewChild('paginator') paginator: MatPaginator;
 
   @Input() actaRecibidoId: Number;
   @Output() data: EventEmitter<TransaccionEntrada> = new EventEmitter<TransaccionEntrada>();
 
   constructor(
+    private common: CommonEntradas,
     private entradasHelper: EntradaHelper,
+    private movimientos: MovimientosHelper,
     private actaRecibidoHelper: ActaRecibidoHelper,
     private pUpManager: PopUpManager,
     private fb: FormBuilder,
-    private translate: TranslateService) {
+    private translate: TranslateService,
+    private utils: UtilidadesService,
+  ) {
+    this.displayedColumns = this.common.columnsElementos;
     this.tipoContratoSelect = false;
     this.vigenciaSelect = false;
     this.contratos = new Array<Contrato>();
     this.contratoEspecifico = new Contrato;
     this.soportes = new Array<SoporteActaProveedor>();
     this.fechaFactura = '';
-    this.validar = false;
     this.iniciarContrato();
   }
 
@@ -71,23 +81,94 @@ export class AdicionesMejorasComponent implements OnInit {
     this.contratoForm = this.fb.group({
       contratoCtrl: ['', [
         Validators.required,
-        Validators.pattern('^[0-9]{2,4}$')],
+        Validators.pattern('^[0-9]{1,4}$')],
       ],
       vigenciaCtrl: ['', [Validators.required]],
     });
     this.facturaForm = this.fb.group({
-      facturaCtrl: ['', Validators.nullValidator],
+      facturaCtrl: ['', Validators.required],
     });
-    this.observacionForm = this.fb.group({
-      observacionCtrl: ['', Validators.nullValidator],
-    });
+    this.elementosForm = this.common.formElementos;
+    this.observacionForm = this.common.formObservaciones;
     this.ordenadorForm = this.fb.group({
       ordenadorCtrl: ['', Validators.nullValidator],
     });
     this.supervisorForm = this.fb.group({
       supervisorCtrl: ['', Validators.nullValidator],
     });
+    this.dataSource = new MatTableDataSource<any>();
+    this.dataSource.paginator = this.paginator;
     this.getVigencia();
+  }
+
+  addElemento() {
+    (this.elementosForm.get('elementos') as FormArray).push(this.elemento);
+    this.dataSource.data = this.dataSource.data.concat({});
+  }
+
+  get elemento(): FormGroup {
+    const form = this.common.elemento;
+    this.cambiosPlaca(form.get('Placa').valueChanges);
+    return form;
+  }
+
+  getActualIndex(index: number) {
+    return index + this.paginator.pageSize * this.paginator.pageIndex;
+  }
+
+  removeElemento(index: number) {
+    index = this.paginator.pageIndex > 0 ? index + (this.paginator.pageIndex * this.paginator.pageSize) : index;
+    (this.elementosForm.get('elementos') as FormArray).removeAt(index);
+    const data = this.dataSource.data;
+    data.splice(index, 1);
+    this.dataSource.data = data;
+  }
+
+  public getDetalleElemento(index: number) {
+    const actaId = this.getElementoForm(index).value.Placa.Id;
+    // this.spinner = 'Consultando detalle del elemento';
+    this.movimientos.getHistorialElemento(actaId, true, true).subscribe(res => {
+      // this.spinner = '';
+      const salidaOk = res && res.Elemento && res.Salida && res.Salida.EstadoMovimientoId.Nombre === 'Salida Aprobada';
+      if (!salidaOk) {
+        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.bajas.errorPlaca'));
+        return;
+      }
+
+      const noTraslado = res && (!res.Traslados || res.Traslados[0].EstadoMovimientoId.Nombre === 'Traslado Aprobado');
+      const noBaja = res && !res.Baja;
+      const assignable = noTraslado && noBaja;
+
+      if (assignable) {
+        const salida = JSON.parse(res.Salida.Detalle).consecutivo;
+        const entrada = JSON.parse(res.Salida.MovimientoPadreId.Detalle).consecutivo;
+        (this.elementosForm.get('elementos') as FormArray).at(index).patchValue({
+          Id: res.Elemento.Id,
+          entrada,
+          fechaEntrada: this.utils.formatDate(res.Salida.MovimientoPadreId.FechaCreacion),
+          salida,
+          fechaSalida: this.utils.formatDate(res.Salida.FechaCreacion),
+        });
+      } else if (!noTraslado) {
+        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.bajas.errorTr'));
+      } else if (!noBaja) {
+        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.bajas.errorBj'));
+      }
+    });
+  }
+
+  private getElementoForm(index: number) {
+    return (this.elementosForm.get('elementos') as FormArray).at(index);
+  }
+
+  private cambiosPlaca(valueChanges: Observable<any>) {
+    valueChanges.pipe(
+      debounceTime(250),
+      distinctUntilChanged(),
+      switchMap((val) => this.common.loadElementos(val)),
+    ).subscribe((response: any) => {
+      this.elementos = response.queryOptions;
+    });
   }
 
   /**
@@ -97,20 +178,17 @@ export class AdicionesMejorasComponent implements OnInit {
     this.contratos = [];
     if (this.opcionTipoContrato !== '' && this.opcionvigencia) {
       this.entradasHelper.getContratos(this.opcionTipoContrato, this.opcionvigencia).subscribe(res => {
-        if (res !== null) {
-          if (isObject(res.contratos_suscritos.contrato_suscritos))
-            for (const index of Object.keys(res.contratos_suscritos.contrato_suscritos)) {
-              const contratoAux = new Contrato;
-              contratoAux.NumeroContratoSuscrito = res.contratos_suscritos.contrato_suscritos[index].numero_contrato;
-              this.contratos.push(contratoAux);
-            }
+        if (res.contratos_suscritos && res.contratos_suscritos.contrato_suscritos && res.contratos_suscritos.contrato_suscritos.length) {
+          this.contratos = res.contratos_suscritos.contrato_suscritos.map(c => ({
+            NumeroContratoSuscrito: c.numero_contrato,
+          }));
         }
       });
     }
   }
 
   loadContratoEspecifico(): void {
-    this.entradasHelper.getContrato(this.contratoInput, this.opcionvigencia).subscribe(res => {
+    this.entradasHelper.getContrato(this.contratoForm.value.contratoCtrl, this.opcionvigencia).subscribe(res => {
       if (res !== null) {
         const ordenadorAux = new OrdenadorGasto;
         const supervisorAux = new Supervisor;
@@ -134,51 +212,35 @@ export class AdicionesMejorasComponent implements OnInit {
 
   loadSoporte(): void {
     this.actaRecibidoHelper.getSoporte(this.actaRecibidoId).subscribe(res => {
-      if (res !== null) {
-        for (const index in res) {
-          if (res.hasOwnProperty(index)) {
-            const soporte = new SoporteActaProveedor;
-            soporte.Id = res[index].Id;
-            soporte.Consecutivo = res[index].Consecutivo;
-            soporte.Proveedor = res[index].ProveedorId;
-            soporte.FechaSoporte = res[index].FechaSoporte;
-            this.soportes.push(soporte);
-          }
-        }
-      }
-      const date = this.soportes[0].FechaSoporte.toString().split('T');
-      this.fechaFactura = date[0];
+      this.soportes = res;
     });
   }
 
-  /**
-   * Métodos para validar campos requeridos en el formulario.
-   */
+  // Métodos para validar campos requeridos en el formulario.
   onContratoSubmit() {
     let existe = false;
-    if (this.contratos.length > 0) {
-      const aux = this.contratoForm.value.contratoCtrl;
-      if (aux !== '') {
-        for (const i in this.contratos) {
-          if (this.contratos[i].NumeroContratoSuscrito.toString() === aux) {
-            this.contratoInput = aux;
-            existe = true;
-          }
-        }
-        if (existe) {
-          this.loadContratoEspecifico();
-          this.loadSoporte();
-        } else {
-          this.stepper.previous();
-          this.iniciarContrato();
-          this.pUpManager.showErrorAlert('El contrato seleccionado no existe!');
-        }
+    if (this.contratos.length && this.contratoForm.value.contratoCtrl) {
+      existe = !!this.contratos.find(c => c.NumeroContratoSuscrito === this.contratoForm.value.contratoCtrl);
+      if (existe) {
+        this.loadContratoEspecifico();
+        this.loadSoporte();
+        return;
       }
     }
+
+    this.stepper.previous();
+    this.iniciarContrato();
+    this.pUpManager.showErrorAlert('El contrato seleccionado no existe!');
+    return;
   }
 
   onObservacionSubmit() {
-    this.validar = true;
+    this.pUpManager.showAlertWithOptions(this.common.optionsSubmit)
+      .then((result) => {
+        if (result.value) {
+          this.onSubmit();
+        }
+      });
   }
 
   /**
@@ -202,12 +264,7 @@ export class AdicionesMejorasComponent implements OnInit {
 
   changeSelectSoporte(event) {
     const soporteId: string = event.target.options[event.target.options.selectedIndex].value;
-    for (const i in this.soportes) {
-      if (this.soportes[i].Id.toString() === soporteId) {
-        const date = this.soportes[i].FechaSoporte.toString().split('T');
-        this.fechaFactura = date[0];
-      }
-    }
+    this.fechaFactura = soporteId ? this.soportes.find(s => s.Id === +soporteId).FechaSoporte.toString() : '';
   }
 
   iniciarContrato() {
@@ -232,25 +289,16 @@ export class AdicionesMejorasComponent implements OnInit {
 
   // Método para enviar registro
   onSubmit() {
-    if (this.validar) {
-      const detalle = {
-        acta_recibido_id: +this.actaRecibidoId,
-        contrato_id: +this.contratoEspecifico.NumeroContratoSuscrito,
-        vigencia_contrato: this.contratoForm.value.vigenciaCtrl,
-      };
+    const detalle = {
+      elementos: this.elementosForm.get('elementos').value.map(el => el.Id),
+      factura: +this.facturaForm.value.facturaCtrl,
+      acta_recibido_id: +this.actaRecibidoId,
+      contrato_id: +this.contratoEspecifico.NumeroContratoSuscrito,
+      vigencia_contrato: this.contratoForm.value.vigenciaCtrl,
+    };
 
-      const transaccion = <TransaccionEntrada>{
-        Observacion: this.observacionForm.value.observacionCtrl,
-        Detalle: detalle,
-        FormatoTipoMovimientoId: 'ENT_AM',
-        SoporteMovimientoId: 0,
-      };
-
-      this.data.emit(transaccion);
-    } else {
-      this.pUpManager.showErrorAlert('No ha llenado todos los campos! No es posible hacer el registro.');
-    }
-
+    const transaccion = this.common.crearTransaccionEntrada(this.observacionForm.value.observacionCtrl, detalle, 'ENT_AM', 0);
+    this.data.emit(transaccion);
   }
 
 }

@@ -22,7 +22,6 @@ export class DetalleEntradaComponent implements OnInit {
   Proveedor: any;
   factura: SoporteActa;
   contrato: Contrato;
-  encargado: any;
   Placa: any;
   Supervisor: any;
   flagDependencia = true;
@@ -95,10 +94,6 @@ export class DetalleEntradaComponent implements OnInit {
 
     if (this.detalleEntrada.ordenador) {
       this.Ordenador = this.detalleEntrada.ordenador;
-    }
-
-    if (this.detalleEntrada.encargado) {
-      this.encargado = this.detalleEntrada.encargado;
     }
 
     switch (this.detalleEntrada.movimiento.FormatoTipoMovimientoId.Nombre) {
