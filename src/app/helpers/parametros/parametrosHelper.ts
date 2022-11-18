@@ -49,4 +49,24 @@ export class ParametrosHelper {
         );
     }
 
+    public getAllParametro(payload: string) {
+        this.rqManager.setPath('PARAMETROS_SERVICE');
+        return this.rqManager.get('parametro?' + payload).pipe(
+            map(
+                (res) => {
+                    if (!res.Success) {
+                        this.pUpManager.showErrorAlert('No se pudo consultar los parámetros');
+                        return undefined;
+                    } else if (res.Data && res.Data.length) {
+                        if (!res.Data[0].Id) {
+                            res = [];
+                        } else {
+                            return res.Data;
+                        }
+                    }
+                },
+            ),
+        );
+    }
+
 }

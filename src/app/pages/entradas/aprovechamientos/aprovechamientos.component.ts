@@ -1,14 +1,16 @@
 import { Component, OnInit, ViewChild, Input, Output, EventEmitter } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { NbStepperComponent } from '@nebular/theme';
-import { Supervisor, TerceroCriterioPlanta } from '../../../@core/data/models/terceros_criterio';
+import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Supervisor } from '../../../@core/data/models/terceros_criterio';
 import { PopUpManager } from '../../../managers/popUpManager';
-import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
 import { Observable } from 'rxjs';
-import { map, startWith } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, map, startWith, switchMap } from 'rxjs/operators';
 import { TransaccionEntrada } from '../../../@core/data/models/entrada/entrada';
 import { TranslateService } from '@ngx-translate/core';
 import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
+import { MatPaginator, MatTableDataSource } from '@angular/material';
+import { MovimientosHelper } from '../../../helpers/movimientos/movimientosHelper';
+import { UtilidadesService } from '../../../@core/utils';
+import { CommonEntradas } from '../CommonEntradas';
 
 @Component({
   selector: 'ngx-aprovechamientos',
@@ -18,46 +20,117 @@ import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
 export class AprovechamientosComponent implements OnInit {
 
   // Formularios
-  fechaForm: FormGroup;
+  elementosForm: FormGroup;
   supervisorForm: FormGroup;
   observacionForm: FormGroup;
   flag = true;
   dependenciaSupervisor: String;
 
   // Validadores
-
-  validar: boolean = false;
+  dataSource: MatTableDataSource<any>;
+  displayedColumns: any;
+  elementos: any[];
   cargando_supervisores: boolean = true;
 
   private Supervisores: Supervisor[];
   supervisoresFiltrados: Observable<Supervisor[]>;
 
-  @ViewChild('stepper') stepper: NbStepperComponent;
+  @ViewChild('paginator') paginator: MatPaginator;
 
   @Input() actaRecibidoId: number;
   @Output() data: EventEmitter<TransaccionEntrada> = new EventEmitter<TransaccionEntrada>();
 
   constructor(
+    private common: CommonEntradas,
+    private movimientos: MovimientosHelper,
+    private utils: UtilidadesService,
     private entradasHelper: EntradaHelper,
-    private tercerosHelper: TercerosHelper,
     private pUpManager: PopUpManager,
     private fb: FormBuilder,
     private translate: TranslateService) {
-    this.validar = false;
+    this.displayedColumns = this.common.columnsElementos;
     this.dependenciaSupervisor = '';
   }
 
   ngOnInit() {
-    this.fechaForm = this.fb.group({
-      fechaCtrl: ['', Validators.required],
-    });
-    this.observacionForm = this.fb.group({
-      observacionCtrl: ['', Validators.nullValidator],
-    });
+    this.elementosForm = this.common.formElementos;
+    this.observacionForm = this.common.formObservaciones;
     this.supervisorForm = this.fb.group({
       supervisorCtrl: ['', Validators.required],
     });
+    this.dataSource = new MatTableDataSource<any>();
+    this.dataSource.paginator = this.paginator;
     this.loadSupervisores();
+  }
+
+  addElemento() {
+    (this.elementosForm.get('elementos') as FormArray).push(this.elemento);
+    this.dataSource.data = this.dataSource.data.concat({});
+  }
+
+  get elemento(): FormGroup {
+    const form = this.common.elemento;
+    this.cambiosPlaca(form.get('Placa').valueChanges);
+    return form;
+  }
+
+  getActualIndex(index: number) {
+    return index + this.paginator.pageSize * this.paginator.pageIndex;
+  }
+
+  removeElemento(index: number) {
+    index = this.paginator.pageIndex > 0 ? index + (this.paginator.pageIndex * this.paginator.pageSize) : index;
+    (this.elementosForm.get('elementos') as FormArray).removeAt(index);
+    const data = this.dataSource.data;
+    data.splice(index, 1);
+    this.dataSource.data = data;
+  }
+
+  public getDetalleElemento(index: number) {
+    const actaId = this.getElementoForm(index).value.Placa.Id;
+    // this.spinner = 'Consultando detalle del elemento';
+    this.movimientos.getHistorialElemento(actaId, true, true).subscribe(res => {
+      // this.spinner = '';
+      const salidaOk = res && res.Elemento && res.Salida && res.Salida.EstadoMovimientoId.Nombre === 'Salida Aprobada';
+      if (!salidaOk) {
+        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.bajas.errorPlaca'));
+        return;
+      }
+
+      const noTraslado = res && (!res.Traslados || res.Traslados[0].EstadoMovimientoId.Nombre === 'Traslado Aprobado');
+      const noBaja = res && !res.Baja;
+      const assignable = noTraslado && noBaja;
+
+      if (assignable) {
+        const salida = JSON.parse(res.Salida.Detalle).consecutivo;
+        const entrada = JSON.parse(res.Salida.MovimientoPadreId.Detalle).consecutivo;
+        (this.elementosForm.get('elementos') as FormArray).at(index).patchValue({
+          Id: res.Elemento.Id,
+          entrada,
+          fechaEntrada: this.utils.formatDate(res.Salida.MovimientoPadreId.FechaCreacion),
+          salida,
+          fechaSalida: this.utils.formatDate(res.Salida.FechaCreacion),
+        });
+      } else if (!noTraslado) {
+        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.bajas.errorTr'));
+      } else if (!noBaja) {
+        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.bajas.errorBj'));
+      }
+    });
+  }
+
+  private getElementoForm(index: number) {
+    return (this.elementosForm.get('elementos') as FormArray).at(index);
+  }
+
+  private cambiosPlaca(valueChanges: Observable<any>) {
+    valueChanges.pipe(
+      debounceTime(250),
+      distinctUntilChanged(),
+      switchMap((val) => this.common.loadElementos(val)),
+    ).subscribe((response: any) => {
+      this.elementos = response.queryOptions;
+    });
   }
 
   private filtroSupervisores(nombre: string): Supervisor[] {
@@ -67,16 +140,15 @@ export class AprovechamientosComponent implements OnInit {
     // } else return [];
   }
 
-
   private loadSupervisores(): void {
     this.entradasHelper.getSupervisores('supervisor_contrato?limit=-1').subscribe(res => {
       if (Array.isArray(res)) {
         this.Supervisores = res;
         this.supervisoresFiltrados = this.supervisorForm.get('supervisorCtrl').valueChanges
-        .pipe(
-          startWith(''),
-          map(val => typeof val === 'string' ? val : this.muestraSupervisor(val)),
-          map(nombre => this.filtroSupervisores(nombre)),
+          .pipe(
+            startWith(''),
+            map(val => typeof val === 'string' ? val : this.muestraSupervisor(val)),
+            map(nombre => this.filtroSupervisores(nombre)),
           );
         // console.log({supervisores: this.Supervisores});
         this.cargando_supervisores = false;
@@ -94,7 +166,7 @@ export class AprovechamientosComponent implements OnInit {
 
   datosSupervisor(param: string): string {
     const supervisorSeleccionado: Supervisor = <Supervisor>this.supervisorForm.value.supervisorCtrl;
-    if (supervisorSeleccionado ) {
+    if (supervisorSeleccionado) {
       if (this.flag) {
         this.flag = false;
         this.entradasHelper.getDependenciaSupervisor('dependencia_SIC', supervisorSeleccionado.DependenciaSupervisor).subscribe(res => {
@@ -115,29 +187,23 @@ export class AprovechamientosComponent implements OnInit {
   }
 
   onObservacionSubmit() {
-    this.validar = true;
+    this.pUpManager.showAlertWithOptions(this.common.optionsSubmit)
+      .then((result) => {
+        if (result.value) {
+          this.onSubmit();
+        }
+      });
   }
 
-// Método para enviar registro
+  // Método para enviar registro
   onSubmit() {
-    if (this.validar) {
-      const detalle = {
-        acta_recibido_id: +this.actaRecibidoId,
-        supervisor: this.supervisorForm.value.supervisorCtrl.Id,
-      };
-
-      const transaccion = <TransaccionEntrada>{
-        Observacion: this.observacionForm.value.observacionCtrl,
-        Detalle: detalle,
-        FormatoTipoMovimientoId: 'ENT_PPA',
-        SoporteMovimientoId: 0,
-      };
-
-      this.data.emit(transaccion);
-    } else {
-      this.pUpManager.showErrorAlert('No ha llenado todos los campos! No es posible hacer el registro.');
-    }
-
+    const detalle = {
+      acta_recibido_id: +this.actaRecibidoId,
+      elementos: this.elementosForm.get('elementos').value.map(el => el.Id),
+      supervisor: this.supervisorForm.value.supervisorCtrl.Id,
+    };
+    const transaccion = this.common.crearTransaccionEntrada(this.observacionForm.value.observacionCtrl, detalle, 'ENT_PPA', 0);
+    this.data.emit(transaccion);
   }
 
 }

@@ -623,6 +623,7 @@
     "fechaAprobacion": "Fecha de Aprobación",
     "nivel_jerarquico": "Hierarchical Level",
     "atras": "Atrás",
+    "emisorResolucion": "Emisor de la resolución",
 
     "subgrupo": {
       "grupo": {
@@ -927,6 +928,12 @@
       "estadoAprobado": "Approved",
       "estadoRechazo": "Rejected",
       "entradas": {
+        "errores": {
+          "elementoSinBaja": "El elemento no se puede reponer porque no ha sido dado de baja."
+        },
+        "elementosMejoras": "Lista de elementos que se van a mejorar.",
+        "elementosReposicion": "Lista de elementos que se van a reponer.",
+        "elementosAprovechamientos": "Lista de elementos que se van a aprovechar.",
         "noEntradasView": "There are no entries to view",
         "noEntradasReview": "There are no entries to review",
         "noEntradasAprobadas": "There are no entries to create an issue",
@@ -934,6 +941,8 @@
         "errorListaEntradas": "Error getting the entries list",
         "errorEstadosMov": "Error getting the status",
         "errorRechazoEntrada": "Error when trying o reject the entry",
+        "registroConfrmTtl": "Confirmar Registro de Entrada",
+        "registroConfrmTxt": "¿Está seguro de registrar la entrada?",
         "registroTtlOk": "Entry Registered",
         "registroTxtOk": "The entry {{CONSECUTIVO}} has been successfully registered",
         "registroFail": "There was an error creating the entry.",

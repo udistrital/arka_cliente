@@ -22,7 +22,6 @@ export class Ubicacion {
 export class SoporteActaProveedor {
     Id: number;
     Consecutivo: string;
-    Proveedor: Proveedor; // CAMBIAR POR MODELO CUANDO SE PUEDA CONSULTAR
     FechaSoporte: Date;
     ActaRecibidoId: ActaRecibido;
     Activo: boolean;

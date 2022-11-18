@@ -624,6 +624,7 @@
     "fechaAprobacion": "Fecha de Aprobación",
     "nivel_jerarquico": "Nivel Jerárquico",
     "atras": "Atrás",
+    "emisorResolucion": "Emisor de la resolución",
 
     "subgrupo": {
       "grupo": {
@@ -928,6 +929,12 @@
       "estadoAprobado": "Aprobada",
       "estadoRechazo": "Rechazada",
       "entradas": {
+        "errores": {
+          "elementoSinBaja": "El elemento no se puede reponer porque no ha sido dado de baja."
+        },
+        "elementosMejoras": "Lista de elementos que se van a mejorar.",
+        "elementosReposicion": "Lista de elementos que se van a reponer.",
+        "elementosAprovechamientos": "Lista de elementos que se van a aprovechar.",
         "noEntradasView": "No se encontraron entradas",
         "noEntradasReview": "No hay entradas pendientes para ser revisadas",
         "noEntradasAprobadas": "No hay entradas aprobadas pendientes por asociar a salida",
@@ -935,6 +942,8 @@
         "errorListaEntradas": "Error al consultar las entradas",
         "errorEstadosMov": "Error al consultar el estado movimiento",
         "errorRechazoEntrada": "Error al rechazar el acta",
+        "registroConfrmTtl": "Confirmar Registro de Entrada",
+        "registroConfrmTxt": "¿Está seguro de registrar la entrada?",
         "registroTtlOk": "Entrada Registrada",
         "registroTxtOk": "La entrada {{CONSECUTIVO}} ha sido registrada de manera exitosa",
         "registroFail": "No es posible hacer el registro de la entrada",

@@ -92,6 +92,10 @@ export class FormCuentasComponent implements OnInit, OnChanges {
   }
 
   private formArrayCuentasMovimiento(cuentas: any): FormGroup {
+    if (!cuentas.length) {
+      return;
+    }
+
     const form = this.fb.group({
       cuentaEspecifica: this.fb.array(
         cuentas.map(cta =>

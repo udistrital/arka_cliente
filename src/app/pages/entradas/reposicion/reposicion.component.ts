@@ -1,158 +1,132 @@
-import { Component, OnInit, Input, ViewChild, ElementRef, Output, EventEmitter } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
-import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
+import { Component, OnInit, Input, Output, EventEmitter, ViewChild } from '@angular/core';
+import { FormGroup, FormArray } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
-import { SafeResourceUrl, DomSanitizer } from '@angular/platform-browser';
-import { SoporteActaProveedor } from '../../../@core/data/models/acta_recibido/soporte_acta';
 import { TransaccionEntrada } from '../../../@core/data/models/entrada/entrada';
+import { MatPaginator, MatStepper, MatTableDataSource } from '@angular/material';
+import { MovimientosHelper } from '../../../helpers/movimientos/movimientosHelper';
+import { UtilidadesService } from '../../../@core/utils';
+import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { PopUpManager } from '../../../managers/popUpManager';
+import { CommonEntradas } from '../CommonEntradas';
 
 @Component({
   selector: 'ngx-reposicion',
   templateUrl: './reposicion.component.html',
   styleUrls: ['./reposicion.component.scss'],
 })
-
 export class ReposicionComponent implements OnInit {
 
-  elementoForm: FormGroup;
+  elementosForm: FormGroup;
   soporteForm: FormGroup;
   observacionForm: FormGroup;
-  facturaForm: FormGroup;
-  elementos: any;
-  placa: string;
-  encargado: string;
-  encargadoId: string;
-  placas: Array<string>;
-  soportes: Array<SoporteActaProveedor>;
-  uidDocumento: string;
-  idDocumento: number;
-  fileDocumento: any;
-  validar: boolean = false;
-  proveedor: string;
-  fechaFactura: string;
-  checked: boolean;
+  dataSource: MatTableDataSource<any>;
+  displayedColumns: any;
+  elementos: any[];
 
-  @ViewChild('file') fileInput: ElementRef;
+  @ViewChild('stepper') stepper: MatStepper;
+  @ViewChild('paginator') paginator: MatPaginator;
+
   @Input() actaRecibidoId: Number;
   @Output() data: EventEmitter<TransaccionEntrada> = new EventEmitter<TransaccionEntrada>();
 
   constructor(
-    private fb: FormBuilder,
-    private  actasHelper: ActaRecibidoHelper,
-    private  entradasHelper: EntradaHelper,
-    private sanitization: DomSanitizer,
-    private translate: TranslateService) {
-    this.elementos = [];
-    this.soportes = new Array<SoporteActaProveedor>();
-    this.proveedor = '';
-    this.fechaFactura = '';
+    private common: CommonEntradas,
+    private movimientos: MovimientosHelper,
+    private utils: UtilidadesService,
+    private pUpManager: PopUpManager,
+    private translate: TranslateService,
+  ) {
+    this.displayedColumns = this.common.columnsElementos;
   }
 
   ngOnInit() {
-    this.elementoForm = this.fb.group({
-      elementoCtrl: ['', [
-        Validators.required,
-        Validators.pattern('^[0-9]{13,13}$')] ],
-      encargadoCtrl: [''],
-    });
-    this.observacionForm = this.fb.group({
-      observacionCtrl: ['', Validators.nullValidator],
-    });
-    this.loadSoporte();
+    this.elementosForm = this.common.formElementos;
+    this.observacionForm = this.common.formObservaciones;
+    this.dataSource = new MatTableDataSource<any>();
+    this.dataSource.paginator = this.paginator;
   }
 
-  changeCheck() {
-    this.checked = !this.checked;
+  addElemento() {
+    (this.elementosForm.get('elementos') as FormArray).push(this.elemento);
+    this.dataSource.data = this.dataSource.data.concat({});
   }
 
-  // Métodos para validar campos requeridos en el formulario
-  onElementoSubmit() {
-    this.elementoForm.markAsDirty();
+  get elemento(): FormGroup {
+    const form = this.common.elemento;
+    this.cambiosPlaca(form.get('Placa').valueChanges);
+    return form;
   }
 
-  // MÉTODO PARA BUSCAR PLACAS EXISTENTES
-  loadPlacasElementos(): void {
-    if (this.placa.length > 3) {
-      this.actasHelper.getElementosByPlaca(this.placa).subscribe(res => {
-        if (res != null ) {
-          while (this.elementos.length > 0) {
-            this.elementos.pop();
-          }
-          this.encargado = '';
-          for (const index of Object.keys(res)) {
-            if (res[index].Placa != null) {
-              this.elementos.push(res[index].Placa);
-            }
-          }
-        }
-      });
-      if (this.placa.length === 13) {
-        this.loadEncargadoElementos(this.placa);
+  getActualIndex(index: number) {
+    return index + this.paginator.pageSize * this.paginator.pageIndex;
+  }
+
+  removeElemento(index: number) {
+    index = this.paginator.pageIndex > 0 ? index + (this.paginator.pageIndex * this.paginator.pageSize) : index;
+    (this.elementosForm.get('elementos') as FormArray).removeAt(index);
+    const data = this.dataSource.data;
+    data.splice(index, 1);
+    this.dataSource.data = data;
+  }
+
+  public getDetalleElemento(index: number) {
+    const actaId = this.getElementoForm(index).value.Placa.Id;
+    // this.spinner = 'Consultando detalle del elemento';
+    this.movimientos.getHistorialElemento(actaId, true, true).subscribe(res => {
+      // this.spinner = '';
+
+      const baja = res && res.Baja && res.Baja.EstadoMovimientoId.Nombre === 'Baja Aprobada';
+      const assignable = baja;
+
+      if (assignable) {
+        const salida = JSON.parse(res.Salida.Detalle).consecutivo;
+        const entrada = JSON.parse(res.Salida.MovimientoPadreId.Detalle).consecutivo;
+        (this.elementosForm.get('elementos') as FormArray).at(index).patchValue({
+          Id: res.Elemento.Id,
+          entrada,
+          fechaEntrada: this.utils.formatDate(res.Salida.MovimientoPadreId.FechaCreacion),
+          salida,
+          fechaSalida: this.utils.formatDate(res.Salida.FechaCreacion),
+        });
+      } else if (!baja) {
+        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.entradas.errores.elementoSinBaja'));
       }
-    }
-  }
-// MÉTODO QUE ACTUALIZA LO CAMBIOS EN EL CAMPO DE PLACAS
-  changePlacaElemento(event) {
-    this.placa = event.target.value;
-    this.loadPlacasElementos();
-
-  }
-// MÉTODO QUE CARGA EL ELEMENTO ASOCIADOS A UNA PLACA
-  loadEncargadoElementos(placa): void {
-    // falta filtrar las placas por las que son de elementos dados de baja
-      this.entradasHelper.getEncargadoElementoByPlaca(placa).subscribe(res => {
-        if (res != null && res !== undefined) {
-          this.encargado = res.NombreCompleto;
-          this.encargadoId = res.Id;
-        }else {
-          this.encargado = '';
-        }
-      });
+    });
   }
 
-  cleanURL(oldURL: string): SafeResourceUrl {
-    return this.sanitization.bypassSecurityTrustUrl(oldURL);
+  private getElementoForm(index: number) {
+    return (this.elementosForm.get('elementos') as FormArray).at(index);
   }
 
-  loadSoporte(): void {
-    this.actasHelper.getSoporte(this.actaRecibidoId).subscribe(res => {
-      if (res !== null) {
-        for (const index in res) {
-          if (res.hasOwnProperty(index)) {
-            const soporte = new SoporteActaProveedor;
-            soporte.Id = res[index].Id;
-            soporte.Consecutivo = res[index].Consecutivo;
-            soporte.Proveedor = res[index].ProveedorId;
-            soporte.FechaSoporte = res[index].FechaSoporte;
-            this.soportes.push(soporte);
-          }
-        }
-      }
+  private cambiosPlaca(valueChanges: Observable<any>) {
+    valueChanges.pipe(
+      debounceTime(250),
+      distinctUntilChanged(),
+      switchMap((val) => this.common.loadElementos(val)),
+    ).subscribe((response: any) => {
+      this.elementos = response.queryOptions;
     });
   }
 
   onObservacionSubmit() {
-    this.validar = true;
+    this.pUpManager.showAlertWithOptions(this.common.optionsSubmit)
+      .then((result) => {
+        if (result.value) {
+          this.onSubmit();
+        }
+      });
   }
 
-//  Método para enviar registro
+  //  Método para enviar registro
   async onSubmit() {
-    if (this.encargado.length !== 0 && this.validar === true) {
-      const detalle = {
-        acta_recibido_id: +this.actaRecibidoId,
-        placa_id: this.placa,
-        encargado_id: this.encargadoId,
-      };
+    const detalle = {
+      acta_recibido_id: +this.actaRecibidoId,
+      elementos: this.elementosForm.get('elementos').value.map(el => el.Id),
+    };
 
-      const transaccion = <TransaccionEntrada>{
-        Observacion: this.observacionForm.value.observacionCtrl,
-        Detalle: detalle,
-        FormatoTipoMovimientoId: 'ENT_RP',
-        SoporteMovimientoId: this.idDocumento,
-      };
-
-      this.data.emit(transaccion);
-    }
+    const transaccion = this.common.crearTransaccionEntrada(this.observacionForm.value.observacionCtrl, detalle, 'ENT_RP', 0);
+    this.data.emit(transaccion);
   }
+
 }
