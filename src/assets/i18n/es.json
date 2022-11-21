@@ -879,6 +879,7 @@
     "mensaje_consulta_entrada": "Lista de entradas realizadas. Para ver el detalle de la entrada presione el ícono de acciones ubicado al costado derecho de la tabla.",
     "consecutivo": "Consecutivo",
     "fecha_entrada": "Fecha de Entrada",
+    "fecha_salida": "Fecha de Salida",
     "tipo_entrada": "Tipo Entrada",
     "estado_entrada": "Estado Entrada",
     "estadoSalida": "Estado Salida",
@@ -930,7 +931,10 @@
       "estadoRechazo": "Rechazada",
       "entradas": {
         "errores": {
-          "elementoSinBaja": "El elemento no se puede reponer porque no ha sido dado de baja."
+          "elementoSinBaja": "El elemento no se puede reponer porque no ha sido dado de baja.",
+          "elementoAprAprovechado": "El elemento ya ha sido aprovechado.",
+          "elementoRepRepuesto": "El elemento ya ha sido repuesto.",
+          "elementoConBaja": "El elemento ha sido dado de baja."
         },
         "elementosMejoras": "Lista de elementos que se van a mejorar.",
         "elementosReposicion": "Lista de elementos que se van a reponer.",

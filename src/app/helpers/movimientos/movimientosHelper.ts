@@ -100,8 +100,8 @@ export class MovimientosHelper {
     }
 
     // Consulta de historial del elemento sin incluir el detalle de cada movimiento
-    public getHistorialElemento(id: number, acta: boolean, final: boolean) {
-        const payload = id + '?acta=' + acta + '&final=' + final;
+    public getHistorialElemento(id: number, acta: boolean, final: boolean, entradas: boolean) {
+        const payload = id + '?acta=' + acta + '&final=' + final + '&entradas=' + entradas;
         this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
         return this.rqManager.get('elementos_movimiento/historial/' + payload).pipe(
             map(

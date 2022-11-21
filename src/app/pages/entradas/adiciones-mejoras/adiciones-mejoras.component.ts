@@ -12,7 +12,6 @@ import { TranslateService } from '@ngx-translate/core';
 import { MatPaginator, MatStepper, MatTableDataSource } from '@angular/material';
 import { Observable } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
-import { UtilidadesService } from '../../../@core/utils';
 import { MovimientosHelper } from '../../../helpers/movimientos/movimientosHelper';
 import { CommonEntradas } from '../CommonEntradas';
 
@@ -65,7 +64,6 @@ export class AdicionesMejorasComponent implements OnInit {
     private pUpManager: PopUpManager,
     private fb: FormBuilder,
     private translate: TranslateService,
-    private utils: UtilidadesService,
   ) {
     this.displayedColumns = this.common.columnsElementos;
     this.tipoContratoSelect = false;
@@ -122,43 +120,6 @@ export class AdicionesMejorasComponent implements OnInit {
     const data = this.dataSource.data;
     data.splice(index, 1);
     this.dataSource.data = data;
-  }
-
-  public getDetalleElemento(index: number) {
-    const actaId = this.getElementoForm(index).value.Placa.Id;
-    // this.spinner = 'Consultando detalle del elemento';
-    this.movimientos.getHistorialElemento(actaId, true, true).subscribe(res => {
-      // this.spinner = '';
-      const salidaOk = res && res.Elemento && res.Salida && res.Salida.EstadoMovimientoId.Nombre === 'Salida Aprobada';
-      if (!salidaOk) {
-        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.bajas.errorPlaca'));
-        return;
-      }
-
-      const noTraslado = res && (!res.Traslados || res.Traslados[0].EstadoMovimientoId.Nombre === 'Traslado Aprobado');
-      const noBaja = res && !res.Baja;
-      const assignable = noTraslado && noBaja;
-
-      if (assignable) {
-        const salida = JSON.parse(res.Salida.Detalle).consecutivo;
-        const entrada = JSON.parse(res.Salida.MovimientoPadreId.Detalle).consecutivo;
-        (this.elementosForm.get('elementos') as FormArray).at(index).patchValue({
-          Id: res.Elemento.Id,
-          entrada,
-          fechaEntrada: this.utils.formatDate(res.Salida.MovimientoPadreId.FechaCreacion),
-          salida,
-          fechaSalida: this.utils.formatDate(res.Salida.FechaCreacion),
-        });
-      } else if (!noTraslado) {
-        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.bajas.errorTr'));
-      } else if (!noBaja) {
-        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.bajas.errorBj'));
-      }
-    });
-  }
-
-  private getElementoForm(index: number) {
-    return (this.elementosForm.get('elementos') as FormArray).at(index);
   }
 
   private cambiosPlaca(valueChanges: Observable<any>) {

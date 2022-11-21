@@ -4,7 +4,6 @@ import { TranslateService } from '@ngx-translate/core';
 import { TransaccionEntrada } from '../../../@core/data/models/entrada/entrada';
 import { MatPaginator, MatStepper, MatTableDataSource } from '@angular/material';
 import { MovimientosHelper } from '../../../helpers/movimientos/movimientosHelper';
-import { UtilidadesService } from '../../../@core/utils';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { PopUpManager } from '../../../managers/popUpManager';
@@ -33,7 +32,6 @@ export class ReposicionComponent implements OnInit {
   constructor(
     private common: CommonEntradas,
     private movimientos: MovimientosHelper,
-    private utils: UtilidadesService,
     private pUpManager: PopUpManager,
     private translate: TranslateService,
   ) {
@@ -68,35 +66,6 @@ export class ReposicionComponent implements OnInit {
     const data = this.dataSource.data;
     data.splice(index, 1);
     this.dataSource.data = data;
-  }
-
-  public getDetalleElemento(index: number) {
-    const actaId = this.getElementoForm(index).value.Placa.Id;
-    // this.spinner = 'Consultando detalle del elemento';
-    this.movimientos.getHistorialElemento(actaId, true, true).subscribe(res => {
-      // this.spinner = '';
-
-      const baja = res && res.Baja && res.Baja.EstadoMovimientoId.Nombre === 'Baja Aprobada';
-      const assignable = baja;
-
-      if (assignable) {
-        const salida = JSON.parse(res.Salida.Detalle).consecutivo;
-        const entrada = JSON.parse(res.Salida.MovimientoPadreId.Detalle).consecutivo;
-        (this.elementosForm.get('elementos') as FormArray).at(index).patchValue({
-          Id: res.Elemento.Id,
-          entrada,
-          fechaEntrada: this.utils.formatDate(res.Salida.MovimientoPadreId.FechaCreacion),
-          salida,
-          fechaSalida: this.utils.formatDate(res.Salida.FechaCreacion),
-        });
-      } else if (!baja) {
-        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.entradas.errores.elementoSinBaja'));
-      }
-    });
-  }
-
-  private getElementoForm(index: number) {
-    return (this.elementosForm.get('elementos') as FormArray).at(index);
   }
 
   private cambiosPlaca(valueChanges: Observable<any>) {

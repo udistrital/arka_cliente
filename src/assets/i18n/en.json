@@ -878,6 +878,7 @@
     "mensaje_consulta_entrada": "List of entries made. To see the detail of the entry press the action icon located on the right side of the table.",
     "consecutivo": "Consecutive",
     "fecha_entrada": "Entry Date",
+    "fecha_salida": "Fecha de Salida",
     "tipo_entrada": "Entry Type",
     "estado_entrada": "Entry Status",
     "estadoSalida": "Estado Salida",
@@ -929,7 +930,10 @@
       "estadoRechazo": "Rejected",
       "entradas": {
         "errores": {
-          "elementoSinBaja": "El elemento no se puede reponer porque no ha sido dado de baja."
+          "elementoSinBaja": "El elemento no se puede reponer porque no ha sido dado de baja.",
+          "elementoAprAprovechado": "El elemento ya ha sido aprovechado.",
+          "elementoRepRepuesto": "El elemento ya ha sido repuesto.",
+          "elementoConBaja": "El elemento ha sido dado de baja."
         },
         "elementosMejoras": "Lista de elementos que se van a mejorar.",
         "elementosReposicion": "Lista de elementos que se van a reponer.",
