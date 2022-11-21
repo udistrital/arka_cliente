@@ -1,10 +1,13 @@
 import { Injectable } from '@angular/core';
-import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn } from '@angular/forms';
+import { AbstractControl, FormArray, FormBuilder, FormGroup, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import { combineLatest, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { TransaccionEntrada } from '../../@core/data/models/entrada/entrada';
+import { UtilidadesService } from '../../@core/utils';
 import { ActaRecibidoHelper } from '../../helpers/acta_recibido/actaRecibidoHelper';
+import { MovimientosHelper } from '../../helpers/movimientos/movimientosHelper';
+import { PopUpManager } from '../../managers/popUpManager';
 
 @Injectable()
 export class CommonEntradas {
@@ -13,6 +16,9 @@ export class CommonEntradas {
         private actaRecibidoHelper: ActaRecibidoHelper,
         private fb: FormBuilder,
         private translate: TranslateService,
+        private utils: UtilidadesService,
+        private movimientos: MovimientosHelper,
+        private pUpManager: PopUpManager,
     ) { }
 
     public validateElementos(): ValidatorFn {
@@ -52,6 +58,89 @@ export class CommonEntradas {
             SoporteMovimientoId,
         };
     }
+
+    public getDetalleElemento(form: FormGroup, index: number, tipoEntrada: string) {
+        const Id = this.getFormArrayAtIndex(form, index).value.Placa.Id;
+        this.patchFormArrayAtIndex(form, index, { Id: 0 });
+
+        this.movimientos.getHistorialElemento(Id, true, true, tipoEntrada === 'ENT_PPA' || tipoEntrada === 'ENT_RP')
+            .subscribe(res => {
+
+                if (!this.checkSalidaHistorial(res)) {
+                    this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.bajas.errorPlaca'));
+                    return;
+                }
+
+                if ((tipoEntrada === 'ENT_PPA' || tipoEntrada === 'ENT_AM') && this.checkBajaHistorial(res)) {
+                    this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.entradas.errores.elementoConBaja'));
+                    return;
+                }
+
+                if (tipoEntrada === 'ENT_PPA' && this.checkEntradaHistorial(res, tipoEntrada)) {
+                    this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.entradas.errores.elementoAprAprovechado'));
+                    return;
+                }
+
+
+                if (tipoEntrada === 'ENT_RP') {
+                    if (!this.checkBajaAprobadaHistorial(res)) {
+                        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.entradas.errores.elementoSinBaja'));
+                        return;
+                    }
+
+                    if (this.checkEntradaHistorial(res, tipoEntrada)) {
+                        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.entradas.errores.elementoRepRepuesto'));
+                        return;
+                    }
+                }
+
+                this.patchFormArrayAtIndex(form, index, this.fillDetalleElemento(res));
+            });
+    }
+
+    private patchFormArrayAtIndex(form: FormGroup, index: number, value: any) {
+        this.getFormArrayAtIndex(form, index).patchValue(value);
+    }
+
+    private getFormArrayAtIndex(form: FormGroup, index: number) {
+        return (form.get('elementos') as FormArray).at(index);
+    }
+
+    private checkSalidaHistorial(historial: any) {
+        return historial && historial.Elemento && historial.Salida && historial.Salida.EstadoMovimientoId.Nombre === 'Salida Aprobada';
+    }
+
+    private checkEntradaHistorial(historial: any, entrada: string) {
+        return historial && historial.Entradas && historial.Entradas.length &&
+            historial.Entradas.some(e => e.FormatoTipoMovimientoId.CodigoAbreviacion === entrada);
+    }
+
+    private checkBajaHistorial(historial: any) {
+        return historial && historial.Baja && historial.Baja.Id;
+    }
+
+    private checkBajaAprobadaHistorial(historial: any) {
+        return this.checkBajaHistorial(historial) && historial.Baja.EstadoMovimientoId.Nombre === 'Baja Aprobada';
+    }
+
+    private fillDetalleElemento(historial: any): any {
+        return {
+            Id: historial.Elemento.Id,
+            entrada: this.getConsecutivoEntrada(historial),
+            fechaEntrada: this.utils.formatDate(historial.Salida.MovimientoPadreId.FechaCreacion),
+            salida: this.getConsecutivoSalida(historial),
+            fechaSalida: this.utils.formatDate(historial.Salida.FechaCreacion),
+        };
+    }
+
+    private getConsecutivoEntrada(historial: any): string {
+        return JSON.parse(historial.Salida.MovimientoPadreId.Detalle).consecutivo;
+    }
+
+    private getConsecutivoSalida(historial: any): string {
+        return JSON.parse(historial.Salida.Detalle).consecutivo;
+    }
+
 
     get formElementos(): FormGroup {
         return this.fb.group({

@@ -243,7 +243,7 @@ export class ConsultaEntradaComponent implements OnInit {
 
     const columns = this.modo === 'consulta' ? {
       EstadoMovimientoId: {
-        title: this.translate.instant('GLOBAL.tipo_entrada'),
+        title: this.translate.instant('GLOBAL.estado_entrada'),
         width: '300px',
         filter: {
           type: 'list',

@@ -8,7 +8,9 @@ import { Supervisor } from '../../../@core/data/models/entrada/supervisor';
 import { TipoEntrada } from '../../../@core/data/models/entrada/tipo_entrada';
 import { NuxeoService } from '../../../@core/utils/nuxeo.service';
 import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
-import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
+import { LocalDataSource } from 'ng2-smart-table';
+import { TranslateService } from '@ngx-translate/core';
+import { SmartTableService } from '../../../@core/data/SmartTableService';
 
 @Component({
   selector: 'ngx-detalle-entrada',
@@ -22,21 +24,24 @@ export class DetalleEntradaComponent implements OnInit {
   Proveedor: any;
   factura: SoporteActa;
   contrato: Contrato;
-  Placa: any;
   Supervisor: any;
   flagDependencia = true;
   dependenciaSupervisor: string;
   Ordenador: any;
   documentoId: boolean;
   entradaId: number;
-  unidadEjecutora: any;
+  settings: any;
+  source: LocalDataSource;
+
   @Input() detalleEntrada: any;
 
   constructor(
     private entradasHelper: EntradaHelper,
-    private actaRecibidoHelper: ActaRecibidoHelper,
     private nuxeoService: NuxeoService,
-    private documentoService: DocumentoService) {
+    private documentoService: DocumentoService,
+    private translate: TranslateService,
+    private tabla: SmartTableService,
+  ) {
     this.entradaEspecifica = new Entrada;
     this.contrato = new Contrato;
   }
@@ -60,15 +65,9 @@ export class DetalleEntradaComponent implements OnInit {
     const detalle = JSON.parse(this.detalleEntrada.movimiento.Detalle);
     this.linkActa = '#/pages/acta_recibido/consulta_acta_recibido/' + detalle.acta_recibido_id;
 
-    this.actaRecibidoHelper.getActaRecibido(detalle.acta_recibido_id).subscribe(res => {
-      if (res) {
-        this.actaRecibidoHelper.getUnidadEjecutoraByID(res.UnidadEjecutoraId).subscribe(res1 => {
-          if (res1.Data) {
-            this.unidadEjecutora = res1.Data;
-          }
-        });
-      }
-    });
+    if (this.detalleEntrada.unidadEjecutora) {
+      this.entradaEspecifica.UnidadEjecutora = this.detalleEntrada.unidadEjecutora;
+    }
 
     if (this.detalleEntrada.proveedor) {
       this.Proveedor = this.detalleEntrada.proveedor;
@@ -78,18 +77,17 @@ export class DetalleEntradaComponent implements OnInit {
       this.factura = this.detalleEntrada.factura;
     }
 
+    if (this.detalleEntrada.elementos && this.detalleEntrada.elementos.length) {
+      this.loadTabla(this.detalleEntrada.elementos);
+      this.getSettings();
+    }
+
     if (this.detalleEntrada.supervisor) {
       this.Supervisor = this.detalleEntrada.supervisor;
-      if (this.Supervisor.DependenciaSupervisor) {
-        if (this.flagDependencia) {
-          this.flagDependencia = false;
-          this.entradasHelper.getDependenciaSupervisor('dependencia_SIC', this.Supervisor.DependenciaSupervisor).subscribe(res => {
-            if (Array.isArray(res)) {
-              this.dependenciaSupervisor = res[0].ESFDEPENCARGADA;
-            }
-          });
-        }
-      }
+    }
+
+    if (this.detalleEntrada.dependenciaSupervisor) {
+      this.dependenciaSupervisor = this.detalleEntrada.dependenciaSupervisor;
     }
 
     if (this.detalleEntrada.ordenador) {
@@ -303,7 +301,6 @@ export class DetalleEntradaComponent implements OnInit {
     this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
     this.entradaEspecifica.TipoEntradaId.Nombre = info.movimiento.FormatoTipoMovimientoId.Nombre; // TIPO ENTRADA
     this.entradaEspecifica.Observacion = info.movimiento.Observacion; // OBSERVACIÓN
-    this.Placa = detalle.placa_id;
     this.documentoId = false;
   }
 
@@ -360,6 +357,66 @@ export class DetalleEntradaComponent implements OnInit {
           });
       }
     });
+  }
+
+  loadTabla(elementos: any[]) {
+    for (const elemento of elementos) {
+      elemento.Entrada = elemento.Salida.MovimientoPadreId.Detalle;
+      elemento.FechaEntrada = elemento.Salida.MovimientoPadreId.FechaCreacion;
+      elemento.Salida_ = elemento.Salida.Detalle;
+      elemento.FechaSalida = elemento.Salida.FechaCreacion;
+    }
+    this.source = new LocalDataSource();
+    this.source.load(elementos);
+  }
+
+  getSettings() {
+    this.settings = {
+      hideSubHeader: true,
+      actions: {
+        position: 'right',
+        delete: false,
+        edit: false,
+        add: false,
+      },
+      mode: 'external',
+      columns: {
+        Placa: {
+          title: this.translate.instant('GLOBAL.Placa'),
+          width: '150px',
+        },
+        Entrada: {
+          title: this.translate.instant('GLOBAL.Entrada'),
+          width: '150px',
+          valuePrepareFunction: (value: any) => {
+            return this.tabla.prepareFunctionParse(value, 'consecutivo');
+          },
+        },
+        FechaEntrada: {
+          title: this.translate.instant('GLOBAL.fecha_entrada'),
+          width: '70px',
+          valuePrepareFunction: this.tabla.formatDate,
+        },
+        Salida_: {
+          title: this.translate.instant('GLOBAL.Salida'),
+          width: '150px',
+          valuePrepareFunction: (value: any) => {
+            return this.tabla.prepareFunctionParse(value, 'consecutivo');
+          },
+        },
+        FechaSalida: {
+          title: this.translate.instant('GLOBAL.fecha_salida'),
+          width: '70px',
+          valuePrepareFunction: this.tabla.formatDate,
+        },
+        ValorTotal: {
+          type: 'html',
+          title: this.translate.instant('GLOBAL.valor_total'),
+          width: '70px',
+          valuePrepareFunction: this.tabla.prepareFunctionCurrency,
+        },
+      },
+    };
   }
 
 }
