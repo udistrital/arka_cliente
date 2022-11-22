@@ -30,7 +30,7 @@
             </div>
         </mat-card-content>
         <mat-card-actions>
-            <button type="button" class="btn btn-secondary float-right" data-dismiss="modal" (click)="ref.close()" *ngIf="detalle">
+            <button mat-flat-button color="primary" data-dismiss="modal" (click)="ref.close()" *ngIf="detalle">
                 {{'GLOBAL.cerrar' | translate}}
             </button>
         </mat-card-actions>

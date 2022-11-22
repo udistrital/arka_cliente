@@ -134,13 +134,12 @@ export class CommonEntradas {
     }
 
     private getConsecutivoEntrada(historial: any): string {
-        return JSON.parse(historial.Salida.MovimientoPadreId.Detalle).consecutivo;
+        return this.utils.getKeyFromString(historial.Salida.MovimientoPadreId.Detalle, 'consecutivo');
     }
 
     private getConsecutivoSalida(historial: any): string {
-        return JSON.parse(historial.Salida.Detalle).consecutivo;
+        return this.utils.getKeyFromString(historial.Salida.Detalle, 'consecutivo');
     }
-
 
     get formElementos(): FormGroup {
         return this.fb.group({
