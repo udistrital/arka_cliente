@@ -388,9 +388,7 @@ export class DetalleEntradaComponent implements OnInit {
         Entrada: {
           title: this.translate.instant('GLOBAL.Entrada'),
           width: '150px',
-          valuePrepareFunction: (value: any) => {
-            return this.tabla.prepareFunctionParse(value, 'consecutivo');
-          },
+          ...this.tabla.getSettingsParse('consecutivo'),
         },
         FechaEntrada: {
           title: this.translate.instant('GLOBAL.fecha_entrada'),
@@ -400,9 +398,7 @@ export class DetalleEntradaComponent implements OnInit {
         Salida_: {
           title: this.translate.instant('GLOBAL.Salida'),
           width: '150px',
-          valuePrepareFunction: (value: any) => {
-            return this.tabla.prepareFunctionParse(value, 'consecutivo');
-          },
+          ...this.tabla.getSettingsParse('consecutivo'),
         },
         FechaSalida: {
           title: this.translate.instant('GLOBAL.fecha_salida'),

@@ -1,114 +1,40 @@
-<!-- <div [nbSpinner]="!mostrar">
-    <label class="search-label" for="search">{{'GLOBAL.search' | translate}}:</label>
-    <input nbInput [(ngModel)]="stringBusqueda" (ngModelChange)="filterSearch()" id="search" class="search-input">
-    <ng-content></ng-content> -->
-    <!-- <input nbInput [nbFilterInput]="dataSource" id="search" class="search-input"> -->
-    <!-- <table [nbTreeGrid]="dataSource" nbSort (sort)="updateSort($event)">
-
-        <tr nbTreeGridHeaderRow *nbTreeGridHeaderRowDef="allColumns"></tr>
-        <tr nbTreeGridRow *nbTreeGridRowDef="let row; columns: allColumns" (click)="getSelectedRow(row.data)" [clickToToggle]="false"
-            ngxSelectDirective></tr>
-
-        <ng-container [nbTreeGridColumnDef]="customColumn">
-            <th nbTreeGridHeaderCell [nbSortHeader]="getSortDirection(customColumn)" *nbTreeGridHeaderCellDef>
-                {{ customColumn2 }}&nbsp;
-                <span *nbSortHeaderIcon="let asc = isAscending; let desc = isDescending"
-                [class]="'fas ' + (asc ? 'fa-sort-up' :(desc ? 'fa-sort-down' :'fa-sort'))"></span>
-            </th>
-            <td nbTreeGridCell *nbTreeGridCellDef="let row">
-                <button nbTreeGridRowToggle *ngIf="row.hasChildren()"
-                [nbPopover]="'GLOBAL.' + (row.expanded ? 'colapsar' : 'expandir') | translate" nbPopoverTrigger="hover" nbPopoverPlacement="left"
-                [attr.aria-label]="'GLOBAL.' + (row.expanded ? 'colapsar' : 'expandir') | translate">
-                    <span [class]="'fas ' + (row.expanded ? 'fa-chevron-down' : 'fa-chevron-right')" aria-hidden="true"></span>
-                </button>
-                {{ row.data[customColumn] }}
-            </td>
-        </ng-container>
-
-        <ng-container *ngFor="let column of defaultColumns; let index = index" [nbTreeGridColumnDef]="column"
-            [showOn]="getShowOn(index)">
-            <th nbTreeGridHeaderCell [nbSortHeader]="getSortDirection(column)" *nbTreeGridHeaderCellDef>
-                {{ defaultColumns2[index] }}&nbsp;
-                <span *nbSortHeaderIcon="let asc = isAscending; let desc = isDescending"
-                [class]="'fas ' + (asc ? 'fa-sort-up' :(desc ? 'fa-sort-down' :'fa-sort'))"></span>
-            </th>
-            <td nbTreeGridCell *nbTreeGridCellDef="let row" class="text-uppercase"> -->
-                <!-- PARA DEPURACIÓN - Descomentar alguna de las dos siguientes -->
-                <!-- <pre>{{imprime({"column":column,"row.data[column]":row.data[column]})}}</pre> -->
-                <!-- <pre>{{imprime({"row":row,"column":column})}}</pre> -->
-
-                <!-- Campo "único" -->
-                <!-- <span *ngIf="row.data[column] !== undefined && row.data[column].Id === undefined">
-                    {{ row.data[column] || '-' }}</span> -->
-
-                <!-- Campo normalizado, asociado a una "tabla paramétrica" -->
-                <!-- <span *ngIf="row.data[column] !== undefined && row.data[column].Id !== undefined">
-                    {{ row.data[column].Nombre || '-' }}</span> -->
-
-                <!-- Acciones -->
-                <!-- <span *ngIf="column === 'Acciones' && row.data.TipoNivelId" class="fas fa-info-circle fa-2x"
-                [nbPopover]="'GLOBAL.info_adicional' | translate" nbPopoverTrigger="hover"
-                (click)="getDetalle(row.data, dialogoDetalle)"></span>
-            </td>
-        </ng-container>
-
-    </table>
-
-</div> -->
-
 <ng-template #dialogoDetalle let-ref="dialogRef">
-    <nb-card class="dialogo">
-        <nb-card-header>
-    <h2>{{ 'GLOBAL.detalle' | translate }}</h2>
-        </nb-card-header>
-        <nb-card-body [nbSpinner]="!detalle">
-    <p class="font-weight-bold text-uppercase pt-4 pb-4">{{ nivelSeleccionado }}:
-        <span class="font-weight-normal">{{ grupoSeleccionado.Nombre }}</span></p>
-
-    <div *ngIf="tipos_de_bien">
-        <p class="font-weight-bold text-uppercase">{{ 'GLOBAL.tipo_bien' | translate }}:
-            <span class="font-weight-normal">{{ tipos_de_bien.Nombre }}</span></p>
-    </div>
-    <p></p>
-    <div *ngIf="cuentasContables">
-        <div *ngFor="let cuenta of cuentasContables" class="row">
-            <div class="col">
-                <p class="font-weight-bold text-uppercase">{{ 'GLOBAL.tipo_movimiento' | translate }}:
-                    <span *ngIf="cuenta.SubtipoMovimientoId" class="font-weight-normal">
-                        {{ 'GLOBAL.movimientos.tipo.' + cuenta.SubtipoMovimientoId.CodigoAbreviacion + '.nombre' | translate }}
-                    </span>
+    <mat-card class="dialogo">
+        <mat-card-title>
+            {{ 'GLOBAL.detalle' | translate }}
+        </mat-card-title>
+        <mat-card-content [nbSpinner]="!detalle">
+            <p class="font-weight-bold text-uppercase">{{ nivelSeleccionado }}:
+                <span class="font-weight-normal">{{ grupoSeleccionado.Nombre }}</span>
+            </p>
+            <div *ngIf="tipos_de_bien">
+                <p class="font-weight-bold text-uppercase">{{ 'GLOBAL.tipo_bien' | translate }}:
+                    <span class="font-weight-normal">{{ tipos_de_bien.Nombre }}</span>
                 </p>
             </div>
-            <div class="col">
-                <p class="font-weight-bold text-uppercase">Cuenta Crédito:
-                    <span *ngIf="cuenta.CuentaCreditoId" class="font-weight-normal">{{ cuenta.CuentaCreditoId.Codigo }}</span></p>
-
+            <p></p>
+            <div *ngIf="source?.data?.length">
+                <p class="font-weight-bold text-uppercase">{{ 'GLOBAL.cuentasContables' | translate }}:</p>
+                <ng2-smart-table [settings]="settings" [source]="source" (custom)="onCustom($event)">
+                </ng2-smart-table>
             </div>
-            <div class="col">
-                <p class="font-weight-bold text-uppercase">Cuenta Débito:
-                    <span *ngIf="cuenta.CuentaDebitoId"  class="font-weight-normal">{{ cuenta.CuentaDebitoId.Codigo }}</span></p>
-
+            <p></p>
+            <div *ngIf="elementosSubgrupo?.length">
+                <p class="font-weight-bold text-uppercase">{{ 'GLOBAL.elementos_asociados' | translate }}:</p>
+                <div *ngFor="let elemento of elementosSubgrupo; let i = index" class="row">
+                    <div class="col">
+                        <span class="font-weight-normal">{{i + 1}}: {{ elemento.Nombre }}</span>
+                        <p class="font-weight-bold text-uppercase"></p>
+                    </div>
+                </div>
             </div>
-        </div>
-    </div>
-
-    <div *ngIf="elementosSubgrupo">
-        <p class="font-weight-bold text-uppercase">{{ 'GLOBAL.elementos_asociados' | translate }}:</p>
-        <div *ngFor="let elemento of elementosSubgrupo; let i = index" class="row">
-            <div class="col">
-                <span class="font-weight-normal">{{i + 1}}: {{ elemento.Nombre }}</span>
-                <p class="font-weight-bold text-uppercase"></p>
-            </div>
-        </div>
-    </div>
-        </nb-card-body>
-        <nb-card-footer>
-        <button type="button" class="btn btn-secondary float-right" data-dismiss="modal" (click)="ref.close()"
-            *ngIf="detalle">{{'GLOBAL.cerrar' | translate}}
-        </button>
-        </nb-card-footer>
-    </nb-card>
-
+        </mat-card-content>
+        <mat-card-actions>
+            <button type="button" class="btn btn-secondary float-right" data-dismiss="modal" (click)="ref.close()" *ngIf="detalle">
+                {{'GLOBAL.cerrar' | translate}}
+            </button>
+        </mat-card-actions>
+    </mat-card>
 </ng-template>
 
 <div [nbSpinner]="!mostrar" style="min-width: 600px;">
