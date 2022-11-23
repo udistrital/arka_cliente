@@ -3,15 +3,14 @@ import { Validators, FormGroup, FormBuilder } from '@angular/forms';
 import { OrdenadorGasto } from '../../../@core/data/models/entrada/ordenador_gasto';
 import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
 import { PopUpManager } from '../../../managers/popUpManager';
-import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { TranslateService } from '@ngx-translate/core';
-import { SoporteActaProveedor } from '../../../@core/data/models/acta_recibido/soporte_acta';
+import { SoporteActa } from '../../../@core/data/models/acta_recibido/soporte_acta';
 import { TransaccionEntrada } from '../../../@core/data/models/entrada/entrada';
-import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
-import { Ordenador, Supervisor, TerceroCriterioJefe, TerceroCriterioPlanta } from '../../../@core/data/models/terceros_criterio';
+import { Ordenador, Supervisor } from '../../../@core/data/models/terceros_criterio';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
-import { Soporte } from '../soporteHelper';
+import { CommonFactura } from '../CommonFactura';
+import { CommonEntradas } from '../CommonEntradas';
 
 @Component({
   selector: 'ngx-caja-menor',
@@ -19,7 +18,7 @@ import { Soporte } from '../soporteHelper';
   styleUrls: ['./caja-menor.component.scss'],
 })
 export class CajaMenorComponent implements OnInit {
-  soporteForm: FormGroup;
+
   observacionForm: FormGroup;
   ordenadorForm: FormGroup;
   supervisorForm: FormGroup;
@@ -27,24 +26,13 @@ export class CajaMenorComponent implements OnInit {
   flag = true;
   dependenciaSupervisor: String;
 
-  // Supervisores: TerceroCriterioPlanta[];
   Supervisores: Supervisor[];
   supervisoresFiltrados: Observable<Supervisor[]>;
   Ordenadores: Ordenador[];
   ordenadoresFiltrados: Observable<Ordenador[]>;
 
   ordenadores: Array<OrdenadorGasto>;
-  solicitanteSelect: boolean;
-  ordenadorId: number;
-  supervisorId: number;
-  validar: boolean;
-  vigencia: number;
-  fechaSolicitante: string;
-  cargoOrdenador: string;
-  fileDocumento: any;
-  uidDocumento: string;
-  idDocumento: number;
-  soportes: Array<SoporteActaProveedor>;
+  soportes: Array<SoporteActa>;
   fechaFactura: string;
 
   cargando_supervisores: boolean = true;
@@ -55,89 +43,42 @@ export class CajaMenorComponent implements OnInit {
 
   constructor(
     private entradasHelper: EntradaHelper,
+    private common: CommonEntradas,
     private pUpManager: PopUpManager,
+    private commonFactura: CommonFactura,
     private fb: FormBuilder,
-    private sanitization: DomSanitizer,
-    private tercerosHelper: TercerosHelper,
     private translate: TranslateService,
-    private soporteHelper: Soporte) {
+  ) {
     this.ordenadores = new Array<OrdenadorGasto>();
-    this.solicitanteSelect = false;
-    this.ordenadorId = 0;
-    this.supervisorId = 0;
-    this.validar = false;
-    this.soportes = new Array<SoporteActaProveedor>();
+    this.soportes = new Array<SoporteActa>();
     this.fechaFactura = '';
     this.dependenciaSupervisor = '';
   }
 
   ngOnInit() {
-    this.soporteForm = this.fb.group({
-      soporteCtrl: ['', Validators.required],
-    });
-    this.observacionForm = this.fb.group({
-      observacionCtrl: ['', Validators.nullValidator],
-    });
+    this.observacionForm = this.common.formObservaciones;
     this.ordenadorForm = this.fb.group({
       ordenadorCtrl: ['', Validators.required],
-      // vigenciaCtrl: ['', Validators.required],
     });
     this.supervisorForm = this.fb.group({
       supervisorCtrl: ['', Validators.required],
     });
-    this.facturaForm = this.fb.group({
-      facturaCtrl: ['', Validators.nullValidator],
-    });
-    this.getVigencia();
+    this.facturaForm = this.commonFactura.formFactura;
     this.loadSupervisores();
     this.loadOrdenadores();
+    this.loadSoportes();
   }
 
-  // Métodos para validar campos requeridos en el formulario
-  onSolicitanteSubmit() {
-    this.soporteForm.markAsDirty();
-  }
-
-  loadSolicitantes(): void {
-    this.entradasHelper.getSolicitantes(this.fechaSolicitante).subscribe(res => {
-      while (this.ordenadores.length > 0) {
-        this.ordenadores.pop();
-      }
-      if (res !== null) {
-        for (const index of Object.keys(res.ListaOrdenadores.Ordenadores)) {
-          const ordenador = new OrdenadorGasto;
-          ordenador.NombreOrdenador = res.ListaOrdenadores.Ordenadores[index].NombreOrdenador;
-          ordenador.Id = res.ListaOrdenadores.Ordenadores[index].IdOrdenador;
-          ordenador.RolOrdenadorGasto = res.ListaOrdenadores.Ordenadores[index].CargoOrdenador;
-          this.ordenadores.push(ordenador);
-        }
-      }
-    });
-  }
-
-  changeSolicitante(event) {
-    if (!this.solicitanteSelect) {
-      this.solicitanteSelect = !this.solicitanteSelect;
-    }
-    const date: Date = event;
-    const mes = parseInt(date.getUTCMonth().toString(), 10) + 1;
-    if (mes < 10) {
-      this.fechaSolicitante = date.getFullYear() + '-0' + mes + '-' + date.getDate();
-    } else {
-      this.fechaSolicitante = date.getFullYear() + '-' + mes + '-' + date.getDate();
-    }
-    this.loadSolicitantes();
-  }
   // -------------------------SUPERVISORES--------------------------------------------------------
   loadSupervisores(): void {
     this.entradasHelper.getSupervisores('supervisor_contrato?limit=-1').subscribe(res => {
       if (Array.isArray(res)) {
         this.Supervisores = res;
         this.supervisoresFiltrados = this.supervisorForm.get('supervisorCtrl').valueChanges
-        .pipe(
-          startWith(''),
-          map(val => typeof val === 'string' ? val : this.muestraSupervisor(val)),
-          map(nombre => this.filtroSupervisores(nombre)),
+          .pipe(
+            startWith(''),
+            map(val => typeof val === 'string' ? val : this.muestraSupervisor(val)),
+            map(nombre => this.filtroSupervisores(nombre)),
           );
         // console.log({supervisores: this.Supervisores});
         this.cargando_supervisores = false;
@@ -212,65 +153,34 @@ export class CajaMenorComponent implements OnInit {
   }
   // ---------------------------------FIN ORDENADORES-------------------------------------------------
 
-  onSoporteSubmit() {
-    if (this.ordenadorId !== 0) {
-      this.soporteForm.markAsDirty();
-    }
+  async loadSoportes(): Promise<void> {
+    this.soportes = await this.commonFactura.loadSoportes(this.actaRecibidoId);
   }
-  loadSoporte(): void {
-    this.soporteHelper.cargarSoporte(this.actaRecibidoId).then(info => {
-      this.fechaFactura = info.fecha;
-      this.soportes = info.soportes;
-    });
+
+  changeSelectSoporte() {
+    this.fechaFactura = this.commonFactura.getFechaFactura(this.soportes, this.facturaForm.value.facturaCtrl);
   }
+
   onObservacionSubmit() {
-    this.validar = true;
-  }
-
-  cleanURL(oldURL: string): SafeResourceUrl {
-    return this.sanitization.bypassSecurityTrustUrl(oldURL);
-  }
-
-  /**
-   * Método para obtener el año en curso
-   */
-  getVigencia() {
-    this.vigencia = new Date().getFullYear();
-  }
-
-  changeSelectSoporte(event) {
-    this.loadSoporte();
-    const soporteId: string = event.target.options[event.target.options.selectedIndex].value;
-    for (const i in this.soportes) {
-      if (this.soportes[i].Id.toString() === soporteId) {
-        const date = this.soportes[i].FechaSoporte.toString().split('T');
-        this.fechaFactura = date[0];
-      }
-    }
+    this.pUpManager.showAlertWithOptions(this.common.optionsSubmit)
+      .then((result) => {
+        if (result.value) {
+          this.onSubmit();
+        }
+      });
   }
 
   // Método para enviar registro
-  async onSubmit() {
-    if (this.validar) {
-      const detalle = {
-        acta_recibido_id: +this.actaRecibidoId,
-        // vigencia: this.ordenadorForm.value.vigenciaCtrl,
-        supervisor: this.supervisorForm.value.supervisorCtrl.Id,
-        ordenador_gasto_id: this.ordenadorForm.value.ordenadorCtrl.Id,
-        // solicitante_id: +this.supervisorId,
-      };
+  onSubmit() {
+    const detalle = {
+      acta_recibido_id: +this.actaRecibidoId,
+      supervisor: this.supervisorForm.value.supervisorCtrl.Id,
+      ordenador_gasto_id: this.ordenadorForm.value.ordenadorCtrl.Id,
+      factura: +this.facturaForm.value.facturaCtrl,
+    };
 
-      const transaccion = <TransaccionEntrada>{
-        Observacion: this.observacionForm.value.observacionCtrl,
-        Detalle: detalle,
-        FormatoTipoMovimientoId: 'ENT_CM',
-        SoporteMovimientoId: this.idDocumento,
-      };
-
-      this.data.emit(transaccion);
-    } else {
-      this.pUpManager.showErrorAlert('No ha llenado todos los campos! No es posible hacer el registro.');
-    }
+    const transaccion = this.common.crearTransaccionEntrada(this.observacionForm.value.observacionCtrl, detalle, 'ENT_CM', 0);
+    this.data.emit(transaccion);
 
   }
 }
