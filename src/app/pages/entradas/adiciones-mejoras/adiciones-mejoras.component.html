@@ -193,7 +193,7 @@
         <div class="form-group col-sm">
           <label>{{'GLOBAL.numero_factura' | translate}}</label>
           <div class="input-group">
-            <select class="form-control" type="text" formControlName="facturaCtrl" (change)="changeSelectSoporte($event)">
+            <select class="form-control" type="text" formControlName="facturaCtrl" (change)="changeSelectSoporte()">
               <option value="" selected>--{{'GLOBAL.seleccionar' | translate}}--</option>
               <option *ngFor="let item of soportes" value="{{ item.Id }}">{{ item.Consecutivo }}</option>
             </select>

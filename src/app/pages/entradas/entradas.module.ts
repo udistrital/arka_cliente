@@ -24,6 +24,7 @@ import { ProvisionalComponent } from './provisional/provisional.component';
 import { IntangiblesDesarrolladosComponent } from './intangibles-desarrollados/intangibles-desarrollados.component';
 import { DetalleEntradaComponent } from './detalle-entrada/detalle-entrada.component';
 import { CommonEntradas } from './CommonEntradas';
+import { CommonContrato } from './CommonContrato';
 import { CommonElementos } from './CommonElementos';
 
 @NgModule({
@@ -61,6 +62,7 @@ import { CommonElementos } from './CommonElementos';
   ],
   providers: [
     CommonEntradas,
+    CommonContrato,
     CommonElementos,
   ],
 })
