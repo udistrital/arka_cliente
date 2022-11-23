@@ -14,8 +14,7 @@
         </div>
         <div class="form-group col-sm">
           <label>{{'GLOBAL.vigencia' | translate}}</label>
-          <select class="form-control" (change)="getContratos()" [disabled]="!tipoContratoSelect"
-            formControlName="vigenciaCtrl">
+          <select class="form-control" (change)="getContratos()" formControlName="vigenciaCtrl">
             <option disabled selected>{{'GLOBAL.seleccionar' | translate}}...</option>
             <option value="{{ vigencia }}">{{ vigencia }}</option>
             <option value="{{ vigencia-1 }}">{{ vigencia-1 }}</option>
@@ -105,7 +104,7 @@
         <div class="form-group col-sm">
           <label>{{'GLOBAL.numero_factura' | translate}}</label>
           <div class="input-group">
-            <select class="form-control" formControlName="facturaCtrl" (change)="changeSelectSoporte($event)">
+            <select class="form-control" formControlName="facturaCtrl" (change)="changeSelectSoporte()">
               <option value="" selected>--{{'GLOBAL.seleccionar' | translate}}--</option>
               <option *ngFor="let item of soportes" value="{{ item.Id }}">{{ item.Consecutivo }}</option>
             </select>
