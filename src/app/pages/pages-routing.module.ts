@@ -35,11 +35,6 @@ const routes: Routes = [{
       canLoad: [CanLoadChildren],
     },
     {
-      path: 'reportes',
-      loadChildren: './reportes/reportes.module#ReportesModule',
-      canActivate: [AuthGuard],
-    },
-    {
       path: 'bodega_consumo',
       loadChildren: './bodega-consumo/bodega-consumo.module#BodegaConsumoModule',
       canActivate: [AuthGuard],
