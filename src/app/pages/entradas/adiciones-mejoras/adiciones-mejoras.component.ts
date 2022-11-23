@@ -14,6 +14,7 @@ import { Observable } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { MovimientosHelper } from '../../../helpers/movimientos/movimientosHelper';
 import { CommonEntradas } from '../CommonEntradas';
+import { CommonElementos } from '../CommonElementos';
 
 @Component({
   selector: 'ngx-adiciones-mejoras',
@@ -59,13 +60,13 @@ export class AdicionesMejorasComponent implements OnInit {
   constructor(
     private common: CommonEntradas,
     private entradasHelper: EntradaHelper,
-    private movimientos: MovimientosHelper,
+    private commonElementos: CommonElementos,
     private actaRecibidoHelper: ActaRecibidoHelper,
     private pUpManager: PopUpManager,
     private fb: FormBuilder,
     private translate: TranslateService,
   ) {
-    this.displayedColumns = this.common.columnsElementos;
+    this.displayedColumns = this.commonElementos.columnsElementos;
     this.tipoContratoSelect = false;
     this.vigenciaSelect = false;
     this.contratos = new Array<Contrato>();
@@ -76,6 +77,7 @@ export class AdicionesMejorasComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.elementosForm = this.commonElementos.formElementos;
     this.contratoForm = this.fb.group({
       contratoCtrl: ['', [
         Validators.required,
@@ -94,6 +96,7 @@ export class AdicionesMejorasComponent implements OnInit {
     this.supervisorForm = this.fb.group({
       supervisorCtrl: ['', Validators.nullValidator],
     });
+    this.observacionForm = this.common.formObservaciones;
     this.dataSource = new MatTableDataSource<any>();
     this.dataSource.paginator = this.paginator;
     this.getVigencia();
@@ -104,29 +107,18 @@ export class AdicionesMejorasComponent implements OnInit {
     this.dataSource.data = this.dataSource.data.concat({});
   }
 
-  get elemento(): FormGroup {
-    const form = this.common.elemento;
+  addElemento() {
+    const form = this.commonElementos.elemento;
+    (this.elementosForm.get('elementos') as FormArray).push(form);
+    this.dataSource.data = this.dataSource.data.concat({});
     this.cambiosPlaca(form.get('Placa').valueChanges);
-    return form;
-  }
-
-  getActualIndex(index: number) {
-    return index + this.paginator.pageSize * this.paginator.pageIndex;
-  }
-
-  removeElemento(index: number) {
-    index = this.paginator.pageIndex > 0 ? index + (this.paginator.pageIndex * this.paginator.pageSize) : index;
-    (this.elementosForm.get('elementos') as FormArray).removeAt(index);
-    const data = this.dataSource.data;
-    data.splice(index, 1);
-    this.dataSource.data = data;
   }
 
   private cambiosPlaca(valueChanges: Observable<any>) {
     valueChanges.pipe(
       debounceTime(250),
       distinctUntilChanged(),
-      switchMap((val) => this.common.loadElementos(val)),
+      switchMap((val) => this.commonElementos.loadElementos(val)),
     ).subscribe((response: any) => {
       this.elementos = response.queryOptions;
     });
