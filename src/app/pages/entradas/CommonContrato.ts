@@ -91,4 +91,16 @@ export class CommonContrato {
         });
     }
 
+    get ordenadorForm(): FormGroup {
+        return this.fb.group({
+            ordenadorCtrl: ['', Validators.nullValidator],
+        });
+    }
+
+    get supervisorForm(): FormGroup {
+        return this.fb.group({
+            supervisorCtrl: ['', Validators.nullValidator],
+        });
+    }
+
 }

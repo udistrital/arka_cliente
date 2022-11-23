@@ -26,6 +26,7 @@ import { DetalleEntradaComponent } from './detalle-entrada/detalle-entrada.compo
 import { CommonEntradas } from './CommonEntradas';
 import { CommonContrato } from './CommonContrato';
 import { CommonElementos } from './CommonElementos';
+import { CommonFactura } from './CommonFactura';
 
 @NgModule({
   declarations: [
@@ -64,6 +65,7 @@ import { CommonElementos } from './CommonElementos';
     CommonEntradas,
     CommonContrato,
     CommonElementos,
+    CommonFactura,
   ],
 })
 export class EntradasModule { }
