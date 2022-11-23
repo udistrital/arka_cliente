@@ -49,4 +49,8 @@ export class UtilidadesService {
         }
     }
 
+    public getKeyFromString(value: string, key: string) {
+        return value && JSON.parse(value) ? JSON.parse(value)[key] : '';
+    }
+
 }

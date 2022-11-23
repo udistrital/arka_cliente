@@ -22,9 +22,11 @@ import { IntangiblesAdquiridosComponent } from './intangibles-adquiridos/intangi
 import { ExtranjeroComponent } from './extranjero/extranjero.component';
 import { ProvisionalComponent } from './provisional/provisional.component';
 import { IntangiblesDesarrolladosComponent } from './intangibles-desarrollados/intangibles-desarrollados.component';
-import { VerComprobanteComponent } from './ver-comprobante/ver-comprobante.component';
 import { DetalleEntradaComponent } from './detalle-entrada/detalle-entrada.component';
 import { CommonEntradas } from './CommonEntradas';
+import { CommonContrato } from './CommonContrato';
+import { CommonElementos } from './CommonElementos';
+import { CommonFactura } from './CommonFactura';
 
 @NgModule({
   declarations: [
@@ -44,7 +46,6 @@ import { CommonEntradas } from './CommonEntradas';
     ExtranjeroComponent,
     ProvisionalComponent,
     IntangiblesDesarrolladosComponent,
-    VerComprobanteComponent,
     DetalleEntradaComponent,
   ],
   imports: [
@@ -58,11 +59,13 @@ import { CommonEntradas } from './CommonEntradas';
     AjustesModule,
   ],
   exports: [
-    VerComprobanteComponent,
     DetalleEntradaComponent,
   ],
   providers: [
     CommonEntradas,
+    CommonContrato,
+    CommonElementos,
+    CommonFactura,
   ],
 })
 export class EntradasModule { }

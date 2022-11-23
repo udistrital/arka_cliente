@@ -319,39 +319,20 @@ export class ConsultaSalidasComponent implements OnInit {
         },
         Funcionario: {
           title: this.translate.instant('GLOBAL.funcionario'),
-          valuePrepareFunction: (value: any) => {
-            return this.tabla.prepareFunctionObject('NombreCompleto', value);
-          },
-          filterFunction: (cell?: any, search?: string): boolean => {
-            return this.tabla.filterFunctionObject('NombreCompleto', cell, search);
-          },
+          ...this.tabla.getSettingsObject('NombreCompleto'),
         },
         Sede: {
           title: this.translate.instant('GLOBAL.sede'),
-          valuePrepareFunction: (value: any) => {
-            return this.tabla.prepareFunctionObject('Nombre', value);
-          },
-          filterFunction: (cell?: any, search?: string): boolean => {
-            return this.tabla.filterFunctionObject('Nombre', cell, search);
-          },
+          ...this.tabla.getSettingsObject('Nombre'),
+
         },
         Dependencia: {
           title: this.translate.instant('GLOBAL.dependencia'),
-          valuePrepareFunction: (value: any) => {
-            return this.tabla.prepareFunctionObject('Nombre', value);
-          },
-          filterFunction: (cell?: any, search?: string): boolean => {
-            return this.tabla.filterFunctionObject('Nombre', cell, search);
-          },
+          ...this.tabla.getSettingsObject('Nombre'),
         },
         Ubicacion: {
           title: this.translate.instant('GLOBAL.ubicacion'),
-          valuePrepareFunction: (value: any) => {
-            return this.tabla.prepareFunctionObject_('EspacioFisicoId', 'Nombre', value);
-          },
-          filterFunction: (cell?: any, search?: string): boolean => {
-            return this.tabla.filterFunctionObject_('EspacioFisicoId', 'Nombre', cell, search);
-          },
+          ...this.tabla.getSettingsObject_('EspacioFisicoId', 'Nombre'),
         },
         ...columns,
       },

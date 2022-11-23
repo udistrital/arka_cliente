@@ -3,11 +3,11 @@ import { FormGroup, FormArray } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import { TransaccionEntrada } from '../../../@core/data/models/entrada/entrada';
 import { MatPaginator, MatStepper, MatTableDataSource } from '@angular/material';
-import { MovimientosHelper } from '../../../helpers/movimientos/movimientosHelper';
 import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { PopUpManager } from '../../../managers/popUpManager';
 import { CommonEntradas } from '../CommonEntradas';
+import { CommonElementos } from '../CommonElementos';
 
 @Component({
   selector: 'ngx-reposicion',
@@ -31,48 +31,31 @@ export class ReposicionComponent implements OnInit {
 
   constructor(
     private common: CommonEntradas,
-    private movimientos: MovimientosHelper,
     private pUpManager: PopUpManager,
+    private commonElementos: CommonElementos,
     private translate: TranslateService,
-  ) {
-    this.displayedColumns = this.common.columnsElementos;
-  }
+  ) { }
 
   ngOnInit() {
-    this.elementosForm = this.common.formElementos;
+    this.displayedColumns = this.commonElementos.columnsElementos;
+    this.elementosForm = this.commonElementos.formElementos;
     this.observacionForm = this.common.formObservaciones;
     this.dataSource = new MatTableDataSource<any>();
     this.dataSource.paginator = this.paginator;
   }
 
   addElemento() {
-    (this.elementosForm.get('elementos') as FormArray).push(this.elemento);
+    const form = this.commonElementos.elemento;
+    (this.elementosForm.get('elementos') as FormArray).push(form);
     this.dataSource.data = this.dataSource.data.concat({});
-  }
-
-  get elemento(): FormGroup {
-    const form = this.common.elemento;
     this.cambiosPlaca(form.get('Placa').valueChanges);
-    return form;
-  }
-
-  getActualIndex(index: number) {
-    return index + this.paginator.pageSize * this.paginator.pageIndex;
-  }
-
-  removeElemento(index: number) {
-    index = this.paginator.pageIndex > 0 ? index + (this.paginator.pageIndex * this.paginator.pageSize) : index;
-    (this.elementosForm.get('elementos') as FormArray).removeAt(index);
-    const data = this.dataSource.data;
-    data.splice(index, 1);
-    this.dataSource.data = data;
   }
 
   private cambiosPlaca(valueChanges: Observable<any>) {
     valueChanges.pipe(
       debounceTime(250),
       distinctUntilChanged(),
-      switchMap((val) => this.common.loadElementos(val)),
+      switchMap((val) => this.commonElementos.loadElementos(val)),
     ).subscribe((response: any) => {
       this.elementos = response.queryOptions;
     });

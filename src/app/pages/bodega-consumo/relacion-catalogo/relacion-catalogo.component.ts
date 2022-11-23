@@ -1,18 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { LocalDataSource } from 'ng2-smart-table';
 import { Router } from '@angular/router';
-import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
-import { Entrada } from '../../../@core/data/models/entrada/entrada';
-import { Contrato } from '../../../@core/data/models/entrada/contrato';
-import { Supervisor } from '../../../@core/data/models/entrada/supervisor';
-import { OrdenadorGasto } from '../../../@core/data/models/entrada/ordenador_gasto';
-import { TipoEntrada } from '../../../@core/data/models/entrada/tipo_entrada';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
-import { NuxeoService } from '../../../@core/utils/nuxeo.service';
-import { DocumentoService } from '../../../@core/data/documento.service';
-import { SalidaHelper } from '../../../helpers/salidas/salidasHelper';
-import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
-import { UserService } from '../../../@core/data/users.service';
 import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/catalogoElementosHelper';
 
 @Component({
@@ -23,44 +12,30 @@ import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/cat
 export class RelacionCatalogoComponent implements OnInit {
 
   source: LocalDataSource;
-  source2: LocalDataSource;
-  entradas: Array<Entrada>;
   detalle: boolean;
-  actaRecibidoId: number;
-  consecutivoEntrada: string;
-  entradaEspecifica: Entrada;
-  contrato: Contrato;
   settings: any;
-  documentoId: boolean;
-  settings2: any;
   cargando: boolean;
 
   @Output() DatosEnviados = new EventEmitter();
-  @Output() DatosTotales = new EventEmitter();
-  subgrupo_id: any;
+  @Input() Subgrupo_Id: any;
 
-  @Input('Subgrupo_Id')
-  set name(subgrupo_id: any) {
-    this.subgrupo_id = subgrupo_id;
-    // console.log(this.subgrupo_id);
-    if (this.subgrupo_id !== undefined) {
-      this.ElementosSinAsignar(this.subgrupo_id);
-    }
-  }
-
-  constructor(private router: Router,
-    private salidasHelper: SalidaHelper,
+  constructor(
+    private router: Router,
     private translate: TranslateService,
-    private nuxeoService: NuxeoService,
-    private documentoService: DocumentoService,
-    private actaRecibidoHelper: ActaRecibidoHelper,
-    private userService: UserService,
     private catalogoHelper: CatalogoElementosHelper,
   ) {
     this.source = new LocalDataSource();
-    this.entradas = new Array<Entrada>();
     this.detalle = false;
     this.loadTablaSettings();
+  }
+
+  ngOnInit() {
+    this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
+      this.loadTablaSettings();
+    });
+    if (this.Subgrupo_Id) {
+      this.ElementosSinAsignar(this.Subgrupo_Id);
+    }
   }
 
   loadTablaSettings() {
@@ -86,26 +61,18 @@ export class RelacionCatalogoComponent implements OnInit {
         },
         Nombre: {
           title: this.translate.instant('GLOBAL.nombre'),
-          valuePrepareFunction: (value: any) => {
-            return value;
-          },
         },
         Descripcion: {
           title: this.translate.instant('GLOBAL.descripcion'),
-          valuePrepareFunction: (value: any) => {
-            return value;
-          },
         },
       },
     };
   }
 
   ElementosSinAsignar(subgrupo_id): void {
-    // console.log(subgrupo_id);
     this.cargando = true;
     this.catalogoHelper.getElementosSubgrupo(subgrupo_id).subscribe((res: any) => {
-      // console.log(res[0]);
-      if (Object.keys(res[0]).length !== 0) {
+      if (res && res.length) {
         this.source.load(res);
       }
       this.cargando = false;
@@ -113,7 +80,6 @@ export class RelacionCatalogoComponent implements OnInit {
   }
 
   onCustom(event) {
-
     this.DatosEnviados.emit(event.data);
     this.detalle = true;
   }
@@ -124,12 +90,6 @@ export class RelacionCatalogoComponent implements OnInit {
 
   onRegister() {
     this.router.navigate(['/pages/entradas/registro']);
-  }
-
-  ngOnInit() {
-    this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
-      this.loadTablaSettings();
-    });
   }
 
 }
