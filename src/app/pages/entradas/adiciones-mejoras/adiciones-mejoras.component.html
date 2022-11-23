@@ -14,7 +14,7 @@
               </button>
             </th>
             <td mat-cell *matCellDef="let element; let rowIndex = index" class="acciones">
-              <button mat-icon-button color="secondary" [disabled]="modo === 'get'" (click)="removeElemento(rowIndex)"
+              <button mat-icon-button color="secondary" [disabled]="modo === 'get'" (click)="commonElementos.removeElemento(rowIndex, elementosForm, dataSource, paginator)"
                 matTooltip="{{'GLOBAL.Acta_Recibido.CapturarElementos.EliminarElemento' | translate }}">
                 <mat-icon>delete_outline</mat-icon>
               </button>
@@ -25,11 +25,11 @@
             <th id="placa" mat-header-cell *matHeaderCellDef mat-sort-header>
               {{ 'GLOBAL.Placa' | translate }}
             </th>
-            <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="getActualIndex(rowIndex)">
+            <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="commonElementos.getActualIndex(rowIndex, paginator)">
               <input type="text" formControlName="Placa" class="form-control"
                 placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}" [matAutocomplete]="auto">
-              <mat-autocomplete #auto="matAutocomplete" [displayWith]="common.muestraPlaca"
-                (optionSelected)="common.getDetalleElemento(elementosForm, getActualIndex(rowIndex), 'ENT_AM')">
+              <mat-autocomplete #auto="matAutocomplete" [displayWith]="commonElementos.muestraPlaca"
+                (optionSelected)="commonElementos.getDetalleElemento(elementosForm, rowIndex, paginator, 'ENT_AM')">
                 <mat-option *ngFor="let item of elementos" [value]="item">
                   {{item.Placa}}
                 </mat-option>
@@ -41,7 +41,7 @@
             <th id="entrada" mat-header-cell *matHeaderCellDef mat-sort-header>
               {{ 'GLOBAL.Entrada' | translate }}
             </th>
-            <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="getActualIndex(rowIndex)">
+            <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="commonElementos.getActualIndex(rowIndex, paginator)">
               <input type="text" class="form-control" formControlName="entrada"
                 placeholder="{{'GLOBAL.Entrada' | translate }}">
             </td>
@@ -51,7 +51,7 @@
             <th id="entrada" mat-header-cell *matHeaderCellDef mat-sort-header>
               {{ 'GLOBAL.fecha_entrada' | translate }}
             </th>
-            <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="getActualIndex(rowIndex)">
+            <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="commonElementos.getActualIndex(rowIndex, paginator)">
               <input type="text" class="form-control" formControlName="fechaEntrada"
                 placeholder="{{'GLOBAL.fecha_entrada' | translate }}">
             </td>
@@ -61,7 +61,7 @@
             <th id="salida" mat-header-cell *matHeaderCellDef mat-sort-header>
               {{ 'GLOBAL.Salida' | translate }}
             </th>
-            <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="getActualIndex(rowIndex)">
+            <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="commonElementos.getActualIndex(rowIndex, paginator)">
               <input type="text" class="form-control" formControlName="salida"
                 placeholder="{{'GLOBAL.Salida' | translate }}">
             </td>
@@ -71,7 +71,7 @@
             <th id="entrada" mat-header-cell *matHeaderCellDef mat-sort-header>
               {{ 'GLOBAL.fecha_salida' | translate }}
             </th>
-            <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="getActualIndex(rowIndex)">
+            <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="commonElementos.getActualIndex(rowIndex, paginator)">
               <input type="text" class="form-control" formControlName="fechaSalida"
                 placeholder="{{'GLOBAL.fecha_salida' | translate }}">
             </td>
@@ -97,15 +97,14 @@
       <div class="row">
         <div class="form-group col-sm">
           <label>{{'GLOBAL.tipo_contrato' | translate}}</label>
-          <select class="form-control" (change)="changeSelectTipoContrato($event)">
+          <select class="form-control" (change)="getContratos()" formControlName="tipoCtrl">
             <option value="">--{{ 'GLOBAL.seleccionar' | translate }}--</option>
             <option *ngFor="let tipo of tipos" [(value)]="tipo.Id">{{tipo.TipoContrato}}</option>
           </select>
         </div>
         <div class="form-group col-sm">
           <label>{{'GLOBAL.vigencia' | translate}}</label>
-          <select class="form-control" (change)="changeSelectVigencia($event)" [disabled]="!tipoContratoSelect"
-            formControlName="vigenciaCtrl">
+          <select class="form-control" (change)="getContratos()" formControlName="vigenciaCtrl">
             <option value="">--{{ 'GLOBAL.seleccionar' | translate }}--</option>
             <option value="{{ vigencia }}">{{ vigencia }}</option>
             <option value="{{ vigencia-1 }}">{{ vigencia-1 }}</option>
@@ -114,10 +113,8 @@
         <div class="form-group col-sm">
           <label>{{'GLOBAL.numero_contrato' | translate}}</label>
           <div class="input-group">
-            <input nbInput type="text" placeholder="{{'GLOBAL.placeholder_contrato' | translate}}"
-              class="form-control" [readonly]="!vigenciaSelect || !tipoContratoSelect" list="contratosList"
-              formControlName="contratoCtrl"
-              [ngClass]="{'form-control-danger': contratoForm.invalid && (contratoForm.dirty || contratoForm.touched)}" />
+            <input nbInput class="form-control" type="text" formControlName="contratoCtrl" list="contratosList"
+              placeholder="{{'GLOBAL.placeholder_contrato' | translate}}">
           </div>
           <datalist id="contratosList">
             <option *ngFor="let item of contratos" value='{{ item.NumeroContratoSuscrito }}'></option>
@@ -139,14 +136,14 @@
         <label>{{'GLOBAL.nombres' | translate}}</label>
         <div class="input-group">
           <input nbInput type="text" shape="semi-round" placeholder="Nombre Completo" class="form-control"
-            value="{{ contratoEspecifico.OrdenadorGasto.NombreOrdenador }}" [readonly]="true" />
+            value="{{ contratoEspecifico?.OrdenadorGasto?.NombreOrdenador }}" disabled>
         </div>
       </div>
       <div class="form-group col-sm">
         <label>{{'GLOBAL.asignacion' | translate}}</label>
         <div class="input-group">
           <input nbInput type="text" shape="semi-round" placeholder="Rol" class="form-control"
-            value="{{ contratoEspecifico.OrdenadorGasto.RolOrdenadorGasto }}" [readonly]="true" />
+            value="{{ contratoEspecifico?.OrdenadorGasto?.RolOrdenadorGasto }}" disabled>
         </div>
       </div>
     </div>
@@ -164,21 +161,21 @@
         <label>{{'GLOBAL.nombres' | translate}}</label>
         <div class="input-group">
           <input nbInput type="text" shape="semi-round" placeholder="Nombre Completo" class="form-control"
-            value="{{ contratoEspecifico.Supervisor.Nombre }}" [readonly]="true" />
+            value="{{ contratoEspecifico?.Supervisor?.Nombre }}" disabled>
         </div>
       </div>
       <div class="form-group col-sm">
         <label>{{'GLOBAL.sede' | translate}}</label>
         <div class="input-group">
           <input nbInput type="text" shape="semi-round" placeholder="Sede" class="form-control"
-            value="{{ contratoEspecifico.Supervisor.Sede }}" [readonly]="true" />
+            value="{{ contratoEspecifico?.Supervisor?.Sede }}" disabled>
         </div>
       </div>
       <div class="form-group col-sm">
         <label>{{'GLOBAL.dependencia' | translate}}</label>
         <div class="input-group">
           <input nbInput type="text" shape="semi-round" placeholder="Dependencia" class="form-control"
-            value="{{ contratoEspecifico.Supervisor.Dependencia }}" [readonly]="true" />
+            value="{{ contratoEspecifico?.Supervisor?.Dependencia }}" disabled>
         </div>
       </div>
     </div>
@@ -196,7 +193,7 @@
         <div class="form-group col-sm">
           <label>{{'GLOBAL.numero_factura' | translate}}</label>
           <div class="input-group">
-            <select class="form-control" type="text" formControlName="facturaCtrl" (change)="changeSelectSoporte($event)">
+            <select class="form-control" type="text" formControlName="facturaCtrl" (change)="changeSelectSoporte()">
               <option value="" selected>--{{'GLOBAL.seleccionar' | translate}}--</option>
               <option *ngFor="let item of soportes" value="{{ item.Id }}">{{ item.Consecutivo }}</option>
             </select>

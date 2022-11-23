@@ -94,12 +94,7 @@ export class TiposBienComponent implements OnInit {
         TipoBienPadreId: {
           title: this.translate.instant('GLOBAL.parametros.tiposBien.tipoBienPadre'),
           width: '170px',
-          valuePrepareFunction: (value: any) => {
-            return this.tabla.prepareFunctionObject('Nombre', value);
-          },
-          filterFunction: (cell?: any, search?: string): boolean => {
-            return this.tabla.filterFunctionObject('Nombre', cell, search);
-          },
+          ...this.tabla.getSettingsObject('Codigo'),
         },
         FechaModificacion: {
           title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.FechaModificacionHeader'),

@@ -14,13 +14,13 @@ export class SmartTableService {
     }
 
     public formatDate(value: Date) {
-        if (value) {
-            const date = new Date(value);
-            date.setUTCMinutes(date.getTimezoneOffset());
-            return new Date(Date.parse(date.toString())).toLocaleDateString('es-CO');
-        } else {
+        if (!value) {
             return '';
         }
+
+        const date = new Date(value);
+        date.setUTCMinutes(date.getTimezoneOffset());
+        return new Date(Date.parse(date.toString())).toLocaleDateString('es-CO');
     }
 
     public prepareFunctionString(value: any): string {
@@ -32,11 +32,21 @@ export class SmartTableService {
         return '<p class="currency">' + value_ + '</p>';
     }
 
-    public prepareFunctionParse(value: string, key: string): string {
-        return value && JSON.parse(value) ? JSON.parse(value)[key] : '';
+    public getSettingsObject(key: string) {
+        return {
+            valuePrepareFunction: (value: any) => {
+                return this.prepareFunctionObject(key, value);
+            },
+            filterFunction: (cell?: any, search?: string): boolean => {
+                return this.filterFunctionObject(key, cell, search);
+            },
+            compareFunction: (direction: any, a: any, b: any): number => {
+                return this.compareFunctionObject(direction, a, b, key);
+            },
+        };
     }
 
-    public prepareFunctionObject(key: string, value?: any): string {
+    private prepareFunctionObject(key: string, value?: any): string {
         if (!value || !value[key]) {
             return '';
         }
@@ -44,7 +54,7 @@ export class SmartTableService {
         return value[key];
     }
 
-    public filterFunctionObject(key: string, cell?: any, search?: string): boolean {
+    private filterFunctionObject(key: string, cell?: any, search?: string): boolean {
         if (key && cell && search.length) {
             if (cell[key]) {
                 if ((cell[key].toUpperCase()).indexOf(search.toUpperCase()) > -1) {
@@ -55,7 +65,27 @@ export class SmartTableService {
         return false;
     }
 
-    public prepareFunctionObject_(key1: string, key2: string, value?: any): string {
+    private compareFunctionObject(direction: any, a: any, b: any, key: string) {
+        const first = a[key] ? a[key].toLowerCase() : '';
+        const second = b[key] ? b[key].toLowerCase() : '';
+        return this.getOrder(first, second, direction);
+    }
+
+    public getSettingsObject_(key1: string, key2: string) {
+        return {
+            valuePrepareFunction: (value: any) => {
+                return this.prepareFunctionObject_(key1, key2, value);
+            },
+            filterFunction: (cell?: any, search?: string): boolean => {
+                return this.filterFunctionObject_(key1, key2, cell, search);
+            },
+            compareFunction: (direction: any, a: any, b: any): number => {
+                return this.compareFunctionObject_(direction, a, b, key1, key2);
+            },
+        };
+    }
+
+    private prepareFunctionObject_(key1: string, key2: string, value?: any): string {
         if (!value || !value[key1] || !value[key1][key2]) {
             return '';
         }
@@ -63,7 +93,7 @@ export class SmartTableService {
         return value[key1][key2];
     }
 
-    public filterFunctionObject_(key1: string, key2: string, cell?: any, search?: string): boolean {
+    private filterFunctionObject_(key1: string, key2: string, cell?: any, search?: string): boolean {
         if (key1 && key2 && cell && search.length) {
             if (cell[key1] && cell[key1][key2]) {
                 if ((cell[key1][key2].toUpperCase()).indexOf(search.toUpperCase()) > -1) {
@@ -72,6 +102,53 @@ export class SmartTableService {
             }
         }
         return false;
+    }
+
+    private compareFunctionObject_(direction: any, a: any, b: any, key1: string, key2: string) {
+        const first = a && a[key1] && a[key1][key2] ? a[key1][key2].toLowerCase() : '';
+        const second = b && b[key1] && b[key1][key2] ? b[key1][key2].toLowerCase() : '';
+        return this.getOrder(first, second, direction);
+    }
+
+    public getSettingsParse(key: string) {
+        return {
+            valuePrepareFunction: (value: any) => {
+                return this.prepareFunctionParse(value, key);
+            },
+            filterFunction: (cell?: any, search?: string): boolean => {
+                return this.filterFunctionParse(key, cell, search);
+            },
+            compareFunction: (direction: any, a: any, b: any): number => {
+                return this.compareFunctionParse(direction, a, b, key);
+            },
+        };
+    }
+
+    private prepareFunctionParse(value: string, key: string): string {
+        return value && JSON.parse(value) ? JSON.parse(value)[key] : '';
+    }
+
+    private filterFunctionParse(key: string, cell?: any, search?: string): boolean {
+        if (cell && JSON.parse(cell)[key] && search.length) {
+            return (JSON.parse(cell)[key].toUpperCase()).indexOf(search.toUpperCase()) > -1;
+        }
+        return false;
+    }
+
+    private compareFunctionParse(direction: any, a: any, b: any, key: string) {
+        const first = a && JSON.parse(a)[key] ? JSON.parse(a)[key].toLowerCase() : '';
+        const second = b && JSON.parse(b)[key] ? JSON.parse(b)[key].toLowerCase() : '';
+        return this.getOrder(first, second, direction);
+    }
+
+    private getOrder(first: any, second: string, direction: any): number {
+        if (first < second) {
+            return -1 * direction;
+        }
+        if (first > second) {
+            return direction;
+        }
+        return 0;
     }
 
     public toUpperCase(value: string) {
@@ -90,4 +167,3 @@ export class SmartTableService {
         }
     }
 }
-

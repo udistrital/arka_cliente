@@ -240,25 +240,14 @@ export class ConsultaTrasladosComponent implements OnInit {
         },
         FuncionarioOrigen: {
           title: this.translate.instant('GLOBAL.funcionarioOrigen'),
-          valuePrepareFunction: (value: any) => {
-            return this.tabla.prepareFunctionObject('NombreCompleto', value);
-          },
-          filterFunction: (cell?: any, search?: string): boolean => {
-            return this.tabla.filterFunctionObject('NombreCompleto', cell, search);
-          },
+          ...this.tabla.getSettingsObject('NombreCompleto'),
         },
         FuncionarioDestino: {
           title: this.translate.instant('GLOBAL.funcionarioDestino'),
-          valuePrepareFunction: (value: any) => {
-            return this.tabla.prepareFunctionObject('NombreCompleto', value);
-          },
-          filterFunction: (cell?: any, search?: string): boolean => {
-            return this.tabla.filterFunctionObject('NombreCompleto', cell, search);
-          },
+          ...this.tabla.getSettingsObject('NombreCompleto'),
         },
         Ubicacion: {
           title: this.translate.instant('GLOBAL.ubicacion'),
-          valuePrepareFunction: this.tabla.prepareFunctionString,
         },
         ...columns,
       },

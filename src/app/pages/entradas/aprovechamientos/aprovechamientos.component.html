@@ -14,7 +14,7 @@
             </button>
           </th>
           <td mat-cell *matCellDef="let element; let rowIndex = index" class="acciones">
-            <button mat-icon-button color="secondary" [disabled]="modo === 'get'" (click)="removeElemento(rowIndex)"
+            <button mat-icon-button color="secondary" [disabled]="modo === 'get'" (click)="commonElementos.removeElemento(rowIndex, elementosForm, dataSource, paginator)"
               matTooltip="{{'GLOBAL.Acta_Recibido.CapturarElementos.EliminarElemento' | translate }}">
               <mat-icon>delete_outline</mat-icon>
             </button>
@@ -25,11 +25,11 @@
           <th id="placa" mat-header-cell *matHeaderCellDef mat-sort-header>
             {{ 'GLOBAL.Placa' | translate }}
           </th>
-          <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="getActualIndex(rowIndex)">
+          <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="commonElementos.getActualIndex(rowIndex, paginator)">
             <input type="text" formControlName="Placa" class="form-control"
               placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}" [matAutocomplete]="auto">
-            <mat-autocomplete #auto="matAutocomplete" [displayWith]="common.muestraPlaca"
-              (optionSelected)="common.getDetalleElemento(elementosForm, getActualIndex(rowIndex), 'ENT_PPA')">
+            <mat-autocomplete #auto="matAutocomplete" [displayWith]="commonElementos.muestraPlaca"
+              (optionSelected)="commonElementos.getDetalleElemento(elementosForm, rowIndex, paginator, 'ENT_PPA')">
               <mat-option *ngFor="let item of elementos" [value]="item">
                 {{item.Placa}}
               </mat-option>
@@ -41,7 +41,7 @@
           <th id="entrada" mat-header-cell *matHeaderCellDef mat-sort-header>
             {{ 'GLOBAL.Entrada' | translate }}
           </th>
-          <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="getActualIndex(rowIndex)">
+          <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="commonElementos.getActualIndex(rowIndex, paginator)">
             <input type="text" class="form-control" formControlName="entrada"
               placeholder="{{'GLOBAL.Entrada' | translate }}">
           </td>
@@ -51,7 +51,7 @@
           <th id="entrada" mat-header-cell *matHeaderCellDef mat-sort-header>
             {{ 'GLOBAL.fecha_entrada' | translate }}
           </th>
-          <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="getActualIndex(rowIndex)">
+          <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="commonElementos.getActualIndex(rowIndex, paginator)">
             <input type="text" class="form-control" formControlName="fechaEntrada"
               placeholder="{{'GLOBAL.fecha_entrada' | translate }}">
           </td>
@@ -61,7 +61,7 @@
           <th id="salida" mat-header-cell *matHeaderCellDef mat-sort-header>
             {{ 'GLOBAL.Salida' | translate }}
           </th>
-          <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="getActualIndex(rowIndex)">
+          <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="commonElementos.getActualIndex(rowIndex, paginator)">
             <input type="text" class="form-control" formControlName="salida"
               placeholder="{{'GLOBAL.Salida' | translate }}">
           </td>
@@ -71,7 +71,7 @@
           <th id="entrada" mat-header-cell *matHeaderCellDef mat-sort-header>
             {{ 'GLOBAL.fecha_salida' | translate }}
           </th>
-          <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="getActualIndex(rowIndex)">
+          <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="commonElementos.getActualIndex(rowIndex, paginator)">
             <input type="text" class="form-control" formControlName="fechaSalida"
               placeholder="{{'GLOBAL.fecha_salida' | translate }}">
           </td>

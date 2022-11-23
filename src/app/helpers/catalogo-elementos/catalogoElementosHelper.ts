@@ -436,32 +436,11 @@ export class CatalogoElementosHelper {
      * If the response is successs, it returns the object's data.
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
      */
-    public getTiposMovimientoKronos() {
-        this.rqManager.setPath('MOVIMIENTOS_KRONOS_SERVICE');
-        const query = '?query=Activo:true&limit=-1';
-        return this.rqManager.get('tipo_movimiento' + query).pipe(
-            map(
-                (res) => {
-                    if (res === 'error') {
-                        this.pUpManager.showErrorAlert('No se pudo consultar el catálogo de bienes');
-                        return undefined;
-                    }
-                    return res;
-                },
-            ),
-        );
-    }
-
-    /**
-     * Catalogo Get
-     * If the response has errors in the OAS API it should show a popup message with an error.
-     * If the response is successs, it returns the object's data.
-     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
-     */
     public getDetalleSubgrupo(subgrupo) {
-      //  console.log('El subgrupo', subgrupo);
+        const payload = 'detalle_subgrupo?sortby=FechaCreacion&order=desc&limit=-1'
+            + '&query=Activo:true,SubgrupoId__Id:' + subgrupo;
         this.rqManager.setPath('CATALOGO_ELEMENTOS_SERVICE');
-        return this.rqManager.get('detalle_subgrupo?query=SubgrupoId.Id:' + subgrupo + ',Activo:true&limit=-1').pipe(
+        return this.rqManager.get(payload).pipe(
             map(
                 (res) => {
                     if (res === 'error') {
