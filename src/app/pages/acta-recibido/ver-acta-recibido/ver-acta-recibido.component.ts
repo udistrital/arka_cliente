@@ -278,7 +278,7 @@ export class VerActaRecibidoComponent implements OnInit {
     return new Promise<void>(resolve => {
       this.Actas_Recibido.getSedeDependencia(ubicacionId).toPromise().then(res => {
         if (res.length) {
-          const codigoSede = res[0].EspacioFisicoId.CodigoAbreviacion.replace(/\d+$/g, '');
+          const codigoSede = res[0].EspacioFisicoId.CodigoAbreviacion.replace(/\d.*/g, '');
           const Dependencia = res[0].DependenciaId;
           const Sede = this.Sedes.find(x => x && x.CodigoAbreviacion === codigoSede);
           if (codigoSede && Dependencia) {

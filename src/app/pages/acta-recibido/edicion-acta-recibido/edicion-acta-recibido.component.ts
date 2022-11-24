@@ -493,7 +493,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
             name: res[0].DependenciaId.Nombre,
             value: res[0].DependenciaId.Id,
           };
-          const codigoSede = res[0].EspacioFisicoId.CodigoAbreviacion.replace(/\d+$/g, '');
+          const codigoSede = res[0].EspacioFisicoId.CodigoAbreviacion.replace(/\d.*/g, '');
           const sede = this.Sedes.find(x => x && x.CodigoAbreviacion === codigoSede);
           if (sede) {
             await this.Traer_Relacion_Ubicaciones(sede.Id, dependencia.value);
