@@ -2,7 +2,6 @@ import { Component, OnInit, ViewChildren, QueryList, Input, Output, EventEmitter
 import { debounceTime, distinctUntilChanged, filter, switchMap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, FormArray, ValidatorFn, AbstractControl, ValidationErrors } from '@angular/forms';
-import { NuxeoService } from '../../../@core/utils/nuxeo.service';
 import { MatTable } from '@angular/material';
 import 'hammerjs';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
@@ -22,18 +21,17 @@ import { ListService } from '../../../@core/store/services/list.service';
 import { SafeResourceUrl, DomSanitizer } from '@angular/platform-browser';
 import { PopUpManager } from '../../../managers/popUpManager';
 import { ConfiguracionService } from '../../../@core/data/configuracion.service';
-import { DocumentoService } from '../../../@core/data/documento.service';
-import { HttpErrorResponse } from '@angular/common/http';
 import { UserService } from '../../../@core/data/users.service';
 import { PermisoUsuario_t as Permiso } from '../../../@core/data/models/roles/rol_usuario';
 import { permisosSeccionesActas } from './reglas';
-import { isObject } from 'rxjs/internal-compatibility';
 import { Acta_t, TipoActa } from '../../../@core/data/models/acta_recibido/tipo_acta';
 import { EstadoElemento } from '../../../@core/data/models/acta_recibido/estado_elemento';
 import { ActaValidators } from '../validators';
 import { CommonActas } from '../shared';
 import { AutocompleterOption } from '../../../@theme/components';
 import { merge } from 'rxjs';
+import { ImplicitAutenticationService } from '../../../@core/utils/implicit_autentication.service';
+import { GestorDocumentalService } from '../../../helpers/gestor_documental/gestorDocumentalHelper';
 
 const FECHA_MINIMA = new Date('1945');
 
@@ -138,9 +136,9 @@ export class EdicionActaRecibidoComponent implements OnInit {
     private listService: ListService,
     private pUpManager: PopUpManager,
     private sanitization: DomSanitizer,
-    private nuxeoService: NuxeoService,
-    private documentoService: DocumentoService,
     private userService: UserService,
+    private autenticationService: ImplicitAutenticationService,
+    private documento: GestorDocumentalService,
   ) {
     this.errores = new Map<string, boolean>();
     this.maxDate = new Date();
@@ -548,36 +546,20 @@ export class EdicionActaRecibidoComponent implements OnInit {
       title: 'Por favor espera, cargando documento',
       allowOutsideClick: false,
       onBeforeOpen: () => {
-          Swal.showLoading();
+        Swal.showLoading();
       },
-  });
-    const filesToGet = [
-      {
-        Id: id_documento,
-        key: id_documento,
-      },
-    ];
-    this.nuxeoService.getDocumentoById$(filesToGet, this.documentoService)
-      .subscribe(response => {
-        const filesResponse = <any>response;
-        if (Object.keys(filesResponse).length === filesToGet.length) {
-          filesToGet.forEach((file: any) => {
-            const url = filesResponse[file.Id];
-            if (url !== undefined) {
-              window.open(url);
-              Swal.close();
-            }
-          });
-        }
-      },
-        (error: HttpErrorResponse) => {
-          Swal({
-            type: 'error',
-            title: error.status + '',
-            text: this.translate.instant('ERROR.' + error.status),
-            confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
-          });
-        });
+    });
+
+    const filesToGet = [{
+      Id: id_documento,
+    }];
+
+    this.documento.get(filesToGet).subscribe((data: any) => {
+      if (data && data.length && data[0].url) {
+        window.open(data[0].url);
+      }
+      Swal.close();
+    });
   }
 
   public getFile(i: number) {
@@ -687,39 +669,31 @@ export class EdicionActaRecibidoComponent implements OnInit {
     this.idDocumento.splice(i, 1);
   }
 
-  async postSoporteNuxeo(files: any) {
-    return new Promise<void>(async (resolve, reject) => {
-      files.forEach((file) => {
-        file.Id = file.nombre;
-        file.nombre = 'soporte_' + file.IdDocumento + '_acta_recibido';
-        file.key = 'soporte_' + file.IdDocumento;
+  async postFile(file: any, index) {
+    if (!file) {
+      return this.idDocumento[index];
+    }
+
+    const nombre = await this.autenticationService.getMail();
+    file.nombre = nombre;
+
+    const rolePromise = new Promise<number>((resolve, reject) => {
+      this.documento.uploadFiles([file]).subscribe((data: any) => {
+        if (data && data.length) {
+          resolve(+data[0].res.Id);
+        }
       });
-      this.nuxeoService.getDocumentos$(files, this.documentoService)
-        .subscribe(response => {
-          if (Object.keys(response).length === files.length) {
-            files.forEach((file) => {
-              const a = this.idDocumento.findIndex((doc) => doc === undefined);
-              const b = this.idDocumento.find(id => id === response[file.key].Id);
-              if (a >= 0 && !b) {
-                this.idDocumento[a] = response[file.key].Id;
-                this.fileDocumento[a] = undefined;
-              }
-              resolve();
-            });
-          }
-        }, error => {
-          reject(error);
-        });
     });
+
+    return rolePromise;
   }
 
   // Envío (a (proveedor y/o contratista)/revisor) o guardado
   private async onFirstSubmit(siguienteEtapa: boolean = false, enviara: number = 0) {
-    const filestoPost = this.fileDocumento.filter(file => file !== undefined);
     this.guardando = true;
     const start = async () => {
-      await CommonActas.asyncForEach(filestoPost, async (file) => {
-        await this.postSoporteNuxeo([file]);
+      await CommonActas.asyncForEach(this.fileDocumento, async (file, index) => {
+        this.idDocumento[index] = await this.postFile(file, index);
       });
     };
     await start();
