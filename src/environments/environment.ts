@@ -12,13 +12,6 @@ import { WSO2 } from './autenticacion';
 export const environment = {
   production: false,
   ...WSO2,
-  NUXEO: {
-    PATH: 'https://documental.portaloas.udistrital.edu.co/nuxeo/',
-    CREDENTIALS: {
-      USERNAME: 'desarrollooas',
-      PASS: 'desarrollooas2019',
-    },
-  },
 
   // ARKA_SERVICE: 'http://localhost:8081/v1/',
   ASSETS_SERVICE: 'https://pruebasassets.portaloas.udistrital.edu.co/',

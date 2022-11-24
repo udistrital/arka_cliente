@@ -121,7 +121,7 @@ export class GestorDocumentalService {
         }),
         )
         .subscribe(async (f: any) => {
-          this.downloadFile(f.file, 'plantilla.xlsx')
+          this.downloadFile(f.file, 'plantilla.xlsx');
         });
     });
     return documents$;

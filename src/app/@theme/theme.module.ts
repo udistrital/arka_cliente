@@ -131,7 +131,6 @@ import {
   ThemeSwitcherListComponent,
   ToggleSettingsButtonComponent,
   SelectComponent,
-  NuxeoComponent,
 } from './components';
 import {
   CapitalizePipe,
@@ -221,7 +220,6 @@ const COMPONENTS = [
   TwoColumnsLayoutComponent,
   ToggleSettingsButtonComponent,
   SelectComponent,
-  NuxeoComponent,
   SelectDirective,
 ];
 
