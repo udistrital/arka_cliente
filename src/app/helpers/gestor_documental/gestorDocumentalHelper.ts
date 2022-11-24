@@ -5,7 +5,6 @@ import { Documento } from '../../@core/data/models/documento';
 import { RequestManager } from '../../managers/requestManager';
 import { PopUpManager } from '../../managers/popUpManager';
 
-
 @Injectable({
   providedIn: 'root',
 })
@@ -104,4 +103,37 @@ export class GestorDocumentalService {
     });
     return documents$;
   }
+
+  get_(files) {
+
+    const documentsSubject = new Subject<Documento[]>();
+    const documents$ = documentsSubject.asObservable();
+    const documentos = [];
+
+    files.map(async (file, index) => {
+      this.rqManager.setPath('DOCUMENTO_SERVICE');
+      this.rqManager.get('documento/' + file.Id)
+        .pipe(mergeMap((doc: any) => {
+          documentos.push(doc);
+
+          this.rqManager.setPath('GESTOR_DOCUMENTAL_SERVICE');
+          return this.rqManager.get('/document/' + doc.Enlace);
+        }),
+        )
+        .subscribe(async (f: any) => {
+          this.downloadFile(f.file, 'plantilla.xlsx')
+        });
+    });
+    return documents$;
+  }
+
+  downloadFile(base64: any, fileName: any) {
+    const src = `data:text/xsls;base64,${base64}`;
+    const link = document.createElement('a');
+    link.href = src;
+    link.download = fileName;
+    link.click();
+    link.remove();
+  }
+
 }
