@@ -10,11 +10,9 @@ import { FormatoTipoMovimiento } from '../../../@core/data/models/entrada/entrad
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { PopUpManager } from '../../../managers/popUpManager';
 import { UserService } from '../../../@core/data/users.service';
-import { NuxeoService } from '../../../@core/utils/nuxeo.service';
-import { HttpErrorResponse } from '@angular/common/http';
-import { DocumentoService } from '../../../@core/data/documento.service';
 import { TrasladosHelper } from '../../../helpers/movimientos/trasladosHelper';
 import { isObject } from 'util';
+import { GestorDocumentalService } from '../../../helpers/gestor_documental/gestorDocumentalHelper';
 
 const SIZE_SOPORTE = 5;
 
@@ -48,10 +46,9 @@ export class FormSolicitudComponent implements OnInit {
     private movimientosHelper: MovimientosHelper,
     private sanitization: DomSanitizer,
     private pUpManager: PopUpManager,
-    private nuxeoService: NuxeoService,
     private userService: UserService,
     private trasladosHelper: TrasladosHelper,
-    private documentoService: DocumentoService,
+    private documento: GestorDocumentalService,
   ) {
     this.bajaId = 0;
     this.sizeSoporte = SIZE_SOPORTE;
@@ -531,29 +528,16 @@ export class FormSolicitudComponent implements OnInit {
   }
 
   private downloadFile(id_documento: any) {
-    const filesToGet = [
-      {
-        Id: id_documento,
-        key: id_documento,
-      },
-    ];
-    this.nuxeoService.getDocumentoById$(filesToGet, this.documentoService)
-      .subscribe(response => {
-        const filesResponse = <any>response;
-        if (Object.keys(filesResponse).length === filesToGet.length) {
-          filesToGet.forEach((file: any) => {
-            const url = filesResponse[file.Id];
-            if (url !== undefined) {
-              window.open(url);
-            }
-          });
-        }
-      },
-        (error: HttpErrorResponse) => {
-          this.pUpManager.showErrorAlert(error);
-        });
-  }
+    const filesToGet = [{
+      Id: id_documento,
+    }];
 
+    this.documento.get(filesToGet).subscribe((data: any) => {
+      if (data && data.length && data[0].url) {
+        window.open(data[0].url);
+      }
+    });
+  }
 
   cleanURL(oldURL: string): SafeResourceUrl {
     return this.sanitization.bypassSecurityTrustUrl(oldURL);

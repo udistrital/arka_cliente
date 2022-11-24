@@ -426,16 +426,18 @@ export class EntradaHelper {
     public getDivisas() {
         this.rqManager.setPath('PARAMETROS_SERVICE');
         return this.rqManager.get('parametro?query=TipoParametroId__Nombre:Divisas').pipe(
-                map(
-                    (res) => {
-                        if (res === 'error') {
-                            this.pUpManager.showErrorAlert('No se pudo consultar el parametro divisas');
-                            return undefined;
-                        }
-                        return res;
-                    },
-                ),
-            );
+            map(
+                (res) => {
+                    if (res === 'error') {
+                        this.pUpManager.showErrorAlert('No se pudo consultar el parametro divisas');
+                        return undefined;
+                    } else if (!res.Data || (res.Data && res.Data.length === 1 && !Object.keys(res.Data[0]).length)) {
+                        res = [];
+                    }
+                    return res;
+                },
+            ),
+        );
     }
 
     public getEstadosMovimiento() {

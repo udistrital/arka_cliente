@@ -2,7 +2,6 @@ import { Component, OnInit, ViewChildren, QueryList } from '@angular/core';
 import { scheduled, asyncScheduler } from 'rxjs';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, FormArray, ValidatorFn, ValidationErrors } from '@angular/forms';
-import { NuxeoService } from '../../../@core/utils/nuxeo.service';
 import { MatTable } from '@angular/material';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
 import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
@@ -21,7 +20,6 @@ import { ListService } from '../../../@core/store/services/list.service';
 import { AutocompleterOption } from '../../../@theme/components';
 import { PopUpManager } from '../../../managers/popUpManager';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-import { DocumentoService } from '../../../@core/data/documento.service';
 import { UserService } from '../../../@core/data/users.service';
 import { AbstractControl } from '@angular/forms/src/model';
 import { TipoActa } from '../../../@core/data/models/acta_recibido/tipo_acta';
@@ -29,6 +27,7 @@ import { EstadoElemento } from '../../../@core/data/models/acta_recibido/estado_
 import { debounceTime, distinctUntilChanged, filter, mergeAll, switchMap } from 'rxjs/operators';
 import { ActaValidators } from '../validators';
 import { CommonActas } from '../shared';
+import { GestorDocumentalService } from '../../../helpers/gestor_documental/gestorDocumentalHelper';
 
 @Component({
   selector: 'ngx-registro-acta-recibido',
@@ -94,8 +93,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
     private listService: ListService,
     private pUpManager: PopUpManager,
     private sanitization: DomSanitizer,
-    private nuxeoService: NuxeoService,
-    private documentoService: DocumentoService,
+    private documento: GestorDocumentalService,
     private userService: UserService,
     private route: ActivatedRoute,
   ) {
@@ -213,6 +211,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
           file.url = this.cleanURL(file.urlTemp);
           file.IdDocumento = 13; // tipo de documento (API documentos_crud)
           file.file = event.target.files[0];
+          file.nombre = file.name;
           this.controlSoportes.at(index).get('Soporte').setValue(file.name);
           this.fileDocumento[index] = file;
         } else {
@@ -347,41 +346,20 @@ export class RegistroActaRecibidoComponent implements OnInit {
     this.fileDocumento.splice(i, 1);
   }
 
-  async postSoporteNuxeo(files: any) {
-    return new Promise<void>(async (resolve, reject) => {
-      files.forEach((file) => {
-        file.Id = file.nombre;
-        file.nombre = 'soporte_' + file.IdDocumento + '_acta_recibido';
-        file.key = 'soporte_' + file.IdDocumento;
+  async postFile(file: any) {
+    if (!file) {
+      return;
+    }
+
+    const rolePromise = new Promise<number>((resolve, reject) => {
+      this.documento.uploadFiles([file]).subscribe((data: any) => {
+        if (data && data.length) {
+          resolve(+data[0].res.Id);
+        }
       });
-      Swal({
-        title: 'Por favor espera, registrando acta',
-        allowOutsideClick: false,
-        onBeforeOpen: () => {
-            Swal.showLoading();
-        },
     });
-      this.nuxeoService.getDocumentos$(files, this.documentoService)
-        .subscribe(response => {
-          if (Object.keys(response).length === files.length) {
-            files.forEach((file) => {
-              const a = this.idDocumento[this.idDocumento.length - 1] === response[file.key].Id;
-              if (!a) {
-                this.idDocumento.push(response[file.key].Id);
-              }
-              resolve();
-            });
-          }
-        }, error => {
-          Swal({
-            type: 'error',
-            title: error.status + '',
-            text: this.translate.instant('ERROR.' + error.status),
-            confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
-          });
-          reject(error);
-        });
-    });
+
+    return rolePromise;
   }
 
   eventoTotales(event) {
@@ -402,7 +380,8 @@ export class RegistroActaRecibidoComponent implements OnInit {
     this.Registrando = true;
     const start = async () => {
       await CommonActas.asyncForEach(this.fileDocumento, async (file) => {
-        await this.postSoporteNuxeo([file]);
+        const docId = await this.postFile(file);
+        this.idDocumento.push(docId);
       });
     };
     await start();

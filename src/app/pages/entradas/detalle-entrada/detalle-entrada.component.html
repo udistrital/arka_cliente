@@ -74,23 +74,19 @@
   <div *ngIf="entradaEspecifica.TipoEntradaId.Nombre === 'Elaboración Propia'">
     <div class="row">
       <div class="col">
-        <p class="text-uppercase"><strong>{{'GLOBAL.ordenador_gasto' | translate }}:</strong>
-          capturar</p>
+        <p class="text-uppercase"><strong>{{'GLOBAL.supervisor' | translate }}:</strong>
+          {{ Supervisor.Nombre }}</p>
       </div>
       <div class="col">
-        <p class="text-uppercase"><strong>{{'GLOBAL.Cargo' | translate }}:</strong>
-          capturar</p>
+        <p class="text-uppercase"><strong>{{'GLOBAL.dependencia' | translate }}:</strong>
+          {{ dependenciaSupervisor?.ESFDEPENCARGADA }}</p>
       </div>
     </div>
 
     <div class="row">
       <div class="col">
-        <p class="text-uppercase"><strong>{{'GLOBAL.Solicitante' | translate }}:</strong>
-          capturar</p>
-      </div>
-      <div class="col">
-        <p class="text-uppercase"><strong>{{'GLOBAL.Cargo' | translate }}:</strong>
-          capturar</p>
+        <p class="text-uppercase"><strong>{{'GLOBAL.ordenador_gasto' | translate }}:</strong>
+          {{ Ordenador?.NombreOrdenador }}</p>
       </div>
     </div>
   </div>
