@@ -15,7 +15,7 @@
         <div class="form-group col-sm">
           <label>{{'GLOBAL.vigencia' | translate}}</label>
           <select class="form-control" (change)="getContratos()" formControlName="vigenciaCtrl">
-            <option disabled selected>{{'GLOBAL.seleccionar' | translate}}...</option>
+            <option value="" selected>--{{'GLOBAL.seleccionar' | translate}}--</option>
             <option value="{{ vigencia }}">{{ vigencia }}</option>
             <option value="{{ vigencia-1 }}">{{ vigencia-1 }}</option>
           </select>
@@ -32,9 +32,7 @@
         </div>
       </div>
       <div class="boton-stepper-initial">
-        <button mat-flat-button color="primary" matStepperNext (click)="onContratoSubmit()">
-          {{'GLOBAL.siguiente' | translate}}
-        </button>
+        <button mat-flat-button color="primary" matStepperNext (click)="onContratoSubmit()">{{'GLOBAL.siguiente' | translate}}</button>
       </div>
     </form>
   </mat-step>
