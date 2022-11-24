@@ -1,8 +1,6 @@
 import { Component, OnInit, ViewChild, Input } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup, FormControl, FormArray, AbstractControl } from '@angular/forms';
-import { NuxeoService } from '../../../@core/utils/nuxeo.service';
-import 'hammerjs';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
 import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
 import { ActaRecibido } from '../../../@core/data/models/acta_recibido/acta_recibido';
@@ -16,16 +14,14 @@ import { TransaccionActaRecibido } from '../../../@core/data/models/acta_recibid
 import Swal from 'sweetalert2';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { CurrencyPipe } from '@angular/common';
-import { DocumentoService } from '../../../@core/data/documento.service';
 import { Store } from '@ngrx/store';
 import { IAppState } from '../../../@core/store/app.state';
 import { ListService } from '../../../@core/store/services/list.service';
-import { HttpErrorResponse } from '@angular/common/http';
 import { UserService } from '../../../@core/data/users.service';
 import { Acta_t, TipoActa } from '../../../@core/data/models/acta_recibido/tipo_acta';
-import { isObject } from 'util';
 import { CompleterData, CompleterService } from 'ng2-completer';
 import { CommonActas } from '../shared';
+import { GestorDocumentalService } from '../../../helpers/gestor_documental/gestorDocumentalHelper';
 
 @Component({
   selector: 'ngx-ver-acta-recibido',
@@ -80,13 +76,13 @@ export class VerActaRecibidoComponent implements OnInit {
     private Actas_Recibido: ActaRecibidoHelper,
     private tercerosHelper: TercerosHelper,
     private cp: CurrencyPipe,
-    private nuxeoService: NuxeoService,
-    private documentoService: DocumentoService,
     private store: Store<IAppState>,
     private listService: ListService,
     private userService: UserService,
     private completerService: CompleterService,
-    private route: ActivatedRoute) {
+    private route: ActivatedRoute,
+    private documento: GestorDocumentalService,
+  ) {
     this.Contratistas = [];
     this.Proveedores = [];
     this.Verificar_tabla = new Array<boolean>();
@@ -299,35 +295,26 @@ export class VerActaRecibidoComponent implements OnInit {
     });
   }
 
-  downloadFile(index: any) {
+  public downloadFile(index: number) {
+    Swal({
+      title: 'Por favor espera, cargando documento',
+      allowOutsideClick: false,
+      onBeforeOpen: () => {
+        Swal.showLoading();
+      },
+    });
 
     const id_documento = (this.controlSoportes as FormArray).at(index).get('Soporte').value;
+    const filesToGet = [{
+      Id: id_documento,
+    }];
 
-    const filesToGet = [
-      {
-        Id: id_documento,
-        key: id_documento,
-      },
-    ];
-    this.nuxeoService.getDocumentoById$(filesToGet, this.documentoService)
-      .subscribe(response => {
-        const filesResponse = <any>response;
-        if (Object.keys(filesResponse).length === filesToGet.length) {
-          // console.log("files", filesResponse);
-          filesToGet.forEach((file: any) => {
-            const url = filesResponse[file.Id];
-            url ? window.open(url) : null;
-          });
-        }
-      },
-        (error: HttpErrorResponse) => {
-          Swal({
-            type: 'error',
-            title: error.status + '',
-            text: this.translate.instant('ERROR.' + error.status),
-            confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
-          });
-        });
+    this.documento.get(filesToGet).subscribe((data: any) => {
+      if (data && data.length && data[0].url) {
+        window.open(data[0].url);
+      }
+      Swal.close();
+    });
   }
 
   private onFirstSubmit(aceptar: boolean = false) {

@@ -1,16 +1,15 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { DocumentoService } from '../../../@core/data/documento.service';
 import { SoporteActa } from '../../../@core/data/models/acta_recibido/soporte_acta';
 import { Contrato } from '../../../@core/data/models/entrada/contrato';
 import { Entrada } from '../../../@core/data/models/entrada/entrada';
 import { OrdenadorGasto } from '../../../@core/data/models/entrada/ordenador_gasto';
 import { Supervisor } from '../../../@core/data/models/entrada/supervisor';
 import { TipoEntrada } from '../../../@core/data/models/entrada/tipo_entrada';
-import { NuxeoService } from '../../../@core/utils/nuxeo.service';
 import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
 import { LocalDataSource } from 'ng2-smart-table';
 import { TranslateService } from '@ngx-translate/core';
 import { SmartTableService } from '../../../@core/data/SmartTableService';
+import { GestorDocumentalService } from '../../../helpers/gestor_documental/gestorDocumentalHelper';
 
 @Component({
   selector: 'ngx-detalle-entrada',
@@ -28,7 +27,7 @@ export class DetalleEntradaComponent implements OnInit {
   flagDependencia = true;
   dependenciaSupervisor: string;
   Ordenador: any;
-  documentoId: boolean;
+  documentoId: number;
   entradaId: number;
   settings: any;
   source: LocalDataSource;
@@ -37,8 +36,7 @@ export class DetalleEntradaComponent implements OnInit {
 
   constructor(
     private entradasHelper: EntradaHelper,
-    private nuxeoService: NuxeoService,
-    private documentoService: DocumentoService,
+    private documento: GestorDocumentalService,
     private translate: TranslateService,
     private tabla: SmartTableService,
   ) {
@@ -92,6 +90,10 @@ export class DetalleEntradaComponent implements OnInit {
 
     if (this.detalleEntrada.ordenador) {
       this.Ordenador = this.detalleEntrada.ordenador;
+    }
+
+    if (this.detalleEntrada.documentoId) {
+      this.documentoId = this.detalleEntrada.documentoId;
     }
 
     switch (this.detalleEntrada.movimiento.FormatoTipoMovimientoId.Nombre) {
@@ -164,7 +166,6 @@ export class DetalleEntradaComponent implements OnInit {
     this.entradaEspecifica.Importacion = detalle.importacion; // IMPORTACIÓN
     this.entradaEspecifica.TipoEntradaId.Nombre = info.movimiento.FormatoTipoMovimientoId.Nombre; // TIPO ENTRADA
     this.entradaEspecifica.Observacion = info.movimiento.Observacion; // OBSERVACIÓN
-    this.documentoId = false; // SOPORTE
     this.loadContrato(info.contrato); // CONTRATO
   }
 
@@ -177,7 +178,6 @@ export class DetalleEntradaComponent implements OnInit {
     this.entradaEspecifica.Solicitante = detalle.solicitante_id; // SOLICITANTE
     this.entradaEspecifica.TipoEntradaId.Nombre = info.movimiento.FormatoTipoMovimientoId.Nombre; // TIPO ENTRADA
     this.entradaEspecifica.Observacion = info.movimiento.Observacion; // OBSERVACIÓN
-    this.documentoId = false; // SOPORTE
   }
 
   loadDetalleDonacion(info) {
@@ -190,7 +190,6 @@ export class DetalleEntradaComponent implements OnInit {
     this.entradaEspecifica.OrdenadorId = detalle.ordenador_gasto_id; // ORDENADOR DE GASTO
     this.entradaEspecifica.TipoEntradaId.Nombre = info.movimiento.FormatoTipoMovimientoId.Nombre; // TIPO ENTRADA
     this.entradaEspecifica.Observacion = info.movimiento.Observacion; // OBSERVACIÓN
-    this.documentoId = false; // SOPORTE
     this.loadContrato(info.contrato); // CONTRATO
   }
 
@@ -201,7 +200,6 @@ export class DetalleEntradaComponent implements OnInit {
     this.entradaEspecifica.Vigencia = detalle.vigencia_ordenador; // VIGENCIA ORDENADOR
     this.entradaEspecifica.TipoEntradaId.Nombre = info.movimiento.FormatoTipoMovimientoId.Nombre; // TIPO ENTRADA
     this.entradaEspecifica.Observacion = info.movimiento.Observacion; // OBSERVACIÓN
-    this.documentoId = false;
   }
 
   loadDetalleTerceros(info) {
@@ -212,7 +210,6 @@ export class DetalleEntradaComponent implements OnInit {
     this.entradaEspecifica.Vigencia = detalle.vigencia_contrato; // VIGENCIA CONTRATO
     this.entradaEspecifica.TipoEntradaId.Nombre = info.movimiento.FormatoTipoMovimientoId.Nombre; // TIPO ENTRADA
     this.entradaEspecifica.Observacion = info.movimiento.Observacion; // OBSERVACIÓN
-    this.documentoId = false; // SOPORTE
     this.loadContrato(info.contrato); // CONTRATO
   }
 
@@ -224,7 +221,6 @@ export class DetalleEntradaComponent implements OnInit {
     this.entradaEspecifica.Solicitante = detalle.solicitante_id; // SOLICITANTE
     this.entradaEspecifica.TipoEntradaId.Nombre = info.movimiento.FormatoTipoMovimientoId.Nombre; // TIPO ENTRADA
     this.entradaEspecifica.Observacion = info.movimiento.Observacion; // OBSERVACIÓN
-    this.documentoId = false; // SOPORTE
   }
 
   loadDetalleAdicionesMejoras(info) {
@@ -235,7 +231,6 @@ export class DetalleEntradaComponent implements OnInit {
     this.entradaEspecifica.Vigencia = detalle.vigencia_contrato; // VIGENCIA CONTRATO
     this.entradaEspecifica.TipoEntradaId.Nombre = info.movimiento.FormatoTipoMovimientoId.Nombre; // TIPO ENTRADA
     this.entradaEspecifica.Observacion = info.movimiento.Observacion; // OBSERVACIÓN
-    this.documentoId = false; // SOPORTE
     this.loadContrato(info.contrato); // CONTRATO
   }
 
@@ -247,7 +242,6 @@ export class DetalleEntradaComponent implements OnInit {
     this.entradaEspecifica.Vigencia = detalle.vigencia_contrato; // VIGENCIA CONTRATO
     this.entradaEspecifica.TipoEntradaId.Nombre = info.movimiento.FormatoTipoMovimientoId.Nombre; // TIPO ENTRADA
     this.entradaEspecifica.Observacion = info.movimiento.Observacion; // OBSERVACIÓN
-    this.documentoId = false; // SOPORTE
     this.loadContrato(info.contrato); // CONTRATO
   }
   loadDetalleProvisional(info) {
@@ -258,7 +252,6 @@ export class DetalleEntradaComponent implements OnInit {
     this.entradaEspecifica.Vigencia = detalle.vigencia_contrato; // VIGENCIA CONTRATO
     this.entradaEspecifica.TipoEntradaId.Nombre = info.movimiento.FormatoTipoMovimientoId.Nombre; // TIPO ENTRADA
     this.entradaEspecifica.Observacion = info.movimiento.Observacion; // OBSERVACIÓN
-    this.documentoId = false; // SOPORTE
     this.loadContrato(info.contrato); // CONTRATO
   }
   loadDetalleComprasExtranjeras(info) {
@@ -272,7 +265,6 @@ export class DetalleEntradaComponent implements OnInit {
     this.entradaEspecifica.RegistroImportacion = detalle.num_reg_importacion; // NUMERO DE IMPORTACION
     this.entradaEspecifica.TasaRepresentativaMercado = detalle.TRM; // TASA REPRESENTATIVA DEL MERCADO
     this.entradaEspecifica.Divisa = detalle.divisa;
-    this.documentoId = false; // SOPORTE
     this.loadContrato(info.contrato); // CONTRATO
   }
 
@@ -284,7 +276,6 @@ export class DetalleEntradaComponent implements OnInit {
     this.entradaEspecifica.OrdenadorId = detalle.ordenador_gasto_id; // ORDENADOR DE GASTO
     this.entradaEspecifica.TipoEntradaId.Nombre = info.movimiento.FormatoTipoMovimientoId.Nombre; // TIPO ENTRADA
     this.entradaEspecifica.Observacion = info.movimiento.Observacion; // OBSERVACIÓN
-    this.documentoId = false;
   }
   loadDetalleAprovechamientos(info) {
     const detalle = JSON.parse(info.movimiento.Detalle);
@@ -293,7 +284,6 @@ export class DetalleEntradaComponent implements OnInit {
     this.entradaEspecifica.Vigencia = detalle.vigencia; // VIGENCIA CONTRATO
     this.entradaEspecifica.TipoEntradaId.Nombre = info.movimiento.FormatoTipoMovimientoId.Nombre; // TIPO ENTRADA
     this.entradaEspecifica.Observacion = info.movimiento.Observacion; // OBSERVACIÓN
-    this.documentoId = false;
   }
   loadDetalleReposicion(info) {
     const detalle = JSON.parse(info.movimiento.Detalle);
@@ -301,7 +291,6 @@ export class DetalleEntradaComponent implements OnInit {
     this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
     this.entradaEspecifica.TipoEntradaId.Nombre = info.movimiento.FormatoTipoMovimientoId.Nombre; // TIPO ENTRADA
     this.entradaEspecifica.Observacion = info.movimiento.Observacion; // OBSERVACIÓN
-    this.documentoId = false;
   }
 
   loadContrato(info: any): void {
@@ -326,35 +315,19 @@ export class DetalleEntradaComponent implements OnInit {
     }
   }
 
-  loadSoporte() {
-    this.entradasHelper.getSoportes(this.entradaId).subscribe(res => {
-      if (res !== null) {
-        const data = <Array<any>>res;
+  public loadSoporte() {
 
-        const filesToGet = [
-          {
-            Id: data[0].DocumentoId,
-            key: data[0].DocumentoId,
-          },
-        ];
+    if (!this.documentoId) {
+      return;
+    }
 
-        this.nuxeoService.getDocumentoById$(filesToGet, this.documentoService)
-          .subscribe(response => {
-            const filesResponse = <any>response;
-            // console.log(filesResponse)
-            if (Object.keys(filesResponse).length === filesToGet.length) {
-              // console.log("files", filesResponse);
-              filesToGet.forEach((file: any) => {
-                const url = filesResponse[file.Id];
-                // let newWindow = window.open('','_blank')
-                const new_tab = window.open(url);
-                new_tab.onload = () => {
-                  new_tab.location = url;
-                };
-                new_tab.focus();
-              });
-            }
-          });
+    const filesToGet = [{
+      Id: this.documentoId,
+    }];
+
+    this.documento.get(filesToGet).subscribe((data: any) => {
+      if (data && data.length && data[0].url) {
+        window.open(data[0].url);
       }
     });
   }

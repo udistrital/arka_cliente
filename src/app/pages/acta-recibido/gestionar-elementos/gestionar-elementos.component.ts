@@ -11,12 +11,12 @@ import { Store } from '@ngrx/store';
 import { IAppState } from '../../../@core/store/app.state';
 import { ConfiguracionService } from '../../../@core/data/configuracion.service';
 import { ListService } from '../../../@core/store/services/list.service';
-import { NuxeoService } from '../../../@core/utils/nuxeo.service';
 import { debounceTime, distinctUntilChanged, map, switchMap } from 'rxjs/operators';
 import { combineLatest, Observable } from 'rxjs';
 import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/catalogoElementosHelper';
 import { ParametrosHelper } from '../../../helpers/parametros/parametrosHelper';
 import { PopUpManager } from '../../../managers/popUpManager';
+import { GestorDocumentalService } from '../../../helpers/gestor_documental/gestorDocumentalHelper';
 
 const SIZE_SOPORTE = 1;
 
@@ -75,6 +75,7 @@ export class GestionarElementosComponent implements OnInit {
     private catalogoHelper: CatalogoElementosHelper,
     private parametrosHelper: ParametrosHelper,
     private pUpManager: PopUpManager,
+    private documento: GestorDocumentalService,
   ) {
     this.Totales = new DatosLocales();
     this.sizeSoporte = SIZE_SOPORTE;
@@ -846,32 +847,8 @@ export class GestionarElementosComponent implements OnInit {
   }
 
   TraerPlantilla() {
-    NuxeoService.nuxeo.header('X-NXDocumentProperties', '*');
-
-    // NuxeoService.nuxeo.request('/id/8e4d5b47-ba37-41dd-b549-4efc1777fef2') // PLANTILLA VIEJA
-    NuxeoService.nuxeo.request('/id/76e0956e-1cbe-45d7-993c-1839fbbf2cfc') // Plantilla nueva
-      .get()
-      .then(function (response) {
-        // console.log(response)
-        response.fetchBlob()
-          .then(function (blob) {
-            // console.log(blob)
-            blob.blob()
-              .then(function (responseblob: Blob) {
-                // console.log(responseblob)
-                const url = window.URL.createObjectURL(responseblob);
-                const plantilla = document.createElement('a');
-                document.body.appendChild(plantilla);
-                plantilla.href = url;
-                plantilla.download = 'plantilla.xlsx';
-                plantilla.click();
-              });
-          })
-          .catch(function (response2) {
-          });
-      })
-      .catch(function (response) {
-      });
+    const filesToGet = [{ Id: 147296 }];
+    this.documento.get_(filesToGet);
   }
 
   public onFileChange(event) {

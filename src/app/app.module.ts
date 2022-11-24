@@ -31,7 +31,6 @@ import { NbToastrModule } from '@nebular/theme';
 import { ListService } from './@core/store/services/list.service';
 import { Store, StoreModule } from '@ngrx/store';
 import { rootReducer } from './@core/store/rootReducer';
-import { NuxeoService } from './@core/utils/nuxeo.service';
 import { LoginComponent } from './login/login.component';
 import { LoadComponent } from './load/load.component';
 export function HttpLoaderFactory(http: HttpClient) {
@@ -90,8 +89,9 @@ export class MaterialModule {}
     TranslatePipe,
   ],
   bootstrap: [AppComponent],
-  providers: [ImplicitAutenticationService,
-    ListService, NuxeoService,
+  providers: [
+    ImplicitAutenticationService,
+    ListService,
     { provide: APP_BASE_HREF, useValue: '/' },
   ],
 })
