@@ -1,18 +1,10 @@
 import { Component, OnInit, EventEmitter, Input, Output } from '@angular/core';
 import { LocalDataSource } from 'ng2-smart-table';
 import { Router } from '@angular/router';
-import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
 import { Entrada } from '../../../@core/data/models/entrada/entrada';
 import { Contrato } from '../../../@core/data/models/entrada/contrato';
-import { Supervisor } from '../../../@core/data/models/entrada/supervisor';
-import { OrdenadorGasto } from '../../../@core/data/models/entrada/ordenador_gasto';
-import { TipoEntrada } from '../../../@core/data/models/entrada/tipo_entrada';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
-import { NuxeoService } from '../../../@core/utils/nuxeo.service';
-import { DocumentoService } from '../../../@core/data/documento.service';
 import { SalidaHelper } from '../../../helpers/salidas/salidasHelper';
-import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
-import { UserService } from '../../../@core/data/users.service';
 
 @Component({
   selector: 'ngx-bodega-sin-asignar',
@@ -38,13 +30,9 @@ export class BodegaSinAsignarComponent implements OnInit {
   @Output() DatosEnviados = new EventEmitter();
   @Output() DatosTotales = new EventEmitter();
 
-  constructor(private router: Router,
+  constructor(
     private salidasHelper: SalidaHelper,
     private translate: TranslateService,
-    private nuxeoService: NuxeoService,
-    private documentoService: DocumentoService,
-    private actaRecibidoHelper: ActaRecibidoHelper,
-    private userService: UserService,
   ) {
     this.source = new LocalDataSource();
     this.entradas = new Array<Entrada>();
