@@ -93,10 +93,8 @@ export class VerActaRecibidoComponent implements OnInit {
     });
     this.listService.findDependencias();
     this.listService.findSedes();
-    this.listService.findUbicaciones();
     this.listService.findEstadosActa();
     this.listService.findEstadosElemento();
-    this.listService.findTipoBien();
     this.listService.findUnidades();
     this.listService.findImpuestoIVA();
     this.loadDependencias();
