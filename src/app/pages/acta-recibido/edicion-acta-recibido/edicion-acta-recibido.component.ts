@@ -95,7 +95,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
   DatosTotales: any;
   guardando: boolean = false;
   sedeDependencia: any;
-  unidadEjecutoraId: any;
   validarElementos: boolean;
   trActa: TransaccionActaRecibido;
   totales: any;
@@ -163,7 +162,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
   }
 
   private async initForms() {
-    await Promise.all([this.loadLists(), this.cargaActa()]);
+    await Promise.all([this.loadLists(), this.cargaActa(), this.loadUnidadesEjecutoras()]);
     this.cargaPermisos();
     this.defineSiHayQueValidarElementosParaEnviar();
     this.estadoLocalizado = this.translate
@@ -274,11 +273,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
     return new Promise<void>(resolve => {
       this.Actas_Recibido.getTransaccionActa(this._Acta_Id, false).subscribe(async Acta => {
         this.trActa = Acta;
-        this.Actas_Recibido.getUnidadEjecutoraByID('?query=TipoParametroId__CodigoAbreviacion:UE').subscribe(res => {
-          if (res) {
-            this.unidadesEjecutoras = res.Data;
-          }
-        });
         resolve();
       });
     });
@@ -334,6 +328,17 @@ export class EdicionActaRecibidoComponent implements OnInit {
           this.Estados_Elemento && this.Estados_Elemento.length > 0 &&
           this.Estados_Acta && this.Estados_Acta.length > 0 &&
           this.Estados_Elemento && this.Estados_Elemento.length > 0) ? resolve() : null;
+      });
+    });
+  }
+
+  private loadUnidadesEjecutoras(): Promise<void> {
+    return new Promise<void>(resolve => {
+      this.Actas_Recibido.getUnidadEjecutoraByID('?query=TipoParametroId__CodigoAbreviacion:UE').subscribe(res => {
+        if (res) {
+          this.unidadesEjecutoras = res.Data;
+        }
+        resolve();
       });
     });
   }
@@ -426,7 +431,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
       this.fileDocumento.push(undefined);
       this.idDocumento.push(Soporte.DocumentoId);
     });
-    this.unidadEjecutoraId = this.unidadesEjecutoras.find((e: any) => e.Id === transaccion_.ActaRecibido.UnidadEjecutoraId);
+
     const Formulario1 = this.fb.group({
       Id: [transaccion_.ActaRecibido.Id],
       Sede: [
@@ -436,7 +441,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
         },
         { validators: this.actaRegistrada ? [] : [Validators.required] },
       ],
-      UnidadEjecutora: this.unidadEjecutoraId,
+      UnidadEjecutora: transaccion_.ActaRecibido.UnidadEjecutoraId,
       Dependencia: [
         {
           value: this.sedeDependencia ? this.sedeDependencia.dependencia : '',
@@ -781,7 +786,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
     actaRecibido.Id = +this._Acta_Id;
     actaRecibido.Activo = true;
     actaRecibido.TipoActaId = <TipoActa>{ Id: this.tipoActa };
-    actaRecibido.UnidadEjecutoraId = this.firstForm.value.Formulario1.UnidadEjecutora.Id;
+    actaRecibido.UnidadEjecutoraId = this.firstForm.value.Formulario1.UnidadEjecutora;
 
     return actaRecibido;
   }

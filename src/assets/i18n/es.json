@@ -1312,7 +1312,7 @@
       },
       "tiposMovimiento":{
         "title": "Administrar tipos de movimiento",
-        "registro_title": "Type of movement",
+        "registro_title": "Tipo de movimiento",
         "actualizacion_title":"Actualización tipo de movimiento",
         "registro_succes": "Tipo de movimiento registrado satisfactoriamente",
         "actualizacion_succes": "Tipo de movimiento actualizado satisfactoriamente",
