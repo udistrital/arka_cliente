@@ -179,7 +179,9 @@ export class VerActaRecibidoComponent implements OnInit {
           this.contratistaId = this.Acta.UltimoEstado.PersonaAsignadaId;
           this.Acta.ActaRecibido = res.ActaRecibido;
           this.Acta.SoportesActa = res.SoportesActa;
-          await Promise.all([this.loadProveedores('', this.proveedorId), this.loadContratistas('', this.contratistaId), this.loadUnidadesEjecutoras()]);
+          await Promise.all([this.loadProveedores('',
+            this.proveedorId), this.loadContratistas('', this.contratistaId),
+            this.loadUnidadesEjecutoras()]);
           resolve();
         });
       };
@@ -283,7 +285,6 @@ export class VerActaRecibidoComponent implements OnInit {
       this.Actas_Recibido.getSedeDependencia(ubicacionId).toPromise().then(res => {
         if (res.length) {
           const codigoSede = res[0].EspacioFisicoId.CodigoAbreviacion.replace(/\d.*/g, '');
-          console.log(codigoSede)
           const Dependencia = res[0].DependenciaId;
           const Sede = this.Sedes.find(x => x && x.CodigoAbreviacion === codigoSede);
           if (codigoSede && Dependencia) {
