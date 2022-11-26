@@ -1,12 +1,12 @@
 import { Component, OnInit, Output, EventEmitter, ViewChild, Input } from '@angular/core';
-import { combineLatest, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { FormBuilder, FormGroup, Validators, ValidatorFn, AbstractControl, ValidationErrors, FormArray } from '@angular/forms';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
 import { OikosHelper } from '../../../helpers/oikos/oikosHelper';
 import { TerceroCriterioContratista } from '../../../@core/data/models/terceros_criterio';
-import { debounceTime, distinctUntilChanged, map, startWith, switchMap } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, map, startWith } from 'rxjs/operators';
 import { MatPaginator, MatTableDataSource } from '@angular/material';
 import { TrasladosHelper } from '../../../helpers/movimientos/trasladosHelper';
 import { PopUpManager } from '../../../managers/popUpManager';
@@ -38,13 +38,12 @@ export class FormTrasladoComponent implements OnInit {
   @Input() trasladoInfo: any;
   @Output() trasladoInfoChange: EventEmitter<any> = new EventEmitter<any>();
 
-
   constructor(
     private translate: TranslateService,
     private fb: FormBuilder,
     private Actas_Recibido: ActaRecibidoHelper,
     private tercerosHelper: TercerosHelper,
-    private oikosHelper: OikosHelper,
+    public oikosHelper: OikosHelper,
     private trasladosHelper: TrasladosHelper,
     private pUpManager: PopUpManager,
   ) {
@@ -416,18 +415,19 @@ export class FormTrasladoComponent implements OnInit {
   }
 
   public getUbicaciones() {
-    const sede = this.formTraslado.get('ubicacion.sede').value ? this.formTraslado.get('ubicacion.sede').value : '';
-    const dependencia = this.formTraslado.get('ubicacion.dependencia').valid ? this.formTraslado.get('ubicacion.dependencia').value : '';
-    this.formTraslado.get('ubicacion').patchValue({ ubicacion: '' });
-    this.ubicacionesFiltradas = [];
-    if (sede && dependencia) {
-      const sede_ = this.sedes.find((x) => x.Id === parseFloat(sede));
-      if (sede_) {
-        this.Actas_Recibido.getAsignacionesBySedeAndDependencia(sede_.CodigoAbreviacion, dependencia.Id).subscribe((res: any) => {
-          this.ubicacionesFiltradas = res;
-        });
-      }
+    const sede = this.formTraslado.get('ubicacion.sede').value;
+    const dependencia = this.formTraslado.get('ubicacion.dependencia').value;
+
+    if (!sede || !dependencia.Id) {
+      this.formTraslado.get('ubicacion').patchValue({ ubicacion: '' });
+      this.ubicacionesFiltradas = [];
+      return;
     }
+
+    const sede_ = this.sedes.find((x) => x.Id === sede);
+    this.Actas_Recibido.getAsignacionesBySedeAndDependencia(sede_.CodigoAbreviacion, dependencia.Id).subscribe((res: any) => {
+      this.ubicacionesFiltradas = res;
+    });
   }
 
   public getInfoTercero(controlName: string) {
@@ -465,10 +465,6 @@ export class FormTrasladoComponent implements OnInit {
           this.trasladoInfoChange.emit(this.formTraslado);
         }
       });
-  }
-
-  public muestraDependencia(field) {
-    return field ? field.Nombre : '';
   }
 
   public muestraPlaca(field): string {
@@ -517,13 +513,9 @@ export class FormTrasladoComponent implements OnInit {
   }
 
   private cambiosDependencia(valueChanges: Observable<any>) {
-    valueChanges.pipe(
-      debounceTime(250),
-      distinctUntilChanged(),
-      switchMap((val) => this.loadDependencias(val)),
-    ).subscribe((response: any) => {
+    this.oikosHelper.cambiosDependencia_(valueChanges).subscribe((response: any) => {
       if (this.load) {
-        this.dependencias = response.queryOptions[0].Id ? response.queryOptions : [];
+        this.dependencias = response.queryOptions;
         this.getUbicaciones();
       }
     });
@@ -542,17 +534,6 @@ export class FormTrasladoComponent implements OnInit {
       const valorFiltrado = nombre.toLowerCase();
       return this.funcionarios.filter(contr => this.muestraFuncionario(contr).toLowerCase().includes(valorFiltrado));
     } else return [];
-  }
-
-  private loadDependencias(text: string) {
-    const queryOptions$ = text.length > 3 ?
-      this.oikosHelper.getDependencias(text) :
-      new Observable((obs) => { obs.next([{}]); });
-    return combineLatest([queryOptions$]).pipe(
-      map(([queryOptions_$]) => ({
-        queryOptions: queryOptions_$,
-      })),
-    );
   }
 
   private loadFuncionarios(): Promise<void> {
