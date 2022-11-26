@@ -4,7 +4,6 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
 import Swal from 'sweetalert2';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
-import { CompleterService, CompleterData } from 'ng2-completer';
 import { Store } from '@ngrx/store';
 import { IAppState } from '../../../@core/store/app.state';
 import { ListService } from '../../../@core/store/services/list.service';
@@ -12,6 +11,7 @@ import { PopUpManager } from '../../../managers/popUpManager';
 import { LocalDataSource } from 'ng2-smart-table';
 import { BodegaConsumoHelper } from '../../../helpers/bodega_consumo/bodegaConsumoHelper';
 import { UserService } from '../../../@core/data/users.service';
+import { OikosHelper } from '../../../helpers/oikos/oikosHelper';
 
 @Component({
   selector: 'ngx-form-elementos-seleccionados',
@@ -21,9 +21,7 @@ import { UserService } from '../../../@core/data/users.service';
 
 export class FormElementosSeleccionadosComponent implements OnInit {
 
-  dataService3: CompleterData;
-  Proveedores: any;
-  Dependencias: any;
+  dependencias: any;
   Ubicaciones: any;
   Sedes: any;
   form_salida: FormGroup;
@@ -44,17 +42,16 @@ export class FormElementosSeleccionadosComponent implements OnInit {
     private router: Router,
     private fb: FormBuilder,
     private Actas_Recibido: ActaRecibidoHelper,
-    private completerService: CompleterService,
     private store: Store<IAppState>,
     private listService: ListService,
     private bodegaConsumoHelper: BodegaConsumoHelper,
     private userService: UserService,
     private pUpManager: PopUpManager,
+    public oikosHelper: OikosHelper,
   ) {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
     });
     this.source2 = new LocalDataSource();
-    this.listService.findDependencias();
     this.listService.findSedes();
     this.loadTablaSettings();
     this.loadLists();
@@ -63,37 +60,40 @@ export class FormElementosSeleccionadosComponent implements OnInit {
 
   ngOnInit() {
     this.form_salida = this.Formulario;
+    this.oikosHelper.cambiosDependencia_(this.form_salida.get('Dependencia').valueChanges).subscribe((response: any) => {
+      this.dependencias = response.queryOptions;
+      this.Traer_Relacion_Ubicaciones();
+    });
   }
   public loadLists() {
     this.store.select((state) => state).subscribe(
       (list) => {
-        this.Dependencias = list.listDependencias[0];
         this.Sedes = list.listSedes[0];
-        this.dataService3 = this.completerService.local(this.Dependencias, 'Nombre', 'Nombre');
       },
     );
   }
   get Formulario(): FormGroup {
     return this.fb.group({
       Cantidad: ['', Validators.required],
-      Sede: ['', Validators.required],
+      Sede: [0, Validators.min(1)],
       Dependencia: ['', Validators.required],
-      Ubicacion: ['', Validators.required],
+      Ubicacion: [0, Validators.min(1)],
     });
   }
   Traer_Relacion_Ubicaciones() {
     const sede = this.form_salida.get('Sede').value;
     const dependencia = this.form_salida.get('Dependencia').value;
 
-    if (this.form_salida.get('Sede').valid || this.form_salida.get('Dependencia').valid) {
-      const sede_ = this.Sedes.find((x) => x.Id === parseFloat(sede));
-      const dependencia_ = this.Dependencias.find((x) => x.Nombre === dependencia);
-      if (sede_ && dependencia_) {
-        this.Actas_Recibido.getAsignacionesBySedeAndDependencia(sede_.CodigoAbreviacion, dependencia_.Id).subscribe((res: any) => {
-          this.Ubicaciones = res;
-        });
-      }
+    if (!sede || !dependencia.Id) {
+      this.form_salida.get('Ubicacion').patchValue(0);
+      this.Ubicaciones = [];
+      return;
     }
+
+    const sede_ = this.Sedes.find((x) => x.Id === parseFloat(sede));
+    this.Actas_Recibido.getAsignacionesBySedeAndDependencia(sede_.CodigoAbreviacion, dependencia.Id).subscribe((res: any) => {
+      this.Ubicaciones = res;
+    });
 
   }
 
@@ -115,7 +115,7 @@ export class FormElementosSeleccionadosComponent implements OnInit {
 
       // elemento.Funcionario = this.Proveedores.find(z => z.compuesto === form.Proveedor);
       elemento.Sede = this.Sedes.find(y => y.Id === parseFloat(form.Sede));
-      elemento.Dependencia = this.Dependencias.find(y => y.Nombre === form.Dependencia);
+      elemento.Dependencia = form.Dependencia;
       elemento.Ubicacion = this.Ubicaciones.find(w => w.Id === parseFloat(form.Ubicacion));
       elemento.Cantidad = form.Cantidad;
       // this.DatosEnviados.emit(elemento);
