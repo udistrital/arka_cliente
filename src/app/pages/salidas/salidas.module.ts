@@ -15,7 +15,6 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatStepperModule } from '@angular/material/stepper';
 import {MatTableModule} from '@angular/material/table';
 import { MatPaginatorModule, MatSortModule } from '@angular/material';
-import { Ng2CompleterModule } from 'ng2-completer';
 import { NgxCurrencyModule } from 'ngx-currency';
 import { rootReducer } from '../../@core/store/rootReducer';
 import { Store, StoreModule } from '@ngrx/store';
@@ -46,7 +45,6 @@ import { AjustesModule } from '../ajustes/ajustes.module';
     ThemeModule,
     Ng2SmartTableModule,
     TranslateModule,
-    Ng2CompleterModule,
     NbStepperModule,
     MatTabsModule,
     MatStepperModule,
