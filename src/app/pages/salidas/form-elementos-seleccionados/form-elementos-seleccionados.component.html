@@ -36,7 +36,7 @@
           <label class="label">{{'GLOBAL.Acta_Recibido.RegistroActa.Dependencia' | translate}}</label>
           <input matInput type="text" formControlName="Dependencia" class="form-control" style="height: auto;"
             placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}" [matAutocomplete]="auto">
-          <mat-autocomplete #auto="matAutocomplete" [displayWith]="muestraDependencia">
+          <mat-autocomplete #auto="matAutocomplete" [displayWith]="oikosHelper.muestraDependencia">
             <mat-option *ngFor="let item of dependencias" [value]="item">
               {{item.Nombre}}
             </mat-option>

@@ -1,5 +1,5 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
-import { combineLatest, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { FormBuilder, FormGroup, Validators, ValidatorFn, AbstractControl, ValidationErrors } from '@angular/forms';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
@@ -8,9 +8,8 @@ import { IAppState } from '../../../@core/store/app.state';
 import { ListService } from '../../../@core/store/services/list.service';
 import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
 import { OikosHelper } from '../../../helpers/oikos/oikosHelper';
-import { isObject } from 'rxjs/internal-compatibility';
 import { TerceroCriterioContratista } from '../../../@core/data/models/terceros_criterio';
-import { debounceTime, distinctUntilChanged, map, startWith, switchMap } from 'rxjs/operators';
+import { map, startWith } from 'rxjs/operators';
 
 
 @Component({
@@ -35,7 +34,7 @@ export class FormElementosSeleccionadosComponent implements OnInit {
     private store: Store<IAppState>,
     private listService: ListService,
     private tercerosHelper: TercerosHelper,
-    private oikosHelper: OikosHelper,
+    public oikosHelper: OikosHelper,
   ) {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
     });
@@ -62,37 +61,31 @@ export class FormElementosSeleccionadosComponent implements OnInit {
       Funcionario: ['', [Validators.required, this.validarTercero()]],
       Sede: ['', Validators.required],
       Dependencia: ['', [Validators.required, this.validateObjectCompleter()]],
-      Ubicacion: [
-        {
-          value: '',
-          disabled: true,
-        },
-        { validators: [Validators.required] },
-      ],
+      Ubicacion: ['', Validators.required],
       Observaciones: [''],
     });
     this.funcionariosFiltrados = this.cambiosFuncionario(form.get('Funcionario'));
-    this.cambiosDependencia(form.get('Dependencia').valueChanges);
+    this.oikosHelper.cambiosDependencia_(form.get('Dependencia').valueChanges).subscribe((response: any) => {
+      this.dependencias = response.queryOptions;
+      this.getUbicaciones();
+    });
     return form;
   }
 
   public getUbicaciones() {
-    const sede = this.form_salida.get('Sede').valid ? this.form_salida.get('Sede').value : '';
-    const dependencia = this.form_salida.get('Dependencia').valid ? this.form_salida.get('Dependencia').value : '';
-    this.form_salida.patchValue({ Ubicacion: '' });
-    this.UbicacionesFiltradas = [];
-    this.form_salida.get('Ubicacion').disable();
-    if (sede && dependencia) {
-      const sede_ = this.Sedes.find((x) => x.Id === parseFloat(sede));
-      if (sede_) {
-        this.Actas_Recibido.getAsignacionesBySedeAndDependencia(sede_.CodigoAbreviacion, dependencia.Id).subscribe((res: any) => {
-          this.UbicacionesFiltradas = res;
-          if (res.length) {
-          this.form_salida.get('Ubicacion').enable();
-        }
-        });
-      }
+    const sede = this.form_salida.get('Sede').value;
+    const dependencia = this.form_salida.get('Dependencia').value;
+
+    if (!sede || !dependencia.Id) {
+      this.form_salida.get('Ubicacion').patchValue({ ubicacion: '' });
+      this.UbicacionesFiltradas = [];
+      return;
     }
+
+    const sede_ = this.Sedes.find((x) => x.Id === sede);
+    this.Actas_Recibido.getAsignacionesBySedeAndDependencia(sede_.CodigoAbreviacion, dependencia.Id).subscribe((res: any) => {
+      this.UbicacionesFiltradas = res;
+    });
   }
 
   public onSubmit() {
@@ -124,34 +117,11 @@ export class FormElementosSeleccionadosComponent implements OnInit {
       );
   }
 
-  private cambiosDependencia(valueChanges: Observable<any>) {
-    valueChanges.pipe(
-      startWith(''),
-      debounceTime(250),
-      distinctUntilChanged(),
-      switchMap((val) => this.loadDependencias(val) ),
-    ).subscribe((response: any) => {
-      this.dependencias = response.queryOptions[0].Id ? response.queryOptions : [];
-      this.getUbicaciones();
-    });
-  }
-
   private filtroFuncionarios(nombre: string): TerceroCriterioContratista[] {
     if (nombre.length >= 4 && Array.isArray(this.Funcionarios)) {
       const valorFiltrado = nombre.toLowerCase();
       return this.Funcionarios.filter(contr => this.muestraFuncionario(contr).toLowerCase().includes(valorFiltrado));
     } else return [];
-  }
-
-  private loadDependencias(text: string) {
-    const queryOptions$ = text.length > 3 ?
-      this.oikosHelper.getDependencias(text) :
-      new Observable((obs) => { obs.next([{}]); });
-    return combineLatest([queryOptions$]).pipe(
-      map(([queryOptions_$]) => ({
-        queryOptions: queryOptions_$,
-      })),
-    );
   }
 
   private loadFuncionarios(): Promise<void> {
