@@ -3,7 +3,6 @@ import { debounceTime, distinctUntilChanged, filter, switchMap } from 'rxjs/oper
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, FormArray, ValidatorFn, AbstractControl, ValidationErrors } from '@angular/forms';
 import { MatTable } from '@angular/material';
-import 'hammerjs';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
 import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
 import { ActaRecibido } from '../../../@core/data/models/acta_recibido/acta_recibido';
@@ -28,10 +27,10 @@ import { Acta_t, TipoActa } from '../../../@core/data/models/acta_recibido/tipo_
 import { EstadoElemento } from '../../../@core/data/models/acta_recibido/estado_elemento';
 import { ActaValidators } from '../validators';
 import { CommonActas } from '../shared';
-import { AutocompleterOption } from '../../../@theme/components';
-import { merge } from 'rxjs';
+import { merge, Observable } from 'rxjs';
 import { ImplicitAutenticationService } from '../../../@core/utils/implicit_autentication.service';
 import { GestorDocumentalService } from '../../../helpers/gestor_documental/gestorDocumentalHelper';
+import { OikosHelper } from '../../../helpers/oikos/oikosHelper';
 
 const FECHA_MINIMA = new Date('1945');
 
@@ -90,8 +89,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
   minDate: Date;
   Ubicaciones: any[] = [];
   Sedes: any;
-  Dependencias: any;
-  Dependencias2: AutocompleterOption[] = [];
+  dependencias: any[];
   DatosTotales: any;
   guardando: boolean = false;
   sedeDependencia: any;
@@ -136,8 +134,10 @@ export class EdicionActaRecibidoComponent implements OnInit {
     private pUpManager: PopUpManager,
     private sanitization: DomSanitizer,
     private userService: UserService,
+    private common: CommonActas,
     private autenticationService: ImplicitAutenticationService,
     private documento: GestorDocumentalService,
+    private oikosHelper: OikosHelper,
   ) {
     this.errores = new Map<string, boolean>();
     this.maxDate = new Date();
@@ -154,15 +154,14 @@ export class EdicionActaRecibidoComponent implements OnInit {
   ngOnInit() {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
     });
-    this.listService.findDependencias();
     this.listService.findSedes();
-    this.listService.findEstadosActa();
-    this.listService.findEstadosElemento();
+    this.listService.findListsActa();
+    this.listService.findUnidadesEjecutoras();
     this.initForms();
   }
 
   private async initForms() {
-    await Promise.all([this.loadLists(), this.cargaActa(), this.loadUnidadesEjecutoras()]);
+    await Promise.all([this.loadLists(), this.cargaActa()]);
     this.cargaPermisos();
     this.defineSiHayQueValidarElementosParaEnviar();
     this.estadoLocalizado = this.translate
@@ -317,28 +316,18 @@ export class EdicionActaRecibidoComponent implements OnInit {
   private loadLists(): Promise<void> {
     return new Promise<void>(async (resolve) => {
       this.store.select((state) => state).subscribe(list => {
-        this.Sedes = CommonActas.preparaSedes(list.listSedes[0]),
-        this.Dependencias = CommonActas.preparaDependencias(list.listDependencias[0]),
-        this.Dependencias2 = CommonActas.convierteDependencias(this.Dependencias),
-        this.Estados_Acta = list.listEstadosActa[0],
-        this.Estados_Elemento = list.listEstadosElemento[0],
-        !this.userService.getPersonaId() ? this.errores.set('terceros', true) : null,
+        if (list.listEstadosActa.length && list.listEstadosActa[0] &&
+          list.listEstadosElemento.length && list.listEstadosElemento[0] &&
+          list.listSedes.length && list.listSedes[0] &&
+          list.listUnidadesEjecutoras.length && list.listUnidadesEjecutoras[0]) {
+          this.Sedes = list.listSedes[0];
+          this.Estados_Acta = list.listEstadosActa[0];
+          this.Estados_Elemento = list.listEstadosElemento[0];
+          this.unidadesEjecutoras = list.listUnidadesEjecutoras[0];
+          !this.userService.getPersonaId() ? this.errores.set('terceros', true) : null;
 
-        (this.Sedes && this.Sedes.length > 0 && this.Dependencias && this.Dependencias.length > 0 &&
-          this.Estados_Elemento && this.Estados_Elemento.length > 0 &&
-          this.Estados_Acta && this.Estados_Acta.length > 0 &&
-          this.Estados_Elemento && this.Estados_Elemento.length > 0) ? resolve() : null;
-      });
-    });
-  }
-
-  private loadUnidadesEjecutoras(): Promise<void> {
-    return new Promise<void>(resolve => {
-      this.Actas_Recibido.getUnidadEjecutoraByID('?query=TipoParametroId__CodigoAbreviacion:UE').subscribe(res => {
-        if (res) {
-          this.unidadesEjecutoras = res.Data;
+          resolve();
         }
-        resolve();
       });
     });
   }
@@ -405,26 +394,32 @@ export class EdicionActaRecibidoComponent implements OnInit {
     // });
 
     const ar = this.actaRegular;
+    const disabled = !this.getPermisoEditar(this.permisos.Acta);
+    const validators = this.actaRegistrada ? [] : [Validators.required];
+    const validators_ = (!ar || this.actaRegistrada) ? [] : [Validators.required];
     const Formulario2 = this.fb.array(transaccion_.SoportesActa.map(Soporte => this.fb.group({
       Id: [Soporte.Id],
       Consecutivo: [
         {
           value: Soporte.Consecutivo,
-          disabled: !this.getPermisoEditar(this.permisos.Acta),
+          disabled,
         },
-        ((!ar || this.actaRegistrada) ? [] : [Validators.required]),
+        { validators: validators_ },
       ],
       Fecha_Factura: [
         {
           value: new Date(Soporte.FechaSoporte) > FECHA_MINIMA ?
             new Date(Soporte.FechaSoporte.toString().split('Z')[0]) : '',
-          disabled: !this.getPermisoEditar(this.permisos.Acta),
+          disabled,
         },
-        ((!ar || this.actaRegistrada) ? [] : [Validators.required]),
+        { validators: validators_ },
       ],
       Soporte: [
-        Soporte.DocumentoId ? Soporte.DocumentoId : '',
-        Validators.required,
+        {
+          value: Soporte.DocumentoId,
+          disabled: false,
+        },
+        { validators: [Validators.required] },
       ],
     })));
     transaccion_.SoportesActa.forEach(Soporte => {
@@ -432,29 +427,36 @@ export class EdicionActaRecibidoComponent implements OnInit {
       this.idDocumento.push(Soporte.DocumentoId);
     });
 
+    const validators__ = this.actaRegistrada ? [] : [Validators.min(1)];
     const Formulario1 = this.fb.group({
       Id: [transaccion_.ActaRecibido.Id],
       Sede: [
         {
-          value: this.sedeDependencia ? this.sedeDependencia.sede : '',
-          disabled: !this.getPermisoEditar(this.permisos.Acta),
+          value: this.sedeDependencia ? this.sedeDependencia.sede : 0,
+          disabled,
         },
-        { validators: this.actaRegistrada ? [] : [Validators.required] },
+        { validators: validators__ },
       ],
-      UnidadEjecutora: transaccion_.ActaRecibido.UnidadEjecutoraId,
+      UnidadEjecutora: [
+        {
+          value: transaccion_.UltimoEstado.ActaRecibidoId.UnidadEjecutoraId,
+          disabled,
+        },
+        { validators: validators__ },
+      ],
       Dependencia: [
         {
           value: this.sedeDependencia ? this.sedeDependencia.dependencia : '',
-          disabled: !this.getPermisoEditar(this.permisos.Acta),
+          disabled,
         },
-        { validators: this.actaRegistrada ? [] : [Validators.required] },
+        { validators },
       ],
       Ubicacion: [
         {
-          value: transaccion_.UltimoEstado.UbicacionId === 0 ? '' : transaccion_.UltimoEstado.UbicacionId,
-          disabled: !this.getPermisoEditar(this.permisos.Acta),
+          value: transaccion_.UltimoEstado.UbicacionId,
+          disabled,
         },
-        { validators: this.actaRegistrada ? [] : [Validators.required] },
+        { validators: validators__ },
       ],
       Contratista: [
         {
@@ -465,14 +467,15 @@ export class EdicionActaRecibidoComponent implements OnInit {
             return this.Contratistas.some(criterio) ? this.Contratistas.find(criterio) : '';
           })(),
           disabled: !this.confService.getAccion('edicionActaAuxI'),
-        }, ar ? [Validators.required, ActaValidators.validarTercero] : [],
+        },
+        { validators: ar ? [Validators.required, ActaValidators.validarTercero] : [] },
       ],
       Proveedor: [
         {
-          value: transaccion_.UltimoEstado.ProveedorId === 0 ? null :
+          value: !transaccion_.UltimoEstado.ProveedorId ? null :
             this.Proveedores.find((proveedor) =>
               proveedor.Tercero.Id === transaccion_.UltimoEstado.ProveedorId),
-          disabled: !this.getPermisoEditar(this.permisos.Acta),
+          disabled,
         },
         { validators: !ar ? [] : this.actaRegistrada ? [ActaValidators.validarTercero] : [Validators.required, ActaValidators.validarTercero] },
       ],
@@ -490,51 +493,44 @@ export class EdicionActaRecibidoComponent implements OnInit {
   }
 
   private async getSedeDepencencia(ubicacionId: number): Promise<void> {
-
     return new Promise<void>(resolve => {
-      this.Actas_Recibido.getSedeDependencia(ubicacionId).toPromise().then(async res => {
-        if (res.length) {
-          const dependencia = {
-            name: res[0].DependenciaId.Nombre,
-            value: res[0].DependenciaId.Id,
-          };
-          const codigoSede = res[0].EspacioFisicoId.CodigoAbreviacion.replace(/\d.*/g, '');
-          const sede = this.Sedes.find(x => x && x.CodigoAbreviacion === codigoSede);
-          if (sede) {
-            await this.Traer_Relacion_Ubicaciones(sede.Id, dependencia.value);
-          }
-          this.sedeDependencia = { sede: sede ? sede.Id : 0, dependencia };
+      this.Actas_Recibido.getSedeDependencia(ubicacionId).toPromise().then(res => {
+        if (!res.length) {
+          resolve();
+          return;
         }
 
-        resolve();
+        const dependencia = res[0].DependenciaId;
+        const codigoSede = res[0].EspacioFisicoId.CodigoAbreviacion.replace(/\d.*/g, '');
+        const sede = this.Sedes.find(x => x && x.CodigoAbreviacion === codigoSede);
+
+        if (!sede || !dependencia) {
+          resolve();
+          return;
+        }
+
+        this.sedeDependencia = { sede: sede.Id, dependencia };
+        this.Actas_Recibido.getAsignacionesBySedeAndDependencia(sede.CodigoAbreviacion, dependencia.Id).subscribe((res_: any) => {
+          this.Ubicaciones = res_;
+          resolve();
+        });
 
       });
     });
   }
 
-  private async Traer_Relacion_Ubicaciones(
+  private Traer_Relacion_Ubicaciones(
     sede: number = this.controlSede.value,
-    dependencia: number = this.controlDependencia.value.value) {
-
-    if (sede && dependencia) {
-      const sede_ = this.Sedes.find((x) => x.Id === sede);
-      const payload = 'fields=Id,EspacioFisicoId&query=DependenciaId__Id:' + dependencia +
-        ',EspacioFisicoId__CodigoAbreviacion__icontains:' + sede_.CodigoAbreviacion;
-      this.Actas_Recibido.getAllAsignacionEspacioFisicoDependencia(payload).subscribe((res: any) => {
-        this.Ubicaciones = res;
-      });
+    dependencia: number = this.controlDependencia.value.Id) {
+    if (!sede || !dependencia) {
+      this.Ubicaciones = [];
+      this.controlUbicacion.patchValue(0);
+      return;
     }
-  }
 
-  get Formulario_2(): FormGroup {
-    this.fileDocumento.push(undefined);
-    this.idDocumento.push(undefined);
-    return this.fb.group({
-      Id: [0],
-      Proveedor: [''],
-      Consecutivo: [''],
-      Fecha_Factura: [''],
-      Soporte: ['', Validators.required],
+    const sede_ = this.Sedes.find((x) => x.Id === sede);
+    this.Actas_Recibido.getAsignacionesBySedeAndDependencia(sede_.CodigoAbreviacion, dependencia).subscribe((res: any) => {
+      this.Ubicaciones = res;
     });
   }
 
@@ -609,47 +605,42 @@ export class EdicionActaRecibidoComponent implements OnInit {
     return this.sanitization.bypassSecurityTrustUrl(oldURL);
   }
 
-  addSoportes() {
-    this.controlSoportes.push(this.Formulario_2);
-  }
-
   private setFormEvents() {
-    // Para cualquier cambio en el formulario:
-    // this.firstForm.valueChanges
-    // .pipe(debounceTime(200))
-    // .subscribe(form => console.debug({form}));
+    this.oikosHelper.cambiosDependencia_(this.controlDependencia.valueChanges).subscribe((response: any) => {
+      this.dependencias = response.queryOptions;
+    });
 
     this.controlContratista.valueChanges
-    .pipe(
-      debounceTime(200), distinctUntilChanged(),
-      filter(query => query.length && query.length >= this.minLength),
-      switchMap(d => this.queryContratistas(d)),
-    )
-    .subscribe(data => {
-      this.Contratistas = data;
-      this.cargandoContratistas = false;
-    });
+      .pipe(
+        debounceTime(200),
+        distinctUntilChanged(),
+        filter(query => query.length && query.length >= this.minLength),
+        switchMap(d => this.queryContratistas(d)),
+      ).subscribe(data => {
+        this.Contratistas = data;
+        this.cargandoContratistas = false;
+      });
 
     this.controlProveedor.valueChanges
-    .pipe(
-      debounceTime(200), distinctUntilChanged(),
-      filter(query => query.length && query.length >= this.minLength),
-      switchMap(d => this.queryProveedores(d)),
-    )
-    .subscribe(data => {
-      this.Proveedores = data;
-      this.cargandoProveedores = false;
-    });
+      .pipe(
+        debounceTime(200),
+        distinctUntilChanged(),
+        filter(query => query.length && query.length >= this.minLength),
+        switchMap(d => this.queryProveedores(d)),
+      ).subscribe(data => {
+        this.Proveedores = data;
+        this.cargandoProveedores = false;
+      });
 
     merge(
       this.controlSede.valueChanges,
       this.controlDependencia.valueChanges,
-    )
-    .pipe(debounceTime(200), distinctUntilChanged())
-    .subscribe((change: any) => {
-      // console.debug({change});
-      this.Traer_Relacion_Ubicaciones();
-    });
+    ).pipe(
+      debounceTime(200),
+      distinctUntilChanged())
+      .subscribe(() => {
+        this.Traer_Relacion_Ubicaciones();
+      });
   }
 
   tab() {
@@ -661,7 +652,9 @@ export class EdicionActaRecibidoComponent implements OnInit {
 
   addTab($event) {
     if ($event === this.controlSoportes.value.length && !this.cargarTab) {
-      this.controlSoportes.push(this.Formulario_2);
+      this.fileDocumento.push(undefined);
+      this.idDocumento.push(undefined);
+      this.controlSoportes.push(this.common.Formulario_2);
       this.selectedTab = this.controlSoportes.value.length;
       this.cargarTab = true;
     }

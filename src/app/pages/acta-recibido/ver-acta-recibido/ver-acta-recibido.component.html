@@ -13,7 +13,7 @@
                 <label>{{'GLOBAL.Acta_Recibido.ContratistaAsignado' | translate}}</label>
                 <div class="input-group">
                   <input matInput type="text" placeholder="{{'GLOBAL.Acta_Recibido.ContratistaAsignado' | translate }}"
-                    class="form-control" formControlName="Contratista" [matAutocomplete]="autoContratista">
+                    class="form-control" formControlName="Contratista" [matAutocomplete]="autoContratista" style="height: auto;">
                     <mat-autocomplete #autoContratista="matAutocomplete" [displayWith]="muestraContratista">
                       <mat-option *ngFor="let contr of Contratistas" [value]="contr">
                         {{muestraContratista(contr)}}
@@ -21,11 +21,11 @@
                     </mat-autocomplete>
                 </div>
               </div>
-              <div class="form-group col-sm-3">
+              <div class="form-group col-sm">
                 <div class="d-flex">
                   <label>{{'GLOBAL.Acta_Recibido.RegistroActa.unidadEjecutora' | translate}}</label>
                 </div>
-                <mat-select class="form-control" formControlName="UnidadEjecutora" disabled="true">
+                <mat-select class="form-control" formControlName="UnidadEjecutora">
                   <mat-option *ngFor="let unidad of unidadesEjecutoras" [value]="unidad.Id">
                     {{unidad.Nombre}}
                   </mat-option>
@@ -35,7 +35,7 @@
               </div>
               <div class="form-group col-sm">
                 <label>{{'GLOBAL.Acta_Recibido.DetalleActa.Proveedor' | translate}}</label>
-                <input matInput type="text" class="form-control"
+                <input matInput type="text" class="form-control" style="height: auto;"
                 formControlName="Proveedor" [matAutocomplete]="autoProveedor">
                 <mat-autocomplete #autoProveedor="matAutocomplete" [displayWith]="muestraProveedor">
                   <mat-option *ngFor="let prov of Proveedores" [value]="prov">
@@ -50,7 +50,7 @@
                 <div class="d-flex">
                   <label>{{'GLOBAL.Acta_Recibido.RegistroActa.unidadEjecutora' | translate}}</label>
                 </div>
-                <mat-select class="form-control" formControlName="UnidadEjecutora" disabled="true">
+                <mat-select class="form-control" formControlName="UnidadEjecutora">
                   <mat-option *ngFor="let unidad of unidadesEjecutoras" [value]="unidad">
                     {{unidad.Nombre}}
                   </mat-option>
@@ -66,10 +66,8 @@
               </div>
               <div class="form-group col-sm">
                 <label>{{'GLOBAL.Acta_Recibido.EdicionActa.Dependencia' | translate}}</label>
-                <ng2-completer style="border: 0rem" inputClass="form-control" nbInput [datasource]="dataService3"
-                  formControlName="Dependencia" [minSearchLength]="3" [clearUnselected]="true"
-                  placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : minLength} }}">
-                </ng2-completer>
+                <input matInput type="text" formControlName="Dependencia" class="form-control" style="height: auto;"
+                  placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}" [matAutocomplete]="auto">
               </div>
               <div class="form-group col-sm">
                 <label>{{'GLOBAL.Acta_Recibido.EdicionActa.Ubicacion' | translate}}</label>

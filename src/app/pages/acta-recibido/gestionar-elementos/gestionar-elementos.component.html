@@ -281,7 +281,7 @@
           <mat-form-field appearance="outline" class="selects">
             <mat-select matInput type="text" formControlName="PorcentajeIvaId">
               <mat-option value="">--{{ 'GLOBAL.seleccionar' | translate }}--</mat-option>
-              <mat-option *ngFor="let tarifa of Tarifas_Iva" [(value)]="tarifa.Tarifa">{{tarifa.Nombre}}</mat-option>
+              <mat-option *ngFor="let tarifa of Tarifas_Iva" [(value)]="tarifa.Tarifa">{{tarifa.Tarifa / 100 | percent}}</mat-option>
             </mat-select>
           </mat-form-field>
         </td>

@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { RequestManager } from '../../managers/requestManager';
 import { PopUpManager } from '../../managers/popUpManager';
-import { map } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, map, startWith, switchMap } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
+import { combineLatest, Observable } from 'rxjs';
 
 @Injectable({
     providedIn: 'root',
@@ -31,10 +32,37 @@ export class OikosHelper {
                         this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.error_dependencias'));
                         return undefined;
                     }
+                    if (!res.length || (res.length === 1 && !Object.keys(res[0]).length)) {
+                        res = [];
+                    }
                     return res;
                 },
             ),
         );
+    }
+
+    public cambiosDependencia_(valueChanges: Observable<any>) {
+        return valueChanges.pipe(
+            startWith(''),
+            debounceTime(250),
+            distinctUntilChanged(),
+            switchMap((val) => this.loadDependencias(val)),
+        );
+    }
+
+    private loadDependencias(text: string) {
+        const queryOptions$ = text.length > 3 ?
+            this.getDependencias(text) :
+            new Observable((obs) => { obs.next([]); });
+        return combineLatest([queryOptions$]).pipe(
+            map(([queryOptions_$]) => ({
+                queryOptions: queryOptions_$,
+            })),
+        );
+    }
+
+    public muestraDependencia(dep: any): string {
+        return dep ? dep.Nombre : '';
     }
 
     /**
@@ -52,6 +80,9 @@ export class OikosHelper {
                     if (res === 'error') {
                         this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.error_dependencias'));
                         return undefined;
+                    }
+                    if (!res.length || (res.length === 1 && !Object.keys(res[0]).length)) {
+                        res = [];
                     }
                     return res;
                 },
