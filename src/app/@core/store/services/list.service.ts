@@ -5,7 +5,7 @@ import { REDUCER_LIST } from '../reducer.constants';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
 import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/catalogoElementosHelper';
 import { BodegaConsumoHelper } from '../../../helpers/bodega_consumo/bodegaConsumoHelper';
-import { BajasHelper } from '../../../helpers/bajas/bajasHelper';
+import { OikosHelper } from '../../../helpers/oikos/oikosHelper';
 @Injectable()
 export class ListService {
 
@@ -13,9 +13,9 @@ export class ListService {
     private ActaRecibido: ActaRecibidoHelper,
     private CatalogoElementos: CatalogoElementosHelper,
     private BodegaConsumo: BodegaConsumoHelper,
-    private Bajas: BajasHelper,
-    private store: Store<IAppState>) {
-  }
+    private oikosHelper: OikosHelper,
+    private store: Store<IAppState>,
+  ) { }
 
   public findPlanCuentasCredito() {
 
@@ -57,15 +57,13 @@ export class ListService {
   }
 
   public findSedes() {
-
     this.store.select(REDUCER_LIST.Sedes).subscribe(
       (list: any) => {
         if (!list || list.length === 0) {
-          this.ActaRecibido.getParametrosSoporte()
+          this.oikosHelper.getSedes()
             .subscribe(
               (res: any[]) => {
-                // console.log(res)
-                this.addList(REDUCER_LIST.Sedes, res[0].Sedes);
+                this.addList(REDUCER_LIST.Sedes, res);
               },
               error => {
                 this.addList(REDUCER_LIST.Sedes, []);
@@ -76,19 +74,20 @@ export class ListService {
     );
   }
 
-  public findDependencias() {
+  public findUnidadesEjecutoras() {
 
-    this.store.select(REDUCER_LIST.Dependencias).subscribe(
+    this.store.select(REDUCER_LIST.UnidadesEjecutoras).subscribe(
       (list: any) => {
-        if (!list || list.length === 0) {
-          this.ActaRecibido.getParametrosSoporte()
+        if (!list || !list.length || !list[0].length) {
+          this.ActaRecibido.getUnidadEjecutoraByID('?query=TipoParametroId__CodigoAbreviacion:UE')
             .subscribe(
-              (res: any[]) => {
-
-                this.addList(REDUCER_LIST.Dependencias, res[0].Dependencias);
+              (res: any) => {
+                if (res.Data.length) {
+                  this.addList(REDUCER_LIST.UnidadesEjecutoras, res.Data);
+                }
               },
               error => {
-                this.addList(REDUCER_LIST.Dependencias, []);
+                this.addList(REDUCER_LIST.UnidadesEjecutoras, []);
               },
             );
         }
@@ -96,19 +95,24 @@ export class ListService {
     );
   }
 
-  public findUbicaciones() {
+  public findListsActa() {
 
-    this.store.select(REDUCER_LIST.Ubicaciones).subscribe(
+    this.store.select(REDUCER_LIST.EstadosActa).subscribe(
       (list: any) => {
         if (!list || list.length === 0) {
-          this.ActaRecibido.getParametrosSoporte()
+          this.ActaRecibido.getParametros()
             .subscribe(
               (res: any[]) => {
-
-                this.addList(REDUCER_LIST.Ubicaciones, res[0].Ubicaciones);
+                this.addList(REDUCER_LIST.EstadosActa, res[0].EstadoActa);
+                this.addList(REDUCER_LIST.EstadosElemento, res[0].EstadoElemento);
+                this.addList(REDUCER_LIST.Unidades, res[0].Unidades);
+                this.addList(REDUCER_LIST.IVA, res[0].IVA);
               },
               error => {
-                this.addList(REDUCER_LIST.Ubicaciones, []);
+                this.addList(REDUCER_LIST.EstadosActa, []);
+                this.addList(REDUCER_LIST.EstadosElemento, []);
+                this.addList(REDUCER_LIST.Unidades, []);
+                this.addList(REDUCER_LIST.IVA, []);
               },
             );
         }
