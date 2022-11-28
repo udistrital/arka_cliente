@@ -1,33 +1,19 @@
+import { Injectable } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { EstadoActa_t } from '../../@core/data/models/acta_recibido/estado_acta';
 import { TerceroCriterioContratista, TerceroCriterioProveedor } from '../../@core/data/models/terceros_criterio';
 
+@Injectable()
 export class CommonActas {
+
+  constructor(
+    private fb: FormBuilder,
+  ) { }
 
   static async asyncForEach(array, callback) {
     for (let index = 0; index < array.length; index++) {
       await callback(array[index], index, array);
     }
-  }
-
-  static preparaSedes(sedes: any) {
-    if (!(sedes && sedes.length)) {
-      return [];
-    }
-    return sedes.sort((a, b) => a.Nombre.toLowerCase().localeCompare(b.Nombre.toLowerCase()));
-  }
-
-  static preparaDependencias(dependencias: any) {
-    if (!(dependencias && dependencias.length)) {
-      return [];
-    }
-    return dependencias.sort((a, b) => a.Nombre.toLowerCase().localeCompare(b.Nombre.toLowerCase()));
-  }
-
-  static convierteDependencias(dependencias: any) {
-    return dependencias.map((dep) => { return {
-      value: dep.Id,
-      name: dep.Nombre,
-    }; });
   }
 
   static muestraContratista(contr: TerceroCriterioContratista): string {
@@ -49,6 +35,15 @@ export class CommonActas {
 
   static i18nEstado(estado: EstadoActa_t): string {
     return 'GLOBAL.Acta_Recibido.EstadosActa.' + EstadoActa_t[estado];
+  }
+
+  get Formulario_2(): FormGroup {
+    return this.fb.group({
+      Id: [0],
+      Consecutivo: [''],
+      Fecha_Factura: [''],
+      Soporte: ['', Validators.required],
+    });
   }
 
 }

@@ -40,9 +40,9 @@ export class ListReducer {
     }
   }
 
-  static ListReducerDependencias(state: Array<any> = new Array, action) {
+  static ListReducerUnidadesEjecutoras(state: Array<any> = new Array, action) {
     switch (action.type) {
-      case REDUCER_LIST.Dependencias:
+      case REDUCER_LIST.UnidadesEjecutoras:
         return [...state, action.payload];
       default:
         return state;
@@ -103,33 +103,6 @@ export class ListReducer {
     }
   }
 
-  static ListReducerConsumo(state: Array<any> = new Array, action) {
-    switch (action.type) {
-      case REDUCER_LIST.Consumo:
-        return [...state, action.payload];
-      default:
-        return state;
-    }
-  }
-
-  static ListReducerConsumoControlado(state: Array<any> = new Array, action) {
-    switch (action.type) {
-      case REDUCER_LIST.ConsumoControlado:
-        return [...state, action.payload];
-      default:
-        return state;
-    }
-  }
-
-  static ListReducerDevolutivo(state: Array<any> = new Array, action) {
-    switch (action.type) {
-      case REDUCER_LIST.Devolutivo:
-        return [...state, action.payload];
-      default:
-        return state;
-    }
-  }
-
   static ListReducerFormatosKardex(state: Array<any> = new Array, action) {
     switch (action.type) {
       case REDUCER_LIST.FormatosKardex:
@@ -151,15 +124,6 @@ export class ListReducer {
   static ListReducerFormatosMovimiento(state: Array<any> = new Array, action) {
     switch (action.type) {
       case REDUCER_LIST.FormatosMovimiento:
-        return [...state, action.payload];
-      default:
-        return state;
-    }
-  }
-
-  static ListReducerClases(state: Array<any> = new Array, action) {
-    switch (action.type) {
-      case REDUCER_LIST.Clases:
         return [...state, action.payload];
       default:
         return state;

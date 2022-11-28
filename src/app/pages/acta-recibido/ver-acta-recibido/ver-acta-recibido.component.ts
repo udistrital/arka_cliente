@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, Input } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormGroup, FormControl, FormArray, AbstractControl } from '@angular/forms';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
@@ -19,7 +19,6 @@ import { IAppState } from '../../../@core/store/app.state';
 import { ListService } from '../../../@core/store/services/list.service';
 import { UserService } from '../../../@core/data/users.service';
 import { Acta_t, TipoActa } from '../../../@core/data/models/acta_recibido/tipo_acta';
-import { CompleterData, CompleterService } from 'ng2-completer';
 import { CommonActas } from '../shared';
 import { GestorDocumentalService } from '../../../helpers/gestor_documental/gestorDocumentalHelper';
 
@@ -31,16 +30,12 @@ import { GestorDocumentalService } from '../../../helpers/gestor_documental/gest
 
 export class VerActaRecibidoComponent implements OnInit {
 
-  Verificar_tabla: boolean[];
   // Mensajes de error
-  errMess: any;
   estadoActa: string = '';
 
   // Variables de Formulario
   firstForm: FormGroup;
-  @ViewChild('fform') firstFormDirective;
   carga_agregada: boolean;
-  index;
   selected = new FormControl(0);
 
   // Tablas parametricas
@@ -53,7 +48,6 @@ export class VerActaRecibidoComponent implements OnInit {
   // Modelos
 
   Acta: TransaccionActaRecibido;
-  Dependencias: any;
   Sedes: any;
   bandera: boolean;
   Proveedores: Partial<TerceroCriterioProveedor>[];
@@ -64,9 +58,7 @@ export class VerActaRecibidoComponent implements OnInit {
   contratistaId: number;
   proveedorId: number;
   UbicacionesFiltradas: any;
-  dataService3: CompleterData;
   minLength: number = 4;
-  unidadEjecutoraId: any;
   unidadesEjecutoras: any;
 
   constructor(
@@ -79,27 +71,20 @@ export class VerActaRecibidoComponent implements OnInit {
     private store: Store<IAppState>,
     private listService: ListService,
     private userService: UserService,
-    private completerService: CompleterService,
     private route: ActivatedRoute,
     private documento: GestorDocumentalService,
   ) {
     this.Contratistas = [];
     this.Proveedores = [];
-    this.Verificar_tabla = new Array<boolean>();
     this.Acta = new TransaccionActaRecibido;
   }
 
   ngOnInit() {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
     });
-    this.listService.findDependencias();
     this.listService.findSedes();
-    this.listService.findUbicaciones();
-    this.listService.findEstadosActa();
-    this.listService.findEstadosElemento();
-    this.listService.findTipoBien();
-    this.listService.findUnidades();
-    this.listService.findImpuestoIVA();
+    this.listService.findListsActa();
+    this.listService.findUnidadesEjecutoras();
     this.loadDependencias();
   }
 
@@ -111,15 +96,16 @@ export class VerActaRecibidoComponent implements OnInit {
   public loadLists(): Promise<void> {
     return new Promise<void>(async (resolve) => {
       this.store.select((state) => state).subscribe((list) => {
-        this.Estados_Acta = list.listEstadosActa[0],
-          this.Estados_Elemento = list.listEstadosElemento[0],
-          this.Dependencias = list.listDependencias[0],
-          this.Sedes = list.listSedes[0],
-          this.dataService3 = this.completerService.local(this.Dependencias, 'Nombre', 'Nombre'),
-
-          (this.Sedes && this.Sedes.length && this.Dependencias && this.Dependencias.length &&
-            this.Estados_Elemento &&  this.Estados_Elemento.length &&
-            this.Estados_Acta && this.Estados_Acta.length > 0) ? resolve() : null;
+        if (list.listEstadosActa.length && list.listEstadosActa[0] &&
+          list.listEstadosElemento.length && list.listEstadosElemento[0] &&
+          list.listSedes.length && list.listSedes[0] &&
+          list.listUnidadesEjecutoras.length && list.listUnidadesEjecutoras[0]) {
+          this.Estados_Acta = list.listEstadosActa[0];
+          this.Estados_Elemento = list.listEstadosElemento[0];
+          this.Sedes = list.listSedes[0];
+          this.unidadesEjecutoras = list.listUnidadesEjecutoras[0];
+          resolve();
+        }
       });
     });
   }
@@ -157,7 +143,6 @@ export class VerActaRecibidoComponent implements OnInit {
       });
     });
   }
-
   private loadActa(): Promise<void> {
     return new Promise<void>(resolve => {
       const finish = async () => {
@@ -169,12 +154,8 @@ export class VerActaRecibidoComponent implements OnInit {
           this.contratistaId = this.Acta.UltimoEstado.PersonaAsignadaId;
           this.Acta.ActaRecibido = res.ActaRecibido;
           this.Acta.SoportesActa = res.SoportesActa;
-          this.Actas_Recibido.getUnidadEjecutoraByID('?query=TipoParametroId__CodigoAbreviacion:UE').subscribe(res1 => {
-            if (res1) {
-              this.unidadesEjecutoras = res1.Data;
-            }
-          });
-          await Promise.all([this.loadProveedores('', this.proveedorId), this.loadContratistas('', this.contratistaId)]);
+          await Promise.all([this.loadProveedores('',
+            this.proveedorId), this.loadContratistas('', this.contratistaId)]);
           resolve();
         });
       };
@@ -226,10 +207,8 @@ export class VerActaRecibidoComponent implements OnInit {
         Soporte: [Soporte.DocumentoId],
       });
       Form2.push(Formulario__2);
-      this.Verificar_tabla.push(false);
     }
 
-    this.unidadEjecutoraId = this.unidadesEjecutoras.find((e: any) => e.Id === transaccion_.ActaRecibido.UnidadEjecutoraId);
     this.firstForm = this.fb.group({
       Formulario1: this.fb.group({
         Id: [transaccion_.ActaRecibido.Id],
@@ -237,17 +216,17 @@ export class VerActaRecibidoComponent implements OnInit {
           value: this.sedeDependencia ? this.sedeDependencia.sede : '',
           disabled: true,
         }],
-        UnidadEjecutora: this.unidadEjecutoraId,
+        UnidadEjecutora: transaccion_.ActaRecibido.UnidadEjecutoraId,
         Dependencia: [{
           value: this.sedeDependencia ? this.sedeDependencia.dependencia : '',
           disabled: true,
         }],
         Ubicacion: [{
-          value: transaccion_.UltimoEstado.UbicacionId === 0 ? '' : transaccion_.UltimoEstado.UbicacionId,
+          value: transaccion_.UltimoEstado.UbicacionId,
           disabled: true,
         }],
         Proveedor: [{
-          value: transaccion_.UltimoEstado.ProveedorId === 0 ? null :
+          value: !transaccion_.UltimoEstado.ProveedorId ? null :
             this.Proveedores.find((proveedor) =>
               proveedor.Tercero.Id === transaccion_.UltimoEstado.ProveedorId),
           disabled: true,
@@ -278,7 +257,7 @@ export class VerActaRecibidoComponent implements OnInit {
     return new Promise<void>(resolve => {
       this.Actas_Recibido.getSedeDependencia(ubicacionId).toPromise().then(res => {
         if (res.length) {
-          const codigoSede = res[0].EspacioFisicoId.CodigoAbreviacion.replace(/\d+$/g, '');
+          const codigoSede = res[0].EspacioFisicoId.CodigoAbreviacion.replace(/\d.*/g, '');
           const Dependencia = res[0].DependenciaId;
           const Sede = this.Sedes.find(x => x && x.CodigoAbreviacion === codigoSede);
           if (codigoSede && Dependencia) {
@@ -367,7 +346,7 @@ export class VerActaRecibidoComponent implements OnInit {
     actaRecibido.Id = +this._ActaId;
     actaRecibido.Activo = true;
     actaRecibido.TipoActaId = <TipoActa>{ Id: this.tipoActa };
-    actaRecibido.UnidadEjecutoraId = this.firstForm.value.Formulario1.UnidadEjecutora.Id;
+    actaRecibido.UnidadEjecutoraId = this.firstForm.value.Formulario1.UnidadEjecutora;
 
     return actaRecibido;
   }

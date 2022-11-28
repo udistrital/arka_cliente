@@ -36,16 +36,14 @@
                     *ngIf="controlContratista.hasError('terceroNoValido')">
                     {{'GLOBAL.Errores.ErrorTercero' | translate}}</p>
                 </div>
-                <div class="form-group col-sm-3">
+                <div class="form-group col-sm">
                   <div class="d-flex">
                     <label>{{'GLOBAL.Acta_Recibido.RegistroActa.unidadEjecutora' | translate}}</label>
                   </div>
                   <mat-select class="form-control" formControlName="UnidadEjecutora">
-                    <mat-option *ngFor="let unidad of unidadesEjecutoras" [value]="unidad">
-                      {{unidad.Nombre}}
-                    </mat-option>
+                    <mat-option *ngFor="let unidad of unidadesEjecutoras" [value]="unidad.Id">{{unidad.Nombre}}</mat-option>
                   </mat-select>
-                  <p class="campo" *ngIf="controlUbicacion.invalid">
+                  <p class="campo" *ngIf="controlDatosBasicos?.get('UnidadEjecutora')?.invalid">
                     {{'GLOBAL.placeholder' | translate}}</p>
                 </div>
                 <div class="form-group col-sm">
@@ -84,10 +82,17 @@
                 </div>
                 <div class="form-group col-sm">
                   <label>{{'GLOBAL.Acta_Recibido.EdicionActa.Dependencia' | translate}}</label>
-                  <ngx-autocompleter [options]="Dependencias2" formControlName="Dependencia">
-                  </ngx-autocompleter>
-                  <p class="campo" *ngIf="controlDependencia.invalid">
-                    {{'GLOBAL.Errores.ErrorRequerido' | translate}}</p>
+                  <input matInput type="text" formControlName="Dependencia" class="form-control" style="height: auto;"
+                    placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}" [matAutocomplete]="auto">
+                  <mat-autocomplete #auto="matAutocomplete" [displayWith]="oikosHelper.muestraDependencia">
+                    <mat-option *ngFor="let item of dependencias" [value]="item">{{item.Nombre}}</mat-option>
+                  </mat-autocomplete>
+                  <p class="error-field" *ngIf="controlDependencia?.errors?.required">
+                    {{'GLOBAL.placeholder' | translate}}</p>
+                  <p class="error-field" *ngIf="controlDependencia?.errors?.errorLongitudMinima">
+                    {{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}</p>
+                  <p class="error-field" *ngIf="controlDependencia?.errors?.dependenciaNoValido">
+                    {{'GLOBAL.Errores.ErrorDependencia' | translate}}</p>
                 </div>
                 <div class="form-group col-sm">
                   <label>{{'GLOBAL.Acta_Recibido.EdicionActa.Ubicacion' | translate}}</label>

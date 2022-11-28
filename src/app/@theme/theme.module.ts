@@ -159,10 +159,9 @@ import { CdkTableModule } from '@angular/cdk/table';
 import { CdkTreeModule } from '@angular/cdk/tree';
 import { SelectDirective } from './directives/mouse-over-tree';
 import { ARKAII_THEME } from './styles/theme.arka2';
-import { Ng2CompleterModule } from 'ng2-completer';
 import { NgxCurrencyModule } from 'ngx-currency';
 
-const BASE_MODULES = [CommonModule, FormsModule, ReactiveFormsModule, Ng2CompleterModule];
+const BASE_MODULES = [CommonModule, FormsModule, ReactiveFormsModule];
 
 const NB_MODULES = [
   NbCardModule,

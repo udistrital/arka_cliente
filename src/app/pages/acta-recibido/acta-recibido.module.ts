@@ -15,12 +15,12 @@ import {MatTableModule} from '@angular/material/table';
 import { MatIconModule, MatPaginatorModule, MatSortModule } from '@angular/material';
 import { EdicionActaRecibidoComponent } from './edicion-acta-recibido/edicion-acta-recibido.component';
 import { GestionarElementosComponent } from './gestionar-elementos/gestionar-elementos.component';
-import { Ng2CompleterModule } from 'ng2-completer';
 import { NgxCurrencyModule } from 'ngx-currency';
 import { rootReducer } from '../../@core/store/rootReducer';
 import { Store, StoreModule } from '@ngrx/store';
 import { ListService } from '../../@core/store/services/list.service';
 import { VerActaRecibidoComponent } from './ver-acta-recibido/ver-acta-recibido.component';
+import { CommonActas } from './shared';
 
 
 @NgModule({
@@ -40,7 +40,6 @@ import { VerActaRecibidoComponent } from './ver-acta-recibido/ver-acta-recibido.
     ThemeModule,
     Ng2SmartTableModule,
     TranslateModule,
-    Ng2CompleterModule,
     NbStepperModule,
     MatTabsModule,
     MatIconModule,
@@ -56,6 +55,7 @@ import { VerActaRecibidoComponent } from './ver-acta-recibido/ver-acta-recibido.
   providers: [
     CurrencyPipe,
     ListService,
+    CommonActas,
   ],
 })
 export class ActaRecibidoModule { }

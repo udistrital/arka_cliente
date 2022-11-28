@@ -550,9 +550,9 @@ export class ActaRecibidoHelper {
                         this.pUpManager.showErrorAlert('No se pudieron cargar los parametros');
                         return undefined;
                     }
-                    if (res.length && !res[0].Id) {
-                        res = [];
-                    }
+                if (!res.Data || (res.Data && res.Data.length === 1 && !Object.keys(res.Data[0]).length)) {
+                    res.Data = [];
+                }
                     return res;
                 },
             ),

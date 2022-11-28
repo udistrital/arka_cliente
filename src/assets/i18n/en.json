@@ -1214,7 +1214,7 @@
       "title": "Generar Ajuste Contable",
       "subtitle": "Por favor ingrese la información solicitada en el siguiente formulario",
       "accion": "Generar Ajuste",
-      "confrmTtl": "Registrar Ajuse Contable",
+      "confrmTtl": "Registrar Ajuste Contable",
       "confrmTxt": "¿Desea registrar el ajuste contable con la información suministrada?",
       "successTtl": "Ajuste Contable Generado",
       "successTxt": "El Ajuste contable {{CONSECUTIVO}} ha sido generado correctamente",
