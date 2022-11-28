@@ -190,11 +190,12 @@ export class FormCuentasComponent implements OnInit, OnChanges {
   private generarTr() {
     const salidas = this.formToTransaction((this.formCuentas.get('salida.cuentaEspecifica') as FormArray).controls);
     const bajas = this.formToTransaction((this.formCuentas.get('baja.cuentaEspecifica') as FormArray).controls);
-    const mediciones = this.formToTransaction((this.formCuentas.get('mediciones.cuentaEspecifica') as FormArray).controls);
     const entradas = this.formToTransaction((this.formCuentas.get('entradas') as FormArray).controls
       .filter(mov => !mov.pristine)
       .map((mov_: FormGroup) => (mov_.controls.cuentaEspecifica as FormArray).controls)
       .reduce((acc, curr) => acc.concat(curr), []));
+    const mediciones = this.formCuentas.get('mediciones.cuentaEspecifica') ?
+      this.formToTransaction((this.formCuentas.get('mediciones.cuentaEspecifica') as FormArray).controls) : [];
 
     return entradas.concat(salidas).concat(bajas).concat(mediciones);
   }
@@ -221,7 +222,8 @@ export class FormCuentasComponent implements OnInit, OnChanges {
         return;
       }
 
-      const mediciones_ = this.findForm((this.formCuentas.get('mediciones.cuentaEspecifica') as FormArray).controls, cta);
+      const mediciones_ = this.formCuentas.get('mediciones.cuentaEspecifica') ?
+        this.findForm((this.formCuentas.get('mediciones.cuentaEspecifica') as FormArray).controls, cta) : undefined;
       if (mediciones_) {
         this.patchForm(mediciones_, cta.Id);
         return;
