@@ -27,7 +27,7 @@ export class FormTrasladoComponent implements OnInit {
   ubicacionesFiltradas: any = [];
   displayedColumns: string[] = ['acciones', 'placa', 'nombre', 'marca', 'serie', 'valor'];
   dataSource: MatTableDataSource<any>;
-  @ViewChild('paginator') paginator: MatPaginator;
+  @ViewChild('paginator', {static: true}) paginator: MatPaginator;
   load: boolean = false;
   trasladoId: number = 0;
   elementos = [];

@@ -3,9 +3,7 @@ import { Injectable } from '@angular/core';
 import { map } from 'rxjs/operators';
 import { PopUpManager } from '../../managers/popUpManager';
 import { TranslateService } from '@ngx-translate/core';
-import { DisponibilidadMovimientosService } from '../../@core/data/disponibilidad-movimientos.service';
 import { TransaccionEntrada } from '../../@core/data/models/entrada/entrada';
-import { StringMap } from '@angular/core/src/render3/jit/compiler_facade_interface';
 
 @Injectable({
     providedIn: 'root',
@@ -15,7 +13,6 @@ export class EntradaHelper {
     constructor(
         private rqManager: RequestManager,
         private pUpManager: PopUpManager,
-        private dispMvtos: DisponibilidadMovimientosService,
         private translate: TranslateService,
     ) {
     }

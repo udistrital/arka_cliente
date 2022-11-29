@@ -33,7 +33,7 @@ export class ExtranjeroComponent implements OnInit {
   fechaFactura: string;
   divisas: string;
 
-  @ViewChild('stepper') stepper: MatStepper;
+  @ViewChild('stepper', {static: true}) stepper: MatStepper;
 
   @Input() actaRecibidoId: number;
   @Output() data: EventEmitter<TransaccionEntrada> = new EventEmitter<TransaccionEntrada>();

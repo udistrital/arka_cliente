@@ -8,7 +8,6 @@ import { TablaEntradaAprobadaComponent } from './tabla-entrada-aprobada/tabla-en
 import { FormElementosSeleccionadosComponent } from './form-elementos-seleccionados/form-elementos-seleccionados.component';
 import { TablaElementosAsignadosComponent } from './tabla-elementos-asignados/tabla-elementos-asignados.component';
 import { Ng2SmartTableModule } from 'ng2-smart-table';
-import { OwlNativeDateTimeModule, OwlDateTimeModule } from 'ng-pick-datetime';
 import { TranslateModule } from '@ngx-translate/core';
 import { NbStepperModule } from '@nebular/theme';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -37,8 +36,6 @@ import { AjustesModule } from '../ajustes/ajustes.module';
     CommonModule,
     SalidasRoutingModule,
     ThemeModule,
-    OwlDateTimeModule,
-    OwlNativeDateTimeModule,
     Ng2SmartTableModule,
     StoreModule.forRoot(rootReducer),
     NgxCurrencyModule,

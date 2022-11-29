@@ -35,10 +35,10 @@ export class TablaElementosAsignadosComponent implements OnInit {
   basePaginasD: number = 0;
   basePaginasC: number = 0;
 
-  @ViewChild('paginatorD') paginatorD: MatPaginator;
-  @ViewChild('paginatorC') paginatorC: MatPaginator;
-  @ViewChild(MatSort) sortD: MatSort;
-  @ViewChild(MatSort) sortC: MatSort;
+  @ViewChild('paginatorD', {static: true}) paginatorD: MatPaginator;
+  @ViewChild('paginatorC', {static: true}) paginatorC: MatPaginator;
+  @ViewChild(MatSort, {static: true}) sortD: MatSort;
+  @ViewChild(MatSort, {static: true}) sortC: MatSort;
   formatoMovimientoBodega: FormatoTipoMovimiento;
   formatoMovimientoFuncionario: FormatoTipoMovimiento;
   @Input('entradaId')
@@ -51,7 +51,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
   devolutivoSeleccionados: boolean;
   consumoSeleccionados: boolean;
   submitted: boolean;
-  @ViewChild('checkTodoInput') checkDummy: MatCheckbox;
+  @ViewChild('checkTodoInput', {static: true}) checkDummy: MatCheckbox;
 
   @HostListener('window:keydown', ['$event'])
   handleKeyDown(event: KeyboardEvent) {

@@ -33,7 +33,7 @@ export class AdquisicionComponent implements OnInit {
   soportes: Array<SoporteActa>;
   fechaFactura: string;
 
-  @ViewChild('stepper') stepper: MatStepper;
+  @ViewChild('stepper', {static: true}) stepper: MatStepper;
 
   @Input() actaRecibidoId: number;
   @Output() data: EventEmitter<TransaccionEntrada> = new EventEmitter<TransaccionEntrada>();

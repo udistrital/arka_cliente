@@ -62,7 +62,7 @@ export class EntradaKardexComponent implements OnInit {
   ];
 
   form_apertura: FormGroup;
-  @ViewChild('fform') firstFormDirective;
+  @ViewChild('fform', {static: true}) firstFormDirective;
 
   constructor(
     private translate: TranslateService,

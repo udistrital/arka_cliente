@@ -14,7 +14,6 @@ import { RegistroComponent } from './registro/registro.component';
 import { TercerosComponent } from './terceros/terceros.component';
 import { ConsultaEntradaComponent } from './consulta-entrada/consulta-entrada.component';
 import { Ng2SmartTableModule } from 'ng2-smart-table';
-import { OwlDateTimeModule, OwlNativeDateTimeModule } from 'ng-pick-datetime';
 import { CajaMenorComponent } from './caja-menor/caja-menor.component';
 import { AprovechamientosComponent } from './aprovechamientos/aprovechamientos.component';
 import { AdicionesMejorasComponent } from './adiciones-mejoras/adiciones-mejoras.component';
@@ -52,8 +51,6 @@ import { CommonFactura } from './CommonFactura';
     CommonModule,
     EntradasRoutingModule,
     ThemeModule,
-    OwlDateTimeModule,
-    OwlNativeDateTimeModule,
     Ng2SmartTableModule,
     ActaRecibidoModule,
     AjustesModule,

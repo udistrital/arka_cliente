@@ -66,10 +66,8 @@ export class ListaMovimientosComponent implements OnInit {
         this.title = this.translate.instant('GLOBAL.ajustes.registrar.accion');
         this.subtitle = this.translate.instant('GLOBAL.ajuste-auto.sugActa');
         this.actaRecibidoHelper.getAllActasRecibidoByEstado(['Asociada a Entrada'], -1, 0).subscribe(res_ => {
-          if (res_.length) {
-            this.actas.load(res);
-            this.spinner = '';
-          }
+          this.actas.load(res_);
+          this.spinner = '';
           this.crear = true;
         });
       }
@@ -137,6 +135,7 @@ export class ListaMovimientosComponent implements OnInit {
     this.spinner = 'Calculando ajuste';
     this.DatosElementos.forEach(el => {
       el.SubgrupoCatalogoId = el.SubgrupoCatalogoId.SubgrupoId.Id;
+      el.TipoBienId = +el.TipoBienId.Id;
       el.ValorResidual = el.ValorTotal * el.ValorResidual / 100;
       el.ActaRecibidoId = <ActaRecibido>{ Id: +this.actaSeleccionada };
       el.EstadoElementoId = <ActaRecibido>{ Id: 2 };
