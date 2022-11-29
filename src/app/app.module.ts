@@ -11,7 +11,6 @@ import { CoreModule } from './@core/core.module';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { ThemeModule } from './@theme/theme.module';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { TranslateModule, TranslateLoader, TranslatePipe } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
@@ -68,7 +67,6 @@ export class MaterialModule {}
     HttpClientModule,
     AppRoutingModule,
     MaterialModule,
-    NgbModule.forRoot(),
     ThemeModule.forRoot(),
     CoreModule.forRoot(),
     HttpClientModule,
