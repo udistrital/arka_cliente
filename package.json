@@ -71,7 +71,7 @@
     "leaflet": "1.2.0",
     "moment": "^2.29.4",
     "nebular-icons": "^1.1.0",
-    "ng2-smart-table": "^1.4.0",
+    "ng2-smart-table": "^1.7.2",
     "ngx-currency": "^2.0.0",
     "ngx-echarts": "^4.2.2",
     "node-sass": "^4.14.1",
@@ -89,9 +89,9 @@
   },
   "devDependencies": {
     "@agm/core": "^1.1.0",
-    "@angular-devkit/build-angular": "~0.13.0",
-    "@angular/cli": "^7.3.9",
-    "@angular/compiler-cli": "^7.2.15",
+    "@angular-devkit/build-angular": "~0.802.2",
+    "@angular/cli": "^8.2.14",
+    "@angular/compiler-cli": "^8.2.14",
     "@angular/language-service": "7.2.15",
     "@fortawesome/fontawesome-free": "^5.2.0",
     "@types/d3-color": "1.0.5",
@@ -113,7 +113,7 @@
     "karma-jasmine": "1.1.0",
     "karma-jasmine-html-reporter": "0.2.2",
     "ng-packagr": "^4.2.0",
-    "ng2-completer": "^3.0.3",
+    "ng2-completer": "^9.0.1",
     "npm-run-all": "4.0.2",
     "primeng": "^8.1.1",
     "protractor": "^7.0.0",
@@ -123,6 +123,6 @@
     "tsickle": ">=0.34.0",
     "tslib": "^1.14.1",
     "tslint": "5.7.0",
-    "typescript": "3.1.1"
+    "typescript": "3.5.3"
   }
 }
