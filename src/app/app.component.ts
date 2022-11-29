@@ -6,7 +6,6 @@
 import { Component, OnInit } from '@angular/core';
 import { AnalyticsService } from './@core/utils/analytics.service';
 import {TranslateService} from '@ngx-translate/core';
-import 'hammerjs';
 import { Router } from '@angular/router';
 import { ImplicitAutenticationService } from './@core/utils/implicit_autentication.service';
 import { environment } from '../environments/environment';
