@@ -6,7 +6,6 @@ import { AjustesRoutingModule } from './ajustes-routing.module';
 import { ListaMovimientosComponent } from './lista-movimientos/lista-movimientos.component';
 import { ActaRecibidoModule } from '../acta-recibido/acta-recibido.module';
 import { Ng2SmartTableModule } from 'ng2-smart-table';
-import { OwlNativeDateTimeModule, OwlDateTimeModule } from 'ng-pick-datetime';
 import { TranslateModule } from '@ngx-translate/core';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatStepperModule } from '@angular/material/stepper';
@@ -33,8 +32,6 @@ import { CrudAjusteComponent } from './crud-ajuste/crud-ajuste.component';
     CommonModule,
     AjustesRoutingModule,
     ThemeModule,
-    OwlDateTimeModule,
-    OwlNativeDateTimeModule,
     Ng2SmartTableModule,
     StoreModule.forRoot(rootReducer),
     NgxCurrencyModule,
