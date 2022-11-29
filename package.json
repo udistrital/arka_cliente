@@ -57,7 +57,6 @@
     "@ngx-translate/http-loader": "^4.0.0",
     "@swimlane/ngx-charts": "^11.1.0",
     "angular-tree-component": "^8.4.0",
-    "angular2-toaster": "^7.0.0",
     "bootstrap": "4.3.1",
     "classlist.js": "1.1.20150312",
     "core-js": "2.5.1",

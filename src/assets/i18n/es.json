@@ -730,6 +730,7 @@
       "elementosInfo2": "Editar elemento: Seleccione un elemento",
       "desactivar": "Desactivar Catálogo",
       "validacion_desactivar" :"¿Está seguro que desea desactivar el catálogo?",
+      "desactivar_success": "Catalogo deshabilidado.", 
       "lista": "Lista de Catálogos",
       "errorDetalleTtl": "Clase sin parametrizar",
       "noCuenta": "Si la cuenta ingresada no existe, verifique que exista y esté activa en el sistema kronos",

@@ -16,7 +16,6 @@ import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { TranslateModule, TranslateLoader, TranslatePipe } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { CdkTableModule } from '@angular/cdk/table';
-import { ToasterModule } from 'angular2-toaster';
 import { ImplicitAutenticationService } from './@core/utils/implicit_autentication.service';
 import { A11yModule } from '@angular/cdk/a11y';
 import { BidiModule } from '@angular/cdk/bidi';
@@ -27,7 +26,6 @@ import { PortalModule } from '@angular/cdk/portal';
 import { ScrollDispatchModule } from '@angular/cdk/scrolling';
 import { CdkStepperModule } from '@angular/cdk/stepper';
 import { CdkTreeModule } from '@angular/cdk/tree';
-import { NbToastrModule } from '@nebular/theme';
 import { ListService } from './@core/store/services/list.service';
 import { Store, StoreModule } from '@ngrx/store';
 import { rootReducer } from './@core/store/rootReducer';
@@ -70,8 +68,6 @@ export class MaterialModule {}
     HttpClientModule,
     AppRoutingModule,
     MaterialModule,
-    ToasterModule.forRoot(),
-    NbToastrModule.forRoot(),
     NgbModule.forRoot(),
     ThemeModule.forRoot(),
     CoreModule.forRoot(),

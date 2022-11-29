@@ -1,7 +1,6 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/catalogoElementosHelper';
-import { ToasterService } from 'angular2-toaster';
 import { PopUpManager } from '../../../managers/popUpManager';
 import { Catalogo } from '../../../@core/data/models/catalogo/catalogo';
 import { FORM_ELEMENTO } from './form-elemento';
@@ -29,7 +28,6 @@ export class RegistroElementosComponent implements OnInit {
 
   constructor(private translate: TranslateService,
     private catalogoElementosService: CatalogoElementosHelper,
-    private toasterService: ToasterService,
     private pUpManager: PopUpManager) {
     this.formElemento = FORM_ELEMENTO;
     this.construirForm();

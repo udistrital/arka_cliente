@@ -1,9 +1,6 @@
 import { NgModule } from '@angular/core';
 import { MatDatepickerModule, MatTreeModule } from '@angular/material';
 import { CommonModule } from '@angular/common';
-import { NbTreeGridModule } from '@nebular/theme';
-import { ToasterModule, ToasterService } from 'angular2-toaster';
-import { TreeModule } from 'angular-tree-component';
 import { Ng2SmartTableModule } from 'ng2-smart-table';
 
 import { ThemeModule } from '../../@theme/theme.module';
@@ -28,10 +25,8 @@ import { FormTipoBienComponent } from './form-tipo-bien/form-tipo-bien.component
     CommonModule,
     MatDatepickerModule,
     MatTreeModule,
-    NbTreeGridModule,
     Ng2SmartTableModule,
     ThemeModule,
-    ToasterModule,
   ],
   declarations: [
     ArbolComponent,
@@ -49,7 +44,6 @@ import { FormTipoBienComponent } from './form-tipo-bien/form-tipo-bien.component
   ],
   providers: [
     CatalogoElementosHelper,
-    ToasterService,
   ],
   exports: [
     CrudCatalogoComponent,

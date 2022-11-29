@@ -1,9 +1,10 @@
-  <nb-card>
-    <nb-card-header><h2>{{ 'GLOBAL.catalogo.lista' | translate }}</h2></nb-card-header>
-    <nb-card-body [nbSpinner]="cargando">
-        <toaster-container [toasterconfig]="config"></toaster-container>
-          <ng2-smart-table [settings]="settings" [source]="source"
-          (delete)="onDelete($event)" (edit)="onEdit($event)" (create)="onCreate()">
-          </ng2-smart-table>
-    </nb-card-body>
-  </nb-card>
+<nb-card>
+  <nb-card-header>
+    <h2>{{ 'GLOBAL.catalogo.lista' | translate }}</h2>
+  </nb-card-header>
+  <nb-card-body [nbSpinner]="cargando">
+    <ng2-smart-table [settings]="settings" [source]="source" (delete)="onDelete($event)"
+      (edit)="onEdit($event)" (create)="onCreate()">
+    </ng2-smart-table>
+  </nb-card-body>
+</nb-card>
