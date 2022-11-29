@@ -22,7 +22,7 @@ export class ComprobanteComponent implements OnInit {
   terceros: any[];
   totalCreditos: any;
   totalDebitos: any;
-  @ViewChild('paginator') paginator: MatPaginator;
+  @ViewChild('paginator', {static: true}) paginator: MatPaginator;
   @Input() modo: string; // create | get | update
   @Input() ajusteInfo: any;
   @Input() consecutivo: string;

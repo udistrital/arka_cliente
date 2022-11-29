@@ -53,7 +53,7 @@ export class DonacionComponent implements OnInit {
   ordenadores: Array<OrdenadorGasto>;
   formatoTipoMovimiento: any;
 
-  @ViewChild('stepper') stepper: NbStepperComponent;
+  @ViewChild('stepper', {static: true}) stepper: NbStepperComponent;
 
   @Input() actaRecibidoId: number;
   @Output() data: EventEmitter<TransaccionEntrada> = new EventEmitter<TransaccionEntrada>();

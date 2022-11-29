@@ -48,7 +48,7 @@ export class IntangiblesAdquiridosComponent implements OnInit {
   opcionTipoContrato: string;
   opcionvigencia: string;
 
-  @ViewChild('stepper') stepper: NbStepperComponent;
+  @ViewChild('stepper', {static: true}) stepper: NbStepperComponent;
 
   @Input() actaRecibidoId: number;
   @Output() data: EventEmitter<TransaccionEntrada> = new EventEmitter<TransaccionEntrada>();

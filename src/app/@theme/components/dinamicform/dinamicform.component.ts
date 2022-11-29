@@ -21,7 +21,7 @@ export class DinamicformComponent implements OnInit, OnChanges, OnDestroy {
   @Output() percentage: EventEmitter<any> = new EventEmitter();
   data: any;
   init: boolean;
-  @ViewChild(MatDatepicker) datepicker: MatDatepicker<Date>;
+  @ViewChild(MatDatepicker, {static: true}) datepicker: MatDatepicker<Date>;
 
   constructor(private sanitization: DomSanitizer,
   ) {

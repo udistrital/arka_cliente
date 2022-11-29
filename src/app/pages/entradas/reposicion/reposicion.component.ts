@@ -23,8 +23,8 @@ export class ReposicionComponent implements OnInit {
   displayedColumns: any;
   elementos: any[];
 
-  @ViewChild('stepper') stepper: MatStepper;
-  @ViewChild('paginator') paginator: MatPaginator;
+  @ViewChild('stepper', {static: true}) stepper: MatStepper;
+  @ViewChild('paginator', {static: true}) paginator: MatPaginator;
 
   @Input() actaRecibidoId: Number;
   @Output() data: EventEmitter<TransaccionEntrada> = new EventEmitter<TransaccionEntrada>();

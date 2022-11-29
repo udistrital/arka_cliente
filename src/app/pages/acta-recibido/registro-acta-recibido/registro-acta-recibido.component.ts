@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChildren, QueryList } from '@angular/core';
 import { scheduled, asyncScheduler, Observable } from 'rxjs';
 import { Router, ActivatedRoute } from '@angular/router';
-import { FormBuilder, FormGroup, Validators, FormArray, ValidatorFn, ValidationErrors } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, FormArray, ValidatorFn, ValidationErrors, AbstractControl } from '@angular/forms';
 import { MatTable } from '@angular/material';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
 import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
@@ -20,7 +20,6 @@ import { ListService } from '../../../@core/store/services/list.service';
 import { PopUpManager } from '../../../managers/popUpManager';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { UserService } from '../../../@core/data/users.service';
-import { AbstractControl } from '@angular/forms/src/model';
 import { TipoActa } from '../../../@core/data/models/acta_recibido/tipo_acta';
 import { EstadoElemento } from '../../../@core/data/models/acta_recibido/estado_elemento';
 import { debounceTime, distinctUntilChanged, filter, mergeAll, switchMap } from 'rxjs/operators';

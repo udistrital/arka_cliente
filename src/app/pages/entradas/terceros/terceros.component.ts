@@ -47,7 +47,7 @@ export class TercerosComponent implements OnInit {
   opcionTipoContrato: string;
   opcionvigencia: string;
 
-  @ViewChild('stepper') stepper: NbStepperComponent;
+  @ViewChild('stepper', {static: true}) stepper: NbStepperComponent;
 
   @Input() actaRecibidoId: Number;
   @Output() data: EventEmitter<TransaccionEntrada> = new EventEmitter<TransaccionEntrada>();

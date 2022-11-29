@@ -30,10 +30,10 @@ export class GestionarElementosComponent implements OnInit {
   form: FormGroup;
   Totales: DatosLocales;
 
-  @ViewChild('paginator') paginator: MatPaginator;
-  @ViewChild(MatSort) sort: MatSort;
-  @ViewChild(MatTable) table: MatTable<any>;
-  @ViewChild('fileInput') fileInput: ElementRef;
+  @ViewChild('paginator', {static: true}) paginator: MatPaginator;
+  @ViewChild(MatSort, {static: true}) sort: MatSort;
+  @ViewChild(MatTable, {static: true}) table: MatTable<any>;
+  @ViewChild('fileInput', {static: true}) fileInput: ElementRef;
   dataSource: MatTableDataSource<any>;
 
   @Input() ActaRecibidoId: number;

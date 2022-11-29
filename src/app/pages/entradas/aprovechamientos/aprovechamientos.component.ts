@@ -34,7 +34,7 @@ export class AprovechamientosComponent implements OnInit {
   private Supervisores: Supervisor[];
   supervisoresFiltrados: Observable<Supervisor[]>;
 
-  @ViewChild('paginator') paginator: MatPaginator;
+  @ViewChild('paginator', {static: true}) paginator: MatPaginator;
 
   @Input() actaRecibidoId: number;
   @Output() data: EventEmitter<TransaccionEntrada> = new EventEmitter<TransaccionEntrada>();

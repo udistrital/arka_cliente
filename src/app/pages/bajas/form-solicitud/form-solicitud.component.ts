@@ -29,7 +29,7 @@ export class FormSolicitudComponent implements OnInit {
   dataSource: MatTableDataSource<any>;
   tiposBaja: FormatoTipoMovimiento[];
   sizeSoporte: number;
-  @ViewChild('paginator') paginator: MatPaginator;
+  @ViewChild('paginator', {static: true}) paginator: MatPaginator;
   spinner: string = '';
   bajaId: number;
   trContable: any;
