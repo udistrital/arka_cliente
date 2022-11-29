@@ -114,7 +114,6 @@ import {
   NbTooltipModule,
   NbCalendarKitModule,
 } from '@nebular/theme';
-import { NbDateFnsDateModule } from '@nebular/date-fns';
 import { NbSecurityModule } from '@nebular/security';
 
 import {
@@ -250,8 +249,6 @@ const NB_THEME_PROVIDERS = [
   ...NbChatModule.forRoot({
     messageGoogleMapKey: 'AIzaSyA_wNuCzia92MAmdLRzmqitRGvCF7wCZPY',
   }).providers,
-  ...NbDateFnsDateModule.forRoot({ format: 'dd/MM/yyyy' }).providers,
-  ...NbDateFnsDateModule.forChild({ format: 'dd/MM/yyyy' }).providers,
 ];
 
 @NgModule({

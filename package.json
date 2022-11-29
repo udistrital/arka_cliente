@@ -51,7 +51,6 @@
     "@asymmetrik/ngx-leaflet": "3.0.1",
     "@nebular/auth": "3.4.2",
     "@nebular/bootstrap": "3.4.2",
-    "@nebular/date-fns": "3.4.2",
     "@nebular/security": "3.4.2",
     "@nebular/theme": "3.4.2",
     "@ng-bootstrap/ng-bootstrap": "^4.0.0",
