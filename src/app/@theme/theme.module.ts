@@ -118,8 +118,6 @@ import {
   FooterComponent,
   HeaderComponent,
   ThemeSettingsComponent,
-  SwitcherComponent,
-  LayoutDirectionSwitcherComponent,
   ThemeSwitcherComponent,
   DinamicformComponent,
   ThemeSwitcherListComponent,
@@ -193,8 +191,6 @@ const NB_MODULES = [
 ];
 
 const COMPONENTS = [
-  SwitcherComponent,
-  LayoutDirectionSwitcherComponent,
   ThemeSwitcherComponent,
   ThemeSwitcherListComponent,
   HeaderComponent,
