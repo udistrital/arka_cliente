@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
-import { MatDatepickerModule, MatTreeModule } from '@angular/material';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatTreeModule } from '@angular/material/tree';
 import { CommonModule } from '@angular/common';
 import { Ng2SmartTableModule } from 'ng2-smart-table';
 

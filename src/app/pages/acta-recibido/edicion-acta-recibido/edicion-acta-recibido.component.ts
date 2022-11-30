@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChildren, QueryList, Input, Output, EventEmitter
 import { debounceTime, distinctUntilChanged, filter, switchMap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, FormArray, ValidatorFn, AbstractControl, ValidationErrors } from '@angular/forms';
-import { MatTable } from '@angular/material';
+import { MatTable } from '@angular/material/table';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
 import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
 import { ActaRecibido } from '../../../@core/data/models/acta_recibido/acta_recibido';

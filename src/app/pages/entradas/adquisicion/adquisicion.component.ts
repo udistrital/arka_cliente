@@ -8,7 +8,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { CommonContrato } from '../CommonContrato';
 import { CommonEntradas } from '../CommonEntradas';
 import { CommonFactura } from '../CommonFactura';
-import { MatStepper } from '@angular/material';
+import { MatStepper } from '@angular/material/stepper';
 
 @Component({
   selector: 'ngx-adquisicion',

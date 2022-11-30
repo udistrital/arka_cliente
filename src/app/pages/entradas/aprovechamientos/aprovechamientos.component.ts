@@ -7,7 +7,8 @@ import { debounceTime, distinctUntilChanged, map, startWith, switchMap } from 'r
 import { TransaccionEntrada } from '../../../@core/data/models/entrada/entrada';
 import { TranslateService } from '@ngx-translate/core';
 import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
-import { MatPaginator, MatTableDataSource } from '@angular/material';
+import { MatTableDataSource } from '@angular/material/table';
+import { MatPaginator } from '@angular/material/paginator';
 import { CommonEntradas } from '../CommonEntradas';
 import { CommonElementos } from '../CommonElementos';
 

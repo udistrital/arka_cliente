@@ -8,7 +8,7 @@ import { TransaccionEntrada } from '../../../@core/data/models/entrada/entrada';
 import { CommonEntradas } from '../CommonEntradas';
 import { CommonContrato } from '../CommonContrato';
 import { CommonFactura } from '../CommonFactura';
-import { MatStepper } from '@angular/material';
+import { MatStepper } from '@angular/material/stepper';
 
 @Component({
   selector: 'ngx-extranjero',
