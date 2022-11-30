@@ -51,7 +51,7 @@
     "@nebular/bootstrap": "^3.6.2",
     "@nebular/security": "^3.6.2",
     "@nebular/theme": "^3.6.2",
-    "@ng-bootstrap/ng-bootstrap": "^4.0.0",
+    "@ng-bootstrap/ng-bootstrap": "^5.3.1",
     "@ngrx/store": "^7.4.0",
     "@ngx-translate/core": "^11.0.1",
     "@ngx-translate/http-loader": "^4.0.0",
@@ -87,7 +87,7 @@
   },
   "devDependencies": {
     "@agm/core": "^1.1.0",
-    "@angular-devkit/build-angular": "~0.802.2",
+    "@angular-devkit/build-angular": "~0.803.29",
     "@angular/cli": "^8.2.14",
     "@angular/compiler-cli": "^8.2.14",
     "@angular/language-service": "8.2.14",
