@@ -117,7 +117,6 @@ import {
 import { NbSecurityModule } from '@nebular/security';
 
 import {
-  AutocompleterComponent,
   FooterComponent,
   HeaderComponent,
   ThemeSettingsComponent,
@@ -125,10 +124,7 @@ import {
   LayoutDirectionSwitcherComponent,
   ThemeSwitcherComponent,
   DinamicformComponent,
-  TinyMCEComponent,
   ThemeSwitcherListComponent,
-  ToggleSettingsButtonComponent,
-  SelectComponent,
 } from './components';
 import {
   CapitalizePipe,
@@ -200,7 +196,6 @@ const NB_MODULES = [
 ];
 
 const COMPONENTS = [
-  AutocompleterComponent,
   SwitcherComponent,
   LayoutDirectionSwitcherComponent,
   ThemeSwitcherComponent,
@@ -208,14 +203,11 @@ const COMPONENTS = [
   HeaderComponent,
   FooterComponent,
   ThemeSettingsComponent,
-  TinyMCEComponent,
   OneColumnLayoutComponent,
   DinamicformComponent,
   SampleLayoutComponent,
   ThreeColumnsLayoutComponent,
   TwoColumnsLayoutComponent,
-  ToggleSettingsButtonComponent,
-  SelectComponent,
   SelectDirective,
 ];
 
