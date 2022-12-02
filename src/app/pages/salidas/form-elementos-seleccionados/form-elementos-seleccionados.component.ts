@@ -112,8 +112,8 @@ export class FormElementosSeleccionadosComponent implements OnInit {
     return control.valueChanges
       .pipe(
         startWith(''),
-        map(val => (typeof val === 'string') ? val : this.muestraFuncionario(val)),
-        map(nombre => this.filtroFuncionarios(nombre)),
+        map((val: any) => (typeof val === 'string') ? val : this.muestraFuncionario(val)),
+        map((nombre: string) => this.filtroFuncionarios(nombre)),
       );
   }
 

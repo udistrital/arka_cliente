@@ -62,8 +62,8 @@ export class IntangiblesDesarrolladosComponent implements OnInit {
         this.supervisoresFiltrados = this.supervisorForm.get('supervisorCtrl').valueChanges
           .pipe(
             startWith(''),
-            map(val => typeof val === 'string' ? val : this.muestraSupervisor(val)),
-            map(nombre => this.filtroSupervisores(nombre)),
+            map((val: any) => typeof val === 'string' ? val : this.muestraSupervisor(val)),
+            map((nombre: string) => this.filtroSupervisores(nombre)),
           );
         // console.log({supervisores: this.Supervisores});
         this.cargando_supervisores = false;
@@ -114,8 +114,8 @@ export class IntangiblesDesarrolladosComponent implements OnInit {
         this.ordenadoresFiltrados = this.ordenadorForm.get('ordenadorCtrl').valueChanges
           .pipe(
             startWith(''),
-            map(val => typeof val === 'string' ? val : this.muestraOrdenador(val)),
-            map(nombre => this.filtroOrdenadores(nombre)),
+            map((val: any) => typeof val === 'string' ? val : this.muestraOrdenador(val)),
+            map((nombre: string) => this.filtroOrdenadores(nombre)),
           );
         // console.log({supervisores: this.Supervisores});
         this.cargando_ordenadores = false;

@@ -614,8 +614,8 @@ export class EdicionActaRecibidoComponent implements OnInit {
       .pipe(
         debounceTime(200),
         distinctUntilChanged(),
-        filter(query => query.length && query.length >= this.minLength),
-        switchMap(d => this.queryContratistas(d)),
+        filter((query: any) => query.length && query.length >= this.minLength),
+        switchMap((d: any) => this.queryContratistas(d)),
       ).subscribe(data => {
         this.Contratistas = data;
         this.cargandoContratistas = false;
@@ -625,8 +625,8 @@ export class EdicionActaRecibidoComponent implements OnInit {
       .pipe(
         debounceTime(200),
         distinctUntilChanged(),
-        filter(query => query.length && query.length >= this.minLength),
-        switchMap(d => this.queryProveedores(d)),
+        filter((query: any) => query.length && query.length >= this.minLength),
+        switchMap((d: any) => this.queryProveedores(d)),
       ).subscribe(data => {
         this.Proveedores = data;
         this.cargandoProveedores = false;

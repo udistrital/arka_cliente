@@ -287,8 +287,8 @@ export class RegistroActaRecibidoComponent implements OnInit {
     this.controlContratista.valueChanges
     .pipe(
       debounceTime(200), distinctUntilChanged(),
-      filter(query => query.length && query.length >= this.minLength),
-      switchMap(d => this.queryContratistas(d)),
+      filter((query: any) => query.length && query.length >= this.minLength),
+      switchMap((d: string) => this.queryContratistas(d)),
     )
     .subscribe(data => {
       this.Contratistas = data;
@@ -298,8 +298,8 @@ export class RegistroActaRecibidoComponent implements OnInit {
     this.controlProveedor.valueChanges
     .pipe(
       debounceTime(200), distinctUntilChanged(),
-      filter(query => query.length && query.length >= this.minLength),
-      switchMap(d => this.queryProveedores(d)),
+      filter((query: any) => query.length && query.length >= this.minLength),
+      switchMap((d: string) => this.queryProveedores(d)),
     )
     .subscribe(data => {
       this.Proveedores = data;
