@@ -1,4 +1,3 @@
-import { Soporte } from '../../../../pages/entradas/soporteHelper';
 import { Movimiento } from '../entrada/entrada';
 
 export class DetalleTraslado {
