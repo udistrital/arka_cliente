@@ -5,7 +5,6 @@ import { Entrada } from '../../../@core/data/models/entrada/entrada';
 import { OrdenadorGasto } from '../../../@core/data/models/entrada/ordenador_gasto';
 import { Supervisor } from '../../../@core/data/models/entrada/supervisor';
 import { TipoEntrada } from '../../../@core/data/models/entrada/tipo_entrada';
-import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
 import { LocalDataSource } from 'ng2-smart-table';
 import { TranslateService } from '@ngx-translate/core';
 import { SmartTableService } from '../../../@core/data/SmartTableService';
@@ -24,8 +23,6 @@ export class DetalleEntradaComponent implements OnInit {
   factura: SoporteActa;
   contrato: Contrato;
   Supervisor: any;
-  flagDependencia = true;
-  dependenciaSupervisor: string;
   Ordenador: any;
   documentoId: number;
   entradaId: number;
@@ -35,13 +32,11 @@ export class DetalleEntradaComponent implements OnInit {
   @Input() detalleEntrada: any;
 
   constructor(
-    private entradasHelper: EntradaHelper,
     private documento: GestorDocumentalService,
     private translate: TranslateService,
     private tabla: SmartTableService,
   ) {
     this.entradaEspecifica = new Entrada;
-    this.contrato = new Contrato;
   }
 
   ngOnInit() {
@@ -50,11 +45,7 @@ export class DetalleEntradaComponent implements OnInit {
 
   iniciarParametros() {
     const tipoEntrada = new TipoEntrada;
-    const supervisor = new Supervisor;
-    const ordenadorGasto = new OrdenadorGasto;
     this.entradaEspecifica.TipoEntradaId = tipoEntrada;
-    this.contrato.Supervisor = supervisor;
-    this.contrato.OrdenadorGasto = ordenadorGasto;
     this.crearEntrada();
   }
 
@@ -62,38 +53,22 @@ export class DetalleEntradaComponent implements OnInit {
 
     const detalle = JSON.parse(this.detalleEntrada.movimiento.Detalle);
     this.linkActa = '#/pages/acta_recibido/consulta_acta_recibido/' + detalle.acta_recibido_id;
+    this.entradaEspecifica.Observacion = this.detalleEntrada.movimiento.Observacion;
+    this.entradaEspecifica.TipoEntradaId.Nombre = this.detalleEntrada.movimiento.FormatoTipoMovimientoId.Nombre;
+    this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id;
+    this.entradaEspecifica.Consecutivo = detalle.consecutivo;
+    this.entradaEspecifica.UnidadEjecutora = this.detalleEntrada.unidadEjecutora;
+    this.loadContrato(this.detalleEntrada.contrato);
 
-    if (this.detalleEntrada.unidadEjecutora) {
-      this.entradaEspecifica.UnidadEjecutora = this.detalleEntrada.unidadEjecutora;
-    }
-
-    if (this.detalleEntrada.proveedor) {
-      this.Proveedor = this.detalleEntrada.proveedor;
-    }
-
-    if (this.detalleEntrada.factura) {
-      this.factura = this.detalleEntrada.factura;
-    }
+    this.documentoId = this.detalleEntrada.documentoId;
+    this.Proveedor = this.detalleEntrada.proveedor;
+    this.factura = this.detalleEntrada.factura;
+    this.Supervisor = this.detalleEntrada.supervisor;
+    this.Ordenador = this.detalleEntrada.ordenador;
 
     if (this.detalleEntrada.elementos && this.detalleEntrada.elementos.length) {
       this.loadTabla(this.detalleEntrada.elementos);
       this.getSettings();
-    }
-
-    if (this.detalleEntrada.supervisor) {
-      this.Supervisor = this.detalleEntrada.supervisor;
-    }
-
-    if (this.detalleEntrada.dependenciaSupervisor) {
-      this.dependenciaSupervisor = this.detalleEntrada.dependenciaSupervisor;
-    }
-
-    if (this.detalleEntrada.ordenador) {
-      this.Ordenador = this.detalleEntrada.ordenador;
-    }
-
-    if (this.detalleEntrada.documentoId) {
-      this.documentoId = this.detalleEntrada.documentoId;
     }
 
     switch (this.detalleEntrada.movimiento.FormatoTipoMovimientoId.Nombre) {
@@ -159,141 +134,62 @@ export class DetalleEntradaComponent implements OnInit {
   // CARGAR DETALLES DE ENTRADA
   loadDetalleAdquisicion(info) {
     const detalle = JSON.parse(info.movimiento.Detalle);
-    this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id; // ACTA RECIBIDO
-    this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
-    this.entradaEspecifica.ContratoId = detalle.contrato_id; // CONTRATO
-    this.entradaEspecifica.Vigencia = detalle.vigencia_contrato; // VIGENCIA CONTRATO
-    this.entradaEspecifica.Importacion = detalle.importacion; // IMPORTACIÓN
-    this.entradaEspecifica.TipoEntradaId.Nombre = info.movimiento.FormatoTipoMovimientoId.Nombre; // TIPO ENTRADA
-    this.entradaEspecifica.Observacion = info.movimiento.Observacion; // OBSERVACIÓN
-    this.loadContrato(info.contrato); // CONTRATO
   }
 
   loadDetalleElaboracion(info) {
     const detalle = JSON.parse(info.movimiento.Detalle);
-    this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id; // ACTA RECIBIDO
-    this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
-    this.entradaEspecifica.Vigencia = detalle.vigencia_ordenador; // VIGENCIA ORDENADOR
-    this.entradaEspecifica.OrdenadorId = detalle.ordenador_gasto_id; // ORDENADOR DE GASTO
-    this.entradaEspecifica.Solicitante = detalle.solicitante_id; // SOLICITANTE
-    this.entradaEspecifica.TipoEntradaId.Nombre = info.movimiento.FormatoTipoMovimientoId.Nombre; // TIPO ENTRADA
-    this.entradaEspecifica.Observacion = info.movimiento.Observacion; // OBSERVACIÓN
   }
 
   loadDetalleDonacion(info) {
     const detalle = JSON.parse(info.movimiento.Detalle);
-    this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id; // ACTA RECIBIDO
-    this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
-    this.entradaEspecifica.ContratoId = detalle.contrato_id; // CONTRATO
-    this.entradaEspecifica.Vigencia = detalle.vigencia_contrato; // VIGENCIA CONTRATO
-    this.entradaEspecifica.OrdenadorId = detalle.ordenador_gasto_id; // ORDENADOR DE GASTO
-    this.entradaEspecifica.TipoEntradaId.Nombre = info.movimiento.FormatoTipoMovimientoId.Nombre; // TIPO ENTRADA
-    this.entradaEspecifica.Observacion = info.movimiento.Observacion; // OBSERVACIÓN
-    this.loadContrato(info.contrato); // CONTRATO
   }
 
   loadDetalleSobrante(info) {
     const detalle = JSON.parse(info.movimiento.Detalle);
-    this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id; // ACTA RECIBIDO
-    this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
-    this.entradaEspecifica.Vigencia = detalle.vigencia_ordenador; // VIGENCIA ORDENADOR
-    this.entradaEspecifica.TipoEntradaId.Nombre = info.movimiento.FormatoTipoMovimientoId.Nombre; // TIPO ENTRADA
-    this.entradaEspecifica.Observacion = info.movimiento.Observacion; // OBSERVACIÓN
   }
 
   loadDetalleTerceros(info) {
     const detalle = JSON.parse(info.movimiento.Detalle);
-    this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id; // ACTA RECIBIDO
-    this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
-    this.entradaEspecifica.ContratoId = detalle.contrato_id; // CONTRATO
-    this.entradaEspecifica.Vigencia = detalle.vigencia_contrato; // VIGENCIA CONTRATO
-    this.entradaEspecifica.TipoEntradaId.Nombre = info.movimiento.FormatoTipoMovimientoId.Nombre; // TIPO ENTRADA
-    this.entradaEspecifica.Observacion = info.movimiento.Observacion; // OBSERVACIÓN
-    this.loadContrato(info.contrato); // CONTRATO
   }
 
   loadDetalleCajaMenor(info) {
     const detalle = JSON.parse(info.movimiento.Detalle);
-    this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id; // ACTA RECIBIDO
-    this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
-    this.entradaEspecifica.Vigencia = detalle.vigencia; // VIGENCIA ORDENADOR
-    this.entradaEspecifica.Solicitante = detalle.solicitante_id; // SOLICITANTE
-    this.entradaEspecifica.TipoEntradaId.Nombre = info.movimiento.FormatoTipoMovimientoId.Nombre; // TIPO ENTRADA
-    this.entradaEspecifica.Observacion = info.movimiento.Observacion; // OBSERVACIÓN
   }
 
   loadDetalleAdicionesMejoras(info) {
     const detalle = JSON.parse(info.movimiento.Detalle);
-    this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id; // ACTA RECIBIDO
-    this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
-    this.entradaEspecifica.ContratoId = detalle.contrato_id; // CONTRATO
-    this.entradaEspecifica.Vigencia = detalle.vigencia_contrato; // VIGENCIA CONTRATO
-    this.entradaEspecifica.TipoEntradaId.Nombre = info.movimiento.FormatoTipoMovimientoId.Nombre; // TIPO ENTRADA
-    this.entradaEspecifica.Observacion = info.movimiento.Observacion; // OBSERVACIÓN
-    this.loadContrato(info.contrato); // CONTRATO
   }
 
   loadDetalleIntangiblesAdquiridos(info) {
     const detalle = JSON.parse(info.movimiento.Detalle);
-    this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id; // ACTA RECIBIDO
-    this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
-    this.entradaEspecifica.ContratoId = detalle.contrato_id; // CONTRATO
-    this.entradaEspecifica.Vigencia = detalle.vigencia_contrato; // VIGENCIA CONTRATO
-    this.entradaEspecifica.TipoEntradaId.Nombre = info.movimiento.FormatoTipoMovimientoId.Nombre; // TIPO ENTRADA
-    this.entradaEspecifica.Observacion = info.movimiento.Observacion; // OBSERVACIÓN
-    this.loadContrato(info.contrato); // CONTRATO
   }
+
   loadDetalleProvisional(info) {
     const detalle = JSON.parse(info.movimiento.Detalle);
-    this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id; // ACTA RECIBIDO
-    this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
-    this.entradaEspecifica.ContratoId = detalle.contrato_id; // CONTRATO
-    this.entradaEspecifica.Vigencia = detalle.vigencia_contrato; // VIGENCIA CONTRATO
-    this.entradaEspecifica.TipoEntradaId.Nombre = info.movimiento.FormatoTipoMovimientoId.Nombre; // TIPO ENTRADA
-    this.entradaEspecifica.Observacion = info.movimiento.Observacion; // OBSERVACIÓN
-    this.loadContrato(info.contrato); // CONTRATO
   }
+
   loadDetalleComprasExtranjeras(info) {
     const detalle = JSON.parse(info.movimiento.Detalle);
-    this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id; // ACTA RECIBIDO
-    this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
-    this.entradaEspecifica.ContratoId = detalle.contrato_id; // CONTRATO
-    this.entradaEspecifica.Vigencia = detalle.vigencia_contrato; // VIGENCIA CONTRATO
-    this.entradaEspecifica.TipoEntradaId.Nombre = info.movimiento.FormatoTipoMovimientoId.Nombre; // TIPO ENTRADA
-    this.entradaEspecifica.Observacion = info.movimiento.Observacion; // OBSERVACIÓN
     this.entradaEspecifica.RegistroImportacion = detalle.num_reg_importacion; // NUMERO DE IMPORTACION
     this.entradaEspecifica.TasaRepresentativaMercado = detalle.TRM; // TASA REPRESENTATIVA DEL MERCADO
     this.entradaEspecifica.Divisa = detalle.divisa;
-    this.loadContrato(info.contrato); // CONTRATO
   }
 
   loadDetalleIntangiblesDesarrollados(info) {
     const detalle = JSON.parse(info.movimiento.Detalle);
-    this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id; // ACTA RECIBIDO
-    this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
-    this.entradaEspecifica.Vigencia = detalle.vigencia_ordenador; // VIGENCIA ORDENADOR
-    this.entradaEspecifica.OrdenadorId = detalle.ordenador_gasto_id; // ORDENADOR DE GASTO
-    this.entradaEspecifica.TipoEntradaId.Nombre = info.movimiento.FormatoTipoMovimientoId.Nombre; // TIPO ENTRADA
-    this.entradaEspecifica.Observacion = info.movimiento.Observacion; // OBSERVACIÓN
   }
+
   loadDetalleAprovechamientos(info) {
     const detalle = JSON.parse(info.movimiento.Detalle);
-    this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id; // ACTA RECIBIDO
-    this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
-    this.entradaEspecifica.Vigencia = detalle.vigencia; // VIGENCIA CONTRATO
-    this.entradaEspecifica.TipoEntradaId.Nombre = info.movimiento.FormatoTipoMovimientoId.Nombre; // TIPO ENTRADA
-    this.entradaEspecifica.Observacion = info.movimiento.Observacion; // OBSERVACIÓN
   }
+
   loadDetalleReposicion(info) {
     const detalle = JSON.parse(info.movimiento.Detalle);
-    this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id; // ACTA RECIBIDO
-    this.entradaEspecifica.Consecutivo = detalle.consecutivo; // CONSECUTIVO
-    this.entradaEspecifica.TipoEntradaId.Nombre = info.movimiento.FormatoTipoMovimientoId.Nombre; // TIPO ENTRADA
-    this.entradaEspecifica.Observacion = info.movimiento.Observacion; // OBSERVACIÓN
   }
 
   loadContrato(info: any): void {
     if (info) {
+      this.contrato = new Contrato;
       const ordenadorAux = new OrdenadorGasto;
       const supervisorAux = new Supervisor;
       ordenadorAux.Id = info.ordenador_gasto.id;
