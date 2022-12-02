@@ -9,12 +9,6 @@ import { FormElementosSeleccionadosComponent } from './form-elementos-selecciona
 import { TablaElementosAsignadosComponent } from './tabla-elementos-asignados/tabla-elementos-asignados.component';
 import { Ng2SmartTableModule } from 'ng2-smart-table';
 import { TranslateModule } from '@ngx-translate/core';
-import { NbStepperModule } from '@nebular/theme';
-import { MatTabsModule } from '@angular/material/tabs';
-import { MatStepperModule } from '@angular/material/stepper';
-import {MatTableModule} from '@angular/material/table';
-import { MatPaginatorModule } from '@angular/material/paginator';
-import { MatSortModule } from '@angular/material/sort';
 import { ListService } from '../../@core/store/services/list.service';
 import { ConsultaSalidaEspecificaComponent } from './consulta-salida-especifica/consulta-salida-especifica.component';
 import { EntradasModule} from './../entradas/entradas.module';
@@ -35,15 +29,7 @@ import { AjustesModule } from '../ajustes/ajustes.module';
     SalidasRoutingModule,
     ThemeModule,
     Ng2SmartTableModule,
-    ThemeModule,
-    Ng2SmartTableModule,
     TranslateModule,
-    NbStepperModule,
-    MatTabsModule,
-    MatStepperModule,
-    MatTableModule,
-    MatPaginatorModule,
-    MatSortModule,
     EntradasModule,
     AjustesModule,
   ],

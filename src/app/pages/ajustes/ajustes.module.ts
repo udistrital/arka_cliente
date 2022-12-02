@@ -7,11 +7,6 @@ import { ListaMovimientosComponent } from './lista-movimientos/lista-movimientos
 import { ActaRecibidoModule } from '../acta-recibido/acta-recibido.module';
 import { Ng2SmartTableModule } from 'ng2-smart-table';
 import { TranslateModule } from '@ngx-translate/core';
-import { MatTabsModule } from '@angular/material/tabs';
-import { MatStepperModule } from '@angular/material/stepper';
-import { MatTableModule } from '@angular/material/table';
-import { MatSortModule } from '@angular/material/sort';
-import { MatPaginatorModule } from '@angular/material/paginator';
 import { ThemeModule } from '../../@theme/theme.module';
 import { ComprobanteComponent } from './comprobante/comprobante.component';
 import { ConsultaAjusteComponent } from './consulta-ajuste/consulta-ajuste.component';
@@ -30,13 +25,7 @@ import { CrudAjusteComponent } from './crud-ajuste/crud-ajuste.component';
     AjustesRoutingModule,
     ThemeModule,
     Ng2SmartTableModule,
-    Ng2SmartTableModule,
     TranslateModule,
-    MatTabsModule,
-    MatStepperModule,
-    MatTableModule,
-    MatPaginatorModule,
-    MatSortModule,
     ActaRecibidoModule,
   ],
   exports: [
