@@ -922,7 +922,9 @@
     "funcionarioOrigen": "Funcionario Solicitante",
     "funcionarioDestino": "Funcionario Receptor",
     "razonRechazo": "Razón de rechazo",
-    "resolucion": "Número de resolución",
+    "resolucion": "Resolución",
+    "numeroResolucion": "Número de Resolución",
+    "fechaResolucion": "Fecha resolución",
     "entradaAsociada": "Entrada Asociada",
     "ultimaModificacion": "Última Modificación",
 

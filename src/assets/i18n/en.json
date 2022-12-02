@@ -921,7 +921,9 @@
     "funcionarioOrigen": "Requestor Current Civil Servant",
     "funcionarioDestino": "recipient Civil Servant",
     "razonRechazo": "Denial reason",
-    "resolucion": "Resolution number",
+    "resolucion": "Resolution",
+    "numeroResolucion": "Número de Resolución",
+    "fechaResolucion": "Fecha resolución",
     "entradaAsociada": "Entrada Asociada",
     "ultimaModificacion": "Última Modificación",
 
