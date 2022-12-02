@@ -71,7 +71,7 @@
     "moment": "^2.29.4",
     "nebular-icons": "^1.1.0",
     "ng2-smart-table": "^1.7.2",
-    "ngx-currency": "^2.0.0",
+    "ngx-currency": "^2.4.1",
     "ngx-echarts": "^4.2.2",
     "node-sass": "^4.14.1",
     "normalize.css": "6.0.0",

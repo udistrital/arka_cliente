@@ -15,7 +15,6 @@ import { MatStepperModule } from '@angular/material/stepper';
 import {MatTableModule} from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
-import { NgxCurrencyModule } from 'ngx-currency';
 import { ListService } from '../../@core/store/services/list.service';
 import { ConsultaSalidaEspecificaComponent } from './consulta-salida-especifica/consulta-salida-especifica.component';
 import { EntradasModule} from './../entradas/entradas.module';
@@ -36,7 +35,6 @@ import { AjustesModule } from '../ajustes/ajustes.module';
     SalidasRoutingModule,
     ThemeModule,
     Ng2SmartTableModule,
-    NgxCurrencyModule,
     ThemeModule,
     Ng2SmartTableModule,
     TranslateModule,

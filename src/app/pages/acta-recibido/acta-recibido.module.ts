@@ -17,7 +17,6 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSortModule } from '@angular/material/sort';
 import { EdicionActaRecibidoComponent } from './edicion-acta-recibido/edicion-acta-recibido.component';
 import { GestionarElementosComponent } from './gestionar-elementos/gestionar-elementos.component';
-import { NgxCurrencyModule } from 'ngx-currency';
 import { ListService } from '../../@core/store/services/list.service';
 import { VerActaRecibidoComponent } from './ver-acta-recibido/ver-acta-recibido.component';
 import { CommonActas } from './shared';
@@ -34,7 +33,6 @@ import { CommonActas } from './shared';
   ],
   imports: [
     CommonModule,
-    NgxCurrencyModule,
     ActaRecibidoRoutingModule,
     ThemeModule,
     Ng2SmartTableModule,
