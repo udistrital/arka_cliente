@@ -4,7 +4,7 @@ import { PopUpManager } from '../../../managers/popUpManager';
 import { Contrato } from '../../../@core/data/models/entrada/contrato';
 import { TransaccionEntrada } from '../../../@core/data/models/entrada/entrada';
 import { SoporteActa } from '../../../@core/data/models/acta_recibido/soporte_acta';
-import { MatStepper } from '@angular/material';
+import { MatStepper } from '@angular/material/stepper';
 import { TranslateService } from '@ngx-translate/core';
 import { CommonEntradas } from '../CommonEntradas';
 import { CommonContrato } from '../CommonContrato';
