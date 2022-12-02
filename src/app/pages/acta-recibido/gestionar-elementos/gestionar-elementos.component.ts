@@ -459,7 +459,7 @@ export class GestionarElementosComponent implements OnInit {
       .pipe(
         debounceTime(250),
         distinctUntilChanged(),
-        switchMap((val) => this.loadClases(val)),
+        switchMap((val: any) => this.loadClases(val)),
       ).subscribe((response: any) => {
         this.clases = response.queryOptions.length && response.queryOptions[0].SubgrupoId ? response.queryOptions : [];
       });

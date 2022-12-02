@@ -133,6 +133,7 @@ export class CommonElementos {
             fechaEntrada: this.utils.formatDate(historial.Salida.MovimientoPadreId.FechaCreacion),
             salida: this.getConsecutivoSalida(historial),
             fechaSalida: this.utils.formatDate(historial.Salida.FechaCreacion),
+            valor: historial.Elemento.ValorTotal,
         };
     }
 
@@ -184,12 +185,18 @@ export class CommonElementos {
                     disabled,
                 },
             ],
+            valor: [
+                {
+                    value: '',
+                    disabled,
+                },
+            ],
         });
         return form;
     }
 
     get columnsElementos(): string[] {
-        return ['acciones', 'placa', 'entrada', 'fechaEntrada', 'salida', 'fechaSalida'];
+        return ['acciones', 'placa', 'entrada', 'fechaEntrada', 'salida', 'fechaSalida', 'valor'];
     }
 
 }

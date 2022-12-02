@@ -74,7 +74,7 @@ export class AprovechamientosComponent implements OnInit {
     valueChanges.pipe(
       debounceTime(250),
       distinctUntilChanged(),
-      switchMap((val) => this.commonElementos.loadElementos(val)),
+      switchMap((val: any) => this.commonElementos.loadElementos(val)),
     ).subscribe((response: any) => {
       this.elementos = response.queryOptions;
     });
@@ -94,8 +94,8 @@ export class AprovechamientosComponent implements OnInit {
         this.supervisoresFiltrados = this.supervisorForm.get('supervisorCtrl').valueChanges
           .pipe(
             startWith(''),
-            map(val => typeof val === 'string' ? val : this.muestraSupervisor(val)),
-            map(nombre => this.filtroSupervisores(nombre)),
+            map((val: any) => typeof val === 'string' ? val : this.muestraSupervisor(val)),
+            map((nombre: string) => this.filtroSupervisores(nombre)),
           );
         this.cargando_supervisores = false;
       }

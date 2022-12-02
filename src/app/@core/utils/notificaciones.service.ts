@@ -63,7 +63,7 @@ export class NotificacionesService {
             this.messagesSubject = webSocket(wsUrl);
             this.messagesSubject
                 .pipe(
-                    map((msn) => {
+                    map((msn: any) => {
                         if (msn.Estado === 'conected') {
                             this.send_ping();
                         } else {

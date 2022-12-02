@@ -23,6 +23,7 @@ export class ComprobanteComponent implements OnInit {
   terceros: any[];
   totalCreditos: any;
   totalDebitos: any;
+
   @ViewChild('paginator', {static: true}) paginator: MatPaginator;
   @Input() modo: string; // create | get | update
   @Input() ajusteInfo: any;
@@ -31,7 +32,6 @@ export class ComprobanteComponent implements OnInit {
   @Input() concepto: string;
   @Output() valid = new EventEmitter<boolean>();
   @Output() ajusteInfoChange: EventEmitter<any> = new EventEmitter<any>();
-
 
   constructor(
     private fb: FormBuilder,
@@ -97,7 +97,7 @@ export class ComprobanteComponent implements OnInit {
     const tercero = (this.formComprobante.get('elementos') as FormArray).at(index).get('cuenta').value.RequiereTercero;
     if (tercero) {
       (this.formComprobante.get('elementos') as FormArray).at(index).get('tercero')
-        .setValidators([Validators.required, this.validarCompleter('TerceroId')]);
+        .setValidators([Validators.required, this.validarCompleter('Numero')]);
       (this.formComprobante.get('elementos') as FormArray).at(index).get('tercero').enable();
     } else {
       (this.formComprobante.get('elementos') as FormArray).at(index).patchValue({ tercero: '' });
@@ -173,7 +173,7 @@ export class ComprobanteComponent implements OnInit {
         startWith(''),
         debounceTime(250),
         distinctUntilChanged(),
-        switchMap((val) => this.loadTerceros(val)),
+        switchMap((val: any) => this.loadTerceros(val)),
       ).subscribe((response: any) => {
         this.terceros = response.queryOptions &&
           response.queryOptions.length &&
@@ -226,7 +226,7 @@ export class ComprobanteComponent implements OnInit {
             disabled: disabled || !mov.Cuenta.RequiereTercero,
           },
           {
-            validators: mov.Cuenta.RequiereTercero ? [Validators.required, this.validarCompleter('Id')] : [],
+            validators: mov.Cuenta.RequiereTercero ? [Validators.required, this.validarCompleter('Numero')] : [],
           },
         ],
         descripcion: [

@@ -508,8 +508,8 @@ export class FormTrasladoComponent implements OnInit {
         startWith(''),
         debounceTime(250),
         distinctUntilChanged(),
-        map(val => typeof val === 'string' ? val : this.muestraFuncionario(val)),
-        map(nombre => this.filtroFuncionarios(nombre)),
+        map((val: any) => typeof val === 'string' ? val : this.muestraFuncionario(val)),
+        map((nombre: string) => this.filtroFuncionarios(nombre)),
       );
   }
 
