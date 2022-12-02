@@ -8,7 +8,7 @@ import { ElementoActa } from '../../../@core/data/models/acta_recibido/elemento'
 import { PopUpManager } from '../../../managers/popUpManager';
 import { Router } from '@angular/router';
 import { SalidaHelper } from '../../../helpers/salidas/salidasHelper';
-import { MatCheckbox } from '@angular/material';
+import { MatCheckbox } from '@angular/material/checkbox';
 import { ElementoMovimientosArka, EstadoMovimiento, FormatoTipoMovimiento } from '../../../@core/data/models/entrada/entrada';
 import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
 

@@ -19,7 +19,7 @@ export class ListService {
 
   public findPlanCuentasCredito() {
 
-    this.store.select(REDUCER_LIST.PlanCuentasCredito).subscribe(
+    this.store.select(<any>REDUCER_LIST.PlanCuentasCredito).subscribe(
       (list: any) => {
         if (!list || list.length === 0) {
           this.CatalogoElementos.getPlanCuentas('credito')
@@ -39,7 +39,7 @@ export class ListService {
 
   public findPlanCuentasDebito() {
 
-    this.store.select(REDUCER_LIST.PlanCuentasDebito).subscribe(
+    this.store.select(<any>REDUCER_LIST.PlanCuentasDebito).subscribe(
       (list: any) => {
         if (!list || list.length === 0) {
           this.CatalogoElementos.getPlanCuentas('debito') // tema de base financiera desplegada debito
@@ -57,7 +57,7 @@ export class ListService {
   }
 
   public findSedes() {
-    this.store.select(REDUCER_LIST.Sedes).subscribe(
+    this.store.select(<any>REDUCER_LIST.Sedes).subscribe(
       (list: any) => {
         if (!list || list.length === 0) {
           this.oikosHelper.getSedes()
@@ -76,7 +76,7 @@ export class ListService {
 
   public findUnidadesEjecutoras() {
 
-    this.store.select(REDUCER_LIST.UnidadesEjecutoras).subscribe(
+    this.store.select(<any>REDUCER_LIST.UnidadesEjecutoras).subscribe(
       (list: any) => {
         if (!list || !list.length || !list[0].length) {
           this.ActaRecibido.getUnidadEjecutoraByID('?query=TipoParametroId__CodigoAbreviacion:UE')
@@ -97,7 +97,7 @@ export class ListService {
 
   public findListsActa() {
 
-    this.store.select(REDUCER_LIST.EstadosActa).subscribe(
+    this.store.select(<any>REDUCER_LIST.EstadosActa).subscribe(
       (list: any) => {
         if (!list || list.length === 0) {
           this.ActaRecibido.getParametros()
@@ -122,7 +122,7 @@ export class ListService {
 
   public findEstadosActa() {
 
-    this.store.select(REDUCER_LIST.EstadosActa).subscribe(
+    this.store.select(<any>REDUCER_LIST.EstadosActa).subscribe(
       (list: any) => {
         if (!list || list.length === 0) {
           this.ActaRecibido.getParametros()
@@ -142,7 +142,7 @@ export class ListService {
 
   public findEstadosElemento() {
 
-    this.store.select(REDUCER_LIST.EstadosElemento).subscribe(
+    this.store.select(<any>REDUCER_LIST.EstadosElemento).subscribe(
       (list: any) => {
         if (!list || list.length === 0) {
           this.ActaRecibido.getParametros()
@@ -162,7 +162,7 @@ export class ListService {
 
   public findTipoBien() {
 
-    this.store.select(REDUCER_LIST.TipoBien).subscribe(
+    this.store.select(<any>REDUCER_LIST.TipoBien).subscribe(
       (list: any) => {
         if (!list || list.length === 0) {
           this.CatalogoElementos.getTipoBien()
@@ -181,7 +181,7 @@ export class ListService {
 
   public findUnidades() {
 
-    this.store.select(REDUCER_LIST.Unidades).subscribe(
+    this.store.select(<any>REDUCER_LIST.Unidades).subscribe(
       (list: any) => {
         if (!list || list.length === 0) {
           this.ActaRecibido.getParametros()
@@ -201,7 +201,7 @@ export class ListService {
 
   public findImpuestoIVA() {
 
-    this.store.select(REDUCER_LIST.IVA).subscribe(
+    this.store.select(<any>REDUCER_LIST.IVA).subscribe(
       (list: any) => {
         if (!list || list.length === 0) {
           this.ActaRecibido.getParametros()
@@ -232,7 +232,7 @@ export class ListService {
 
   public findformatosKardex() {
 
-    this.store.select(REDUCER_LIST.FormatosKardex).subscribe(
+    this.store.select(<any>REDUCER_LIST.FormatosKardex).subscribe(
       (list: any) => {
         if (!list || list.length === 0) {
           this.BodegaConsumo.getFormatosKardex()
@@ -253,7 +253,7 @@ export class ListService {
 
   public findEstadosMovimiento() {
 
-    this.store.select(REDUCER_LIST.EstadosMovimiento).subscribe(
+    this.store.select(<any>REDUCER_LIST.EstadosMovimiento).subscribe(
       (list: any) => {
         if (!list || list.length === 0) {
           this.BodegaConsumo.getEstadosMovimiento()

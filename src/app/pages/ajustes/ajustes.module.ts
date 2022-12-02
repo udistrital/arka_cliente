@@ -10,11 +10,9 @@ import { TranslateModule } from '@ngx-translate/core';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatTableModule } from '@angular/material/table';
-import { MatPaginatorModule, MatSortModule } from '@angular/material';
+import { MatSortModule } from '@angular/material/sort';
+import { MatPaginatorModule } from '@angular/material/paginator';
 import { NgxCurrencyModule } from 'ngx-currency';
-import { rootReducer } from '../../@core/store/rootReducer';
-import { Store, StoreModule } from '@ngrx/store';
-import { ListService } from '../../@core/store/services/list.service';
 import { ThemeModule } from '../../@theme/theme.module';
 import { ComprobanteComponent } from './comprobante/comprobante.component';
 import { ConsultaAjusteComponent } from './consulta-ajuste/consulta-ajuste.component';
@@ -33,7 +31,6 @@ import { CrudAjusteComponent } from './crud-ajuste/crud-ajuste.component';
     AjustesRoutingModule,
     ThemeModule,
     Ng2SmartTableModule,
-    StoreModule.forRoot(rootReducer),
     NgxCurrencyModule,
     Ng2SmartTableModule,
     TranslateModule,

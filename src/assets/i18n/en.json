@@ -731,6 +731,7 @@
       "elementosInfo2": "Edit element: Select an Element row",
       "desactivar": "Disable Catalogue",
       "validacion_desactivar": "¿Are you sure you want to disable the catalog? ",
+      "desactivar_success": "Catalogo deshabilidado.", 
       "noCuenta": "Si la cuenta ingresada no existe, verifique que esté activa en el sistema kronos",
       "lista": "Catalogue List"
     },

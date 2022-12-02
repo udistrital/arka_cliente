@@ -113,7 +113,4 @@ export class HeaderComponent implements OnInit {
     this.menuService.navigateHome();
   }
 
-  startSearch() {
-    this.analyticsService.trackEvent('startSearch');
-  }
 }

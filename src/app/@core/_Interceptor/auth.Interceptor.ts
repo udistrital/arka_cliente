@@ -58,18 +58,18 @@ export class AuthInterceptor implements HttpInterceptor {
           if (event instanceof HttpErrorResponse) {
             // cache.put(req, event); // Update the cache.
             this.router.navigate(['/']);
-            this.pUpManager.showErrorToast(this.translate.instant(`ERROR.${event['status']}`));
+            this.pUpManager.showErrorAlert(this.translate.instant(`ERROR.${event['status']}`));
           } else {
             if (event['body']) {
 
               if (event['body'] !== null) {
 
                 if (event['body']['Body'] !== undefined && event['body']['Body'] === null) {
-                  this.pUpManager.showInfoToast('No se encontraron Datos');
+                  this.pUpManager.showAlert('Alerta', 'No se encontraron Datos');
                 }
 
               } else {
-                this.pUpManager.showInfoToast('No se encontraron Datos');
+                this.pUpManager.showAlert('Alerta', 'No se encontraron Datos');
               }
             }
           }
@@ -82,7 +82,7 @@ export class AuthInterceptor implements HttpInterceptor {
               text: error.status + ' - ' + error.statusText,
               confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
             });
-            this.pUpManager.showErrorToast(this.translate.instant(`ERROR.${error['status']}`));
+            this.pUpManager.showErrorAlert(this.translate.instant(`ERROR.${error['status']}`));
           },
         ),
         finalize(() => this.loaderService.hide()));
@@ -93,7 +93,7 @@ export class AuthInterceptor implements HttpInterceptor {
           if (event instanceof HttpErrorResponse) {
             // cache.put(req, event); // Update the cache.
             // this.snackBar.open('test', undefined, { duration: 5000 });
-            this.pUpManager.showErrorToast(this.translate.instant(`ERROR.${event['status']}`));
+            this.pUpManager.showErrorAlert(this.translate.instant(`ERROR.${event['status']}`));
           } else {
 
             if (event['body']) {
@@ -101,11 +101,11 @@ export class AuthInterceptor implements HttpInterceptor {
               if (event['body'] !== null) {
 
                 if (event['body']['Body'] !== undefined && event['body']['Body'] === null) {
-                  this.pUpManager.showInfoToast('No se encontraron Datos');
+                  this.pUpManager.showAlert('Alert', 'No se encontraron Datos');
                 }
 
               } else {
-                this.pUpManager.showInfoToast('No se encontraron Datos');
+                this.pUpManager.showAlert('Alert', 'No se encontraron Datos');
               }
             }
           }
@@ -113,7 +113,7 @@ export class AuthInterceptor implements HttpInterceptor {
           (error: any) => {
             console.info(error);
             // this.snackBar.open('Error en el Servidor', undefined, { duration: 5000 });
-            this.pUpManager.showErrorToast(this.translate.instant(`ERROR.${error['status']}`));
+            this.pUpManager.showErrorAlert(this.translate.instant(`ERROR.${error['status']}`));
           },
         ));
     }

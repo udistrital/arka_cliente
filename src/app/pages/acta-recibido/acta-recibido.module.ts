@@ -12,12 +12,12 @@ import { NbStepperModule } from '@nebular/theme';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatStepperModule } from '@angular/material/stepper';
 import {MatTableModule} from '@angular/material/table';
-import { MatIconModule, MatPaginatorModule, MatSortModule } from '@angular/material';
+import { MatIconModule } from '@angular/material/icon';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatSortModule } from '@angular/material/sort';
 import { EdicionActaRecibidoComponent } from './edicion-acta-recibido/edicion-acta-recibido.component';
 import { GestionarElementosComponent } from './gestionar-elementos/gestionar-elementos.component';
 import { NgxCurrencyModule } from 'ngx-currency';
-import { rootReducer } from '../../@core/store/rootReducer';
-import { Store, StoreModule } from '@ngrx/store';
 import { ListService } from '../../@core/store/services/list.service';
 import { VerActaRecibidoComponent } from './ver-acta-recibido/ver-acta-recibido.component';
 import { CommonActas } from './shared';
@@ -34,7 +34,6 @@ import { CommonActas } from './shared';
   ],
   imports: [
     CommonModule,
-    StoreModule.forRoot(rootReducer),
     NgxCurrencyModule,
     ActaRecibidoRoutingModule,
     ThemeModule,

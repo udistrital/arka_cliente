@@ -403,26 +403,6 @@
                             <mat-hint class="text-danger">{{c.alerta}}</mat-hint>
                         </mat-form-field>
 
-                        <!-- editor -->
-                        <div *ngSwitchCase="'editor'" class="form-group">
-                            <label for="{{c.nombre}}">
-                                {{c.requerido?'* '+c.label:c.label}}
-                            </label>
-
-                            <nb-card>
-                                <nb-card-header>
-                                    Tiny MCE
-                                </nb-card-header>
-                                <nb-card-body>
-                                    <ngx-tiny-mce ngDefaultControl [(ngModel)]="c.valor"
-                                        [ngModelOptions]="{standalone: true}" id="{{c.nombre}}" name="{{c.nombre}}"
-                                        (ngModelChange)="validCampo(c)" type="text"></ngx-tiny-mce>
-                                </nb-card-body>
-                            </nb-card>
-
-                            <mat-hint class=" text-danger ">{{c.alerta}}</mat-hint>
-                        </div>
-
                         <!-- input-file -->
                         <div *ngSwitchCase="'file'" class="{{c.clase}}">
                             <div class="row">

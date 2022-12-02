@@ -13,10 +13,9 @@ import { NbStepperModule } from '@nebular/theme';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatStepperModule } from '@angular/material/stepper';
 import {MatTableModule} from '@angular/material/table';
-import { MatPaginatorModule, MatSortModule } from '@angular/material';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatSortModule } from '@angular/material/sort';
 import { NgxCurrencyModule } from 'ngx-currency';
-import { rootReducer } from '../../@core/store/rootReducer';
-import { Store, StoreModule } from '@ngrx/store';
 import { ListService } from '../../@core/store/services/list.service';
 import { ConsultaSalidaEspecificaComponent } from './consulta-salida-especifica/consulta-salida-especifica.component';
 import { EntradasModule} from './../entradas/entradas.module';
@@ -37,7 +36,6 @@ import { AjustesModule } from '../ajustes/ajustes.module';
     SalidasRoutingModule,
     ThemeModule,
     Ng2SmartTableModule,
-    StoreModule.forRoot(rootReducer),
     NgxCurrencyModule,
     ThemeModule,
     Ng2SmartTableModule,

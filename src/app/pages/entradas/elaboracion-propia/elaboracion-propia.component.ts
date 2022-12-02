@@ -169,7 +169,7 @@ export class ElaboracionPropiaComponent implements OnInit {
         file.file = event.target.files[0];
         this.fileDocumento = file;
       } else {
-        this.pUpManager.showToast('error', this.translate.instant('GLOBAL.error'), this.translate.instant('ERROR.formato_documento_pdf'));
+        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.error'));
       }
     }
   }
