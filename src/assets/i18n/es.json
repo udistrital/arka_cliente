@@ -626,6 +626,7 @@
     "nivel_jerarquico": "Nivel Jerárquico",
     "atras": "Atrás",
     "emisorResolucion": "Emisor de la resolución",
+    "entidadOProveedor": "Entidad (Proveedor)",
 
     "subgrupo": {
       "grupo": {
@@ -842,7 +843,7 @@
     "placeholder_usuario": "usuario",
     "parametro": "parametro",
     "placeholder_parametro": "parametro",
-    "valor": "valor",
+    "valor": "Valor",
     "placeholder_valor": "valor",
     "notificacion_configuracion_perfil": "notificacion_configuracion_perfil",
     "placeholder_notificacion_configuracion_perfil": "notificacion_configuracion_perfil",
@@ -922,7 +923,9 @@
     "funcionarioOrigen": "Funcionario Solicitante",
     "funcionarioDestino": "Funcionario Receptor",
     "razonRechazo": "Razón de rechazo",
-    "resolucion": "Número de resolución",
+    "resolucion": "Resolución",
+    "numeroResolucion": "Número de Resolución",
+    "fechaResolucion": "Fecha resolución",
     "entradaAsociada": "Entrada Asociada",
     "ultimaModificacion": "Última Modificación",
 

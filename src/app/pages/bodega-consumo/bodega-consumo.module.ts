@@ -7,7 +7,6 @@ import { AgregarElementosComponent } from './agregar-elementos/agregar-elementos
 import { ThemeModule } from '../../@theme/theme.module';
 import { Ng2SmartTableModule } from 'ng2-smart-table';
 import { FormElementosSeleccionadosComponent } from './form-elementos-seleccionados/form-elementos-seleccionados.component';
-import { NgxCurrencyModule } from 'ngx-currency';
 import { KardexComponent, CurrencyCustomPipe } from './kardex/kardex.component';
 import { TableModule } from 'primeng/table';
 import { ConsultaSolicitudComponent } from './consulta-solicitud/consulta-solicitud.component';
@@ -40,7 +39,6 @@ import { NbDialogModule } from '@nebular/theme';
   ],
   imports: [
     TranslateModule,
-    NgxCurrencyModule,
     CommonModule,
     BodegaConsumoRoutingModule,
     ThemeModule,

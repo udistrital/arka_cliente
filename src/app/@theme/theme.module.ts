@@ -210,9 +210,6 @@ const NB_THEME_PROVIDERS = [
   ...NbDialogModule.forRoot().providers,
   ...NbWindowModule.forRoot().providers,
   ...NbToastrModule.forRoot().providers,
-  ...NbChatModule.forRoot({
-    messageGoogleMapKey: 'AIzaSyA_wNuCzia92MAmdLRzmqitRGvCF7wCZPY',
-  }).providers,
 ];
 
 @NgModule({
@@ -222,7 +219,7 @@ const NB_THEME_PROVIDERS = [
   entryComponents: [...ENTRY_COMPONENTS],
 })
 export class ThemeModule {
-  static forRoot(): ModuleWithProviders {
+  static forRoot(): ModuleWithProviders<ThemeModule> {
     return <ModuleWithProviders>{
       ngModule: ThemeModule,
       providers: [...NB_THEME_PROVIDERS,

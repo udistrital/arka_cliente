@@ -46,7 +46,7 @@ export class OikosHelper {
             startWith(''),
             debounceTime(250),
             distinctUntilChanged(),
-            switchMap((val) => this.loadDependencias(val)),
+            switchMap((val: any) => this.loadDependencias(val)),
         );
     }
 

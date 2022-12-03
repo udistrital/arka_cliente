@@ -54,7 +54,7 @@ export class FormResolucionComponent implements OnInit {
     valueChanges.pipe(
       debounceTime(250),
       distinctUntilChanged(),
-      switchMap((val) => this.loadDependencias(val)),
+      switchMap((val: any) => this.loadDependencias(val)),
     ).subscribe((response: any) => {
       this.dependencias = response.queryOptions;
     });

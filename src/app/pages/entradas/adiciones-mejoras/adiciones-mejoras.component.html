@@ -48,7 +48,7 @@
           </ng-container>
 
           <ng-container matColumnDef="fechaEntrada">
-            <th id="entrada" mat-header-cell *matHeaderCellDef mat-sort-header>
+            <th id="fEntrada" mat-header-cell *matHeaderCellDef mat-sort-header>
               {{ 'GLOBAL.fecha_entrada' | translate }}
             </th>
             <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="commonElementos.getActualIndex(rowIndex, paginator)">
@@ -68,12 +68,22 @@
           </ng-container>
 
           <ng-container matColumnDef="fechaSalida">
-            <th id="entrada" mat-header-cell *matHeaderCellDef mat-sort-header>
+            <th id="fSalida" mat-header-cell *matHeaderCellDef mat-sort-header>
               {{ 'GLOBAL.fecha_salida' | translate }}
             </th>
             <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="commonElementos.getActualIndex(rowIndex, paginator)">
               <input type="text" class="form-control" formControlName="fechaSalida"
                 placeholder="{{'GLOBAL.fecha_salida' | translate }}">
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="valor">
+            <th id="valor" mat-header-cell *matHeaderCellDef mat-sort-header>
+              {{ 'GLOBAL.valor' | translate }}
+            </th>
+            <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="commonElementos.getActualIndex(rowIndex, paginator)">
+              <input type="text" class="form-control" formControlName="valor"
+                placeholder="{{'GLOBAL.valor' | translate }}" currencyMask [options]="{allowNegative: false}">
             </td>
           </ng-container>
 

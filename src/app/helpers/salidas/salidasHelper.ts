@@ -1,7 +1,6 @@
 import { RequestManager } from '../../managers/requestManager';
 import { Injectable } from '@angular/core';
-import { map, switchMap } from 'rxjs/operators';
-import { iif } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { PopUpManager } from '../../managers/popUpManager';
 import { TranslateService } from '@ngx-translate/core';
 import { DisponibilidadMovimientosService } from '../../@core/data/disponibilidad-movimientos.service';
