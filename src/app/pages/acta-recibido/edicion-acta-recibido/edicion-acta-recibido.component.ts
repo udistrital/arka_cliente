@@ -383,7 +383,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
     if (this.trActa.UltimoEstado.ProveedorId) {
       promises.push(this.loadProveedores('', this.trActa.UltimoEstado.ProveedorId));
     }
-    if (this.trActa.UltimoEstado.PersonaAsignadaId) {
+    if (this.actaRegular && this.trActa.UltimoEstado.PersonaAsignadaId) {
       promises.push(this.loadContratistas('', this.trActa.UltimoEstado.PersonaAsignadaId));
     }
     await Promise.all(promises);
