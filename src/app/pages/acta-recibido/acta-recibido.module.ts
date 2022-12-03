@@ -8,13 +8,6 @@ import { RegistroActaRecibidoComponent } from './registro-acta-recibido/registro
 import { ConsultaActaRecibidoComponent } from './consulta-acta-recibido/consulta-acta-recibido.component';
 import { TranslateModule } from '@ngx-translate/core';
 import { Ng2SmartTableModule } from 'ng2-smart-table';
-import { NbStepperModule } from '@nebular/theme';
-import { MatTabsModule } from '@angular/material/tabs';
-import { MatStepperModule } from '@angular/material/stepper';
-import {MatTableModule} from '@angular/material/table';
-import { MatIconModule } from '@angular/material/icon';
-import { MatPaginatorModule } from '@angular/material/paginator';
-import { MatSortModule } from '@angular/material/sort';
 import { EdicionActaRecibidoComponent } from './edicion-acta-recibido/edicion-acta-recibido.component';
 import { GestionarElementosComponent } from './gestionar-elementos/gestionar-elementos.component';
 import { ListService } from '../../@core/store/services/list.service';
@@ -37,13 +30,6 @@ import { CommonActas } from './shared';
     ThemeModule,
     Ng2SmartTableModule,
     TranslateModule,
-    NbStepperModule,
-    MatTabsModule,
-    MatIconModule,
-    MatStepperModule,
-    MatTableModule,
-    MatPaginatorModule,
-    MatSortModule,
   ],
   exports: [
     VerActaRecibidoComponent,
