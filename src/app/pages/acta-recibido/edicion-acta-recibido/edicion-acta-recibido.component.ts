@@ -501,7 +501,8 @@ export class EdicionActaRecibidoComponent implements OnInit {
         }
 
         const dependencia = res[0].DependenciaId;
-        const codigoSede = res[0].EspacioFisicoId.CodigoAbreviacion.replace(/\d.*/g, '');
+        const sede_ = res[0].EspacioFisicoId.CodigoAbreviacion;
+        const codigoSede = sede_.substring(0, 2) + sede_.substring(2).replace(/\d.*/g, '');
         const sede = this.Sedes.find(x => x && x.CodigoAbreviacion === codigoSede);
 
         if (!sede || !dependencia) {

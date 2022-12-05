@@ -257,9 +257,12 @@ export class VerActaRecibidoComponent implements OnInit {
     return new Promise<void>(resolve => {
       this.Actas_Recibido.getSedeDependencia(ubicacionId).toPromise().then(res => {
         if (res.length) {
-          const codigoSede = res[0].EspacioFisicoId.CodigoAbreviacion.replace(/\d.*/g, '');
+
           const Dependencia = res[0].DependenciaId;
+          const sede_ = res[0].EspacioFisicoId.CodigoAbreviacion;
+          const codigoSede = sede_.substring(0, 2) + sede_.substring(2).replace(/\d.*/g, '');
           const Sede = this.Sedes.find(x => x && x.CodigoAbreviacion === codigoSede);
+
           if (codigoSede && Dependencia) {
             this.Actas_Recibido.getAsignacionesBySedeAndDependencia(codigoSede, Dependencia.Id).subscribe((res_: any) => {
               this.UbicacionesFiltradas = res_;
