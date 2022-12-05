@@ -154,8 +154,8 @@ export class VerActaRecibidoComponent implements OnInit {
           this.contratistaId = this.Acta.UltimoEstado.PersonaAsignadaId;
           this.Acta.ActaRecibido = res.ActaRecibido;
           this.Acta.SoportesActa = res.SoportesActa;
-          await Promise.all([this.loadProveedores('',
-            this.proveedorId), this.loadContratistas('', this.contratistaId)]);
+          await Promise.all([this.loadProveedores('', this.proveedorId),
+          this.loadContratistas('', this.actaRegular ? this.contratistaId : 0)]);
           resolve();
         });
       };
@@ -216,7 +216,10 @@ export class VerActaRecibidoComponent implements OnInit {
           value: this.sedeDependencia ? this.sedeDependencia.sede : '',
           disabled: true,
         }],
-        UnidadEjecutora: transaccion_.ActaRecibido.UnidadEjecutoraId,
+        UnidadEjecutora: [{
+          value: transaccion_.ActaRecibido.UnidadEjecutoraId,
+          disabled: true,
+        }],
         Dependencia: [{
           value: this.sedeDependencia ? this.sedeDependencia.dependencia : '',
           disabled: true,
@@ -349,7 +352,7 @@ export class VerActaRecibidoComponent implements OnInit {
     actaRecibido.Id = +this._ActaId;
     actaRecibido.Activo = true;
     actaRecibido.TipoActaId = <TipoActa>{ Id: this.tipoActa };
-    actaRecibido.UnidadEjecutoraId = this.firstForm.value.Formulario1.UnidadEjecutora;
+    actaRecibido.UnidadEjecutoraId = this.controlUnidad.value;
 
     return actaRecibido;
   }
@@ -512,6 +515,9 @@ export class VerActaRecibidoComponent implements OnInit {
   }
   get controlUbicacion() {
     return this.controlDatosBasicos.get('Ubicacion');
+  }
+  get controlUnidad() {
+    return this.controlDatosBasicos.get('UnidadEjecutora');
   }
 
   get controlSoportes() {
