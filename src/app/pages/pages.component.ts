@@ -50,7 +50,7 @@ export class PagesComponent implements OnInit {
       if (!n.link) {
         node = {
           title: n.title,
-          icon: 'nb-list',
+          icon: 'file-outline',
           url: n.link,
           home: false,
           key: n.Nombre,
@@ -59,7 +59,7 @@ export class PagesComponent implements OnInit {
       } else {
         node = {
           title: n.title,
-          icon: 'nb-list',
+          icon: 'file-outline',
           link: n.link,
           home: false,
           key: n.Nombre,
@@ -68,7 +68,7 @@ export class PagesComponent implements OnInit {
       if (n.hasOwnProperty('children')) {
         if (n.children !== null) {
           const children = this.addIcons(n.children);
-          node = { ...node, ...{ children: children }, ...{ icon: 'nb-compose' } };
+          node = { ...node, ...{ children: children }, ...{ icon: 'folder-outline' } };
         }
       }
       return node;
@@ -135,7 +135,7 @@ export class PagesComponent implements OnInit {
 
     const homeOption = {
       title: this.translate.instant('MENU.main.inicio.name'),
-      icon: 'nb-home',
+      icon: 'home',
       url: '#/pages/dashboard',
     };
 

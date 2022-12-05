@@ -126,6 +126,7 @@ import { TranslateModule } from '@ngx-translate/core';
 import { SelectDirective } from './directives/mouse-over-tree';
 import { ARKAII_THEME } from './styles/theme.arka2';
 import { CurrencyMaskConfig, CURRENCY_MASK_CONFIG, NgxCurrencyModule } from 'ngx-currency';
+import { NbEvaIconsModule } from '@nebular/eva-icons';
 
 const BASE_MODULES = [CommonModule, FormsModule, ReactiveFormsModule];
 
@@ -142,6 +143,7 @@ export const CustomCurrencyMaskConfig: CurrencyMaskConfig = {
 };
 
 const NB_MODULES = [
+  NbEvaIconsModule,
   NbCardModule,
   NbLayoutModule,
   NbTabsetModule,
@@ -219,7 +221,7 @@ const NB_THEME_PROVIDERS = [
 ];
 
 @NgModule({
-  imports: [...BASE_MODULES, ...NB_MODULES, MAT_MODULES],
+  imports: [...BASE_MODULES, ...NB_MODULES, MAT_MODULES, NbEvaIconsModule],
   exports: [...BASE_MODULES, ...NB_MODULES, MAT_MODULES, ...COMPONENTS, ...PIPES],
   declarations: [...COMPONENTS, ...PIPES],
   entryComponents: [...ENTRY_COMPONENTS],
