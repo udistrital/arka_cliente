@@ -4,6 +4,7 @@ import { iif } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 import { PopUpManager } from '../../managers/popUpManager';
 import { DisponibilidadMovimientosService } from '../../@core/data/disponibilidad-movimientos.service';
+import { UserService } from '../../@core/data/users.service';
 
 @Injectable({
     providedIn: 'root',
@@ -14,8 +15,8 @@ export class BodegaConsumoHelper {
         private rqManager: RequestManager,
         private pUpManager: PopUpManager,
         private dispMvtos: DisponibilidadMovimientosService,
-    ) {
-    }
+        private userService: UserService,
+    ) { }
 
     /**
      * Entradas Get
@@ -220,7 +221,8 @@ export class BodegaConsumoHelper {
      */
     public getSolicitudesBodega(tramiteOnly: boolean = false) {
         this.rqManager.setPath('ARKA_SERVICE');
-        const query = 'bodega_consumo/solicitud/' + (tramiteOnly ? '?tramite_only=true' : '');
+        const usuario = this.userService.getUserMail();
+        const query = 'bodega_consumo/solicitud/' + '?user=' + usuario + (tramiteOnly ? '&tramite_only=true' : '');
         return this.rqManager.get(query).pipe(
             map(
                 (res) => {
