@@ -65,18 +65,10 @@ export class ListCatalogoComponent implements OnInit {
         Nombre: {
           title: this.translate.instant('GLOBAL.nombre'),
           width: '30%',
-          // type: 'string;',
-          valuePrepareFunction: (value) => {
-            return value;
-          },
         },
         Descripcion: {
           title: this.translate.instant('GLOBAL.descripcion'),
           width: '30%',
-          // type: 'string;',
-          valuePrepareFunction: (value) => {
-            return value;
-          },
         },
         FechaModificacion: {
           title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.FechaModificacionHeader'),
@@ -92,12 +84,9 @@ export class ListCatalogoComponent implements OnInit {
           valuePrepareFunction: this.tabla.formatDate,
         },
         Activo: {
-          title: this.translate.instant('GLOBAL.estado'),
           width: '10%',
-          // type: 'boolean;',
-          valuePrepareFunction: (value) => {
-            return this.translate.instant('GLOBAL.' + (value ? 'activo' : 'inactivo'));
-          },
+          title: this.translate.instant('GLOBAL.activo'),
+          ...this.tabla.getSettingsBool(),
         },
       },
     };

@@ -94,7 +94,7 @@ export class TiposBienComponent implements OnInit {
         TipoBienPadreId: {
           title: this.translate.instant('GLOBAL.parametros.tiposBien.tipoBienPadre'),
           width: '170px',
-          ...this.tabla.getSettingsObject('Codigo'),
+          ...this.tabla.getSettingsObject('Nombre'),
         },
         FechaModificacion: {
           title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.FechaModificacionHeader'),
@@ -104,17 +104,17 @@ export class TiposBienComponent implements OnInit {
         NecesitaPlaca: {
           width: '80px',
           title: this.translate.instant('GLOBAL.parametros.tiposBien.necesita_placa'),
-          valuePrepareFunction: this.tabla.boolToText,
+          ...this.tabla.getSettingsBool(),
         },
         NecesitaPoliza: {
           width: '80px',
           title: this.translate.instant('GLOBAL.parametros.tiposBien.necesita_poliza'),
-          valuePrepareFunction: this.tabla.boolToText,
+          ...this.tabla.getSettingsBool(),
         },
         BodegaConsumo: {
           width: '80px',
           title: this.translate.instant('GLOBAL.parametros.tiposBien.bodegaConsumo'),
-          valuePrepareFunction: this.tabla.boolToText,
+          ...this.tabla.getSettingsBool(),
         },
         Descripcion: {
           title: this.translate.instant('GLOBAL.Descripcion'),
@@ -129,7 +129,7 @@ export class TiposBienComponent implements OnInit {
         Activo: {
           width: '100px',
           title: this.translate.instant('GLOBAL.activo'),
-          valuePrepareFunction: this.tabla.boolToText,
+          ...this.tabla.getSettingsBool(),
         },
       },
     };
