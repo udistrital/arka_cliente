@@ -22,6 +22,38 @@ export class SmartTableService {
         return value ? value : '';
     }
 
+    public getSettingsDate() {
+        return {
+            valuePrepareFunction: (value: any) => {
+                return this.prepareFunctionDate(value);
+            },
+            filterFunction: (cell?: any, search?: string): boolean => {
+                return this.filterFunctionDate(cell, search);
+            },
+        };
+    }
+
+    private prepareFunctionDate(value?: any): string {
+        if (!value) {
+            return '';
+        }
+
+        const date = new Date(value);
+        date.setUTCMinutes(date.getTimezoneOffset());
+        return new Date(Date.parse(date.toString())).toLocaleDateString('es-CO');
+    }
+
+    private filterFunctionDate(cell?: any, search?: string): boolean {
+
+        if (!cell || !search) {
+            return false;
+        }
+
+        if (this.prepareFunctionDate(cell).indexOf(search) > -1) {
+            return true;
+        }
+    }
+
     public prepareFunctionCurrency(value: any): string {
         const value_ = value ? Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP' }).format(value) : '';
         return '<p class="currency">' + value_ + '</p>';

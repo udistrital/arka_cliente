@@ -4,6 +4,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { LocalDataSource } from 'ng2-smart-table';
 import { ConfiguracionService } from '../../../@core/data/configuracion.service';
 import { EstadoMovimiento } from '../../../@core/data/models/entrada/entrada';
+import { SmartTableService } from '../../../@core/data/SmartTableService';
 import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
 import { AjustesHelper } from '../../../helpers/movimientos/ajustesHelper';
 import { PopUpManager } from '../../../managers/popUpManager';
@@ -33,6 +34,7 @@ export class ConsultaAjusteComponent implements OnInit {
     private pUpManager: PopUpManager,
     private confService: ConfiguracionService,
     private ajustesHelper: AjustesHelper,
+    private tabla: SmartTableService,
   ) { }
 
   ngOnInit() {
@@ -154,23 +156,13 @@ export class ConsultaAjusteComponent implements OnInit {
         FechaCreacion: {
           title: this.translate.instant('GLOBAL.fecha_creacion'),
           width: '15%',
-          valuePrepareFunction: (value) => {
-            return this.formatDate(value);
-          },
-          filter: {
-            type: 'daterange',
-            config: {
-              daterange: {
-                format: 'yyyy/mm/dd',
-              },
-            },
-          },
+          ...this.tabla.getSettingsDate(),
         },
         FechaAprobacion: {
           title: this.translate.instant('GLOBAL.fechaAprobacion'),
           width: '15%',
           valuePrepareFunction: (value) => {
-            const date = value ? this.formatDate(value) :
+            const date = value ? this.tabla.formatDate(value) :
               this.translate.instant('GLOBAL.bajas.consulta.espera');
             return date;
           },
@@ -219,9 +211,4 @@ export class ConsultaAjusteComponent implements OnInit {
     };
   }
 
-  private formatDate(value) {
-    const date = new Date(value);
-    date.setUTCMinutes(date.getTimezoneOffset());
-    return new Date(Date.parse(date.toString())).toLocaleDateString('es-CO');
-  }
 }

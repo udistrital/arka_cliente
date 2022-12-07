@@ -99,7 +99,7 @@ export class TiposBienComponent implements OnInit {
         FechaModificacion: {
           title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.FechaModificacionHeader'),
           width: '110px',
-          valuePrepareFunction: this.tabla.formatDate,
+          ...this.tabla.getSettingsDate(),
         },
         NecesitaPlaca: {
           width: '80px',

@@ -261,7 +261,7 @@ export class DetalleEntradaComponent implements OnInit {
         FechaEntrada: {
           title: this.translate.instant('GLOBAL.fecha_entrada'),
           width: '70px',
-          valuePrepareFunction: this.tabla.formatDate,
+          ...this.tabla.getSettingsDate(),
         },
         Salida_: {
           title: this.translate.instant('GLOBAL.Salida'),
@@ -271,7 +271,7 @@ export class DetalleEntradaComponent implements OnInit {
         FechaSalida: {
           title: this.translate.instant('GLOBAL.fecha_salida'),
           width: '70px',
-          valuePrepareFunction: this.tabla.formatDate,
+          ...this.tabla.getSettingsDate(),
         },
         ValorTotal: {
           type: 'html',

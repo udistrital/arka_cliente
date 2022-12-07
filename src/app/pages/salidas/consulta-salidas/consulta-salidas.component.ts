@@ -279,28 +279,12 @@ export class ConsultaSalidasComponent implements OnInit {
         FechaCreacion: {
           title: this.translate.instant('GLOBAL.fecha_creacion'),
           width: '70px',
-          valuePrepareFunction: this.tabla.formatDate,
-          filter: {
-            type: 'daterange',
-            config: {
-              daterange: {
-                format: 'yyyy/mm/dd',
-              },
-            },
-          },
+          ...this.tabla.getSettingsDate(),
         },
         FechaModificacion: {
           title: this.translate.instant('GLOBAL.ultimaModificacion'),
           width: '70px',
-          valuePrepareFunction: this.tabla.formatDate,
-          filter: {
-            type: 'daterange',
-            config: {
-              daterange: {
-                format: 'yyyy/mm/dd',
-              },
-            },
-          },
+          ...this.tabla.getSettingsDate(),
         },
         MovimientoPadreId: {
           title: this.translate.instant('GLOBAL.entradaAsociada'),

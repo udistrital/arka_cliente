@@ -294,15 +294,7 @@ export class ConsultaEntradaComponent implements OnInit {
         FechaCreacion: {
           title: this.translate.instant('GLOBAL.fecha_entrada'),
           width: '70px',
-          valuePrepareFunction: this.tabla.formatDate,
-          filter: {
-            type: 'daterange',
-            config: {
-              daterange: {
-                format: 'yyyy/mm/dd',
-              },
-            },
-          },
+          ...this.tabla.getSettingsDate(),
         },
         FormatoTipoMovimientoId: {
           title: this.translate.instant('GLOBAL.tipo_entrada'),

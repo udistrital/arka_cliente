@@ -73,15 +73,7 @@ export class ListCatalogoComponent implements OnInit {
         FechaModificacion: {
           title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.FechaModificacionHeader'),
           width: '20%',
-          filter: {
-            type: 'daterange',
-            config: {
-              daterange: {
-                format: 'yyyy/mm/dd',
-              },
-            },
-          },
-          valuePrepareFunction: this.tabla.formatDate,
+          ...this.tabla.getSettingsDate(),
         },
         Activo: {
           width: '10%',

@@ -6,6 +6,7 @@ import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoH
 import { ActaRecibido } from '../../../@core/data/models/acta_recibido/acta_recibido';
 import { PopUpManager } from '../../../managers/popUpManager';
 import { ConfiguracionService } from '../../../@core/data/configuracion.service';
+import { SmartTableService } from '../../../@core/data/SmartTableService';
 
 @Component({
   selector: 'ngx-lista-movimientos',
@@ -34,6 +35,7 @@ export class ListaMovimientosComponent implements OnInit {
     private salidasHelper: SalidaHelper,
     private pUpManager: PopUpManager,
     private confService: ConfiguracionService,
+    private tabla: SmartTableService,
   ) {
     this.ajustes = new LocalDataSource();
     this.actas = new LocalDataSource();
@@ -196,12 +198,6 @@ export class ListaMovimientosComponent implements OnInit {
     }
   }
 
-  private formatDate(value) {
-    const date = new Date(value);
-    date.setUTCMinutes(date.getTimezoneOffset());
-    return new Date(Date.parse(date.toString())).toLocaleDateString('es-CO');
-  }
-
   get alerta() {
     return {
       type: 'warning',
@@ -240,23 +236,13 @@ export class ListaMovimientosComponent implements OnInit {
         FechaCreacion: {
           title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.FechaCreacionHeader'),
           width: '70px',
-          valuePrepareFunction: (value: any) => {
-            return this.formatDate(value);
-          },
-          filter: {
-            type: 'daterange',
-            config: {
-              daterange: {
-                format: 'yyyy/mm/dd',
-              },
-            },
-          },
+          ...this.tabla.getSettingsDate(),
         },
         FechaVistoBueno: {
           title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.FechaVistoBuenoHeader'),
           width: '70px',
           valuePrepareFunction: (value: any) => {
-            const date = value ? this.formatDate(value) :
+            const date = value ? this.tabla.formatDate(value) :
               this.translate.instant('GLOBAL.bajas.consulta.espera');
             return date;
           },
@@ -321,17 +307,7 @@ export class ListaMovimientosComponent implements OnInit {
         FechaCreacion: {
           title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.FechaCreacionHeader'),
           width: '30%',
-          valuePrepareFunction: (value: any) => {
-            return this.formatDate(value);
-          },
-          filter: {
-            type: 'daterange',
-            config: {
-              daterange: {
-                format: 'yyyy/mm/dd',
-              },
-            },
-          },
+          ...this.tabla.getSettingsDate(),
         },
         TrContable: {
           title: this.translate.instant('GLOBAL.ajuste-auto.afectacionContable'),
