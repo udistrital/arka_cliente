@@ -51,7 +51,7 @@
                   <label>{{'GLOBAL.Acta_Recibido.RegistroActa.unidadEjecutora' | translate}}</label>
                 </div>
                 <mat-select class="form-control" formControlName="UnidadEjecutora">
-                  <mat-option *ngFor="let unidad of unidadesEjecutoras" [value]="unidad">
+                  <mat-option *ngFor="let unidad of unidadesEjecutoras" [value]="unidad.Id">
                     {{unidad.Nombre}}
                   </mat-option>
                 </mat-select>
