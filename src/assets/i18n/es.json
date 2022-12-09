@@ -720,6 +720,8 @@
         "textPostElementoErr": "No se pudo actualizar el elemento",
         "textPutElementoErr": "No se pudo registrar el elemento"
       },
+      "noExiste": "El catálogo no existe",
+      "errCrear": "Error al crear el catálogo",
       "uno": "Catálogo",
       "crear": "Crear Catálogo",
       "editar": "Editar Catálogo",
@@ -1310,7 +1312,8 @@
         "umbralInferior": "Umbral Inferior (UVT)",
         "umbralSuperior": "Umbral Superior (UVT)",
         "bodegaConsumo": "Bodega de Consumo",
-        "errorRango": "Ingrese un rango válido",
+        "errorRango": "El rango indicado se solapa con otros tipos de bien.",
+        "errorPadre": "Si el tipo de bien es padre, éste no puede tener un tipo de bien padre.",
         "registro_text":"¿Desea registrar los datos ingresados?",
         "actualizacion_text": "¿Desea actualizar los datos ingresados?"
       },

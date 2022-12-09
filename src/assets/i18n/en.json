@@ -721,6 +721,8 @@
         "errorDetalleTtl": "Class not configured",
         "errorDetalleTxt": "Go to the section Catalog -> Catalog Building and assign the good type for the selected class"
       },
+      "noExiste": "El catálogo no existe",
+      "errCrear": "Error al crear el catálogo",
       "uno": "Catalogue",
       "crear": "Create Catalogue",
       "editar": "Edit Catalogue",
@@ -1310,7 +1312,8 @@
      "umbralInferior": "Umbral Inferior (UVT)",
      "umbralSuperior": "Umbral Superior (UVT)",
      "bodegaConsumo": "Bodega de Consumo",
-     "errorRango": "Ingrese un rango válido",
+     "errorRango": "El rango indicado se solapa con otros tipos de bien",
+     "errorPadre": "Si el tipo de bien es padre, éste no puede tener un tipo de bien padre.",
      "registro_text":"Do you want to register the data entered?",
      "actualizacion_text": "Do you want to update the data entered?"
    },

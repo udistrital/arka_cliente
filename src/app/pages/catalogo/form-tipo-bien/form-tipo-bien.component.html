@@ -9,6 +9,7 @@
             <mat-option value="">--{{ 'GLOBAL.seleccionar' | translate }}--</mat-option>
             <mat-option *ngFor="let tipo of tiposBienPadre" [value]="tipo.Id">{{tipo.Nombre}}</mat-option>
           </mat-select>
+          <mat-hint>{{ 'GLOBAL.parametros.tiposBien.errorPadre' | translate }}</mat-hint>
         </mat-form-field>
       </td>
       <td>

@@ -13,14 +13,7 @@ import { PopUpManager } from '../../../managers/popUpManager';
 })
 export class CrudCatalogoComponent implements OnInit {
 
-  catalogo_id: number;
-
-  @Input('catalogo_id')
-  set name(catalogo_id: number) {
-    this.catalogo_id = catalogo_id;
-    this.loadCatalogo();
-  }
-
+  @Input() catalogo_id: number;
   @Output() eventChange = new EventEmitter();
 
   info_catalogo: Catalogo;
@@ -66,11 +59,14 @@ export class CrudCatalogoComponent implements OnInit {
     if (this.catalogo_id !== undefined && this.catalogo_id !== 0) {
       this.catalogoElementosService.getCatalogoById(this.catalogo_id)
         .subscribe(res => {
-          if (res !== null) {
-            this.info_catalogo = <Catalogo>res;
-          }
-          this.titulo = this.translate.instant('GLOBAL.catalogo.editar_nombre', { NOMBRE: this.info_catalogo.Nombre });
           this.cargando = false;
+          if (res.Id) {
+            this.info_catalogo = <Catalogo>res;
+            this.titulo = this.translate.instant('GLOBAL.catalogo.editar_nombre', { NOMBRE: this.info_catalogo.Nombre });
+          } else {
+            this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.catalogo.noExiste'));
+            this.volver();
+          }
         });
     } else {
       this.info_catalogo = undefined;
@@ -97,12 +93,17 @@ export class CrudCatalogoComponent implements OnInit {
         if (willDelete.value) {
           this.info_catalogo = <Catalogo>catalogo;
           this.catalogoElementosService.putCatalogo(this.info_catalogo, this.info_catalogo.Id)
-            .subscribe(res => {
-              this.loadCatalogo();
-              this.eventChange.emit(true);
-              this.showToast('success',
-                this.translate.instant('GLOBAL.Actualizado'),
-                this.translate.instant('GLOBAL.Actualizado_Catalogo_placeholder'));
+            .subscribe((res: any) => {
+              this.cargando = false;
+              if (res.Id) {
+                this.loadCatalogo();
+                this.eventChange.emit(true);
+                this.showToast('success',
+                  this.translate.instant('GLOBAL.Actualizado'),
+                  this.translate.instant('GLOBAL.Actualizado_Catalogo_placeholder'));
+              } else {
+                this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.catalogo.noExiste'));
+              }
             });
         }
       });
@@ -125,12 +126,16 @@ export class CrudCatalogoComponent implements OnInit {
         if (willDelete.value) {
           this.info_catalogo = <Catalogo>catalogo;
           this.catalogoElementosService.postCatalogo(this.info_catalogo)
-            .subscribe((res) => {
-              this.info_catalogo = <Catalogo><unknown>res;
-              this.eventChange.emit(true);
-              this.showToast('success',
-                this.translate.instant('GLOBAL.Creado'),
-                this.translate.instant('GLOBAL.Creado_Catalogo_placeholder'));
+            .subscribe((res: any) => {
+              if (res.Id) {
+                this.info_catalogo = <Catalogo>res;
+                this.eventChange.emit(true);
+                this.showToast('success',
+                  this.translate.instant('GLOBAL.Creado'),
+                  this.translate.instant('GLOBAL.Creado_Catalogo_placeholder'));
+              } else {
+                this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.catalogo.errCrear'));
+              }
             });
         }
       });
