@@ -1309,6 +1309,8 @@
         "necesita_placa":"Requiere placa",
         "necesita_poliza":"Requiere póliza",
         "tipoBienPadre":"Tipo Bien padre",
+        "crear": "Crear tipo de bien",
+        "editar": "Editar tipo de bien",
         "umbralInferior": "Umbral Inferior (UVT)",
         "umbralSuperior": "Umbral Superior (UVT)",
         "bodegaConsumo": "Bodega de Consumo",

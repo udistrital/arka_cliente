@@ -64,8 +64,8 @@ export class TiposBienComponent implements OnInit {
 
   loadTablasSettings() {
     const f = {
-      registrar: this.translate.instant('GLOBAL.registrar_nueva_salida'),
-      editar: this.translate.instant('GLOBAL.Acta_Recibido.EdicionActa.Title'),
+      registrar: this.translate.instant('GLOBAL.parametros.tiposBien.crear'),
+      editar: this.translate.instant('GLOBAL.parametros.tiposBien.editar'),
     };
 
     this.settings = {
