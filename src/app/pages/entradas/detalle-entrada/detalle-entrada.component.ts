@@ -58,7 +58,7 @@ export class DetalleEntradaComponent implements OnInit {
     this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id;
     this.entradaEspecifica.Consecutivo = detalle.consecutivo;
     this.entradaEspecifica.UnidadEjecutora = this.detalleEntrada.unidadEjecutora;
-    this.loadContrato(this.detalleEntrada.contrato);
+    this.loadContrato(this.detalleEntrada.contrato, this.detalleEntrada.tipo_contrato_id);
 
     this.documentoId = this.detalleEntrada.documentoId;
     this.Proveedor = this.detalleEntrada.proveedor;
@@ -187,7 +187,7 @@ export class DetalleEntradaComponent implements OnInit {
     const detalle = JSON.parse(info.movimiento.Detalle);
   }
 
-  loadContrato(info: any): void {
+  loadContrato(info: any, tipo: any): void {
     if (info) {
       this.contrato = new Contrato;
       const ordenadorAux = new OrdenadorGasto;
@@ -203,7 +203,7 @@ export class DetalleEntradaComponent implements OnInit {
       supervisorAux.DocumentoIdentificacion = info.supervisor.documento_identificacion;
       this.contrato.OrdenadorGasto = ordenadorAux;
       this.contrato.NumeroContratoSuscrito = info.numero_contrato_suscrito;
-      this.contrato.TipoContrato = info.tipo_contrato;
+      this.contrato.TipoContrato = tipo;
       this.contrato.FechaSuscripcion = info.fecha_suscripcion;
       this.contrato.Supervisor = supervisorAux;
       this.contrato.Vigencia = info.vigencia;
