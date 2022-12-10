@@ -882,8 +882,8 @@ export class GestionarElementosComponent implements OnInit {
     this.dataSource.data = [];
     this.actaRecibidoHelper.postArchivo(formModel).subscribe((res: any) => {
       if (res !== null) {
-        if (res.Mensaje !== undefined) {
-          this.pUpManager.showAlertWithOptions(this.optionsErrPlantilla(res.Mensaje));
+        if (res.Mensaje) {
+          this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.Errores.' + res.Mensaje));
           this.clearFile();
         } else {
           this.fillForm(res.Elementos);

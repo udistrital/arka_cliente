@@ -261,28 +261,6 @@ export class EntradaHelper {
         );
     }
 
-
-    /**
-     * Entradas Get
-     * If the response has errors in the OAS API it should show a popup message with an error.
-     * If the response is successs, it returns the object's data.
-     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
-     */
-    public getEncargadoElementoByPlaca(placa) {
-        this.rqManager.setPath('ARKA_SERVICE');
-        return this.rqManager.get('entrada/encargado/' + placa).pipe(
-            map(
-                (res) => {
-                    if (res === 'error') {
-                        this.pUpManager.showErrorAlert('No se pudo consultar el encargado del elemento');
-                        return undefined;
-                    }
-                    return res;
-                },
-            ),
-        );
-    }
-
     /**
      * EntradaByActa Get
      * If the response has errors in the OAS API it should show a popup message with an error.
@@ -382,23 +360,6 @@ export class EntradaHelper {
                         return undefined;
                     }
                     return res;
-                },
-            ),
-        );
-    }
-
-    public putFormatoEntrada(FormatoTipoMovimiento) {
-        this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
-        return this.rqManager.put('formato_tipo_movimiento', FormatoTipoMovimiento).pipe(
-            map(
-                (res) => {
-                    if (res) {
-                        return res;
-                    } else {
-                        this.pUpManager.showErrorAlert('No se pudo consultar el contrato contratos');
-                        return undefined;
-
-                    }
                 },
             ),
         );
