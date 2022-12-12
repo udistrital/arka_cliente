@@ -10,7 +10,7 @@ export const environment = {
   ...WSO2,
 
   ASSETS_SERVICE: 'https://pruebasassets.portaloas.udistrital.edu.co/',
-  NOTIFICACION_SERVICE: 'ws://pruebasapi.intranetoas.udistrital.edu.co:8116/ws',
+  NOTIFICACION_SERVICE: 'https://pruebasassets.portaloas.udistrital.edu.co/',
 
   TOKEN: {
     AUTORIZATION_URL: 'https://autenticacion.portaloas.udistrital.edu.co/oauth2/authorize',
