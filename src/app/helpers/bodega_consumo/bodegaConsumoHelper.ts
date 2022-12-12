@@ -4,6 +4,7 @@ import { iif } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 import { PopUpManager } from '../../managers/popUpManager';
 import { DisponibilidadMovimientosService } from '../../@core/data/disponibilidad-movimientos.service';
+import { UserService } from '../../@core/data/users.service';
 
 @Injectable({
     providedIn: 'root',
@@ -14,8 +15,8 @@ export class BodegaConsumoHelper {
         private rqManager: RequestManager,
         private pUpManager: PopUpManager,
         private dispMvtos: DisponibilidadMovimientosService,
-    ) {
-    }
+        private userService: UserService,
+    ) { }
 
     /**
      * Entradas Get
@@ -176,10 +177,10 @@ export class BodegaConsumoHelper {
      * If the response is successs, it returns the object's data.
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
      */
-    public getElementosKardex(id) {
+    public getElementosKardex(id, limit, offset) {
         this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
         return this.rqManager.get('elementos_movimiento?query=ElementoCatalogoId:' + id +
-            '&limit=-1&sortby=FechaCreacion&order=asc').pipe(
+            '&limit=' + limit + '&offset=' + offset + '&sortby=FechaCreacion&order=asc').pipe(
                 map(
                     (res) => {
                         if (res === 'error') {
@@ -220,7 +221,8 @@ export class BodegaConsumoHelper {
      */
     public getSolicitudesBodega(tramiteOnly: boolean = false) {
         this.rqManager.setPath('ARKA_SERVICE');
-        const query = 'bodega_consumo/solicitud/' + (tramiteOnly ? '?tramite_only=true' : '');
+        const usuario = this.userService.getUserMail();
+        const query = 'bodega_consumo/solicitud/' + '?user=' + usuario + (tramiteOnly ? '&tramite_only=true' : '');
         return this.rqManager.get(query).pipe(
             map(
                 (res) => {

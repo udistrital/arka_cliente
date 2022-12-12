@@ -34,6 +34,7 @@ export class DetalleSolicitudComponent implements OnInit {
   form_apertura: FormGroup;
   Detalle_Solicitud: any;
   submitted: boolean;
+  metodo: number;
   @Output() done = new EventEmitter<boolean>();
   @Input('Editar')
   set name4(edit: boolean) {
@@ -271,7 +272,45 @@ export class DetalleSolicitudComponent implements OnInit {
     this.source.refresh();
   }
 
-  onAprobar() {
+  calculoSalidas(Id): Promise<Array<any>> {
+    return new Promise<Array<any>>(async (resolve) => {
+      this.BodegaConsumo.getElementosKardex(Id, -1, 0).subscribe((res: any) => {
+        const pila = [];
+        const aux = JSON.parse(res[0].MovimientoId.Detalle);
+        this.metodo = aux.Metodo_Valoracion;
+        if (this.metodo === 2) {
+          for (let i = 0; i < res.length; i++) {
+            if (res[i].MovimientoId.FormatoTipoMovimientoId.CodigoAbreviacion === 'AP_KDX' ||
+                res[i].MovimientoId.FormatoTipoMovimientoId.CodigoAbreviacion === 'ENT_KDX') {
+              for (let j = 0; j < res[i].Unidad; j++) {
+                pila.push(res[i]);
+              }
+            } else if (res[i].MovimientoId.FormatoTipoMovimientoId.CodigoAbreviacion === 'SAL_KDX') {
+              for (let j = 0; j < res[i].Unidad; j++) {
+                pila.shift();
+              }
+            }
+          }
+        } else if (this.metodo === 3) {
+          for (let i = 0; i < res.length; i++) {
+            if (res[i].MovimientoId.FormatoTipoMovimientoId.CodigoAbreviacion === 'AP_KDX' ||
+                res[i].MovimientoId.FormatoTipoMovimientoId.CodigoAbreviacion === 'ENT_KDX') {
+              for (let j = 0; j < res[i].Unidad; j++) {
+                pila.push(res[i]);
+              }
+            } else if (res[i].MovimientoId.FormatoTipoMovimientoId.CodigoAbreviacion === 'SAL_KDX') {
+              for (let j = 0; j < res[i].Unidad; j++) {
+                pila.pop();
+              }
+            }
+          }
+        }
+        resolve(pila);
+      });
+    });
+  }
+
+  async onAprobar() {
     if (this.submitted) {
       return;
     } else {
@@ -299,31 +338,41 @@ export class DetalleSolicitudComponent implements OnInit {
     );
 
     this.source.getAll().then((elementos) => {
-      // console.log({res});
       elementos.forEach(element => {
-
-        const elemento: any = {};
-        const valor_promedio = element.SaldoValor / element.SaldoCantidad;
-        // console.log(valor_promedio)
-        elemento.Id = element.Id;
-        elemento.Activo = true;
-        elemento.ElementoCatalogoId = element.ElementoCatalogoId.Id;
-        elemento.Unidad = element.CantidadAprobada;
-        elemento.ValorTotal = element.CantidadAprobada * valor_promedio;
-        elemento.ValorUnitario = valor_promedio;
-        elemento.SaldoCantidad = element.SaldoCantidad - element.CantidadAprobada;
-        elemento.SaldoValor = element.SaldoValor - (valor_promedio * element.CantidadAprobada);
-
-        SalidaKardex.Movimiento[0].Elementos.push(elemento);
-
+        const disponibles = [this.calculoSalidas(element.ElementoCatalogoId.Id)];
+        Promise.all(disponibles);
+        let disp: any;
+        disponibles[0].then(r => {
+          disp = r;
+          const elemento: any = {};
+          const valor_promedio = element.SaldoValor / element.SaldoCantidad;
+          elemento.Id = element.Id;
+          elemento.Activo = true;
+          elemento.ElementoCatalogoId = element.ElementoCatalogoId.Id;
+          elemento.Unidad = element.CantidadAprobada;
+          elemento.ValorTotal = 0;
+          if (this.metodo === 2) {
+            for (let i = 0; i < element.CantidadAprobada; i++) {
+              elemento.ValorTotal += disp[i].ValorUnitario;
+            }
+          } else if (this.metodo === 3) {
+            for (let i = 0; i < element.CantidadAprobada; i++) {
+              elemento.ValorTotal += disp[disp.length - 1 - i].ValorUnitario;
+            }
+          }
+          elemento.ValorUnitario = elemento.ValorTotal / element.CantidadAprobada;
+          elemento.SaldoCantidad = element.SaldoCantidad - element.CantidadAprobada;
+          elemento.SaldoValor = element.SaldoValor - elemento.ValorTotal;
+          SalidaKardex.Movimiento[0].Elementos.push(elemento);
+          this.BodegaConsumo.postResponderSolicitud(SalidaKardex).subscribe((res: any) => {
+            if (res) {
+              this.done.emit(true);
+              this.pUpManager.showAlertWithOptions(this.optionsAprobacion);
+            }
+          });
+        });
       });
 
-      this.BodegaConsumo.postResponderSolicitud(SalidaKardex).subscribe((res: any) => {
-        if (res) {
-          this.done.emit(true);
-          this.pUpManager.showAlertWithOptions(this.optionsAprobacion);
-        }
-      });
     });
 
   }

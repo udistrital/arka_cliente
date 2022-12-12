@@ -1,10 +1,8 @@
 import { Component, OnInit, ViewChildren, QueryList } from '@angular/core';
-import { Observable, scheduled, asyncScheduler } from 'rxjs';
+import { scheduled, asyncScheduler, Observable } from 'rxjs';
 import { Router, ActivatedRoute } from '@angular/router';
-import { FormBuilder, FormGroup, Validators, FormArray, ValidatorFn, ValidationErrors } from '@angular/forms';
-import { NuxeoService } from '../../../@core/utils/nuxeo.service';
-import { MatTable } from '@angular/material';
-import 'hammerjs';
+import { FormBuilder, FormGroup, Validators, FormArray, ValidatorFn, ValidationErrors, AbstractControl } from '@angular/forms';
+import { MatTable } from '@angular/material/table';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
 import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
 import { ActaRecibido } from '../../../@core/data/models/acta_recibido/acta_recibido';
@@ -19,18 +17,16 @@ import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { Store } from '@ngrx/store';
 import { IAppState } from '../../../@core/store/app.state';
 import { ListService } from '../../../@core/store/services/list.service';
-import { AutocompleterOption } from '../../../@theme/components';
 import { PopUpManager } from '../../../managers/popUpManager';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-import { DocumentoService } from '../../../@core/data/documento.service';
 import { UserService } from '../../../@core/data/users.service';
-import { AbstractControl } from '@angular/forms/src/model';
-import { isObject } from 'rxjs/internal-compatibility';
 import { TipoActa } from '../../../@core/data/models/acta_recibido/tipo_acta';
 import { EstadoElemento } from '../../../@core/data/models/acta_recibido/estado_elemento';
 import { debounceTime, distinctUntilChanged, filter, mergeAll, switchMap } from 'rxjs/operators';
 import { ActaValidators } from '../validators';
 import { CommonActas } from '../shared';
+import { GestorDocumentalService } from '../../../helpers/gestor_documental/gestorDocumentalHelper';
+import { OikosHelper } from '../../../helpers/oikos/oikosHelper';
 
 @Component({
   selector: 'ngx-registro-acta-recibido',
@@ -58,18 +54,11 @@ export class RegistroActaRecibidoComponent implements OnInit {
   // Tablas parametricas
 
   Estados_Acta: any;
-  Tipos_Bien: any;
-  Estados_Elemento: any;
 
   // Modelos
-  Acta: ActaRecibido;
-  Soportes_Acta: Array<SoporteActa>;
-  Historico_Acta: HistoricoActa;
   Ubicaciones: any[] = [];
-  Sedes: any[] = [];
-  Dependencias: any[] = [];
-  Dependencias2: AutocompleterOption[] = [];
-  DatosTotales: any;
+  Sedes: any = [];
+  dependencias: any[] = [];
   Totales: Array<any>;
   fileDocumento: any[];
   idDocumento: number[];
@@ -84,6 +73,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
   totales: any;
   minLength: number = 4;
   sizeSoporte: number = 5;
+  unidadesEjecutoras: any;
 
   constructor(
     private translate: TranslateService,
@@ -95,10 +85,10 @@ export class RegistroActaRecibidoComponent implements OnInit {
     private listService: ListService,
     private pUpManager: PopUpManager,
     private sanitization: DomSanitizer,
-    private nuxeoService: NuxeoService,
-    private documentoService: DocumentoService,
+    private documento: GestorDocumentalService,
     private userService: UserService,
     private route: ActivatedRoute,
+    private oikosHelper: OikosHelper,
   ) {
     this.maxDate = new Date();
     this.minDate = new Date(-1);
@@ -109,9 +99,9 @@ export class RegistroActaRecibidoComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.listService.findDependencias();
     this.listService.findSedes();
     this.listService.findEstadosActa();
+    this.listService.findUnidadesEjecutoras();
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
     });
     this.route.data.subscribe(data => {
@@ -168,12 +158,14 @@ export class RegistroActaRecibidoComponent implements OnInit {
   public loadLists(): Promise<void> {
     return new Promise<void>(async (resolve) => {
       this.store.select((state) => state).subscribe(list => {
-        list.listSedes[0] && list.listDependencias[0] && list.listEstadosActa[0] ? (
-          this.Sedes = CommonActas.preparaSedes(list.listSedes[0]),
-          this.Dependencias = CommonActas.preparaDependencias(list.listDependencias[0]),
-          this.Dependencias2 = CommonActas.convierteDependencias(this.Dependencias),
-          this.Estados_Acta = list.listEstadosActa[0],
-          resolve()) : null;
+        if (list.listEstadosActa.length && list.listEstadosActa[0] &&
+          list.listSedes.length && list.listSedes[0] &&
+          list.listUnidadesEjecutoras.length && list.listUnidadesEjecutoras[0]) {
+          this.Sedes = list.listSedes[0];
+          this.Estados_Acta = list.listEstadosActa[0];
+          this.unidadesEjecutoras = list.listUnidadesEjecutoras[0];
+          resolve();
+        }
       });
     });
   }
@@ -209,6 +201,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
           file.url = this.cleanURL(file.urlTemp);
           file.IdDocumento = 13; // tipo de documento (API documentos_crud)
           file.file = event.target.files[0];
+          file.nombre = file.name;
           this.controlSoportes.at(index).get('Soporte').setValue(file.name);
           this.fileDocumento[index] = file;
         } else {
@@ -241,17 +234,27 @@ export class RegistroActaRecibidoComponent implements OnInit {
         this.controlSoportes.push(this.newSoporte);
       }
     }
-    this.firstForm.setValue(transaccion_);
+    if (transaccion_.Formulario1.Sede, transaccion_.Formulario1.Dependencia) {
+      const sede_ = this.Sedes.find((x) => x.Id === transaccion_.Formulario1.Sede);
+      this.Actas_Recibido.getAsignacionesBySedeAndDependencia(sede_.CodigoAbreviacion, transaccion_.Formulario1.Dependencia.Id)
+        .subscribe((res: any) => {
+          this.Ubicaciones = res;
+          this.firstForm.setValue(transaccion_);
+        });
+    } else {
+      this.firstForm.setValue(transaccion_);
+    }
   }
 
   private get baseForm() {
     return this.fb.group({
       Formulario1: this.fb.group({
         Contratista: [''],
+        UnidadEjecutora: [0],
         Proveedor: ['', [ActaValidators.validarTercero]],
-        Sede: [''],
+        Sede: [0],
         Dependencia: [''],
-        Ubicacion: [''],
+        Ubicacion: [0],
       }),
       Formulario2: this.fb.array([this.newSoporte]),
       Formulario3: this.fb.group({
@@ -263,14 +266,17 @@ export class RegistroActaRecibidoComponent implements OnInit {
   }
 
   private setFormValidators() {
-    this.controlSede.setValidators(this.ae ? [Validators.required] : []);
+    this.controlSede.setValidators(this.ae ? [Validators.min(1)] : []);
     this.controlDependencia.setValidators(this.ae ? [Validators.required] : []);
-    this.controlUbicacion.setValidators(this.ae ? [Validators.required] : []);
-    this.controlContratista.setValidators(this.ae ? [] : [Validators.required, ActaValidators.validarTercero] );
+    this.controlUbicacion.setValidators(this.ae ? [Validators.min(1)] : []);
+    this.controlContratista.setValidators(this.ae ? [] : [Validators.required, ActaValidators.validarTercero]);
   }
 
   private setFormEvents() {
-    // Ante cualquier cambio en el formulario
+    this.oikosHelper.cambiosDependencia_(this.controlDependencia.valueChanges).subscribe((response: any) => {
+      this.dependencias = response.queryOptions;
+    });
+
     this.firstForm.valueChanges
     .pipe(debounceTime(200))
     .subscribe((form: any) => {
@@ -281,8 +287,8 @@ export class RegistroActaRecibidoComponent implements OnInit {
     this.controlContratista.valueChanges
     .pipe(
       debounceTime(200), distinctUntilChanged(),
-      filter(query => query.length && query.length >= this.minLength),
-      switchMap(d => this.queryContratistas(d)),
+      filter((query: any) => query.length && query.length >= this.minLength),
+      switchMap((d: string) => this.queryContratistas(d)),
     )
     .subscribe(data => {
       this.Contratistas = data;
@@ -292,8 +298,8 @@ export class RegistroActaRecibidoComponent implements OnInit {
     this.controlProveedor.valueChanges
     .pipe(
       debounceTime(200), distinctUntilChanged(),
-      filter(query => query.length && query.length >= this.minLength),
-      switchMap(d => this.queryProveedores(d)),
+      filter((query: any) => query.length && query.length >= this.minLength),
+      switchMap((d: string) => this.queryProveedores(d)),
     )
     .subscribe(data => {
       this.Proveedores = data;
@@ -305,8 +311,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
       this.controlDependencia.valueChanges,
     ], asyncScheduler)
     .pipe(mergeAll(), debounceTime(200), distinctUntilChanged())
-    .subscribe((change: any) => {
-      // console.debug({change});
+    .subscribe(() => {
       this.Traer_Relacion_Ubicaciones();
     });
   }
@@ -342,28 +347,20 @@ export class RegistroActaRecibidoComponent implements OnInit {
     this.fileDocumento.splice(i, 1);
   }
 
-  async postSoporteNuxeo(files: any) {
-    return new Promise<void>(async (resolve, reject) => {
-      files.forEach((file) => {
-        file.Id = file.nombre;
-        file.nombre = 'soporte_' + file.IdDocumento + '_acta_recibido';
-        file.key = 'soporte_' + file.IdDocumento;
+  async postFile(file: any) {
+    if (!file) {
+      return;
+    }
+
+    const rolePromise = new Promise<number>((resolve, reject) => {
+      this.documento.uploadFiles([file]).subscribe((data: any) => {
+        if (data && data.length) {
+          resolve(+data[0].res.Id);
+        }
       });
-      this.nuxeoService.getDocumentos$(files, this.documentoService)
-        .subscribe(response => {
-          if (Object.keys(response).length === files.length) {
-            files.forEach((file) => {
-              const a = this.idDocumento[this.idDocumento.length - 1] === response[file.key].Id;
-              if (!a) {
-                this.idDocumento.push(response[file.key].Id);
-              }
-              resolve();
-            });
-          }
-        }, error => {
-          reject(error);
-        });
     });
+
+    return rolePromise;
   }
 
   eventoTotales(event) {
@@ -384,14 +381,15 @@ export class RegistroActaRecibidoComponent implements OnInit {
     this.Registrando = true;
     const start = async () => {
       await CommonActas.asyncForEach(this.fileDocumento, async (file) => {
-        await this.postSoporteNuxeo([file]);
+        const docId = await this.postFile(file);
+        this.idDocumento.push(docId);
       });
     };
     await start();
     const transaccionActa = new TransaccionActaRecibido();
 
     const Datos = this.firstForm.value;
-    transaccionActa.ActaRecibido = this.generarActa();
+    transaccionActa.ActaRecibido = this.generarActa(Datos);
     transaccionActa.UltimoEstado = this.generarEstadoActa(Datos, this.ae ? EstadoActa_t.Aceptada : EstadoActa_t.Registrada);
     transaccionActa.Elementos = <Elemento[]>[];
     this.ae ? transaccionActa.Elementos = this.generarElementos() : null;
@@ -422,13 +420,13 @@ export class RegistroActaRecibidoComponent implements OnInit {
     });
   }
 
-  private generarActa(): ActaRecibido {
+  private generarActa(Datos: any): ActaRecibido {
     const ta = this.ae ? 2 : 1;
-
     const actaRecibido = new ActaRecibido;
     actaRecibido.Id = null;
     actaRecibido.Activo = true;
     actaRecibido.TipoActaId = <TipoActa>{Id: ta};
+    actaRecibido.UnidadEjecutoraId = Datos.Formulario1.UnidadEjecutora;
 
     return actaRecibido;
   }
@@ -474,6 +472,8 @@ export class RegistroActaRecibidoComponent implements OnInit {
       for (const datos of this.DatosElementos) {
 
         const elemento = new Elemento;
+        const subgrupo = datos.SubgrupoCatalogoId ? datos.SubgrupoCatalogoId.SubgrupoId.Id : null;
+        const tipoBien = datos.TipoBienId ? datos.TipoBienId.Id : null;
 
         elemento.Id = null;
         elemento.Nombre = datos.Nombre;
@@ -488,7 +488,8 @@ export class RegistroActaRecibidoComponent implements OnInit {
         elemento.PorcentajeIvaId = parseInt(datos.PorcentajeIvaId, 10);
         elemento.ValorIva = parseFloat(datos.ValorIva);
         elemento.ValorFinal = parseFloat(datos.ValorTotal);
-        elemento.SubgrupoCatalogoId = datos.SubgrupoCatalogoId.SubgrupoId.Id;
+        elemento.SubgrupoCatalogoId = subgrupo ? subgrupo : null;
+        elemento.TipoBienId = tipoBien ? tipoBien : null;
         elemento.EstadoElementoId = <EstadoElemento>{Id: ee};
         elemento.ActaRecibidoId = new ActaRecibido;
         elemento.Activo = true;
@@ -534,25 +535,20 @@ export class RegistroActaRecibidoComponent implements OnInit {
     return this.ae ? 'Formulario_Acta_Especial' : 'Formulario_Registro';
   }
 
-  Traer_Relacion_Ubicaciones() {
-    const sede = this.controlSede;
-    const dependencia = this.controlDependencia;
-    // console.debug({sede: sede.value, dependencia: dependencia.value});
-    if (sede.value && dependencia.value && dependencia.value.value) {
-      const transaccion = {
-        Sede: this.Sedes.find((x) => x.Id === parseFloat(sede.value)),
-        Dependencia: this.Dependencias.find((x) => x.Id === dependencia.value.value),
-      };
-      // console.debug({transaccion});
-      this.Actas_Recibido.postRelacionSedeDependencia(transaccion).subscribe((res: any) => {
-        const relaciones = res[0].Relaciones;
-        if (isObject(relaciones)) {
-          this.Ubicaciones = relaciones;
-        } else {
-          this.Ubicaciones = [];
-        }
-      });
+  Traer_Relacion_Ubicaciones(
+    sede = this.controlSede.value,
+    dependencia = this.controlDependencia.value) {
+
+    if (!sede || !dependencia) {
+      this.Ubicaciones = [];
+      this.controlUbicacion.patchValue(0);
+      return;
     }
+
+    const sede_ = this.Sedes.find((x) => x.Id === sede);
+    this.Actas_Recibido.getAsignacionesBySedeAndDependencia(sede_.CodigoAbreviacion, dependencia.Id).subscribe((res: any) => {
+      this.Ubicaciones = res;
+    });
   }
 
   private checkValidness: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {

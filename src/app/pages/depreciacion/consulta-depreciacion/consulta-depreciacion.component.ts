@@ -7,6 +7,7 @@ import { EstadoMovimiento } from '../../../@core/data/models/entrada/entrada';
 import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
 import { PopUpManager } from '../../../managers/popUpManager';
 import { DepreciacionHelper } from '../../../helpers/movimientos/depreciacionHelper';
+import { SmartTableService } from '../../../@core/data/SmartTableService';
 
 @Component({
   selector: 'ngx-consulta-depreciacion',
@@ -37,6 +38,7 @@ export class ConsultaDepreciacionComponent implements OnInit {
     private depreciacionHelper: DepreciacionHelper,
     private pUpManager: PopUpManager,
     private confService: ConfiguracionService,
+    private tabla: SmartTableService,
   ) { }
 
   ngOnInit() {
@@ -192,7 +194,7 @@ export class ConsultaDepreciacionComponent implements OnInit {
         position: 'right',
         delete: this.modo === 'consulta',
         edit: true,
-        add: this.modo === 'consulta' && !!this.confService.getAccion('registrarCierre'),
+        add: !!this.confService.getAccion('registrarCierre') && (this.modo === 'consulta'),
       },
       add: {
         addButtonContent: '<i class="fas" title="' + t.registrar + '" aria-label="' + t.registrar + '">'
@@ -209,23 +211,13 @@ export class ConsultaDepreciacionComponent implements OnInit {
         FechaCreacion: {
           title: this.translate.instant('GLOBAL.fecha_creacion'),
           width: '15%',
-          valuePrepareFunction: (value) => {
-            return this.formatDate(value);
-          },
-          filter: {
-            type: 'daterange',
-            config: {
-              daterange: {
-                format: 'yyyy/mm/dd',
-              },
-            },
-          },
+          ...this.tabla.getSettingsDate(),
         },
         FechaAprobacion: {
           title: this.translate.instant('GLOBAL.fechaAprobacion'),
           width: '20%',
           valuePrepareFunction: (value) => {
-            const date = value ? this.formatDate(value) :
+            const date = value ? this.tabla.formatDate(value) :
               this.translate.instant('GLOBAL.bajas.consulta.espera');
             return date;
           },
@@ -241,17 +233,7 @@ export class ConsultaDepreciacionComponent implements OnInit {
         FechaCorte: {
           title: this.translate.instant('GLOBAL.fechaCorte'),
           width: '15%',
-          valuePrepareFunction: (value) => {
-            return this.formatDate(value);
-          },
-          filter: {
-            type: 'daterange',
-            config: {
-              daterange: {
-                format: 'yyyy/mm/dd',
-              },
-            },
-          },
+          ...this.tabla.getSettingsDate(),
         },
         Observacion: {
           title: this.translate.instant('GLOBAL.observaciones'),
@@ -260,12 +242,6 @@ export class ConsultaDepreciacionComponent implements OnInit {
         ...columns,
       },
     };
-  }
-
-  private formatDate(value) {
-    const date = new Date(value);
-    date.setUTCMinutes(date.getTimezoneOffset());
-    return new Date(Date.parse(date.toString())).toLocaleDateString('es-CO');
   }
 
 }

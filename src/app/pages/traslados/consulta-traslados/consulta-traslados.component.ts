@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { LocalDataSource } from 'ng2-smart-table';
 import { ConfiguracionService } from '../../../@core/data/configuracion.service';
 import { EstadoMovimiento } from '../../../@core/data/models/entrada/entrada';
+import { SmartTableService } from '../../../@core/data/SmartTableService';
 import { UserService } from '../../../@core/data/users.service';
 import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
 import { TrasladosHelper } from '../../../helpers/movimientos/trasladosHelper';
@@ -30,14 +31,13 @@ export class ConsultaTrasladosComponent implements OnInit {
 
   constructor(
     private translate: TranslateService,
-    private router: Router,
     private entradasHelper: EntradaHelper,
     private route: ActivatedRoute,
     private trasladosHelper: TrasladosHelper,
     private pUpManager: PopUpManager,
     private confService: ConfiguracionService,
     private userService: UserService,
-  ) { }
+    private tabla: SmartTableService) { }
 
   ngOnInit() {
     this.route.data.subscribe(data => {
@@ -52,22 +52,23 @@ export class ConsultaTrasladosComponent implements OnInit {
   }
 
   loadTraslados(): void {
-    this.trasladosHelper.getTraslados(this.modo === 'confirmacion', this.modo === 'revision').subscribe(res => {
-      if (res.length) {
-        res.forEach(salida => {
-          salida.EstadoMovimientoId = this.estadosMovimiento.find(estado =>
-            estado.Id === salida.EstadoMovimientoId).Nombre;
-        });
-      }
-      this.source.load(res);
-      this.source.setSort([{ field: 'FechaCreacion', direction: 'desc' }]);
-      this.mostrar = true;
-    });
+    this.trasladosHelper.getTraslados(this.modo === 'confirmacion', this.modo === 'revision')
+      .subscribe(res => {
+        if (res.length) {
+          res.forEach(salida => {
+            salida.EstadoMovimientoId = this.estadosMovimiento.find(estado =>
+              estado.Id === salida.EstadoMovimientoId).Nombre;
+          });
+        }
+        this.source.load(res);
+        this.source.setSort([{ field: 'FechaCreacion', direction: 'desc' }]);
+        this.mostrar = true;
+      });
   }
 
   private loadEstados() {
     this.entradasHelper.getEstadosMovimiento().toPromise().then(res => {
-      if (res.length > 0) {
+      if (res.length) {
         this.estadosMovimiento = res;
         this.loadTablaSettings();
         this.loadTraslados();
@@ -227,57 +228,22 @@ export class ConsultaTrasladosComponent implements OnInit {
         FechaCreacion: {
           title: this.translate.instant('GLOBAL.fecha_creacion'),
           width: '70px',
-          valuePrepareFunction: (value) => {
-            const date = new Date(Date.parse(value)).toLocaleDateString('es-CO');
-            return date;
-          },
-          filter: {
-            type: 'daterange',
-            config: {
-              daterange: {
-                format: 'yyyy/mm/dd',
-              },
-            },
-          },
+          ...this.tabla.getSettingsDate(),
         },
         FuncionarioOrigen: {
           title: this.translate.instant('GLOBAL.funcionarioOrigen'),
-          valuePrepareFunction: (value: any) => {
-            return value ? value.NombreCompleto : '';
-          },
-          filterFunction: this.filterFunction,
+          ...this.tabla.getSettingsObject('NombreCompleto'),
         },
         FuncionarioDestino: {
           title: this.translate.instant('GLOBAL.funcionarioDestino'),
-          valuePrepareFunction: (value: any) => {
-            return value ? value.NombreCompleto : '';
-          },
-          filterFunction: this.filterFunction,
+          ...this.tabla.getSettingsObject('NombreCompleto'),
         },
         Ubicacion: {
           title: this.translate.instant('GLOBAL.ubicacion'),
-          valuePrepareFunction: (value: any) => {
-            if (value !== null) {
-              return value;
-            } else {
-              return '';
-            }
-          },
         },
         ...columns,
       },
     };
   }
 
-  private filterFunction(cell?: any, search?: string): boolean {
-    if (cell && search.length) {
-      if (cell && cell.NombreCompleto) {
-        if ((cell.NombreCompleto.toUpperCase()).indexOf(search.toUpperCase()) > -1) {
-          return true;
-        }
-      }
-    } else {
-      return false;
-    }
-  }
 }

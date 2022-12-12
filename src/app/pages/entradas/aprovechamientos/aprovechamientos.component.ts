@@ -1,13 +1,16 @@
 import { Component, OnInit, ViewChild, Input, Output, EventEmitter } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { NbStepperComponent } from '@nebular/theme';
-import { TerceroCriterioPlanta } from '../../../@core/data/models/terceros_criterio';
+import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Supervisor } from '../../../@core/data/models/terceros_criterio';
 import { PopUpManager } from '../../../managers/popUpManager';
-import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
 import { Observable } from 'rxjs';
-import { map, startWith } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, map, startWith, switchMap } from 'rxjs/operators';
 import { TransaccionEntrada } from '../../../@core/data/models/entrada/entrada';
 import { TranslateService } from '@ngx-translate/core';
+import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
+import { MatTableDataSource } from '@angular/material/table';
+import { MatPaginator } from '@angular/material/paginator';
+import { CommonEntradas } from '../CommonEntradas';
+import { CommonElementos } from '../CommonElementos';
 
 @Component({
   selector: 'ngx-aprovechamientos',
@@ -17,88 +20,110 @@ import { TranslateService } from '@ngx-translate/core';
 export class AprovechamientosComponent implements OnInit {
 
   // Formularios
-  fechaForm: FormGroup;
+  elementosForm: FormGroup;
   supervisorForm: FormGroup;
   observacionForm: FormGroup;
+  flag = true;
+  dependenciaSupervisor: String;
 
   // Validadores
-  vigenciaSelect: boolean;
-
-  validar: boolean = false;
+  dataSource: MatTableDataSource<any>;
+  displayedColumns: any;
+  elementos: any[];
   cargando_supervisores: boolean = true;
 
-  private Supervisores: TerceroCriterioPlanta[];
-  supervisoresFiltrados: Observable<TerceroCriterioPlanta[]>;
+  private Supervisores: Supervisor[];
+  supervisoresFiltrados: Observable<Supervisor[]>;
 
-  @ViewChild('stepper') stepper: NbStepperComponent;
+  @ViewChild('paginator', {static: true}) paginator: MatPaginator;
 
   @Input() actaRecibidoId: number;
   @Output() data: EventEmitter<TransaccionEntrada> = new EventEmitter<TransaccionEntrada>();
 
   constructor(
-    private tercerosHelper: TercerosHelper,
+    private common: CommonEntradas,
+    private commonElementos: CommonElementos,
+    private entradasHelper: EntradaHelper,
     private pUpManager: PopUpManager,
     private fb: FormBuilder,
-    private translate: TranslateService) {
-    this.vigenciaSelect = false;
-    this.validar = false;
+    private translate: TranslateService,
+  ) {
+    this.dependenciaSupervisor = '';
   }
 
   ngOnInit() {
-    this.fechaForm = this.fb.group({
-      fechaCtrl: ['', Validators.required],
-    });
-    this.observacionForm = this.fb.group({
-      observacionCtrl: ['', Validators.nullValidator],
-    });
+    this.displayedColumns = this.commonElementos.columnsElementos;
+    this.elementosForm = this.commonElementos.formElementos;
+    this.observacionForm = this.common.formObservaciones;
     this.supervisorForm = this.fb.group({
       supervisorCtrl: ['', Validators.required],
     });
+    this.dataSource = new MatTableDataSource<any>();
+    this.dataSource.paginator = this.paginator;
     this.loadSupervisores();
   }
 
-  private filtroSupervisores(nombre: string): TerceroCriterioPlanta[] {
+  addElemento() {
+    const form = this.commonElementos.elemento;
+    (this.elementosForm.get('elementos') as FormArray).push(form);
+    this.dataSource.data = this.dataSource.data.concat({});
+    this.cambiosPlaca(form.get('Placa').valueChanges);
+  }
+
+  private cambiosPlaca(valueChanges: Observable<any>) {
+    valueChanges.pipe(
+      debounceTime(250),
+      distinctUntilChanged(),
+      switchMap((val: any) => this.commonElementos.loadElementos(val)),
+    ).subscribe((response: any) => {
+      this.elementos = response.queryOptions;
+    });
+  }
+
+  private filtroSupervisores(nombre: string): Supervisor[] {
     // if (nombre.length >= 4 ) {
     const valorFiltrado = nombre.toLowerCase();
-    return this.Supervisores.filter(sup => sup.TerceroPrincipal.NombreCompleto.toLowerCase().includes(valorFiltrado));
+    return this.Supervisores.filter(sup => sup.Nombre.toLowerCase().includes(valorFiltrado));
     // } else return [];
   }
 
-
   private loadSupervisores(): void {
-    this.tercerosHelper.getTercerosByCriterio('funcionarioPlanta').subscribe(res => {
+    this.entradasHelper.getSupervisores('supervisor_contrato?limit=-1').subscribe(res => {
       if (Array.isArray(res)) {
         this.Supervisores = res;
         this.supervisoresFiltrados = this.supervisorForm.get('supervisorCtrl').valueChanges
           .pipe(
             startWith(''),
-            map(val => typeof val === 'string' ? val : this.muestraSupervisor(val)),
-            map(nombre => this.filtroSupervisores(nombre)),
+            map((val: any) => typeof val === 'string' ? val : this.muestraSupervisor(val)),
+            map((nombre: string) => this.filtroSupervisores(nombre)),
           );
-        // console.log({supervisores: this.Supervisores});
         this.cargando_supervisores = false;
       }
     });
   }
 
-  muestraSupervisor(sup: TerceroCriterioPlanta): string {
-    if (sup.TerceroPrincipal !== undefined) {
-      return sup.TerceroPrincipal.NombreCompleto;
+  muestraSupervisor(sup: Supervisor): string {
+    if (sup.Nombre !== undefined) {
+      return sup.Nombre;
     } else {
       return '';
     }
   }
 
   datosSupervisor(param: string): string {
-    const supervisorSeleccionado: TerceroCriterioPlanta = <TerceroCriterioPlanta>this.supervisorForm.value.supervisorCtrl;
-    // console.log({supervisorSeleccionado});
-    if (supervisorSeleccionado && supervisorSeleccionado.Sede) {
+    const supervisorSeleccionado: Supervisor = <Supervisor>this.supervisorForm.value.supervisorCtrl;
+    if (supervisorSeleccionado) {
+      if (this.flag) {
+        this.flag = false;
+        this.entradasHelper.getDependenciaSupervisor('dependencia_SIC', supervisorSeleccionado.DependenciaSupervisor).subscribe(res => {
+          if (Array.isArray(res)) {
+            this.dependenciaSupervisor = res[0].ESFDEPENCARGADA;
+          }
+        });
+      }
       switch (param) {
         case 'sede':
-          return supervisorSeleccionado.Sede.Nombre;
-
-        case 'dependencia':
-          return supervisorSeleccionado.Dependencia.Nombre;
+          return supervisorSeleccionado.SedeSupervisor;
 
         default:
           return '';
@@ -108,30 +133,23 @@ export class AprovechamientosComponent implements OnInit {
   }
 
   onObservacionSubmit() {
-    this.validar = true;
+    this.pUpManager.showAlertWithOptions(this.common.optionsSubmit)
+      .then((result) => {
+        if (result.value) {
+          this.onSubmit();
+        }
+      });
   }
 
-// Método para enviar registro
+  // Método para enviar registro
   onSubmit() {
-    if (this.validar) {
-      const detalle = {
-        acta_recibido_id: +this.actaRecibidoId,
-        vigencia: this.fechaForm.value.fechaCtrl,
-        supervisor: this.supervisorForm.value.supervisorCtrl.TerceroPrincipal.Id,
-      };
-
-      const transaccion = <TransaccionEntrada>{
-        Observacion: this.observacionForm.value.observacionCtrl,
-        Detalle: detalle,
-        FormatoTipoMovimientoId: 'ENT_PPA',
-        SoporteMovimientoId: 0,
-      };
-
-      this.data.emit(transaccion);
-    } else {
-      this.pUpManager.showErrorAlert('No ha llenado todos los campos! No es posible hacer el registro.');
-    }
-
+    const detalle = {
+      acta_recibido_id: +this.actaRecibidoId,
+      elementos: this.elementosForm.get('elementos').value.map(el => el.Id),
+      supervisor: this.supervisorForm.value.supervisorCtrl.Id,
+    };
+    const transaccion = this.common.crearTransaccionEntrada(this.observacionForm.value.observacionCtrl, detalle, 'ENT_PPA', 0);
+    this.data.emit(transaccion);
   }
 
 }

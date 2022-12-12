@@ -1,0 +1,23 @@
+mat-table {
+    overflow-x: scroll;
+}
+
+mat-select {
+    height: auto;
+}
+
+label {
+    color: black;
+}
+
+.acciones {
+    width: 50px;
+    text-align: center;
+}
+
+th,
+td,
+input {
+    height: 50px;
+    width: 160px;
+}

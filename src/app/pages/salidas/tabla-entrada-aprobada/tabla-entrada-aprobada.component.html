@@ -48,7 +48,7 @@
         </div>
         <div class="col">
           <p class="text-uppercase"><strong>{{'GLOBAL.Acta_Recibido.RegistroActa.Ubicacion' | translate}}:</strong>
-            {{ salida?.Ubicacion?.Nombre }}</p>
+            {{ salida?.Ubicacion.EspacioFisicoId?.Nombre }}</p>
         </div>
       </div>
     </mat-expansion-panel>
@@ -56,8 +56,7 @@
     <mat-expansion-panel [expanded]="true" hideToggle>
       <mat-expansion-panel-header>{{'GLOBAL.salidas.elementos' | translate}}
       </mat-expansion-panel-header>
-      <ngx-tabla-elementos-asignados [entradaId]="consecutivoEntrada" [edicionSalida]="edicion"
-        [salida_id]="salida_id" [actaRecibidoId]="actaRecibidoId">
+      <ngx-tabla-elementos-asignados [entradaId]="consecutivoEntrada" [salida_id]="salida_id">
       </ngx-tabla-elementos-asignados>
     </mat-expansion-panel>
   </mat-accordion>

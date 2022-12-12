@@ -7,11 +7,7 @@ Archivos de configuracion para variables de entorno para
 - `prod`: Entorno de produccion
 
 ##Archivo de configuracion
-```shell 
-NUXEO:
-{
-    PATH: 'endpoint documentos',
-},
+```shell
 CONFIGURACION_SERVICE: 'endpoint configuración',
 NOTIFICACION_SERVICE: 'endpoint notificaciones',
 CONF_MENU_SERVICE: 'endpoint configuracion de menu',

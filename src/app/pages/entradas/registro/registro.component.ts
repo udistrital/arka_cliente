@@ -72,11 +72,13 @@ export class RegistroComponent implements OnInit {
       this.spinner = this.EntradaId ? 'Actualizando Entrada' : 'Registrando Entrada';
       entrada.Id = this.EntradaId ? this.EntradaId : 0;
       this.entradasHelper.postEntrada(entrada, entrada.Id, false).subscribe((res: any) => {
-        if (res.Detalle) {
-          const consecutivo = JSON.parse(res.Detalle).consecutivo;
+        this.spinner = '';
+        if (res.Error) {
+          this.pUpManager.showErrorAlert(res.Error);
+        } else if (res.Movimiento.Id) {
+          const consecutivo = JSON.parse(res.Movimiento.Detalle).consecutivo;
           this.pUpManager.showAlertWithOptions(this.getOptionsRegistro(consecutivo));
           this.volver.emit(true);
-          this.spinner = '';
         } else {
           this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.entradas.registroFail'));
         }
@@ -118,28 +120,12 @@ export class RegistroComponent implements OnInit {
         FechaCreacion: {
           title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.FechaCreacionHeader'),
           width: '70',
-          valuePrepareFunction: this.tabla.formatDate,
-          filter: {
-            type: 'daterange',
-            config: {
-              daterange: {
-                format: 'yyyy/mm/dd',
-              },
-            },
-          },
+          ...this.tabla.getSettingsDate(),
         },
         FechaVistoBueno: {
           title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.FechaVistoBuenoHeader'),
           width: '70',
-          valuePrepareFunction: this.tabla.formatDate,
-          filter: {
-            type: 'daterange',
-            config: {
-              daterange: {
-                format: 'yyyy/mm/dd',
-              },
-            },
-          },
+          ...this.tabla.getSettingsDate(),
         },
         RevisorId: {
           title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.ModificadaPor'),
@@ -171,7 +157,7 @@ export class RegistroComponent implements OnInit {
 
   loadActas(): void {
     this.spinner = 'Cargando actas aceptadas';
-    this.actaRecibidoHelper.getAllActasRecibidoByEstado(['Aceptada']).subscribe(res => {
+    this.actaRecibidoHelper.getAllActasRecibidoByEstado(['Aceptada'], -1, 0).subscribe(res => {
       this.spinner = '';
       if (res && res.length) {
         this.source.load(res);

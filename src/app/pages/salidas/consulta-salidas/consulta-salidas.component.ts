@@ -26,7 +26,7 @@ export class ConsultaSalidasComponent implements OnInit {
   estadosMovimiento: Array<EstadoMovimiento>;
   movimiento: Movimiento;
   filaSeleccionada: any;
-  transaccionContable: any;
+  trContable: any;
   submitted: boolean;
   title: string;
   subtitle: string;
@@ -143,7 +143,7 @@ export class ConsultaSalidasComponent implements OnInit {
     this.salidaId = '';
     this.entradaParametro = '';
     this.filaSeleccionada = undefined;
-    this.transaccionContable = undefined;
+    this.trContable = undefined;
     this.submitted = false;
     this.router.navigateByUrl('/pages/salidas/' +
       (this.modo === 'consulta' ? 'consulta' : this.modo === 'revision' ? 'aprobar' : '') + '_salidas');
@@ -173,13 +173,21 @@ export class ConsultaSalidasComponent implements OnInit {
       this.spinner = 'Actualizando salida y generando transacción contable';
       this.salidasHelper.registrarSalida([], this.movimiento.Id).toPromise().then((res: any) => {
         this.spinner = '';
-        if (res && res.errorTransaccion === '') {
-          const obj = JSON.parse(res.movimientoArka.Detalle);
-          this.transaccionContable = res.transaccionContable;
+        if (res && !res.Error) {
+          if (res.TransaccionContable) {
+            const fecha = new Date(res.TransaccionContable.Fecha).toLocaleString();
+            this.trContable = {
+              rechazo: '',
+              movimientos: res.TransaccionContable.movimientos,
+              concepto: res.TransaccionContable.Concepto,
+              fecha,
+            };
+          }
+          const obj = JSON.parse(res.Movimiento.Detalle);
           this.consecutivoSalida = obj.consecutivo;
           this.alertSuccess(true);
-        } else if (res && res.errorTransaccion !== '') {
-          this.pUpManager.showErrorAlert(res.errorTransaccion);
+        } else if (res && res.Error) {
+          this.pUpManager.showErrorAlert(res.Error);
           this.onVolver();
         }
       });
@@ -271,28 +279,12 @@ export class ConsultaSalidasComponent implements OnInit {
         FechaCreacion: {
           title: this.translate.instant('GLOBAL.fecha_creacion'),
           width: '70px',
-          valuePrepareFunction: this.tabla.formatDate,
-          filter: {
-            type: 'daterange',
-            config: {
-              daterange: {
-                format: 'yyyy/mm/dd',
-              },
-            },
-          },
+          ...this.tabla.getSettingsDate(),
         },
         FechaModificacion: {
           title: this.translate.instant('GLOBAL.ultimaModificacion'),
           width: '70px',
-          valuePrepareFunction: this.tabla.formatDate,
-          filter: {
-            type: 'daterange',
-            config: {
-              daterange: {
-                format: 'yyyy/mm/dd',
-              },
-            },
-          },
+          ...this.tabla.getSettingsDate(),
         },
         MovimientoPadreId: {
           title: this.translate.instant('GLOBAL.entradaAsociada'),
@@ -311,43 +303,20 @@ export class ConsultaSalidasComponent implements OnInit {
         },
         Funcionario: {
           title: this.translate.instant('GLOBAL.funcionario'),
-          valuePrepareFunction: (value: any) => {
-            if (value !== null) {
-              return value.NombreCompleto;
-            } else {
-              return '';
-            }
-          },
-          filterFunction: (cell?: any, search?: string): boolean => {
-            return this.tabla.filterFunctionObject('NombreCompleto', cell, search);
-          },
+          ...this.tabla.getSettingsObject('NombreCompleto'),
         },
         Sede: {
           title: this.translate.instant('GLOBAL.sede'),
-          valuePrepareFunction: (value: any) => {
-            return value && value.Nombre ? value.Nombre : '';
-          },
-          filterFunction: (cell?: any, search?: string): boolean => {
-            return this.tabla.filterFunctionObject('Nombre', cell, search);
-          },
+          ...this.tabla.getSettingsObject('Nombre'),
+
         },
         Dependencia: {
           title: this.translate.instant('GLOBAL.dependencia'),
-          valuePrepareFunction: (value: any) => {
-            return value && value.Nombre ? value.Nombre : '';
-          },
-          filterFunction: (cell?: any, search?: string): boolean => {
-            return this.tabla.filterFunctionObject('Nombre', cell, search);
-          },
+          ...this.tabla.getSettingsObject('Nombre'),
         },
         Ubicacion: {
           title: this.translate.instant('GLOBAL.ubicacion'),
-          valuePrepareFunction: (value: any) => {
-            return value && value.Nombre ? value.Nombre : '';
-          },
-          filterFunction: (cell?: any, search?: string): boolean => {
-            return this.tabla.filterFunctionObject('Nombre', cell, search);
-          },
+          ...this.tabla.getSettingsObject_('EspacioFisicoId', 'Nombre'),
         },
         ...columns,
       },

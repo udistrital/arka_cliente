@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { TranslateService } from '@ngx-translate/core';
 import { LocalDataSource } from 'ng2-smart-table';
 import { ConfiguracionService } from '../../../@core/data/configuracion.service';
@@ -8,6 +8,7 @@ import { BajasHelper } from '../../../helpers/bajas/bajasHelper';
 import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
 import { PopUpManager } from '../../../managers/popUpManager';
 import Swal from 'sweetalert2';
+import { SmartTableService } from '../../../@core/data/SmartTableService';
 
 @Component({
   selector: 'ngx-consulta-bajas',
@@ -36,7 +37,7 @@ export class ConsultaBajasComponent implements OnInit {
     private pUpManager: PopUpManager,
     private bajasHelper: BajasHelper,
     private route: ActivatedRoute,
-  ) { }
+    private tabla: SmartTableService) { }
 
   ngOnInit() {
     this.route.data.subscribe(data => {
@@ -65,44 +66,38 @@ export class ConsultaBajasComponent implements OnInit {
     this.subtitle = this.translate.instant('GLOBAL.bajas.' + this.modo + '.subtitle');
   }
 
-  public onRegister() {
-    const query = 'Nombre__in:cierreEnCurso,Valor:true';
-    this.confService.getAllParametro(query).subscribe(res => {
-      if (res && res.length) {
-        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.cierres.alertaEnCurso'));
-      } else {
-        this.modoCrud = 'registrar';
-        this.bajaId = 0;
-      }
-    });
+  public async onRegister() {
+    const cierre = await this.confService.checkCierreEnCurso();
+    if (!cierre) {
+      this.modoCrud = 'registrar';
+      this.bajaId = 0;
+    } else {
+      this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.cierres.alertaEnCurso'));
+    }
   }
 
-  public onEdit(event) {
+  public async onEdit(event) {
     this.filaSeleccionada = event.data;
     if (this.modo === 'consulta') {
       if (event.data.EstadoMovimientoId === 'Baja Rechazada') {
-        const query = 'Nombre__in:cierreEnCurso,Valor:true';
-        this.confService.getAllParametro(query).subscribe(res => {
-          if (res && res.length) {
-            this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.cierres.alertaEnCurso'));
-          } else {
-            this.modoCrud = 'editar';
-            this.bajaId = event.data.Id;
-          }
-        });
+        const cierre = await this.confService.checkCierreEnCurso();
+        if (!cierre) {
+          this.modoCrud = 'editar';
+          this.bajaId = event.data.Id;
+        } else {
+          this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.cierres.alertaEnCurso'));
+        }
       } else {
         this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.bajas.consulta.errorEditar'));
       }
     } else if (this.modo === 'revision') {
-      const query = 'Nombre__in:cierreEnCurso,Valor:true';
-      this.confService.getAllParametro(query).subscribe(res => {
-        if (res && res.length) {
-          this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.cierres.alertaEnCurso'));
-        } else {
-          this.modoCrud = 'revisar';
-          this.bajaId = event.data.Id;
-        }
-      });
+      const cierre = await this.confService.checkCierreEnCurso();
+      if (!cierre) {
+        this.modoCrud = 'revisar';
+        this.bajaId = event.data.Id;
+      } else {
+        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.cierres.alertaEnCurso'));
+      }
     }
   }
 
@@ -127,7 +122,7 @@ export class ConsultaBajasComponent implements OnInit {
   }
 
   private loadBajas(): void {
-    this.bajasHelper.getSolicitudes(this.modo === 'aprobacion', this.modo === 'revision').subscribe((res: any) => {
+    this.bajasHelper.getAll(this.modo === 'aprobacion', this.modo === 'revision').subscribe((res: any) => {
       if (res.length) {
         res.forEach(baja => {
           baja.EstadoMovimientoId = this.estadosMovimiento.find(estado =>
@@ -142,7 +137,7 @@ export class ConsultaBajasComponent implements OnInit {
 
   private loadEstados() {
     this.entradasHelper.getEstadosMovimiento().toPromise().then(res => {
-      if (res.length > 0) {
+      if (res.length) {
         this.estadosMovimiento = res;
         this.loadTablaSettings();
         this.loadBajas();
@@ -158,7 +153,7 @@ export class ConsultaBajasComponent implements OnInit {
     const RazonRechazo = !aprobar ? info.RazonRechazo : '';
     const FechaRevisionC = aprobar ? new Date(Date.parse(info.fecha)).toLocaleDateString('es-CO') : '';
     const Resolucion = aprobar ? info.numero : '';
-    const DependenciaId = aprobar ? info.dependencia.Id : '';
+    const DependenciaId = aprobar ? info.dependencia.Id : 0;
     const ids = this.seleccionados.map(el => el.Id);
     const data = {
       Bajas: ids,
@@ -170,21 +165,16 @@ export class ConsultaBajasComponent implements OnInit {
     };
 
     this.bajasHelper.postRevisionComite(data).subscribe((res: any) => {
-      this.alertSuccess(aprobar);
+      if (res.Error) {
+        this.pUpManager.showErrorAlert(res.Error);
+      } else {
+        this.alertSuccess(aprobar);
+      }
     });
   }
 
   private alertSuccess(aprobar: boolean) {
-    const sfx = aprobar ? 'A' : 'R';
-    const title = this.translate.instant('GLOBAL.bajas.aprobar.successTtl' + sfx);
-    const text = this.translate.instant('GLOBAL.bajas.aprobar.successTxt' + sfx);
-    const options = {
-      type: 'success',
-      title,
-      text,
-      showConfirmButton: true,
-    };
-    this.pUpManager.showAlertWithOptions(options);
+    this.pUpManager.showAlertWithOptions(this.optionsSuccess(aprobar));
     this.seleccionados.forEach(baja => {
       this.source.remove(baja);
     });
@@ -192,56 +182,30 @@ export class ConsultaBajasComponent implements OnInit {
   }
 
   public rechazar() {
-    (Swal as any).fire({
-      title: this.translate.instant('GLOBAL.bajas.aprobar.confrmTtlR'),
-      text: this.translate.instant('GLOBAL.bajas.aprobar.confrmTxtR'),
-      type: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: this.translate.instant('GLOBAL.si'),
-      cancelButtonText: this.translate.instant('GLOBAL.no'),
-    }).then((result) => {
-      if (result.value) {
-        (Swal as any).mixin({
-          input: 'text',
-          confirmButtonText: this.translate.instant('GLOBAL.Acta_Recibido.VerificacionActa.Rechazar'),
-          showCancelButton: true,
-          progressSteps: ['1'],
-        }).queue([
-          {
-            title: this.translate.instant('GLOBAL.bajas.revisar.confrmRechazoTtl'),
-            text: this.translate.instant('GLOBAL.bajas.revisar.confrmRechazoTtx'),
-          },
-        ]).then((result2) => {
-          if (result2.value) {
-            const info = {
-              RazonRechazo: result2.value[0],
-            };
-            this.submitComite(false, info);
-          }
-        });
-      }
-    });
+    this.pUpManager.showAlertWithOptions(this.optionsRechazo)
+      .then((result) => {
+        if (result.value) {
+          (Swal as any).mixin(this.optionsIngresarRazon)
+            .queue(this.optionsConfirmRazon)
+            .then((result_) => {
+              if (result_.value) {
+                const info = {
+                  RazonRechazo: result_.value[0],
+                };
+                this.submitComite(false, info);
+              }
+            });
+        }
+      });
   }
 
   public confirm() {
-    const title = this.translate.instant('GLOBAL.bajas.aprobar.confrmTtlA');
-    const text = this.translate.instant('GLOBAL.bajas.aprobar.confrmTxtA');
-    (Swal as any).fire({
-      title,
-      text,
-      type: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: this.translate.instant('GLOBAL.si'),
-      cancelButtonText: this.translate.instant('GLOBAL.no'),
-    }).then((result) => {
-      if (result.value) {
-        this.resolucion = true;
-      }
-    });
+    this.pUpManager.showAlertWithOptions(this.optionsConfirm)
+      .then((result) => {
+        if (result.value) {
+          this.resolucion = true;
+        }
+      });
   }
 
   submitAprobacion(event) {
@@ -321,19 +285,7 @@ export class ConsultaBajasComponent implements OnInit {
         FechaCreacion: {
           title: this.translate.instant('GLOBAL.fecha_creacion'),
           width: '70px',
-          valuePrepareFunction: (value: any) => {
-            const date = new Date(value);
-            date.setUTCMinutes(date.getTimezoneOffset());
-            return new Date(Date.parse(date.toString())).toLocaleDateString('es-CO');
-          },
-          filter: {
-            type: 'daterange',
-            config: {
-              daterange: {
-                format: 'yyyy/mm/dd',
-              },
-            },
-          },
+          ...this.tabla.getSettingsDate(),
         },
         FechaRevisionA: {
           title: this.translate.instant('GLOBAL.bajas.consulta.fechaRevA'),
@@ -371,23 +323,11 @@ export class ConsultaBajasComponent implements OnInit {
         },
         Funcionario: {
           title: this.translate.instant('GLOBAL.bajas.consulta.solicitante'),
-          valuePrepareFunction: (value: any) => {
-            if (value) {
-              return value;
-            } else {
-              return '';
-            }
-          },
+          valuePrepareFunction: this.tabla.prepareFunctionString,
         },
         Revisor: {
           title: this.translate.instant('GLOBAL.bajas.consulta.revisor'),
-          valuePrepareFunction: (value: any) => {
-            if (value !== null) {
-              return value;
-            } else {
-              return '';
-            }
-          },
+          valuePrepareFunction: this.tabla.prepareFunctionString,
         },
         TipoBaja: {
           title: this.translate.instant('GLOBAL.bajas.consulta.tipoBaja'),
@@ -396,6 +336,62 @@ export class ConsultaBajasComponent implements OnInit {
         ...columns,
       },
     };
+  }
+
+  private optionsSuccess(aprobar: boolean) {
+    const sfx = aprobar ? 'A' : 'R';
+    const title = this.translate.instant('GLOBAL.bajas.aprobar.successTtl' + sfx);
+    const text = this.translate.instant('GLOBAL.bajas.aprobar.successTxt' + sfx);
+    return {
+      type: 'success',
+      title,
+      text,
+      showConfirmButton: true,
+    };
+  }
+
+  get optionsConfirm() {
+    return {
+      title: this.translate.instant('GLOBAL.bajas.aprobar.confrmTtlA'),
+      text: this.translate.instant('GLOBAL.bajas.aprobar.confrmTxtA'),
+      type: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: this.translate.instant('GLOBAL.si'),
+      cancelButtonText: this.translate.instant('GLOBAL.no'),
+    };
+  }
+
+  get optionsRechazo() {
+    return {
+      title: this.translate.instant('GLOBAL.bajas.aprobar.confrmTtlR'),
+      text: this.translate.instant('GLOBAL.bajas.aprobar.confrmTxtR'),
+      type: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: this.translate.instant('GLOBAL.si'),
+      cancelButtonText: this.translate.instant('GLOBAL.no'),
+    };
+  }
+
+  get optionsIngresarRazon() {
+    return {
+      input: 'text',
+      confirmButtonText: this.translate.instant('GLOBAL.Acta_Recibido.VerificacionActa.Rechazar'),
+      showCancelButton: true,
+      progressSteps: ['1'],
+    };
+  }
+
+  get optionsConfirmRazon() {
+    return [
+      {
+        title: this.translate.instant('GLOBAL.bajas.revisar.confrmRechazoTtl'),
+        text: this.translate.instant('GLOBAL.bajas.revisar.confrmRechazoTtx'),
+      },
+    ];
   }
 
 }

@@ -3,7 +3,6 @@ import { RequestManager } from '../../managers/requestManager';
 import { PopUpManager } from '../../managers/popUpManager';
 import { map } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
-import { Movimiento } from '../../@core/data/models/entrada/entrada';
 
 @Injectable({
     providedIn: 'root',
@@ -92,6 +91,23 @@ export class MovimientosHelper {
                 (res) => {
                     if (res === 'error') {
                         this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.error_dependencias'));
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
+
+    // Consulta de historial del elemento sin incluir el detalle de cada movimiento
+    public getHistorialElemento(id: number, acta: boolean, final: boolean, entradas: boolean) {
+        const payload = id + '?acta=' + acta + '&final=' + final + '&entradas=' + entradas;
+        this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
+        return this.rqManager.get('elementos_movimiento/historial/' + payload).pipe(
+            map(
+                (res) => {
+                    if (res === 'error') {
+                        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.errorHistorialElemento'));
                         return undefined;
                     }
                     return res;

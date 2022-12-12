@@ -1,43 +1,107 @@
-<div>
-<!-- FORMULARIO -->
-<nb-stepper #stepper orientation="horizontal">
+<mat-horizontal-stepper [linear]=true>
 
   <!-- DATOS DE ELEMENTO HURTADO -->
-  <nb-step [stepControl]="elementoForm" label="Elemento">
-    <h5>Elemento</h5>
-    <form [formGroup]="elementoForm" (ngSubmit)="onElementoSubmit()" class="step-container">
-      <div class="row">
-        <div class="form-group col-sm">
-          <label>Placa Hurtada</label>
-          <div class="input-group">
-            <input type="text" placeholder="Placa Elemento Hurtado" class="form-control" formControlName="elementoCtrl" (input)="changePlacaElemento($event)"
-              [ngClass]="{'form-control-danger': elementoForm.invalid && (elementoForm.dirty || elementoForm.touched)}" list="elementosList"
-              />
-          </div>
-          <datalist id="elementosList">
-            <option value="sleccione un valor" selected disabled></option>
-            <option *ngFor="let item of elementos" value='{{ item }}'></option>
-          </datalist>
-        </div>
-        <div class="form-group col-sm">
-          <label>Encargado</label>
-          <div class="input-group">
-            <input nbInput type="text" placeholder="{{'GLOBAL.asignacion' | translate}}" class="form-control"
-              formControlName="encargadoCtrl"  [readonly]="true" value="{{ encargado }}"
-              />
-          </div>
-        </div>
-      </div>
-      <div class="row float-right">
-        <button type="button" (click)="onElementoSubmit()" nbButton
-      nbStepperNext>
-          {{'GLOBAL.siguiente' | translate}}</button>
+  <mat-step [stepControl]="elementosForm" label="{{'GLOBAL.elementos' | translate}}">
+    <h5>{{'GLOBAL.movimientos.entradas.elementosReposicion' | translate}}</h5>
+
+    <form [formGroup]="elementosForm">
+      <mat-table #table [dataSource]="dataSource" formArrayName="elementos" matSort>
+        <ng-container matColumnDef="acciones">
+          <th id="col-acciones" mat-header-cell *matHeaderCellDef class="acciones">
+            <button mat-icon-button color="primary" [disabled]="modo === 'get'" (click)="addElemento()"
+              matTooltip="{{'GLOBAL.Acta_Recibido.CapturarElementos.AgregarElemento' | translate }}">
+              <mat-icon>add_box</mat-icon>
+            </button>
+          </th>
+          <td mat-cell *matCellDef="let element; let rowIndex = index" class="acciones">
+            <button mat-icon-button color="secondary" [disabled]="modo === 'get'" (click)="commonElementos.removeElemento(rowIndex, elementosForm, dataSource, paginator)"
+              matTooltip="{{'GLOBAL.Acta_Recibido.CapturarElementos.EliminarElemento' | translate }}">
+              <mat-icon>delete_outline</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="placa">
+          <th id="placa" mat-header-cell *matHeaderCellDef mat-sort-header>
+            {{ 'GLOBAL.Placa' | translate }}
+          </th>
+          <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="commonElementos.getActualIndex(rowIndex, paginator)">
+            <input type="text" formControlName="Placa" class="form-control"
+              placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}" [matAutocomplete]="auto">
+            <mat-autocomplete #auto="matAutocomplete" [displayWith]="commonElementos.muestraPlaca"
+              (optionSelected)="commonElementos.getDetalleElemento(elementosForm, rowIndex, paginator, 'ENT_RP')">
+              <mat-option *ngFor="let item of elementos" [value]="item">
+                {{item.Placa}}
+              </mat-option>
+            </mat-autocomplete>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="entrada">
+          <th id="entrada" mat-header-cell *matHeaderCellDef mat-sort-header>
+            {{ 'GLOBAL.Entrada' | translate }}
+          </th>
+          <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="commonElementos.getActualIndex(rowIndex, paginator)">
+            <input type="text" class="form-control" formControlName="entrada"
+              placeholder="{{'GLOBAL.Entrada' | translate }}">
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="fechaEntrada">
+          <th id="fEntrada" mat-header-cell *matHeaderCellDef mat-sort-header>
+            {{ 'GLOBAL.fecha_entrada' | translate }}
+          </th>
+          <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="commonElementos.getActualIndex(rowIndex, paginator)">
+            <input type="text" class="form-control" formControlName="fechaEntrada"
+              placeholder="{{'GLOBAL.fecha_entrada' | translate }}">
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="salida">
+          <th id="salida" mat-header-cell *matHeaderCellDef mat-sort-header>
+            {{ 'GLOBAL.Salida' | translate }}
+          </th>
+          <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="commonElementos.getActualIndex(rowIndex, paginator)">
+            <input type="text" class="form-control" formControlName="salida"
+              placeholder="{{'GLOBAL.Salida' | translate }}">
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="fechaSalida">
+          <th id="fSalida" mat-header-cell *matHeaderCellDef mat-sort-header>
+            {{ 'GLOBAL.fecha_salida' | translate }}
+          </th>
+          <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="commonElementos.getActualIndex(rowIndex, paginator)">
+            <input type="text" class="form-control" formControlName="fechaSalida"
+              placeholder="{{'GLOBAL.fecha_salida' | translate }}">
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="valor">
+          <th id="valor" mat-header-cell *matHeaderCellDef mat-sort-header>
+            {{ 'GLOBAL.valor' | translate }}
+          </th>
+          <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="commonElementos.getActualIndex(rowIndex, paginator)">
+            <input type="text" class="form-control" formControlName="valor"
+              placeholder="{{'GLOBAL.valor' | translate }}" currencyMask [options]="{allowNegative: false}">
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </mat-table>
+      <mat-paginator #paginator [pageSizeOptions]="[10, 25, 50]"></mat-paginator>
+
+      <div class="boton-stepper-initial">
+        <button mat-flat-button color="primary" matStepperNext [disabled]="!elementosForm.get('elementos').valid">
+          {{'GLOBAL.siguiente' | translate}}
+        </button>
       </div>
     </form>
-  </nb-step>
+  </mat-step>
   
   <!-- OBSERVACIONES -->
-  <nb-step [stepControl]="observacionForm" label="{{'GLOBAL.observaciones' | translate}}">
+  <mat-step [stepControl]="observacionForm" label="{{'GLOBAL.observaciones' | translate}}">
     <form [formGroup]="observacionForm" class="step-container">
       <h5>{{'GLOBAL.observaciones' | translate}}</h5>
       <div class="row">
@@ -48,31 +112,10 @@
           </div>
         </div>
       </div>
-      <div class="row">
-        <div class="col">
-          <button nbButton nbStepperPrevious>{{'GLOBAL.anterior' | translate}}</button>
-        </div>
-        <div class="col" align="end">
-          <button type="button" (click)="onObservacionSubmit()" nbButton nbStepperNext>{{'GLOBAL.siguiente' |
-            translate}}</button>
-        </div>
+      <div class="botones-stepper-middle">
+        <button mat-flat-button color="primary" matStepperPrevious>{{'GLOBAL.anterior' | translate}}</button>
+        <button mat-flat-button color="primary" matStepperNext (click)="onObservacionSubmit()">{{'GLOBAL.registrar_entrada' | translate}}</button>
       </div>
     </form>
-  </nb-step>
-
-  <!-- FINALIZAR -->
-  <nb-step [hidden]="true">
-      <div class="step-container d-flex justify-content-center">
-        <h3>{{'GLOBAL.datos_correctos' | translate}}!</h3>
-      </div>
-      <div class="step-container d-flex justify-content-center">
-        <p>{{'GLOBAL.mensaje_registrar' | translate}}</p>
-      </div>
-      <div class="row float-right">
-        <button type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off"
-        [disabled]="!validar" (click)="onSubmit()">
-          {{'GLOBAL.registrar_entrada' | translate}}</button>
-      </div>
-  </nb-step>
-</nb-stepper>
-</div>
+  </mat-step>
+</mat-horizontal-stepper>

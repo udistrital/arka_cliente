@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { RequestManager } from '../../managers/requestManager';
 import { PopUpManager } from '../../managers/popUpManager';
-import { map } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, map, startWith, switchMap } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
+import { combineLatest, Observable } from 'rxjs';
 
 @Injectable({
     providedIn: 'root',
@@ -31,10 +32,37 @@ export class OikosHelper {
                         this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.error_dependencias'));
                         return undefined;
                     }
+                    if (!res.length || (res.length === 1 && !Object.keys(res[0]).length)) {
+                        res = [];
+                    }
                     return res;
                 },
             ),
         );
+    }
+
+    public cambiosDependencia_(valueChanges: Observable<any>) {
+        return valueChanges.pipe(
+            startWith(''),
+            debounceTime(250),
+            distinctUntilChanged(),
+            switchMap((val: any) => this.loadDependencias(val)),
+        );
+    }
+
+    private loadDependencias(text: string) {
+        const queryOptions$ = text.length > 3 ?
+            this.getDependencias(text) :
+            new Observable((obs) => { obs.next([]); });
+        return combineLatest([queryOptions$]).pipe(
+            map(([queryOptions_$]) => ({
+                queryOptions: queryOptions_$,
+            })),
+        );
+    }
+
+    public muestraDependencia(dep: any): string {
+        return dep ? dep.Nombre : '';
     }
 
     /**
@@ -44,7 +72,7 @@ export class OikosHelper {
     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
     */
     public getSedes() {
-        const query = 'espacio_fisico?limit=-1&sortby=Nombre&order=asc&query=TipoEspacioFisicoId__CodigoAbreviacion:Tipo_1';
+        const query = 'espacio_fisico?limit=-1&sortby=Nombre&order=asc&query=TipoEspacioFisicoId__Nombre:SEDE';
         this.rqManager.setPath('OIKOS_SERVICE');
         return this.rqManager.get(query).pipe(
             map(
@@ -52,6 +80,9 @@ export class OikosHelper {
                     if (res === 'error') {
                         this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.error_dependencias'));
                         return undefined;
+                    }
+                    if (!res.length || (res.length === 1 && !Object.keys(res[0]).length)) {
+                        res = [];
                     }
                     return res;
                 },

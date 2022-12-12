@@ -25,7 +25,6 @@ export class ConsultaEntradaComponent implements OnInit {
   movimiento: Movimiento;
   modo: string = 'consulta';
   filaSeleccionada: any;
-  transaccionContable: any;
   updateEntrada: boolean = false;
   trContable: any;
   submitted: boolean;
@@ -92,14 +91,8 @@ export class ConsultaEntradaComponent implements OnInit {
         const detalle = JSON.parse(this.movimiento.Detalle);
         this.entradaEspecifica.Consecutivo = detalle.consecutivo;
         this.actaRecibidoId = detalle.acta_recibido_id;
-        if (res.trContable) {
-          const fecha = new Date(res.trContable.fecha).toLocaleString();
-          this.trContable = {
-            rechazo: '',
-            movimientos: res.trContable.movimientos,
-            concepto: res.trContable.concepto,
-            fecha,
-          };
+        if (res.TransaccionContable) {
+          this.transaccionContable(res.TransaccionContable);
         }
       }
       this.spinner = '';
@@ -118,19 +111,30 @@ export class ConsultaEntradaComponent implements OnInit {
     }
   }
 
+  private transaccionContable(tr) {
+    const fecha = new Date(tr.Fecha).toLocaleString();
+    this.trContable = {
+      rechazo: '',
+      movimientos: tr.movimientos,
+      concepto: tr.Concepto,
+      fecha,
+    };
+  }
+
   private onSubmitRevision(aprobar: boolean) {
     this.submitted = true;
     if (aprobar) {
       this.spinner = 'Aprobando entrada y generando transacción contable';
       this.entradasHelper.postEntrada({}, +this.entradaId, true).toPromise().then((res: any) => {
         this.spinner = '';
-        if (res && res.errorTransaccion === '') {
+        if (res && !res.Error) {
+          if (res.TransaccionContable) {
+            this.transaccionContable(res.TransaccionContable);
+          }
           this.alertSuccess(true);
-          this.transaccionContable = res.transaccionContable;
           this.source.remove(this.filaSeleccionada);
-        } else if (res && res.errorTransaccion !== '') {
-          this.pUpManager.showErrorAlert(res.errorTransaccion);
-          this.onVolver();
+        } else if (res && res.Error) {
+          this.pUpManager.showErrorAlert(res.Error);
         }
       });
     } else {
@@ -212,7 +216,6 @@ export class ConsultaEntradaComponent implements OnInit {
     this.filaSeleccionada = undefined;
     this.entradaId = undefined;
     this.trContable = undefined;
-    this.transaccionContable = undefined;
     this.router.navigateByUrl('/pages/entradas/' +
       (this.modo === 'consulta' ? 'consulta' : this.modo === 'revision' ? 'aprobar' : '') + '_entrada');
   }
@@ -240,7 +243,7 @@ export class ConsultaEntradaComponent implements OnInit {
 
     const columns = this.modo === 'consulta' ? {
       EstadoMovimientoId: {
-        title: this.translate.instant('GLOBAL.tipo_entrada'),
+        title: this.translate.instant('GLOBAL.estado_entrada'),
         width: '300px',
         filter: {
           type: 'list',
@@ -291,15 +294,7 @@ export class ConsultaEntradaComponent implements OnInit {
         FechaCreacion: {
           title: this.translate.instant('GLOBAL.fecha_entrada'),
           width: '70px',
-          valuePrepareFunction: this.tabla.formatDate,
-          filter: {
-            type: 'daterange',
-            config: {
-              daterange: {
-                format: 'yyyy/mm/dd',
-              },
-            },
-          },
+          ...this.tabla.getSettingsDate(),
         },
         FormatoTipoMovimientoId: {
           title: this.translate.instant('GLOBAL.tipo_entrada'),

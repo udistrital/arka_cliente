@@ -60,10 +60,12 @@ export class GenerarDepreciacionComponent implements OnInit {
       if (res) {
         this.consecutivo = res.Movimiento && res.Movimiento.Detalle ? JSON.parse(res.Movimiento.Detalle).Consecutivo : '';
         this.fillForm(res.Movimiento);
+        const fecha = new Date(res.TransaccionContable.Fecha).toLocaleString();
         this.trContable = {
           rechazo: '',
           movimientos: res.TransaccionContable.movimientos,
           concepto: res.TransaccionContable.Concepto,
+          fecha,
         };
       }
     });

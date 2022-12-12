@@ -1,4 +1,4 @@
-<mat-vertical-stepper [nbSpinner]="!load" [linear]="modo !== 'get'" #stepper>
+<mat-vertical-stepper [nbSpinnerMessage]="spinner" [nbSpinner]="spinner" [linear]="modo !== 'get'" #stepper>
   <mat-step [stepControl]="formBaja.get('rechazo')" *ngIf="formBaja && formBaja.get('rechazo.razon').value !== ''"
     label="{{'GLOBAL.razonRechazo' | translate}}">
     <form [formGroup]="formBaja.get('rechazo')">
@@ -121,7 +121,7 @@
               placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 5} }}" [matAutocomplete]="auto">
             <mat-autocomplete #auto="matAutocomplete" [displayWith]="muestraDependencia"
               (optionSelected)="getDetalleElemento(getActualIndex(rowIndex))">
-              <mat-option *ngFor="let item of dependencias" [value]="item">
+              <mat-option *ngFor="let item of elementosFiltrados" [value]="item">
                 {{item.Placa}}
               </mat-option>
             </mat-autocomplete>
@@ -251,9 +251,9 @@
             placeholder="{{'GLOBAL.resolucion' | translate }}">
         </div>
         <div class="form-group col-sm">
-          <label class="label">{{'GLOBAL.dependencia' | translate}}</label>
+          <label class="label">{{'GLOBAL.emisorResolucion' | translate}}</label>
           <input type="text" class="form-control" formControlName="dependencia" style="width: 100%;"
-            placeholder="{{'GLOBAL.dependencia' | translate }}">
+            placeholder="{{'GLOBAL.emisorResolucion' | translate }}">
         </div>
         <div class="form-group col-sm">
           <label class="label">{{'GLOBAL.bajas.consulta.fechaRevC' | translate}}</label>

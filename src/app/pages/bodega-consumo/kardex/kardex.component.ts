@@ -13,18 +13,30 @@ import { BodegaConsumoHelper } from '../../../helpers/bodega_consumo/bodegaConsu
 })
 export class KardexComponent implements OnInit {
 
+  prev = false;
+  next = true;
+  SizePage: string;
+
   encargado: string;
   elementos: any[];
   sales: any[];
   kardex: Kardex[];
   cargando: boolean;
 
-  @Input('Kardex')
-  set name(elemento: number) {
+  @Input('Kardex') _Kardex: number;
+  _limit: number;
+  _offset: number;
+  name(elemento: number, limit: number, offset: number) {
     this.cargando = true;
-
     if (elemento !== undefined) {
-      this.bodegaConsumoService.getElementosKardex(elemento).subscribe((res: any) => {
+      this.bodegaConsumoService.getElementosKardex(elemento, limit, offset).subscribe((res: any) => {
+        if (res.length < this._limit) {
+          this.next = false;
+        }
+        if (res.length === 0) {
+          this.next = false;
+          this._offset -= limit;
+        }
         if (res.length) {
           this.ArmarHojaKardex(res);
         }
@@ -43,14 +55,22 @@ export class KardexComponent implements OnInit {
     this.cargando = false;
   }
 
-  @Input('Entrada')
-  set name3(elemento: any) {
+  @Input('Entrada') _Entrada: number;
+  name3(elemento: any, limit: number, offset: number) {
     this.cargando = true;
 
     if (Object.keys(elemento).length !== 0) {
-      this.bodegaConsumoService.getElementosKardex(elemento.ElementoCatalogoId).subscribe((res: any) => {
+      this.bodegaConsumoService.getElementosKardex(elemento.ElementoCatalogoId, limit, offset).subscribe((res: any) => {
         if (res.length) {
           this.ArmarHojaKardex(res);
+        }
+        if (res.length < this._limit) {
+          this.next = false;
+          this.ArmarMovimientoPrevio(elemento);
+        }
+        if (res.length === 0) {
+          this.next = false;
+          this._offset -= limit;
           this.ArmarMovimientoPrevio(elemento);
         }
         this.cargando = false;
@@ -65,12 +85,56 @@ export class KardexComponent implements OnInit {
     private fb: FormBuilder,
     private bodegaConsumoService: BodegaConsumoHelper,
   ) {
+    this._limit = 10;
+    this._offset = 0;
+    this.SizePage = '10';
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
     });
     this.kardex = new Array<Kardex>();
   }
 
+  changeItemsPerPage() {
+    this._limit = Number(this.SizePage);
+    this._offset = 0;
+    if (this._Kardex) {
+      this.name(this._Kardex, this._limit, this._offset);
+    } else if (this._Entrada) {
+      this.name3(this._Entrada, this._limit, this._offset);
+    }
+  }
+
+  previousPage() {
+    if (this.prev) {
+      this._offset = this._offset - Number(this.SizePage);
+    }
+
+    if (this._offset === 0) {
+      this.prev = false;
+    }
+    if (this._Kardex) {
+      this.name(this._Kardex, this._limit, this._offset);
+    } else if (this._Entrada) {
+      this.name3(this._Entrada, this._limit, this._offset);
+    }
+    this.next = true;
+  }
+
+  nextPage() {
+    this._offset = this._offset + Number(this.SizePage);
+    this.prev = true;
+    if (this._Kardex) {
+      this.name(this._Kardex, this._limit, this._offset);
+    } else if (this._Entrada) {
+      this.name3(this._Entrada, this._limit, this._offset);
+    }
+  }
+
   ngOnInit() {
+    if (this._Kardex) {
+      this.name(this._Kardex, this._limit, this._offset);
+    } else if (this._Entrada) {
+      this.name3(this._Entrada, this._limit, this._offset);
+    }
   }
 
   ArmarHojaKardex(elementos: any[]) {

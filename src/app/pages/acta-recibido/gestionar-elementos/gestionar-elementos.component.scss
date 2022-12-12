@@ -59,14 +59,6 @@ tr.mat-footer-row {
                                   supported by Chrome, Edge, Opera and Firefox */
 }
 
-::ng-deep ng2-completer[id="clase"] .completer-input {
-  height: 50px;
-  width: 250px;
-}
-::ng-deep ng2-completer[id="clase"] .completer-dropdown {
-  width: 250px !important;
-}
-
 p {
   margin: 0.5rem 0;
 }

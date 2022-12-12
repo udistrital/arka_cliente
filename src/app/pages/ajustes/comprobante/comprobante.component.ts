@@ -1,9 +1,9 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
-import { element } from '@angular/core/src/render3';
 import { AbstractControl, FormArray, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
-import { MatPaginator, MatTableDataSource } from '@angular/material';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatTableDataSource } from '@angular/material/table';
 import { Store } from '@ngrx/store';
-import { combineLatest, fromEvent, Observable } from 'rxjs';
+import { combineLatest, Observable } from 'rxjs';
 import { debounceTime, distinctUntilChanged, map, startWith, switchMap } from 'rxjs/operators';
 import { IAppState } from '../../../@core/store/app.state';
 import { ListService } from '../../../@core/store/services/list.service';
@@ -23,7 +23,8 @@ export class ComprobanteComponent implements OnInit {
   terceros: any[];
   totalCreditos: any;
   totalDebitos: any;
-  @ViewChild('paginator') paginator: MatPaginator;
+
+  @ViewChild('paginator', {static: true}) paginator: MatPaginator;
   @Input() modo: string; // create | get | update
   @Input() ajusteInfo: any;
   @Input() consecutivo: string;
@@ -31,7 +32,6 @@ export class ComprobanteComponent implements OnInit {
   @Input() concepto: string;
   @Output() valid = new EventEmitter<boolean>();
   @Output() ajusteInfoChange: EventEmitter<any> = new EventEmitter<any>();
-
 
   constructor(
     private fb: FormBuilder,
@@ -42,8 +42,10 @@ export class ComprobanteComponent implements OnInit {
 
   ngOnInit() {
     this.buildForm();
-    this.listService.findPlanCuentasDebito();
-    this.listService.findPlanCuentasCredito();
+    if (this.modo !== 'get') {
+      this.listService.findPlanCuentasDebito();
+      this.listService.findPlanCuentasCredito();
+    }
   }
 
   public loadLists() {
@@ -95,7 +97,7 @@ export class ComprobanteComponent implements OnInit {
     const tercero = (this.formComprobante.get('elementos') as FormArray).at(index).get('cuenta').value.RequiereTercero;
     if (tercero) {
       (this.formComprobante.get('elementos') as FormArray).at(index).get('tercero')
-        .setValidators([Validators.required, this.validarCompleter('TerceroId')]);
+        .setValidators([Validators.required, this.validarCompleter('Numero')]);
       (this.formComprobante.get('elementos') as FormArray).at(index).get('tercero').enable();
     } else {
       (this.formComprobante.get('elementos') as FormArray).at(index).patchValue({ tercero: '' });
@@ -171,7 +173,7 @@ export class ComprobanteComponent implements OnInit {
         startWith(''),
         debounceTime(250),
         distinctUntilChanged(),
-        switchMap((val) => this.loadTerceros(val)),
+        switchMap((val: any) => this.loadTerceros(val)),
       ).subscribe((response: any) => {
         this.terceros = response.queryOptions &&
           response.queryOptions.length &&
@@ -224,7 +226,7 @@ export class ComprobanteComponent implements OnInit {
             disabled: disabled || !mov.Cuenta.RequiereTercero,
           },
           {
-            validators: mov.Cuenta.RequiereTercero ? [Validators.required, this.validarCompleter('Id')] : [],
+            validators: mov.Cuenta.RequiereTercero ? [Validators.required, this.validarCompleter('Numero')] : [],
           },
         ],
         descripcion: [

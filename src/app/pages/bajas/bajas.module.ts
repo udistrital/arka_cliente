@@ -6,9 +6,6 @@ import { ConsultaBajasComponent } from './consulta-bajas/consulta-bajas.componen
 import { BajasComponent } from './bajas.component';
 import { Ng2SmartTableModule } from 'ng2-smart-table';
 import { TranslateModule } from '@ngx-translate/core';
-import { Ng2CompleterModule } from 'ng2-completer';
-import { rootReducer } from '../../@core/store/rootReducer';
-import { StoreModule } from '@ngrx/store';
 import { ListService } from '../../@core/store/services/list.service';
 import { ThemeModule } from '../../@theme/theme.module';
 import { FormSolicitudComponent } from './form-solicitud/form-solicitud.component';
@@ -29,9 +26,7 @@ import { AjustesModule } from '../ajustes/ajustes.module';
     CommonModule,
     BajasRoutingModule,
     Ng2SmartTableModule,
-    StoreModule.forRoot(rootReducer),
     TranslateModule,
-    Ng2CompleterModule,
     ThemeModule,
     AjustesModule,
   ],

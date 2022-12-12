@@ -613,6 +613,7 @@
     "Acciones": "Actions",
     "verDetalle" : "Ver Detalle",
     "NA": "N/A",
+    "cuentasContables": "Cuentas Contables",
 
     "Deshacer": "Undo",
     "colapsar": "Collapse",
@@ -623,6 +624,8 @@
     "fechaAprobacion": "Fecha de Aprobación",
     "nivel_jerarquico": "Hierarchical Level",
     "atras": "Atrás",
+    "emisorResolucion": "Emisor de la resolución",
+    "entidadOProveedor": "Entidad (Proveedor)",
 
     "subgrupo": {
       "grupo": {
@@ -718,6 +721,8 @@
         "errorDetalleTtl": "Class not configured",
         "errorDetalleTxt": "Go to the section Catalog -> Catalog Building and assign the good type for the selected class"
       },
+      "noExiste": "El catálogo no existe",
+      "errCrear": "Error al crear el catálogo",
       "uno": "Catalogue",
       "crear": "Create Catalogue",
       "editar": "Edit Catalogue",
@@ -729,6 +734,7 @@
       "elementosInfo2": "Edit element: Select an Element row",
       "desactivar": "Disable Catalogue",
       "validacion_desactivar": "¿Are you sure you want to disable the catalog? ",
+      "desactivar_success": "Catalogo deshabilidado.", 
       "noCuenta": "Si la cuenta ingresada no existe, verifique que esté activa en el sistema kronos",
       "lista": "Catalogue List"
     },
@@ -877,6 +883,7 @@
     "mensaje_consulta_entrada": "List of entries made. To see the detail of the entry press the action icon located on the right side of the table.",
     "consecutivo": "Consecutive",
     "fecha_entrada": "Entry Date",
+    "fecha_salida": "Fecha de Salida",
     "tipo_entrada": "Entry Type",
     "estado_entrada": "Entry Status",
     "estadoSalida": "Estado Salida",
@@ -917,7 +924,9 @@
     "funcionarioOrigen": "Requestor Current Civil Servant",
     "funcionarioDestino": "recipient Civil Servant",
     "razonRechazo": "Denial reason",
-    "resolucion": "Resolution number",
+    "resolucion": "Resolution",
+    "numeroResolucion": "Número de Resolución",
+    "fechaResolucion": "Fecha resolución",
     "entradaAsociada": "Entrada Asociada",
     "ultimaModificacion": "Última Modificación",
 
@@ -927,6 +936,15 @@
       "estadoAprobado": "Approved",
       "estadoRechazo": "Rejected",
       "entradas": {
+        "errores": {
+          "elementoSinBaja": "El elemento no se puede reponer porque no ha sido dado de baja.",
+          "elementoAprAprovechado": "El elemento ya ha sido aprovechado.",
+          "elementoRepRepuesto": "El elemento ya ha sido repuesto.",
+          "elementoConBaja": "El elemento ha sido dado de baja."
+        },
+        "elementosMejoras": "Lista de elementos que se van a mejorar.",
+        "elementosReposicion": "Lista de elementos que se van a reponer.",
+        "elementosAprovechamientos": "Lista de elementos que se van a aprovechar.",
         "noEntradasView": "There are no entries to view",
         "noEntradasReview": "There are no entries to review",
         "noEntradasAprobadas": "There are no entries to create an issue",
@@ -934,6 +952,8 @@
         "errorListaEntradas": "Error getting the entries list",
         "errorEstadosMov": "Error getting the status",
         "errorRechazoEntrada": "Error when trying o reject the entry",
+        "registroConfrmTtl": "Confirmar Registro de Entrada",
+        "registroConfrmTxt": "¿Está seguro de registrar la entrada?",
         "registroTtlOk": "Entry Registered",
         "registroTxtOk": "The entry {{CONSECUTIVO}} has been successfully registered",
         "registroFail": "There was an error creating the entry.",
@@ -1200,7 +1220,7 @@
       "title": "Generar Ajuste Contable",
       "subtitle": "Por favor ingrese la información solicitada en el siguiente formulario",
       "accion": "Generar Ajuste",
-      "confrmTtl": "Registrar Ajuse Contable",
+      "confrmTtl": "Registrar Ajuste Contable",
       "confrmTxt": "¿Desea registrar el ajuste contable con la información suministrada?",
       "successTtl": "Ajuste Contable Generado",
       "successTxt": "El Ajuste contable {{CONSECUTIVO}} ha sido generado correctamente",
@@ -1288,7 +1308,14 @@
      "actualizacion_title":"Updating type of property or service",
      "necesita_placa":"Requiere placa",
      "necesita_poliza":"Requiere póliza",
-     "bien_padre":"Bien padre",
+     "tipoBienPadre":"Tipo Bien padre",
+     "crear": "Crear tipo de bien",
+     "editar": "Editar tipo de bien",
+     "umbralInferior": "Umbral Inferior (UVT)",
+     "umbralSuperior": "Umbral Superior (UVT)",
+     "bodegaConsumo": "Bodega de Consumo",
+     "errorRango": "El rango indicado se solapa con otros tipos de bien",
+     "errorPadre": "Si el tipo de bien es padre, éste no puede tener un tipo de bien padre.",
      "registro_text":"Do you want to register the data entered?",
      "actualizacion_text": "Do you want to update the data entered?"
    },
@@ -1413,7 +1440,8 @@
         "estadoBaja": "Request Status",
         "tipoBaja": "Request reason",
         "espera": "Pending review",
-        "errorEditar": "The request can not be edited"
+        "errorEditar": "The request can not be edited",
+        "errorPermisoEditar": "No tiene permisos para editar esta solicitud."
       },
       "registrar": {
         "title": "Create removal request",

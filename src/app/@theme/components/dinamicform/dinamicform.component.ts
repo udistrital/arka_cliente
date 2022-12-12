@@ -1,7 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter, OnChanges, ViewChild, OnDestroy } from '@angular/core';
 import { MatDatepicker } from '@angular/material/datepicker';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-import { CompleterService, CompleterData } from 'ng2-completer';
 
 @Component({
   selector: 'ngx-dinamicform',
@@ -20,13 +19,11 @@ export class DinamicformComponent implements OnInit, OnChanges, OnDestroy {
   @Output() resultSmart: EventEmitter<any> = new EventEmitter();
   @Output() interlaced: EventEmitter<any> = new EventEmitter();
   @Output() percentage: EventEmitter<any> = new EventEmitter();
-  protected dataService: CompleterData[];
   data: any;
   init: boolean;
-  @ViewChild(MatDatepicker) datepicker: MatDatepicker<Date>;
+  @ViewChild(MatDatepicker, {static: true}) datepicker: MatDatepicker<Date>;
 
   constructor(private sanitization: DomSanitizer,
-    private completerService: CompleterService,
   ) {
     this.data = {
       valid: true,
@@ -34,7 +31,6 @@ export class DinamicformComponent implements OnInit, OnChanges, OnDestroy {
       percentage: 0,
       files: [],
     };
-    this.dataService = [];
   }
 
   ngOnInit() {
@@ -85,40 +81,6 @@ export class DinamicformComponent implements OnInit, OnChanges, OnDestroy {
                             element.valor.push(e2);
                           }
                         }));
-                      }
-                      break;
-                    case 'autocomplete':
-                      if (element.hasOwnProperty('opciones')) {
-                        this.dataService[element.id] = this.completerService.local(element.opciones, element.key, element.key);
-                        element.opciones.forEach((e1) => {
-                          if (this.modeloData[i].Id !== null) {
-                            if (e1.Id === this.modeloData[i].Id) {
-                              element.valor = e1[element.key];
-                            }
-                            if (e1.Codigo !== undefined && e1.Codigo !== null && e1.Codigo === this.modeloData[i].Id) {
-                              element.valor = e1[element.key];
-                            }
-                          }
-                        });
-                      }
-                      break;
-                    case 'autocompletedouble':
-                      if (element.hasOwnProperty('opciones')) {
-
-              //          var a = element.opciones.map(x=> {return {Codigo: x.Codigo + " " + x.Nombre}})
-              //          var b = element.valor
-                        this.dataService[element.id] = this.completerService.local(element.opciones, element.key, element.key);
-                        element.opciones.forEach((e1) => {
-                          if (this.modeloData[i].Id !== null) {
-                            if (e1.Id === this.modeloData[i].Id) {
-                              element.valor = e1[element.key];
-                            }
-                            if (e1.Codigo !== undefined && e1.Codigo !== null &&
-                              e1.Codigo.substring(0, e1.Codigo.indexOf(' ')) === this.modeloData[i].Id) {
-                              element.valor = e1[element.key];
-                            }
-                          }
-                        });
                       }
                       break;
                     case 'select':

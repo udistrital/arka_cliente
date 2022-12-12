@@ -6,7 +6,6 @@ import { Component, OnInit, Input, Output, EventEmitter, OnChanges } from '@angu
 import { FORM_GRUPO } from './form-grupo';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import Swal from 'sweetalert2';
-import 'style-loader!angular2-toaster/toaster.css';
 import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/catalogoElementosHelper';
 
 @Component({

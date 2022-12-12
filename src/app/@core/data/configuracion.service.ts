@@ -57,6 +57,20 @@ export class ConfiguracionService {
     }));
   }
 
+  checkCierreEnCurso(): Promise<boolean> {
+    return new Promise<boolean>(resolve => {
+      const payload = 'Nombre__in:cierreEnCurso,Valor:true';
+      this.getAllParametro(payload).toPromise()
+        .then(res => {
+          if (res && res.length) {
+            resolve(true);
+          } else {
+            resolve(false);
+          }
+        });
+    });
+  }
+
   setParametro(parametro: Parametro) {
     return this.put('parametro', parametro);
   }

@@ -1,14 +1,14 @@
 import { Component, OnInit, Output, EventEmitter, ViewChild, Input } from '@angular/core';
-import { combineLatest, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { FormBuilder, FormGroup, Validators, ValidatorFn, AbstractControl, ValidationErrors, FormArray } from '@angular/forms';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
 import { OikosHelper } from '../../../helpers/oikos/oikosHelper';
-import { isObject } from 'rxjs/internal-compatibility';
 import { TerceroCriterioContratista } from '../../../@core/data/models/terceros_criterio';
-import { debounceTime, distinctUntilChanged, map, startWith, switchMap } from 'rxjs/operators';
-import { MatPaginator, MatTableDataSource } from '@angular/material';
+import { debounceTime, distinctUntilChanged, map, startWith } from 'rxjs/operators';
+import { MatTableDataSource } from '@angular/material/table';
+import { MatPaginator } from '@angular/material/paginator';
 import { TrasladosHelper } from '../../../helpers/movimientos/trasladosHelper';
 import { PopUpManager } from '../../../managers/popUpManager';
 
@@ -28,7 +28,7 @@ export class FormTrasladoComponent implements OnInit {
   ubicacionesFiltradas: any = [];
   displayedColumns: string[] = ['acciones', 'placa', 'nombre', 'marca', 'serie', 'valor'];
   dataSource: MatTableDataSource<any>;
-  @ViewChild('paginator') paginator: MatPaginator;
+  @ViewChild('paginator', {static: true}) paginator: MatPaginator;
   load: boolean = false;
   trasladoId: number = 0;
   elementos = [];
@@ -39,13 +39,12 @@ export class FormTrasladoComponent implements OnInit {
   @Input() trasladoInfo: any;
   @Output() trasladoInfoChange: EventEmitter<any> = new EventEmitter<any>();
 
-
   constructor(
     private translate: TranslateService,
     private fb: FormBuilder,
     private Actas_Recibido: ActaRecibidoHelper,
     private tercerosHelper: TercerosHelper,
-    private oikosHelper: OikosHelper,
+    public oikosHelper: OikosHelper,
     private trasladosHelper: TrasladosHelper,
     private pUpManager: PopUpManager,
   ) {
@@ -91,21 +90,14 @@ export class FormTrasladoComponent implements OnInit {
   private loadUbicaciones(): Promise<void> {
     return new Promise<void>(resolve => {
       if (this.modo === 'put') {
-        const transaccion = {
-          Sede: this.trasladoInfo.ubicacion.Sede,
-          Dependencia: this.trasladoInfo.ubicacion.Dependencia,
-        };
-        this.Actas_Recibido.postRelacionSedeDependencia(transaccion).subscribe((res: any) => {
-          if (res && res.length && res[0].Relaciones.length) {
-            this.ubicacionesFiltradas = res[0].Relaciones;
-          }
+        const sede = this.trasladoInfo.ubicacion.Sede;
+        const dependencia = this.trasladoInfo.ubicacion.Dependencia;
+        this.Actas_Recibido.getAsignacionesBySedeAndDependencia(sede.CodigoAbreviacion, dependencia.Id).subscribe((res: any) => {
+          this.ubicacionesFiltradas = res;
           resolve();
         });
       } else if (this.modo === 'get') {
-        this.ubicacionesFiltradas = [{
-          Id: this.trasladoInfo.ubicacion.Ubicacion.Id,
-          Nombre: this.trasladoInfo.ubicacion.Ubicacion.EspacioFisicoId.Nombre,
-        }];
+        this.ubicacionesFiltradas = [this.trasladoInfo.ubicacion.Ubicacion];
         resolve();
       } else {
         resolve();
@@ -424,22 +416,19 @@ export class FormTrasladoComponent implements OnInit {
   }
 
   public getUbicaciones() {
-    const sede = this.formTraslado.get('ubicacion.sede').value ? this.formTraslado.get('ubicacion.sede').value : '';
-    const dependencia = this.formTraslado.get('ubicacion.dependencia').valid ? this.formTraslado.get('ubicacion.dependencia').value : '';
-    this.formTraslado.get('ubicacion').patchValue({ ubicacion: '' });
-    this.ubicacionesFiltradas = [];
-    if (sede && dependencia) {
-      const transaccion: any = {};
-      transaccion.Sede = this.sedes.find((x) => x.Id === parseInt(sede, 10));
-      transaccion.Dependencia = dependencia;
-      if (transaccion.Sede !== undefined && transaccion.Dependencia !== undefined) {
-        this.Actas_Recibido.postRelacionSedeDependencia(transaccion).subscribe((res: any) => {
-          if (res.length && res[0].Relaciones && res[0].Relaciones.length) {
-            this.ubicacionesFiltradas = res[0].Relaciones;
-          }
-        });
-      }
+    const sede = this.formTraslado.get('ubicacion.sede').value;
+    const dependencia = this.formTraslado.get('ubicacion.dependencia').value;
+
+    if (!sede || !dependencia.Id) {
+      this.formTraslado.get('ubicacion').patchValue({ ubicacion: '' });
+      this.ubicacionesFiltradas = [];
+      return;
     }
+
+    const sede_ = this.sedes.find((x) => x.Id === sede);
+    this.Actas_Recibido.getAsignacionesBySedeAndDependencia(sede_.CodigoAbreviacion, dependencia.Id).subscribe((res: any) => {
+      this.ubicacionesFiltradas = res;
+    });
   }
 
   public getInfoTercero(controlName: string) {
@@ -477,10 +466,6 @@ export class FormTrasladoComponent implements OnInit {
           this.trasladoInfoChange.emit(this.formTraslado);
         }
       });
-  }
-
-  public muestraDependencia(field) {
-    return field ? field.Nombre : '';
   }
 
   public muestraPlaca(field): string {
@@ -523,19 +508,15 @@ export class FormTrasladoComponent implements OnInit {
         startWith(''),
         debounceTime(250),
         distinctUntilChanged(),
-        map(val => typeof val === 'string' ? val : this.muestraFuncionario(val)),
-        map(nombre => this.filtroFuncionarios(nombre)),
+        map((val: any) => typeof val === 'string' ? val : this.muestraFuncionario(val)),
+        map((nombre: string) => this.filtroFuncionarios(nombre)),
       );
   }
 
   private cambiosDependencia(valueChanges: Observable<any>) {
-    valueChanges.pipe(
-      debounceTime(250),
-      distinctUntilChanged(),
-      switchMap((val) => this.loadDependencias(val)),
-    ).subscribe((response: any) => {
+    this.oikosHelper.cambiosDependencia_(valueChanges).subscribe((response: any) => {
       if (this.load) {
-        this.dependencias = response.queryOptions[0].Id ? response.queryOptions : [];
+        this.dependencias = response.queryOptions;
         this.getUbicaciones();
       }
     });
@@ -554,17 +535,6 @@ export class FormTrasladoComponent implements OnInit {
       const valorFiltrado = nombre.toLowerCase();
       return this.funcionarios.filter(contr => this.muestraFuncionario(contr).toLowerCase().includes(valorFiltrado));
     } else return [];
-  }
-
-  private loadDependencias(text: string) {
-    const queryOptions$ = text.length > 3 ?
-      this.oikosHelper.getDependencias(text) :
-      new Observable((obs) => { obs.next([{}]); });
-    return combineLatest([queryOptions$]).pipe(
-      map(([queryOptions_$]) => ({
-        queryOptions: queryOptions_$,
-      })),
-    );
   }
 
   private loadFuncionarios(): Promise<void> {

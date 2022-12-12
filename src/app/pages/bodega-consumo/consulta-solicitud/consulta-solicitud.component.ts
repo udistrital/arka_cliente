@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { LocalDataSource } from 'ng2-smart-table';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { BodegaConsumoHelper } from '../../../helpers/bodega_consumo/bodegaConsumoHelper';
+import { SmartTableService } from '../../../@core/data/SmartTableService';
 
 @Component({
   selector: 'ngx-consulta-solicitud',
@@ -22,6 +23,7 @@ export class ConsultaSolicitudComponent implements OnInit {
     private translate: TranslateService,
     private bodegaHelper: BodegaConsumoHelper,
     private route: ActivatedRoute,
+    private tabla: SmartTableService,
   ) {
     this.source = new LocalDataSource();
   }
@@ -109,16 +111,12 @@ export class ConsultaSolicitudComponent implements OnInit {
       FechaCreacion: {
         title: this.translate.instant('GLOBAL.fecha_creacion'),
         width: '15%',
-        valuePrepareFunction: (value: any) => {
-          return this.formatDate(value);
-        },
+        ...this.tabla.getSettingsDate(),
       },
       FechaModificacion: {
         title: this.translate.instant('GLOBAL.fechaRevision'),
         width: '15%',
-        valuePrepareFunction: (value: any) => {
-          return this.formatDate(value);
-        },
+        ...this.tabla.getSettingsDate(),
       },
       Solicitante: {
         title: this.translate.instant('GLOBAL.solicitante'),
@@ -180,12 +178,6 @@ export class ConsultaSolicitudComponent implements OnInit {
         },
       },
     };
-  }
-
-  private formatDate(value: Date) {
-    const date = new Date(value);
-    date.setUTCMinutes(date.getTimezoneOffset());
-    return new Date(Date.parse(date.toString())).toLocaleDateString('es-CO');
   }
 
 }

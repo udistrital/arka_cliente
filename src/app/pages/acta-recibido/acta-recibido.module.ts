@@ -8,19 +8,11 @@ import { RegistroActaRecibidoComponent } from './registro-acta-recibido/registro
 import { ConsultaActaRecibidoComponent } from './consulta-acta-recibido/consulta-acta-recibido.component';
 import { TranslateModule } from '@ngx-translate/core';
 import { Ng2SmartTableModule } from 'ng2-smart-table';
-import { NbStepperModule } from '@nebular/theme';
-import { MatTabsModule } from '@angular/material/tabs';
-import { MatStepperModule } from '@angular/material/stepper';
-import {MatTableModule} from '@angular/material/table';
-import { MatPaginatorModule, MatSortModule } from '@angular/material';
 import { EdicionActaRecibidoComponent } from './edicion-acta-recibido/edicion-acta-recibido.component';
 import { GestionarElementosComponent } from './gestionar-elementos/gestionar-elementos.component';
-import { Ng2CompleterModule } from 'ng2-completer';
-import { NgxCurrencyModule } from 'ngx-currency';
-import { rootReducer } from '../../@core/store/rootReducer';
-import { Store, StoreModule } from '@ngrx/store';
 import { ListService } from '../../@core/store/services/list.service';
 import { VerActaRecibidoComponent } from './ver-acta-recibido/ver-acta-recibido.component';
+import { CommonActas } from './shared';
 
 
 @NgModule({
@@ -34,19 +26,10 @@ import { VerActaRecibidoComponent } from './ver-acta-recibido/ver-acta-recibido.
   ],
   imports: [
     CommonModule,
-    StoreModule.forRoot(rootReducer),
-    NgxCurrencyModule,
     ActaRecibidoRoutingModule,
     ThemeModule,
     Ng2SmartTableModule,
     TranslateModule,
-    Ng2CompleterModule,
-    NbStepperModule,
-    MatTabsModule,
-    MatStepperModule,
-    MatTableModule,
-    MatPaginatorModule,
-    MatSortModule,
   ],
   exports: [
     VerActaRecibidoComponent,
@@ -55,6 +38,7 @@ import { VerActaRecibidoComponent } from './ver-acta-recibido/ver-acta-recibido.
   providers: [
     CurrencyPipe,
     ListService,
+    CommonActas,
   ],
 })
 export class ActaRecibidoModule { }

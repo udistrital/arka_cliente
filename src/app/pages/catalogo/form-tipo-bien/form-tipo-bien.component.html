@@ -1,0 +1,72 @@
+<form [formGroup]="form" class="form-card" (ngSubmit)="onSubmit()">
+
+  <table class="full-width" cellspacing="0">
+    <tr>
+      <td>
+        <mat-form-field class="full-width" appearance="outline">
+          <mat-label>{{ 'GLOBAL.parametros.tiposBien.tipoBienPadre' | translate }}</mat-label>
+          <mat-select type="number" formControlName="TipoBienPadreId">
+            <mat-option value="">--{{ 'GLOBAL.seleccionar' | translate }}--</mat-option>
+            <mat-option *ngFor="let tipo of tiposBienPadre" [value]="tipo.Id">{{tipo.Nombre}}</mat-option>
+          </mat-select>
+          <mat-hint>{{ 'GLOBAL.parametros.tiposBien.errorPadre' | translate }}</mat-hint>
+        </mat-form-field>
+      </td>
+      <td>
+        <mat-form-field class="full-width" appearance="outline">
+          <mat-label>{{ 'GLOBAL.Nombre' | translate }}</mat-label>
+          <input matInput type="text" formControlName="Nombre" placeholder="">
+          <mat-error>{{ 'GLOBAL.Errores.ErrorRequerido' | translate }}</mat-error>
+        </mat-form-field>
+      </td>
+    </tr>
+  </table>
+
+  <div>
+    <mat-form-field class="full-width" appearance="outline">
+      <mat-label>{{ 'GLOBAL.Descripcion' | translate }}</mat-label>
+      <textarea matInput placeholder="" formControlName="Descripcion" maxlength="250"></textarea>
+    </mat-form-field>
+  </div>
+
+  <table class="full-width" cellspacing="0" *ngIf="form.value.TipoBienPadreId > 0">
+    <tr>
+      <td>
+        <mat-form-field class="full-width" appearance="outline">
+          <mat-label>{{ 'GLOBAL.parametros.tiposBien.umbralInferior' | translate }}</mat-label>
+          <input matInput type="number" placeholder="" formControlName="LimiteInferior">
+          <mat-error *ngIf="form.get('LimiteInferior').hasError('required')">
+            {{ 'GLOBAL.Errores.ErrorRequerido' | translate }}
+          </mat-error>
+          <mat-error *ngIf="form.get('LimiteInferior').hasError('errorRange') || form.get('LimiteInferior').hasError('errorOverlapped')">
+            {{ 'GLOBAL.parametros.tiposBien.errorRango' | translate }}
+          </mat-error>
+        </mat-form-field>
+      </td>
+      <td>
+        <mat-form-field class="full-width" appearance="outline">
+          <mat-label>{{ 'GLOBAL.parametros.tiposBien.umbralSuperior' | translate }}</mat-label>
+          <input matInput type="number" placeholder="" formControlName="LimiteSuperior">
+          <mat-error *ngIf="form.get('LimiteSuperior').hasError('required')">
+            {{ 'GLOBAL.Errores.ErrorRequerido' | translate }}
+          </mat-error>
+          <mat-error *ngIf="form.get('LimiteSuperior').hasError('errorRange') || form.get('LimiteSuperior').hasError('errorOverlapped')">
+            {{ 'GLOBAL.parametros.tiposBien.errorRango' | translate }}
+          </mat-error>
+        </mat-form-field>
+      </td>
+    </tr>
+  </table>
+
+  <div style="display: flex; flex-direction: column;">
+    <mat-checkbox formControlName="NecesitaPlaca">{{ 'GLOBAL.necesita_placa' | translate }}</mat-checkbox>
+    <mat-checkbox formControlName="NecesitaPoliza">{{ 'GLOBAL.necesita_poliza' | translate }}</mat-checkbox>
+    <mat-checkbox formControlName="BodegaConsumo">{{ 'GLOBAL.parametros.tiposBien.bodegaConsumo' | translate }}</mat-checkbox>
+    <mat-checkbox formControlName="Activo">{{ 'GLOBAL.activo' | translate }}</mat-checkbox>
+  </div>
+
+  <button mat-flat-button color="primary" class="float-right text-uppercase" type="submit" [disabled]="!form.valid">
+    {{'GLOBAL.guardar' | translate}}
+  </button>
+
+</form>

@@ -1,158 +1,86 @@
-import { Component, OnInit, Input, ViewChild, ElementRef, Output, EventEmitter } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
-import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
+import { Component, OnInit, Input, Output, EventEmitter, ViewChild } from '@angular/core';
+import { FormGroup, FormArray } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
-import { SafeResourceUrl, DomSanitizer } from '@angular/platform-browser';
-import { SoporteActaProveedor } from '../../../@core/data/models/acta_recibido/soporte_acta';
 import { TransaccionEntrada } from '../../../@core/data/models/entrada/entrada';
+import { MatStepper } from '@angular/material/stepper';
+import { MatTableDataSource } from '@angular/material/table';
+import { MatPaginator } from '@angular/material/paginator';
+import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { PopUpManager } from '../../../managers/popUpManager';
+import { CommonEntradas } from '../CommonEntradas';
+import { CommonElementos } from '../CommonElementos';
 
 @Component({
   selector: 'ngx-reposicion',
   templateUrl: './reposicion.component.html',
   styleUrls: ['./reposicion.component.scss'],
 })
-
 export class ReposicionComponent implements OnInit {
 
-  elementoForm: FormGroup;
+  elementosForm: FormGroup;
   soporteForm: FormGroup;
   observacionForm: FormGroup;
-  facturaForm: FormGroup;
-  elementos: any;
-  placa: string;
-  encargado: string;
-  encargadoId: string;
-  placas: Array<string>;
-  soportes: Array<SoporteActaProveedor>;
-  uidDocumento: string;
-  idDocumento: number;
-  fileDocumento: any;
-  validar: boolean = false;
-  proveedor: string;
-  fechaFactura: string;
-  checked: boolean;
+  dataSource: MatTableDataSource<any>;
+  displayedColumns: any;
+  elementos: any[];
 
-  @ViewChild('file') fileInput: ElementRef;
+  @ViewChild('stepper', {static: true}) stepper: MatStepper;
+  @ViewChild('paginator', {static: true}) paginator: MatPaginator;
+
   @Input() actaRecibidoId: Number;
   @Output() data: EventEmitter<TransaccionEntrada> = new EventEmitter<TransaccionEntrada>();
 
   constructor(
-    private fb: FormBuilder,
-    private  actasHelper: ActaRecibidoHelper,
-    private  entradasHelper: EntradaHelper,
-    private sanitization: DomSanitizer,
-    private translate: TranslateService) {
-    this.elementos = [];
-    this.soportes = new Array<SoporteActaProveedor>();
-    this.proveedor = '';
-    this.fechaFactura = '';
-  }
+    private common: CommonEntradas,
+    private pUpManager: PopUpManager,
+    private commonElementos: CommonElementos,
+    private translate: TranslateService,
+  ) { }
 
   ngOnInit() {
-    this.elementoForm = this.fb.group({
-      elementoCtrl: ['', [
-        Validators.required,
-        Validators.pattern('^[0-9]{13,13}$')] ],
-      encargadoCtrl: [''],
-    });
-    this.observacionForm = this.fb.group({
-      observacionCtrl: ['', Validators.nullValidator],
-    });
-    this.loadSoporte();
+    this.displayedColumns = this.commonElementos.columnsElementos;
+    this.elementosForm = this.commonElementos.formElementos;
+    this.observacionForm = this.common.formObservaciones;
+    this.dataSource = new MatTableDataSource<any>();
+    this.dataSource.paginator = this.paginator;
   }
 
-  changeCheck() {
-    this.checked = !this.checked;
+  addElemento() {
+    const form = this.commonElementos.elemento;
+    (this.elementosForm.get('elementos') as FormArray).push(form);
+    this.dataSource.data = this.dataSource.data.concat({});
+    this.cambiosPlaca(form.get('Placa').valueChanges);
   }
 
-  // Métodos para validar campos requeridos en el formulario
-  onElementoSubmit() {
-    this.elementoForm.markAsDirty();
-  }
-
-  // MÉTODO PARA BUSCAR PLACAS EXISTENTES
-  loadPlacasElementos(): void {
-    if (this.placa.length > 3) {
-      this.actasHelper.getElementosByPlaca(this.placa).subscribe(res => {
-        if (res != null ) {
-          while (this.elementos.length > 0) {
-            this.elementos.pop();
-          }
-          this.encargado = '';
-          for (const index of Object.keys(res)) {
-            if (res[index].Placa != null) {
-              this.elementos.push(res[index].Placa);
-            }
-          }
-        }
-      });
-      if (this.placa.length === 13) {
-        this.loadEncargadoElementos(this.placa);
-      }
-    }
-  }
-// MÉTODO QUE ACTUALIZA LO CAMBIOS EN EL CAMPO DE PLACAS
-  changePlacaElemento(event) {
-    this.placa = event.target.value;
-    this.loadPlacasElementos();
-
-  }
-// MÉTODO QUE CARGA EL ELEMENTO ASOCIADOS A UNA PLACA
-  loadEncargadoElementos(placa): void {
-    // falta filtrar las placas por las que son de elementos dados de baja
-      this.entradasHelper.getEncargadoElementoByPlaca(placa).subscribe(res => {
-        if (res != null && res !== undefined) {
-          this.encargado = res.NombreCompleto;
-          this.encargadoId = res.Id;
-        }else {
-          this.encargado = '';
-        }
-      });
-  }
-
-  cleanURL(oldURL: string): SafeResourceUrl {
-    return this.sanitization.bypassSecurityTrustUrl(oldURL);
-  }
-
-  loadSoporte(): void {
-    this.actasHelper.getSoporte(this.actaRecibidoId).subscribe(res => {
-      if (res !== null) {
-        for (const index in res) {
-          if (res.hasOwnProperty(index)) {
-            const soporte = new SoporteActaProveedor;
-            soporte.Id = res[index].Id;
-            soporte.Consecutivo = res[index].Consecutivo;
-            soporte.Proveedor = res[index].ProveedorId;
-            soporte.FechaSoporte = res[index].FechaSoporte;
-            this.soportes.push(soporte);
-          }
-        }
-      }
+  private cambiosPlaca(valueChanges: Observable<any>) {
+    valueChanges.pipe(
+      debounceTime(250),
+      distinctUntilChanged(),
+      switchMap((val) => this.commonElementos.loadElementos(val)),
+    ).subscribe((response: any) => {
+      this.elementos = response.queryOptions;
     });
   }
 
   onObservacionSubmit() {
-    this.validar = true;
+    this.pUpManager.showAlertWithOptions(this.common.optionsSubmit)
+      .then((result) => {
+        if (result.value) {
+          this.onSubmit();
+        }
+      });
   }
 
-//  Método para enviar registro
+  //  Método para enviar registro
   async onSubmit() {
-    if (this.encargado.length !== 0 && this.validar === true) {
-      const detalle = {
-        acta_recibido_id: +this.actaRecibidoId,
-        placa_id: this.placa,
-        encargado_id: this.encargadoId,
-      };
+    const detalle = {
+      acta_recibido_id: +this.actaRecibidoId,
+      elementos: this.elementosForm.get('elementos').value.map(el => el.Id),
+    };
 
-      const transaccion = <TransaccionEntrada>{
-        Observacion: this.observacionForm.value.observacionCtrl,
-        Detalle: detalle,
-        FormatoTipoMovimientoId: 'ENT_RP',
-        SoporteMovimientoId: this.idDocumento,
-      };
-
-      this.data.emit(transaccion);
-    }
+    const transaccion = this.common.crearTransaccionEntrada(this.observacionForm.value.observacionCtrl, detalle, 'ENT_RP', 0);
+    this.data.emit(transaccion);
   }
+
 }

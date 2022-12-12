@@ -10,7 +10,7 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 export class AjustarCantidadComponent implements OnInit {
 
   @Input() row: any;
-  @ViewChild('fform') firstFormDirective;
+  @ViewChild('fform', {static: true}) firstFormDirective;
   form_cantidad: FormGroup;
   maxAsignable: number;
 

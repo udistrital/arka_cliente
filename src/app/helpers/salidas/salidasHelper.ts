@@ -1,7 +1,6 @@
 import { RequestManager } from '../../managers/requestManager';
 import { Injectable } from '@angular/core';
-import { map, switchMap } from 'rxjs/operators';
-import { iif } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { PopUpManager } from '../../managers/popUpManager';
 import { TranslateService } from '@ngx-translate/core';
 import { DisponibilidadMovimientosService } from '../../@core/data/disponibilidad-movimientos.service';
@@ -53,6 +52,22 @@ export class SalidaHelper {
                 (res) => {
                     if (res === 'error') {
                         this.pUpManager.showErrorAlert('No se pudo consultar el contrato contratos');
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
+
+    public getElementosParaSalida(salida: number = 0, entrada: number = 0) {
+        this.rqManager.setPath('ARKA_SERVICE');
+        const payload = 'salida_id=' + salida + '&entrada_id=' + entrada;
+        return this.rqManager.get('salida/elementos?' + payload).pipe(
+            map(
+                (res) => {
+                    if (res === 'error') {
+                        this.pUpManager.showErrorAlert('Error al consultar los elementos para realizar la respectiva salida.');
                         return undefined;
                     }
                     return res;

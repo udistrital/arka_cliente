@@ -45,7 +45,7 @@
             "name": "Asignación de Cuentas"
           },
           "tipos_bien": {
-            "name": "Tipos de bien"
+            "name": "Tipos de Bien"
           }
         }
       },
@@ -408,7 +408,8 @@
         "BotonRegistro": "Registrar Acta",
         "SizeSoporte":"Tamaño máximo: {{ SIZE }} MB",
         "ErrorSizeSoporteTitle":"Archivo no permitido",
-        "ErrorSizeSoporteText":"El tamaño del archivo debe ser menor a {{ SIZE }} MB"
+        "ErrorSizeSoporteText":"El tamaño del archivo debe ser menor a {{ SIZE }} MB",
+        "unidadEjecutora": "Unidad Ejecutora"
       },
       "EdicionActa":{
         "Title": "Editar Acta de Recibido",
@@ -613,6 +614,7 @@
     "Acciones":"Acciones",
     "verDetalle" : "Ver Detalle",
     "NA": "N/A",
+    "cuentasContables": "Cuentas Contables",
 
     "Deshacer":"Deshacer",
     "colapsar": "Colapsar",
@@ -623,6 +625,8 @@
     "fechaAprobacion": "Fecha de Aprobación",
     "nivel_jerarquico": "Nivel Jerárquico",
     "atras": "Atrás",
+    "emisorResolucion": "Emisor de la resolución",
+    "entidadOProveedor": "Entidad (Proveedor)",
 
     "subgrupo": {
       "grupo": {
@@ -716,6 +720,8 @@
         "textPostElementoErr": "No se pudo actualizar el elemento",
         "textPutElementoErr": "No se pudo registrar el elemento"
       },
+      "noExiste": "El catálogo no existe",
+      "errCrear": "Error al crear el catálogo",
       "uno": "Catálogo",
       "crear": "Crear Catálogo",
       "editar": "Editar Catálogo",
@@ -727,6 +733,7 @@
       "elementosInfo2": "Editar elemento: Seleccione un elemento",
       "desactivar": "Desactivar Catálogo",
       "validacion_desactivar" :"¿Está seguro que desea desactivar el catálogo?",
+      "desactivar_success": "Catalogo deshabilidado.", 
       "lista": "Lista de Catálogos",
       "errorDetalleTtl": "Clase sin parametrizar",
       "noCuenta": "Si la cuenta ingresada no existe, verifique que exista y esté activa en el sistema kronos",
@@ -838,7 +845,7 @@
     "placeholder_usuario": "usuario",
     "parametro": "parametro",
     "placeholder_parametro": "parametro",
-    "valor": "valor",
+    "valor": "Valor",
     "placeholder_valor": "valor",
     "notificacion_configuracion_perfil": "notificacion_configuracion_perfil",
     "placeholder_notificacion_configuracion_perfil": "notificacion_configuracion_perfil",
@@ -877,6 +884,7 @@
     "mensaje_consulta_entrada": "Lista de entradas realizadas. Para ver el detalle de la entrada presione el ícono de acciones ubicado al costado derecho de la tabla.",
     "consecutivo": "Consecutivo",
     "fecha_entrada": "Fecha de Entrada",
+    "fecha_salida": "Fecha de Salida",
     "tipo_entrada": "Tipo Entrada",
     "estado_entrada": "Estado Entrada",
     "estadoSalida": "Estado Salida",
@@ -917,7 +925,9 @@
     "funcionarioOrigen": "Funcionario Solicitante",
     "funcionarioDestino": "Funcionario Receptor",
     "razonRechazo": "Razón de rechazo",
-    "resolucion": "Número de resolución",
+    "resolucion": "Resolución",
+    "numeroResolucion": "Número de Resolución",
+    "fechaResolucion": "Fecha resolución",
     "entradaAsociada": "Entrada Asociada",
     "ultimaModificacion": "Última Modificación",
 
@@ -927,6 +937,15 @@
       "estadoAprobado": "Aprobada",
       "estadoRechazo": "Rechazada",
       "entradas": {
+        "errores": {
+          "elementoSinBaja": "El elemento no se puede reponer porque no ha sido dado de baja.",
+          "elementoAprAprovechado": "El elemento ya ha sido aprovechado.",
+          "elementoRepRepuesto": "El elemento ya ha sido repuesto.",
+          "elementoConBaja": "El elemento ha sido dado de baja."
+        },
+        "elementosMejoras": "Lista de elementos que se van a mejorar.",
+        "elementosReposicion": "Lista de elementos que se van a reponer.",
+        "elementosAprovechamientos": "Lista de elementos que se van a aprovechar.",
         "noEntradasView": "No se encontraron entradas",
         "noEntradasReview": "No hay entradas pendientes para ser revisadas",
         "noEntradasAprobadas": "No hay entradas aprobadas pendientes por asociar a salida",
@@ -934,6 +953,8 @@
         "errorListaEntradas": "Error al consultar las entradas",
         "errorEstadosMov": "Error al consultar el estado movimiento",
         "errorRechazoEntrada": "Error al rechazar el acta",
+        "registroConfrmTtl": "Confirmar Registro de Entrada",
+        "registroConfrmTxt": "¿Está seguro de registrar la entrada?",
         "registroTtlOk": "Entrada Registrada",
         "registroTxtOk": "La entrada {{CONSECUTIVO}} ha sido registrada de manera exitosa",
         "registroFail": "No es posible hacer el registro de la entrada",
@@ -1199,7 +1220,7 @@
         "title": "Generar Ajuste Contable",
         "subtitle": "Por favor ingrese la información solicitada en el siguiente formulario",
         "accion": "Generar Ajuste",
-        "confrmTtl": "Registrar Ajuse Contable",
+        "confrmTtl": "Registrar Ajuste Contable",
         "confrmTxt": "¿Desea registrar el ajuste contable con la información suministrada?",
         "successTtl": "Ajuste Contable Generado",
         "successTxt": "El Ajuste contable {{CONSECUTIVO}} ha sido generado correctamente",
@@ -1265,7 +1286,7 @@
         "error_desactivacion": "La entrada no ha sido inhabilitada correctamente"
       },
       "tiposBien": {
-        "title": "Administrar tipos de bien y servicios",
+        "title": "Administrar tipos de Bienes y Servicios",
         "subtitle": "Seleccione un tipo de bien o servicio para cambiar su estado",
         "title_activacion": "Habilitar Tipo de Bien o Servicio",
         "title_desactivacion": "Inhabilitar Tipo de Bien o Servicio",
@@ -1287,13 +1308,20 @@
         "actualizacion_title":"Actualización tipo de bien o servicio",
         "necesita_placa":"Requiere placa",
         "necesita_poliza":"Requiere póliza",
-        "bien_padre":"Bien padre",
+        "tipoBienPadre":"Tipo Bien padre",
+        "crear": "Crear tipo de bien",
+        "editar": "Editar tipo de bien",
+        "umbralInferior": "Umbral Inferior (UVT)",
+        "umbralSuperior": "Umbral Superior (UVT)",
+        "bodegaConsumo": "Bodega de Consumo",
+        "errorRango": "El rango indicado se solapa con otros tipos de bien.",
+        "errorPadre": "Si el tipo de bien es padre, éste no puede tener un tipo de bien padre.",
         "registro_text":"¿Desea registrar los datos ingresados?",
         "actualizacion_text": "¿Desea actualizar los datos ingresados?"
       },
       "tiposMovimiento":{
         "title": "Administrar tipos de movimiento",
-        "registro_title": "Type of movement",
+        "registro_title": "Tipo de movimiento",
         "actualizacion_title":"Actualización tipo de movimiento",
         "registro_succes": "Tipo de movimiento registrado satisfactoriamente",
         "actualizacion_succes": "Tipo de movimiento actualizado satisfactoriamente",
@@ -1412,7 +1440,8 @@
         "estadoBaja": "Estado Solicitud",
         "tipoBaja": "Tipo Baja",
         "espera": "En Espera",
-        "errorEditar": "No se puede editar esta solicitud"
+        "errorEditar": "No se puede editar esta solicitud",
+        "errorPermisoEditar": "No tiene permisos para editar esta solicitud."
       },
       "registrar": {
         "title": "Solicitar Baja de Bienes",

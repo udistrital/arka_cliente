@@ -1,19 +1,46 @@
 import { ModuleWithProviders, NgModule } from '@angular/core';
-import { CommonModule, CurrencyPipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
-import {
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatIconModule } from '@angular/material/icon';
+import { MatSortModule } from '@angular/material/sort';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatTableModule } from '@angular/material/table';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatPaginatorModule } from '@angular/material/paginator';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatSelectModule } from '@angular/material/select';
+import { MatStepperModule } from '@angular/material/stepper';
+import { MatCardModule } from '@angular/material/card';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatTreeModule } from '@angular/material/tree';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatRadioModule } from '@angular/material/radio';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatInputModule } from '@angular/material/input';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatGridListModule } from '@angular/material/grid-list';
+import { MatListModule } from '@angular/material/list';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatToolbarModule } from '@angular/material/toolbar';
+
+const MAT_MODULES = [
   MatAutocompleteModule,
-  MatBadgeModule,
-  MatBottomSheetModule,
   MatButtonModule,
   MatButtonToggleModule,
   MatCardModule,
   MatCheckboxModule,
-  MatChipsModule,
+  MatStepperModule,
+  MatDatepickerModule,
   MatDialogModule,
-  MatDividerModule,
   MatExpansionModule,
   MatGridListModule,
   MatIconModule,
@@ -25,60 +52,16 @@ import {
   MatProgressBarModule,
   MatProgressSpinnerModule,
   MatRadioModule,
-  MatRippleModule,
   MatSelectModule,
   MatSidenavModule,
-  MatSliderModule,
-  MatSlideToggleModule,
   MatSnackBarModule,
   MatSortModule,
-  MatStepperModule,
   MatTableModule,
   MatTabsModule,
   MatToolbarModule,
   MatTooltipModule,
   MatTreeModule,
-} from '@angular/material';
-
-const MAT_MODULES = [
-    CdkTableModule,
-    CdkTreeModule,
-    MatAutocompleteModule,
-    MatBadgeModule,
-    MatBottomSheetModule,
-    MatButtonModule,
-    MatButtonToggleModule,
-    MatCardModule,
-    MatCheckboxModule,
-    MatChipsModule,
-    MatStepperModule,
-    MatDatepickerModule,
-    MatDialogModule,
-    MatDividerModule,
-    MatExpansionModule,
-    MatGridListModule,
-    MatIconModule,
-    MatInputModule,
-    MatListModule,
-    MatMenuModule,
-    MatNativeDateModule,
-    MatPaginatorModule,
-    MatProgressBarModule,
-    MatProgressSpinnerModule,
-    MatRadioModule,
-    MatRippleModule,
-    MatSelectModule,
-    MatSidenavModule,
-    MatSliderModule,
-    MatSlideToggleModule,
-    MatSnackBarModule,
-    MatSortModule,
-    MatTableModule,
-    MatTabsModule,
-    MatToolbarModule,
-    MatTooltipModule,
-    MatTreeModule,
-  ];
+];
 
 import {
   NbActionsModule,
@@ -97,11 +80,9 @@ import {
   NbProgressBarModule,
   NbCalendarModule,
   NbCalendarRangeModule,
-  NbStepperModule,
   NbButtonModule,
   NbInputModule,
   NbAccordionModule,
-  NbDatepickerModule,
   NbDialogModule,
   NbWindowModule,
   NbListModule,
@@ -114,24 +95,15 @@ import {
   NbTooltipModule,
   NbCalendarKitModule,
 } from '@nebular/theme';
-import { NbDateFnsDateModule } from '@nebular/date-fns';
 import { NbSecurityModule } from '@nebular/security';
 
 import {
-  AutocompleterComponent,
   FooterComponent,
   HeaderComponent,
-  SearchInputComponent,
   ThemeSettingsComponent,
-  SwitcherComponent,
-  LayoutDirectionSwitcherComponent,
   ThemeSwitcherComponent,
   DinamicformComponent,
-  TinyMCEComponent,
   ThemeSwitcherListComponent,
-  ToggleSettingsButtonComponent,
-  SelectComponent,
-  NuxeoComponent,
 } from './components';
 import {
   CapitalizePipe,
@@ -151,19 +123,13 @@ import { COSMIC_THEME } from './styles/theme.cosmic';
 import { CORPORATE_THEME } from './styles/theme.corporate';
 import { UD_THEME } from './styles/theme.ud';
 import { ImplicitAutenticationService } from '../@core/utils/implicit_autentication.service';
-import { NotificacionesService } from '../@core/utils/notificaciones.service';
-import { ConfiguracionService } from '../@core/data/configuracion.service';
 import { DocumentoService } from '../@core/data/documento.service';
-import { TranslatePipe, TranslateModule } from '@ngx-translate/core';
-import { MatDatepickerModule } from '@angular/material';
-import { CdkTableModule } from '@angular/cdk/table';
-import { CdkTreeModule } from '@angular/cdk/tree';
+import { TranslateModule } from '@ngx-translate/core';
 import { SelectDirective } from './directives/mouse-over-tree';
 import { ARKAII_THEME } from './styles/theme.arka2';
-import { Ng2CompleterModule } from 'ng2-completer';
 import { NgxCurrencyModule } from 'ngx-currency';
 
-const BASE_MODULES = [CommonModule, FormsModule, ReactiveFormsModule, Ng2CompleterModule];
+const BASE_MODULES = [CommonModule, FormsModule, ReactiveFormsModule];
 
 const NB_MODULES = [
   NbCardModule,
@@ -183,13 +149,11 @@ const NB_MODULES = [
   NbProgressBarModule,
   NbCalendarModule,
   NbCalendarRangeModule,
-  NbStepperModule,
   NbButtonModule,
   NbListModule,
   NbToastrModule,
   NbInputModule,
   NbAccordionModule,
-  NbDatepickerModule,
   NbDialogModule,
   NbWindowModule,
   NbAlertModule,
@@ -204,24 +168,16 @@ const NB_MODULES = [
 ];
 
 const COMPONENTS = [
-  AutocompleterComponent,
-  SwitcherComponent,
-  LayoutDirectionSwitcherComponent,
   ThemeSwitcherComponent,
   ThemeSwitcherListComponent,
   HeaderComponent,
   FooterComponent,
-  SearchInputComponent,
   ThemeSettingsComponent,
-  TinyMCEComponent,
   OneColumnLayoutComponent,
   DinamicformComponent,
   SampleLayoutComponent,
   ThreeColumnsLayoutComponent,
   TwoColumnsLayoutComponent,
-  ToggleSettingsButtonComponent,
-  SelectComponent,
-  NuxeoComponent,
   SelectDirective,
 ];
 
@@ -246,15 +202,9 @@ const NB_THEME_PROVIDERS = [
   ).providers,
   ...NbSidebarModule.forRoot().providers,
   ...NbMenuModule.forRoot().providers,
-  ...NbDatepickerModule.forRoot().providers,
   ...NbDialogModule.forRoot().providers,
   ...NbWindowModule.forRoot().providers,
   ...NbToastrModule.forRoot().providers,
-  ...NbChatModule.forRoot({
-    messageGoogleMapKey: 'AIzaSyA_wNuCzia92MAmdLRzmqitRGvCF7wCZPY',
-  }).providers,
-  ...NbDateFnsDateModule.forRoot({ format: 'dd/MM/yyyy' }).providers,
-  ...NbDateFnsDateModule.forChild({ format: 'dd/MM/yyyy' }).providers,
 ];
 
 @NgModule({
@@ -264,14 +214,11 @@ const NB_THEME_PROVIDERS = [
   entryComponents: [...ENTRY_COMPONENTS],
 })
 export class ThemeModule {
-  static forRoot(): ModuleWithProviders {
+  static forRoot(): ModuleWithProviders<ThemeModule> {
     return <ModuleWithProviders>{
       ngModule: ThemeModule,
       providers: [...NB_THEME_PROVIDERS,
-        CurrencyPipe,
         ImplicitAutenticationService,
-        NotificacionesService,
-        ConfiguracionService,
         DocumentoService,
       ],
     };

@@ -90,45 +90,37 @@ export class CrudTrasladoComponent implements OnInit {
   }
 
   public rechazar() {
-    (Swal as any).fire({
-      title: this.translate.instant('GLOBAL.traslados.' + this.modoCrud + '.confrmTtlR'),
-      text: this.translate.instant('GLOBAL.traslados.' + this.modoCrud + '.confrmTxtR'),
-      type: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: this.translate.instant('GLOBAL.si'),
-      cancelButtonText: this.translate.instant('GLOBAL.no'),
-    }).then((result) => {
-      if (result.value) {
-        (Swal as any).mixin({
-          input: 'text',
-          confirmButtonText: this.translate.instant('GLOBAL.Acta_Recibido.VerificacionActa.Rechazar'),
-          showCancelButton: true,
-          progressSteps: ['1'],
-          inputValidator: (value) => {
-            return new Promise<string>((resolve) => {
-              if (!value.length) {
-                resolve(this.translate.instant('GLOBAL.traslados.revisar.confrmRechazoTtx'));
-              } else {
-                resolve('');
-              }
-            });
-          },
-        }).queue([
-          {
-            title: this.translate.instant('GLOBAL.traslados.revisar.confrmRechazoTtl'),
-            text: this.translate.instant('GLOBAL.traslados.revisar.confrmRechazoTtx'),
-          },
-        ]).then((result2) => {
-          if (result2.value) {
-            this.rechazo = result2.value[0];
-            this.buildMovimiento(true);
-          }
-        });
+    this.pUpManager.showAlertWithOptions(this.optionsRechazo)
+      .then((result) => {
+        if (result.value) {
+          (Swal as any).mixin({
+            input: 'text',
+            confirmButtonText: this.translate.instant('GLOBAL.Acta_Recibido.VerificacionActa.Rechazar'),
+            showCancelButton: true,
+            progressSteps: ['1'],
+            inputValidator: (value) => {
+              return new Promise<string>((resolve) => {
+                if (!value.length) {
+                  resolve(this.translate.instant('GLOBAL.traslados.revisar.confrmRechazoTtx'));
+                } else {
+                  resolve('');
+                }
+              });
+            },
+          }).queue([
+            {
+              title: this.translate.instant('GLOBAL.traslados.revisar.confrmRechazoTtl'),
+              text: this.translate.instant('GLOBAL.traslados.revisar.confrmRechazoTtx'),
+            },
+          ]).then((result2) => {
+            if (result2.value) {
+              this.rechazo = result2.value[0];
+              this.buildMovimiento(true);
+            }
+          });
 
-      }
-    });
+        }
+      });
   }
 
   private getFormatoTraslado() {
@@ -144,23 +136,12 @@ export class CrudTrasladoComponent implements OnInit {
   }
 
   public confirm(rechazar: boolean = false) {
-    const sfx = (this.modoCrud !== 'editar' && this.modoCrud !== 'confirmar' && this.modoCrud !== 'revisar') ? '' : rechazar ? 'R' : 'A';
-    const title = this.translate.instant('GLOBAL.traslados.' + this.modoCrud + '.confrmTtl' + sfx);
-    const text = this.translate.instant('GLOBAL.traslados.' + this.modoCrud + '.confrmTxt' + sfx);
-    (Swal as any).fire({
-      title,
-      text,
-      type: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: this.translate.instant('GLOBAL.si'),
-      cancelButtonText: this.translate.instant('GLOBAL.no'),
-    }).then((result) => {
-      if (result.value) {
-        this.buildMovimiento(rechazar);
-      }
-    });
+    this.pUpManager.showAlertWithOptions(this.optionsConfirm(rechazar))
+      .then((result) => {
+        if (result.value) {
+          this.buildMovimiento(rechazar);
+        }
+      });
   }
 
   private buildMovimiento(rechazar: boolean) {
@@ -231,8 +212,21 @@ export class CrudTrasladoComponent implements OnInit {
 
   private aprobarTraslado(movimiento) {
     this.trasladosHelper.aprobarTraslado(movimiento).subscribe((res: any) => {
-      this.alertSuccess(false, JSON.parse(res.movimiento.Detalle).Consecutivo);
-      this.trContable = res.trContable;
+      if (res && !res.Error) {
+        if (res.TransaccionContable) {
+          const fecha = new Date(res.TransaccionContable.Fecha).toLocaleString();
+          this.trContable = {
+            rechazo: '',
+            movimientos: res.TransaccionContable.movimientos,
+            concepto: res.TransaccionContable.Concepto,
+            fecha,
+          };
+        }
+        const obj = JSON.parse(res.Movimiento.Detalle);
+        this.alertSuccess(false, obj ? obj.Consecutivo : '');
+      } else if (res && res.Error) {
+        this.pUpManager.showErrorAlert(res.Error);
+      }
     });
   }
 
@@ -258,4 +252,34 @@ export class CrudTrasladoComponent implements OnInit {
       }
     });
   }
+
+  private optionsConfirm(rechazar: boolean) {
+    const sfx = (this.modoCrud !== 'editar' && this.modoCrud !== 'confirmar' && this.modoCrud !== 'revisar') ? '' : rechazar ? 'R' : 'A';
+    const title = this.translate.instant('GLOBAL.traslados.' + this.modoCrud + '.confrmTtl' + sfx);
+    const text = this.translate.instant('GLOBAL.traslados.' + this.modoCrud + '.confrmTxt' + sfx);
+    return {
+      title,
+      text,
+      type: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: this.translate.instant('GLOBAL.si'),
+      cancelButtonText: this.translate.instant('GLOBAL.no'),
+    };
+  }
+
+  get optionsRechazo() {
+    return {
+      title: this.translate.instant('GLOBAL.traslados.' + this.modoCrud + '.confrmTtlR'),
+      text: this.translate.instant('GLOBAL.traslados.' + this.modoCrud + '.confrmTxtR'),
+      type: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: this.translate.instant('GLOBAL.si'),
+      cancelButtonText: this.translate.instant('GLOBAL.no'),
+    };
+  }
+
 }
