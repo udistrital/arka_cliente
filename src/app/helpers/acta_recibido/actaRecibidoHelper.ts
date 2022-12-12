@@ -181,7 +181,7 @@ export class ActaRecibidoHelper {
     public getElementosActa(actaId) {
         this.rqManager.setPath('ARKA_SERVICE');
         return this.rqManager.get(
-            'acta_recibido/get_elementos_acta/' + actaId).pipe(
+            'acta_recibido/elementos/' + actaId).pipe(
                 map(
                     (res) => {
                         if (res === 'error') {

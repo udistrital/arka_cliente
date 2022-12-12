@@ -19,7 +19,7 @@ export const environment = {
   // CUENTAS_CONTABLES_SERVICE: 'http://pruebasapi.intranetoas.udistrital.edu.co:8209/v1/',
   // GOOGLE_SERVICE: 'http://localhost:8080/v1/',
   // MOVIMIENTOS_ARKA_SERVICE: 'http://localhost:8080/v1/',
-  NOTIFICACION_SERVICE: 'https://pruebasassets.portaloas.udistrital.edu.co/',
+  NOTIFICACION_SERVICE: 'https://autenticacion.portaloas.udistrital.edu.co/apioas/notificacion_mid/v1/',
 
   TOKEN: {
     AUTORIZATION_URL: 'https://autenticacion.portaloas.udistrital.edu.co/oauth2/authorize',

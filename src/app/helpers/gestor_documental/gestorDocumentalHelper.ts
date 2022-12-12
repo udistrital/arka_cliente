@@ -90,7 +90,7 @@ export class GestorDocumentalService {
           documentos.push(doc);
 
           this.rqManager.setPath('GESTOR_DOCUMENTAL_SERVICE');
-          return this.rqManager.get('/document/' + doc.Enlace);
+          return this.rqManager.get('document/' + doc.Enlace);
         }),
         )
         .subscribe(async (f: any) => {
@@ -117,7 +117,7 @@ export class GestorDocumentalService {
           documentos.push(doc);
 
           this.rqManager.setPath('GESTOR_DOCUMENTAL_SERVICE');
-          return this.rqManager.get('/document/' + doc.Enlace);
+          return this.rqManager.get('document/' + doc.Enlace);
         }),
         )
         .subscribe(async (f: any) => {
