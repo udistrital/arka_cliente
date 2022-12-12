@@ -9,6 +9,7 @@ import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
 import { ListService } from '../../../@core/store/services/list.service';
 import { Store } from '@ngrx/store';
 import { IAppState } from '../../../@core/store/app.state';
+import { SmartTableService } from '../../../@core/data/SmartTableService';
 
 @Component({
   selector: 'ngx-lista-bienes',
@@ -38,7 +39,7 @@ export class ListaBienesComponent implements OnInit {
   constructor(
     private pUpManager: PopUpManager,
     private translate: TranslateService,
-
+    private tabla: SmartTableService,
   ) {
     this.source = new LocalDataSource();
     this.bienSeleccionado = '';
@@ -88,18 +89,7 @@ export class ListaBienesComponent implements OnInit {
         },
         FechaRegistro: {
           title: this.translate.instant('GLOBAL.fecha_creacion'),
-          valuePrepareFunction: (value: any) => {
-            const date = value.split('T');
-            return date[0];
-          },
-          filter: {
-            type: 'daterange',
-            config: {
-              daterange: {
-                format: 'yyyy/mm/dd',
-              },
-            },
-          },
+          ...this.tabla.getSettingsDate(),
         },
         BienInmueble: {
           title: this.translate.instant('GLOBAL.revisor'),

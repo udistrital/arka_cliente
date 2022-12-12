@@ -126,7 +126,7 @@ export class TiposEntradaComponent implements OnInit {
       if (result.value) {
         FormatoTipoMovimiento.Activo = !FormatoTipoMovimiento.Activo,
           this.updating = true;
-        this.entradasHelper.putFormatoEntrada(FormatoTipoMovimiento).subscribe((res: any) => {
+        this.entradasHelper.putMovimientoArka(FormatoTipoMovimiento).subscribe((res: any) => {
           if (res !== null) {
             (Swal as any).fire({
               type: 'success',

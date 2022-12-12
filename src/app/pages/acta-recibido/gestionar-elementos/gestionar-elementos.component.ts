@@ -517,7 +517,7 @@ export class GestionarElementosComponent implements OnInit {
 
         const clase = control_.get('SubgrupoCatalogoId');
         const tipoBien = control_.get('TipoBienId');
-        if (clase.valid && tipoBien.valid) {
+        if (clase.value && clase.value.TipoBienId && tipoBien.valid) {
           this.setCantidad(control.parent,
             this.checkPlacaSubgrupoTipoBien(clase.value.TipoBienId.Id, tipoBien.value && tipoBien.value.Id ? tipoBien.value.Id : 0, unit));
         }
@@ -540,8 +540,9 @@ export class GestionarElementosComponent implements OnInit {
         } else {
           const tb = control.parent.get('TipoBienId');
           const sg = control.parent.get('SubgrupoCatalogoId');
-          if ((sg.value.TipoBienId && !this.tiposBien.find(tb_ => (tb_.TipoBienPadreId.Id === sg.value.TipoBienId.Id && tb_.LimiteInferior))) ||
-            (tb.valid && tb.value && sg.valid && sg.value.TipoBienId.Id !== tb.value.TipoBienPadreId.Id)) {
+          if ((sg.value && sg.value.TipoBienId &&
+            !this.tiposBien.find(tb_ => (tb_.TipoBienPadreId.Id === sg.value.TipoBienId.Id && tb_.LimiteInferior))) ||
+            (tb.valid && tb.value && sg.value && sg.value.TipoBienId.Id !== tb.value.TipoBienPadreId.Id)) {
             return { errorTipoBien: true };
           }
         }
@@ -881,8 +882,8 @@ export class GestionarElementosComponent implements OnInit {
     this.dataSource.data = [];
     this.actaRecibidoHelper.postArchivo(formModel).subscribe((res: any) => {
       if (res !== null) {
-        if (res.Mensaje !== undefined) {
-          this.pUpManager.showAlertWithOptions(this.optionsErrPlantilla(res.Mensaje));
+        if (res.Mensaje) {
+          this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.Errores.' + res.Mensaje));
           this.clearFile();
         } else {
           this.fillForm(res.Elementos);

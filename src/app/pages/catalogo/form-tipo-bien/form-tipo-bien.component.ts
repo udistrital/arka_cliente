@@ -159,7 +159,7 @@ export class FormTipoBienComponent implements OnInit, OnChanges {
 
   private validateRange(): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
-      if (control.parent) {
+      if (control.parent && !control.pristine) {
         const min = control.parent.get('LimiteInferior');
         const max = control.parent.get('LimiteSuperior');
 

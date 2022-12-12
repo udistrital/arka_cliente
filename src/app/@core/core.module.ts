@@ -110,7 +110,7 @@ export const NB_CORE_PROVIDERS = [
   declarations: [],
   providers: [
     AuthGuard,
-
+    SmartTableService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,

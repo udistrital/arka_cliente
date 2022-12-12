@@ -11,6 +11,7 @@ import { PermisoUsuario_t as Permiso } from '../../../@core/data/models/roles/ro
 import { TransaccionActaRecibido } from '../../../@core/data/models/acta_recibido/transaccion_acta_recibido';
 import { EstadoActa, EstadoActa_t } from '../../../@core/data/models/acta_recibido/estado_acta';
 import { CommonActas } from '../shared';
+import { SmartTableService } from '../../../@core/data/SmartTableService';
 
 const ORDEN_ESTADOS: EstadoActa_t[] = [
   EstadoActa_t.Registrada,
@@ -65,6 +66,7 @@ export class ConsultaActaRecibidoComponent implements OnInit {
     private actaRecibidoHelper: ActaRecibidoHelper,
     private confService: ConfiguracionService,
     private userService: UserService,
+    private tabla: SmartTableService,
   ) {
     this.limit = 10;
     this.SizePage = '10';
@@ -200,32 +202,12 @@ export class ConsultaActaRecibidoComponent implements OnInit {
         FechaCreacion: {
           title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.FechaCreacionHeader'),
           width: '70px',
-          valuePrepareFunction: (value: any) => {
-            return this.formatDate(value);
-          },
-          filter: {
-            type: 'daterange',
-            config: {
-              daterange: {
-                format: 'yyyy/mm/dd',
-              },
-            },
-          },
+          ...this.tabla.getSettingsDate(),
         },
         FechaModificacion: {
           title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.FechaModificacionHeader'),
           width: '70px',
-          valuePrepareFunction: (value: any) => {
-            return this.formatDate(value);
-          },
-          filter: {
-            type: 'daterange',
-            config: {
-              daterange: {
-                format: 'yyyy/mm/dd',
-              },
-            },
-          },
+          ...this.tabla.getSettingsDate(),
         },
         RevisorId: {
           title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.ModificadaPor'),
@@ -237,7 +219,7 @@ export class ConsultaActaRecibidoComponent implements OnInit {
           title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.FechaVistoBuenoHeader'),
           width: '70px',
           valuePrepareFunction: (value: any) => {
-            const date = value ? this.formatDate(value) :
+            const date = value ? this.tabla.formatDate(value) :
               this.translate.instant('GLOBAL.bajas.consulta.espera');
               return date;
           },
@@ -452,12 +434,6 @@ export class ConsultaActaRecibidoComponent implements OnInit {
     this.verActa = false;
     this.validarActa = false;
     // console.log('1')
-  }
-
-  private formatDate(value) {
-    const date = new Date(value);
-    date.setUTCMinutes(date.getTimezoneOffset());
-    return new Date(Date.parse(date.toString())).toLocaleDateString('es-CO');
   }
 
   traducirEstado(estado: EstadoActa_t): string {

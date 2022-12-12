@@ -1,17 +1,12 @@
 import { Injectable } from '@angular/core';
 import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
 
-@Injectable({
-    providedIn: 'root',
-})
+@Injectable()
 export class SmartTableService {
 
     constructor(
         private translate: TranslateService,
-    ) {
-        this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
-        });
-    }
+    ) { }
 
     public formatDate(value: Date) {
         if (!value) {
@@ -25,6 +20,38 @@ export class SmartTableService {
 
     public prepareFunctionString(value: any): string {
         return value ? value : '';
+    }
+
+    public getSettingsDate() {
+        return {
+            valuePrepareFunction: (value: any) => {
+                return this.prepareFunctionDate(value);
+            },
+            filterFunction: (cell?: any, search?: string): boolean => {
+                return this.filterFunctionDate(cell, search);
+            },
+        };
+    }
+
+    private prepareFunctionDate(value?: any): string {
+        if (!value) {
+            return '';
+        }
+
+        const date = new Date(value);
+        date.setUTCMinutes(date.getTimezoneOffset());
+        return new Date(Date.parse(date.toString())).toLocaleDateString('es-CO');
+    }
+
+    private filterFunctionDate(cell?: any, search?: string): boolean {
+
+        if (!cell || !search) {
+            return false;
+        }
+
+        if (this.prepareFunctionDate(cell).indexOf(search) > -1) {
+            return true;
+        }
     }
 
     public prepareFunctionCurrency(value: any): string {
@@ -124,6 +151,20 @@ export class SmartTableService {
         };
     }
 
+    public getSettingsBool() {
+        return {
+            valuePrepareFunction: (value: any) => {
+                return this.prepareFunctionBool(value);
+            },
+            filterFunction: (cell?: any, search?: string): boolean => {
+                return this.filterFunctionBool(cell, search);
+            },
+            compareFunction: (direction: any, a: any, b: any): number => {
+                return this.compareFunctionBool(direction, a, b);
+            },
+        };
+    }
+
     private prepareFunctionParse(value: string, key: string): string {
         return value && JSON.parse(value) ? JSON.parse(value)[key] : '';
     }
@@ -159,11 +200,28 @@ export class SmartTableService {
         }
     }
 
-    public boolToText(value: boolean) {
+    private prepareFunctionBool(value: boolean) {
         if (value) {
-            return 'SÍ'; // this.translate.instant('GLOBAL.si')
+            return this.translate.instant('GLOBAL.si');
         } else {
-            return 'NO'; // this.translate.instant('GLOBAL.no');
+            return this.translate.instant('GLOBAL.no');
         }
     }
+
+    private filterFunctionBool(cell?: any, search?: string): boolean {
+        if (!search.length) {
+            return false;
+        }
+
+        if (this.prepareFunctionBool(cell).toUpperCase().indexOf(search.toUpperCase()) > -1) {
+            return true;
+        }
+    }
+
+    private compareFunctionBool(direction: any, a: any, b: any) {
+        const first = this.prepareFunctionBool(a);
+        const second = this.prepareFunctionBool(b);
+        return this.getOrder(first, second, direction);
+    }
+
 }

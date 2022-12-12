@@ -4,7 +4,7 @@
       <strong>{{'GLOBAL.consecutivo' | translate }}</strong>: {{consecutivo}}
     </p>
     <p *ngIf="fecha" class="text-uppercase">
-      <strong>{{'GLOBAL.Comprobante_Contable.FechaTransaccion' | translate }}</strong>: {{fecha}}
+      <strong>{{'GLOBAL.Comprobante_Contable.FechaTransaccion' | translate }}</strong>: {{fecha | date:'dd/MM/yyy'}}
     </p>
     <p *ngIf="concepto" class="text-uppercase">
       <strong>{{'GLOBAL.Comprobante_Contable.Concepto' | translate }}</strong>: {{concepto}}
