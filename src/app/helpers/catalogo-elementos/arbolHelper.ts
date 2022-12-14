@@ -40,7 +40,7 @@ export class DynamicDatabase {
         this.rqManager.setPath('CATALOGO_ELEMENTOS_SERVICE');
         return this.rqManager.get('tr_catalogo/arbol?primer_nivel=true&catalogo_id=' + catalogoId + query).pipe(
             map(
-                (res) => {
+                (res: any) => {
                     return res.map(
                         node => new DynamicFlatNode(node.data, 0, node.expandible),
                     );
