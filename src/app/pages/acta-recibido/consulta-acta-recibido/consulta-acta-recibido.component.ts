@@ -218,19 +218,7 @@ export class ConsultaActaRecibidoComponent implements OnInit {
         FechaVistoBueno: {
           title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.FechaVistoBuenoHeader'),
           width: '70px',
-          valuePrepareFunction: (value: any) => {
-            const date = value ? this.tabla.formatDate(value) :
-              this.translate.instant('GLOBAL.bajas.consulta.espera');
-              return date;
-          },
-          filter: {
-            type: 'daterange',
-            config: {
-              daterange: {
-                format: 'yyyy/mm/dd',
-              },
-            },
-          },
+          ...this.tabla.getSettingsDate_(),
         },
         AceptadaPor: {
           title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.AceptadaPor'),

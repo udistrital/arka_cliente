@@ -14,13 +14,12 @@ export const environment = {
   ...WSO2,
 
   // ARKA_SERVICE: 'http://localhost:8081/v1/',
-  ASSETS_SERVICE: 'https://pruebasassets.portaloas.udistrital.edu.co/',
   // CATALOGO_ELEMENTOS_SERVICE: 'http://localhost:8080/v1/',
   // CUENTAS_CONTABLES_SERVICE: 'http://pruebasapi.intranetoas.udistrital.edu.co:8209/v1/',
   // GOOGLE_SERVICE: 'http://localhost:8080/v1/',
   // MOVIMIENTOS_ARKA_SERVICE: 'http://localhost:8080/v1/',
-  NOTIFICACION_SERVICE: 'https://pruebasassets.portaloas.udistrital.edu.co/',
 
+  ASSETS_SERVICE: 'https://pruebasassets.portaloas.udistrital.edu.co/',
   TOKEN: {
     AUTORIZATION_URL: 'https://autenticacion.portaloas.udistrital.edu.co/oauth2/authorize',
     CLIENTE_ID: 'e36v1MPQk2jbz9KM4SmKhk8Cyw0a',
