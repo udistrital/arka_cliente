@@ -8,6 +8,8 @@ export class SmartTableService {
         private translate: TranslateService,
     ) { }
 
+    zero = new Date(-1);
+
     public formatDate(value: Date) {
         if (!value) {
             return '';
@@ -33,6 +35,17 @@ export class SmartTableService {
         };
     }
 
+    public getSettingsDate_() {
+        return {
+            valuePrepareFunction: (value: any) => {
+                return this.prepareFunctionDate_(value);
+            },
+            filterFunction: (cell?: any, search?: string): boolean => {
+                return this.filterFunctionDate_(cell, search);
+            },
+        };
+    }
+
     private prepareFunctionDate(value?: any): string {
         if (!value) {
             return '';
@@ -50,6 +63,27 @@ export class SmartTableService {
         }
 
         if (this.prepareFunctionDate(cell).indexOf(search) > -1) {
+            return true;
+        }
+    }
+
+    private prepareFunctionDate_(value?: any): string {
+        if (!value) {
+            return '';
+        }
+
+        const date = new Date(value) > this.zero ? this.formatDate(value) :
+            this.translate.instant('GLOBAL.bajas.consulta.espera');
+        return date;
+    }
+
+    private filterFunctionDate_(cell?: any, search?: string): boolean {
+
+        if (!cell || !search) {
+            return false;
+        }
+
+        if (this.prepareFunctionDate_(cell).indexOf(search) > -1) {
             return true;
         }
     }
