@@ -10,6 +10,7 @@ export const environment = {
   production: true,
   ...WSO2,
 
+  ASSETS_SERVICE: 'https://pruebasassets.portaloas.udistrital.edu.co/',
   TOKEN: {
     AUTORIZATION_URL: 'https://autenticacion.portaloas.udistrital.edu.co/oauth2/authorize',
     CLIENTE_ID: '4h6flKY9tkUfQyMIf2EsZoF9ERoa',
