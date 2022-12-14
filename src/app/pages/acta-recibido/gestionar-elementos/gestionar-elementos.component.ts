@@ -82,8 +82,7 @@ export class GestionarElementosComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.listService.findUnidades();
-    this.listService.findImpuestoIVA();
+    this.listService.findListsActa();
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
     });
     this.createForm();

@@ -102,11 +102,11 @@ export class ListService {
         if (!list || list.length === 0) {
           this.ActaRecibido.getParametros()
             .subscribe(
-              (res: any[]) => {
-                this.addList(REDUCER_LIST.EstadosActa, res[0].EstadoActa);
-                this.addList(REDUCER_LIST.EstadosElemento, res[0].EstadoElemento);
-                this.addList(REDUCER_LIST.Unidades, res[0].Unidades);
-                this.addList(REDUCER_LIST.IVA, res[0].IVA);
+              (res: any) => {
+                this.addList(REDUCER_LIST.EstadosActa, res.EstadoActa);
+                this.addList(REDUCER_LIST.EstadosElemento, res.EstadoElemento);
+                this.addList(REDUCER_LIST.Unidades, res.Unidades);
+                this.addList(REDUCER_LIST.IVA, res.IVA);
               },
               error => {
                 this.addList(REDUCER_LIST.EstadosActa, []);
@@ -127,9 +127,8 @@ export class ListService {
         if (!list || list.length === 0) {
           this.ActaRecibido.getParametros()
             .subscribe(
-              (res: any[]) => {
-
-                this.addList(REDUCER_LIST.EstadosActa, res[0].EstadoActa);
+              (res: any) => {
+                this.addList(REDUCER_LIST.EstadosActa, res.EstadoActa);
               },
               error => {
                 this.addList(REDUCER_LIST.EstadosActa, []);
@@ -147,9 +146,8 @@ export class ListService {
         if (!list || list.length === 0) {
           this.ActaRecibido.getParametros()
             .subscribe(
-              (res: any[]) => {
-
-                this.addList(REDUCER_LIST.EstadosElemento, res[0].EstadoElemento);
+              (res: any) => {
+                this.addList(REDUCER_LIST.EstadosElemento, res.EstadoElemento);
               },
               error => {
                 this.addList(REDUCER_LIST.EstadosElemento, []);
@@ -186,9 +184,8 @@ export class ListService {
         if (!list || list.length === 0) {
           this.ActaRecibido.getParametros()
             .subscribe(
-              (res: any[]) => {
-
-                this.addList(REDUCER_LIST.Unidades, res[0].Unidades);
+              (res: any) => {
+                this.addList(REDUCER_LIST.Unidades, res.Unidades);
               },
               error => {
                 this.addList(REDUCER_LIST.Unidades, []);
@@ -206,20 +203,8 @@ export class ListService {
         if (!list || list.length === 0) {
           this.ActaRecibido.getParametros()
             .subscribe(
-              (res: any[]) => {
-
-                for (const index in res) {
-                  if (res.hasOwnProperty(index)) {
-                    for (const index2 in res[index].IVA) {
-                      if (true) {
-                        res[index].IVA[index2].Nombre = res[index].IVA[index2].Tarifa.toString() + '% ' +
-                        res[index].IVA[index2].CodigoAbreviacion;
-                      }
-                    }
-                    // console.log(res[index].IVA)
-                  }
-                }
-                this.addList(REDUCER_LIST.IVA, res[0].IVA);
+              (res: any) => {
+                this.addList(REDUCER_LIST.IVA, res.IVA);
               },
               error => {
                 this.addList(REDUCER_LIST.IVA, []);
