@@ -16,57 +16,57 @@ const routes: Routes = [{
     },
     {
       path: 'acta_recibido',
-      loadChildren: './acta-recibido/acta-recibido.module#ActaRecibidoModule',
+      loadChildren: () => import('./acta-recibido/acta-recibido.module').then(m => m.ActaRecibidoModule),
       canLoad: [CanLoadChildren],
     },
     {
       path: 'catalogo',
-      loadChildren: './catalogo/catalogo.module#CatalogoModule',
+      loadChildren: () => import('./catalogo/catalogo.module').then(m => m.CatalogoModule),
       canActivate: [AuthGuard],
     },
     {
       path: 'entradas',
-      loadChildren: './entradas/entradas.module#EntradasModule',
+      loadChildren: () => import('./entradas/entradas.module').then(m => m.EntradasModule),
       canLoad: [CanLoadChildren],
     },
     {
       path: 'salidas',
-      loadChildren: './salidas/salidas.module#SalidasModule',
+      loadChildren: () => import('./salidas/salidas.module').then(m => m.SalidasModule),
       canLoad: [CanLoadChildren],
     },
     {
       path: 'bodega_consumo',
-      loadChildren: './bodega-consumo/bodega-consumo.module#BodegaConsumoModule',
+      loadChildren: () => import('./bodega-consumo/bodega-consumo.module').then(m => m.BodegaConsumoModule),
       canActivate: [AuthGuard],
     },
     {
       path: 'bajas',
-      loadChildren: './bajas/bajas.module#BajasModule',
+      loadChildren: () => import('./bajas/bajas.module').then(m => m.BajasModule),
       canActivate: [AuthGuard],
     },
     {
       path: 'ajustes',
-      loadChildren: './ajustes/ajustes.module#AjustesModule',
+      loadChildren: () => import('./ajustes/ajustes.module').then(m => m.AjustesModule),
       canActivate: [AuthGuard],
     },
     {
       path: 'bienes-inmuebles',
-      loadChildren: './bienes-inmuebles/bienes-inmuebles.module#BienesInmueblesModule',
+      loadChildren: () => import('./bienes-inmuebles/bienes-inmuebles.module').then(m => m.BienesInmueblesModule),
       canActivate: [AuthGuard],
     },
     {
       path: 'parametros',
-      loadChildren: './parametros/parametros.module#ParametrosModule',
+      loadChildren: () => import('./parametros/parametros.module').then(m => m.ParametrosModule),
       canActivate: [AuthGuard],
     },
     {
       path: 'traslados',
-      loadChildren: './traslados/traslados.module#TrasladosModule',
+      loadChildren: () => import('./traslados/traslados.module').then(m => m.TrasladosModule),
       canActivate: [AuthGuard],
     },
     {
       path: 'cierres',
-      loadChildren: './depreciacion/depreciacion.module#DepreciacionModule',
+      loadChildren: () => import('./depreciacion/depreciacion.module').then(m => m.DepreciacionModule),
       canActivate: [AuthGuard],
     },
     {
@@ -83,5 +83,4 @@ const routes: Routes = [{
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule],
 })
-export class PagesRoutingModule {
-}
+export class PagesRoutingModule { }
