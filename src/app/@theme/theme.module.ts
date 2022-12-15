@@ -123,7 +123,6 @@ import { COSMIC_THEME } from './styles/theme.cosmic';
 import { CORPORATE_THEME } from './styles/theme.corporate';
 import { UD_THEME } from './styles/theme.ud';
 import { ImplicitAutenticationService } from '../@core/utils/implicit_autentication.service';
-import { DocumentoService } from '../@core/data/documento.service';
 import { TranslateModule } from '@ngx-translate/core';
 import { SelectDirective } from './directives/mouse-over-tree';
 import { ARKAII_THEME } from './styles/theme.arka2';
@@ -219,7 +218,6 @@ export class ThemeModule {
       ngModule: ThemeModule,
       providers: [...NB_THEME_PROVIDERS,
         ImplicitAutenticationService,
-        DocumentoService,
       ],
     };
   }
