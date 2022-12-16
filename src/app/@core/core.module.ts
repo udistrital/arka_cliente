@@ -22,6 +22,9 @@ import { LoaderService } from './utils/load.service';
 import { UtilidadesService } from './utils/utilidades.service';
 import { AutenticationService } from './utils/authentication.service';
 import { SmartTableService } from './data/SmartTableService';
+import { MenuService } from './data/menu.service';
+import { ConfiguracionService } from './data/configuracion.service';
+import { UserService } from './data/users.service';
 
 
 const socialLinks = [
@@ -96,6 +99,9 @@ export const NB_CORE_PROVIDERS = [
   UtilidadesService,
   AutenticationService,
   SmartTableService,
+  MenuService,
+  ConfiguracionService,
+  UserService,
 ];
 
 @NgModule({
@@ -109,6 +115,12 @@ export const NB_CORE_PROVIDERS = [
   providers: [
     AuthGuard,
     SmartTableService,
+    MenuService,
+    ConfiguracionService,
+    UserService,
+    StateService,
+    AnalyticsService,
+    LayoutService,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,

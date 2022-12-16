@@ -41,8 +41,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     BrowserAnimationsModule,
     HttpClientModule,
     AppRoutingModule,
-    ThemeModule.forRoot(),
-    CoreModule.forRoot(),
+    ThemeModule,
+    CoreModule,
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,

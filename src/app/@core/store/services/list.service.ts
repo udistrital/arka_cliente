@@ -59,7 +59,7 @@ export class ListService {
   public findSedes() {
     this.store.select(<any>REDUCER_LIST.Sedes).subscribe(
       (list: any) => {
-        if (!list || list.length === 0) {
+        if (!list || !list.length || !list[0].length) {
           this.oikosHelper.getSedes()
             .subscribe(
               (res: any[]) => {

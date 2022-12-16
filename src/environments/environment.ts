@@ -13,7 +13,7 @@ export const environment = {
   production: false,
   ...WSO2,
 
-  // ARKA_SERVICE: 'http://localhost:8081/v1/',
+  // ARKA_SERVICE: 'http://localhost:8083/v1/',
   // CATALOGO_ELEMENTOS_SERVICE: 'http://localhost:8080/v1/',
   // CUENTAS_CONTABLES_SERVICE: 'http://pruebasapi.intranetoas.udistrital.edu.co:8209/v1/',
   // GOOGLE_SERVICE: 'http://localhost:8080/v1/',

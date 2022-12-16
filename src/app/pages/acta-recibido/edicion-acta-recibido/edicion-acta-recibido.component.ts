@@ -320,7 +320,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
       this.store.select((state) => state).subscribe(list => {
         if (list.listEstadosActa.length && list.listEstadosActa[0] &&
           list.listEstadosElemento.length && list.listEstadosElemento[0] &&
-          list.listSedes.length && list.listSedes[0] &&
+          list.listSedes.length && list.listSedes[0].length &&
           list.listUnidadesEjecutoras.length && list.listUnidadesEjecutoras[0]) {
           this.Sedes = list.listSedes[0];
           this.Estados_Acta = list.listEstadosActa[0];

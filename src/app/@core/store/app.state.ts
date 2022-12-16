@@ -11,7 +11,7 @@ export interface IAppState {
   listProveedores: Proveedor[];
   listPlanCuentasCredito: Cuenta[][];
   listPlanCuentasDebito: Cuenta[][];
-  listSedes: Ubicacion[];
+  listSedes: Ubicacion[][];
   listUbicaciones: Ubicacion[];
   listEstadosActa: EstadoActa[];
   listEstadosElemento: EstadoElemento[];
