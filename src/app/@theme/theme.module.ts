@@ -122,7 +122,6 @@ import { DEFAULT_THEME } from './styles/theme.default';
 import { COSMIC_THEME } from './styles/theme.cosmic';
 import { CORPORATE_THEME } from './styles/theme.corporate';
 import { UD_THEME } from './styles/theme.ud';
-import { ImplicitAutenticationService } from '../@core/utils/implicit_autentication.service';
 import { TranslateModule } from '@ngx-translate/core';
 import { SelectDirective } from './directives/mouse-over-tree';
 import { ARKAII_THEME } from './styles/theme.arka2';
@@ -197,7 +196,7 @@ const NB_THEME_PROVIDERS = [
     {
       name: 'arka2',
     },
-    [ DEFAULT_THEME, COSMIC_THEME, CORPORATE_THEME, UD_THEME, ARKAII_THEME ],
+    [DEFAULT_THEME, COSMIC_THEME, CORPORATE_THEME, UD_THEME, ARKAII_THEME],
   ).providers,
   ...NbSidebarModule.forRoot().providers,
   ...NbMenuModule.forRoot().providers,
@@ -217,7 +216,6 @@ export class ThemeModule {
     return <ModuleWithProviders>{
       ngModule: ThemeModule,
       providers: [...NB_THEME_PROVIDERS,
-        ImplicitAutenticationService,
       ],
     };
   }

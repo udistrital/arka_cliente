@@ -18,7 +18,6 @@ import { AsignacionKardexComponent } from './asignacion-kardex/asignacion-kardex
 import { ConsultaKardexComponent } from './consulta-kardex/consulta-kardex.component';
 import { EntradaKardexComponent } from './entrada-kardex/entrada-kardex.component';
 import { AjustarCantidadComponent } from './ajustar-cantidad/ajustar-cantidad.component';
-import { NbDialogModule } from '@nebular/theme';
 
 @NgModule({
   declarations: [
@@ -44,7 +43,6 @@ import { NbDialogModule } from '@nebular/theme';
     ThemeModule,
     Ng2SmartTableModule,
     TableModule,
-    NbDialogModule.forRoot(),
   ],
   entryComponents: [
     AjustarCantidadComponent,
