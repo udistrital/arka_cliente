@@ -215,8 +215,7 @@ export class ThemeModule {
   static forRoot(): ModuleWithProviders<ThemeModule> {
     return <ModuleWithProviders>{
       ngModule: ThemeModule,
-      providers: [...NB_THEME_PROVIDERS,
-      ],
+      providers: NB_THEME_PROVIDERS,
     };
   }
 }
