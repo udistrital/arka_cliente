@@ -225,6 +225,7 @@ export class CrudTrasladoComponent implements OnInit {
         const obj = JSON.parse(res.Movimiento.Detalle);
         this.alertSuccess(false, obj ? obj.Consecutivo : '');
       } else if (res && res.Error) {
+        this.loading = false;
         this.pUpManager.showErrorAlert(res.Error);
       }
     });

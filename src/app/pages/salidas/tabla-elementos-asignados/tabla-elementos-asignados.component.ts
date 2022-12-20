@@ -35,10 +35,10 @@ export class TablaElementosAsignadosComponent implements OnInit {
   basePaginasD: number = 0;
   basePaginasC: number = 0;
 
-  @ViewChild('paginatorD', {static: true}) paginatorD: MatPaginator;
-  @ViewChild('paginatorC', {static: true}) paginatorC: MatPaginator;
-  @ViewChild(MatSort, {static: true}) sortD: MatSort;
-  @ViewChild(MatSort, {static: true}) sortC: MatSort;
+  @ViewChild('paginatorD', { static: true }) paginatorD: MatPaginator;
+  @ViewChild('paginatorC', { static: true }) paginatorC: MatPaginator;
+  @ViewChild(MatSort, { static: true }) sortD: MatSort;
+  @ViewChild(MatSort, { static: true }) sortC: MatSort;
   formatoMovimientoBodega: FormatoTipoMovimiento;
   formatoMovimientoFuncionario: FormatoTipoMovimiento;
   @Input('entradaId')
@@ -51,7 +51,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
   devolutivoSeleccionados: boolean;
   consumoSeleccionados: boolean;
   submitted: boolean;
-  @ViewChild('checkTodoInput', {static: true}) checkDummy: MatCheckbox;
+  @ViewChild('checkTodoInput', { static: true }) checkDummy: MatCheckbox;
 
   @HostListener('window:keydown', ['$event'])
   handleKeyDown(event: KeyboardEvent) {
@@ -105,11 +105,11 @@ export class TablaElementosAsignadosComponent implements OnInit {
   private loadTablas(consumo: any[], devolutivos: any[], sede: any, dependencia: any, ubicacion: any, funcionario: any) {
 
     consumo.forEach(el => {
-      this.fillElemento(el, funcionario, sede, dependencia, ubicacion);
+      this.fillElemento(el, funcionario, sede, dependencia, ubicacion, true);
     });
 
     devolutivos.forEach(el => {
-      this.fillElemento(el, funcionario, sede, dependencia, ubicacion);
+      this.fillElemento(el, funcionario, sede, dependencia, ubicacion, false);
     });
 
     this.sourceDevolutivo = new MatTableDataSource<ElementoActa>(devolutivos);
@@ -122,7 +122,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
 
   }
 
-  private fillElemento(el, funcionario, sede, dependencia, ubicacion) {
+  private fillElemento(el, funcionario, sede, dependencia, ubicacion, consumo) {
     if (!this.salida_id) {
       el.ElementoActaId = el.Id;
     }
@@ -130,9 +130,9 @@ export class TablaElementosAsignadosComponent implements OnInit {
     el.Sede = sede;
     el.Dependencia = dependencia;
     el.Ubicacion = ubicacion;
-    el.ValorResidual = !el.SubgrupoCatalogoId.Depreciacion && !el.SubgrupoCatalogoId.Amortizacion ? 0 :
+    el.ValorResidual = consumo || (!el.SubgrupoCatalogoId.Depreciacion && !el.SubgrupoCatalogoId.Amortizacion) ? 0 :
       this.salida_id ? el.ValorResidual : el.SubgrupoCatalogoId.ValorResidual * 100;
-    el.VidaUtil = !el.SubgrupoCatalogoId.Depreciacion && !el.SubgrupoCatalogoId.Amortizacion ? 0 :
+    el.VidaUtil = consumo || (!el.SubgrupoCatalogoId.Depreciacion && !el.SubgrupoCatalogoId.Amortizacion) ? 0 :
       this.salida_id ? el.VidaUtil : el.SubgrupoCatalogoId.VidaUtil;
   }
 
@@ -301,7 +301,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
 
   private getFormatoBodega() {
     this.entradasHelper.getFormatoEntradaByName('Salida de Consumo').subscribe(res => {
-      if (res !== null) {
+      if (res && res.length) {
         this.formatoMovimientoBodega = res[0];
       }
     });
@@ -309,7 +309,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
 
   private getFormatoFuncionario() {
     this.entradasHelper.getFormatoEntradaByName('Salida').subscribe(res => {
-      if (res !== null) {
+      if (res && res.length) {
         this.formatoMovimientoFuncionario = res[0];
       }
     });
@@ -349,10 +349,16 @@ export class TablaElementosAsignadosComponent implements OnInit {
     }
   }
 
-  private salidaFuncionarioDevolutivo() {
-    if (this.sourceDevolutivo.data.length > 0) {
-      const obs = 'Salida con elementos Devolutivos o de Consumo Controlado asignados a funcionario.';
-      const datos_agrupados2 = this.sourceDevolutivo.data.reduce((accumulator, currentValue) => {
+  private salidaFuncionario() {
+    const dev_ = this.sourceDevolutivo.data.concat(
+      this.sourceConsumo.data.filter(el =>
+        el.Ubicacion.EspacioFisicoId.Nombre !== 'SECCION ALMACEN GENERAL E INVENTARIOS' ||
+        el.Funcionario.Id !== this.JefeOficinaId,
+      ));
+
+    if (dev_.length) {
+      const obs = 'Salida con elementos asignados a funcionario.';
+      const datos_agrupados2 = dev_.reduce((accumulator, currentValue) => {
         const val = currentValue.Funcionario.Id + '-' + currentValue.Ubicacion.Id;
         accumulator[val] = accumulator[val] || {
           Salida: {
@@ -380,49 +386,9 @@ export class TablaElementosAsignadosComponent implements OnInit {
     }
   }
 
-  private salidaConsumoFuncionario() {
-
-    const elementosAsignados = this.sourceConsumo.data.filter(el =>
-      el.Ubicacion.EspacioFisicoId.Nombre !== 'SECCION ALMACEN GENERAL E INVENTARIOS' ||
-      el.Funcionario.Id !== this.JefeOficinaId,
-    );
-    const obs = 'Salida con elementos de consumo asignados a funcionario.';
-
-    if (elementosAsignados.length > 0) {
-      const datos_agrupados2 = elementosAsignados.reduce((accumulator, currentValue) => {
-        if (currentValue.Funcionario.Id) {
-          const val = currentValue.Funcionario.Id + '-' + currentValue.Ubicacion.Id;
-          accumulator[val] = accumulator[val] || {
-            Salida: {
-              Observacion: this.getObservacion(obs, currentValue.Observaciones),
-              Detalle: this.createDetalle(currentValue.Funcionario.Id, currentValue.Ubicacion.Id),
-              Activo: true,
-              MovimientoPadreId: {
-                Id: +this.entradaId,
-              },
-              FormatoTipoMovimientoId: {
-                Id: this.formatoMovimientoFuncionario.Id,
-              },
-              EstadoMovimientoId: new EstadoMovimiento,
-            },
-            Elementos: [],
-          };
-          const elemento = this.crearElemento(currentValue);
-          accumulator[val].Elementos.push(elemento);
-          return accumulator;
-        }
-      }, {});
-
-      return datos_agrupados2;
-    } else {
-      return null;
-    }
-  }
-
   onSubmit() {
     const salidaBodega = this.salidaBodega();
-    const salidaFuncionariosC = this.salidaConsumoFuncionario();
-    const salidaFuncionariosD = this.salidaFuncionarioDevolutivo();
+    const salidaFuncionariosD = this.salidaFuncionario();
 
     const Salidas = {
       Salidas: [],
@@ -431,11 +397,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
     if (salidaBodega) {
       Salidas.Salidas.push(salidaBodega);
     }
-    if (salidaFuncionariosC) {
-      for (const salida of Object.keys(salidaFuncionariosC)) {
-        Salidas.Salidas.push(salidaFuncionariosC[salida]);
-      }
-    }
+
     if (salidaFuncionariosD) {
       for (const salida of Object.keys(salidaFuncionariosD)) {
         Salidas.Salidas.push(salidaFuncionariosD[salida]);

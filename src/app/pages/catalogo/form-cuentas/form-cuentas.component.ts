@@ -74,15 +74,23 @@ export class FormCuentasComponent implements OnInit, OnChanges {
           return acc;
         }, {});
 
+      const sal_ = this.cuentasInfo.filter(cf => (cf.TipoMovimientoId.CodigoAbreviacion.includes('ENT_')))
+        .reduce((acc, curr) => {
+          const { TipoMovimientoId } = curr;
+          acc[TipoMovimientoId.CodigoAbreviacion] =
+            acc[TipoMovimientoId.CodigoAbreviacion] ? acc[TipoMovimientoId.CodigoAbreviacion] : [];
+          acc[TipoMovimientoId.CodigoAbreviacion].push(curr);
+          return acc;
+        }, {});
+
       const ent = Object.values(ent_).map(cf => (this.formArrayCuentasMovimiento(cf)));
-      const salida = this.formArrayCuentasMovimiento(this.cuentasInfo.filter(cf => (cf.SubtipoMovimientoId.CodigoAbreviacion.includes('SAL'))));
+      const sal = Object.values(sal_).map(cf => (this.formArrayCuentasMovimiento(cf)));
       const baja = this.formArrayCuentasMovimiento(this.cuentasInfo.filter(cf => (cf.SubtipoMovimientoId.CodigoAbreviacion === 'BJ_HT')));
-      const mediciones = this.formArrayCuentasMovimiento(this.cuentasInfo
-        .filter(cf => (cf.SubtipoMovimientoId.CodigoAbreviacion === 'DEP' || cf.SubtipoMovimientoId.CodigoAbreviacion === 'AMT')));
+      const mediciones = this.formArrayCuentasMovimiento(this.cuentasInfo.filter(cf => (cf.SubtipoMovimientoId.CodigoAbreviacion === 'CRR')));
 
       this.formCuentas = this.fb.group({
         entradas: this.fb.array(ent),
-        salida,
+        salidas: this.fb.array(sal),
         baja,
         mediciones,
       });
@@ -99,16 +107,18 @@ export class FormCuentasComponent implements OnInit, OnChanges {
     const form = this.fb.group({
       cuentaEspecifica: this.fb.array(
         cuentas.map(cta =>
-          this.formGroupCuentasTipoBienMovimiento(cta.Id, cta.SubtipoMovimientoId, cta.CuentaDebitoId, cta.CuentaCreditoId, cta.TipoBienId))),
+          this.formGroupCuentasTipoBienMovimiento(cta.Id,
+            cta.TipoMovimientoId, cta.SubtipoMovimientoId, cta.CuentaDebitoId, cta.CuentaCreditoId, cta.TipoBienId))),
     });
     return form;
   }
 
-  private formGroupCuentasTipoBienMovimiento(id: number, movId: any, db: any, cr: any, tb: any): FormGroup {
+  private formGroupCuentasTipoBienMovimiento(id: number, movId, sMovId: any, db: any, cr: any, tb: any): FormGroup {
     const disabled = !this.escritura;
     const form = this.fb.group({
       Id: [id],
-      SubtipoMovimientoId: [movId],
+      TipoMovimientoId: [movId],
+      SubtipoMovimientoId: [sMovId],
       TipoBienId: [tb],
       CuentaDebitoId: [
         {
@@ -157,15 +167,17 @@ export class FormCuentasComponent implements OnInit, OnChanges {
       });
   }
 
-  public setGeneral(i: number, j: number) {
-    if (i !== null && j !== null) {
+  public setGeneral(i: number, j: number, entrada: boolean) {
+    if (entrada) {
       const global = ((this.formCuentas.get('entradas') as FormArray).at(i)
         .get('cuentaEspecifica') as FormArray).at(j).value.CuentaDebitoId;
       this.patchGeneral(global);
-    } else if (i !== null && j === null) {
-      const global = (this.formCuentas.get('salida.cuentaEspecifica') as FormArray).at(i).value.CuentaCreditoId;
+    } else {
+      const global = ((this.formCuentas.get('salidas') as FormArray).at(i)
+        .get('cuentaEspecifica') as FormArray).at(j).value.CuentaCreditoId;
       this.patchGeneral(global);
     }
+
     return;
   }
 
@@ -178,18 +190,24 @@ export class FormCuentasComponent implements OnInit, OnChanges {
         ctr.markAsDirty();
       });
 
-    (this.formCuentas.get('salida.cuentaEspecifica') as FormArray).controls
+    (this.formCuentas.get('salidas') as FormArray).controls
+      .map((mov_: FormGroup) => (mov_.controls.cuentaEspecifica as FormArray).controls)
       .reduce((acc, curr) => acc.concat(curr), [])
       .forEach(ctr => {
         ctr.patchValue({ CuentaCreditoId: value });
         ctr.markAsDirty();
       });
+
     return;
   }
 
   private generarTr() {
-    const salidas = this.formToTransaction((this.formCuentas.get('salida.cuentaEspecifica') as FormArray).controls);
-    const bajas = this.formToTransaction((this.formCuentas.get('baja.cuentaEspecifica') as FormArray).controls);
+    const salidas = this.formToTransaction((this.formCuentas.get('salidas') as FormArray).controls
+      .filter(mov => !mov.pristine)
+      .map((mov_: FormGroup) => (mov_.controls.cuentaEspecifica as FormArray).controls)
+      .reduce((acc, curr) => acc.concat(curr), []));
+    const bajas = this.formCuentas.get('baja.cuentaEspecifica') ?
+      this.formToTransaction((this.formCuentas.get('baja.cuentaEspecifica') as FormArray).controls) : [];
     const entradas = this.formToTransaction((this.formCuentas.get('entradas') as FormArray).controls
       .filter(mov => !mov.pristine)
       .map((mov_: FormGroup) => (mov_.controls.cuentaEspecifica as FormArray).controls)
@@ -208,6 +226,7 @@ export class FormCuentasComponent implements OnInit, OnChanges {
         Id: cmtb.Id,
         CuentaDebitoId: cmtb.CuentaDebitoId.Id,
         CuentaCreditoId: cmtb.CuentaCreditoId.Id,
+        TipoMovimientoId: cmtb.TipoMovimientoId.Id,
         SubtipoMovimientoId: cmtb.SubtipoMovimientoId.Id,
         TipoBienId: { Id: cmtb.TipoBienId.Id },
       }));
@@ -216,7 +235,8 @@ export class FormCuentasComponent implements OnInit, OnChanges {
   private updateForm() {
     this.cuentasNuevas.forEach(cta => {
 
-      const salida_ = this.findForm((this.formCuentas.get('salida.cuentaEspecifica') as FormArray).controls, cta);
+      const salida_ = this.findForm((this.formCuentas.get('salidas') as FormArray).controls
+        .map((mov_: FormGroup) => (mov_.controls.cuentaEspecifica as FormArray).controls), cta);
       if (salida_) {
         this.patchForm(salida_, cta.Id);
         return;
@@ -253,7 +273,9 @@ export class FormCuentasComponent implements OnInit, OnChanges {
   private findForm(controls: any, cuenta: any): any {
     return controls
       .reduce((acc, curr) => acc.concat(curr), [])
-      .find(c_ => c_.value.SubtipoMovimientoId.Id === cuenta.SubtipoMovimientoId && c_.value.TipoBienId.Id === cuenta.TipoBienId.Id);
+      .find(c_ => c_.value.TipoMovimientoId.Id === cuenta.TipoMovimientoId &&
+        c_.value.SubtipoMovimientoId.Id === cuenta.SubtipoMovimientoId &&
+        c_.value.TipoBienId.Id === cuenta.TipoBienId.Id);
   }
 
   private cambiosCuenta(control: AbstractControl) {

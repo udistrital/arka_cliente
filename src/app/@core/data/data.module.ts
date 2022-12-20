@@ -21,7 +21,7 @@ const SERVICES = [
   ],
 })
 export class DataModule {
-  static forRoot(): ModuleWithProviders {
+  static forRoot(): ModuleWithProviders<DataModule> {
     return <ModuleWithProviders>{
       ngModule: DataModule,
       providers: [

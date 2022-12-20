@@ -8,6 +8,7 @@ import { Parametro } from '../../../@core/data/models/configuracion_crud';
 import Swal from 'sweetalert2';
 import { ConfiguracionService } from '../../../@core/data/configuracion.service';
 import { PopUpManager } from '../../../managers/popUpManager';
+import { ListService } from '../../../@core/store/services/list.service';
 
 @Component({
   selector: 'ngx-crud-cuentas',
@@ -38,6 +39,7 @@ export class CrudCuentasComponent implements OnInit {
     private catalogoElementosService: CatalogoElementosHelper,
     private confService: ConfiguracionService,
     private pUpManager: PopUpManager,
+    private listService: ListService,
   ) {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { });
     this.spinner = '';
@@ -50,6 +52,8 @@ export class CrudCuentasComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.listService.findPlanCuentasDebito();
+    this.listService.findPlanCuentasCredito();
     this.loadCatalogos();
     this.cargaPermisoEdicionCuentas();
     this.cargaEstadoSesionContable();
