@@ -18,7 +18,7 @@ export class CommonActas {
 
   static muestraContratista(contr: TerceroCriterioContratista): string {
     if (contr && contr.Identificacion) {
-      return contr.Identificacion.TipoDocumentoId.CodigoAbreviacion + ':' + contr.Identificacion.Numero + ' - ' + contr.Tercero.NombreCompleto;
+      return contr.Identificacion.TipoDocumentoId.CodigoAbreviacion + ' ' + contr.Identificacion.Numero + ' ' + contr.Tercero.NombreCompleto;
     } else {
       if (contr) {
         return contr.Tercero.NombreCompleto;
