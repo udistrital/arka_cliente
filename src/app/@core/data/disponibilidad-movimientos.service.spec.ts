@@ -6,7 +6,7 @@ describe('DisponibilidadMovimientosService', () => {
   beforeEach(() => TestBed.configureTestingModule({}));
 
   it('should be created', () => {
-    const service: DisponibilidadMovimientosService = TestBed.get(DisponibilidadMovimientosService);
+    const service: DisponibilidadMovimientosService = TestBed.inject(DisponibilidadMovimientosService);
     expect(service).toBeTruthy();
   });
 });

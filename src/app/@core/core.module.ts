@@ -14,14 +14,12 @@ import { AuthGuard } from './_guards/auth.guard';
 
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 
-import {
-  LayoutService,
-  PlayerService,
-  StateService,
-  ImplicitAutenticationService,
-  LoaderService,
-  UtilidadesService,
-} from './utils';
+import { LayoutService } from './utils/layout.service';
+import { PlayerService } from './utils/player.service';
+import { StateService } from './utils/state.service';
+import { ImplicitAutenticationService } from './utils/implicit_autentication.service';
+import { LoaderService } from './utils/load.service';
+import { UtilidadesService } from './utils/utilidades.service';
 import { AutenticationService } from './utils/authentication.service';
 import { SmartTableService } from './data/SmartTableService';
 
@@ -123,7 +121,7 @@ export class CoreModule {
     throwIfAlreadyLoaded(parentModule, 'CoreModule');
   }
 
-  static forRoot(): ModuleWithProviders {
+  static forRoot(): ModuleWithProviders<CoreModule> {
     return <ModuleWithProviders>{
       ngModule: CoreModule,
       providers: [

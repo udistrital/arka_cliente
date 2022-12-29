@@ -65,7 +65,7 @@
             <td mat-cell *matCellDef="let element; let rowIndex = index">
               <div>
                 <input disabled nbInput type="text" fieldSize="tiny" class="cell"
-                  [ngModel]="element.SubgrupoCatalogoId.TipoBienId.Nombre">
+                  [ngModel]="element.TipoBienId?.Nombre">
               </div>
             </td>
           </ng-container>
@@ -260,7 +260,7 @@
             <td mat-cell *matCellDef="let element; let rowIndex = index">
               <div>
                 <input disabled nbInput type="text" fieldSize="tiny" class="cell"
-                  [ngModel]="element.SubgrupoCatalogoId.TipoBienId.Nombre">
+                  [ngModel]="element.TipoBienId?.Nombre">
               </div>
             </td>
           </ng-container>

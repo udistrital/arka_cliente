@@ -512,7 +512,7 @@ export class ActaRecibidoHelper {
 
     public getAsignacionesBySedeAndDependencia(codigoSede: string, dependenciaId: number) {
         if (codigoSede && dependenciaId) {
-            const payload = 'fields=Id,EspacioFisicoId&query=DependenciaId__Id:' + dependenciaId +
+            const payload = 'limit=-1&fields=Id,EspacioFisicoId&query=DependenciaId__Id:' + dependenciaId +
                 ',EspacioFisicoId__CodigoAbreviacion__istartswith:' + codigoSede;
             return this.getAllAsignacionEspacioFisicoDependencia(payload);
         } else {

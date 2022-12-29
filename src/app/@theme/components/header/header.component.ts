@@ -7,8 +7,6 @@ import { LayoutService } from '../../../@core/utils';
 import { ImplicitAutenticationService } from '../../../@core/utils/implicit_autentication.service';
 import { NotificacionesService } from '../../../@core/utils/notificaciones.service';
 import { Subscription, Observable } from 'rxjs';
-import { CatalogoComponent } from '../../../pages/catalogo/catalogo.component';
-import { CatalogoService } from '../../../@core/data/catalogo.service';
 
 @Component({
   selector: 'ngx-header',

@@ -43,7 +43,6 @@ export function HttpLoaderFactory(http: HttpClient) {
     AppRoutingModule,
     ThemeModule.forRoot(),
     CoreModule.forRoot(),
-    HttpClientModule,
     TranslateModule.forRoot({
       loader: {
         provide: TranslateLoader,
