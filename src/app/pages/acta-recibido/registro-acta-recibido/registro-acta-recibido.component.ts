@@ -177,8 +177,9 @@ export class RegistroActaRecibidoComponent implements OnInit {
   muestraContratista = CommonActas.muestraContratista;
 
   private queryProveedores(query: string = '') {
+    this.Proveedores = [];
     this.cargandoProveedores = true;
-    return this.tercerosHelper.getTercerosByCriterio('proveedor', 0, query);
+    return this.tercerosHelper.getAllTercero_(query, 0);
   }
   muestraProveedor = CommonActas.muestraProveedor;
 

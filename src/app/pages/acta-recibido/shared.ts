@@ -17,7 +17,7 @@ export class CommonActas {
   }
 
   static muestraContratista(contr: TerceroCriterioContratista): string {
-    if (contr && contr.Identificacion) {
+    if (contr && contr.Identificacion.TipoDocumentoId.CodigoAbreviacion) {
       return contr.Identificacion.TipoDocumentoId.CodigoAbreviacion + ' ' + contr.Identificacion.Numero + ' ' + contr.Tercero.NombreCompleto;
     } else {
       if (contr) {
@@ -28,7 +28,8 @@ export class CommonActas {
 
   static muestraProveedor(prov: Partial<TerceroCriterioProveedor>): string {
     if (prov) {
-      const str = prov.Identificacion ? prov.Identificacion.TipoDocumentoId.CodigoAbreviacion + ':' + prov.Identificacion.Numero + ' - ' : '';
+      const str = prov.Identificacion.TipoDocumentoId.CodigoAbreviacion ?
+        prov.Identificacion.TipoDocumentoId.CodigoAbreviacion + ' ' + prov.Identificacion.Numero + ' ' : '';
       return str + prov.Tercero.NombreCompleto;
     }
   }

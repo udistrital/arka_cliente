@@ -281,11 +281,12 @@ export class EdicionActaRecibidoComponent implements OnInit {
     this.cargandoContratistas = true;
     return this.tercerosHelper.getTercerosByCriterio('contratista', id, query);
   }
-  private loadContratistas(query: string = '', id: number= 0): Promise<void> {
+  private loadContratistas(query: string = '', id: number = 0): Promise<void> {
     return new Promise<void>(resolve => {
       if (id || (query.length && query.length >= this.minLength)) {
+        this.Contratistas = [];
         this.queryContratistas(query, id).toPromise().then(res => {
-          this.Contratistas = res;
+          this.Contratistas.push(res);
           this.cargandoContratistas = false;
           resolve();
         });
@@ -297,13 +298,14 @@ export class EdicionActaRecibidoComponent implements OnInit {
 
   private queryProveedores(query: string = '', id: number= 0) {
     this.cargandoProveedores = true;
-    return this.tercerosHelper.getTercerosByCriterio('proveedor', id, query);
+    return this.tercerosHelper.getAllTercero_(query, id);
   }
   private loadProveedores(query: string = '', id: number= 0): Promise<void> {
     return new Promise<void>(resolve => {
       if (id || (query.length && query.length >= this.minLength)) {
-        this.queryProveedores(query, id).toPromise().then(res => {
-          this.Proveedores = res;
+        this.Proveedores = [];
+        this.queryProveedores(query, id).toPromise().then((res: any) => {
+          this.Proveedores.push(res);
           this.cargandoProveedores = false;
           resolve();
         });
