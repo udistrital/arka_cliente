@@ -1429,6 +1429,7 @@
     "bajas": {
       "consulta": {
         "title": "Consulta de bajas de bienes",
+        "nuevo": "Nueva solicitud de baja de elementos",
         "subtitle": "A continuación se listan las basjas registradas, seleccione una de las opciones para ver más detalles",
         "fechaRevA": "Fecha Revisión Almacén",
         "fechaRevC": "Fecha de Aprobación",

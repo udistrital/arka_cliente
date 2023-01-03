@@ -739,16 +739,16 @@ export class EdicionActaRecibidoComponent implements OnInit {
         });
         this.cambio.emit(undefined);
         if (siguienteEtapa) {
-          const cedulaprov = this.controlProveedor.value && this.controlProveedor.value.Identificacion ?
-            this.controlProveedor.value.Identificacion.Numero : '';
-          const cedularev = this.controlContratista.value.Identificacion.Numero;
-          if (enviara === 1) {
-            this.EnviarEmail(cedulaprov);
-            this.EnviarEmail(cedularev);
-          }
-          if (enviara === 2) {
-            this.EnviarEmail(cedularev);
-          }
+          // const cedulaprov = this.controlProveedor.value && this.controlProveedor.value.Identificacion ?
+          //   this.controlProveedor.value.Identificacion.Numero : '';
+          // const cedularev = this.controlContratista.value.Identificacion.Numero;
+          // if (enviara === 1) {
+          //   this.EnviarEmail(cedulaprov);
+          //   this.EnviarEmail(cedularev);
+          // }
+          // if (enviara === 2) {
+          //   this.EnviarEmail(cedularev);
+          // }
 
           // Se usa una redirección "dummy", intermedia. Ver
           // https://stackoverflow.com/a/49509706/3180052
