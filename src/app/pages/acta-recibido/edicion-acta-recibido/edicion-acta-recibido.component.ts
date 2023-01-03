@@ -281,11 +281,12 @@ export class EdicionActaRecibidoComponent implements OnInit {
     this.cargandoContratistas = true;
     return this.tercerosHelper.getTercerosByCriterio('contratista', id, query);
   }
-  private loadContratistas(query: string = '', id: number= 0): Promise<void> {
+  private loadContratistas(query: string = '', id: number = 0): Promise<void> {
     return new Promise<void>(resolve => {
       if (id || (query.length && query.length >= this.minLength)) {
+        this.Contratistas = [];
         this.queryContratistas(query, id).toPromise().then(res => {
-          this.Contratistas = res;
+          this.Contratistas.push(res);
           this.cargandoContratistas = false;
           resolve();
         });
@@ -297,13 +298,14 @@ export class EdicionActaRecibidoComponent implements OnInit {
 
   private queryProveedores(query: string = '', id: number= 0) {
     this.cargandoProveedores = true;
-    return this.tercerosHelper.getTercerosByCriterio('proveedor', id, query);
+    return this.tercerosHelper.getAllTercero_(query, id);
   }
   private loadProveedores(query: string = '', id: number= 0): Promise<void> {
     return new Promise<void>(resolve => {
       if (id || (query.length && query.length >= this.minLength)) {
-        this.queryProveedores(query, id).toPromise().then(res => {
-          this.Proveedores = res;
+        this.Proveedores = [];
+        this.queryProveedores(query, id).toPromise().then((res: any) => {
+          this.Proveedores.push(res);
           this.cargandoProveedores = false;
           resolve();
         });
@@ -737,16 +739,16 @@ export class EdicionActaRecibidoComponent implements OnInit {
         });
         this.cambio.emit(undefined);
         if (siguienteEtapa) {
-          const cedulaprov = this.controlProveedor.value && this.controlProveedor.value.Identificacion ?
-            this.controlProveedor.value.Identificacion.Numero : '';
-          const cedularev = this.controlContratista.value.Identificacion.Numero;
-          if (enviara === 1) {
-            this.EnviarEmail(cedulaprov);
-            this.EnviarEmail(cedularev);
-          }
-          if (enviara === 2) {
-            this.EnviarEmail(cedularev);
-          }
+          // const cedulaprov = this.controlProveedor.value && this.controlProveedor.value.Identificacion ?
+          //   this.controlProveedor.value.Identificacion.Numero : '';
+          // const cedularev = this.controlContratista.value.Identificacion.Numero;
+          // if (enviara === 1) {
+          //   this.EnviarEmail(cedulaprov);
+          //   this.EnviarEmail(cedularev);
+          // }
+          // if (enviara === 2) {
+          //   this.EnviarEmail(cedularev);
+          // }
 
           // Se usa una redirección "dummy", intermedia. Ver
           // https://stackoverflow.com/a/49509706/3180052

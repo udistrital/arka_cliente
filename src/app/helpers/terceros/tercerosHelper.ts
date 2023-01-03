@@ -117,7 +117,7 @@ export class TercerosHelper {
         this.rqManager.setPath('TERCEROS_MID_SERVICE');
         let path = 'tipo/' + criterio;
         if (idTercero > 0) {
-            path += '/' + idTercero;
+            return this.getAllTercero_('', idTercero);
         } else {
             if (query !== '') {
                 path += '?query=' + query;
@@ -129,6 +129,29 @@ export class TercerosHelper {
                     if (res === 'error' || !Array.isArray(res)) {
                         this.pUpManager.showErrorAlert('No se encontro ningun tercero que pueda ejercer como supervisor');
                         return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
+
+    public getAllTercero_(query: string, id: number) {
+        this.rqManager.setPath('TERCEROS_SERVICE');
+        let payload = '';
+        if (id > 0) {
+            payload += '/' + id;
+        } else {
+            if (query !== '') {
+                payload += '?query=' + query;
+            }
+        }
+        return this.rqManager.get('tercero/identificacion/' + payload).pipe(
+            map(
+                (res) => {
+                    if (res.Message) {
+                        this.pUpManager.showErrorAlert('No se pudo consultar el detalle del tercero');
+                        return [];
                     }
                     return res;
                 },

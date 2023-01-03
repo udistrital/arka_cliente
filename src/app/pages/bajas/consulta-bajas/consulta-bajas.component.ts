@@ -291,8 +291,7 @@ export class ConsultaBajasComponent implements OnInit {
           title: this.translate.instant('GLOBAL.bajas.consulta.fechaRevA'),
           width: '70px',
           valuePrepareFunction: (value: any) => {
-            const date = value ? new Date(Date.parse(value)).toLocaleDateString('es-CO') :
-              this.translate.instant('GLOBAL.bajas.consulta.espera');
+            const date = value ? this.tabla.formatDate(value) : this.translate.instant('GLOBAL.bajas.consulta.espera');
             return date;
           },
           filter: {
@@ -308,8 +307,7 @@ export class ConsultaBajasComponent implements OnInit {
           title: this.translate.instant('GLOBAL.bajas.consulta.fechaRevC'),
           width: '70px',
           valuePrepareFunction: (value: any) => {
-            const date = value ? new Date(Date.parse(value)).toLocaleDateString('es-CO') :
-              this.translate.instant('GLOBAL.bajas.consulta.espera');
+            const date = value ? this.tabla.formatDate(value) : this.translate.instant('GLOBAL.bajas.consulta.espera');
             return date === 'Invalid Date' ? value : date;
           },
           filter: {

@@ -110,15 +110,15 @@ export class VerActaRecibidoComponent implements OnInit {
     });
   }
 
-  private loadProveedores(query: string = '', id: number= 0): Promise<void> {
+  private loadProveedores(id: number = 0): Promise<void> {
     if (id === 0) {
       return new Promise<void>(resolve => {
         resolve();
       });
     }
     return new Promise<void>(resolve => {
-      this.tercerosHelper.getTercerosByCriterio('proveedor', id, query).toPromise().then(res => {
-        this.Proveedores = res;
+      this.tercerosHelper.getAllTercero_('', id).toPromise().then(res => {
+        this.Proveedores.push(res);
         resolve();
       }, (reason) => {
         resolve();
@@ -135,7 +135,7 @@ export class VerActaRecibidoComponent implements OnInit {
     }
     return new Promise<void>(resolve => {
       this.tercerosHelper.getTercerosByCriterio('contratista', id, query).toPromise().then(res => {
-        this.Contratistas = res;
+        this.Contratistas.push(res);
         resolve();
       }, (reason) => {
         this.Contratistas = [];
@@ -154,7 +154,7 @@ export class VerActaRecibidoComponent implements OnInit {
           this.contratistaId = this.Acta.UltimoEstado.PersonaAsignadaId;
           this.Acta.ActaRecibido = res.ActaRecibido;
           this.Acta.SoportesActa = res.SoportesActa;
-          await Promise.all([this.loadProveedores('', this.proveedorId),
+          await Promise.all([this.loadProveedores(this.proveedorId),
           this.loadContratistas('', this.actaRegular ? this.contratistaId : 0)]);
           resolve();
         });
