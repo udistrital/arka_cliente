@@ -1429,6 +1429,7 @@
     "bajas": {
       "consulta": {
         "title": "Browse removal requests",
+        "nuevo": "Nueva solicitud de baja de elementos",
         "subtitle": "These are the removal requests, click to see more actions",
         "fechaRevA": "Warehouse review date",
         "fechaRevC": "Comitee review date",

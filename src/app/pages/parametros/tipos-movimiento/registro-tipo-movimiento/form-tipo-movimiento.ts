@@ -23,7 +23,7 @@ export const FORM_TIPO_MOVIMIENTO = {
             nombre: 'CodigoAbreviacion',
             label_i18n: 'activo',
             placeholder_i18n: 'activo',
-            requerido: false,
+            requerido: true,
             tipo: 'text',
         },
         {
