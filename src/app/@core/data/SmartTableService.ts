@@ -53,7 +53,13 @@ export class SmartTableService {
 
         const date = new Date(value);
         date.setUTCMinutes(date.getTimezoneOffset());
-        return new Date(Date.parse(date.toString())).toLocaleDateString('es-CO');
+        const date_ = new Date(Date.parse(date.toString())).toLocaleDateString('es-CO');
+
+        if (date_.toString() === 'Invalid Date') {
+            return '';
+        }
+
+        return date_;
     }
 
     private filterFunctionDate(cell?: any, search?: string): boolean {
