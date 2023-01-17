@@ -302,6 +302,19 @@ export class DetalleSolicitudComponent implements OnInit {
     });
   }
 
+  public confirm(aprobar: boolean) {
+    this.pUpManager.showAlertWithOptions(this.getOptionsSubmit(aprobar))
+      .then((result) => {
+        if (result.value) {
+          if (aprobar) {
+            this.onAprobar();
+          } else {
+            this.onRechazar();
+          }
+        }
+      });
+  }
+
   async onAprobar() {
     if (this.submitted) {
       return;
@@ -407,6 +420,19 @@ export class DetalleSolicitudComponent implements OnInit {
     } else {
       return false;
     }
+  }
+
+  private getOptionsSubmit(aprobar: boolean): any {
+    return {
+      title: this.translate.instant('GLOBAL.BodegaConsumo.Solicitud.confrmTtl' + (aprobar ? 'A' : 'R')),
+      text: this.translate.instant('GLOBAL.BodegaConsumo.Solicitud.confrmTxt' + (aprobar ? 'A' : 'R')),
+      type: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: this.translate.instant('GLOBAL.si'),
+      cancelButtonText: this.translate.instant('GLOBAL.no'),
+    };
   }
 
   get optionsRechazo() {

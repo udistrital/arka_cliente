@@ -57,11 +57,11 @@
 
 <mat-card-actions *ngIf="Editar" class="justify-content-center" style="padding-bottom: 2rem;">
     <button mat-raised-button color="primary" class="float-left text-uppercase" [disabled]="submitted"
-        (click)="onRechazar()">
+        (click)="confirm(false)">
         {{'GLOBAL.Solicitudes.Rechazar' | translate}}
     </button>
     <button mat-raised-button color="primary" class="float-right text-uppercase" [disabled]="verificar || submitted"
-        (click)="onAprobar()">
+        (click)="confirm(true)">
         {{'GLOBAL.Solicitudes.Aprobar' | translate}}
     </button>
 </mat-card-actions>

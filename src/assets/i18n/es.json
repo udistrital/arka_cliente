@@ -755,6 +755,7 @@
         "BotonConfirmar": "Confirmar Entrada de Kardex"
       },
       "Consulta": {
+        "detalleKardex": "Ver ficha Kárdex",
         "Titulo": "Consultar Kardex",
         "Indice": "Indice de Fichas Kardex asociadas a Inventario de Consumo. Seleccione una para ver sus registros"
       },
@@ -771,7 +772,11 @@
         "ListaTodas": "Lista de Todas las Solicitudes de Elementos a la Bodega de Consumo",
         "Titulo": "Solicitud de Elementos de Bodega de Consumo",
         "ColumnaElementoCatalogo": "Clase Catálogo",
-        "Ayuda": "Para iniciar la solicitud de elementos, por favor seleccione cualquier elemento. Los elementos solicitados serán listados conforme se van seleccionando."
+        "Ayuda": "Para iniciar la solicitud de elementos, por favor seleccione cualquier elemento. Los elementos solicitados serán listados conforme se van seleccionando.",
+        "confrmTtlA": "Aprobar Solicitud de Elementos",
+        "confrmTxtA": "¿Desea aprobar la solicitud de elementos de consumo?",
+        "confrmTtlR": "Rechazar Solicitud de Elementos",
+        "confrmTxtR": "¿Desea rechazar la solicitud de elementos de consumo?"
       }
     },
 

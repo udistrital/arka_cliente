@@ -56,15 +56,14 @@ export class ConsultaKardexComponent implements OnInit {
       hideSubHeader: false,
       noDataMessage: this.translate.instant('GLOBAL.no_data_entradas'),
       actions: {
-        columnTitle: this.translate.instant('GLOBAL.detalle'),
+        columnTitle: this.translate.instant('GLOBAL.Acciones'),
         position: 'right',
         add: false,
         edit: false,
         delete: false,
         custom: [
           {
-            name: this.translate.instant('GLOBAL.seleccionar'),
-            title: '<i class="fas fa-eye"></i>',
+            title: '<i class="fas fa-eye" title="' + this.translate.instant('GLOBAL.BodegaConsumo.Consulta.detalleKardex') + '"></i>',
           },
         ],
       },
@@ -72,7 +71,7 @@ export class ConsultaKardexComponent implements OnInit {
         ElementoCatalogoId: {
           title: this.translate.instant('GLOBAL.Elemento.Uno'),
           valuePrepareFunction: (value: any) => {
-            if (value !== null) {
+            if (value) {
               let elem = value.Codigo ? value.Codigo + ' - ' : '';
               elem += value.Nombre ? value.Nombre : '';
               return elem;
@@ -81,17 +80,12 @@ export class ConsultaKardexComponent implements OnInit {
             }
           },
           filterFunction: (cell?: any, search?: string): boolean => {
-            // console.log(cell);
-            // console.log(search);
-            if (Object.keys(cell).length !== 0) {
-              if (cell.Descripcion.indexOf(search) > -1) {
+            if (cell && search.length) {
+              if ((cell.Codigo + ' - ' + cell.Nombre).indexOf(search) > -1) {
                 return true;
-              } else {
-                return false;
               }
-            } else {
-              return false;
             }
+            return false;
           },
         },
         Observaciones: {
@@ -102,40 +96,9 @@ export class ConsultaKardexComponent implements OnInit {
           width: '70px',
           ...this.tabla.getSettingsDate(),
         },
-        /* // Esta columna no tiene sentido, una ficha se puede llenar de varias salidas
-        MovimientoPadreId: {
-          title: 'Salida Asociada',
-          valuePrepareFunction: (value: any) => {
-            if (value !== null) {
-              return value.Id;
-            } else {
-              return '';
-            }
-          },
-        },
-        // */
         MetodoValoracion: {
           title: this.translate.instant('GLOBAL.BodegaConsumo.MetodoInventario.Nombre'),
-          valuePrepareFunction: (value: any) => {
-            if (value !== null) {
-              return value.Nombre;
-            } else {
-              return '';
-            }
-          },
-          filterFunction: (cell?: any, search?: string): boolean => {
-            // console.log(cell);
-            // console.log(search);
-            if (Object.keys(cell).length !== 0) {
-              if (cell.Nombre.indexOf(search) > -1) {
-                return true;
-              } else {
-                return false;
-              }
-            } else {
-              return false;
-            }
-          },
+          ...this.tabla.getSettingsObject('Nombre'),
         },
         CantidadMinima: {
           title: this.translate.instant('GLOBAL.Solicitudes.CantMin'),

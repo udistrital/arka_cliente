@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { LocalDataSource } from 'ng2-smart-table';
-import { Router } from '@angular/router';
 import { Entrada } from '../../../@core/data/models/entrada/entrada';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { BodegaConsumoHelper } from '../../../helpers/bodega_consumo/bodegaConsumoHelper';
@@ -21,7 +20,6 @@ export class AgregarElementosComponent implements OnInit {
   mostrar: boolean;
 
   constructor(
-    private router: Router,
     private translate: TranslateService,
     private bodegaConsumo: BodegaConsumoHelper,
   ) {
