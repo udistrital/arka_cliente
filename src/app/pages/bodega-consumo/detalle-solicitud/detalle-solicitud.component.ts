@@ -1,9 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { LocalDataSource } from 'ng2-smart-table';
 import { TranslateService } from '@ngx-translate/core';
-
-import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
-import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
 import { PopUpManager } from '../../../managers/popUpManager';
 import { BodegaConsumoHelper } from '../../../helpers/bodega_consumo/bodegaConsumoHelper';
 import { NbDialogService } from '@nebular/theme';
@@ -12,9 +9,6 @@ import { Store } from '@ngrx/store';
 import { ListService } from '../../../@core/store/services/list.service';
 import { IAppState } from '../../../@core/store/app.state';
 import { FormBuilder, Validators, FormGroup } from '@angular/forms';
-import { Elemento } from '../../../@core/data/models/acta_recibido/elemento';
-import { Router } from '@angular/router';
-import Swal from 'sweetalert2';
 
 @Component({
   selector: 'ngx-detalle-solicitud',
@@ -57,14 +51,12 @@ export class DetalleSolicitudComponent implements OnInit {
     private translate: TranslateService,
     private dialogService: NbDialogService,
     private bodegaHelper: BodegaConsumoHelper,
-    private tercerosHelper: TercerosHelper,
-    private actasHelper: ActaRecibidoHelper,
-    private router: Router,
     private store: Store<IAppState>,
     private fb: FormBuilder,
     private BodegaConsumo: BodegaConsumoHelper,
     private listService: ListService,
-    private pUpManager: PopUpManager) {
+    private pUpManager: PopUpManager,
+  ) {
     this.source = new LocalDataSource();
     if (this.Editar === undefined) {
       this.Editar = false;
@@ -281,7 +273,7 @@ export class DetalleSolicitudComponent implements OnInit {
         if (this.metodo === 2) {
           for (let i = 0; i < res.length; i++) {
             if (res[i].MovimientoId.FormatoTipoMovimientoId.CodigoAbreviacion === 'AP_KDX' ||
-                res[i].MovimientoId.FormatoTipoMovimientoId.CodigoAbreviacion === 'ENT_KDX') {
+              res[i].MovimientoId.FormatoTipoMovimientoId.CodigoAbreviacion === 'ENT_KDX') {
               for (let j = 0; j < res[i].Unidad; j++) {
                 pila.push(res[i]);
               }
@@ -294,7 +286,7 @@ export class DetalleSolicitudComponent implements OnInit {
         } else if (this.metodo === 3) {
           for (let i = 0; i < res.length; i++) {
             if (res[i].MovimientoId.FormatoTipoMovimientoId.CodigoAbreviacion === 'AP_KDX' ||
-                res[i].MovimientoId.FormatoTipoMovimientoId.CodigoAbreviacion === 'ENT_KDX') {
+              res[i].MovimientoId.FormatoTipoMovimientoId.CodigoAbreviacion === 'ENT_KDX') {
               for (let j = 0; j < res[i].Unidad; j++) {
                 pila.push(res[i]);
               }
@@ -308,6 +300,19 @@ export class DetalleSolicitudComponent implements OnInit {
         resolve(pila);
       });
     });
+  }
+
+  public confirm(aprobar: boolean) {
+    this.pUpManager.showAlertWithOptions(this.getOptionsSubmit(aprobar))
+      .then((result) => {
+        if (result.value) {
+          if (aprobar) {
+            this.onAprobar();
+          } else {
+            this.onRechazar();
+          }
+        }
+      });
   }
 
   async onAprobar() {
@@ -337,42 +342,41 @@ export class DetalleSolicitudComponent implements OnInit {
       },
     );
 
-    this.source.getAll().then((elementos) => {
-      elementos.forEach(element => {
-        const disponibles = [this.calculoSalidas(element.ElementoCatalogoId.Id)];
-        Promise.all(disponibles);
-        let disp: any;
-        disponibles[0].then(r => {
-          disp = r;
-          const elemento: any = {};
-          const valor_promedio = element.SaldoValor / element.SaldoCantidad;
-          elemento.Id = element.Id;
-          elemento.Activo = true;
-          elemento.ElementoCatalogoId = element.ElementoCatalogoId.Id;
-          elemento.Unidad = element.CantidadAprobada;
-          elemento.ValorTotal = 0;
-          if (this.metodo === 2) {
-            for (let i = 0; i < element.CantidadAprobada; i++) {
-              elemento.ValorTotal += disp[i].ValorUnitario;
-            }
-          } else if (this.metodo === 3) {
-            for (let i = 0; i < element.CantidadAprobada; i++) {
-              elemento.ValorTotal += disp[disp.length - 1 - i].ValorUnitario;
-            }
-          }
-          elemento.ValorUnitario = elemento.ValorTotal / element.CantidadAprobada;
-          elemento.SaldoCantidad = element.SaldoCantidad - element.CantidadAprobada;
-          elemento.SaldoValor = element.SaldoValor - elemento.ValorTotal;
-          SalidaKardex.Movimiento[0].Elementos.push(elemento);
-          this.BodegaConsumo.postResponderSolicitud(SalidaKardex).subscribe((res: any) => {
-            if (res) {
-              this.done.emit(true);
-              this.pUpManager.showAlertWithOptions(this.optionsAprobacion);
-            }
-          });
-        });
-      });
+    const solicitudes_ = await this.source.getAll();
 
+    await Promise.all(solicitudes_.filter(s => s.CantidadAprobada).map(async (element) => {
+      let disp: any;
+      const el_ = await this.calculoSalidas(element.ElementoCatalogoId.Id);
+      disp = el_;
+
+      const elemento: any = {};
+      const valor_promedio = element.SaldoValor / element.SaldoCantidad;
+      elemento.Id = element.Id;
+      elemento.Activo = true;
+      elemento.ElementoCatalogoId = element.ElementoCatalogoId.Id;
+      elemento.Unidad = element.CantidadAprobada;
+      elemento.ValorTotal = 0;
+      if (this.metodo === 2) {
+        for (let i = 0; i < element.CantidadAprobada; i++) {
+          elemento.ValorTotal += disp[i].ValorUnitario;
+        }
+      } else if (this.metodo === 3) {
+        for (let i = 0; i < element.CantidadAprobada; i++) {
+          elemento.ValorTotal += disp[disp.length - 1 - i].ValorUnitario;
+        }
+      }
+
+      elemento.ValorUnitario = elemento.ValorTotal / element.CantidadAprobada;
+      elemento.SaldoCantidad = element.SaldoCantidad - element.CantidadAprobada;
+      elemento.SaldoValor = element.SaldoValor - elemento.ValorTotal;
+      SalidaKardex.Movimiento[0].Elementos.push(elemento);
+    }));
+
+    this.BodegaConsumo.postResponderSolicitud(SalidaKardex).subscribe((res: any) => {
+      if (res) {
+        this.done.emit(true);
+        this.pUpManager.showAlertWithOptions(this.optionsAprobacion);
+      }
     });
 
   }
@@ -416,6 +420,19 @@ export class DetalleSolicitudComponent implements OnInit {
     } else {
       return false;
     }
+  }
+
+  private getOptionsSubmit(aprobar: boolean): any {
+    return {
+      title: this.translate.instant('GLOBAL.BodegaConsumo.Solicitud.confrmTtl' + (aprobar ? 'A' : 'R')),
+      text: this.translate.instant('GLOBAL.BodegaConsumo.Solicitud.confrmTxt' + (aprobar ? 'A' : 'R')),
+      type: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: this.translate.instant('GLOBAL.si'),
+      cancelButtonText: this.translate.instant('GLOBAL.no'),
+    };
   }
 
   get optionsRechazo() {
