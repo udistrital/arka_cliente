@@ -29,7 +29,7 @@
       <p class="text-uppercase">
         <strong *ngIf="entradaEspecifica.TipoEntradaId.Nombre !== 'Donación'">{{'GLOBAL.factura' | translate }}:</strong>
         <strong *ngIf="entradaEspecifica.TipoEntradaId.Nombre === 'Donación'">{{'GLOBAL.resolucion' | translate }}:</strong>
-        {{ factura.Consecutivo + ' ' + ('GLOBAL.de' | translate) }} {{ factura.FechaSoporte | date:'dd/MM/yyyy' }}</p>
+        {{ factura.Consecutivo + ' ' + ('GLOBAL.de' | translate) }} {{ tabla.formatDate(factura.FechaSoporte) }}</p>
     </div>
     <div class="col" *ngIf="Proveedor">
       <p class="text-uppercase">
