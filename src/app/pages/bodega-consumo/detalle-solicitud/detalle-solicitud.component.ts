@@ -118,9 +118,6 @@ export class DetalleSolicitudComponent implements OnInit {
         },
         ElementoCatalogoId: {
           title: this.translate.instant('GLOBAL.Elemento.Relacionado'),
-          valuePrepareFunction: (value: any) => {
-            return !value ? '' : value.Codigo ? value.Codigo + ' - ' + value.Nombre : value.Nombre;
-          },
           ...this.tabla.getSettingsCodigoNombre(),
         },
         Sede: {

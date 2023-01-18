@@ -70,23 +70,7 @@ export class ConsultaKardexComponent implements OnInit {
       columns: {
         ElementoCatalogoId: {
           title: this.translate.instant('GLOBAL.Elemento.Uno'),
-          valuePrepareFunction: (value: any) => {
-            if (value) {
-              let elem = value.Codigo ? value.Codigo + ' - ' : '';
-              elem += value.Nombre ? value.Nombre : '';
-              return elem;
-            } else {
-              return '';
-            }
-          },
-          filterFunction: (cell?: any, search?: string): boolean => {
-            if (cell && search.length) {
-              if ((cell.Codigo + ' - ' + cell.Nombre).indexOf(search) > -1) {
-                return true;
-              }
-            }
-            return false;
-          },
+          ...this.tabla.getSettingsCodigoNombre(),
         },
         FechaCreacion: {
           title: this.translate.instant('GLOBAL.fecha_creacion'),

@@ -3,6 +3,7 @@ import { LocalDataSource } from 'ng2-smart-table';
 import { Entrada } from '../../../@core/data/models/entrada/entrada';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { BodegaConsumoHelper } from '../../../helpers/bodega_consumo/bodegaConsumoHelper';
+import { SmartTableService } from '../../../@core/data/SmartTableService';
 
 @Component({
   selector: 'ngx-agregar-elementos',
@@ -22,6 +23,7 @@ export class AgregarElementosComponent implements OnInit {
   constructor(
     private translate: TranslateService,
     private bodegaConsumo: BodegaConsumoHelper,
+    private tabla: SmartTableService,
   ) {
     this.source = new LocalDataSource();
     this.entradas = new Array<Entrada>();
@@ -55,10 +57,7 @@ export class AgregarElementosComponent implements OnInit {
       columns: {
         ElementoCatalogoId: {
           title: this.translate.instant('GLOBAL.Elemento.Relacionado'),
-          valuePrepareFunction: (value: any) => {
-            return !value ? '' : value.Codigo ? value.Codigo + ' - ' + value.Nombre : value.Nombre;
-          },
-          filterFunction: this.filterFunction,
+          ...this.tabla.getSettingsCodigoNombre(),
         },
         Descripcion: {
           title: this.translate.instant('GLOBAL.Descripcion'),
@@ -84,26 +83,6 @@ export class AgregarElementosComponent implements OnInit {
 
   onCustom(event) {
     this.DatosEnviados = event.data;
-  }
-
-  private filterFunction(cell?: any, search?: string): boolean {
-    if (cell && search.length) {
-      if (cell.Codigo && cell.Nombre) {
-        if ((cell.Codigo + ' - ' + cell.Nombre.toUpperCase()).indexOf(search.toUpperCase()) > -1) {
-          return true;
-        } else {
-          return false;
-        }
-      } else if (cell.Nombre) {
-        if ((cell.Nombre.toUpperCase()).indexOf(search.toUpperCase()) > -1) {
-          return true;
-        } else {
-          return false;
-        }
-      }
-    } else {
-      return false;
-    }
   }
 
 }
