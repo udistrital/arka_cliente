@@ -1,52 +1,52 @@
-  <nb-card>
-    <nb-card-header>
-      <h2>{{'GLOBAL.BodegaConsumo.Consulta.Titulo' | translate}}</h2>
-    </nb-card-header>
-    <nb-card-body [nbSpinner]="cargandoListaKardex"><nb-card><nb-card-body>
+<mat-card>
+  <mat-card-title>
+    {{'GLOBAL.BodegaConsumo.Consulta.Titulo' | translate}}
+  </mat-card-title>
 
-      <!-- CARD PARA MOSTRAR LAS SOLICITUDES -->
-      <p *ngIf="!kardex"><span class="fas fa-info-circle"></span>&nbsp;
-        <em>{{'GLOBAL.BodegaConsumo.Consulta.Indice' | translate}}</em>
-      </p>
-      <ng2-smart-table [settings]="settings" [source]="source" (custom)="onCustom($event)" *ngIf="!kardex">
+  <mat-card-subtitle *ngIf="!kardex">
+    <p><span class="fas fa-info-circle"></span>&nbsp;<em>{{ 'GLOBAL.BodegaConsumo.Consulta.Indice' | translate }}</em></p>
+  </mat-card-subtitle>
+
+  <mat-card-content [nbSpinner]="cargandoListaKardex">
+
+    <div class="smart-table-container" *ngIf="!kardex">
+      <ng2-smart-table [settings]="settings" [source]="source" (custom)="onCustom($event)">
       </ng2-smart-table>
-      <nb-card *ngIf="kardex">
-        <nb-card-body>
+    </div>
 
-          <div  class="justify-content-center">
-            <div class="row">
-              <div class="col">
-                <p class="text-uppercase"><strong>{{'GLOBAL.fecha_creacion' | translate}}:</strong>
-                  {{ elemento.FechaCreacion | date }}</p>
-              </div>
-              <div class="col">
-                <p class="text-uppercase"><strong>{{'GLOBAL.Elemento.Uno' | translate}}:</strong>
-                  {{ elemento.ElementoCatalogoId.Nombre}}</p>
-              </div>
-              <div class="col">
-              </div>
-            </div>
-            <div class="row">
-              <div class="col">
-                <p class="text-uppercase"><strong>{{'GLOBAL.BodegaConsumo.MetodoInventario.Nombre'| translate}}</strong>:
-                  {{ elemento.MetodoValoracion.Nombre}}</p>
-              </div>
-              <div class="col">
-                <p class="text-uppercase"><strong>{{'GLOBAL.Solicitudes.CantMin'| translate}}</strong>: {{ elemento.CantidadMinima }}</p>
-              </div>
-              <div class="col">
-                <p class="text-uppercase"><strong>{{'GLOBAL.Solicitudes.CantMax'| translate}}</strong>: {{ elemento.CantidadMaxima }}</p>
-              </div>
-            </div>
-          </div>
+    <div class="justify-content-center" *ngIf="kardex">
+      <div class="row">
+        <div class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.fecha_creacion' | translate}}:</strong>
+            {{ elemento.FechaCreacion | date }}</p>
+        </div>
+        <div class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.Elemento.Uno' | translate}}:</strong>
+            {{ elemento.ElementoCatalogoId.Nombre }}</p>
+        </div>
+        <div class="col">
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.BodegaConsumo.MetodoInventario.Nombre'| translate}}</strong>:
+            {{ elemento.MetodoValoracion.Nombre }}</p>
+        </div>
+        <div class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.Solicitudes.CantMin'| translate}}</strong>: {{ elemento.CantidadMinima }}</p>
+        </div>
+        <div class="col">
+          <p class="text-uppercase"><strong>{{'GLOBAL.Solicitudes.CantMax'| translate}}</strong>: {{ elemento.CantidadMaxima }}</p>
+        </div>
+      </div>
+    </div>
 
-        </nb-card-body>
-      </nb-card>
-      <ngx-kardex *ngIf="kardex" [Kardex]="kardex"></ngx-kardex>
-    </nb-card-body></nb-card></nb-card-body>
-    <nb-card-footer *ngIf="kardex">
-        <button mat-raised-button color="primary" class="float-left text-uppercase" data-dismiss="modal" (click)="onVolver()">
-          {{'GLOBAL.volver' | translate}}
-        </button>
-    </nb-card-footer>
-  </nb-card>
+    <ngx-kardex *ngIf="kardex" [Kardex]="kardex"></ngx-kardex>
+  </mat-card-content>
+
+  <mat-card-actions *ngIf="kardex">
+    <button mat-raised-button color="primary" class="float-left text-uppercase" data-dismiss="modal" (click)="onVolver()">
+      {{'GLOBAL.volver' | translate}}
+    </button>
+  </mat-card-actions>
+</mat-card>

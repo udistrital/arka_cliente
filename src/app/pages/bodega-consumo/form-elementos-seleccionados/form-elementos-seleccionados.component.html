@@ -1,6 +1,6 @@
 <form [formGroup]="form_salida" #fform="ngForm" class="step-container">
-  <nb-card>
-    <nb-card-body class="bla">
+  <mat-card>
+    <mat-card-content>
         <header *ngIf="Datos" class="row form-group"><table class="col-sm input-group">
           <tr><th id="col-nombre">{{'GLOBAL.Nombre' | translate}}:</th><td>{{ Datos.ElementoCatalogoId?.Nombre }}</td></tr>
           <tr><th id="col-descripcion">{{'GLOBAL.Descripcion' | translate}}:</th><td>{{ Datos.ElementoCatalogoId.Descripcion }}</td></tr>
@@ -39,17 +39,21 @@
             </select>
           </div>
         </div>
-    </nb-card-body>
-    <nb-card-footer>
-      <button nbButton [disabled]="!form_salida.valid" (click)="onSeleccionarElemento()" class="float-right">{{'GLOBAL.seleccionar' | translate}}</button>
-    </nb-card-footer>
-  </nb-card>
+    </mat-card-content>
+    <mat-card-actions>
+      <button mat-raised-button color="primary" class="float-right text-uppercase" [disabled]="!form_salida.valid" (click)="onSeleccionarElemento()">
+        {{'GLOBAL.seleccionar' | translate}}</button>
+    </mat-card-actions>
+  </mat-card>
 </form>
-<nb-card>
-  <nb-card-body>
-    <ng2-smart-table [settings]="settings2" [source]="source2" (custom)="onCustom($event)"></ng2-smart-table>
-  </nb-card-body>
-    <nb-card-footer>
-        <button *ngIf="detalle2" nbButton (click)="onSubmit()" class="float-right">{{'GLOBAL.enviarSolicitud' | translate}}</button>
-    </nb-card-footer>
-</nb-card>
+<mat-card>
+  <mat-card-content>
+    <div class="smart-table-container">
+      <ng2-smart-table [settings]="settings2" [source]="source2" (custom)="onCustom($event)"></ng2-smart-table>
+    </div>
+  </mat-card-content>
+    <mat-card-actions>
+      <button mat-raised-button color="primary" class="float-right text-uppercase" *ngIf="detalle2" (click)="onSubmit()">
+          {{'GLOBAL.enviarSolicitud' | translate}}</button>
+    </mat-card-actions>
+</mat-card>
