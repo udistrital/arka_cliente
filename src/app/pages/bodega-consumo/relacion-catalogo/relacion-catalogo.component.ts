@@ -88,8 +88,4 @@ export class RelacionCatalogoComponent implements OnInit {
     this.detalle = !this.detalle;
   }
 
-  onRegister() {
-    this.router.navigate(['/pages/entradas/registro']);
-  }
-
 }

@@ -1,7 +1,5 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
-import { Router } from '@angular/router';
 import { BodegaConsumoHelper } from '../../../helpers/bodega_consumo/bodegaConsumoHelper';
 
 @Component({
@@ -21,8 +19,6 @@ export class AsignacionKardexComponent implements OnInit {
 
   constructor(
     private translate: TranslateService,
-    private router: Router,
-    private fb: FormBuilder,
     private BodegaConsumo: BodegaConsumoHelper,
   ) {
     this.paso = 0;

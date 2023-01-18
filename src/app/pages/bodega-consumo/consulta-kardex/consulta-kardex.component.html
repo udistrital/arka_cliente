@@ -45,7 +45,7 @@
       <ngx-kardex *ngIf="kardex" [Kardex]="kardex"></ngx-kardex>
     </nb-card-body></nb-card></nb-card-body>
     <nb-card-footer *ngIf="kardex">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="onVolver()">
+        <button mat-raised-button color="primary" class="float-left text-uppercase" data-dismiss="modal" (click)="onVolver()">
           {{'GLOBAL.volver' | translate}}
         </button>
     </nb-card-footer>

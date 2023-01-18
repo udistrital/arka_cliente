@@ -1,32 +1,38 @@
-<nb-card>
-    <nb-card-header><h2>{{ 'GLOBAL.BodegaConsumo.Asignacion.Titulo' | translate }}</h2></nb-card-header>
-    <nb-card-body>
+<mat-card>
+    <mat-card-title>{{ 'GLOBAL.BodegaConsumo.Asignacion.Titulo' | translate }}</mat-card-title>
+    <mat-card-content>
         <ngx-bodega-sin-asignar *ngIf="paso === 0" (DatosEnviados)="Asignar_Elemento_Bodega($event)">
         </ngx-bodega-sin-asignar>
 
-        <nb-card *ngIf="paso === 1"><nb-card-body><table>
-            <tr>
-                <th id="col-elemento-uno">{{ 'GLOBAL.Elemento.Uno' | translate }}</th>
-                <th id="col-marca">{{ 'GLOBAL.marca' | translate }}</th>
-                <th id="col-serie">{{ 'GLOBAL.serie' | translate }}</th>
-                <th id="col-nombre">{{ 'GLOBAL.subgrupo.clase.nombre' | translate }}</th>
-                <th id="col-cantidad">{{ 'GLOBAL.cantidad' | translate }}</th>
-            </tr>
-            <tr>
-                <td>{{ElementoSinAsignar.Nombre}}</td>
-                <td>{{ElementoSinAsignar.Marca}}</td>
-                <td>{{ElementoSinAsignar.Serie}}</td>
-                <td>{{ElementoSinAsignar.SubgrupoCatalogoId.Codigo + ' - ' + ElementoSinAsignar.SubgrupoCatalogoId.Nombre}}</td>
-                <td>{{ElementoSinAsignar.SaldoCantidad}}</td>
-            </tr>
-        </table></nb-card-body></nb-card>
+        <mat-card *ngIf="paso === 1">
+            <mat-card-content>
+                <table>
+                    <tr>
+                        <th id="col-elemento-uno">{{ 'GLOBAL.Elemento.Uno' | translate }}</th>
+                        <th id="col-marca">{{ 'GLOBAL.marca' | translate }}</th>
+                        <th id="col-serie">{{ 'GLOBAL.serie' | translate }}</th>
+                        <th id="col-nombre">{{ 'GLOBAL.subgrupo.clase.nombre' | translate }}</th>
+                        <th id="col-cantidad">{{ 'GLOBAL.cantidad' | translate }}</th>
+                    </tr>
+                    <tr>
+                        <td>{{ElementoSinAsignar.Nombre}}</td>
+                        <td>{{ElementoSinAsignar.Marca}}</td>
+                        <td>{{ElementoSinAsignar.Serie}}</td>
+                        <td>{{ElementoSinAsignar.SubgrupoCatalogoId.Codigo + ' - ' +
+                            ElementoSinAsignar.SubgrupoCatalogoId.Nombre}}</td>
+                        <td>{{ElementoSinAsignar.SaldoCantidad}}</td>
+                    </tr>
+                </table>
+            </mat-card-content>
+        </mat-card>
+
         <ngx-relacion-catalogo *ngIf="paso === 1"
             [Subgrupo_Id]="ElementoSinAsignar.SubgrupoCatalogoId.Id"
             (DatosEnviados)="Asignar_Elemento_Catalogo($event)">
         </ngx-relacion-catalogo>
 
         <!-- "DUMMY CARD" MIENTRAS SE IDENTIFICA SI HAY QUE CREAR O ASIGNAR A KARDEX -->
-        <nb-card *ngIf="paso === 2 && !modoKardexCargado" [nbSpinner]="!modoKardexCargado"><nb-card-body></nb-card-body></nb-card>
+        <mat-card *ngIf="paso === 2 && !modoKardexCargado" [nbSpinner]="!modoKardexCargado"><mat-card-content></mat-card-content></mat-card>
 
         <ngx-entrada-kardex [Elementos_K]="ElementosKardex" [Elemento_C]="ElementoCatalogo" [Elemento_B]="ElementoSinAsignar"
             *ngIf="paso === 2 && apertura !== undefined && !apertura" [nbSpinner]="!modoKardexCargado"
@@ -36,12 +42,10 @@
             (DatosEnviados)="Asignar_Elemento_Movimiento($event)" [nbSpinner]="!modoKardexCargado"
             *ngIf="paso === 2 && apertura !== undefined && apertura">
         </ngx-apertura-kardex>
-    </nb-card-body>
-    <nb-card-footer *ngIf="paso > 0">
-        <div class="pt-4">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal"
-                (click)="onVolver()">{{'GLOBAL.volver' | translate}}
-            </button>
-        </div>
-    </nb-card-footer>
-</nb-card>
+    </mat-card-content>
+    <mat-card-actions *ngIf="paso > 0">
+        <button mat-raised-button color="primary" class="float-left text-uppercase" data-dismiss="modal" (click)="onVolver()">
+            {{'GLOBAL.volver' | translate}}
+        </button>
+    </mat-card-actions>
+</mat-card>

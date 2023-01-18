@@ -70,26 +70,7 @@ export class ConsultaKardexComponent implements OnInit {
       columns: {
         ElementoCatalogoId: {
           title: this.translate.instant('GLOBAL.Elemento.Uno'),
-          valuePrepareFunction: (value: any) => {
-            if (value) {
-              let elem = value.Codigo ? value.Codigo + ' - ' : '';
-              elem += value.Nombre ? value.Nombre : '';
-              return elem;
-            } else {
-              return '';
-            }
-          },
-          filterFunction: (cell?: any, search?: string): boolean => {
-            if (cell && search.length) {
-              if ((cell.Codigo + ' - ' + cell.Nombre).indexOf(search) > -1) {
-                return true;
-              }
-            }
-            return false;
-          },
-        },
-        Observaciones: {
-          title: this.translate.instant('GLOBAL.observaciones'),
+          ...this.tabla.getSettingsCodigoNombre(),
         },
         FechaCreacion: {
           title: this.translate.instant('GLOBAL.fecha_creacion'),
@@ -99,6 +80,9 @@ export class ConsultaKardexComponent implements OnInit {
         MetodoValoracion: {
           title: this.translate.instant('GLOBAL.BodegaConsumo.MetodoInventario.Nombre'),
           ...this.tabla.getSettingsObject('Nombre'),
+        },
+        SaldoCantidad: {
+          title: this.translate.instant('GLOBAL.Existencias'),
         },
         CantidadMinima: {
           title: this.translate.instant('GLOBAL.Solicitudes.CantMin'),
@@ -131,13 +115,9 @@ export class ConsultaKardexComponent implements OnInit {
     this.elemento = event.data;
     this.kardex = event.data.ElementoCatalogoId.Id;
   }
+
   onVolver() {
-    // this.source.empty().then(() => {
     this.kardex = undefined;
-    //   if (this.Dependencias !== undefined && this.Sedes !== undefined && this.Proveedores !== undefined) {
-    //    // console.log('ok');
-    //     this.loadSalidas();
-    //  }
-    // });
   }
+
 }

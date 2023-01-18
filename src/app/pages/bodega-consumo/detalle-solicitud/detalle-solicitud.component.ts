@@ -9,6 +9,7 @@ import { Store } from '@ngrx/store';
 import { ListService } from '../../../@core/store/services/list.service';
 import { IAppState } from '../../../@core/store/app.state';
 import { FormBuilder, Validators, FormGroup } from '@angular/forms';
+import { SmartTableService } from '../../../@core/data/SmartTableService';
 
 @Component({
   selector: 'ngx-detalle-solicitud',
@@ -56,6 +57,7 @@ export class DetalleSolicitudComponent implements OnInit {
     private BodegaConsumo: BodegaConsumoHelper,
     private listService: ListService,
     private pUpManager: PopUpManager,
+    private tabla: SmartTableService,
   ) {
     this.source = new LocalDataSource();
     if (this.Editar === undefined) {
@@ -87,6 +89,15 @@ export class DetalleSolicitudComponent implements OnInit {
   }
 
   loadTablaSettings(editar: boolean) {
+    let columnaExistencias = {};
+    if (editar) {
+      columnaExistencias = {
+        SaldoCantidad: {
+          title: this.translate.instant('GLOBAL.Solicitudes.CantDisponible'),
+        },
+      };
+    }
+
     const settings = {
       noDataMessage: this.translate.instant('GLOBAL.no_data_entradas'),
       actions: {
@@ -101,101 +112,34 @@ export class DetalleSolicitudComponent implements OnInit {
       },
       mode: 'external',
       columns: {
-        SubgrupoCatalogoId: {
+        SubgrupoId: {
           title: this.translate.instant('GLOBAL.BodegaConsumo.Solicitud.ColumnaElementoCatalogo'),
-          valuePrepareFunction: (value: any) => {
-            return !value ? '' : value.Codigo ? value.Codigo + ' - ' + value.Nombre : value.Nombre;
-          },
-          filterFunction: this.filterFunction,
+          ...this.tabla.getSettingsCodigoNombre(),
         },
         ElementoCatalogoId: {
           title: this.translate.instant('GLOBAL.Elemento.Relacionado'),
-          valuePrepareFunction: (value: any) => {
-            return !value ? '' : value.Codigo ? value.Codigo + ' - ' + value.Nombre : value.Nombre;
-          },
-          filterFunction: this.filterFunction,
+          ...this.tabla.getSettingsCodigoNombre(),
         },
         Sede: {
           title: this.translate.instant('GLOBAL.sede'),
-          valuePrepareFunction: (value: any) => {
-            if (value !== null) {
-              return value.Nombre;
-            } else {
-              return '';
-            }
-          },
-          filterFunction: (cell?: any, search?: string): boolean => {
-            // console.log(cell);
-            // console.log(search);
-            if (Object.keys(cell).length !== 0) {
-              if (cell.Nombre.indexOf(search) > -1) {
-                return true;
-              } else {
-                return false;
-              }
-            } else {
-              return false;
-            }
-          },
+          ...this.tabla.getSettingsObject('Nombre'),
         },
         Dependencia: {
           title: this.translate.instant('GLOBAL.dependencia'),
-          valuePrepareFunction: (value: any) => {
-            if (value !== null) {
-              return value.Nombre;
-            } else {
-              return '';
-            }
-          },
-          filterFunction: (cell?: any, search?: string): boolean => {
-            // console.log(cell);
-            // console.log(search);
-            if (Object.keys(cell).length !== 0) {
-              if (cell.Nombre.indexOf(search) > -1) {
-                return true;
-              } else {
-                return false;
-              }
-            } else {
-              return false;
-            }
-          },
+          ...this.tabla.getSettingsObject('Nombre'),
         },
         Ubicacion: {
           title: this.translate.instant('GLOBAL.ubicacion'),
-          valuePrepareFunction: (value: any) => {
-            if (value !== null) {
-              return value.Nombre;
-            } else {
-              return '';
-            }
-          },
-          filterFunction: (cell?: any, search?: string): boolean => {
-            // console.log(cell);
-            // console.log(search);
-            if (Object.keys(cell).length !== 0) {
-              if (cell.Nombre.indexOf(search) > -1) {
-                return true;
-              } else {
-                return false;
-              }
-            } else {
-              return false;
-            }
-          },
+          ...this.tabla.getSettingsObject('Nombre'),
         },
         Cantidad: {
           title: this.translate.instant('GLOBAL.Solicitudes.CantSolicitada'),
         },
+        ...columnaExistencias,
+        CantidadAprobada: {
+          title: this.translate.instant('GLOBAL.Solicitudes.CantAprobada'),
+        },
       },
-    };
-    if (editar) {
-      settings.columns['SaldoCantidad'] = {
-        title: this.translate.instant('GLOBAL.Solicitudes.CantDisponible'),
-      };
-    }
-    settings.columns['CantidadAprobada'] = {
-      title: this.translate.instant('GLOBAL.Solicitudes.CantAprobada'),
     };
 
     this.settings = settings;
@@ -203,12 +147,14 @@ export class DetalleSolicitudComponent implements OnInit {
 
   loadSolicitud(): void {
     this.bodegaHelper.getSolicitudBodega(this.salida_id.Id).subscribe(res => {
-      // console.log({res});
-      if (Object.keys(res).length !== 0) {
-        if (Array.isArray(res.Elementos)) {
-          this.source.load(res.Elementos);
-        }
-        this.Solicitud = res.Solicitud[0];
+      if (res.Elementos && res.Solicitud) {
+
+        res.Elementos.forEach(e => {
+          e.SubgrupoId = e.ElementoCatalogoId.SubgrupoId;
+        });
+
+        this.source.load(res.Elementos);
+        this.Solicitud = res.Solicitud;
         this.Detalle_Solicitud = JSON.parse(this.Solicitud.Detalle);
       }
     });
@@ -400,26 +346,6 @@ export class DetalleSolicitudComponent implements OnInit {
         this.pUpManager.showAlertWithOptions(this.optionsRechazo);
       }
     });
-  }
-
-  private filterFunction(cell?: any, search?: string): boolean {
-    if (cell && search.length) {
-      if (cell.Codigo && cell.Nombre) {
-        if ((cell.Codigo + ' - ' + cell.Nombre.toUpperCase()).indexOf(search.toUpperCase()) > -1) {
-          return true;
-        } else {
-          return false;
-        }
-      } else if (cell.Nombre) {
-        if ((cell.Nombre.toUpperCase()).indexOf(search.toUpperCase()) > -1) {
-          return true;
-        } else {
-          return false;
-        }
-      }
-    } else {
-      return false;
-    }
   }
 
   private getOptionsSubmit(aprobar: boolean): any {
