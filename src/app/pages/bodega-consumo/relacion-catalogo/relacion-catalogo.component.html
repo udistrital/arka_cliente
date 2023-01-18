@@ -1,17 +1,13 @@
-  <nb-card>
-    <nb-card-body [nbSpinner]="cargando">
+<mat-card [nbSpinner]="cargando">
 
-      <!-- CARD PARA MOSTRAR LAS SOLICITUDES *ngIf="!detalle" -->
-      <p>
-        <span class="fas fa-info-circle"></span>&nbsp;
-        <em>
-          {{'GLOBAL.BodegaConsumo.Asignacion.Paso2_p1' | translate}}<br />
-          {{'GLOBAL.BodegaConsumo.Asignacion.Paso2_p2' | translate}}
-        </em>
-      </p>
+  <mat-card-subtitle>
+    <p><span class="fas fa-info-circle"></span>&nbsp;<em>{{ 'GLOBAL.BodegaConsumo.Asignacion.Paso2_p1' | translate }}</em></p>
+    <p><span class="fas fa-info-circle"></span>&nbsp;<em>{{ 'GLOBAL.BodegaConsumo.Asignacion.Paso2_p2' | translate }}</em></p>
+  </mat-card-subtitle>
 
-      <ng2-smart-table [settings]="settings" [source]="source" (custom)="onCustom($event)">
-      </ng2-smart-table>
+  <mat-card-content>
+    <ng2-smart-table [settings]="settings" [source]="source" (custom)="onCustom($event)">
+    </ng2-smart-table>
+  </mat-card-content>
 
-    </nb-card-body>
-  </nb-card>
+</mat-card>

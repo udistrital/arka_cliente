@@ -95,7 +95,7 @@ export class DetalleSolicitudComponent implements OnInit {
         SaldoCantidad: {
           title: this.translate.instant('GLOBAL.Solicitudes.CantDisponible'),
         },
-      }
+      };
     }
 
     const settings = {
