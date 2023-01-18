@@ -264,4 +264,50 @@ export class SmartTableService {
         return this.getOrder(first, second, direction);
     }
 
+    public getSettingsCodigoNombre() {
+        return {
+            valuePrepareFunction: (value: any) => {
+                return this.prepareFunctionCodigoNombre(value);
+            },
+            filterFunction: (cell?: any, search?: string): boolean => {
+                return this.filterFunctionCodigoNombre(cell, search);
+            },
+            compareFunction: (direction: any, a: any, b: any): number => {
+                return this.compareFunctionCodigoNombre(direction, a, b);
+            },
+        };
+    }
+
+    private prepareFunctionCodigoNombre(value?: any): string {
+        if (!value) {
+            return '';
+        }
+
+        return value.Codigo ? value.Codigo + ' - ' + value.Nombre : value.Nombre;
+    }
+
+    private filterFunctionCodigoNombre(cell?: any, search?: string): boolean {
+
+        if (!search.length) {
+            return false;
+        }
+
+        const value = this.prepareFunctionCodigoNombre(cell);
+        if (!value) {
+            return false;
+        }
+
+        if ((value.toUpperCase()).indexOf(search.toUpperCase()) > -1) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private compareFunctionCodigoNombre(direction: any, a: any, b: any) {
+        const first = this.prepareFunctionCodigoNombre(a);
+        const second = this.prepareFunctionCodigoNombre(b);
+        return this.getOrder(first, second, direction);
+    }
+
 }

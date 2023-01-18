@@ -88,9 +88,6 @@ export class ConsultaKardexComponent implements OnInit {
             return false;
           },
         },
-        Observaciones: {
-          title: this.translate.instant('GLOBAL.observaciones'),
-        },
         FechaCreacion: {
           title: this.translate.instant('GLOBAL.fecha_creacion'),
           width: '70px',
@@ -99,6 +96,9 @@ export class ConsultaKardexComponent implements OnInit {
         MetodoValoracion: {
           title: this.translate.instant('GLOBAL.BodegaConsumo.MetodoInventario.Nombre'),
           ...this.tabla.getSettingsObject('Nombre'),
+        },
+        SaldoCantidad: {
+          title: this.translate.instant('GLOBAL.Existencias'),
         },
         CantidadMinima: {
           title: this.translate.instant('GLOBAL.Solicitudes.CantMin'),
@@ -131,13 +131,9 @@ export class ConsultaKardexComponent implements OnInit {
     this.elemento = event.data;
     this.kardex = event.data.ElementoCatalogoId.Id;
   }
+
   onVolver() {
-    // this.source.empty().then(() => {
     this.kardex = undefined;
-    //   if (this.Dependencias !== undefined && this.Sedes !== undefined && this.Proveedores !== undefined) {
-    //    // console.log('ok');
-    //     this.loadSalidas();
-    //  }
-    // });
   }
+
 }
