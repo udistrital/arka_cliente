@@ -105,13 +105,11 @@ export class ListService {
               (res: any) => {
                 this.addList(REDUCER_LIST.EstadosActa, res.EstadoActa);
                 this.addList(REDUCER_LIST.EstadosElemento, res.EstadoElemento);
-                this.addList(REDUCER_LIST.Unidades, res.Unidades);
                 this.addList(REDUCER_LIST.IVA, res.IVA);
               },
               error => {
                 this.addList(REDUCER_LIST.EstadosActa, []);
                 this.addList(REDUCER_LIST.EstadosElemento, []);
-                this.addList(REDUCER_LIST.Unidades, []);
                 this.addList(REDUCER_LIST.IVA, []);
               },
             );
@@ -182,10 +180,10 @@ export class ListService {
     this.store.select(<any>REDUCER_LIST.Unidades).subscribe(
       (list: any) => {
         if (!list || list.length === 0) {
-          this.ActaRecibido.getParametros()
+          this.ActaRecibido.getUnidades()
             .subscribe(
               (res: any) => {
-                this.addList(REDUCER_LIST.Unidades, res.Unidades);
+                this.addList(REDUCER_LIST.Unidades, res);
               },
               error => {
                 this.addList(REDUCER_LIST.Unidades, []);

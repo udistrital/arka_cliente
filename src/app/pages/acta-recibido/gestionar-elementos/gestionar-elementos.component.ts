@@ -83,6 +83,7 @@ export class GestionarElementosComponent implements OnInit {
 
   ngOnInit() {
     this.listService.findListsActa();
+    this.listService.findUnidades();
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
     });
     this.createForm();
@@ -672,13 +673,27 @@ export class GestionarElementosComponent implements OnInit {
     data.Marca = '';
     data.Serie = '';
     data.Subtotal = 0;
-    data.UnidadMedida = 13;
+    data.UnidadMedida = this.unidad;
+    data.PorcentajeIvaId = 0;
     data.ValorIva = 0;
     data.ValorTotal = 0;
     data.ValorUnitario = 0;
 
     (this.formElementos.get('elementos') as FormArray).push(this.fillElemento(data));
     this.dataSource.data = this.dataSource.data.concat({});
+  }
+
+  get unidad(): number {
+    if (!this.unidades.length) {
+      return 0;
+    }
+
+    const unidad = this.unidades.find(u => u.Nombre === 'UNIDAD');
+    if (!unidad) {
+      return 0;
+    }
+
+    return unidad.Id;
   }
 
   get selected() {

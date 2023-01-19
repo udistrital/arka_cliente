@@ -426,15 +426,19 @@ export class ActaRecibidoHelper {
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
      */
     public getUnidades() {
-        this.rqManager.setPath('UNIDADES_SERVICE');
-        return this.rqManager.get('unidad?limit=-1').pipe(
+        const payload = 'limit=-1&fields=Id,Nombre&sortby=Nombre&order=asc&query=TipoParametroId__CodigoAbreviacion__in:L|M|T|C|S';
+        this.rqManager.setPath('PARAMETROS_SERVICE');
+        return this.rqManager.get('parametro?' + payload).pipe(
             map(
                 (res) => {
-                    if (res === 'error') {
-                        this.pUpManager.showErrorAlert('No se pudo consultar las unidades');
+                    if (res['Type'] === 'error') {
+                        this.pUpManager.showErrorAlert('No se pudieron cargar los parametros');
                         return undefined;
                     }
-                    return res;
+                    if (!res.Data || (res.Data && res.Data.length === 1 && !Object.keys(res.Data[0]).length)) {
+                        res.Data = [];
+                    }
+                    return res.Data;
                 },
             ),
         );

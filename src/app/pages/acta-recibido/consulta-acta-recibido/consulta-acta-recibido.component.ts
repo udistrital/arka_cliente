@@ -12,6 +12,7 @@ import { TransaccionActaRecibido } from '../../../@core/data/models/acta_recibid
 import { EstadoActa, EstadoActa_t } from '../../../@core/data/models/acta_recibido/estado_acta';
 import { CommonActas } from '../shared';
 import { SmartTableService } from '../../../@core/data/SmartTableService';
+import { ListService } from '../../../@core/store/services/list.service';
 
 const ORDEN_ESTADOS: EstadoActa_t[] = [
   EstadoActa_t.Registrada,
@@ -67,7 +68,11 @@ export class ConsultaActaRecibidoComponent implements OnInit {
     private confService: ConfiguracionService,
     private userService: UserService,
     private tabla: SmartTableService,
+    private listService: ListService,
   ) {
+    this.listService.findSedes();
+    this.listService.findListsActa();
+    this.listService.findUnidades();
     this.limit = 10;
     this.SizePage = '10';
     this.offset = 0;

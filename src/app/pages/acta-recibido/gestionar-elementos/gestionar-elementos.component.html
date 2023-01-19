@@ -226,7 +226,7 @@
           <mat-form-field appearance="outline" class="valores">
             <mat-select matInput type="text" formControlName="UnidadMedida">
               <mat-option value="">--{{ 'GLOBAL.seleccionar' | translate }}--</mat-option>
-              <mat-option *ngFor="let unidad of unidades" [(value)]="unidad.Id">{{unidad.Unidad}}</mat-option>
+              <mat-option *ngFor="let unidad of unidades" [(value)]="unidad.Id">{{unidad.Nombre}}</mat-option>
             </mat-select>
           </mat-form-field>
         </td>
