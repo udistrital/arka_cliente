@@ -13,7 +13,7 @@
 
     <!-- CARD PARA MOSTRAR LAS LISTA DE ENTRADAS -->
 
-    <div class="container-tabla" *ngIf="mostrar">
+    <div class="smart-table-container" *ngIf="mostrar">
       <ng2-smart-table [settings]="settings" [source]="source" (delete)="onDelete($event)" (edit)="onEdit($event)"
         (create)="onRegister($event)">
       </ng2-smart-table>

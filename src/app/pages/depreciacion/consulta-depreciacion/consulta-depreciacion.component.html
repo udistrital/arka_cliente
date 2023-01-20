@@ -4,13 +4,15 @@
   </mat-card-title>
 
   <mat-card-subtitle *ngIf="!continuar">
-    {{ subtitle }}
+    <p><span class="fas fa-info-circle"></span>&nbsp;<em>{{ subtitle }}</em></p>
   </mat-card-subtitle>
 
   <mat-card-content>
-    <ng2-smart-table *ngIf="!continuar" [settings]="settings" [source]="source" (create)="onRegister()"
-      (edit)="onEdit($event)" (delete)="onView($event)">
-    </ng2-smart-table>
+    <div class="smart-table-container">
+      <ng2-smart-table *ngIf="!continuar" [settings]="settings" [source]="source" (create)="onRegister()"
+        (edit)="onEdit($event)" (delete)="onView($event)">
+      </ng2-smart-table>
+    </div>
     <ngx-generar-depreciacion *ngIf="continuar" [modoCrud]="modoCrud" [depreciacionId]="depreciacionId"
       [refDate]="fechaMin" (accion)="actualizarVista($event)"></ngx-generar-depreciacion>
   </mat-card-content>

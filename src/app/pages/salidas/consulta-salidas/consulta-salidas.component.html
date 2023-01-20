@@ -7,9 +7,11 @@
     {{ subtitle | translate}}
   </mat-card-subtitle>
 
-  <ng2-smart-table *ngIf="!salidaId && settings" [settings]="settings" [source]="source" (edit)="onEdit($event)"
-    (delete)="onDelete($event)" (create)="onRegister($event)">
-  </ng2-smart-table>
+  <div class="smart-table-container" *ngIf="!salidaId && settings">
+    <ng2-smart-table [settings]="settings" [source]="source" (edit)="onEdit($event)"
+      (delete)="onDelete($event)" (create)="onRegister($event)">
+    </ng2-smart-table>
+  </div>
 
   <ngx-consulta-salida-especifica [salida_id]="salidaId" *ngIf="salidaId && !editarSalida">
   </ngx-consulta-salida-especifica>
