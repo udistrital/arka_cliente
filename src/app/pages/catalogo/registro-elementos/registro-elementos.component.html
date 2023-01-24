@@ -1,10 +1,12 @@
 <div class="row">
-<nb-card class="col">
-  <nb-card-header>
-    <h2>{{'GLOBAL.registro_elementos' | translate}}</h2>
-  </nb-card-header>
-  <nb-card-body [nbSpinner]="cargando_catalogos">
-        <h5>{{'GLOBAL.catalogo.uno' | translate}}</h5>
+<mat-card class="col">
+  <mat-card-title>
+    {{'GLOBAL.registro_elementos' | translate}}
+  </mat-card-title>
+  <mat-card-subtitle>
+    {{'GLOBAL.catalogo.uno' | translate}}
+  </mat-card-subtitle>
+  <mat-card-content [nbSpinner]="cargando_catalogos">
         <select class="form-control mb-4" (change)="onChange($event.target.value)">
           <option disabled selected>{{'GLOBAL.seleccionar' | translate}}...</option>
           <option *ngFor="let item of catalogos" value="{{ item.Id }}">{{ item.Nombre }}</option>
@@ -20,12 +22,14 @@
             <em>{{'GLOBAL.catalogo.elementosInfo2' | translate}}</em>
           </p>
         </ngx-arbol>
-  </nb-card-body>
-</nb-card>
+  </mat-card-content>
+</mat-card>
 <div class="col" *ngIf="ver_formulario">
-  <nb-card>
-    <nb-card-body>
-      <h2>{{ 'GLOBAL.detalle' | translate }}</h2>
+  <mat-card>
+    <mat-card-title>
+      {{'GLOBAL.detalle' | translate}}
+    </mat-card-title>
+    <mat-card-content>
       <p class="font-weight-bold text-uppercase pt-4 pb-4">{{ 'GLOBAL.subgrupo.clase.nombre' | translate }}:
         <span class="font-weight-normal">{{ subgrupo.Codigo }}: {{ subgrupo.Nombre }}</span>
       </p>
@@ -33,7 +37,7 @@
         [clean]="clean">
       </ngx-dinamicform>
 
-    </nb-card-body>
-  </nb-card>
+    </mat-card-content>
+  </mat-card>
 </div>
 </div>

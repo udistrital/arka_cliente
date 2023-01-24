@@ -1,9 +1,9 @@
 <div class="col-lg-12">
-  <nb-card>
-    <nb-card-header>
-      <h1>Lista de Bienes Inmuebles</h1>
-    </nb-card-header>
-    <nb-card-body [nbSpinner]="!mostrar">
+  <mat-card>
+    <mat-card-title>
+      Lista de Bienes Inmuebles
+    </mat-card-title>
+    <mat-card-content [nbSpinner]="!mostrar">
 
       <p class="h4 pb-4" *ngIf="bienSeleccionado === ''&& click === false">Seleccione el bien inmueble sobre el cual desea realizar un avalúo, 
         o presione el boton Registrar para Ingresar un nuevo bien
@@ -16,6 +16,6 @@
         *ngIf="bienSeleccionado=== ''&& click === false"></ng2-smart-table>
       <ngx-avaluo *ngIf="bienSeleccionado !== ''" [bienSeleccionadoId]="bienSeleccionado"></ngx-avaluo>
       <ngx-registro-inmuebles *ngIf="bienSeleccionado ===''&& click === true"></ngx-registro-inmuebles>
-    </nb-card-body>
-  </nb-card>
+    </mat-card-content>
+  </mat-card>
 </div>
