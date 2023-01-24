@@ -104,11 +104,11 @@ export class GestionarElementosComponent implements OnInit {
   }
 
   private async initForms() {
-    const uvt = await this.loadUVT();
-    if (!uvt) {
-      this.pUpManager.showErrorAlert('No se pudo consultar el valor del UVT. Intente más tarde o contacte soporte');
-      return;
-    }
+    // const uvt = await this.loadUVT();
+    // if (!uvt) {
+    //   this.pUpManager.showErrorAlert('No se pudo consultar el valor del UVT. Intente más tarde o contacte soporte');
+    //   return;
+    // }
 
     await this.loadTiposBienHijos();
     await Promise.all([this.loadLists(), this.loadElementos()]);
@@ -312,7 +312,7 @@ export class GestionarElementosComponent implements OnInit {
 
   private checkPlacaSubgrupo(tipoBienPadre: number, valorUnitario: number): boolean {
     const placa = this.tiposBien.filter(tb => tb.TipoBienPadreId.Id === tipoBienPadre)
-      .find(tb_ => tb_.LimiteInferior <= (valorUnitario / this.UVT) && valorUnitario / this.UVT < tb_.LimiteSuperior);
+      .find(tb_ => tb_.LimiteInferior <= valorUnitario && valorUnitario < tb_.LimiteSuperior);
     return placa && placa.NecesitaPlaca;
   }
 
@@ -321,7 +321,7 @@ export class GestionarElementosComponent implements OnInit {
       return this.checkPlacaSubgrupo(tipoBienPadre, valorUnitario);
     } else {
       const placa = this.tiposBien.filter(tb => tb.Id === tipoBienHijo && tb.NecesitaPlaca)
-        .find(tb_ => tb_.LimiteInferior <= (valorUnitario / this.UVT) && valorUnitario / this.UVT < tb_.LimiteSuperior);
+        .find(tb_ => tb_.LimiteInferior <= valorUnitario && valorUnitario < tb_.LimiteSuperior);
       return placa && placa.NecesitaPlaca;
     }
   }
