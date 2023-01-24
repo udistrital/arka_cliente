@@ -178,7 +178,7 @@
   </mat-step>
   <mat-step [stepControl]="formTraslado.get('elementos')" label="{{'GLOBAL.elementos' | translate}}">
     <form [formGroup]="formTraslado">
-      <div class="container-tabla">
+      <div class="smart-table-container">
         <mat-table [dataSource]="dataSource" formArrayName="elementos" matSort>
           <ng-container matColumnDef="acciones">
             <th id="col-acciones" mat-header-cell *matHeaderCellDef class="acciones">

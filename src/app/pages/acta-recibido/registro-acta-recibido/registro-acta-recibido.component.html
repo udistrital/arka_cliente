@@ -1,15 +1,15 @@
-<nb-card>
-  <nb-card-header>
-    <h2>{{'GLOBAL.Acta_Recibido.RegistroActa.Title' | translate}}</h2>
-  </nb-card-header>
-  <nb-card-body>
+<mat-card>
+  <mat-card-title>
+    {{'GLOBAL.Acta_Recibido.RegistroActa.Title' | translate}}
+  </mat-card-title>
+  <mat-card-content>
     <form *ngIf="firstForm" [formGroup]="firstForm" #fform="ngForm" class="step-container">
       <mat-vertical-stepper [linear]="true" #stepper>
 
         <!-- Datos iniciales -->
         <mat-step label="{{'GLOBAL.Acta_Recibido.RegistroActa.DatosTitle' | translate}}" formGroupName="Formulario1">
-          <nb-card>
-            <nb-card-body class="bla">
+          <mat-card>
+            <mat-card-content>
 
               <div class="row" *ngIf="tipoActa === 'regular'">
                 <div class="form-group col-sm">
@@ -119,18 +119,18 @@
                 </div>
               </div>
 
-            </nb-card-body>
-            <nb-card-footer>
+            </mat-card-content>
+            <mat-card-actions>
               <button nbButton matStepperNext class="float-right" [disabled]="controlDatosBasicos.invalid">
                 {{'GLOBAL.Acta_Recibido.RegistroActa.SiguienteButton' | translate}}</button>
-            </nb-card-footer>
-          </nb-card>
+            </mat-card-actions>
+          </mat-card>
         </mat-step>
 
         <!-- Soportes -->
         <mat-step label="{{'GLOBAL.Acta_Recibido.RegistroActa.SoporteTitle' | translate}}" formArrayName="Formulario2">
-          <nb-card [nbSpinner]="cargarTab">
-            <nb-card-body style="padding-bottom: 0">
+          <mat-card [nbSpinner]="cargarTab">
+            <mat-card-content style="padding-bottom: 0">
               <mat-tab-group [(selectedIndex)]="selectedTab" animationDuration="200ms" (selectedIndexChange)="addTab($event)"
                 (animationDone)="tab()">
 
@@ -141,11 +141,10 @@
                     &nbsp; &nbsp;<em class="fas fa-window-close" (click)="removeTab(i)"
                       *ngIf="controlSoportes.value.length > 1"></em>
                   </ng-template>
-                  <div>
 
                     <!-- Datos básicos del Soporte -->
-                    <nb-card>
-                      <nb-card-body>
+                  <mat-card>
+                      <mat-card-content>
                         <div class="row">
                           <div class="col" *ngIf="tipoActa === 'regular'">
                             <div class="form-group col-sm">
@@ -173,8 +172,6 @@
                           <div class="col">
                             <div class="form-group col-sm">
                               <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Soporte' | translate}}</label>
-                              <nb-card>
-                                <nb-card-body>
                                   <div class="col-sm soporte">
                                     <div>
                                       <button nbButton type="button" [disabled]="fileDocumento[i]"
@@ -209,24 +206,20 @@
                                         {{'GLOBAL.Errores.ErrorRequerido' | translate}}</p>
                                     </div>
                                   </div>
-                                </nb-card-body>
-                              </nb-card>
                             </div>
                           </div>
 
                         </div>
-                      </nb-card-body>
-                    </nb-card>
-
-                  </div>
+                      </mat-card-content>
+                    </mat-card>
                 </mat-tab>
+
                 <mat-tab>
                   <ng-template mat-tab-label>
                     <em class="fas fa-plus-square fa-2x"  style="color: #991c1a;"></em>
                   </ng-template>
-                  <div>
-                    <nb-card>
-                      <nb-card-body>
+                    <mat-card>
+                      <mat-card-content>
                         <div class="row">
                           <div class="col" *ngIf="tipoActa === 'regular'">
                             <div class="form-group col-sm">
@@ -253,8 +246,6 @@
                           <div class="col">
                             <div class="form-group col-sm">
                               <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Soporte' | translate}}</label>
-                              <nb-card>
-                                <nb-card-body>
                                   <div class="col-sm soporte">
                                     <div>
                                       <button nbButton type="button" (click)="fileInputDocumento.click();">
@@ -274,19 +265,16 @@
                                     </div>
                                     <p></p>
                                   </div>
-                                </nb-card-body>
-                              </nb-card>
                             </div>
                           </div>
                         </div>
-                      </nb-card-body>
-                    </nb-card>
-                  </div>
+                      </mat-card-content>
+                    </mat-card>
                 </mat-tab>
               </mat-tab-group>
-            </nb-card-body>
+            </mat-card-content>
 
-            <nb-card-footer style="padding-top: 0">
+            <mat-card-actions>
               <div class="justify-content-center">
                 <button nbButton matStepperPrevious>
                   {{'GLOBAL.Acta_Recibido.RegistroActa.AnteriorButton' | translate}}
@@ -300,17 +288,17 @@
                   {{'GLOBAL.Acta_Recibido.RegistroActa.SiguienteButton' | translate}}
                 </button>
               </div>
-            </nb-card-footer>
-          </nb-card>
+            </mat-card-actions>
+          </mat-card>
         </mat-step>
 
         <!-- Elementos asociados al Soporte -->
         <mat-step *ngIf="tipoActa === 'especial'" label="{{'GLOBAL.Acta_Recibido.RegistroActa.ElementosTitle' | translate}}">
-          <nb-card>
+          <mat-card>
             <ngx-gestionar-elementos [Modo]="'agregar'" (DatosTotales)="eventoTotales($event)"
               (DatosEnviados)="eventoListaElementos($event)" (ElementosValidos)="setElementosValidos($event)">
             </ngx-gestionar-elementos>
-            <nb-card-footer>
+            <mat-card-actions>
               <div class="justify-content-center">
                 <button nbButton matStepperPrevious>
                   {{'GLOBAL.Acta_Recibido.RegistroActa.AnteriorButton' | translate}}
@@ -320,14 +308,14 @@
                   {{'GLOBAL.Acta_Recibido.RegistroActa.SiguienteButton' | translate}}
                 </button>
               </div>
-            </nb-card-footer>
-          </nb-card>
+            </mat-card-actions>
+          </mat-card>
         </mat-step>
 
         <!-- Resumen, Validación, Envío, Guardar -->
         <mat-step *ngIf="tipoActa === 'especial'" label="{{'GLOBAL.Acta_Recibido.RegistroActa.DatosAdicionales' | translate}}" formGroupName="Formulario3">
-          <nb-card>
-            <nb-card-body>
+          <mat-card>
+            <mat-card-content>
               <div class="form-group  col-lg-12" *ngIf="totales && DatosElementos && DatosElementos.length > 1">
                 <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Consolidado' | translate}}</label>
                 <table class="consolidado">
@@ -356,12 +344,12 @@
                 <p class="campo" *ngIf="controlDatosAdicionales.invalid">
                   {{'GLOBAL.placeholder' | translate}}</p>
               </div>
-            </nb-card-body>
-            <nb-card-footer>
+            </mat-card-content>
+            <mat-card-actions>
               <button nbButton matStepperPrevious>{{'GLOBAL.Acta_Recibido.RegistroActa.AnteriorButton' |
                 translate}}</button>
-            </nb-card-footer>
-          </nb-card>
+            </mat-card-actions>
+          </mat-card>
           <div class="botones">
             <button mat-icon-button type="button" *ngIf="errores && errores.size > 0" [nbPopover]="erroresTemplate"
               nbPopoverTrigger="hover">
@@ -376,18 +364,18 @@
 
       </mat-vertical-stepper>
     </form>
-  </nb-card-body>
-</nb-card>
+  </mat-card-content>
+</mat-card>
 
 <ng-template #erroresTemplate>
-  <nb-card>
-    <nb-card-body>
+  <mat-card>
+    <mat-card-content>
       {{ 'GLOBAL.Acta_Recibido.Errores.Mensaje' | translate }}
       <ul>
         <li *ngIf="errores.get('terceros')">{{ 'GLOBAL.Acta_Recibido.Errores.Terceros' | translate }}</li>
         <li *ngIf="errores.get('formularios')">{{ 'GLOBAL.Acta_Recibido.Errores.Formularios' | translate }}</li>
         <li *ngIf="errores.get('clases')">{{ 'GLOBAL.Acta_Recibido.Errores.Clases' | translate }}</li>
       </ul>
-    </nb-card-body>
-  </nb-card>
+    </mat-card-content>
+  </mat-card>
 </ng-template>

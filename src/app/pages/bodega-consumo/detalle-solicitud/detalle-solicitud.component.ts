@@ -147,16 +147,15 @@ export class DetalleSolicitudComponent implements OnInit {
 
   loadSolicitud(): void {
     this.bodegaHelper.getSolicitudBodega(this.salida_id.Id).subscribe(res => {
-      if (res.Elementos && res.Solicitud) {
-
+      if (res.Elementos) {
         res.Elementos.forEach(e => {
           e.SubgrupoId = e.ElementoCatalogoId.SubgrupoId;
         });
-
         this.source.load(res.Elementos);
-        this.Solicitud = res.Solicitud;
-        this.Detalle_Solicitud = JSON.parse(this.Solicitud.Detalle);
       }
+
+      this.Solicitud = res.Solicitud;
+      this.Detalle_Solicitud = JSON.parse(this.Solicitud.Detalle);
     });
   }
 
@@ -212,7 +211,7 @@ export class DetalleSolicitudComponent implements OnInit {
 
   calculoSalidas(Id): Promise<Array<any>> {
     return new Promise<Array<any>>(async (resolve) => {
-      this.BodegaConsumo.getElementosKardex(Id, -1, 0).subscribe((res: any) => {
+      this.BodegaConsumo.getElementosKardex(Id, -1, 0, 'asc').subscribe((res: any) => {
         const pila = [];
         const aux = JSON.parse(res[0].MovimientoId.Detalle);
         this.metodo = aux.Metodo_Valoracion;

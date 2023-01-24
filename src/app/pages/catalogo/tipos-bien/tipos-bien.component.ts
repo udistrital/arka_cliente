@@ -34,7 +34,7 @@ export class TiposBienComponent implements OnInit {
   }
 
   private loadTiposBien(): void {
-    const query = 'limit=-1&sortby=Activo&order=desc';
+    const query = 'limit=-1&sortby=Activo,TipoBienPadreId__Nombre,LimiteInferior&order=desc,desc,asc';
     this.catalogoHelper.getAllTiposBien(query).subscribe(res => {
       this.spinner = true;
       if (res && res.length !== 0) {

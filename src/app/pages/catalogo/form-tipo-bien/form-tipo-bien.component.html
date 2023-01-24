@@ -34,7 +34,7 @@
       <td>
         <mat-form-field class="full-width" appearance="outline">
           <mat-label>{{ 'GLOBAL.parametros.tiposBien.umbralInferior' | translate }}</mat-label>
-          <input matInput type="number" placeholder="" formControlName="LimiteInferior">
+          <input matInput type="text" placeholder="" formControlName="LimiteInferior" currencyMask>
           <mat-error *ngIf="form.get('LimiteInferior').hasError('required')">
             {{ 'GLOBAL.Errores.ErrorRequerido' | translate }}
           </mat-error>
@@ -46,7 +46,7 @@
       <td>
         <mat-form-field class="full-width" appearance="outline">
           <mat-label>{{ 'GLOBAL.parametros.tiposBien.umbralSuperior' | translate }}</mat-label>
-          <input matInput type="number" placeholder="" formControlName="LimiteSuperior">
+          <input matInput type="text" placeholder="" formControlName="LimiteSuperior" currencyMask>
           <mat-error *ngIf="form.get('LimiteSuperior').hasError('required')">
             {{ 'GLOBAL.Errores.ErrorRequerido' | translate }}
           </mat-error>

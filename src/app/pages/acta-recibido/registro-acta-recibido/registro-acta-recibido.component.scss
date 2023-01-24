@@ -20,10 +20,7 @@
   height: 400px;
   overflow: auto;
 }
-.bla {
-  position: relative;
-  z-index: 1;
-}
+
 .cell {
   height: 50px;
   width: 150px;
@@ -65,10 +62,6 @@ table.consolidado {
 .botones {
   display: flex;
   justify-content: flex-end;
-  padding: 0;
-  button {
-    margin-left: 1rem;
-  }
   .anterior {
     align-self: flex-start;
   }

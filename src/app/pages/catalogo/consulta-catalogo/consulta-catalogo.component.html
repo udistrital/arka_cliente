@@ -1,11 +1,13 @@
-<nb-card>
-  <nb-card-header>
-    <h2>{{'GLOBAL.consultar_catalogo' | translate}}</h2>
-  </nb-card-header>
-  <nb-card-body>
+<mat-card>
+  <mat-card-title>
+    {{'GLOBAL.consultar_catalogo' | translate}}
+  </mat-card-title>
+  <mat-card-subtitle>
+    {{'GLOBAL.catalogo.uno' | translate}}
+  </mat-card-subtitle>
+  <mat-card-content>
 
     <div [nbSpinner]="cargando_catalogos">
-    <h5>{{'GLOBAL.catalogo.uno' | translate}}</h5>
     <select class="form-control mb-4" (change)="onChange($event.target.value)">
       <option disabled selected>{{'GLOBAL.seleccionar' | translate}}...</option>
       <option *ngFor="let item of catalogos" value="{{ item.Id }}">{{ item.Nombre }}</option>
@@ -14,5 +16,5 @@
 
     <ngx-arbol *ngIf="catalogoId !== 0" [catalogoId]="catalogoId" [acciones]=true></ngx-arbol>
 
-  </nb-card-body>
-</nb-card>
+  </mat-card-content>
+</mat-card>

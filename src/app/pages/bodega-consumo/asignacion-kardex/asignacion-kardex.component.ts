@@ -45,7 +45,7 @@ export class AsignacionKardexComponent implements OnInit {
     this.ElementoCatalogo = event;
 
     this.modoKardexCargado = false;
-    this.BodegaConsumo.getElementosKardex(event.Id, -1, 0).subscribe((res: any) => {
+    this.BodegaConsumo.getElementosKardex(event.Id, -1, 0, 'asc').subscribe((res: any) => {
       if (res.length && res.some(el => el.MovimientoId.FormatoTipoMovimientoId.CodigoAbreviacion === 'AP_KDX')) {
           this.ElementosKardex = res;
           this.apertura = false;

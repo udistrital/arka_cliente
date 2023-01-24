@@ -1,9 +1,9 @@
 <div class="row">
-  <nb-card class="col">
-    <nb-card-header>
-      <h2>{{'GLOBAL.catalogo.uno' | translate}}</h2>
-    </nb-card-header>
-    <nb-card-body [nbSpinner]="cargando_catalogos">
+  <mat-card class="col">
+    <mat-card-title>
+      {{'GLOBAL.catalogo.uno' | translate}}
+    </mat-card-title>
+    <mat-card-content [nbSpinner]="cargando_catalogos">
         <select class="form-control mb-4" (change)="onChange($event.target.value)">
           <option disabled selected>{{'GLOBAL.seleccionar' | translate}}...</option>
           <option *ngFor="let item of catalogos" value="{{ item.Id }}">{{ item.Nombre }}</option>
@@ -14,37 +14,37 @@
             <em>{{'GLOBAL.catalogo.constrInfo' | translate}}</em>
           </p>
         </ngx-arbol>
-    </nb-card-body>
-    <nb-card-footer *ngIf="catalogoId !== undefined">
+    </mat-card-content>
+    <mat-card-actions *ngIf="catalogoId !== undefined">
         <button nbButton class="float-right" (click)="AgregarGrupo()">{{'GLOBAL.subgrupo.grupo.agregar' | translate}}</button>
-    </nb-card-footer>
-  </nb-card>
+    </mat-card-actions>
+  </mat-card>
 
   <div class="col" *ngIf="ver_formulario">
-    <nb-card *ngIf="modificarGrupo">
-      <nb-card-header>
+    <mat-card *ngIf="modificarGrupo">
+      <mat-card-title>
         {{'GLOBAL.subgrupo.grupo'+ stringHeader | translate}}
-      </nb-card-header>
+      </mat-card-title>
       <ngx-crud-grupo [catalogoId]="catalogoSeleccionado" [grupo]="subgrupo"
         (eventChange)="recargarCatalogo($event)"></ngx-crud-grupo>
-      <nb-card-footer>
+      <mat-card-actions>
         <button nbButton (click)="QuitarVista()">{{'GLOBAL.volver' | translate}}</button>
         <button nbButton *ngIf="subgrupo" class="float-right" (click)="AgregarSubgrupo()">{{'GLOBAL.subgrupo.segmento.agregar' |
           translate}}</button>
-      </nb-card-footer>
-    </nb-card>
+      </mat-card-actions>
+    </mat-card>
 
-    <nb-card *ngIf="modificarSubgrupo">
-      <nb-card-header>
-        {{'GLOBAL.subgrupo.'+nivel_actual+stringHeader | translate}}        
-      </nb-card-header>
+    <mat-card *ngIf="modificarSubgrupo">
+      <mat-card-title>
+        {{'GLOBAL.subgrupo.'+nivel_actual+stringHeader | translate}}
+      </mat-card-title>
       <ngx-crud-subgrupo *ngIf="modificarSubgrupo" [create]="crearSubgrupo" [subgrupo]="subgrupo" (eventChange)="recargarCatalogo($event)">
       </ngx-crud-subgrupo>
-      <nb-card-footer>
+      <mat-card-actions>
         <button nbButton (click)="QuitarVista()">{{'GLOBAL.volver' | translate}}</button>
         <button nbButton class="float-right" (click)="AgregarSubgrupo()"
           *ngIf="permitir_crear_subgrupo">{{'GLOBAL.subgrupo.'+nivel_hijo+'.agregar' | translate}}</button>
-      </nb-card-footer>
-    </nb-card>
+      </mat-card-actions>
+    </mat-card>
   </div>
 </div>
