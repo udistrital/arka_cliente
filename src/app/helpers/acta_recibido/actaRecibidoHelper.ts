@@ -156,6 +156,10 @@ export class ActaRecibidoHelper {
         );
     }
 
+    public getEndpointAllActas(user: string) {
+        return this.rqManager.getPath('ARKA_SERVICE') + 'acta_recibido/get_all_actas?u=' + user;
+    }
+
     public getAllActasRecibidoByEstado(estados: [string], limit: number, offset: number) {
         const querySt = estados.join();
         this.rqManager.setPath('ARKA_SERVICE');

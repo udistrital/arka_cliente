@@ -41,6 +41,10 @@ export class RequestManager {
     // console.log({resPath: this.path});
   }
 
+  getPath(service: string) {
+    return environment[service];
+  }
+
   /**
    * Perform a GET http request
    * @param endpoint service's end-point
