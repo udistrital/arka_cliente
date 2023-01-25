@@ -113,7 +113,6 @@ export class ConsultaActaRecibidoComponent implements OnInit {
         if (res.length < limit) {
           this.next = false;
         }
-        res = this.calculaRevisores(res);
         this.source.load(res);
       } else if (res.length === 0) {
         this.next = false;
@@ -147,27 +146,6 @@ export class ConsultaActaRecibidoComponent implements OnInit {
     this.cargarActas(this.limit, this.offset);
   }
 
-  // TODO: Lo ideal sería que el MID, así como retorna 'FechaVistoBueno'
-  // de una vez retorne la persona que dió dicho visto bueno
-  // (Si se llega a implementar, esta función sería innecesaria y se podría eliminar)
-  private calculaRevisores(actas) {
-
-    const estadosAceptada: EstadoActa_t[] = [
-      EstadoActa_t.Aceptada,
-      EstadoActa_t.AsociadoEntrada,
-    ];
-
-    const data = actas.map(acta => {
-      let aceptada = '';
-      if (estadosAceptada.some(est => acta.EstadoActaId.Id === est)) {
-        aceptada = acta.RevisorId;
-      }
-      acta.AceptadaPor = aceptada;
-      return acta;
-    });
-    return data;
-  }
-
   cargarCampos() {
     const f = {
       registrar: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.Title'),
@@ -187,7 +165,7 @@ export class ConsultaActaRecibidoComponent implements OnInit {
       },
       add: {
         addButtonContent: '<i class="fas" title="' + f.registrar + '" aria-label="' + f.registrar + '">' +
-        this.translate.instant('GLOBAL.crear_nuevo') + '</i>',
+          this.translate.instant('GLOBAL.crear_nuevo') + '</i>',
       },
       edit: {
         editButtonContent: '<i class="far fa-edit" title="' + f.editar + '" aria-label="' + f.editar + '"></i>',
@@ -257,7 +235,7 @@ export class ConsultaActaRecibidoComponent implements OnInit {
             },
           },
         },
-        UbicacionId: {
+        DependenciaId: {
           title: this.translate.instant('GLOBAL.dependencia'),
           valuePrepareFunction: (value: any) => {
             return value;
