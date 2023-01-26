@@ -146,10 +146,12 @@
           </mat-card-content>
         </mat-card>
 
-        <mat-card *ngIf="totales && elementos && elementos.length > 0">
-          <mat-card-title>{{'GLOBAL.Acta_Recibido.VerificacionActa.Consolidado' | translate}}</mat-card-title>
+        <mat-card formGroupName="Formulario3">
+          <mat-card-title>{{'GLOBAL.Acta_Recibido.RegistroActa.DatosAdicionales' | translate}}</mat-card-title>
           <mat-card-content>
-            <table class="consolidado">
+            <label *ngIf="totales && elementos?.length > 0">
+              {{'GLOBAL.Acta_Recibido.RegistroActa.Consolidado' | translate}}</label>
+            <table class="consolidado" *ngIf="totales && elementos?.length > 0">
               <tr>
                 <th id="c1" class="cell-3">{{'GLOBAL.Acta_Recibido.VerificacionActa.Subtotal' | translate}}</th>
                 <td class="cell-3">{{totales.Subtotal | currency}}</td>
@@ -163,18 +165,10 @@
                 <td class="cell-3">{{totales.ValorTotal | currency}}</td>
               </tr>
             </table>
-          </mat-card-content>
-        </mat-card>
-
-        <mat-card formGroupName="Formulario3">
-          <mat-card-title>{{'GLOBAL.Acta_Recibido.VerificacionActa.DatosAdicionales' | translate}}</mat-card-title>
-          <mat-card-content>
-            <div class="form-group  col-lg-12">
-              <label>{{'GLOBAL.Acta_Recibido.VerificacionActa.Observaciones' | translate}}</label>
-              <div class="input-group">
-                <textarea rows="5" class="form-control" placeholder="{{'GLOBAL.Acta_Recibido.VerificacionActa.Observaciones' | translate }}"
-                  formControlName="Datos_Adicionales"></textarea>
-              </div>
+            <label>{{'GLOBAL.Acta_Recibido.VerificacionActa.Observaciones' | translate}}</label>
+            <div class="input-group">
+              <textarea rows="5" class="form-control" placeholder="{{'GLOBAL.Acta_Recibido.VerificacionActa.Observaciones' | translate }}"
+                formControlName="Datos_Adicionales"></textarea>
             </div>
           </mat-card-content>
         </mat-card>

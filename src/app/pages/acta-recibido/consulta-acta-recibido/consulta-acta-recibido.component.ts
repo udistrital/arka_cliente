@@ -1,9 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
-import { LocalDataSource } from 'ng2-smart-table';
+import { ServerDataSource } from 'ng2-smart-table';
 import { NavigationEnd, Router } from '@angular/router';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
-import { ConsultaActaRecibido } from '../../../@core/data/models/acta_recibido/consulta_actas';
 import Swal from 'sweetalert2';
 import { ConfiguracionService } from '../../../@core/data/configuracion.service';
 import { UserService } from '../../../@core/data/users.service';
@@ -13,6 +12,8 @@ import { EstadoActa, EstadoActa_t } from '../../../@core/data/models/acta_recibi
 import { CommonActas } from '../shared';
 import { SmartTableService } from '../../../@core/data/SmartTableService';
 import { ListService } from '../../../@core/store/services/list.service';
+import { HttpClient } from '@angular/common/http';
+import { PopUpManager } from '../../../managers/popUpManager';
 
 const ORDEN_ESTADOS: EstadoActa_t[] = [
   EstadoActa_t.Registrada,
@@ -32,28 +33,16 @@ const ORDEN_ESTADOS: EstadoActa_t[] = [
 export class ConsultaActaRecibidoComponent implements OnInit {
 
   actaSeleccionada: string;
-
   editarActa: boolean = false;
   verActa: boolean = false;
   validarActa: boolean = false;
+  mostrar: boolean = true;
 
-  source: LocalDataSource;
-  actas: Array<ConsultaActaRecibido>;
-  Ubicaciones: any;
+  source: ServerDataSource;
+  settings: any;
+
   navigationSubscription;
 
-  prev = false;
-  next = true;
-  SizePage: string;
-  limit: number;
-  offset: number;
-
-  settings: any;
-  accion: string;
-  actas2: any;
-  mostrar: boolean;
-  recargar: boolean;
-  user: string;
   permisos: {
     Acta: Permiso,
     Elementos: Permiso,
@@ -61,6 +50,7 @@ export class ConsultaActaRecibidoComponent implements OnInit {
       Acta: Permiso.Ninguno,
       Elementos: Permiso.Ninguno,
     };
+
   constructor(
     private translate: TranslateService,
     private router: Router,
@@ -69,106 +59,40 @@ export class ConsultaActaRecibidoComponent implements OnInit {
     private userService: UserService,
     private tabla: SmartTableService,
     private listService: ListService,
+    private pUpManager: PopUpManager,
+    private http: HttpClient,
   ) {
     this.listService.findSedes();
     this.listService.findListsActa();
     this.listService.findUnidades();
-    this.limit = 10;
-    this.SizePage = '10';
-    this.offset = 0;
     this.navigationSubscription = this.router.events.subscribe((e: any) => {
       // If it is a NavigationEnd event re-initalise the component
       if (e instanceof NavigationEnd) {
-        this.initialiseInvites();
+        this.onBack(false);
       }
     });
 
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
-      this.cargarCampos();
+      this.setSettings();
     });
 
-    this.cargarCampos();
-    this.source = new LocalDataSource(); // create the source
-    this.actas = new Array<ConsultaActaRecibido>();
-
-  }
-  initialiseInvites() {
-    // Set default values and re-fetch any data you need.
-    // this.ngOnInit();
-    this.actaSeleccionada = '';
-    this.accion = '';
-    // console.log('1')
   }
 
   ngOnInit() {
-    // const estados = ['Registrada', 'Anulada'];
-    this.user = this.userService.getUserMail();
-    this.cargarActas(this.limit, this.offset);
-  }
-
-  cargarActas(limit, offset) {
-    this.mostrar = false;
-    this.actaRecibidoHelper.getActasRecibidoUsuario(this.user, limit, offset).subscribe((res: any) => {
-      if (Array.isArray(res) && res.length !== 0) {
-        if (res.length < limit) {
-          this.next = false;
-        }
-        res = this.calculaRevisores(res);
-        this.source.load(res);
-      } else if (res.length === 0) {
-        this.next = false;
-        this.offset -= limit;
-      }
-      this.mostrar = true;
+    this.setSettings();
+    const user = this.userService.getUserMail();
+    this.source = new ServerDataSource(this.http, {
+      endPoint: this.actaRecibidoHelper.getEndpointAllActas(user),
+      pagerLimitKey: 'limit',
+      pagerPageKey: 'offset',
+      filterFieldKey: '#field#',
+      sortFieldKey: 'sortby',
+      sortDirKey: 'order',
+      totalKey: 'x-total-count',
     });
   }
 
-  changeItemsPerPage() {
-    this.limit = Number(this.SizePage);
-    this.offset = 0;
-    this.cargarActas(this.limit, this.offset);
-  }
-
-  previousPage() {
-    if (this.prev) {
-      this.offset = this.offset - Number(this.SizePage);
-    }
-
-    if (this.offset === 0) {
-      this.prev = false;
-    }
-    this.cargarActas(this.limit, this.offset);
-    this.next = true;
-  }
-
-  nextPage() {
-    this.offset = this.offset + Number(this.SizePage);
-    this.prev = true;
-    this.cargarActas(this.limit, this.offset);
-  }
-
-  // TODO: Lo ideal sería que el MID, así como retorna 'FechaVistoBueno'
-  // de una vez retorne la persona que dió dicho visto bueno
-  // (Si se llega a implementar, esta función sería innecesaria y se podría eliminar)
-  private calculaRevisores(actas) {
-
-    const estadosAceptada: EstadoActa_t[] = [
-      EstadoActa_t.Aceptada,
-      EstadoActa_t.AsociadoEntrada,
-    ];
-
-    const data = actas.map(acta => {
-      let aceptada = '';
-      if (estadosAceptada.some(est => acta.EstadoActaId.Id === est)) {
-        aceptada = acta.RevisorId;
-      }
-      acta.AceptadaPor = aceptada;
-      return acta;
-    });
-    return data;
-  }
-
-  cargarCampos() {
+  private setSettings() {
     const f = {
       registrar: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.Title'),
       editar: this.translate.instant('GLOBAL.Acta_Recibido.EdicionActa.Title'),
@@ -176,7 +100,7 @@ export class ConsultaActaRecibidoComponent implements OnInit {
     };
     this.settings = {
       pager: {
-        display: false,
+        display: true,
       },
       noDataMessage: 'No se encontraron elementos asociados.',
       actions: {
@@ -187,7 +111,7 @@ export class ConsultaActaRecibidoComponent implements OnInit {
       },
       add: {
         addButtonContent: '<i class="fas" title="' + f.registrar + '" aria-label="' + f.registrar + '">' +
-        this.translate.instant('GLOBAL.crear_nuevo') + '</i>',
+          this.translate.instant('GLOBAL.crear_nuevo') + '</i>',
       },
       edit: {
         editButtonContent: '<i class="far fa-edit" title="' + f.editar + '" aria-label="' + f.editar + '"></i>',
@@ -214,36 +138,27 @@ export class ConsultaActaRecibidoComponent implements OnInit {
           width: '70px',
           ...this.tabla.getSettingsDate(),
         },
+        FechaVistoBueno: {
+          title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.FechaVistoBuenoHeader'),
+          width: '70px',
+          ...this.tabla.getSettingsDate_(),
+        },
+        PersonaAsignada: {
+          title: this.translate.instant('GLOBAL.Acta_Recibido.ContratistaAsignado'),
+        },
         RevisorId: {
           title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.ModificadaPor'),
           valuePrepareFunction: (value: any) => {
             return value;
           },
         },
-        FechaVistoBueno: {
-          title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.FechaVistoBuenoHeader'),
-          width: '70px',
-          ...this.tabla.getSettingsDate_(),
-        },
         AceptadaPor: {
           title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.AceptadaPor'),
-          valuePrepareFunction: (value: any) => {
-            return value;
-          },
-        },
-        PersonaAsignada: {
-          title: this.translate.instant('GLOBAL.Acta_Recibido.ContratistaAsignado'),
-          valuePrepareFunction: (value: any) => {
-            return value;
-          },
         },
         EstadoActaId: {
           title: this.translate.instant('GLOBAL.estado'),
-          valuePrepareFunction: (value: EstadoActa) => {
-            return this.traducirEstado(value.Id);
-          },
-          filterFunction: (actual: EstadoActa, requerido: string) => {
-            return actual.CodigoAbreviacion === requerido;
+          valuePrepareFunction: (value) => {
+            return this.traducirEstado(value);
           },
           filter: {
             type: 'list',
@@ -252,22 +167,16 @@ export class ConsultaActaRecibidoComponent implements OnInit {
               list: ORDEN_ESTADOS.map((estado: EstadoActa_t) => {
                 const value = EstadoActa_t[estado];
                 const title = this.traducirEstado(estado);
-                return {value, title};
+                return { value, title };
               }),
             },
           },
         },
-        UbicacionId: {
+        DependenciaId: {
           title: this.translate.instant('GLOBAL.dependencia'),
-          valuePrepareFunction: (value: any) => {
-            return value;
-          },
         },
         Observaciones: {
           title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.ObservacionesHeader'),
-          valuePrepareFunction: (value: any) => {
-            return value;
-          },
         },
       },
     };
@@ -290,22 +199,9 @@ export class ConsultaActaRecibidoComponent implements OnInit {
       // 3. Anular acta
       this.actaRecibidoHelper.putTransaccionActa(Transaccion_Acta, id)
         .subscribe(res => {
-          if (res !== null) {
-            (Swal as any).fire({
-              type: 'success',
-              title: this.translate.instant('GLOBAL.Acta_Recibido.AnuladaOkTitulo',
-                { ACTA: id }),
-              text: this.translate.instant('GLOBAL.Acta_Recibido.AnuladaOkMsg',
-                { ACTA: id }),
-                showConfirmButton: false,
-                timer: 2000,
-            });
-
-            // Se usa una redirección "dummy", intermedia. Ver
-            // https://stackoverflow.com/a/49509706/3180052
-            this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
-              this.router.navigateByUrl('/pages/acta_recibido/consulta_acta_recibido');
-            });
+          if (res) {
+            this.pUpManager.showAlertWithOptions(this.optionsAnular(id));
+            this.source.refresh();
             this.mostrar = true;
           }
         });
@@ -317,7 +213,7 @@ export class ConsultaActaRecibidoComponent implements OnInit {
     let editarActa = false;
     let validarActa: boolean;
 
-    const estId = event.data.EstadoActaId.Id;
+    const estId = event.data.EstadoActaId;
     switch (estId) {
       case EstadoActa_t.EnVerificacion:
       case EstadoActa_t.Registrada:
@@ -325,24 +221,20 @@ export class ConsultaActaRecibidoComponent implements OnInit {
       case EstadoActa_t.EnModificacion:
       case EstadoActa_t.Aceptada:
         this.actaSeleccionada = `${event.data.Id}`;
-        this.accion = '';
         editarActa = true;
         break;
 
       default: {
-        (Swal as any).fire({
-          type: 'error',
-          title: this.translate.instant('GLOBAL.error'),
-          text: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.EdicionBloqueada', {
-            NUM: event.data.Id,
-            STATE: event.data.Estado,
-          }),
+        const options = this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.EdicionBloqueada', {
+          NUM: event.data.Id,
+          STATE: this.traducirEstado(event.data.EstadoActaId),
         });
+        this.pUpManager.showErrorAlert(options);
         break;
       }
     }
 
-    validarActa = event.data.EstadoActaId.Id === EstadoActa_t.EnVerificacion;
+    validarActa = event.data.EstadoActaId === EstadoActa_t.EnVerificacion;
     this.editarActa = editarActa && !validarActa;
     this.validarActa = validarActa;
     // console.log({'this.estadoActaSeleccionada':this.estadoActaSeleccionada});
@@ -356,80 +248,85 @@ export class ConsultaActaRecibidoComponent implements OnInit {
   seleccionarActa(event): void {
     // console.log({event});
     this.actaSeleccionada = `${event.data.Id}`;
-    this.accion = 'Ver';
     this.verActa = true;
     this.router.navigate(['/pages/acta_recibido/consulta_acta_recibido/' + event.data.Id]);
   }
 
   onDelete(event): void {
-    switch (event.data.EstadoActaId.Id) {
+    switch (event.data.EstadoActaId) {
 
       case EstadoActa_t.EnVerificacion:
       case EstadoActa_t.Registrada:
       case EstadoActa_t.EnElaboracion:
       case EstadoActa_t.EnModificacion:
       case EstadoActa_t.Aceptada:
-        (Swal as any).fire({
-          title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.DialogoAnularTitulo', { 'ACTA': event.data.Id }),
-          text: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.DialogoAnularMsg', { 'ACTA': event.data.Id }),
-          type: 'warning',
-          showCancelButton: true,
-          confirmButtonColor: '#3085d6',
-          cancelButtonColor: '#d33',
-          confirmButtonText: 'Anular Acta',
-          cancelButtonText: 'Cancelar',
-        }).then((result) => {
-          if (result.value) {
-            (Swal as any).mixin({
-              input: 'text',
-              confirmButtonText: 'Anular',
-              showCancelButton: true,
-              progressSteps: ['1'],
-            }).queue([
-              {
-                title: 'Observaciones',
-                text: 'Inserte la razon de la anulación',
-              },
-            ]).then((result2) => {
-              if (result2.value) {
-                this.anularActa(event.data.Id, result2.value);
-              }
-            });
-          }
-        });
-        this.ngOnInit();
+        this.pUpManager.showAlertWithOptions(this.optionsConfrmAnular(event.data))
+          .then((result) => {
+            if (result.value) {
+              (Swal as any).mixin({
+                input: 'text',
+                confirmButtonText: 'Anular',
+                showCancelButton: true,
+                progressSteps: ['1'],
+              }).queue([
+                {
+                  title: 'Observaciones',
+                  text: 'Inserte la razon de la anulación',
+                },
+              ]).then((result2) => {
+                if (result2.value) {
+                  this.anularActa(event.data.Id, result2.value);
+                }
+              });
+            }
+          });
         break;
 
       default:
-        (Swal as any).fire({
-          title: this.translate.instant('GLOBAL.error'),
-          text: this.translate.instant('GLOBAL.Acta_Recibido.ErrorAnularMsg', {
-            ACTA: event.data.Id,
-            ESTADO: this.traducirEstado(event.data.EstadoActaId.Id),
-          }),
-          type: 'error',
-          showCancelButton: false,
-          confirmButtonColor: '#3085d6',
-          confirmButtonText: 'Ok',
+        const options = this.translate.instant('GLOBAL.Acta_Recibido.ErrorAnularMsg', {
+          ACTA: event.data.Id,
+          ESTADO: this.traducirEstado(event.data.EstadoActaId),
         });
+        this.pUpManager.showErrorAlert(options);
         break;
 
     }
   }
 
-  onBack() {
-    if (this.recargar) {
-      this.recargar = false;
-      this.cargarActas(this.limit, this.offset);
+  onBack(refresh: boolean) {
+    if (refresh) {
+      this.source.refresh();
     }
-    this.initialiseInvites();
+    this.actaSeleccionada = '';
     this.editarActa = false;
     this.verActa = false;
     this.validarActa = false;
-    // console.log('1')
   }
 
   traducirEstado(estado: EstadoActa_t): string {
     return this.translate.instant(CommonActas.i18nEstado(estado));
   }
+
+  private optionsConfrmAnular(data: any) {
+    return {
+      title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.DialogoAnularTitulo', { 'ACTA': data.Id }),
+      text: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.DialogoAnularMsg', { 'ACTA': data.Id }),
+      type: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Anular Acta',
+      cancelButtonText: 'Cancelar',
+    };
+  }
+
+  private optionsAnular(id) {
+    const base = 'GLOBAL.Acta_Recibido.AnuladaOk';
+    return {
+      type: 'success',
+      title: this.translate.instant(base + 'Titulo', { ACTA: id }),
+      text: this.translate.instant(base + 'Msg', { ACTA: id }),
+    };
+  }
+
 }

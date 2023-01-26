@@ -67,7 +67,7 @@ export class ListaMovimientosComponent implements OnInit {
         this.spinner = 'Cargando Actas';
         this.title = this.translate.instant('GLOBAL.ajustes.registrar.accion');
         this.subtitle = this.translate.instant('GLOBAL.ajuste-auto.sugActa');
-        this.actaRecibidoHelper.getAllActasRecibidoByEstado(['Asociada a Entrada'], -1, 0).subscribe(res_ => {
+        this.actaRecibidoHelper.getAllActasRecibidoByEstado(['AsociadoEntrada'], -1, 0).subscribe(res_ => {
           this.actas.load(res_);
           this.spinner = '';
           this.crear = true;
@@ -258,7 +258,7 @@ export class ListaMovimientosComponent implements OnInit {
         RevisorId: {
           title: this.translate.instant('GLOBAL.revisor'),
         },
-        UbicacionId: {
+        DependenciaId: {
           title: this.translate.instant('GLOBAL.ubicacion'),
           valuePrepareFunction: (value: any) => {
             return value;
