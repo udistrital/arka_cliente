@@ -258,7 +258,7 @@ export class ListaMovimientosComponent implements OnInit {
         RevisorId: {
           title: this.translate.instant('GLOBAL.revisor'),
         },
-        UbicacionId: {
+        DependenciaId: {
           title: this.translate.instant('GLOBAL.ubicacion'),
           valuePrepareFunction: (value: any) => {
             return value;

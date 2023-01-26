@@ -133,7 +133,7 @@ export class RegistroComponent implements OnInit {
             return value;
           },
         },
-        UbicacionId: {
+        DependenciaId: {
           title: this.translate.instant('GLOBAL.dependencia'),
           valuePrepareFunction: (value: any) => {
             return value;
