@@ -37,7 +37,6 @@ export class AprovechamientosComponent implements OnInit {
 
   @ViewChild('paginator', {static: true}) paginator: MatPaginator;
 
-  @Input() actaRecibidoId: number;
   @Output() data: EventEmitter<TransaccionEntrada> = new EventEmitter<TransaccionEntrada>();
 
   constructor(
@@ -144,7 +143,6 @@ export class AprovechamientosComponent implements OnInit {
   // Método para enviar registro
   onSubmit() {
     const detalle = {
-      acta_recibido_id: +this.actaRecibidoId,
       elementos: this.elementosForm.get('elementos').value.map(el => el.Id),
       supervisor: this.supervisorForm.value.supervisorCtrl.Id,
     };

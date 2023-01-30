@@ -195,35 +195,6 @@
     </div>
   </mat-step>
 
-  <!-- FACTURA -->
-  <mat-step [stepControl]="facturaForm" label="{{'GLOBAL.factura' | translate}}">
-    <form [formGroup]="facturaForm" class="step-container">
-      <h5>{{'GLOBAL.factura' | translate}}</h5>
-      <div class="row">
-        <div class="form-group col-sm">
-          <label>{{'GLOBAL.numero_factura' | translate}}</label>
-          <div class="input-group">
-            <select class="form-control" type="text" formControlName="facturaCtrl" (change)="changeSelectSoporte()">
-              <option value="" selected>--{{'GLOBAL.seleccionar' | translate}}--</option>
-              <option *ngFor="let item of soportes" value="{{ item.Id }}">{{ item.Consecutivo }}</option>
-            </select>
-          </div>
-        </div>
-        <div class="form-group col-sm">
-          <label>{{'GLOBAL.fecha_factura' | translate}}</label>
-          <div class="input-group">
-            <input nbInput type="text" shape="semi-round" placeholder="{{'GLOBAL.fecha_factura' | translate}}"
-              class="form-control" value="{{ fechaFactura | date:'dd/MM/yyy' }}" [readonly]="true">
-          </div>
-        </div>
-      </div>
-      <div class="botones-stepper-middle">
-        <button mat-flat-button color="primary" matStepperPrevious>{{'GLOBAL.anterior' | translate}}</button>
-        <button mat-flat-button color="primary" matStepperNext>{{'GLOBAL.siguiente' | translate}}</button>
-      </div>
-    </form>
-  </mat-step>
-
   <!-- OBSERVACIONES -->
   <mat-step [stepControl]="observacionForm" label="{{'GLOBAL.observaciones' | translate}}">
     <form [formGroup]="observacionForm" class="step-container">

@@ -16,14 +16,15 @@ import { SmartTableService } from '../../../@core/data/SmartTableService';
 export class RegistroComponent implements OnInit {
 
   // Datos Tabla
-  source: LocalDataSource;
+  source: LocalDataSource = new LocalDataSource();
   settings: any;
-  tiposDeEntradas: any;
+  tiposDeEntradas: any[];
   // Acta de recibido
-  actaSeleccionada: string;
-  opcionEntrada: string = '';
+  actaSeleccionada: string = '';
+  opcionEntrada: any = '';
   title: string;
   spinner: string;
+  step: string; // = 'acta' || 'tipo' || 'formulario';
 
   @Input() ActaParaEditar: any;
   @Input() EntradaId: number;
@@ -34,40 +35,47 @@ export class RegistroComponent implements OnInit {
     private entradasHelper: EntradaHelper,
     private pUpManager: PopUpManager,
     private translate: TranslateService,
-    private tabla: SmartTableService) {
-    this.source = new LocalDataSource();
-    this.actaSeleccionada = '';
+    private tabla: SmartTableService,
+  ) {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { });
   }
 
   ngOnInit() {
-    if (this.EntradaId && this.ActaParaEditar) {
-      this.title = this.translate.instant('GLOBAL.movimientos.entradas.editarTtl');
-      this.cargarTiposDeEntradas();
-    } else {
-      this.title = this.translate.instant('GLOBAL.registrar_entrada');
-      this.loadTablaSettings();
-      this.loadActas();
-    }
+    this.title = 'GLOBAL.';
     this.actaSeleccionada = this.EntradaId && this.ActaParaEditar ? this.ActaParaEditar : '';
+    this.loadTablaSettings();
+    if (this.EntradaId) {
+      this.title += 'movimientos.entradas.editarTtl';
+      this.cargarActa(this.ActaParaEditar);
+    } else {
+      this.title += 'registrar_entrada';
+      this.cargarTiposDeEntradas();
+    }
+
   }
 
-  onVolver() {
-    const update = this.EntradaId && this.ActaParaEditar;
-    if (update && !this.opcionEntrada) {
-      this.volver.emit(false);
-    } else if (update) {
-      this.opcionEntrada = '';
-    } else if (!update && this.opcionEntrada) {
-      this.opcionEntrada = '';
-    } else if (!update && this.actaSeleccionada) {
-      this.actaSeleccionada = '';
+  public onVolver() {
+    if (!this.EntradaId) {
+      if (this.step === 'formulario' && this.actaSeleccionada) {
+        this.actaSeleccionada = '';
+        this.step = 'acta';
+      } else if ((this.step === 'formulario' && !this.actaSeleccionada) || this.step === 'acta') {
+        this.opcionEntrada = '';
+        this.step = 'tipo';
+      } else if (this.step === 'tipo') {
+        this.volver.emit(false);
+      }
     } else {
-      this.volver.emit(false);
+      if (this.step === 'formulario') {
+        this.opcionEntrada = '';
+        this.step = 'tipo';
+      } else if (this.step === 'tipo') {
+        this.volver.emit(false);
+      }
     }
   }
 
-  onSubmit(entrada: TransaccionEntrada) {
+  public onSubmit(entrada: TransaccionEntrada) {
     if (entrada.Detalle) {
       this.spinner = this.EntradaId ? 'Actualizando Entrada' : 'Registrando Entrada';
       entrada.Id = this.EntradaId ? this.EntradaId : 0;
@@ -86,8 +94,23 @@ export class RegistroComponent implements OnInit {
     }
   }
 
+  private cargarActa(acta) {
+    if (!acta) {
+      this.cargarTiposDeEntradas();
+      return;
+    }
+
+    this.spinner = 'Cargando detalle del acta';
+    this.actaRecibidoHelper.getAllActaRecibido('query=Id:' + acta).subscribe(res => {
+      this.spinner = '';
+      if (res && res.length) {
+        this.cargarTiposDeEntradas(res[0].TipoActaId.Id);
+      }
+    });
+  }
+
   private getOptionsRegistro(consecutivo: string) {
-    const modo = this.EntradaId && this.ActaParaEditar ? 'update' : 'registro';
+    const modo = this.EntradaId ? 'update' : 'registro';
     return {
       type: 'success',
       title: this.translate.instant('GLOBAL.movimientos.entradas.' + modo + 'TtlOk', { CONSECUTIVO: consecutivo }),
@@ -95,7 +118,7 @@ export class RegistroComponent implements OnInit {
     };
   }
 
-  loadTablaSettings() {
+  private loadTablaSettings() {
     this.settings = {
       hideSubHeader: false,
       noDataMessage: this.translate.instant('GLOBAL.no_data_actas_entrada'),
@@ -115,81 +138,65 @@ export class RegistroComponent implements OnInit {
       columns: {
         Id: {
           title: this.translate.instant('GLOBAL.consecutivo'),
-          width: '70',
         },
         FechaCreacion: {
           title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.FechaCreacionHeader'),
-          width: '70',
           ...this.tabla.getSettingsDate(),
         },
         FechaVistoBueno: {
           title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.FechaVistoBuenoHeader'),
-          width: '70',
           ...this.tabla.getSettingsDate(),
         },
         RevisorId: {
           title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.ModificadaPor'),
-          valuePrepareFunction: (value: any) => {
-            return value;
-          },
         },
         DependenciaId: {
           title: this.translate.instant('GLOBAL.dependencia'),
-          valuePrepareFunction: (value: any) => {
-            return value;
-          },
         },
         PersonaAsignada: {
           title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.AceptadaPor'),
-          valuePrepareFunction: (value: any) => {
-            return value;
-          },
         },
         Observaciones: {
           title: this.translate.instant('GLOBAL.observaciones'),
-          valuePrepareFunction: (value: any) => {
-            return value.toUpperCase();
-          },
         },
       },
     };
   }
 
-  loadActas(): void {
+  public loadActas(): void {
+    if (this.opcionEntrada.NumeroOrden === 3 || this.actaSeleccionada) {
+      this.step = 'formulario';
+      return;
+    }
+
+    this.step = 'acta';
     this.spinner = 'Cargando actas aceptadas';
-    this.actaRecibidoHelper.getAllActasRecibidoByEstado(['Aceptada'], -1, 0).subscribe(res => {
+    this.actaRecibidoHelper.getAllActasRecibido_('Aceptada', this.opcionEntrada.NumeroOrden, -1, 0).subscribe(res => {
       this.spinner = '';
       if (res && res.length) {
         this.source.load(res);
-        this.spinner = '';
       }
     });
   }
 
-  onCustom(event) {
-    this.spinner = 'Cargando tipos de entradas';
-    this.actaRecibidoHelper.getTransaccionActa(event.data.Id, true).subscribe(res => {
-      res.ActaRecibido.TipoActaId.Id === 1 ?
-        this.entradasHelper.getTiposEntradaByOrden(1).subscribe(res_ => {
-          this.tiposDeEntradas = res_;
-        }) : this.entradasHelper.getTiposEntradaByOrden(2).subscribe(res__ => {
-          this.tiposDeEntradas = res__;
-        });
-      this.actaSeleccionada = `${event.data.Id}`;
-      this.spinner = '';
-    });
+  public onActa(event) {
+    this.step = 'formulario';
+    this.actaSeleccionada = `${event.data.Id}`;
   }
 
-  cargarTiposDeEntradas() {
+  private cargarTiposDeEntradas(tipo?: number) {
+    this.step = 'tipo';
     this.spinner = 'Cargando tipos de entradas';
-    this.actaRecibidoHelper.getTransaccionActa(this.ActaParaEditar, true).subscribe(res => {
-      res.ActaRecibido.TipoActaId.Id === 1 ?
-        this.entradasHelper.getTiposEntradaByOrden(1).subscribe(res_ => {
-          this.tiposDeEntradas = res_;
-        }) : this.entradasHelper.getTiposEntradaByOrden(2).subscribe(res__ => {
-          this.tiposDeEntradas = res__;
-        });
+    let query = 'limit=-1&sortby=Nombre&order=asc&query=CodigoAbreviacion__startswith:ENT_,NumeroOrden';
+    if (tipo) {
+      query += ':' + tipo;
+    } else {
+      query += '__lte:3';
+    }
+
+    this.entradasHelper.getAllFormatoTipoMovimiento(query).subscribe(res_ => {
       this.spinner = '';
+      this.tiposDeEntradas = res_;
     });
   }
 }

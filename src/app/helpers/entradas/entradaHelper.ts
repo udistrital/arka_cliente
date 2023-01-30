@@ -247,18 +247,7 @@ export class EntradaHelper {
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
      */
     public getFormatoEntradaByName(nombre) {
-        this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
-        return this.rqManager.get('formato_tipo_movimiento?query=Nombre:' + nombre + '&limit=-1').pipe(
-            map(
-                (res) => {
-                    if (res === 'error') {
-                        this.pUpManager.showErrorAlert('No se pudo consultar el contrato contratos');
-                        return undefined;
-                    }
-                    return res;
-                },
-            ),
-        );
+        return this.getAllFormatoTipoMovimiento('limit=-1&query=Nombre:' + nombre);
     }
 
     /**
@@ -304,18 +293,7 @@ export class EntradaHelper {
     }
 
     public getMovimientosArka() {
-        this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
-        return this.rqManager.get('formato_tipo_movimiento?limit=-1&sortby=Id&order=asc').pipe(
-            map(
-                (res) => {
-                    if (res === 'error') {
-                        this.pUpManager.showErrorAlert('No se pudo consultar los tipos de movimiento');
-                        return undefined;
-                    }
-                    return res;
-                },
-            ),
-        );
+        return this.getAllFormatoTipoMovimiento('limit=-1&sortby=Id&order=asc');
     }
 
     public putMovimientoArka(TipoMovimiento) {
@@ -351,8 +329,12 @@ export class EntradaHelper {
     }
 
     public getFormatoEntrada() {
+        return this.getAllFormatoTipoMovimiento('query=NumeroOrden__lte:3&sortby=Id&order=asc&limit=-1');
+    }
+
+    public getAllFormatoTipoMovimiento(payload: string) {
         this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
-        return this.rqManager.get('formato_tipo_movimiento?query=NumeroOrden__lte:2&sortby=Id&order=asc&limit=-1').pipe(
+        return this.rqManager.get('formato_tipo_movimiento?' + payload).pipe(
             map(
                 (res) => {
                     if (res === 'error') {
@@ -363,22 +345,6 @@ export class EntradaHelper {
                 },
             ),
         );
-    }
-
-    public getTiposEntradaByOrden(NumeroOrden) {
-        this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
-        return this.rqManager.get('formato_tipo_movimiento?query=Activo:true,NumeroOrden:' +
-            NumeroOrden + '&fields=CodigoAbreviacion&sortby=Nombre&order=asc&limit=-1').pipe(
-                map(
-                    (res) => {
-                        if (res === 'error') {
-                            this.pUpManager.showErrorAlert('No se pudo consultar el contrato contratos');
-                            return undefined;
-                        }
-                        return res;
-                    },
-                ),
-            );
     }
 
     public getDivisas() {
