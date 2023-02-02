@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { AbstractControl, FormArray, FormBuilder, FormGroup, ValidationErrors, ValidatorFn } from '@angular/forms';
+import { AbstractControl, FormArray, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { TranslateService } from '@ngx-translate/core';
@@ -35,6 +35,17 @@ export class CommonElementos {
         };
     }
 
+    private validateObjectCompleter(): ValidatorFn {
+        return (control: AbstractControl): ValidationErrors | null => {
+            const valor = control.value;
+            const checkStringLength = typeof (valor) === 'string' && valor.length && valor.length < 4;
+            const checkInvalidString = typeof (valor) === 'string' && valor.length > 3;
+            const checkInvalidObject = typeof (valor) === 'object' && valor && !valor.Id;
+            return (checkStringLength) ? { errorLongitudMinima: true } :
+                (checkInvalidString || checkInvalidObject) ? { noSeleccionado: true } : null;
+        };
+    }
+
     public loadElementos(text: any) {
         const queryOptions$ = !text.Placa && text.length > 3 ?
             this.actaRecibidoHelper.getAllElemento('sortby=Placa&order=desc&limit=-1&fields=Id,Placa&query=Placa__icontains:' + text) :
@@ -48,6 +59,31 @@ export class CommonElementos {
 
     public muestraPlaca(field): string {
         return field && field.Placa ? field.Placa : '';
+    }
+
+    public getDetalleAprovechado(form: FormGroup, index: number, paginator: MatPaginator) {
+        const Id = this.getFormArrayAtIndex(form, this.getActualIndex(index, paginator)).value.aprovechado.Id;
+        this.patchFormArrayAtIndex(form, index, { aprovechado: '' });
+
+        this.movimientos.getHistorialElemento(Id, true, true, false)
+            .subscribe(res => {
+                if (!this.checkSalidaHistorial(res)) {
+                    this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.bajas.errorPlaca'));
+                    return;
+                }
+
+                // if (this.checkBajaHistorial(res)) {
+                //     this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.entradas.errores.elementoConBaja'));
+                //     return;
+                // }
+
+                // if (this.checkEntradaHistorial(res, 'ENT_PPA')) {
+                //     this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.entradas.errores.elementoAprAprovechado'));
+                //     return;
+                // }
+
+                // this.patchFormArrayAtIndex(form, index, {aprovechado: res.Elemento.Id});
+            });
     }
 
     public getDetalleElemento(form: FormGroup, index: number, paginator: MatPaginator, tipoEntrada: string) {
@@ -151,9 +187,73 @@ export class CommonElementos {
         });
     }
 
-    get elemento(): FormGroup {
+    public formElementos_(tipo: string): FormGroup {
+        let form = this.elementoGenerico;
+        if (tipo === 'ENT_RP') {
+            return this.fb.group(form);
+        }
+
+        form = { ...form, ...this.elementoMejorado };
+        if (tipo === 'ENT_AM') {
+            return this.fb.group(form);
+        }
+
+        form = { ...form, ...this.elementoAprovechado };
+        return this.fb.group(form);
+    }
+
+    get elementoAprovechado(): any {
+        const form = {
+            aprovechado: [
+                {
+                    value: '',
+                    disabled: false,
+                },
+                {
+                    validators: [Validators.required, this.validateObjectCompleter()],
+                },
+            ],
+        };
+        return form;
+    }
+
+    get elementoMejorado(): any {
+        const disabled = false;
+        const form = {
+            valorLibros: [
+                {
+                    value: 0,
+                    disabled,
+                },
+                {
+                    validators: [Validators.min(0.01)],
+                },
+            ],
+            vidaUtil: [
+                {
+                    value: 0,
+                    disabled,
+                },
+                {
+                    validators: [Validators.min(0), Validators.max(100)],
+                },
+            ],
+            valorResidual: [
+                {
+                    value: 0,
+                    disabled,
+                },
+                {
+                    validators: [Validators.min(0), Validators.max(100)],
+                },
+            ],
+        };
+        return form;
+    }
+
+    get elementoGenerico(): any {
         const disabled = true;
-        const form = this.fb.group({
+        const form = {
             Id: [0],
             Placa: [
                 {
@@ -191,12 +291,24 @@ export class CommonElementos {
                     disabled,
                 },
             ],
-        });
+        };
         return form;
     }
 
+    get columnsAcciones(): string[] {
+        return ['acciones', 'placa'];
+    }
+
     get columnsElementos(): string[] {
-        return ['acciones', 'placa', 'entrada', 'fechaEntrada', 'salida', 'fechaSalida', 'valor'];
+        return ['entrada', 'fechaEntrada', 'salida', 'fechaSalida', 'valor'];
+    }
+
+    get columnsMejorados(): string[] {
+        return ['valorLibros', 'vidaUtil', 'valorResidual'];
+    }
+
+    get columnsAprovechados(): string[] {
+        return ['aprovechado'];
     }
 
 }

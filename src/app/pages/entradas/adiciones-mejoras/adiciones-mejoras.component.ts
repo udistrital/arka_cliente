@@ -50,7 +50,9 @@ export class AdicionesMejorasComponent implements OnInit {
     private pUpManager: PopUpManager,
     private translate: TranslateService,
   ) {
-    this.displayedColumns = this.commonElementos.columnsElementos;
+    this.displayedColumns = this.commonElementos.columnsAcciones.concat(
+      this.commonElementos.columnsMejorados.concat(
+        this.commonElementos.columnsElementos));
   }
 
   ngOnInit() {
@@ -71,7 +73,7 @@ export class AdicionesMejorasComponent implements OnInit {
   }
 
   addElemento() {
-    const form = this.commonElementos.elemento;
+    const form = this.commonElementos.formElementos_('ENT_AM');
     (this.elementosForm.get('elementos') as FormArray).push(form);
     this.dataSource.data = this.dataSource.data.concat({});
     this.cambiosPlaca(form.get('Placa').valueChanges);
@@ -115,7 +117,12 @@ export class AdicionesMejorasComponent implements OnInit {
   // Método para enviar registro
   onSubmit() {
     const detalle = {
-      elementos: this.elementosForm.get('elementos').value.map(el => el.Id),
+      elementos: this.elementosForm.get('elementos').value.map(el => ({
+        Id: el.Id,
+        ValorLibros: el.valorLibros,
+        ValorResidual: el.valorResidual,
+        VidaUtil: el.vidaUtil,
+      })),
       contrato_id: +this.contratoEspecifico.NumeroContratoSuscrito,
       vigencia_contrato: this.contratoForm.value.vigenciaCtrl,
     };
