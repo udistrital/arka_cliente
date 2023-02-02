@@ -851,6 +851,8 @@
     "placeholder_parametro": "Parameter",
     "valor": "Value",
     "placeholder_valor": "Value",
+    "valorLibros": "Valor Libros",
+    "valorInicial": "Valor Inicial",
     "notificacion_configuracion_perfil": "notificacion_configuracion_perfil",
     "placeholder_notificacion_configuracion_perfil": "notificacion_configuracion_perfil",
     "menu_opcion": "menu_opcion",
@@ -934,6 +936,8 @@
     "fechaResolucion": "Fecha resolución",
     "entradaAsociada": "Entrada Asociada",
     "ultimaModificacion": "Última Modificación",
+    "elementoAprovechado": "Elemento Aprovechado",
+    "elementoMejorado": "Elemento Mejorado",
 
     "movimientos": {
       "estadoTramite": "Awaiting review",

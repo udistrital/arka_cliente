@@ -25,8 +25,8 @@ export class ReposicionComponent implements OnInit {
   displayedColumns: any;
   elementos: any[];
 
-  @ViewChild('stepper', {static: true}) stepper: MatStepper;
-  @ViewChild('paginator', {static: true}) paginator: MatPaginator;
+  @ViewChild('stepper', { static: true }) stepper: MatStepper;
+  @ViewChild('paginator', { static: true }) paginator: MatPaginator;
 
   @Input() actaRecibidoId: Number;
   @Output() data: EventEmitter<TransaccionEntrada> = new EventEmitter<TransaccionEntrada>();
@@ -39,7 +39,7 @@ export class ReposicionComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.displayedColumns = this.commonElementos.columnsElementos;
+    this.displayedColumns = this.commonElementos.columnsAcciones.concat(this.commonElementos.columnsElementos);
     this.elementosForm = this.commonElementos.formElementos;
     this.observacionForm = this.common.formObservaciones;
     this.dataSource = new MatTableDataSource<any>();
@@ -47,7 +47,7 @@ export class ReposicionComponent implements OnInit {
   }
 
   addElemento() {
-    const form = this.commonElementos.elemento;
+    const form = this.commonElementos.formElementos_('ENT_RP');
     (this.elementosForm.get('elementos') as FormArray).push(form);
     this.dataSource.data = this.dataSource.data.concat({});
     this.cambiosPlaca(form.get('Placa').valueChanges);
@@ -76,7 +76,9 @@ export class ReposicionComponent implements OnInit {
   async onSubmit() {
     const detalle = {
       acta_recibido_id: +this.actaRecibidoId,
-      elementos: this.elementosForm.get('elementos').value.map(el => el.Id),
+      elementos: this.elementosForm.get('elementos').value.map(el => ({
+        Id: el.Id,
+      })),
     };
 
     const transaccion = this.common.crearTransaccionEntrada(this.observacionForm.value.observacionCtrl, detalle, 'ENT_RP', 0);

@@ -105,9 +105,10 @@ export class ActaRecibidoHelper {
         );
     }
 
-    public getActasRecibidoPorEstados(estado) {
+    public getAllActasRecibido_(estado: string, tipo: string, limit: number, offset: number) {
+        const payload = (estado ? 'EstadoActaId=' + estado : '') + (tipo ? '&TipoActaId=' + tipo : '');
         this.rqManager.setPath('ARKA_SERVICE');
-        return this.rqManager.get('acta_recibido/get_actas_recibido_tipo/' + estado).pipe(
+        return this.rqManager.get('acta_recibido/get_all_actas?' + payload + '&limit=' + limit + '&offset=' + offset).pipe(
             map(
                 (res) => {
                     if (res === 'error') {
@@ -548,9 +549,16 @@ export class ActaRecibidoHelper {
         );
     }
 
-    public getActaRecibido(id) {
+    /**
+     * getAllActaRecibido
+     * Consulta endpoint acta_recibido de api acta_recibido_crud
+     * If the response has errors in the OAS API it should show a popup message with an error.
+     * If the response is successs, it returns the object's data.
+     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
+    */
+    public getAllActaRecibido(payload) {
         this.rqManager.setPath('ACTA_RECIBIDO_SERVICE');
-        return this.rqManager.get('acta_recibido/' + id + '').pipe(
+        return this.rqManager.get('acta_recibido?' + payload).pipe(
             map(
                 (res) => {
                     if (res === 'error') {

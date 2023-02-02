@@ -23,7 +23,7 @@
 
           <ng-container matColumnDef="placa">
             <th id="placa" mat-header-cell *matHeaderCellDef mat-sort-header>
-              {{ 'GLOBAL.Placa' | translate }}
+              {{ 'GLOBAL.elementoMejorado' | translate }}
             </th>
             <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="commonElementos.getActualIndex(rowIndex, paginator)">
               <input type="text" formControlName="Placa" class="form-control"
@@ -34,6 +34,36 @@
                   {{item.Placa}}
                 </mat-option>
               </mat-autocomplete>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="valorLibros">
+            <th id="libros" mat-header-cell *matHeaderCellDef mat-sort-header>
+              {{ 'GLOBAL.valorLibros' | translate }}
+            </th>
+            <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="commonElementos.getActualIndex(rowIndex, paginator)">
+              <input type="text" formControlName="valorLibros" class="form-control" currencyMask
+                placeholder="{{'GLOBAL.valorLibros' | translate : {NUM : 4} }}">
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="vidaUtil">
+            <th id="vidaUtil" mat-header-cell *matHeaderCellDef mat-sort-header>
+              {{ 'GLOBAL.vidaUtilSug' | translate }}
+            </th>
+            <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="commonElementos.getActualIndex(rowIndex, paginator)">
+              <input type="number" formControlName="vidaUtil" class="form-control"
+                placeholder="{{'GLOBAL.vidaUtilSug' | translate : {NUM : 4} }}">
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="valorResidual">
+            <th id="valorResidual" mat-header-cell *matHeaderCellDef mat-sort-header>
+              {{ 'GLOBAL.valorResidualSug' | translate }}
+            </th>
+            <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="commonElementos.getActualIndex(rowIndex, paginator)">
+              <input type="number" formControlName="valorResidual" class="form-control"
+                placeholder="{{'GLOBAL.valorResidualSug' | translate : {NUM : 4} }}">
             </td>
           </ng-container>
 
@@ -79,11 +109,11 @@
 
           <ng-container matColumnDef="valor">
             <th id="valor" mat-header-cell *matHeaderCellDef mat-sort-header>
-              {{ 'GLOBAL.valor' | translate }}
+              {{ 'GLOBAL.valorInicial' | translate }}
             </th>
             <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="commonElementos.getActualIndex(rowIndex, paginator)">
               <input type="text" class="form-control" formControlName="valor"
-                placeholder="{{'GLOBAL.valor' | translate }}" currencyMask [options]="{allowNegative: false}">
+                placeholder="{{'GLOBAL.valorInicial' | translate }}" currencyMask [options]="{allowNegative: false}">
             </td>
           </ng-container>
 
@@ -193,35 +223,6 @@
       <button mat-flat-button color="primary" matStepperPrevious>{{'GLOBAL.anterior' | translate}}</button>
       <button mat-flat-button color="primary" matStepperNext>{{'GLOBAL.siguiente' | translate}}</button>
     </div>
-  </mat-step>
-
-  <!-- FACTURA -->
-  <mat-step [stepControl]="facturaForm" label="{{'GLOBAL.factura' | translate}}">
-    <form [formGroup]="facturaForm" class="step-container">
-      <h5>{{'GLOBAL.factura' | translate}}</h5>
-      <div class="row">
-        <div class="form-group col-sm">
-          <label>{{'GLOBAL.numero_factura' | translate}}</label>
-          <div class="input-group">
-            <select class="form-control" type="text" formControlName="facturaCtrl" (change)="changeSelectSoporte()">
-              <option value="" selected>--{{'GLOBAL.seleccionar' | translate}}--</option>
-              <option *ngFor="let item of soportes" value="{{ item.Id }}">{{ item.Consecutivo }}</option>
-            </select>
-          </div>
-        </div>
-        <div class="form-group col-sm">
-          <label>{{'GLOBAL.fecha_factura' | translate}}</label>
-          <div class="input-group">
-            <input nbInput type="text" shape="semi-round" placeholder="{{'GLOBAL.fecha_factura' | translate}}"
-              class="form-control" value="{{ fechaFactura | date:'dd/MM/yyy' }}" [readonly]="true">
-          </div>
-        </div>
-      </div>
-      <div class="botones-stepper-middle">
-        <button mat-flat-button color="primary" matStepperPrevious>{{'GLOBAL.anterior' | translate}}</button>
-        <button mat-flat-button color="primary" matStepperNext>{{'GLOBAL.siguiente' | translate}}</button>
-      </div>
-    </form>
   </mat-step>
 
   <!-- OBSERVACIONES -->
