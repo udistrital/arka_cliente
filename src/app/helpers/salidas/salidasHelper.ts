@@ -198,7 +198,8 @@ export class SalidaHelper {
      */
     public getEntradasSinSalida() {
         this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
-        return this.rqManager.get('movimiento?sortby=FechaCreacion&order=desc&query=EstadoMovimientoId__Nombre:Entrada Aprobada&limit=-1').pipe(
+        const tipos = 'FormatoTipoMovimientoId__CodigoAbreviacion__in:ENT_TR|ENT_RP|ENT_CM|ENT_EP|ENT_DN|ENT_SI|ENT_CE|ENT_BEP|ENT_IA|ENT_ID|ENT_ADQ'
+        return this.rqManager.get('movimiento?sortby=FechaCreacion&order=desc&limit=-1&query=EstadoMovimientoId__Nombre:Entrada Aprobada,' + tipos).pipe(
             map(
                 (res) => {
                     if (res === 'error') {
