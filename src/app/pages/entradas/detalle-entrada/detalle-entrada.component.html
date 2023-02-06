@@ -12,14 +12,14 @@
   </div>
 
   <!-- ACTA RECIBIDO -->
-  <div class="row">
+  <div class="row" *ngIf="entradaEspecifica?.ActaRecibidoId">
     <div class="col">
       <p><a class="text-uppercase" [href]="linkActa"><strong>{{'GLOBAL.Acta_Recibido.ActaNo' | translate }}:</strong>
         {{ entradaEspecifica.ActaRecibidoId }}</a></p>
     </div>
     <div class="col">
       <p class="text-uppercase"><strong>{{'GLOBAL.Acta_Recibido.RegistroActa.unidadEjecutora' | translate }}:</strong>
-        {{ entradaEspecifica?.UnidadEjecutora?.Nombre }}</p>
+        {{ entradaEspecifica.UnidadEjecutora?.Nombre }}</p>
     </div>
   </div>
 

@@ -32,7 +32,7 @@
         <mat-step label="{{'GLOBAL.info' | translate}}">
           <ngx-detalle-entrada [detalleEntrada]="entradaEspecifica"></ngx-detalle-entrada>
         </mat-step>
-        <mat-step label="{{'GLOBAL.elementos_entrada' | translate}}">
+        <mat-step label="{{'GLOBAL.elementos_entrada' | translate}}" *ngIf="actaRecibidoId">
           <ngx-gestionar-elementos [ActaRecibidoId]="actaRecibidoId" [Modo]="'ver'"></ngx-gestionar-elementos>
         </mat-step>
         <mat-step label="{{'GLOBAL.Comprobante_Contable.Titulo' | translate}}" *ngIf="trContable?.movimientos">

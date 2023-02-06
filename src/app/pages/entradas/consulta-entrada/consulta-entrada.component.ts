@@ -290,6 +290,9 @@ export class ConsultaEntradaComponent implements OnInit {
         ActaRecibidoId: {
           title: this.translate.instant('GLOBAL.Acta_Recibido.una'),
           width: '140px',
+          valuePrepareFunction: (value: any) => {
+            return value ? value : '';
+          },
         },
         FechaCreacion: {
           title: this.translate.instant('GLOBAL.fecha_entrada'),
