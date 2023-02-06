@@ -253,6 +253,8 @@ export class DetalleEntradaComponent implements OnInit {
           title: this.translate.instant('GLOBAL.Placa'),
           width: '150px',
         },
+        ...this.columnsMejorados,
+        ...this.columnsAprovechados,
         Entrada: {
           title: this.translate.instant('GLOBAL.Entrada'),
           width: '150px',
@@ -281,6 +283,33 @@ export class DetalleEntradaComponent implements OnInit {
         },
       },
     };
+  }
+
+  get columnsMejorados() {
+    const cols = {
+      ValorLibros: {
+        type: 'html',
+        title: this.translate.instant('GLOBAL.valorLibros'),
+        width: '70px',
+        valuePrepareFunction: this.tabla.prepareFunctionCurrency,
+      },
+      VidaUtil: {
+        title: this.translate.instant('GLOBAL.vidaUtilSug'),
+      },
+      ValorResidual: {
+        title: this.translate.instant('GLOBAL.valorResidualSug'),
+      },
+    };
+    return this.entradaEspecifica.TipoEntradaId.Nombre !== 'Reposición' ? cols : {};
+  }
+
+  get columnsAprovechados() {
+    const cols = {
+      AprovechadoId: {
+        title: this.translate.instant('GLOBAL.elementoAprovechado'),
+      },
+    };
+    return this.entradaEspecifica.TipoEntradaId.Nombre === 'Partes por Aprovechamientos' ? cols : {};
   }
 
 }

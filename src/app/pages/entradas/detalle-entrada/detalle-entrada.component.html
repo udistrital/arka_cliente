@@ -185,7 +185,9 @@
     </button>
   </div>
 
-  <ng2-smart-table [settings]="settings" [source]="source" *ngIf="source?.data?.length">
-  </ng2-smart-table>
+  <div class="smart-table-container" *ngIf="source?.data?.length">
+    <ng2-smart-table [settings]="settings" [source]="source">
+    </ng2-smart-table>
+  </div>
 
 </div>
