@@ -153,7 +153,7 @@ export class CommonElementos {
     }
 
     private getValorActual(historial: any) {
-        return historial && (historial.Novedades && historial.Novedad.length ? historial.Novedades[0].ValorLibros :
+        return historial && (historial.Novedades && historial.Novedades.length ? historial.Novedades[0].ValorLibros :
             historial.Elemento ? historial.Elemento.ValorTotal : '');
     }
 
