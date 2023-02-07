@@ -63,7 +63,8 @@ export class CommonElementos {
 
     public getDetalleAprovechado(form: FormGroup, index: number, paginator: MatPaginator) {
         const Id = this.getFormArrayAtIndex(form, this.getActualIndex(index, paginator)).value.aprovechado.Id;
-        this.patchFormArrayAtIndex(form, index, { aprovechado: '' });
+        const Placa = this.getFormArrayAtIndex(form, this.getActualIndex(index, paginator)).value.aprovechado.Placa;
+        this.patchFormArrayAtIndex(form, index, { aprovechado: { Id: 0, Placa } });
 
         this.movimientos.getHistorialElemento(Id, true, true, false)
             .subscribe(res => {
@@ -72,17 +73,12 @@ export class CommonElementos {
                     return;
                 }
 
-                // if (this.checkBajaHistorial(res)) {
-                //     this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.entradas.errores.elementoConBaja'));
-                //     return;
-                // }
+                if (!this.checkBajaAprobadaHistorial(res)) {
+                    this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.entradas.errores.elementoSinBaja'));
+                    return;
+                }
 
-                // if (this.checkEntradaHistorial(res, 'ENT_PPA')) {
-                //     this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.entradas.errores.elementoAprAprovechado'));
-                //     return;
-                // }
-
-                // this.patchFormArrayAtIndex(form, index, {aprovechado: res.Elemento.Id});
+                this.patchFormArrayAtIndex(form, index, { aprovechado: { Id: res.Elemento.Id, Placa } });
             });
     }
 
@@ -102,12 +98,6 @@ export class CommonElementos {
                     this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.entradas.errores.elementoConBaja'));
                     return;
                 }
-
-                if (tipoEntrada === 'ENT_PPA' && this.checkEntradaHistorial(res, tipoEntrada)) {
-                    this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.entradas.errores.elementoAprAprovechado'));
-                    return;
-                }
-
 
                 if (tipoEntrada === 'ENT_RP') {
                     if (!this.checkBajaAprobadaHistorial(res)) {
@@ -162,9 +152,15 @@ export class CommonElementos {
         return this.checkBajaHistorial(historial) && historial.Baja.EstadoMovimientoId.Nombre === 'Baja Aprobada';
     }
 
+    private getValorActual(historial: any) {
+        return historial && (historial.Novedades && historial.Novedades.length ? historial.Novedades[0].ValorLibros :
+            historial.Elemento ? historial.Elemento.ValorTotal : '');
+    }
+
     private fillDetalleElemento(historial: any): any {
         return {
             Id: historial.Elemento.Id,
+            valorActual: this.getValorActual(historial),
             entrada: this.getConsecutivoEntrada(historial),
             fechaEntrada: this.utils.formatDate(historial.Salida.MovimientoPadreId.FechaCreacion),
             salida: this.getConsecutivoSalida(historial),
@@ -247,6 +243,12 @@ export class CommonElementos {
                     validators: [Validators.min(0), Validators.max(100)],
                 },
             ],
+            valorActual: [
+                {
+                    value: '',
+                    disabled: true,
+                },
+            ],
         };
         return form;
     }
@@ -304,7 +306,7 @@ export class CommonElementos {
     }
 
     get columnsMejorados(): string[] {
-        return ['valorLibros', 'vidaUtil', 'valorResidual'];
+        return ['valorLibros', 'vidaUtil', 'valorResidual', 'valorActual'];
     }
 
     get columnsAprovechados(): string[] {

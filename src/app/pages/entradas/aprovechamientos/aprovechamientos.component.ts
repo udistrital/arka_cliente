@@ -11,6 +11,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { CommonEntradas } from '../CommonEntradas';
 import { CommonElementos } from '../CommonElementos';
+import * as moment from 'moment';
 
 @Component({
   selector: 'ngx-aprovechamientos',
@@ -154,6 +155,7 @@ export class AprovechamientosComponent implements OnInit {
         ValorResidual: el.valorResidual,
         VidaUtil: el.vidaUtil,
       })),
+      FechaCorte: moment().format('YYYY-MM-DD'),
       supervisor: this.supervisorForm.value.supervisorCtrl.Id,
     };
     const transaccion = this.common.crearTransaccionEntrada(this.observacionForm.value.observacionCtrl, detalle, 'ENT_PPA', 0);

@@ -12,6 +12,7 @@ import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { CommonEntradas } from '../CommonEntradas';
 import { CommonContrato } from '../CommonContrato';
 import { CommonElementos } from '../CommonElementos';
+import * as moment from 'moment';
 
 @Component({
   selector: 'ngx-adiciones-mejoras',
@@ -123,6 +124,7 @@ export class AdicionesMejorasComponent implements OnInit {
         ValorResidual: el.valorResidual,
         VidaUtil: el.vidaUtil,
       })),
+      FechaCorte: moment().format('YYYY-MM-DD'),
       contrato_id: +this.contratoEspecifico.NumeroContratoSuscrito,
       vigencia_contrato: this.contratoForm.value.vigenciaCtrl,
     };

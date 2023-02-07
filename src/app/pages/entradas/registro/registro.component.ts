@@ -6,6 +6,9 @@ import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
 import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
 import { TransaccionEntrada } from '../../../@core/data/models/entrada/entrada';
 import { SmartTableService } from '../../../@core/data/SmartTableService';
+import { ListService } from '../../../@core/store/services/list.service';
+import { Store } from '@ngrx/store';
+import { IAppState } from '../../../@core/store/app.state';
 
 @Component({
   selector: 'ngx-registro',
@@ -19,6 +22,8 @@ export class RegistroComponent implements OnInit {
   source: LocalDataSource = new LocalDataSource();
   settings: any;
   tiposDeEntradas: any[];
+  unidadesEjecutoras: any;
+  idexud: boolean;
   // Acta de recibido
   actaSeleccionada: string = '';
   opcionEntrada: any = '';
@@ -36,14 +41,18 @@ export class RegistroComponent implements OnInit {
     private pUpManager: PopUpManager,
     private translate: TranslateService,
     private tabla: SmartTableService,
+    private listService: ListService,
+    private store: Store<IAppState>,
   ) {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { });
+    this.listService.findUnidadesEjecutoras();
   }
 
   ngOnInit() {
     this.title = 'GLOBAL.';
     this.actaSeleccionada = this.EntradaId && this.ActaParaEditar ? this.ActaParaEditar : '';
     this.loadTablaSettings();
+    this.loadLists();
     if (this.EntradaId) {
       this.title += 'movimientos.entradas.editarTtl';
       this.cargarActa(this.ActaParaEditar);
@@ -52,6 +61,14 @@ export class RegistroComponent implements OnInit {
       this.cargarTiposDeEntradas();
     }
 
+  }
+
+  public loadLists() {
+    this.store.select((state) => state).subscribe(list => {
+      if (list.listUnidadesEjecutoras && list.listUnidadesEjecutoras.length && list.listUnidadesEjecutoras[0]) {
+        this.unidadesEjecutoras = list.listUnidadesEjecutoras[0];
+      }
+    });
   }
 
   public onVolver() {
@@ -104,7 +121,7 @@ export class RegistroComponent implements OnInit {
     this.actaRecibidoHelper.getAllActaRecibido('query=Id:' + acta).subscribe(res => {
       this.spinner = '';
       if (res && res.length) {
-        this.cargarTiposDeEntradas(res[0].TipoActaId.Id);
+        this.cargarTiposDeEntradas(res[0].TipoActaId.Id, res[0].UnidadEjecutoraId);
       }
     });
   }
@@ -169,9 +186,16 @@ export class RegistroComponent implements OnInit {
       return;
     }
 
+    const idexud_ = this.entradasIDEXUD.some(u => u === this.opcionEntrada.CodigoAbreviacion);
+    let unidadEjecutora = '';
+    if (!idexud_) {
+      const ud = this.unidadesEjecutoras.find(u => u.CodigoAbreviacion === 'UD');
+      unidadEjecutora = ud ? ud.Id : '0';
+    }
+
     this.step = 'acta';
     this.spinner = 'Cargando actas aceptadas';
-    this.actaRecibidoHelper.getAllActasRecibido_('Aceptada', this.opcionEntrada.NumeroOrden, -1, 0).subscribe(res => {
+    this.actaRecibidoHelper.getAllActasRecibido_('Aceptada', this.opcionEntrada.NumeroOrden, unidadEjecutora, -1, 0).subscribe(res => {
       this.spinner = '';
       if (res && res.length) {
         this.source.load(res);
@@ -182,16 +206,31 @@ export class RegistroComponent implements OnInit {
   public onActa(event) {
     this.step = 'formulario';
     this.actaSeleccionada = `${event.data.Id}`;
+    const idexud_ = this.unidadesEjecutoras.find(u => u.CodigoAbreviacion === 'IDEXUD');
+    this.idexud = idexud_ && idexud_.Id === event.data.UnidadEjecutoraId;
   }
 
-  private cargarTiposDeEntradas(tipo?: number) {
+  private cargarTiposDeEntradas(tipo?: number, unidadEjecutora?: number) {
     this.step = 'tipo';
     this.spinner = 'Cargando tipos de entradas';
-    let query = 'limit=-1&sortby=Nombre&order=asc&query=CodigoAbreviacion__startswith:ENT_,NumeroOrden';
-    if (tipo) {
-      query += ':' + tipo;
+    let entradasIDEXUD = '';
+    this.idexud = false;
+    if (unidadEjecutora) {
+      const idexud = this.unidadesEjecutoras.find(u => u.CodigoAbreviacion === 'IDEXUD');
+      entradasIDEXUD = idexud && unidadEjecutora === idexud.Id ? this.entradasIDEXUD.join(',') : '';
+    }
+
+    let query = 'limit=-1&sortby=Nombre&order=asc&query=CodigoAbreviacion';
+    if (entradasIDEXUD) {
+      this.idexud = true;
+      query += '__in:' + entradasIDEXUD;
     } else {
-      query += '__lte:3';
+      query += '__startswith:ENT_,NumeroOrden';
+      if (tipo) {
+        query += ':' + tipo;
+      } else {
+        query += '__lte:3';
+      }
     }
 
     this.entradasHelper.getAllFormatoTipoMovimiento(query).subscribe(res_ => {
@@ -199,4 +238,9 @@ export class RegistroComponent implements OnInit {
       this.tiposDeEntradas = res_;
     });
   }
+
+  get entradasIDEXUD() {
+    return ['ENT_ADQ'];
+  }
+
 }
