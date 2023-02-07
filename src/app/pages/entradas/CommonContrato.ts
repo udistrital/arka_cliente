@@ -82,7 +82,7 @@ export class CommonContrato {
 
     get formContrato(): FormGroup {
         return this.fb.group({
-            tipoCtrl: ['', [Validators.required]],
+            tipoCtrl: [''],
             vigenciaCtrl: ['', [Validators.required]],
             contratoCtrl: ['', [
                 Validators.required,

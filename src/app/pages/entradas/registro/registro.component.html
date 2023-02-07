@@ -33,7 +33,7 @@
 
       <ngx-adiciones-mejoras *ngSwitchCase="'ENT_AM'"
         (data)="onSubmit($event)"></ngx-adiciones-mejoras>
-      <ngx-adquisicion *ngSwitchCase="'ENT_ADQ'" [actaRecibidoId]="actaSeleccionada"
+      <ngx-adquisicion *ngSwitchCase="'ENT_ADQ'" [actaRecibidoId]="actaSeleccionada" [idexud]="idexud"
         (data)="onSubmit($event)"></ngx-adquisicion>
       <ngx-caja-menor *ngSwitchCase="'ENT_CM'" [actaRecibidoId]="actaSeleccionada"
         (data)="onSubmit($event)"></ngx-caja-menor>

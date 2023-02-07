@@ -23,6 +23,7 @@ export class RegistroComponent implements OnInit {
   settings: any;
   tiposDeEntradas: any[];
   unidadesEjecutoras: any;
+  idexud: boolean;
   // Acta de recibido
   actaSeleccionada: string = '';
   opcionEntrada: any = '';
@@ -205,12 +206,15 @@ export class RegistroComponent implements OnInit {
   public onActa(event) {
     this.step = 'formulario';
     this.actaSeleccionada = `${event.data.Id}`;
+    const idexud_ = this.unidadesEjecutoras.find(u => u.CodigoAbreviacion === 'IDEXUD');
+    this.idexud = idexud_ && idexud_.Id === event.data.UnidadEjecutoraId;
   }
 
   private cargarTiposDeEntradas(tipo?: number, unidadEjecutora?: number) {
     this.step = 'tipo';
     this.spinner = 'Cargando tipos de entradas';
     let entradasIDEXUD = '';
+    this.idexud = false;
     if (unidadEjecutora) {
       const idexud = this.unidadesEjecutoras.find(u => u.CodigoAbreviacion === 'IDEXUD');
       entradasIDEXUD = idexud && unidadEjecutora === idexud.Id ? this.entradasIDEXUD.join(',') : '';
@@ -218,6 +222,7 @@ export class RegistroComponent implements OnInit {
 
     let query = 'limit=-1&sortby=Nombre&order=asc&query=CodigoAbreviacion';
     if (entradasIDEXUD) {
+      this.idexud = true;
       query += '__in:' + entradasIDEXUD;
     } else {
       query += '__startswith:ENT_,NumeroOrden';

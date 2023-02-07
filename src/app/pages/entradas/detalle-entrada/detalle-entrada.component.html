@@ -44,33 +44,33 @@
     <div class="row">
       <div class="col">
         <p class="text-uppercase"><strong>{{'GLOBAL.contrato' | translate }}:</strong>
-          {{ contrato.NumeroContratoSuscrito + ' ' + ('GLOBAL.de' | translate) + ' '+ contrato?.Vigencia }}</p>
+          {{ contrato.NumeroContratoSuscrito + ' ' + ('GLOBAL.de' | translate) + ' '+ contrato.Vigencia }}</p>
       </div>
-      <div class="col">
+      <div class="col" *ngIf="contrato.TipoContrato">
         <p class="text-uppercase"><strong>{{'GLOBAL.tipo_contrato' | translate }}:</strong>
-          {{ contrato?.TipoContrato?.TipoContrato }}</p>
+          {{ contrato.TipoContrato.TipoContrato }}</p>
       </div>
     </div>
 
-    <div class="row">
+    <div class="row" *ngIf="contrato.OrdenadorGasto?.NombreOrdenador">
       <div class="col">
         <p class="text-uppercase"><strong>{{'GLOBAL.ordenador_gasto' | translate }}:</strong>
-          {{ contrato.OrdenadorGasto?.NombreOrdenador }}</p>
+          {{ contrato.OrdenadorGasto.NombreOrdenador }}</p>
       </div>
       <div class="col">
         <p class="text-uppercase"><strong>{{'GLOBAL.Cargo' | translate }}:</strong>
-          {{ contrato.OrdenadorGasto?.RolOrdenadorGasto }}</p>
+          {{ contrato.OrdenadorGasto.RolOrdenadorGasto }}</p>
       </div>
     </div>
 
-    <div class="row">
+    <div class="row" *ngIf="contrato.Supervisor?.Nombre">
       <div class="col">
         <p class="text-uppercase"><strong>{{'GLOBAL.supervisor' | translate }}:</strong>
-          {{ contrato.Supervisor?.Nombre }}</p>
+          {{ contrato.Supervisor.Nombre }}</p>
       </div>
       <div class="col">
         <p class="text-uppercase"><strong>{{'GLOBAL.Cargo' | translate }}:</strong>
-          {{ contrato.Supervisor?.Cargo }}</p>
+          {{ contrato.Supervisor.Cargo }}</p>
       </div>
     </div>
   </div>
