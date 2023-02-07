@@ -105,8 +105,9 @@ export class ActaRecibidoHelper {
         );
     }
 
-    public getAllActasRecibido_(estado: string, tipo: string, limit: number, offset: number) {
-        const payload = (estado ? 'EstadoActaId=' + estado : '') + (tipo ? '&TipoActaId=' + tipo : '');
+    public getAllActasRecibido_(estado: string, tipo: string, unidadEjecutora: string, limit: number, offset: number) {
+        const payload = (estado ? 'EstadoActaId=' + estado : '') + (tipo ? '&TipoActaId=' + tipo : '') +
+            (unidadEjecutora ? '&UnidadEjecutoraId=' + unidadEjecutora : '');
         this.rqManager.setPath('ARKA_SERVICE');
         return this.rqManager.get('acta_recibido/get_all_actas?' + payload + '&limit=' + limit + '&offset=' + offset).pipe(
             map(
