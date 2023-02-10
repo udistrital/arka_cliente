@@ -90,23 +90,9 @@ export class ConsultaSolicitudComponent implements OnInit {
 
   get columnas() {
     return {
-      Detalle: {
+      Consecutivo: {
         title: this.translate.instant('GLOBAL.consecutivo'),
         width: '15%',
-        valuePrepareFunction: (value: any) => {
-          return value ? JSON.parse(value).Consecutivo : '';
-        },
-        filterFunction: (cell?: any, search?: string): boolean => {
-          if (cell && search.length) {
-            const consecutivo = JSON.parse(cell).Consecutivo;
-            if (consecutivo) {
-              if (consecutivo.indexOf(search) > -1) {
-                return true;
-              }
-            }
-          }
-          return false;
-        },
       },
       FechaCreacion: {
         title: this.translate.instant('GLOBAL.fecha_creacion'),

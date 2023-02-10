@@ -363,7 +363,7 @@ export class DetalleSolicitudComponent implements OnInit {
   get optionsRechazo() {
     return {
       title: this.translate.instant('GLOBAL.movimientos.SalidaRechazadaTitle'),
-      text: this.translate.instant('GLOBAL.movimientos.SalidaRechazadaText', { CONSECUTIVO: this.Detalle_Solicitud.Consecutivo }),
+      text: this.translate.instant('GLOBAL.movimientos.SalidaRechazadaText', { CONSECUTIVO: this.Solicitud.Consecutivo }),
       type: 'success',
     };
   }
@@ -371,7 +371,7 @@ export class DetalleSolicitudComponent implements OnInit {
   get optionsAprobacion() {
     return {
       title: this.translate.instant('GLOBAL.salidas.exito_registro_titulo'),
-      text: this.translate.instant('GLOBAL.salidas.exito_registro_texto', { CONSECUTIVO: this.Detalle_Solicitud.Consecutivo }),
+      text: this.translate.instant('GLOBAL.salidas.exito_registro_texto', { CONSECUTIVO: this.Solicitud.Consecutivo }),
       type: 'success',
     };
   }
