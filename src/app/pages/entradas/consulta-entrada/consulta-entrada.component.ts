@@ -71,7 +71,6 @@ export class ConsultaEntradaComponent implements OnInit {
         res.forEach(entrada => {
           entrada.Detalle = JSON.parse((entrada.Detalle));
           entrada.ActaRecibidoId = entrada.Detalle.acta_recibido_id;
-          entrada.Consecutivo = entrada.Detalle.consecutivo;
           entrada.FormatoTipoMovimientoId = entrada.FormatoTipoMovimientoId.Nombre;
           entrada.EstadoMovimientoId = entrada.EstadoMovimientoId.Nombre;
         });
@@ -89,7 +88,7 @@ export class ConsultaEntradaComponent implements OnInit {
         this.entradaEspecifica = res;
         this.movimiento = res.movimiento;
         const detalle = JSON.parse(this.movimiento.Detalle);
-        this.entradaEspecifica.Consecutivo = detalle.consecutivo;
+        this.entradaEspecifica.Consecutivo = res.movimiento.Consecutivo;
         this.actaRecibidoId = detalle.acta_recibido_id;
         if (res.TransaccionContable) {
           this.transaccionContable(res.TransaccionContable);
@@ -152,8 +151,7 @@ export class ConsultaEntradaComponent implements OnInit {
 
 
   private alertSuccess(aprobar: boolean) {
-    const consecutivo = JSON.parse(this.movimiento.Detalle).consecutivo;
-    this.pUpManager.showAlertWithOptions(this.getOptionsSubmit(aprobar, consecutivo));
+    this.pUpManager.showAlertWithOptions(this.getOptionsSubmit(aprobar, this.movimiento.Consecutivo));
     this.source.remove(this.filaSeleccionada);
     if (!aprobar) {
       this.onVolver();

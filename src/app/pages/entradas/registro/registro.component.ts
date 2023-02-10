@@ -101,8 +101,7 @@ export class RegistroComponent implements OnInit {
         if (res.Error) {
           this.pUpManager.showErrorAlert(res.Error);
         } else if (res.Movimiento.Id) {
-          const consecutivo = JSON.parse(res.Movimiento.Detalle).consecutivo;
-          this.pUpManager.showAlertWithOptions(this.getOptionsRegistro(consecutivo));
+          this.pUpManager.showAlertWithOptions(this.getOptionsRegistro(res.Movimiento.Consecutivo));
           this.volver.emit(true);
         } else {
           this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.entradas.registroFail'));

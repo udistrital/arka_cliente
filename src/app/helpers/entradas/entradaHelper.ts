@@ -60,7 +60,7 @@ export class EntradaHelper {
     }
 
     public getOrdenadores(criterio: string, query: string= '') {
-        this.rqManager.setPath('UNIDADES_SERVICE');
+        this.rqManager.setPath('ARGO_SERVICE');
         let path = criterio;
         if (query !== '') {
             path += '?query=' + query;
@@ -79,7 +79,7 @@ export class EntradaHelper {
     }
 
     public getSupervisores(criterio: string, query: string= '') {
-        this.rqManager.setPath('UNIDADES_SERVICE');
+        this.rqManager.setPath('ARGO_SERVICE');
         let path = criterio;
         if (query !== '') {
             path += '?query=' + query;
@@ -98,7 +98,7 @@ export class EntradaHelper {
     }
 
     public getDependenciaSupervisor(dependencia: string, query: string= '') {
-        this.rqManager.setPath('UNIDADES_SERVICE');
+        this.rqManager.setPath('ARGO_SERVICE');
         let path = dependencia;
         if (query !== '') {
             path += '?query=ESFCODIGODEP:' + query;
@@ -396,7 +396,7 @@ export class EntradaHelper {
     }
 
     public getTiposContrato() {
-        this.rqManager.setPath('UNIDADES_SERVICE');
+        this.rqManager.setPath('ARGO_SERVICE');
         return this.rqManager.get('tipo_contrato?fields=Id,TipoContrato&sortby=TipoContrato&order=asc&limit=-1').pipe(
             map(
                 (res) => {

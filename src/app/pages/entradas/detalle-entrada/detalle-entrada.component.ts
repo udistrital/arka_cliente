@@ -56,7 +56,7 @@ export class DetalleEntradaComponent implements OnInit {
     this.entradaEspecifica.Observacion = this.detalleEntrada.movimiento.Observacion;
     this.entradaEspecifica.TipoEntradaId.Nombre = this.detalleEntrada.movimiento.FormatoTipoMovimientoId.Nombre;
     this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id;
-    this.entradaEspecifica.Consecutivo = detalle.consecutivo;
+    this.entradaEspecifica.Consecutivo = this.detalleEntrada.movimiento.Consecutivo;
     this.entradaEspecifica.UnidadEjecutora = this.detalleEntrada.unidadEjecutora;
     this.loadContrato(this.detalleEntrada.contrato, this.detalleEntrada.tipo_contrato_id);
 
@@ -229,9 +229,9 @@ export class DetalleEntradaComponent implements OnInit {
 
   loadTabla(elementos: any[]) {
     for (const elemento of elementos) {
-      elemento.Entrada = elemento.Salida.MovimientoPadreId.Detalle;
+      elemento.Entrada = elemento.Salida.MovimientoPadreId.Consecutivo;
       elemento.FechaEntrada = elemento.Salida.MovimientoPadreId.FechaCreacion;
-      elemento.Salida_ = elemento.Salida.Detalle;
+      elemento.Salida_ = elemento.Salida.Consecutivo;
       elemento.FechaSalida = elemento.Salida.FechaCreacion;
     }
     this.source = new LocalDataSource();
@@ -258,7 +258,6 @@ export class DetalleEntradaComponent implements OnInit {
         Entrada: {
           title: this.translate.instant('GLOBAL.Entrada'),
           width: '150px',
-          ...this.tabla.getSettingsParse('consecutivo'),
         },
         FechaEntrada: {
           title: this.translate.instant('GLOBAL.fecha_entrada'),
@@ -268,7 +267,6 @@ export class DetalleEntradaComponent implements OnInit {
         Salida_: {
           title: this.translate.instant('GLOBAL.Salida'),
           width: '150px',
-          ...this.tabla.getSettingsParse('consecutivo'),
         },
         FechaSalida: {
           title: this.translate.instant('GLOBAL.fecha_salida'),
