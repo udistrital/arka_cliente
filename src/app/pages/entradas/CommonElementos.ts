@@ -170,11 +170,11 @@ export class CommonElementos {
     }
 
     private getConsecutivoEntrada(historial: any): string {
-        return this.utils.getKeyFromString(historial.Salida.MovimientoPadreId.Detalle, 'consecutivo');
+        return historial.Salida.MovimientoPadreId.Consecutivo;
     }
 
     private getConsecutivoSalida(historial: any): string {
-        return this.utils.getKeyFromString(historial.Salida.Detalle, 'consecutivo');
+        return historial.Salida.Consecutivo;
     }
 
     get formElementos(): FormGroup {

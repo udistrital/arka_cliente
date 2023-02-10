@@ -1,7 +1,5 @@
 import { Component, OnInit, EventEmitter, Input, Output } from '@angular/core';
 import { LocalDataSource } from 'ng2-smart-table';
-import { Entrada } from '../../../@core/data/models/entrada/entrada';
-import { Contrato } from '../../../@core/data/models/entrada/contrato';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { SalidaHelper } from '../../../helpers/salidas/salidasHelper';
 import { SmartTableService } from '../../../@core/data/SmartTableService';
@@ -15,15 +13,9 @@ export class BodegaSinAsignarComponent implements OnInit {
 
   source: LocalDataSource;
   source2: LocalDataSource;
-  entradas: Array<Entrada>;
   detalle: boolean;
-  actaRecibidoId: number;
-  consecutivoEntrada: string;
-  entradaEspecifica: Entrada;
-  contrato: Contrato;
   settings: any;
   mostrar: boolean;
-  documentoId: boolean;
   settings2: any;
 
   @Input() DatosRecibidos: any;
@@ -36,7 +28,6 @@ export class BodegaSinAsignarComponent implements OnInit {
     private tabla: SmartTableService,
   ) {
     this.source = new LocalDataSource();
-    this.entradas = new Array<Entrada>();
     this.detalle = false;
   }
 
@@ -69,9 +60,7 @@ export class BodegaSinAsignarComponent implements OnInit {
         MovimientoId: {
           title: this.translate.instant('GLOBAL.Salida'),
           width: '20%',
-          valuePrepareFunction: (value: any) => {
-            return value && value.Detalle && JSON.parse(value.Detalle) ? JSON.parse(value.Detalle).consecutivo : '';
-          },
+          ...this.tabla.getSettingsObject('Consecutivo'),
         },
         SubgrupoCatalogoId: {
           title: this.translate.instant('GLOBAL.subgrupo.clase.nombre'),

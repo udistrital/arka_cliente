@@ -15,7 +15,6 @@ export class AgregarElementosComponent implements OnInit {
 
   source: LocalDataSource;
   entradas: Array<Entrada>;
-  consecutivoEntrada: string;
   settings: any;
   DatosEnviados: any;
   mostrar: boolean;

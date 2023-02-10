@@ -427,8 +427,8 @@ export class TablaElementosAsignadosComponent implements OnInit {
     if (salidas && salidas.length) {
       const length = salidas.length;
       const s = length > 1 ? 's' : '';
-      const consecutivo0 = JSON.parse(salidas[0].Salida.Detalle).consecutivo;
-      const consecutivoF = JSON.parse(salidas[length - 1].Salida.Detalle).consecutivo;
+      const consecutivo0 = salidas[0].Salida.Consecutivo;
+      const consecutivoF = salidas[length - 1].Salida.Consecutivo;
       const title = this.translate.instant(this.baseI18n + 'salidas.registroTtlOk', { S: s });
       const text = this.translate.instant(this.baseI18n + 'salidas.registroTxtOk' +
         (length > 1 ? 'Varios' : ''), { N: length, CONSECUTIVO0: consecutivo0, CONSECUTIVOF: consecutivoF });
