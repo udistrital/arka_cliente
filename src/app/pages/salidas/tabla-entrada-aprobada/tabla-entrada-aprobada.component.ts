@@ -104,7 +104,6 @@ export class TablaEntradaAprobadaComponent implements OnInit {
         res.forEach(entrada => {
           entrada.Detalle = JSON.parse((entrada.Detalle));
           entrada.ActaRecibidoId = entrada.Detalle.acta_recibido_id;
-          entrada.Consecutivo = entrada.Detalle.consecutivo;
           entrada.FormatoTipoMovimientoId = entrada.FormatoTipoMovimientoId.Nombre;
         });
         this.source.load(res);
@@ -119,7 +118,7 @@ export class TablaEntradaAprobadaComponent implements OnInit {
       if (res.movimiento) {
         this.entradaEspecifica = res;
         const detalle = JSON.parse(res.movimiento.Detalle);
-        this.entradaEspecifica.Consecutivo = detalle.consecutivo;
+        this.entradaEspecifica.Consecutivo = res.movimiento.Consecutivo;
         this.actaRecibidoId = detalle.acta_recibido_id;
       }
       this.spinner = '';

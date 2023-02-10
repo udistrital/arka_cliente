@@ -25,6 +25,9 @@ export class Movimiento {
     Id: number;
     Observacion: string;
     Detalle: string;
+    ContratoId: number;
+    Consecutivo: string;
+    FechaCorte: string;
     Activo: boolean;
     MovimientoPadreId: Movimiento;
     FormatoTipoMovimientoId: FormatoTipoMovimiento;
