@@ -58,7 +58,7 @@ export class GenerarDepreciacionComponent implements OnInit {
   private getDepreciacion(depreciacionId: number) {
     this.depreciacionHelper.getDepreciacion(depreciacionId).subscribe(res => {
       if (res) {
-        this.consecutivo = res.Movimiento && res.Movimiento.Detalle ? JSON.parse(res.Movimiento.Detalle).Consecutivo : '';
+        this.consecutivo = res.Movimiento.Consecutivo;
         this.fillForm(res.Movimiento);
         const fecha = new Date(res.TransaccionContable.Fecha).toLocaleString();
         this.trContable = {
@@ -200,7 +200,7 @@ export class GenerarDepreciacionComponent implements OnInit {
           this.formDepreciacion.disable();
           this.submitted = true;
           this.accion.emit(true);
-          this.consecutivo = res.Movimiento && res.Movimiento.Detalle ? JSON.parse(res.Movimiento.Detalle).Consecutivo : '';
+          this.consecutivo = res.Movimiento.Consecutivo;
           this.alertSuccess(res.TransaccionContable, false);
         }
       });
@@ -222,7 +222,7 @@ export class GenerarDepreciacionComponent implements OnInit {
           this.formDepreciacion.disable();
           this.submitted = true;
           this.accion.emit(true);
-          this.consecutivo = res.Movimiento && res.Movimiento.Detalle ? JSON.parse(res.Movimiento.Detalle).Consecutivo : '';
+          this.consecutivo = res.Movimiento.Consecutivo;
 
 
           this.submitted = true;
