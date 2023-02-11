@@ -84,7 +84,6 @@ export class ListaMovimientosComponent implements OnInit {
       if (res.length) {
         res.forEach(ajuste => {
           const detalle = JSON.parse(ajuste.Detalle);
-          ajuste.Consecutivo = detalle.Consecutivo;
           ajuste.Numero = detalle.Elementos.length;
           ajuste.TrContable = detalle.TrContable;
         });
@@ -105,7 +104,7 @@ export class ListaMovimientosComponent implements OnInit {
         };
 
         this.title = this.translate.instant('GLOBAL.ajuste-auto.registroTtlS',
-          { CONSECUTIVO: JSON.parse(res.Movimiento.Detalle).Consecutivo });
+          { CONSECUTIVO: res.Movimiento.Consecutivo });
         this.subtitle = this.translate.instant('GLOBAL.ajuste-auto.sbtttlInfo');
       }
       this.spinner = '';
@@ -164,7 +163,7 @@ export class ListaMovimientosComponent implements OnInit {
         };
 
         this.title = this.translate.instant('GLOBAL.ajuste-auto.registroTtlS',
-          { CONSECUTIVO: JSON.parse(res.Movimiento.Detalle).Consecutivo });
+          { CONSECUTIVO: res.Movimiento.Consecutivo });
         this.subtitle = this.translate.instant('GLOBAL.ajuste-auto.sbtttlInfo');
         this.loadAjustes(false);
       } else {
