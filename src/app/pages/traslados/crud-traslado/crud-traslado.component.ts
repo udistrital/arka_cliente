@@ -73,7 +73,7 @@ export class CrudTrasladoComponent implements OnInit {
         this.movimiento = res.Movimiento;
         const detalle = res.Movimiento && res.Movimiento.Detalle ? JSON.parse(res.Movimiento.Detalle) : '';
         const rechazo = detalle ? detalle.RazonRechazo : '';
-        this.consecutivo = detalle ? detalle.Consecutivo : '';
+        this.consecutivo = res.Movimiento.Consecutivo;
         if (res.TrContable) {
           this.trasladoData.trContable = res.TrContable;
           this.trasladoData.trContable.consecutivo = this.consecutivo;
@@ -149,7 +149,8 @@ export class CrudTrasladoComponent implements OnInit {
     if (!this.submitted) {
       this.loading = true;
       this.submitted = true;
-      const detalle_ = this.movimiento ? <DetalleTraslado>JSON.parse(this.movimiento.Detalle) : new (DetalleTraslado);
+      const Consecutivo = this.movimiento ? this.movimiento.Consecutivo : '';
+      const ConsecutivoId = this.movimiento ? this.movimiento.ConsecutivoId : 0;
       const val = this.trasladoData;
       const Elementos = val.controls.elementos.value.map(element => element.id);
       const FuncionarioOrigen = val.controls.origen.value.tercero.Tercero.Id;
@@ -170,13 +171,13 @@ export class CrudTrasladoComponent implements OnInit {
         FuncionarioDestino,
         Ubicacion,
         Elementos,
-        Consecutivo: detalle_ ? detalle_.Consecutivo : '',
-        ConsecutivoId: detalle_ ? detalle_.ConsecutivoId : 0,
         RazonRechazo,
       };
 
       const movimiento = <Movimiento>{
         Id: this.trasladoId,
+        Consecutivo,
+        ConsecutivoId,
         Detalle: JSON.stringify(detalle),
         Observacion,
         Activo: true,
@@ -200,13 +201,13 @@ export class CrudTrasladoComponent implements OnInit {
 
   private updateTraslado(movimiento, rechazar: boolean) {
     this.entradasHelper.putMovimiento(movimiento).toPromise().then((res: any) => {
-      this.alertSuccess(rechazar, JSON.parse(res.Detalle).Consecutivo);
+      this.alertSuccess(rechazar, res.Consecutivo);
     });
   }
 
   private postTraslado(movimiento) {
     this.trasladosHelper.postTraslado(movimiento).subscribe((res: any) => {
-      this.alertSuccess(false, JSON.parse(res.Detalle).Consecutivo);
+      this.alertSuccess(false, res.Consecutivo);
     });
   }
 
@@ -222,8 +223,7 @@ export class CrudTrasladoComponent implements OnInit {
             fecha,
           };
         }
-        const obj = JSON.parse(res.Movimiento.Detalle);
-        this.alertSuccess(false, obj ? obj.Consecutivo : '');
+        this.alertSuccess(false, res.Movimiento.Consecutivo);
       } else if (res && res.Error) {
         this.loading = false;
         this.pUpManager.showErrorAlert(res.Error);

@@ -5,8 +5,6 @@ export class DetalleTraslado {
     FuncionarioDestino: string;
     Elementos: Array<number>;
     Ubicacion: string;
-    Consecutivo: string;
-    ConsecutivoId: number;
     RazonRechazo: string;
 }
 
@@ -27,8 +25,6 @@ export class SoporteMovimiento {
 export class DetalleBaja {
     Elementos: Array<number>;
     Funcionario: number;
-    Consecutivo: string;
-    ConsecutivoId: number;
     FechaRevisionA: string;
     Revisor: number;
     FechaRevisionC: string;
