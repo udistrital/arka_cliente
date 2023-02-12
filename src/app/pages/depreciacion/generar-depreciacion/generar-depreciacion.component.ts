@@ -74,7 +74,7 @@ export class GenerarDepreciacionComponent implements OnInit {
   private fillForm(data: any) {
     const detalle = JSON.parse(data.Detalle);
     const observaciones = data.Observacion;
-    const fecha = new Date(detalle.FechaCorte);
+    const fecha = new Date(data.FechaCorte);
     fecha.setUTCMinutes(fecha.getTimezoneOffset());
     const razon = detalle.RazonRechazo;
 
