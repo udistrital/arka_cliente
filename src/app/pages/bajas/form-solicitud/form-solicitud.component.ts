@@ -296,8 +296,8 @@ export class FormSolicitudComponent implements OnInit {
 
     if (values.elementos && values.elementos.length) {
       values.elementos.forEach(element => {
-        const consSalida = JSON.parse(element.Historial.Salida.Detalle).consecutivo;
-        const consEntrada = JSON.parse(element.Historial.Salida.MovimientoPadreId.Detalle).consecutivo;
+        const consSalida = element.Historial.Salida.Consecutivo;
+        const consEntrada = element.Historial.Salida.MovimientoPadreId.Consecutivo;
         const formEl = this.fb.group({
           id: [element.Id],
           placa: [
@@ -430,8 +430,8 @@ export class FormSolicitudComponent implements OnInit {
       const noBaja = res.Historial && !res.Historial.Baja;
       const assignable = res.Id && salidaOk && noTraslado && noBaja;
       if (assignable) {
-        const consSalida = JSON.parse(res.Historial.Salida.Detalle).consecutivo;
-        const consEntrada = JSON.parse(res.Historial.Salida.MovimientoPadreId.Detalle).consecutivo;
+        const consSalida = res.Historial.Salida.Consecutivo;
+        const consEntrada = res.Historial.Salida.MovimientoPadreId.Consecutivo;
         (this.formBaja.get('elementos') as FormArray).at(index).patchValue({
           id: res.Id,
           nombre: res.Nombre,

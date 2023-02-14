@@ -58,7 +58,7 @@ export class GenerarDepreciacionComponent implements OnInit {
   private getDepreciacion(depreciacionId: number) {
     this.depreciacionHelper.getDepreciacion(depreciacionId).subscribe(res => {
       if (res) {
-        this.consecutivo = res.Movimiento && res.Movimiento.Detalle ? JSON.parse(res.Movimiento.Detalle).Consecutivo : '';
+        this.consecutivo = res.Movimiento.Consecutivo;
         this.fillForm(res.Movimiento);
         const fecha = new Date(res.TransaccionContable.Fecha).toLocaleString();
         this.trContable = {
@@ -74,7 +74,7 @@ export class GenerarDepreciacionComponent implements OnInit {
   private fillForm(data: any) {
     const detalle = JSON.parse(data.Detalle);
     const observaciones = data.Observacion;
-    const fecha = new Date(detalle.FechaCorte);
+    const fecha = new Date(data.FechaCorte);
     fecha.setUTCMinutes(fecha.getTimezoneOffset());
     const razon = detalle.RazonRechazo;
 
@@ -200,7 +200,7 @@ export class GenerarDepreciacionComponent implements OnInit {
           this.formDepreciacion.disable();
           this.submitted = true;
           this.accion.emit(true);
-          this.consecutivo = res.Movimiento && res.Movimiento.Detalle ? JSON.parse(res.Movimiento.Detalle).Consecutivo : '';
+          this.consecutivo = res.Movimiento.Consecutivo;
           this.alertSuccess(res.TransaccionContable, false);
         }
       });
@@ -222,7 +222,7 @@ export class GenerarDepreciacionComponent implements OnInit {
           this.formDepreciacion.disable();
           this.submitted = true;
           this.accion.emit(true);
-          this.consecutivo = res.Movimiento && res.Movimiento.Detalle ? JSON.parse(res.Movimiento.Detalle).Consecutivo : '';
+          this.consecutivo = res.Movimiento.Consecutivo;
 
 
           this.submitted = true;

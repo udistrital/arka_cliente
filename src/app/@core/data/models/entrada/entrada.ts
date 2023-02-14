@@ -25,7 +25,7 @@ export class Movimiento {
     Id: number;
     Observacion: string;
     Detalle: string;
-    ContratoId: number;
+    ConsecutivoId: number;
     Consecutivo: string;
     FechaCorte: string;
     Activo: boolean;

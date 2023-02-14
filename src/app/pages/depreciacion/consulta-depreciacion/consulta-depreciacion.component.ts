@@ -57,8 +57,6 @@ export class ConsultaDepreciacionComponent implements OnInit {
     this.depreciacionHelper.getDepreciaciones(this.modo === 'revision').subscribe(res => {
       if (res.length) {
         res.forEach(dep => {
-          const detalle = JSON.parse(dep.Detalle);
-          dep.FechaCorte = detalle.FechaCorte;
           dep.EstadoMovimientoId = dep.EstadoMovimientoId.Nombre;
           dep.FechaAprobacion = dep.EstadoMovimientoId === 'Cierre Aprobado' ?
             dep.FechaModificacion : '';
