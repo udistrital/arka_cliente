@@ -155,6 +155,10 @@ export class ArbolComponent implements OnInit, OnChanges {
         delete: false,
       },
       columns: {
+        TipoMovimientoId: {
+          title: this.translate.instant('GLOBAL.tipo_entrada'),
+          ...this.tabla.getSettingsObject('Nombre'),
+        },
         SubtipoMovimientoId: {
           title: this.translate.instant('GLOBAL.tipo_movimiento'),
           ...this.tabla.getSettingsObject('Nombre'),

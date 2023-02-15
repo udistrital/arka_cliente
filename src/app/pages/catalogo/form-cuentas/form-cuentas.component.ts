@@ -16,7 +16,7 @@ export class FormCuentasComponent implements OnInit, OnChanges {
 
   @Input() escritura: boolean;
   @Input() cuentasInfo: any[];
-  @Input() cuentasNuevas: any[];
+  @Input() cuentasNuevas: boolean;
   @Output() cuentasPendientes: EventEmitter<any> = new EventEmitter<any>();
   @Output() valid = new EventEmitter<boolean>();
 
@@ -43,7 +43,7 @@ export class FormCuentasComponent implements OnInit, OnChanges {
     if (changes.cuentasInfo && changes.cuentasInfo.currentValue) {
       this.initForms();
     } else if (changes.cuentasNuevas && changes.cuentasNuevas.currentValue) {
-      this.updateForm();
+      this.formCuentas.markAsPristine();
     } else if (changes.escritura) {
       if (changes.escritura.currentValue) {
         this.formCuentas.enable();
@@ -230,52 +230,6 @@ export class FormCuentasComponent implements OnInit, OnChanges {
         SubtipoMovimientoId: cmtb.SubtipoMovimientoId.Id,
         TipoBienId: { Id: cmtb.TipoBienId.Id },
       }));
-  }
-
-  private updateForm() {
-    this.cuentasNuevas.forEach(cta => {
-
-      const salida_ = this.findForm((this.formCuentas.get('salidas') as FormArray).controls
-        .map((mov_: FormGroup) => (mov_.controls.cuentaEspecifica as FormArray).controls), cta);
-      if (salida_) {
-        this.patchForm(salida_, cta.Id);
-        return;
-      }
-
-      const mediciones_ = this.formCuentas.get('mediciones.cuentaEspecifica') ?
-        this.findForm((this.formCuentas.get('mediciones.cuentaEspecifica') as FormArray).controls, cta) : undefined;
-      if (mediciones_) {
-        this.patchForm(mediciones_, cta.Id);
-        return;
-      }
-
-      const baja_ = this.findForm((this.formCuentas.get('baja.cuentaEspecifica') as FormArray).controls, cta);
-      if (baja_) {
-        this.patchForm(baja_, cta.Id);
-        return;
-      }
-
-      const entrada_ = this.findForm((this.formCuentas.get('entradas') as FormArray).controls
-        .map((mov_: FormGroup) => (mov_.controls.cuentaEspecifica as FormArray).controls), cta);
-      if (entrada_) {
-        this.patchForm(entrada_, cta.Id);
-        return;
-      }
-
-    });
-  }
-
-  private patchForm(form: any, Id: number) {
-    form.patchValue({ Id });
-    form.markAsPristine();
-  }
-
-  private findForm(controls: any, cuenta: any): any {
-    return controls
-      .reduce((acc, curr) => acc.concat(curr), [])
-      .find(c_ => c_.value.TipoMovimientoId.Id === cuenta.TipoMovimientoId &&
-        c_.value.SubtipoMovimientoId.Id === cuenta.SubtipoMovimientoId &&
-        c_.value.TipoBienId.Id === cuenta.TipoBienId.Id);
   }
 
   private cambiosCuenta(control: AbstractControl) {

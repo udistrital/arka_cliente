@@ -23,17 +23,27 @@
     </mat-card-content>
   </mat-card>
 
-  <div class="col" *ngIf="uid_1 && claseOk">
+  <div class="col" *ngIf="subgrupo">
     <mat-card>
       <mat-card-title>
-        {{'GLOBAL.subgrupo.clase.seleccionado' | translate}}: {{ uid_1.Nombre }}
+        {{'GLOBAL.subgrupo.clase.seleccionado' | translate}}: {{ subgrupo.Nombre }}
       </mat-card-title>
       <mat-card-subtitle>
         {{'GLOBAL.catalogo.noCuenta' | translate}}
       </mat-card-subtitle>
       <mat-card-content>
-        <ngx-form-cuentas [escritura]="modificando_cuentas && puede_editar" [cuentasInfo]="infoCuentas"
-          [cuentasNuevas]="cuentasNuevas" (cuentasPendientes)="setPendientes($event)"></ngx-form-cuentas>
+        <div>
+          <mat-label>{{'GLOBAL.tipo_movimiento' | translate}}</mat-label>
+          <mat-select class="form-control mb-4" style="height: auto;" [(ngModel)]="movimientoId" (ngModelChange)="loadCuentas()">
+            <mat-option value="">--{{ 'GLOBAL.seleccionar' | translate }}--</mat-option>
+            <mat-option *ngFor="let entrada of tiposDeEMovimentos" [value]="entrada.Id">
+              {{ 'GLOBAL.movimientos.tipo.'+entrada?.CodigoAbreviacion+'.nombre' | translate }}
+            </mat-option>
+          </mat-select>
+        </div>
+
+        <ngx-form-cuentas *ngIf="claseOk && movimientoId" [escritura]="modificando_cuentas && puede_editar"
+          [cuentasInfo]="infoCuentas" [cuentasNuevas]="actualizar" (cuentasPendientes)="setPendientes($event)"></ngx-form-cuentas>
       </mat-card-content>
       <mat-card-actions>
         <button mat-flat-button color="primary" class="float-right text-uppercase" (click)="onSubmit()"
