@@ -415,9 +415,9 @@ export class CatalogoElementosHelper {
      * If the response is successs, it returns the object's data.
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
      */
-    public getCuentasContables(subgrupo) {
+    public getCuentasContables(subgrupo, movimiento = 0) {
         this.rqManager.setPath('ARKA_SERVICE');
-        return this.rqManager.get('catalogo_elementos/cuentas_contables/' + subgrupo).pipe(
+        return this.rqManager.get('catalogo_elementos/cuentas_contables/' + subgrupo + '?movimientoId=' + movimiento).pipe(
             map(
                 (res) => {
                     if (res === 'error') {

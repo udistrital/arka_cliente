@@ -1,5 +1,5 @@
 <mat-vertical-stepper *ngIf="formCuentas" [linear]="this.escritura" #stepper>
-	<mat-step [stepControl]="formCuentas.get('entradas')" label="{{'GLOBAL.Entradas' | translate}}">
+	<mat-step *ngIf="formCuentas.get('entradas')?.controls?.length" [stepControl]="formCuentas.get('entradas')" label="{{'GLOBAL.Entradas' | translate}}">
 		<form [formGroup]="formCuentas">
 			<div formArrayName="entradas" class="row">
 				<div *ngFor="let cuentasMov of formCuentas.get('entradas')['controls']; let i = index" [formGroupName]="i">
@@ -75,7 +75,7 @@
 			</div>
 		</form>
 	</mat-step>
-	<mat-step [stepControl]="formCuentas.get('salida')" label="{{'GLOBAL.Salidas' | translate}}">
+	<mat-step *ngIf="formCuentas.get('salidas')?.controls?.length" [stepControl]="formCuentas.get('salidas')" label="{{'GLOBAL.Salidas' | translate}}">
 		<form [formGroup]="formCuentas">
 			<div formArrayName="salidas" class="row">
 				<div *ngFor="let cuentasMov of formCuentas.get('salidas')['controls']; let i = index" [formGroupName]="i">
@@ -146,15 +146,15 @@
 					<button mat-flat-button color="primary" matStepperPrevious class="float-left text-uppercase">
 						{{'GLOBAL.anterior' | translate}}
 					</button>
-					<button mat-flat-button color="primary" matStepperNext class="float-right text-uppercase"
+					<!-- <button mat-flat-button color="primary" matStepperNext class="float-right text-uppercase"
 						[disabled]="formCuentas.get('salidas').invalid">{{'GLOBAL.siguiente' | translate}}
-					</button>
+					</button> -->
 				</div>
 			</div>
 		</form>
 	</mat-step>
 	<mat-step [stepControl]="formCuentas.get('mediciones')" label="{{'GLOBAL.MedicionesPosteriores' | translate}}"
-		*ngIf="formCuentas.get('mediciones.cuentaEspecifica')?.controls?.length">
+		*ngIf="formCuentas.get('mediciones.cuentaEspecifica')">
 		<form [formGroup]="formCuentas.get('mediciones')">
 			<div formArrayName="cuentaEspecifica" class="row">
 				<fieldset>
@@ -209,7 +209,7 @@
 					</div>
 				</fieldset>
 			</div>
-			<div class="row">
+			<!-- <div class="row">
 				<div class="col botones">
 					<button mat-flat-button color="primary" matStepperPrevious class="float-left text-uppercase">
 						{{'GLOBAL.anterior' | translate}}
@@ -218,10 +218,10 @@
 						[disabled]="formCuentas.get('mediciones').invalid">{{'GLOBAL.siguiente' | translate}}
 					</button>
 				</div>
-			</div>
+			</div> -->
 		</form>
 	</mat-step>
-	<mat-step [stepControl]="formCuentas.get('baja')" label="{{'GLOBAL.Baja' | translate}}">
+	<mat-step *ngIf="formCuentas.get('baja.cuentaEspecifica')" [stepControl]="formCuentas.get('baja')" label="{{'GLOBAL.Baja' | translate}}">
 		<form [formGroup]="formCuentas.get('baja')">
 			<div formArrayName="cuentaEspecifica" class="row">
 				<fieldset>
@@ -276,13 +276,13 @@
 					</div>
 				</fieldset>
 			</div>
-			<div class="row">
+			<!-- <div class="row">
 				<div class="col botones">
 					<button mat-flat-button color="primary" matStepperPrevious class="float-left text-uppercase">
 						{{'GLOBAL.anterior' | translate}}
 					</button>
 				</div>
-			</div>
+			</div> -->
 		</form>
 	</mat-step>
 </mat-vertical-stepper>

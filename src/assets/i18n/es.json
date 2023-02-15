@@ -1089,6 +1089,10 @@
         "AMT": {
           "nombre": "Amortización",
           "descripcion": "Amortización"
+        },
+        "CRR": {
+          "nombre": "Mediciones Posteriores",
+          "descripcion": "Mediciones Posteriores"
         }
       },
       "tab_consumo": "Elementos de Consumo",

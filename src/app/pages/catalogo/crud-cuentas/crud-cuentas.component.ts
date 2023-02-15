@@ -9,6 +9,7 @@ import Swal from 'sweetalert2';
 import { ConfiguracionService } from '../../../@core/data/configuracion.service';
 import { PopUpManager } from '../../../managers/popUpManager';
 import { ListService } from '../../../@core/store/services/list.service';
+import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
 
 @Component({
   selector: 'ngx-crud-cuentas',
@@ -18,19 +19,21 @@ import { ListService } from '../../../@core/store/services/list.service';
 export class CrudCuentasComponent implements OnInit {
   catalogos: Array<Catalogo>;
   catalogoId: number;
-  uid_1: Subgrupo;
+  subgrupo: Subgrupo;
   infoCuentas: any[];
 
   spinner: string;
   valid: boolean;
   estado_cargado: boolean;
-  cuentasNuevas: any[];
+  actualizar: boolean = false;
   cuentasPendientes: any[];
   puede_editar: boolean;
   texto_sesion_contable: string;
   texto_estado: string;
   modificando_cuentas: boolean;
   claseOk: boolean;
+  tiposDeEMovimentos: any[];
+  movimientoId: number = 0;
 
   private estadoAsignacionContable: Parametro;
 
@@ -40,6 +43,7 @@ export class CrudCuentasComponent implements OnInit {
     private confService: ConfiguracionService,
     private pUpManager: PopUpManager,
     private listService: ListService,
+    private entradasHelper: EntradaHelper,
   ) {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { });
     this.spinner = '';
@@ -55,6 +59,7 @@ export class CrudCuentasComponent implements OnInit {
     this.listService.findPlanCuentasDebito();
     this.listService.findPlanCuentasCredito();
     this.loadCatalogos();
+    this.cargarTiposDeMovimientos();
     this.cargaPermisoEdicionCuentas();
     this.cargaEstadoSesionContable();
   }
@@ -137,34 +142,38 @@ export class CrudCuentasComponent implements OnInit {
       this.catalogoId = catalogo;
     }
     this.claseOk = false;
-    this.uid_1 = undefined;
+    this.subgrupo = undefined;
     this.infoCuentas = undefined;
-    this.cuentasNuevas = undefined;
     this.cuentasPendientes = undefined;
+    this.movimientoId = 0;
+  }
+
+  loadCuentas() {
+    if (this.subgrupo && this.movimientoId) {
+      this.spinner = 'Cargando Cuentas Contables';
+      this.catalogoElementosService.getCuentasContables(this.subgrupo.Id, this.movimientoId).subscribe(res => {
+        this.spinner = '';
+        if (res.length) {
+          this.infoCuentas = res;
+          this.cuentasPendientes = [];
+          this.claseOk = true;
+        } else {
+          this.claseOk = false;
+          this.movimientoId = 0;
+          this.subgrupo = undefined;
+          this.pUpManager.showAlertWithOptions(this.optionsNoPArametrizado);
+        }
+      });
+    } else {
+      this.cuentasPendientes = [];
+    }
   }
 
   receiveMessage(event) {
     if (event.TipoNivelId.Id === Nivel_t.Clase) {
-      if (this.uid_1 === undefined || this.uid_1.Id !== event.Id) {
-        this.uid_1 = event;
-        this.spinner = 'Cargando Cuentas Contables';
-        this.catalogoElementosService.getCuentasContables(event.Id).subscribe(res => {
-          this.spinner = '';
-          if (res.length) {
-            this.infoCuentas = res;
-            this.cuentasNuevas = [];
-            this.cuentasPendientes = [];
-            this.claseOk = true;
-          } else {
-            this.claseOk = false;
-            const opt = {
-              title: this.translate.instant('GLOBAL.catalogo.errorDetalleTtl'),
-              text: this.translate.instant('GLOBAL.catalogo.errorDetalleTxt'),
-              type: 'warning',
-            };
-            this.pUpManager.showAlertWithOptions(opt);
-          }
-        });
+      if (this.subgrupo === undefined || this.subgrupo.Id !== event.Id) {
+        this.subgrupo = event;
+        this.loadCuentas();
       }
     } else {
       this.onChange();
@@ -178,32 +187,17 @@ export class CrudCuentasComponent implements OnInit {
   }
 
   private updateMovimientos(): void {
-    const opt: any = {
-      title: this.translate.instant('GLOBAL.Actualizar'),
-      text: this.translate.instant('GLOBAL.Actualizar_Movimientos_placeholder'),
-      type: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085D6',
-      cancelButtonColor: '#D33',
-      confirmButtonText: this.translate.instant('GLOBAL.si'),
-      cancelButtonText: this.translate.instant('GLOBAL.no'),
-    };
-
-    this.pUpManager.showAlertWithOptions(opt)
+    this.pUpManager.showAlertWithOptions(this.optionsConfirm)
       .then((willDelete) => {
         if (willDelete.value) {
           this.spinner = 'Actualizando cuentas contables';
-          this.catalogoElementosService.putTransaccionCuentasSubgrupo(this.cuentasPendientes, this.uid_1.Id)
+          this.catalogoElementosService.putTransaccionCuentasSubgrupo(this.cuentasPendientes, this.subgrupo.Id)
             .subscribe((res: any) => {
               this.spinner = '';
-              if (res.length) {
-                this.cuentasNuevas = res;
-                const opt_: any = {
-                  title: this.translate.instant('GLOBAL.Actualizado'),
-                  text: this.translate.instant('GLOBAL.Actualizado_Movimientos_placeholder'),
-                  type: 'success',
-                };
-                this.pUpManager.showAlertWithOptions(opt_);
+              if (res) {
+                this.actualizar = true;
+                this.cuentasPendientes = [];
+                this.pUpManager.showAlertWithOptions(this.optionsActualizado);
               }
             });
         }
@@ -215,8 +209,43 @@ export class CrudCuentasComponent implements OnInit {
   }
 
   public setPendientes(event) {
+    this.actualizar = false;
     this.cuentasPendientes = event;
   }
 
-}
+  private cargarTiposDeMovimientos() {
+    this.entradasHelper.getTiposMovimientos().subscribe(res_ => {
+      this.tiposDeEMovimentos = res_;
+    });
+  }
 
+  get optionsNoPArametrizado() {
+    return {
+      title: this.translate.instant('GLOBAL.catalogo.errorDetalleTtl'),
+      text: this.translate.instant('GLOBAL.catalogo.errorDetalleTxt'),
+      type: 'warning',
+    };
+  }
+
+  get optionsConfirm() {
+    return {
+      title: this.translate.instant('GLOBAL.Actualizar'),
+      text: this.translate.instant('GLOBAL.Actualizar_Movimientos_placeholder'),
+      type: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085D6',
+      cancelButtonColor: '#D33',
+      confirmButtonText: this.translate.instant('GLOBAL.si'),
+      cancelButtonText: this.translate.instant('GLOBAL.no'),
+    };
+  }
+
+  get optionsActualizado() {
+    return {
+      title: this.translate.instant('GLOBAL.Actualizado'),
+      text: this.translate.instant('GLOBAL.Actualizado_Movimientos_placeholder'),
+      type: 'success',
+    };
+  }
+
+}
