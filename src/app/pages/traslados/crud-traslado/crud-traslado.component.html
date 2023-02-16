@@ -2,7 +2,7 @@
   {{ title }} {{ consecutivo }}
 </mat-card-title>
 <mat-card-subtitle>
-  {{ subtitle }}
+  <p><span class="fas fa-info-circle"></span>&nbsp;<em>{{ subtitle }}</em></p>
 </mat-card-subtitle>
 <mat-card-content [nbSpinner]="loading">
   <ngx-form-traslado *ngIf="showForm" (valid)="setValidness($event)" [(trasladoInfo)]="trasladoData" [modo]="modoForm">

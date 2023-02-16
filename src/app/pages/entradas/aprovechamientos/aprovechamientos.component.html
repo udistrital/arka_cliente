@@ -23,17 +23,73 @@
 
         <ng-container matColumnDef="placa">
           <th id="placa" mat-header-cell *matHeaderCellDef mat-sort-header>
-            {{ 'GLOBAL.Placa' | translate }}
+            {{ 'GLOBAL.elementoMejorado' | translate }}
           </th>
           <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="commonElementos.getActualIndex(rowIndex, paginator)">
             <input type="text" formControlName="Placa" class="form-control"
-              placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}" [matAutocomplete]="auto">
-            <mat-autocomplete #auto="matAutocomplete" [displayWith]="commonElementos.muestraPlaca"
+              placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}" [matAutocomplete]="autoM">
+            <mat-autocomplete #autoM="matAutocomplete" [displayWith]="commonElementos.muestraPlaca"
               (optionSelected)="commonElementos.getDetalleElemento(elementosForm, rowIndex, paginator, 'ENT_PPA')">
               <mat-option *ngFor="let item of elementos" [value]="item">
                 {{item.Placa}}
               </mat-option>
             </mat-autocomplete>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="aprovechado">
+          <th id="aprovechado" mat-header-cell *matHeaderCellDef mat-sort-header>
+            {{ 'GLOBAL.elementoAprovechado' | translate }}
+          </th>
+          <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="commonElementos.getActualIndex(rowIndex, paginator)">
+            <input type="text" formControlName="aprovechado" class="form-control"
+              placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}" [matAutocomplete]="autoA">
+            <mat-autocomplete #autoA="matAutocomplete" [displayWith]="commonElementos.muestraPlaca"
+              (optionSelected)="commonElementos.getDetalleAprovechado(elementosForm, rowIndex, paginator)">
+              <mat-option *ngFor="let item of elementos" [value]="item">
+                {{item.Placa}}
+              </mat-option>
+            </mat-autocomplete>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="valorLibros">
+          <th id="libros" mat-header-cell *matHeaderCellDef mat-sort-header>
+            {{ 'GLOBAL.valorLibros' | translate }}
+          </th>
+          <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="commonElementos.getActualIndex(rowIndex, paginator)">
+            <input type="text" formControlName="valorLibros" class="form-control" currencyMask
+              placeholder="{{'GLOBAL.valorLibros' | translate : {NUM : 4} }}">
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="vidaUtil">
+          <th id="vidaUtil" mat-header-cell *matHeaderCellDef mat-sort-header>
+            {{ 'GLOBAL.vidaUtilSug' | translate }}
+          </th>
+          <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="commonElementos.getActualIndex(rowIndex, paginator)">
+            <input type="number" formControlName="vidaUtil" class="form-control"
+              placeholder="{{'GLOBAL.vidaUtilSug' | translate : {NUM : 4} }}">
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="valorResidual">
+          <th id="valorResidual" mat-header-cell *matHeaderCellDef mat-sort-header>
+            {{ 'GLOBAL.valorResidualSug' | translate }}
+          </th>
+          <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="commonElementos.getActualIndex(rowIndex, paginator)">
+            <input type="number" formControlName="valorResidual" class="form-control"
+              placeholder="{{'GLOBAL.valorResidualSug' | translate : {NUM : 4} }}">
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="valorActual">
+          <th id="valorActual" mat-header-cell *matHeaderCellDef mat-sort-header>
+            {{ 'GLOBAL.valorActual' | translate }}
+          </th>
+          <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="commonElementos.getActualIndex(rowIndex, paginator)">
+            <input type="number" formControlName="valorActual" class="form-control"
+            placeholder="{{ 'GLOBAL.valorActual' | translate }}">
           </td>
         </ng-container>
 
@@ -83,7 +139,7 @@
           </th>
           <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="commonElementos.getActualIndex(rowIndex, paginator)">
             <input type="text" class="form-control" formControlName="valor"
-              placeholder="{{'GLOBAL.valor' | translate }}" currencyMask [options]="{allowNegative: false}">
+              placeholder="{{'GLOBAL.valor' | translate }}" currencyMask>
           </td>
         </ng-container>
 

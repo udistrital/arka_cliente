@@ -1,7 +1,7 @@
 <mat-horizontal-stepper #stepper [linear]=true>
 
   <!-- DATOS DE CONTRATO -->
-  <mat-step [stepControl]="contratoForm" label="{{'GLOBAL.contrato' | translate}}">
+  <mat-step [stepControl]="contratoForm" *ngIf="!idexud" label="{{'GLOBAL.contrato' | translate}}">
     <h5>{{'GLOBAL.datos_contrato' | translate}}</h5>
     <form [formGroup]="contratoForm" class="step-container">
       <div class="row">
@@ -37,8 +37,34 @@
     </form>
   </mat-step>
 
+  <mat-step [stepControl]="contratoForm" *ngIf="idexud" label="{{'GLOBAL.contrato' | translate}}">
+    <h5>{{'GLOBAL.datos_contrato' | translate}}</h5>
+    <form [formGroup]="contratoForm" class="step-container">
+      <div class="row">
+        <div class="form-group col-sm">
+          <label>{{'GLOBAL.vigencia' | translate}}</label>
+          <select class="form-control" (change)="getContratos()" formControlName="vigenciaCtrl">
+            <option value="" selected>--{{'GLOBAL.seleccionar' | translate}}--</option>
+            <option value="{{ vigencia }}">{{ vigencia }}</option>
+            <option value="{{ vigencia-1 }}">{{ vigencia-1 }}</option>
+          </select>
+        </div>
+        <div class="form-group col-sm">
+          <label>{{'GLOBAL.numero_contrato' | translate}}</label>
+          <div class="input-group">
+            <input nbInput type="text" placeholder="{{'GLOBAL.placeholder_contrato' | translate}}"
+              class="form-control" formControlName="contratoCtrl">
+          </div>
+        </div>
+      </div>
+      <div class="boton-stepper-initial">
+        <button mat-flat-button color="primary" matStepperNext (click)="onContratoSubmit()">{{'GLOBAL.siguiente' | translate}}</button>
+      </div>
+    </form>
+  </mat-step>
+
   <!-- ORDENADOR DE GASTO -->
-  <mat-step [stepControl]="ordenadorForm" label="{{'GLOBAL.ordenador_gasto' | translate}}">
+  <mat-step [stepControl]="ordenadorForm" *ngIf="!idexud" label="{{'GLOBAL.ordenador_gasto' | translate}}">
     <h5>{{'GLOBAL.ordenador_gasto' | translate}}</h5>
     <div class="row">
       <div class="form-group col-sm">
@@ -63,7 +89,7 @@
   </mat-step>
 
   <!-- SUPERVISOR -->
-  <mat-step [stepControl]="supervisorForm" label="{{'GLOBAL.supervisor' | translate}}">
+  <mat-step [stepControl]="supervisorForm" *ngIf="!idexud" label="{{'GLOBAL.supervisor' | translate}}">
     <h5>{{'GLOBAL.supervisor' | translate}}</h5>
     <div class="row">
       <div class="form-group col-sm">

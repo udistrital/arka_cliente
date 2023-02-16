@@ -1,7 +1,7 @@
 <form [formGroup]="form_cantidad" #fform="ngForm" *ngIf="form_cantidad">
-  <nb-card>
-    <nb-card-header>{{ 'GLOBAL.Solicitudes.CantAprobada' | translate }}</nb-card-header>
-    <nb-card-body>
+  <mat-card>
+    <mat-card-title>{{ 'GLOBAL.Solicitudes.CantAprobada' | translate }}</mat-card-title>
+    <mat-card-content>
       <div class="row">
         <div class="form-group col-sm">
           <label>{{ 'GLOBAL.cantidad' | translate }}</label>
@@ -18,10 +18,10 @@
             {{ 'GLOBAL.Solicitudes.CantDisponible' | translate }}: {{row.SaldoCantidad}}</p>
         </div>
       </div>
-    </nb-card-body>
-    <nb-card-footer>
-      <button type="button" nbButton (click)="cancel()">{{ 'GLOBAL.cancelar' | translate }}</button>
-      <button type="button" [disabled]="form_cantidad.invalid" nbButton (click)="submit()" class="float-right">{{ 'GLOBAL.actualizar' | translate }}</button>
-    </nb-card-footer>
-  </nb-card>
+    </mat-card-content>
+    <mat-card-actions>
+      <button mat-raised-button color="primary" class="float-left text-uppercase" (click)="cancel()">{{ 'GLOBAL.cancelar' | translate }}</button>
+      <button mat-raised-button color="primary" class="float-right text-uppercase" (click)="submit()" [disabled]="form_cantidad.invalid">{{ 'GLOBAL.actualizar' | translate }}</button>
+    </mat-card-actions>
+  </mat-card>
 </form>

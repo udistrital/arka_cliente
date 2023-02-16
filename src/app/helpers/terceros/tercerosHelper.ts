@@ -166,7 +166,7 @@ export class TercerosHelper {
      * Trae todos o un tercero, de acuerdo al criterio especificado
      */
     public getSupervisores() {
-        this.rqManager.setPath('UNIDADES_SERVICE');
+        this.rqManager.setPath('ARGO_SERVICE');
         const query = 'supervisor_contrato?limit=-1&fields=Id,Nombre,SedeSupervisor';
         return this.rqManager.get(query).pipe(
             map(

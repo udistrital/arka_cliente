@@ -79,7 +79,7 @@ export class CrudAjusteComponent implements OnInit {
         }
         this.ajusteData = {};
         this.ajusteData.movimientos = res.TrContable;
-        this.consecutivo = detalle.Consecutivo;
+        this.consecutivo = res.Movimiento.Consecutivo;
         this.showForm = true;
       }
     });
@@ -198,7 +198,7 @@ export class CrudAjusteComponent implements OnInit {
     this.submitted = true;
     this.ajustesHelper.putAjuste(this.ajusteId).toPromise().then((res: any) => {
       this.loading = false;
-      this.alertSuccess(false, JSON.parse(res.Detalle).Consecutivo);
+      this.alertSuccess(false, res.Consecutivo);
     });
   }
 
@@ -207,7 +207,7 @@ export class CrudAjusteComponent implements OnInit {
     this.submitted = true;
     this.entradasHelper.putMovimiento(this.ajuste).toPromise().then((res: any) => {
       this.loading = false;
-      this.alertSuccess(rechazar, JSON.parse(res.Detalle).Consecutivo);
+      this.alertSuccess(rechazar, res.Consecutivo);
     });
   }
 
@@ -225,7 +225,7 @@ export class CrudAjusteComponent implements OnInit {
     this.submitted = true;
     this.ajustesHelper.postAjuste(TrContable).toPromise().then((res: any) => {
       this.loading = false;
-      this.alertSuccess(false, JSON.parse(res.Detalle).Consecutivo);
+      this.alertSuccess(false, res.Consecutivo);
     });
   }
 

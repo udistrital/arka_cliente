@@ -1,13 +1,14 @@
-  <nb-card>
-    <nb-card-body [nbSpinner]="!mostrar">
+<mat-card>
 
-      <p>
-        <span class="fas fa-info-circle"></span>&nbsp;
-        <em>{{ 'GLOBAL.BodegaConsumo.Asignacion.Paso1' | translate }}</em>
-      </p>
+  <mat-card-subtitle>
+    <p><span class="fas fa-info-circle"></span>&nbsp;<em>{{ 'GLOBAL.BodegaConsumo.Asignacion.Paso1' | translate }}</em></p>
+  </mat-card-subtitle>
 
+  <mat-card-content [nbSpinner]="!mostrar">
+    <div class="smart-table-container">
       <ng2-smart-table [settings]="settings" [source]="source" (custom)="onCustom($event)">
       </ng2-smart-table>
+    </div>
+    </mat-card-content>
 
-    </nb-card-body>
-  </nb-card>
+</mat-card>

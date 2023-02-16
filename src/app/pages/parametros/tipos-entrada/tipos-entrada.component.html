@@ -1,16 +1,16 @@
 <div class="col-lg-12">
-  <nb-card [nbSpinner]="updating || !mostrar">
-    <nb-card-header>
+  <mat-card [nbSpinner]="updating || !mostrar">
+    <mat-card-title>
+        {{'GLOBAL.parametros.tiposEntradas.title' | translate}}
+    </mat-card-title>
+    <mat-card-subtitle>
+      {{'GLOBAL.parametros.tiposEntradas.subtitle' | translate}}
+    </mat-card-subtitle>
+    <mat-card-content>
 
-      <h1>{{'GLOBAL.parametros.tiposEntradas.title' | translate}}</h1>
-
-    </nb-card-header>
-    <nb-card-body>
-
-      <p class="h4 pb-4">{{'GLOBAL.parametros.tiposEntradas.subtitle' | translate}}</p>
       <ng2-smart-table [settings]="settingsTiposEntrada" [source]="TiposEntrada" (edit)="DesactivarMovimiento($event)">
       </ng2-smart-table>
 
-    </nb-card-body>
-  </nb-card>
+    </mat-card-content>
+  </mat-card>
 </div>

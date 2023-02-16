@@ -3,7 +3,7 @@
     <div class="row">
         <div class="col">
             <p class="text-uppercase"><strong>{{'GLOBAL.consecutivo' | translate}}:</strong>
-                {{Detalle_Solicitud.Consecutivo}} </p>
+                {{Solicitud.Consecutivo}} </p>
         </div>
         <div class="col">
             <p class="text-uppercase"><strong>{{'GLOBAL.estado' | translate}}:</strong>
@@ -40,8 +40,10 @@
     </div>
 </ng-container>
 
-<ng2-smart-table [settings]="settings" [source]="source" (edit)="onEdit($event)">
-</ng2-smart-table>
+<div class="smart-table-container">
+    <ng2-smart-table [settings]="settings" [source]="source" (edit)="onEdit($event)">
+    </ng2-smart-table>
+</div>
 
 <form [formGroup]="form_apertura" #fform="ngForm" *ngIf="form_apertura">
     <div class="form-group col-sm">
@@ -49,7 +51,7 @@
             <label>{{'GLOBAL.Detalle' | translate}}</label>
             <div class="input-group">
                 <textarea rows="5" placeholder="{{'GLOBAL.BodegaConsumo.Asignacion.Placeholder' | translate}}"
-                    class="form-control" formControlName="Observaciones" required></textarea>
+                    class="form-control" formControlName="Observaciones"></textarea>
             </div>
         </div>
     </div>
@@ -57,11 +59,11 @@
 
 <mat-card-actions *ngIf="Editar" class="justify-content-center" style="padding-bottom: 2rem;">
     <button mat-raised-button color="primary" class="float-left text-uppercase" [disabled]="submitted"
-        (click)="onRechazar()">
+        (click)="confirm(false)">
         {{'GLOBAL.Solicitudes.Rechazar' | translate}}
     </button>
     <button mat-raised-button color="primary" class="float-right text-uppercase" [disabled]="verificar || submitted"
-        (click)="onAprobar()">
+        (click)="confirm(true)">
         {{'GLOBAL.Solicitudes.Aprobar' | translate}}
     </button>
 </mat-card-actions>

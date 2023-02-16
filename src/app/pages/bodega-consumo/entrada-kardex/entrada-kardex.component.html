@@ -1,33 +1,33 @@
-  <form [formGroup]="form_apertura" #fform="ngForm" *ngIf="form_apertura">
-      <nb-card>
-        <nb-card-header>
-          {{'GLOBAL.BodegaConsumo.Asignacion.Existente' | translate}}
-        </nb-card-header>
-        <nb-card-body [nbSpinner]="!cargaLista">
-              <label>{{'GLOBAL.Detalle' | translate}}</label>
-              <div class="input-group">
-                <textarea rows="5" placeholder="{{'GLOBAL.BodegaConsumo.Asignacion.Placeholder' | translate}}"
-                  class="form-control" formControlName="Observaciones"></textarea>
-              </div>
-        </nb-card-body>
-        <nb-card-footer>
-          <button nbButton (click)="onSubmit()" [disabled]="!form_apertura.valid" class="float-right">
-            {{'GLOBAL.BodegaConsumo.Asignacion.BotonPreparar' | translate}}
-          </button>
-        </nb-card-footer>
-      </nb-card>
-      <nb-card *ngIf="ElementoMovimiento">
-        <nb-card-header>
-          {{'GLOBAL.BodegaConsumo.Asignacion.VistaPrevia' | translate}}
-        </nb-card-header>
-        <nb-card-body>
-          <ngx-kardex *ngIf="ElementoMovimiento" [Entrada]="ElementoMovimiento">
-          </ngx-kardex>
-        </nb-card-body>
-        <nb-card-footer>
-          <button nbButton (click)="onSubmit2()" *ngIf="ElementoMovimiento" class="float-right">
-            {{'GLOBAL.BodegaConsumo.Asignacion.BotonConfirmar' | translate}}
-          </button>
-        </nb-card-footer>
-      </nb-card>
-  </form>
+<form [formGroup]="form_apertura" #fform="ngForm" *ngIf="form_apertura">
+  <mat-card>
+    <mat-card-title>
+      {{'GLOBAL.BodegaConsumo.Asignacion.Existente' | translate}}
+    </mat-card-title>
+    <mat-card-content [nbSpinner]="!cargaLista">
+      <label>{{'GLOBAL.Detalle' | translate}}</label>
+      <div class="input-group">
+        <textarea rows="5" placeholder="{{'GLOBAL.BodegaConsumo.Asignacion.Placeholder' | translate}}"
+          class="form-control" formControlName="Observaciones"></textarea>
+      </div>
+    </mat-card-content>
+    <mat-card-actions>
+      <button mat-raised-button color="primary" class="float-right text-uppercase" (click)="onSubmit()" [disabled]="!form_apertura.valid">
+        {{ 'GLOBAL.BodegaConsumo.Asignacion.BotonPreparar' | translate }}
+      </button>
+    </mat-card-actions>
+  </mat-card>
+  <mat-card *ngIf="ElementoMovimiento">
+    <mat-card-title>
+      {{'GLOBAL.BodegaConsumo.Asignacion.VistaPrevia' | translate}}
+    </mat-card-title>
+    <mat-card-content>
+      <ngx-kardex *ngIf="ElementoMovimiento" [Entrada]="ElementoMovimiento">
+      </ngx-kardex>
+    </mat-card-content>
+    <mat-card-actions>
+      <button mat-raised-button color="primary" class="float-right text-uppercase" (click)="onSubmit2()" *ngIf="ElementoMovimiento">
+        {{ 'GLOBAL.BodegaConsumo.Asignacion.BotonConfirmar' | translate }}
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</form>

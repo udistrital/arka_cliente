@@ -177,10 +177,10 @@ export class BodegaConsumoHelper {
      * If the response is successs, it returns the object's data.
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
      */
-    public getElementosKardex(id, limit, offset) {
+    public getElementosKardex(id, limit, offset, order) {
         this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
         return this.rqManager.get('elementos_movimiento?query=ElementoCatalogoId:' + id +
-            '&limit=' + limit + '&offset=' + offset + '&sortby=FechaCreacion&order=asc').pipe(
+            '&limit=' + limit + '&offset=' + offset + '&sortby=FechaCreacion&order=' + order).pipe(
                 map(
                     (res) => {
                         if (res === 'error') {

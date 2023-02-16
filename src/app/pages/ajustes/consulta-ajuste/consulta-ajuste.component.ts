@@ -55,8 +55,6 @@ export class ConsultaAjusteComponent implements OnInit {
     this.ajustesHelper.getAll(this.modo === 'revision', rol).subscribe(res => {
       if (res.length) {
         res.forEach(mov => {
-          mov.Detalle = JSON.parse((mov.Detalle));
-          mov.Consecutivo = mov.Detalle.Consecutivo;
           mov.EstadoMovimientoId = mov.EstadoMovimientoId.Nombre;
           mov.FechaAprobacion = mov.EstadoMovimientoId === 'Ajuste Aprobado' ?
             mov.FechaModificacion : '';

@@ -1,7 +1,6 @@
-import { Component, OnInit, LOCALE_ID, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
-import { Validators, FormBuilder, FormGroup, AbstractControl, ValidatorFn } from '@angular/forms';
-import { getCurrencySymbol, formatCurrency } from '@angular/common';
+import { formatCurrency } from '@angular/common';
 import { Pipe, PipeTransform } from '@angular/core';
 import { Kardex } from '../../../@core/data/models/bodega-consumo.ts/kardex';
 import { BodegaConsumoHelper } from '../../../helpers/bodega_consumo/bodegaConsumoHelper';
@@ -17,9 +16,6 @@ export class KardexComponent implements OnInit {
   next = true;
   SizePage: string;
 
-  encargado: string;
-  elementos: any[];
-  sales: any[];
   kardex: Kardex[];
   cargando: boolean;
 
@@ -28,8 +24,8 @@ export class KardexComponent implements OnInit {
   _offset: number;
   name(elemento: number, limit: number, offset: number) {
     this.cargando = true;
-    if (elemento !== undefined) {
-      this.bodegaConsumoService.getElementosKardex(elemento, limit, offset).subscribe((res: any) => {
+    if (elemento) {
+      this.bodegaConsumoService.getElementosKardex(elemento, limit, offset, 'asc').subscribe((res: any) => {
         if (res.length < this._limit) {
           this.next = false;
         }
@@ -59,8 +55,8 @@ export class KardexComponent implements OnInit {
   name3(elemento: any, limit: number, offset: number) {
     this.cargando = true;
 
-    if (Object.keys(elemento).length !== 0) {
-      this.bodegaConsumoService.getElementosKardex(elemento.ElementoCatalogoId, limit, offset).subscribe((res: any) => {
+    if (elemento && elemento.ElementoCatalogoId) {
+      this.bodegaConsumoService.getElementosKardex(elemento.ElementoCatalogoId, limit, offset, 'asc').subscribe((res: any) => {
         if (res.length) {
           this.ArmarHojaKardex(res);
         }
@@ -82,7 +78,6 @@ export class KardexComponent implements OnInit {
 
   constructor(
     private translate: TranslateService,
-    private fb: FormBuilder,
     private bodegaConsumoService: BodegaConsumoHelper,
   ) {
     this._limit = 10;

@@ -146,7 +146,7 @@ export class FormElementosSeleccionadosComponent implements OnInit {
 
       this.bodegaConsumoHelper.postSolicitud(solicitud).subscribe((res_: any) => {
         if (res_.Id) {
-          this.consecutivo = res_.Detalle ? JSON.parse(res_.Detalle).Consecutivo : '';
+          this.consecutivo = res_.Consecutivo;
           this.pUpManager.showAlertWithOptions(this.optionsRegistro);
           this.router.navigate(['/pages/bodega_consumo/consulta_solicitud']);
         }

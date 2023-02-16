@@ -755,6 +755,7 @@
         "BotonConfirmar": "Confirmar Entrada de Kardex"
       },
       "Consulta": {
+        "detalleKardex": "Ver ficha Kárdex",
         "Titulo": "Consultar Kardex",
         "Indice": "Indice de Fichas Kardex asociadas a Inventario de Consumo. Seleccione una para ver sus registros"
       },
@@ -771,7 +772,11 @@
         "ListaTodas": "Lista de Todas las Solicitudes de Elementos a la Bodega de Consumo",
         "Titulo": "Solicitud de Elementos de Bodega de Consumo",
         "ColumnaElementoCatalogo": "Clase Catálogo",
-        "Ayuda": "Para iniciar la solicitud de elementos, por favor seleccione cualquier elemento. Los elementos solicitados serán listados conforme se van seleccionando."
+        "Ayuda": "Para iniciar la solicitud de elementos, por favor seleccione cualquier elemento. Los elementos solicitados serán listados conforme se van seleccionando.",
+        "confrmTtlA": "Aprobar Solicitud de Elementos",
+        "confrmTxtA": "¿Desea aprobar la solicitud de elementos de consumo?",
+        "confrmTtlR": "Rechazar Solicitud de Elementos",
+        "confrmTxtR": "¿Desea rechazar la solicitud de elementos de consumo?"
       }
     },
 
@@ -846,6 +851,8 @@
     "parametro": "parametro",
     "placeholder_parametro": "parametro",
     "valor": "Valor",
+    "valorLibros": "Valor Libros",
+    "valorInicial": "Valor Inicial",
     "placeholder_valor": "valor",
     "notificacion_configuracion_perfil": "notificacion_configuracion_perfil",
     "placeholder_notificacion_configuracion_perfil": "notificacion_configuracion_perfil",
@@ -930,6 +937,9 @@
     "fechaResolucion": "Fecha resolución",
     "entradaAsociada": "Entrada Asociada",
     "ultimaModificacion": "Última Modificación",
+    "elementoAprovechado": "Elemento Aprovechado",
+    "elementoMejorado": "Elemento Mejorado",
+    "valorActual": "Valor Actual",
 
     "movimientos": {
       "estadoTramite": "En Trámite",
@@ -1079,6 +1089,10 @@
         "AMT": {
           "nombre": "Amortización",
           "descripcion": "Amortización"
+        },
+        "CRR": {
+          "nombre": "Mediciones Posteriores",
+          "descripcion": "Mediciones Posteriores"
         }
       },
       "tab_consumo": "Elementos de Consumo",
@@ -1311,8 +1325,8 @@
         "tipoBienPadre":"Tipo Bien padre",
         "crear": "Crear tipo de bien",
         "editar": "Editar tipo de bien",
-        "umbralInferior": "Umbral Inferior (UVT)",
-        "umbralSuperior": "Umbral Superior (UVT)",
+        "umbralInferior": "Umbral Inferior",
+        "umbralSuperior": "Umbral Superior",
         "bodegaConsumo": "Bodega de Consumo",
         "errorRango": "El rango indicado se solapa con otros tipos de bien.",
         "errorPadre": "Si el tipo de bien es padre, éste no puede tener un tipo de bien padre.",

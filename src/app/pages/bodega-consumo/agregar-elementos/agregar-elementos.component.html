@@ -1,17 +1,23 @@
-  <nb-card>
-    <nb-card-header>
-      <h2>{{ 'GLOBAL.BodegaConsumo.Solicitud.Titulo' | translate}}</h2>
-    </nb-card-header>
-    <nb-card-body [nbSpinner]="!mostrar">
+<mat-card>
+  <mat-card-title>
+    {{ 'GLOBAL.BodegaConsumo.Solicitud.Titulo' | translate}}
+  </mat-card-title>
 
-      <!-- CARD PARA MOSTRAR LAS SOLICITUDES -->
-      <nb-card><nb-card-body>
-      <p><span class="fas fa-info-circle"></span>&nbsp;<em>{{ 'GLOBAL.BodegaConsumo.Solicitud.Ayuda' | translate }}</em></p>
-      <ng2-smart-table [settings]="settings" [source]="source" (custom)="onCustom($event)">
-      </ng2-smart-table>
-      </nb-card-body></nb-card>
+  <mat-card-content [nbSpinner]="!mostrar">
 
-      <ngx-form-elementos-seleccionados *ngIf="DatosEnviados" [Datos]="DatosEnviados">
-      </ngx-form-elementos-seleccionados>
-    </nb-card-body>
-  </nb-card>
+    <mat-card>
+      <mat-card-subtitle>
+        <p><span class="fas fa-info-circle"></span>&nbsp;<em>{{ 'GLOBAL.BodegaConsumo.Solicitud.Ayuda' | translate }}</em></p>
+      </mat-card-subtitle>
+      <mat-card-content>
+        <div class="smart-table-container">
+          <ng2-smart-table [settings]="settings" [source]="source" (custom)="onCustom($event)">
+          </ng2-smart-table>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <ngx-form-elementos-seleccionados *ngIf="DatosEnviados" [Datos]="DatosEnviados">
+    </ngx-form-elementos-seleccionados>
+  </mat-card-content>
+</mat-card>

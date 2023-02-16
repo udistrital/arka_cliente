@@ -67,8 +67,7 @@ export class CrudBajasComponent implements OnInit {
     this.bajasHelper.getOne(bajaId).subscribe(res => {
       this.checkEditor(res.Funcionario);
       if (res) {
-        const detalle = res.Movimiento && res.Movimiento.Detalle ? JSON.parse(res.Movimiento.Detalle) : '';
-        this.consecutivo = detalle ? detalle.Consecutivo : '';
+        this.consecutivo = res.Movimiento.Consecutivo;
         this.movimiento = res.Movimiento;
         this.bajaData = {};
         this.bajaData.elementos = res.Elementos;
@@ -153,8 +152,8 @@ export class CrudBajasComponent implements OnInit {
 
     this.loading = true;
     const detalle_ = this.movimiento ? <DetalleBaja>JSON.parse(this.movimiento.Detalle) : new (DetalleBaja);
-    const ConsecutivoId = detalle_ ? detalle_.ConsecutivoId : 0;
-    const Consecutivo = detalle_ ? detalle_.Consecutivo : '';
+    const ConsecutivoId = this.movimiento ? this.movimiento.ConsecutivoId : 0;
+    const Consecutivo = this.movimiento ? this.movimiento.Consecutivo : '';
     const Funcionario = this.bajaData.controls.info.controls.funcionario.value.id;
     const Elementos = this.bajaData.controls.elementos.controls.map(control => control.value.id);
     const tipoBaja = this.bajaData.controls.info.controls.tipoBaja.value;
@@ -174,13 +173,13 @@ export class CrudBajasComponent implements OnInit {
       Revisor,
       FechaRevisionA,
       FechaRevisionC,
-      Consecutivo,
-      ConsecutivoId,
       RazonRechazo,
     };
 
     const movimiento = <Movimiento>{
       Id: this.bajaId,
+      ConsecutivoId,
+      Consecutivo,
       Detalle: JSON.stringify(detalle),
       Observacion: this.bajaData.controls.observaciones.value.observaciones,
       Activo: true,
@@ -218,19 +217,19 @@ export class CrudBajasComponent implements OnInit {
 
   private updateMovimiento(movimiento, rechazar: boolean) {
     this.entradasHelper.putMovimiento(movimiento).toPromise().then((res: any) => {
-      this.alertSuccess(rechazar, JSON.parse(res.Detalle).Consecutivo);
+      this.alertSuccess(rechazar, res.Consecutivo);
     });
   }
 
   private postBaja(movimiento: TrSoporteMovimiento) {
     this.bajasHelper.postBaja(movimiento).subscribe((res: any) => {
-      this.alertSuccess(false, JSON.parse(res.Detalle).Consecutivo);
+      this.alertSuccess(false, res.Consecutivo);
     });
   }
 
   private putBaja(movimiento: TrSoporteMovimiento, bajaId: number) {
     this.bajasHelper.putBaja(movimiento, bajaId).subscribe((res: any) => {
-      this.alertSuccess(false, JSON.parse(res.Detalle).Consecutivo);
+      this.alertSuccess(false, res.Consecutivo);
     });
   }
 

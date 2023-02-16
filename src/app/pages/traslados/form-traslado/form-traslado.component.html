@@ -178,7 +178,7 @@
   </mat-step>
   <mat-step [stepControl]="formTraslado.get('elementos')" label="{{'GLOBAL.elementos' | translate}}">
     <form [formGroup]="formTraslado">
-      <div class="container-tabla">
+      <div class="smart-table-container">
         <mat-table [dataSource]="dataSource" formArrayName="elementos" matSort>
           <ng-container matColumnDef="acciones">
             <th id="col-acciones" mat-header-cell *matHeaderCellDef class="acciones">
@@ -285,14 +285,14 @@
           <button mat-flat-button color="primary" matStepperPrevious class="float-left text-uppercase">
             {{'GLOBAL.anterior' | translate}}
           </button>
-          <button mat-flat-button color="primary" matStepperNext class="float-right text-uppercase" *ngIf="trContable">
+          <button mat-flat-button color="primary" matStepperNext class="float-right text-uppercase" *ngIf="trContable?.movimientos">
             {{'GLOBAL.siguiente' | translate}}
           </button>
         </div>
       </div>
     </form>
   </mat-step>
-  <mat-step label="{{'GLOBAL.Comprobante_Contable.Titulo' | translate}}" *ngIf="trContable">
+  <mat-step label="{{'GLOBAL.Comprobante_Contable.Titulo' | translate}}" *ngIf="trContable?.movimientos">
     <ngx-comprobante [ajusteInfo]="trContable" [modo]="'get'" [consecutivo]="trContable.consecutivo"
       [fecha]="trContable.Fecha" [concepto]="trContable.Concepto">
     </ngx-comprobante>

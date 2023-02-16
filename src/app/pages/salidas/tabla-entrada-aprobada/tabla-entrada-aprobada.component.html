@@ -8,8 +8,10 @@
   <mat-card-subtitle *ngIf="!consecutivoEntrada && !salida">{{'GLOBAL.salidas.salida_instruccion' | translate}}
   </mat-card-subtitle>
 
-  <ng2-smart-table *ngIf="!consecutivoEntrada" [settings]="settings" [source]="source" (custom)="onCustom($event)">
-  </ng2-smart-table>
+  <div class="smart-table-container" *ngIf="!consecutivoEntrada">
+    <ng2-smart-table [settings]="settings" [source]="source" (custom)="onCustom($event)">
+    </ng2-smart-table>
+  </div>
 
   <mat-accordion *ngIf="consecutivoEntrada" multi>
     <mat-expansion-panel [expanded]="true">

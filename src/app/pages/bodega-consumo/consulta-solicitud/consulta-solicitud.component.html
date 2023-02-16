@@ -9,8 +9,10 @@
     {{ 'GLOBAL.BodegaConsumo.Solicitud.Lista' + (Editar ? 'Pendientes' : 'Todas') | translate }}
   </mat-card-subtitle>
   <mat-card-content [nbSpinner]="!mostrar">
-    <ng2-smart-table *ngIf="!salidaId" [settings]="settings" [source]="source" (custom)="onCustom($event)">
-    </ng2-smart-table>
+    <div class="smart-table-container">
+      <ng2-smart-table *ngIf="!salidaId" [settings]="settings" [source]="source" (custom)="onCustom($event)">
+      </ng2-smart-table>
+    </div>
     <ngx-detalle-solicitud *ngIf="salidaId" (done)="onResponder()" [Editar]="Editar" [salida_id]="salidaId">
     </ngx-detalle-solicitud>
   </mat-card-content>

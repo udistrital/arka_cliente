@@ -105,30 +105,11 @@ export class ActaRecibidoHelper {
         );
     }
 
-/**
-     * Actas de Recibido Activas Get
-     * If the response has errors in the OAS API it should show a popup message with an error.
-     * If the response is successs, it returns the object's data.
-     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
-     */
-    public getActasRecibido3() {
+    public getAllActasRecibido_(estado: string, tipo: string, unidadEjecutora: string, limit: number, offset: number) {
+        const payload = (estado ? 'EstadoActaId=' + estado : '') + (tipo ? '&TipoActaId=' + tipo : '') +
+            (unidadEjecutora ? '&UnidadEjecutoraId=' + unidadEjecutora : '');
         this.rqManager.setPath('ARKA_SERVICE');
-        return this.rqManager.get('acta_recibido/get_all_actas/').pipe(
-            map(
-                (res) => {
-                    if (res === 'error') {
-                        this.pUpManager.showErrorAlert('No se pudo consultar las actas de recibido');
-                        return undefined;
-                    }
-                    return res;
-                },
-            ),
-        );
-    }
-
-    public getActasRecibidoPorEstados(estado) {
-        this.rqManager.setPath('ARKA_SERVICE');
-        return this.rqManager.get('acta_recibido/get_actas_recibido_tipo/' + estado).pipe(
+        return this.rqManager.get('acta_recibido/get_all_actas?' + payload + '&limit=' + limit + '&offset=' + offset).pipe(
             map(
                 (res) => {
                     if (res === 'error') {
@@ -156,10 +137,14 @@ export class ActaRecibidoHelper {
         );
     }
 
+    public getEndpointAllActas(user: string) {
+        return this.rqManager.getPath('ARKA_SERVICE') + 'acta_recibido/get_all_actas?u=' + user;
+    }
+
     public getAllActasRecibidoByEstado(estados: [string], limit: number, offset: number) {
         const querySt = estados.join();
         this.rqManager.setPath('ARKA_SERVICE');
-        return this.rqManager.get('acta_recibido/get_all_actas?states=' + querySt + '&limit=' + limit + '&offset=' + offset).pipe(
+        return this.rqManager.get('acta_recibido/get_all_actas?EstadoActaId=' + querySt + '&limit=' + limit + '&offset=' + offset).pipe(
             map(
                 (res) => {
                     if (res === 'error') {
@@ -426,15 +411,19 @@ export class ActaRecibidoHelper {
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
      */
     public getUnidades() {
-        this.rqManager.setPath('UNIDADES_SERVICE');
-        return this.rqManager.get('unidad?limit=-1').pipe(
+        const payload = 'limit=-1&fields=Id,Nombre&sortby=Nombre&order=asc&query=TipoParametroId__CodigoAbreviacion__in:L|M|T|C|S';
+        this.rqManager.setPath('PARAMETROS_SERVICE');
+        return this.rqManager.get('parametro?' + payload).pipe(
             map(
                 (res) => {
-                    if (res === 'error') {
-                        this.pUpManager.showErrorAlert('No se pudo consultar las unidades');
+                    if (res['Type'] === 'error') {
+                        this.pUpManager.showErrorAlert('No se pudieron cargar los parametros');
                         return undefined;
                     }
-                    return res;
+                    if (!res.Data || (res.Data && res.Data.length === 1 && !Object.keys(res.Data[0]).length)) {
+                        res.Data = [];
+                    }
+                    return res.Data;
                 },
             ),
         );
@@ -448,27 +437,6 @@ export class ActaRecibidoHelper {
     public getParametros() {
         this.rqManager.setPath('ARKA_SERVICE');
         return this.rqManager.get('acta_recibido').pipe(
-            map(
-                (res) => {
-                    if (res['Type'] === 'error') {
-                        this.pUpManager.showErrorAlert('No se pudieron cargar los parametros generales');
-                        return undefined;
-                    }
-                    return res;
-                },
-            ),
-        );
-    }
-
-    /**
-     * Conversion Archivo Get
-     * If the response has errors in the OAS API it should show a popup message with an error.
-     * If the response is successs, it returns the object's data.
-     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
-     */
-    public getProveedor(idProveedor) {
-        this.rqManager.setPath('UNIDADES_SERVICE');
-        return this.rqManager.get('informacion_proveedor/' + idProveedor + '?fields=Id,NumDocumento,NomProveedor').pipe(
             map(
                 (res) => {
                     if (res['Type'] === 'error') {
@@ -561,9 +529,16 @@ export class ActaRecibidoHelper {
         );
     }
 
-    public getActaRecibido(id) {
+    /**
+     * getAllActaRecibido
+     * Consulta endpoint acta_recibido de api acta_recibido_crud
+     * If the response has errors in the OAS API it should show a popup message with an error.
+     * If the response is successs, it returns the object's data.
+     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
+    */
+    public getAllActaRecibido(payload) {
         this.rqManager.setPath('ACTA_RECIBIDO_SERVICE');
-        return this.rqManager.get('acta_recibido/' + id + '').pipe(
+        return this.rqManager.get('acta_recibido?' + payload).pipe(
             map(
                 (res) => {
                     if (res === 'error') {

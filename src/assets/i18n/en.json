@@ -764,13 +764,18 @@
         "UEPS": "LIFO - Last In, First Out"
       },
       "Solicitud": {
+        "detalleKardex": "Ver ficha Kárdex",
         "TituloPendientes": "Pending Requests of Consumer Warehouse",
         "TituloTodas": "Consumer Warehouse Requests",
         "ListaPendientes": "List of Pending Requests of Elements to Consumer Warehouse",
         "ListaTodas": "List of all the Requests of Elements to Consumer Warehouse",
         "Titulo": "Consumer Warehouse Items Request",
         "ColumnaElementoCatalogo": "Catalogue: Code/Class/Element",
-        "Ayuda": "To begin with the Items Request, please choose any item. The selected elements will be listed as they are selected"
+        "Ayuda": "To begin with the Items Request, please choose any item. The selected elements will be listed as they are selected",
+        "confrmTtlA": "Aprobar Solicitud de Elementos",
+        "confrmTxtA": "¿Desea aprobar la solicitud de elementos de consumo?",
+        "confrmTtlR": "Rechazar Solicitud de Elementos",
+        "confrmTxtR": "¿Desea rechazar la solicitud de elementos de consumo?"
       }
     },
 
@@ -846,6 +851,8 @@
     "placeholder_parametro": "Parameter",
     "valor": "Value",
     "placeholder_valor": "Value",
+    "valorLibros": "Valor Libros",
+    "valorInicial": "Valor Inicial",
     "notificacion_configuracion_perfil": "notificacion_configuracion_perfil",
     "placeholder_notificacion_configuracion_perfil": "notificacion_configuracion_perfil",
     "menu_opcion": "menu_opcion",
@@ -929,6 +936,9 @@
     "fechaResolucion": "Fecha resolución",
     "entradaAsociada": "Entrada Asociada",
     "ultimaModificacion": "Última Modificación",
+    "elementoAprovechado": "Elemento Aprovechado",
+    "elementoMejorado": "Elemento Mejorado",
+    "valorActual": "Valor Actual",
 
     "movimientos": {
       "estadoTramite": "Awaiting review",
@@ -1079,6 +1089,10 @@
         "AMT": {
           "nombre": "Amortización",
           "descripcion": "Amortización"
+        },
+        "CRR": {
+          "nombre": "Mediciones Posteriores",
+          "descripcion": "Mediciones Posteriores"
         }
       },
       "tab_consumo": "Elementos de Consumo",
@@ -1311,8 +1325,8 @@
      "tipoBienPadre":"Tipo Bien padre",
      "crear": "Crear tipo de bien",
      "editar": "Editar tipo de bien",
-     "umbralInferior": "Umbral Inferior (UVT)",
-     "umbralSuperior": "Umbral Superior (UVT)",
+     "umbralInferior": "Umbral Inferior",
+     "umbralSuperior": "Umbral Superior",
      "bodegaConsumo": "Bodega de Consumo",
      "errorRango": "El rango indicado se solapa con otros tipos de bien",
      "errorPadre": "Si el tipo de bien es padre, éste no puede tener un tipo de bien padre.",

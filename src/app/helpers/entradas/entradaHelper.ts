@@ -60,7 +60,7 @@ export class EntradaHelper {
     }
 
     public getOrdenadores(criterio: string, query: string= '') {
-        this.rqManager.setPath('UNIDADES_SERVICE');
+        this.rqManager.setPath('ARGO_SERVICE');
         let path = criterio;
         if (query !== '') {
             path += '?query=' + query;
@@ -79,7 +79,7 @@ export class EntradaHelper {
     }
 
     public getSupervisores(criterio: string, query: string= '') {
-        this.rqManager.setPath('UNIDADES_SERVICE');
+        this.rqManager.setPath('ARGO_SERVICE');
         let path = criterio;
         if (query !== '') {
             path += '?query=' + query;
@@ -98,7 +98,7 @@ export class EntradaHelper {
     }
 
     public getDependenciaSupervisor(dependencia: string, query: string= '') {
-        this.rqManager.setPath('UNIDADES_SERVICE');
+        this.rqManager.setPath('ARGO_SERVICE');
         let path = dependencia;
         if (query !== '') {
             path += '?query=ESFCODIGODEP:' + query;
@@ -165,6 +165,29 @@ export class EntradaHelper {
             (tramiteOnly ? ',EstadoMovimientoId__Nombre:Entrada En Trámite' : '');
         this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
         return this.rqManager.get(query).pipe(
+            map(
+                (res) => {
+                    if (res === 'error') {
+                        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.entradas.errorListaEntradas'));
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
+
+    /**
+     * Entradas Get
+     * If the response has errors in the OAS API it should show a popup message with an error.
+     * If the response is successs, it returns the object's data.
+     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
+     */
+    public getTiposMovimientos() {
+        const payload = '?sortby=Nombre&order=asc&limit=-1&query=CodigoAbreviacion__in:' +
+            'ENT_TR|ENT_RP|ENT_CM|ENT_PPA|ENT_EP|ENT_DN|ENT_SI|ENT_CE|ENT_BEP|ENT_IA|ENT_ID|ENT_AM|ENT_ADQ|CRR|BJ_HT';
+        this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
+        return this.rqManager.get('formato_tipo_movimiento' + payload).pipe(
             map(
                 (res) => {
                     if (res === 'error') {
@@ -247,18 +270,7 @@ export class EntradaHelper {
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
      */
     public getFormatoEntradaByName(nombre) {
-        this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
-        return this.rqManager.get('formato_tipo_movimiento?query=Nombre:' + nombre + '&limit=-1').pipe(
-            map(
-                (res) => {
-                    if (res === 'error') {
-                        this.pUpManager.showErrorAlert('No se pudo consultar el contrato contratos');
-                        return undefined;
-                    }
-                    return res;
-                },
-            ),
-        );
+        return this.getAllFormatoTipoMovimiento('limit=-1&query=Nombre:' + nombre);
     }
 
     /**
@@ -304,18 +316,7 @@ export class EntradaHelper {
     }
 
     public getMovimientosArka() {
-        this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
-        return this.rqManager.get('formato_tipo_movimiento?limit=-1&sortby=Id&order=asc').pipe(
-            map(
-                (res) => {
-                    if (res === 'error') {
-                        this.pUpManager.showErrorAlert('No se pudo consultar los tipos de movimiento');
-                        return undefined;
-                    }
-                    return res;
-                },
-            ),
-        );
+        return this.getAllFormatoTipoMovimiento('limit=-1&sortby=Id&order=asc');
     }
 
     public putMovimientoArka(TipoMovimiento) {
@@ -351,8 +352,12 @@ export class EntradaHelper {
     }
 
     public getFormatoEntrada() {
+        return this.getAllFormatoTipoMovimiento('query=NumeroOrden__lte:3&sortby=Id&order=asc&limit=-1');
+    }
+
+    public getAllFormatoTipoMovimiento(payload: string) {
         this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
-        return this.rqManager.get('formato_tipo_movimiento?query=NumeroOrden__lte:2&sortby=Id&order=asc&limit=-1').pipe(
+        return this.rqManager.get('formato_tipo_movimiento?' + payload).pipe(
             map(
                 (res) => {
                     if (res === 'error') {
@@ -363,22 +368,6 @@ export class EntradaHelper {
                 },
             ),
         );
-    }
-
-    public getTiposEntradaByOrden(NumeroOrden) {
-        this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
-        return this.rqManager.get('formato_tipo_movimiento?query=Activo:true,NumeroOrden:' +
-            NumeroOrden + '&fields=CodigoAbreviacion&sortby=Nombre&order=asc&limit=-1').pipe(
-                map(
-                    (res) => {
-                        if (res === 'error') {
-                            this.pUpManager.showErrorAlert('No se pudo consultar el contrato contratos');
-                            return undefined;
-                        }
-                        return res;
-                    },
-                ),
-            );
     }
 
     public getDivisas() {
@@ -430,7 +419,7 @@ export class EntradaHelper {
     }
 
     public getTiposContrato() {
-        this.rqManager.setPath('UNIDADES_SERVICE');
+        this.rqManager.setPath('ARGO_SERVICE');
         return this.rqManager.get('tipo_contrato?fields=Id,TipoContrato&sortby=TipoContrato&order=asc&limit=-1').pipe(
             map(
                 (res) => {

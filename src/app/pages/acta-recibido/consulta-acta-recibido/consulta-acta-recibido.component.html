@@ -1,44 +1,25 @@
-  <nb-card *ngIf="!(editarActa||verActa||validarActa)">
-    <nb-card-header><h2>{{'GLOBAL.Acta_Recibido.varias' | translate}}</h2></nb-card-header>
-    <nb-card-body [nbSpinner]="!mostrar">
-      <em>{{'GLOBAL.Acta_Recibido.ConsultaActas.Instrucciones' | translate}}</em>
+<mat-card>
+  <mat-card-title *ngIf="!(editarActa||verActa||validarActa)">{{'GLOBAL.Acta_Recibido.varias' | translate}}</mat-card-title>
+  <mat-card-subtitle *ngIf="!(editarActa||verActa||validarActa)">
+    <p><span class="fas fa-info-circle"></span>&nbsp;<em>{{ 'GLOBAL.Acta_Recibido.ConsultaActas.Instrucciones' | translate }}</em></p>
+  </mat-card-subtitle>
+  <mat-card-content [nbSpinner]="!mostrar">
+    <div class="smart-table-container" [hidden]="(editarActa||verActa||validarActa)">
       <ng2-smart-table [settings]="settings" [source]="source" (delete)="onDelete($event)"
-        (userRowSelect)="seleccionarActa($event)" (edit)="onEdit($event)" (create)="onCreate($event)">
-      </ng2-smart-table>
-    </nb-card-body>
-    <div class="container">
-      <div class="row">
-        <div class="col-md-10"></div>
-        <div class="col-md-2">
-          <div class="row">
-            <nb-select placeholder="Items por pagina" [(ngModel)]="SizePage" [(selected)]="SizePage" (selectedChange)="changeItemsPerPage()">
-              <nb-option value="10">10</nb-option>
-              <nb-option value="20">20</nb-option>
-              <nb-option value="50">50</nb-option>
-            </nb-select>
-            <button mat-icon-button color="primary" (click) = previousPage() [disabled]="!prev">
-              <mat-icon>keyboard_arrow_left</mat-icon>
-            </button>
-            <button mat-icon-button color="primary" (click) = nextPage() [disabled]="!next">
-              <mat-icon>keyboard_arrow_right</mat-icon>
-            </button>
-          </div>
-        </div>
-      </div>
+        (userRowSelect)="seleccionarActa($event)" (edit)="onEdit($event)" (create)="onCreate($event)"></ng2-smart-table>
     </div>
-  </nb-card>
+  </mat-card-content>
 
   <!-- escritura -->
   <ngx-edicion-acta-recibido *ngIf="editarActa"
-    [Id_Acta]="actaSeleccionada" (cambio)="recargar=true"></ngx-edicion-acta-recibido>
+  [Id_Acta]="actaSeleccionada" (cambio)="onBack(true)"></ngx-edicion-acta-recibido>
 
   <!-- "lectura" (+ checkboxes) -->
-  <ngx-ver-acta-recibido *ngIf="validarActa"
-    [Id_Acta]="actaSeleccionada" Modo="verificar"></ngx-ver-acta-recibido>
+  <ngx-ver-acta-recibido *ngIf="validarActa" [Id_Acta]="actaSeleccionada" Modo="verificar"></ngx-ver-acta-recibido>
 
-  <div class="justify-content-center float-right" *ngIf="actaSeleccionada !== ''">
-    <button type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off"
-      (click)="onBack()">
+  <mat-card-actions *ngIf="actaSeleccionada !== ''">
+    <button mat-flat-button color="primary" class="float-left text-uppercase" (click)="onBack(false)">
       {{'GLOBAL.Acta_Recibido.VerificacionActa.Volver' | translate}}
     </button>
-  </div>
+  </mat-card-actions>
+</mat-card>

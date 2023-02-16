@@ -183,8 +183,7 @@ export class ConsultaSalidasComponent implements OnInit {
               fecha,
             };
           }
-          const obj = JSON.parse(res.Movimiento.Detalle);
-          this.consecutivoSalida = obj.consecutivo;
+          this.consecutivoSalida = res.Movimiento.Consecutivo;
           this.alertSuccess(true);
         } else if (res && res.Error) {
           this.pUpManager.showErrorAlert(res.Error);
@@ -206,8 +205,7 @@ export class ConsultaSalidasComponent implements OnInit {
 
   private alertSuccess(aprobar: boolean) {
     this.source.remove(this.filaSeleccionada);
-    const consecutivo = this.movimiento.Detalle ? JSON.parse(this.movimiento.Detalle).consecutivo : '';
-    this.pUpManager.showAlertWithOptions(this.getOptionsSuccess(aprobar, consecutivo));
+    this.pUpManager.showAlertWithOptions(this.getOptionsSuccess(aprobar, this.movimiento.Consecutivo));
     if (!aprobar) {
       this.onVolver();
     }
@@ -288,18 +286,7 @@ export class ConsultaSalidasComponent implements OnInit {
         },
         MovimientoPadreId: {
           title: this.translate.instant('GLOBAL.entradaAsociada'),
-          valuePrepareFunction: (value: any) => {
-            return value && value.Detalle && JSON.parse(value.Detalle) ? JSON.parse(value.Detalle).consecutivo : '';
-          },
-          filterFunction(cell?: any, search?: string): boolean {
-            if (cell && search.length) {
-              const consecutivo = cell.Detalle && JSON.parse(cell.Detalle) ? JSON.parse(cell.Detalle).consecutivo : '';
-              if (consecutivo && consecutivo.indexOf(search.toUpperCase()) > -1) {
-                return true;
-              }
-            }
-            return false;
-          },
+          ...this.tabla.getSettingsObject('Consecutivo'),
         },
         Funcionario: {
           title: this.translate.instant('GLOBAL.funcionario'),

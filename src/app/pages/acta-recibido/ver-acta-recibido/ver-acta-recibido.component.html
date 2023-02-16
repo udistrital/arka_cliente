@@ -1,13 +1,13 @@
-<nb-card>
-  <nb-card-header><h2>{{'GLOBAL.Acta_Recibido.VerificacionActa.TitleId' | translate: {ID: _ActaId} }}</h2>
+<mat-card>
+  <mat-card-title>{{'GLOBAL.Acta_Recibido.VerificacionActa.TitleId' | translate: {ID: _ActaId} }}<br>
   <label>{{'GLOBAL.Acta_Recibido.ConsultaActas.EstadoHeader' | translate: {STATE: estadoActa} }}</label>
-  </nb-card-header>
-  <nb-card-body [nbSpinner]="!carga_agregada">
+  </mat-card-title>
+  <mat-card-content [nbSpinner]="!carga_agregada">
     <form [formGroup]="firstForm" #fform="ngForm" class="step-container" *ngIf="firstForm">
 
-        <nb-card formGroupName="Formulario1">
-          <nb-card-header>{{'GLOBAL.Acta_Recibido.VerificacionActa.DatosTitle' | translate}}</nb-card-header>
-          <nb-card-body>
+        <mat-card formGroupName="Formulario1">
+          <mat-card-title>{{'GLOBAL.Acta_Recibido.VerificacionActa.DatosTitle' | translate}}</mat-card-title>
+          <mat-card-content>
             <div class="row" *ngIf="actaRegular">
               <div class="form-group col-sm">
                 <label>{{'GLOBAL.Acta_Recibido.ContratistaAsignado' | translate}}</label>
@@ -77,20 +77,20 @@
                 </mat-select>
               </div>
             </div>
-          </nb-card-body>
-        </nb-card>
+          </mat-card-content>
+        </mat-card>
 
-        <nb-card formArrayName="Formulario2">
-          <nb-card-header>{{'GLOBAL.Acta_Recibido.VerificacionActa.SoporteTitle' | translate}}</nb-card-header>
-          <nb-card-body>
+        <mat-card formArrayName="Formulario2">
+          <mat-card-title>{{'GLOBAL.Acta_Recibido.VerificacionActa.SoporteTitle' | translate}}</mat-card-title>
+          <mat-card-content>
             <mat-tab-group [selectedIndex]="selected.value" (selectedIndexChange)="selected.setValue($event)">
               <mat-tab *ngFor="let soporte of controlSoportes['controls']; let i = index" [formGroupName]="i">
                 <ng-template mat-tab-label>
                   {{'GLOBAL.Acta_Recibido.VerificacionActa.SoporteSubTitle' | translate}} &nbsp; {{i + 1}}
                 </ng-template>
                 <div>
-                  <nb-card>
-                    <nb-card-body>
+                  <mat-card>
+                    <mat-card-content>
                       <div class="row">
                         <div class="col" *ngIf="actaRegular">
                           <div class="form-group col-sm">
@@ -116,38 +116,42 @@
                         <div class="col">
                           <div class="form-group col-sm">
                             <label>{{'GLOBAL.Acta_Recibido.DetalleActa.Soporte' | translate}}</label>
-                            <nb-card>
-                              <nb-card-body>
+                            <mat-card>
+                              <mat-card-content>
                                 <div class="col-sm soporte">
                                   <button nbButton type="button" (click)="downloadFile(i)">
                                     <em class="fas fa-eye fa-2x"></em>
                                   </button>
                                 </div>
-                              </nb-card-body>
-                            </nb-card>
+                              </mat-card-content>
+                            </mat-card>
                           </div>
                         </div>
                       </div>
-                    </nb-card-body>
-                  </nb-card>
+                    </mat-card-content>
+                  </mat-card>
                 </div>
               </mat-tab>
             </mat-tab-group>
 
-            <nb-card-body>
-              <div>
-                <ngx-gestionar-elementos [Modo]="Modo" [ActaRecibidoId]="Acta.ActaRecibido.Id"
-                  (ElementosValidos)="eventoElementosSeleccionados($event)" (DatosEnviados)="eventoElementos($event)"
-                  (DatosTotales)="eventoTotales($event)"></ngx-gestionar-elementos>
-              </div>
-            </nb-card-body>
-          </nb-card-body>
-        </nb-card>
+          </mat-card-content>
+        </mat-card>
 
-        <nb-card *ngIf="totales && elementos && elementos.length > 0">
-          <nb-card-header>{{'GLOBAL.Acta_Recibido.VerificacionActa.Consolidado' | translate}}</nb-card-header>
-          <nb-card-body>
-            <table class="consolidado">
+        <mat-card>
+          <mat-card-title>{{'GLOBAL.Acta_Recibido.EdicionActa.ElementosTitle' | translate}}</mat-card-title>
+          <mat-card-content>
+            <ngx-gestionar-elementos [Modo]="Modo" [ActaRecibidoId]="Acta.ActaRecibido.Id"
+              (ElementosValidos)="eventoElementosSeleccionados($event)" (DatosEnviados)="eventoElementos($event)"
+              (DatosTotales)="eventoTotales($event)"></ngx-gestionar-elementos>
+          </mat-card-content>
+        </mat-card>
+
+        <mat-card formGroupName="Formulario3">
+          <mat-card-title>{{'GLOBAL.Acta_Recibido.RegistroActa.DatosAdicionales' | translate}}</mat-card-title>
+          <mat-card-content>
+            <label *ngIf="totales && elementos?.length > 0">
+              {{'GLOBAL.Acta_Recibido.RegistroActa.Consolidado' | translate}}</label>
+            <table class="consolidado" *ngIf="totales && elementos?.length > 0">
               <tr>
                 <th id="c1" class="cell-3">{{'GLOBAL.Acta_Recibido.VerificacionActa.Subtotal' | translate}}</th>
                 <td class="cell-3">{{totales.Subtotal | currency}}</td>
@@ -161,30 +165,24 @@
                 <td class="cell-3">{{totales.ValorTotal | currency}}</td>
               </tr>
             </table>
-          </nb-card-body>
-        </nb-card>
-
-        <nb-card formGroupName="Formulario3">
-          <nb-card-header>{{'GLOBAL.Acta_Recibido.VerificacionActa.DatosAdicionales' | translate}}</nb-card-header>
-          <nb-card-body>
-            <div class="form-group  col-lg-12">
-              <label>{{'GLOBAL.Acta_Recibido.VerificacionActa.Observaciones' | translate}}</label>
-              <div class="input-group">
-                <textarea rows="5" class="form-control" placeholder="{{'GLOBAL.Acta_Recibido.VerificacionActa.Observaciones' | translate }}"
-                  formControlName="Datos_Adicionales"></textarea>
-              </div>
+            <label>{{'GLOBAL.Acta_Recibido.VerificacionActa.Observaciones' | translate}}</label>
+            <div class="input-group">
+              <textarea rows="5" class="form-control" placeholder="{{'GLOBAL.Acta_Recibido.VerificacionActa.Observaciones' | translate }}"
+                formControlName="Datos_Adicionales"></textarea>
             </div>
-          </nb-card-body>
-          <nb-card-footer *ngIf="Modo === 'verificar'">
-            <div class="justify-content-center">
-              <button nbButton (click)="Revisar_Totales2()">{{'GLOBAL.Acta_Recibido.VerificacionActa.Rechazar' |
-                translate}}</button>
-              <button nbButton [disabled]="!bandera" (click)="Revisar_Totales()"
-                class="float-right">{{'GLOBAL.Acta_Recibido.VerificacionActa.Verificar' | translate}}</button>
-            </div>
-          </nb-card-footer>
-        </nb-card>
+          </mat-card-content>
+        </mat-card>
 
-    </form>
-  </nb-card-body>
-</nb-card>
+      </form>
+    </mat-card-content>
+    <mat-card-actions *ngIf="Modo === 'verificar'">
+      <div class="botones-stepper-middle">
+        <button mat-flat-button color="primary" (click)="Revisar_Totales2()">
+          {{'GLOBAL.Acta_Recibido.VerificacionActa.Rechazar' | translate}}
+        </button>
+        <button mat-flat-button color="primary" [disabled]="!bandera" (click)="Revisar_Totales()">
+          {{'GLOBAL.Acta_Recibido.VerificacionActa.Verificar' | translate}}
+        </button>
+      </div>
+    </mat-card-actions>
+</mat-card>

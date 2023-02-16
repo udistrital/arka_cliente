@@ -33,9 +33,10 @@ export class AdquisicionComponent implements OnInit {
   soportes: Array<SoporteActa>;
   fechaFactura: string;
 
-  @ViewChild('stepper', {static: true}) stepper: MatStepper;
+  @ViewChild('stepper', { static: true }) stepper: MatStepper;
 
   @Input() actaRecibidoId: number;
+  @Input() idexud: boolean;
   @Output() data: EventEmitter<TransaccionEntrada> = new EventEmitter<TransaccionEntrada>();
 
   constructor(
@@ -69,9 +70,13 @@ export class AdquisicionComponent implements OnInit {
   }
 
   async onContratoSubmit() {
+    if (this.idexud) {
+      return;
+    }
+
     const existe = this.commonContrato.checkContrato(this.contratos, this.contratoForm.value.contratoCtrl);
     if (!existe) {
-      this.stepper.previous();
+      this.stepper.selectedIndex = 0;
       this.contratoEspecifico = new Contrato;
       this.pUpManager.showErrorAlert('El contrato seleccionado no existe!');
       return;
@@ -97,7 +102,7 @@ export class AdquisicionComponent implements OnInit {
   onSubmit() {
     const detalle = {
       acta_recibido_id: +this.actaRecibidoId,
-      contrato_id: +this.contratoEspecifico.NumeroContratoSuscrito,
+      contrato_id: +this.contratoForm.value.contratoCtrl,
       vigencia_contrato: this.contratoForm.value.vigenciaCtrl,
       factura: +this.facturaForm.value.facturaCtrl,
     };
