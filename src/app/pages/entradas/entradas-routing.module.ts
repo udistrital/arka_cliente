@@ -41,6 +41,3 @@ const routes: Routes = [{
 })
 
 export class EntradasRoutingModule { }
-
-export const routedComponents = [
-];

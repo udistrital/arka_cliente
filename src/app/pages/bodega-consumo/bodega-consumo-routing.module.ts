@@ -68,6 +68,3 @@ const routes: Routes = [{
   exports: [RouterModule],
 })
 export class BodegaConsumoRoutingModule { }
-
-export const routedComponents = [
-];

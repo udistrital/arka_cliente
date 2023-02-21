@@ -5,7 +5,7 @@ import { Ng2SmartTableModule } from 'ng2-smart-table';
 import { ThemeModule } from '../../@theme/theme.module';
 import { CatalogoElementosHelper } from '../../helpers/catalogo-elementos/catalogoElementosHelper';
 import { ArbolComponent } from './arbol/arbol.component';
-import { CatalogoRoutingModule, routedComponents } from './catalogo-routing.module';
+import { CatalogoRoutingModule } from './catalogo-routing.module';
 import { CatalogoComponent } from './catalogo.component';
 import { ConsultaCatalogoComponent } from './consulta-catalogo/consulta-catalogo.component';
 import { CrudGrupoComponent } from './crud-grupo/crud-grupo.component';
@@ -17,6 +17,7 @@ import { RegistroElementosComponent } from './registro-elementos/registro-elemen
 import { TiposBienComponent } from './tipos-bien/tipos-bien.component';
 import { CrudCatalogoComponent } from './crud-catalogo/crud-catalogo.component';
 import { FormTipoBienComponent } from './form-tipo-bien/form-tipo-bien.component';
+import { ListCatalogoComponent } from './list-catalogo/list-catalogo.component';
 
 @NgModule({
   imports: [
@@ -36,15 +37,12 @@ import { FormTipoBienComponent } from './form-tipo-bien/form-tipo-bien.component
     RegistroCatalogoComponent,
     RegistroElementosComponent,
     TiposBienComponent,
-    ...routedComponents,
+    ListCatalogoComponent,
+    CrudCatalogoComponent,
     FormTipoBienComponent,
   ],
   providers: [
     CatalogoElementosHelper,
-  ],
-  exports: [
-    CrudCatalogoComponent,
-    ConsultaCatalogoComponent,
   ],
 })
 export class CatalogoModule { }
