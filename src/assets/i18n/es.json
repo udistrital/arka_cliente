@@ -183,17 +183,6 @@
           }
         }
       },
-      "reportes": {
-        "name": "Reportes",
-        "children": {
-          "entradas": {
-            "name": "Entradas"
-          },
-          "salidas": {
-            "name": "Salidas"
-          }
-        }
-      },
       "ajustes": {
         "name": "Ajustes",
         "children": {
@@ -218,19 +207,11 @@
           }
         }
       },
-      "bienes-inmuebles": {
+      "inmuebles": {
         "name": "Bienes Inmuebles",
         "children": {
-          "listaBienes": {
-            "name": "Lista de Bienes Inmuebles"
-          }
-        }
-      },
-      "parametros": {
-        "name": "Parametrización",
-        "children": {
-          "tiposEntrada": {
-            "name": "Tipos de Entrada"
+          "consulta": {
+            "name": "Consulta"
           }
         }
       },
