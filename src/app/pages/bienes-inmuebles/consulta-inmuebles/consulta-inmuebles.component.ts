@@ -6,11 +6,11 @@ import { SmartTableService } from '../../../@core/data/SmartTableService';
 import { ActaRecibidoCrud } from '../../../helpers/acta_recibido_crud/acta_recibido_crud';
 
 @Component({
-  selector: 'ngx-lista-bienes',
-  templateUrl: './lista-bienes.component.html',
-  styleUrls: ['./lista-bienes.component.scss'],
+  selector: 'ngx-consulta-inmuebles',
+  templateUrl: './consulta-inmuebles.component.html',
+  styleUrls: ['./consulta-inmuebles.component.scss'],
 })
-export class ListaBienesComponent implements OnInit {
+export class ConsultaInmueblesComponent implements OnInit {
 
   spinner: string = '';
   source: LocalDataSource;

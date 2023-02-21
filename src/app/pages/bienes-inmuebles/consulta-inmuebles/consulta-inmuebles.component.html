@@ -5,7 +5,7 @@
   <mat-card-content>
     <ng2-smart-table [settings]="settings" [source]="source" (custom)="onCustom($event)" (create)="onCreate()"
       *ngIf="!bienSeleccionado"></ng2-smart-table>
-    <ngx-avaluo *ngIf="bienSeleccionado && !crear" [inmuebleId]="bienSeleccionado" (volver)="onVolver()"></ngx-avaluo>
+    <ngx-form-inmueble *ngIf="bienSeleccionado && !crear" [inmuebleId]="bienSeleccionado" (volver)="onVolver()"></ngx-form-inmueble>
     <ngx-registro-inmuebles *ngIf="!bienSeleccionado && crear"></ngx-registro-inmuebles>
   </mat-card-content>
 </mat-card>

@@ -5,11 +5,11 @@ import { PopUpManager } from '../../../managers/popUpManager';
 import { ArkaMidInmuebles } from '../../../helpers/arka_mid/inmuebles';
 
 @Component({
-  selector: 'ngx-avaluo',
-  templateUrl: './avaluo.component.html',
-  styleUrls: ['./avaluo.component.scss'],
+  selector: 'ngx-form-inmueble',
+  templateUrl: './form-inmueble.component.html',
+  styleUrls: ['./form-inmueble.component.scss'],
 })
-export class AvaluoComponent implements OnInit {
+export class FormInmuebleComponent implements OnInit {
 
   @Input() inmuebleId: Number;
   @Output() volver = new EventEmitter();

@@ -1,12 +1,12 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { AuthGuard } from '../../@core/_guards/auth.guard';
-import { ListaBienesComponent } from './lista-bienes/lista-bienes.component';
+import { ConsultaInmueblesComponent } from './consulta-inmuebles/consulta-inmuebles.component';
 
 const routes: Routes = [
   {
     path: 'consulta',
-    component: ListaBienesComponent,
+    component: ConsultaInmueblesComponent,
     canActivate: [AuthGuard],
   },
 ];
