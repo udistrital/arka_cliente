@@ -1,21 +1,11 @@
-<div class="col-lg-12">
-  <mat-card>
-    <mat-card-title>
-      Lista de Bienes Inmuebles
-    </mat-card-title>
-    <mat-card-content [nbSpinner]="!mostrar">
-
-      <p class="h4 pb-4" *ngIf="bienSeleccionado === ''&& click === false">Seleccione el bien inmueble sobre el cual desea realizar un avalúo, 
-        o presione el boton Registrar para Ingresar un nuevo bien
-      </p>
-      <div class="col" align="center">
-        <button nbButton (click)="onClick($event)"  *ngIf="bienSeleccionado === ''&& click === false">Registrar Bien +</button>
-      </div>
-
-      <ng2-smart-table [settings]="settings" [source]="source" (custom)="onCustom($event)"
-        *ngIf="bienSeleccionado=== ''&& click === false"></ng2-smart-table>
-      <ngx-avaluo *ngIf="bienSeleccionado !== ''" [bienSeleccionadoId]="bienSeleccionado"></ngx-avaluo>
-      <ngx-registro-inmuebles *ngIf="bienSeleccionado ===''&& click === true"></ngx-registro-inmuebles>
-    </mat-card-content>
-  </mat-card>
-</div>
+<mat-card [nbSpinner]="spinner" [nbSpinnerMessage]="spinner">
+  <mat-card-title>
+    {{ 'GLOBAL.inmuebles.consultaTtl' | translate }}
+  </mat-card-title>
+  <mat-card-content>
+    <ng2-smart-table [settings]="settings" [source]="source" (custom)="onCustom($event)" (create)="onCreate()"
+      *ngIf="!bienSeleccionado"></ng2-smart-table>
+    <ngx-avaluo *ngIf="bienSeleccionado && !crear" [inmuebleId]="bienSeleccionado" (volver)="onVolver()"></ngx-avaluo>
+    <ngx-registro-inmuebles *ngIf="!bienSeleccionado && crear"></ngx-registro-inmuebles>
+  </mat-card-content>
+</mat-card>
