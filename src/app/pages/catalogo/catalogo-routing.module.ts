@@ -63,9 +63,3 @@ const routes: Routes = [{
 })
 
 export class CatalogoRoutingModule { }
-
-export const routedComponents = [
-  CatalogoComponent,
-  ListCatalogoComponent,
-  CrudCatalogoComponent,
-];

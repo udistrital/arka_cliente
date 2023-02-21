@@ -183,17 +183,6 @@
           }
         }
       },
-      "reportes": {
-        "name": "Reports",
-        "children": {
-          "entradas": {
-            "name": "Inputs"
-          },
-          "salidas": {
-            "name": "Outputs"
-          }
-        }
-      },
       "ajustes": {
         "name": "Ajustes",
         "children": {
@@ -218,19 +207,11 @@
           }
         }
       },
-      "bienes-inmuebles": {
-        "name": "bienes-inmuebles",
+      "inmuebles": {
+        "name": "Bienes Inmuebles",
         "children": {
-          "listaBienes": {
-            "name": "lista de bienes"
-          }
-        }
-      },
-      "parametros": {
-        "name": "Parameters",
-        "children": {
-          "tiposEntrada": {
-            "name": "Entry types"
+          "consulta": {
+            "name": "Consulta"
           }
         }
       },
@@ -1207,6 +1188,11 @@
     "seleccionarArch": "Seleccionar archivo",
     "borrarSel": "Eliminar seleccionados",
     "hasta": "to",
+    "espacioFisico": "Espacio Físico",
+    "tipoEspacioFisico": "Tipo Espacio Físico",
+    "informacionGeneral": "Información General",
+    "datosAdicionales": "Datos Adicionales",
+    "valores": "Valores",
   "ajustes": {
     "movimientos_relacionados": "Related transfers",
     "confirmar_anular_entrada": "The related accounting and inventory entries will be reversed",
@@ -1623,6 +1609,14 @@
       "alerta-success-cont-txt": "Los elementos fueron actualizados correctamente y se generaron transacciones contables.",
       "numeroElementos": "Cantidad de elementos modificados",
       "afectacionContable": "Afectación Contable"
+    },
+    "inmuebles": {
+      "consultaTtl": "Consulta de bienes inmuebles",
+      "noData": "No se encontraron bienes inmuebles",
+      "cuentaDebito": "Cuenta Débito Entrada",
+      "cuentaCredito": "Cuenta Crédito Entrada",
+      "cuentaDebitoMediciones": "Cuenta Débito Mediciones Posteriores",
+      "cuentaCreditoMediciones": "Cuenta Crédito Mediciones Posteriores"
     }
   }
 }

@@ -32,7 +32,6 @@ import { CommonActas } from './shared';
     TranslateModule,
   ],
   exports: [
-    VerActaRecibidoComponent,
     GestionarElementosComponent,
   ],
   providers: [

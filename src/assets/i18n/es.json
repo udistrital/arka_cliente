@@ -183,17 +183,6 @@
           }
         }
       },
-      "reportes": {
-        "name": "Reportes",
-        "children": {
-          "entradas": {
-            "name": "Entradas"
-          },
-          "salidas": {
-            "name": "Salidas"
-          }
-        }
-      },
       "ajustes": {
         "name": "Ajustes",
         "children": {
@@ -218,19 +207,11 @@
           }
         }
       },
-      "bienes-inmuebles": {
+      "inmuebles": {
         "name": "Bienes Inmuebles",
         "children": {
-          "listaBienes": {
-            "name": "Lista de Bienes Inmuebles"
-          }
-        }
-      },
-      "parametros": {
-        "name": "Parametrización",
-        "children": {
-          "tiposEntrada": {
-            "name": "Tipos de Entrada"
+          "consulta": {
+            "name": "Consulta"
           }
         }
       },
@@ -1207,6 +1188,11 @@
     "seleccionarArch": "Seleccionar archivo",
     "borrarSel": "Eliminar seleccionados",
     "hasta": "hasta",
+    "espacioFisico": "Espacio Físico",
+    "tipoEspacioFisico": "Tipo Espacio Físico",
+    "informacionGeneral": "Información General",
+    "datosAdicionales": "Datos Adicionales",
+    "valores": "Valores",
     "ajustes": {
       "movimientos_relacionados": "Movimientos relacionados",
       "confirmar_anular_entrada": "Los movimientos de inventario y contables asociados a esta entrada serán anulados",
@@ -1623,6 +1609,14 @@
       "alerta-success-cont-txt": "Los elementos fueron actualizados correctamente y se generaron transacciones contables.",
       "numeroElementos": "Número de Elementos",
       "afectacionContable": "Afectación Contable"
+    },
+    "inmuebles": {
+      "consultaTtl": "Consulta de bienes inmuebles",
+      "noData": "No se encontraron bienes inmuebles",
+      "cuentaDebito": "Cuenta Débito Entrada",
+      "cuentaCredito": "Cuenta Crédito Entrada",
+      "cuentaDebitoMediciones": "Cuenta Débito Mediciones Posteriores",
+      "cuentaCreditoMediciones": "Cuenta Crédito Mediciones Posteriores"
     }
   }
 }

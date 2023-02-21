@@ -1,0 +1,89 @@
+<mat-horizontal-stepper #stepper>
+
+  <mat-step [stepControl]="form.get('datosGenerales')" label="{{'GLOBAL.informacionGeneral' | translate}}">
+    <form [formGroup]="form.get('datosGenerales')">
+      <mat-form-field appearance="outline">
+        <mat-label>{{'GLOBAL.Nombre' | translate}}</mat-label>
+        <input matInput type="text" formControlName="Nombre"
+          placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}">
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>{{'GLOBAL.espacioFisico' | translate}}</mat-label>
+        <input matInput type="text" formControlName="EspacioFisico"
+          placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}">
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>{{'GLOBAL.tipoEspacioFisico' | translate}}</mat-label>
+        <input matInput type="text" formControlName="TipoEspacioFisico"
+          placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}">
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>{{'GLOBAL.sede' | translate}}</mat-label>
+        <input matInput type="text" formControlName="Sede"
+          placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}">
+      </mat-form-field>
+    </form>
+  </mat-step>
+
+  <mat-step [stepControl]="form.get('valores')" label="{{'GLOBAL.valores' | translate}}">
+    <form [formGroup]="form.get('valores')">
+      <mat-form-field appearance="outline">
+        <mat-label>{{'GLOBAL.valorInicial' | translate}}</mat-label>
+        <input matInput type="text" formControlName="ValorInicial" currencyMask
+          placeholder="{{'GLOBAL.valorInicial' | translate : {NUM : 4} }}">
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>{{'GLOBAL.valorResidual' | translate}}</mat-label>
+        <input matInput type="text" formControlName="ValorResidual" currencyMask
+          placeholder="{{'GLOBAL.valorResidual' | translate : {NUM : 4} }}">
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>{{'GLOBAL.vidaUtilSug' | translate}}</mat-label>
+        <input matInput type="text" formControlName="VidaUtil"
+          placeholder="{{'GLOBAL.vidaUtilSug' | translate : {NUM : 4} }}">
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>{{'GLOBAL.fechaCorte' | translate}}</mat-label>
+        <input matInput [matDatepicker]="fecha" formControlName="FechaReferencia"
+          placeholder="{{'GLOBAL.fechaCorte' | translate : {NUM : 4} }}">
+        <mat-datepicker-toggle matSuffix [for]="fecha"></mat-datepicker-toggle>
+        <mat-datepicker #fecha></mat-datepicker>
+      </mat-form-field>
+    </form>
+  </mat-step>
+
+  <mat-step [stepControl]="form.get('cuentas')"  label="{{'GLOBAL.cuentasContables' | translate}}">
+    <form [formGroup]="form.get('cuentas')">
+      <mat-form-field appearance="outline">
+        <mat-label>{{'GLOBAL.inmuebles.cuentaDebito' | translate}}</mat-label>
+        <input matInput type="text" formControlName="CuentaDebitoId"
+          placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}">
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>{{'GLOBAL.inmuebles.cuentaCredito' | translate}}</mat-label>
+        <input matInput type="text" formControlName="CuentaCreditoId"
+          placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}">
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>{{'GLOBAL.inmuebles.cuentaDebitoMediciones' | translate}}</mat-label>
+        <input matInput type="text" formControlName="CuentaMedicionesDebitoId"
+          placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}">
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>{{'GLOBAL.inmuebles.cuentaCreditoMediciones' | translate}}</mat-label>
+        <input matInput type="text" formControlName="CuentaMedicionesCreditoId"
+          placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}">
+      </mat-form-field>
+    </form>
+  </mat-step>
+
+  <mat-step [stepControl]="form.get('datosAdicionales')" label="{{'GLOBAL.datosAdicionales' | translate}}">
+    <form [formGroup]="form.get('datosAdicionales')">
+    </form>
+  </mat-step>
+
+</mat-horizontal-stepper>
+
+<mat-card-actions>
+  <button mat-flat-button color="primary" (click)="onVolver()">{{ 'GLOBAL.volver' | translate }}</button>
+</mat-card-actions>

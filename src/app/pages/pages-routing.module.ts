@@ -50,7 +50,7 @@ const routes: Routes = [{
       canActivate: [AuthGuard],
     },
     {
-      path: 'bienes-inmuebles',
+      path: 'inmuebles',
       loadChildren: () => import('./bienes-inmuebles/bienes-inmuebles.module').then(m => m.BienesInmueblesModule),
       canActivate: [AuthGuard],
     },
