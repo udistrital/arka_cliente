@@ -1,4 +1,4 @@
-  <p-table class="table table-striped table-bordered d-flex justify-content-xl-center smart-table-container" [value]="kardex" [nbSpinner]="cargando">
+  <p-table class="table table-striped table-bordered d-flex justify-content-xl-center smart-table-container" [value]="kardex.reverse()" [nbSpinner]="cargando">
     <ng-template pTemplate="header">
       <tr>
         <th id="col-fecha" class="align-middle" rowspan="2"><strong>{{'GLOBAL.fecha' | translate}}</strong></th>
@@ -43,10 +43,10 @@
       <nb-option value="20">20</nb-option>
       <nb-option value="50">50</nb-option>
     </nb-select>
-    <button mat-icon-button color="primary" (click)="previousPage()" [disabled]="!prev">
+    <button mat-icon-button color="primary" (click)="previousPage()" [disabled]="!prev" *ngIf="!_Entrada">
       <mat-icon>keyboard_arrow_left</mat-icon>
     </button>
-    <button mat-icon-button color="primary" (click)="nextPage()" [disabled]="!next">
+    <button mat-icon-button color="primary" (click)="nextPage()" [disabled]="!next" *ngIf="!_Entrada">
       <mat-icon>keyboard_arrow_right</mat-icon>
     </button>
   </div>

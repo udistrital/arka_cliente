@@ -25,7 +25,7 @@ export class KardexComponent implements OnInit {
   name(elemento: number, limit: number, offset: number) {
     this.cargando = true;
     if (elemento) {
-      this.bodegaConsumoService.getElementosKardex(elemento, limit, offset, 'asc').subscribe((res: any) => {
+      this.bodegaConsumoService.getElementosKardex(elemento, limit, offset, 'desc').subscribe((res: any) => {
         if (res.length < this._limit) {
           this.next = false;
         }
@@ -56,19 +56,9 @@ export class KardexComponent implements OnInit {
     this.cargando = true;
 
     if (elemento && elemento.ElementoCatalogoId) {
-      this.bodegaConsumoService.getElementosKardex(elemento.ElementoCatalogoId, limit, offset, 'asc').subscribe((res: any) => {
-        if (res.length) {
-          this.ArmarHojaKardex(res);
-        }
-        if (res.length < this._limit) {
-          this.next = false;
-          this.ArmarMovimientoPrevio(elemento);
-        }
-        if (res.length === 0) {
-          this.next = false;
-          this._offset -= limit;
-          this.ArmarMovimientoPrevio(elemento);
-        }
+      this.bodegaConsumoService.getElementosKardex(elemento.ElementoCatalogoId, limit, offset, 'desc').subscribe((res: any) => {
+        this.ArmarHojaKardex(res);
+        this.ArmarMovimientoPrevio(elemento);
         this.cargando = false;
       });
     }
@@ -108,8 +98,6 @@ export class KardexComponent implements OnInit {
     }
     if (this._Kardex) {
       this.name(this._Kardex, this._limit, this._offset);
-    } else if (this._Entrada) {
-      this.name3(this._Entrada, this._limit, this._offset);
     }
     this.next = true;
   }
@@ -119,8 +107,6 @@ export class KardexComponent implements OnInit {
     this.prev = true;
     if (this._Kardex) {
       this.name(this._Kardex, this._limit, this._offset);
-    } else if (this._Entrada) {
-      this.name3(this._Entrada, this._limit, this._offset);
     }
   }
 
@@ -178,7 +164,7 @@ export class KardexComponent implements OnInit {
     kardex_.ValorTotal_E = elemento_.ValorTotal;
     kardex_.SaldoValorUnitario = elemento_.SaldoValor / elemento_.SaldoCantidad;
     kardex_.FechaCreacion = new Date().toISOString();
-    this.kardex.push(kardex_);
+    this.kardex.unshift(kardex_);
 
   }
 
