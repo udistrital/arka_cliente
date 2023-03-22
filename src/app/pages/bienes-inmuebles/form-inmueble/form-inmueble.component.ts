@@ -140,21 +140,21 @@ export class FormInmuebleComponent implements OnInit {
     const Cuentas = {
       CuentaCreditoId,
       CuentaDebitoId,
-    }
+    };
 
     const CuentaMedicionesDebitoId = Validadores.getValue(this.form, 'cuentas.CuentaMedicionesDebitoId');
     const CuentaMedicionesCreditoId = Validadores.getValue(this.form, 'cuentas.CuentaMedicionesCreditoId');
     const CuentasMediciones = {
       CuentaCreditoId: CuentaMedicionesCreditoId,
       CuentaDebitoId: CuentaMedicionesDebitoId,
-    }
+    };
 
     const data = {
       Cuentas,
       CuentasMediciones,
       Elemento: { Id: valueElemento.Id },
       ElementoMovimiento: { valueValores },
-      EspacioFisico: { Id: valueElemento.EspacioFisico }
+      EspacioFisico: { Id: valueElemento.EspacioFisico },
     };
 
   }
@@ -165,12 +165,12 @@ export class FormInmuebleComponent implements OnInit {
 
   public getDetalleEspacio() {
 
-    const ctrl = this.form.get('datosGenerales.EspacioFisico')
+    const ctrl = this.form.get('datosGenerales.EspacioFisico');
     if (!ctrl.valid || !ctrl.value || !ctrl.value.TipoEspacioFisicoId) {
       return;
     }
 
-    this.form.get('datosGenerales.TipoEspacioFisico').patchValue(ctrl.value.TipoEspacioFisicoId.Nombrejmmz);
+    this.form.get('datosGenerales.TipoEspacioFisico').patchValue(ctrl.value.TipoEspacioFisicoId.Nombre);
 
   }
 
