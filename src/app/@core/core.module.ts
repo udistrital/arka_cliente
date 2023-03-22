@@ -22,6 +22,7 @@ import { LoaderService } from './utils/load.service';
 import { UtilidadesService } from './utils/utilidades.service';
 import { AutenticationService } from './utils/authentication.service';
 import { SmartTableService } from './data/SmartTableService';
+import { Validadores } from './data/validadores';
 
 
 const socialLinks = [
@@ -109,6 +110,7 @@ export const NB_CORE_PROVIDERS = [
   providers: [
     AuthGuard,
     SmartTableService,
+    Validadores,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,

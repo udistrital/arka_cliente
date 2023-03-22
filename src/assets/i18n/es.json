@@ -860,7 +860,7 @@
     "salir": "salir",
     "eliminar": "Eliminar",
     "actualizar": "Actualizar",
-    "crear": "crear",
+    "crear": "Crear",
     "Relacionar": "Asociar",
     "registrar": "registrar",
     "guardar": "guardar",
@@ -1616,7 +1616,19 @@
       "cuentaDebito": "Cuenta Débito Entrada",
       "cuentaCredito": "Cuenta Crédito Entrada",
       "cuentaDebitoMediciones": "Cuenta Débito Mediciones Posteriores",
-      "cuentaCreditoMediciones": "Cuenta Crédito Mediciones Posteriores"
+      "cuentaCreditoMediciones": "Cuenta Crédito Mediciones Posteriores",
+      "create": {
+        "confrmTtl": "Registrar Inmueble",
+        "confrmTxt": "¿Desea registrar el bien inmueble?",
+        "successTtl": "Inmueble Registrado",
+        "successTxt": "El inmueble fue registrado correctamente"
+      },
+      "update": {
+        "confrmTtl": "Actualizar Inmueble",
+        "confrmTxt": "¿Desea actualizar el bien inmueble?",
+        "successTtl": "Inmueble Actualizado",
+        "successTxt": "El inmueble fue actualizado correctamente"
+      }
     }
   }
 }
