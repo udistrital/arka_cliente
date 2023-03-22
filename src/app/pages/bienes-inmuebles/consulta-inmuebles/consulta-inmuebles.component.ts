@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { LocalDataSource } from 'ng2-smart-table';
 import { PopUpManager } from '../../../managers/popUpManager';
 import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
@@ -17,6 +17,7 @@ export class ConsultaInmueblesComponent implements OnInit {
   bienSeleccionado: number = 0;
   settings: any;
   crear: boolean = false;
+  modo: string; // 'create' || 'read' || 'update'
 
   constructor(
     private pUpManager: PopUpManager,
@@ -36,6 +37,12 @@ export class ConsultaInmueblesComponent implements OnInit {
   }
 
   loadTablaSettings() {
+    const t = {
+      registrar: this.translate.instant('GLOBAL.bajas.consulta.nuevo'),
+      delete: this.translate.instant('GLOBAL.verDetalle'),
+      edit: this.translate.instant('GLOBAL.bajas.revisar.accionEdit'),
+    };
+
     this.settings = {
       hideSubHeader: false,
       mode: 'external',
@@ -43,15 +50,19 @@ export class ConsultaInmueblesComponent implements OnInit {
       actions: {
         columnTitle: this.translate.instant('GLOBAL.Acciones'),
         position: 'right',
-        add: false,
-        edit: false,
-        delete: false,
-        custom: [
-          {
-            name: 'detalle',
-            title: '<i class="fas fa-door-open" title="Seleccionar"></i>',
-          },
-        ],
+        add: true,
+        edit: true,
+        delete: true,
+      },
+      add: {
+        addButtonContent: '<em class="fas" title="' + t.registrar + '" aria-label="' + t.registrar + '">'
+          + this.translate.instant('GLOBAL.crear_nuevo') + '</em>',
+      },
+      edit: {
+        editButtonContent: '<em class="fas fa-edit" title="' + t.edit + '" aria-label="' + t.edit + '"></em>',
+      },
+      delete: {
+        deleteButtonContent: '<em class="fas fa-eye" title="' + t.delete + '" aria-label="' + t.delete + '"></em>',
       },
       columns: {
         FechaCreacion: {
@@ -76,14 +87,22 @@ export class ConsultaInmueblesComponent implements OnInit {
   }
 
   onCreate() {
+    this.modo = 'create';
   }
 
   onCustom(event) {
     this.bienSeleccionado = event.data.Id;
+    this.modo = 'read';
+  }
+
+  onEdit(event) {
+    this.bienSeleccionado = event.data.Id;
+    this.modo = 'update';
   }
 
   onVolver() {
     this.bienSeleccionado = 0;
+    this.modo = '';
   }
 
 }

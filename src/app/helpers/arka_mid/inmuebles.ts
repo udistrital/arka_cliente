@@ -21,7 +21,7 @@ export class ArkaMidInmuebles {
         this.rqManager.setPath('ARKA_SERVICE');
         return this.rqManager.get('inmuebles/' + id).pipe(
             map(
-                (res) => {
+                (res: any) => {
                     if (res.Message) {
                         this.pUpManager.showErrorAlert('No se pudo consultar el detalle del bien inmueble.');
                         return undefined;
@@ -31,4 +31,35 @@ export class ArkaMidInmuebles {
             ),
         );
     }
+
+    public putInmueble(inmueble, id) {
+        this.rqManager.setPath('ARKA_SERVICE');
+        return this.rqManager.put2('inmuebles/', inmueble, id).pipe(
+            map(
+                (res: any) => {
+                    if (res.Message) {
+                        this.pUpManager.showErrorAlert('No se pudo actualizar el detalle del bien inmueble.');
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
+
+    public postInmueble(inmueble) {
+        this.rqManager.setPath('ARKA_SERVICE');
+        return this.rqManager.post('inmuebles/', inmueble).pipe(
+            map(
+                (res: any) => {
+                    if (res.Message) {
+                        this.pUpManager.showErrorAlert('No se pudo crear el bien inmueble.');
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
+
 }

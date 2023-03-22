@@ -3,9 +3,11 @@
     {{ 'GLOBAL.inmuebles.consultaTtl' | translate }}
   </mat-card-title>
   <mat-card-content>
-    <ng2-smart-table [settings]="settings" [source]="source" (custom)="onCustom($event)" (create)="onCreate()"
-      *ngIf="!bienSeleccionado"></ng2-smart-table>
-    <ngx-form-inmueble *ngIf="bienSeleccionado && !crear" [inmuebleId]="bienSeleccionado" (volver)="onVolver()"></ngx-form-inmueble>
-    <ngx-registro-inmuebles *ngIf="!bienSeleccionado && crear"></ngx-registro-inmuebles>
+    <ng2-smart-table *ngIf="!modo" [settings]="settings" [source]="source"
+      (create)="onCreate()" (delete)="onCustom($event)" (edit)="onEdit($event)">
+    </ng2-smart-table>
+    <ngx-form-inmueble *ngIf="modo" [inmuebleId]="bienSeleccionado" [modo]="modo"
+      (volver)="onVolver()">
+    </ngx-form-inmueble>
   </mat-card-content>
 </mat-card>
