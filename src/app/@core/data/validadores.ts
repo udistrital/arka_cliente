@@ -7,11 +7,22 @@ export class Validadores {
     static validateObjectCompleter(key: string, length: number): ValidatorFn {
         return (control: AbstractControl): ValidationErrors | null => {
             const valor = control.value;
-            const checkStringLength = typeof (valor) === 'string' && valor.length && valor.length < length;
-            const checkInvalidString = typeof (valor) === 'string' && valor.length > length - 1;
-            const checkInvalidObject = typeof (valor) === 'object' && valor && !valor[key];
-            return (checkStringLength) ? { errorLongitudMinima: true } :
-                (checkInvalidString || checkInvalidObject) ? { dependenciaNoValido: true } : null;
+            if (!valor) {
+                return null;
+            }
+
+            const checkMinLength = typeof (valor) === 'string' && valor.length && valor.length < length;
+            if (checkMinLength) {
+                return { errorLongitudMinima: true };
+            }
+
+            const checkNoSelected = typeof (valor) === 'string';
+            const checkInvalidObject = typeof (valor) === 'object' && !valor[key];
+            if (checkNoSelected || checkInvalidObject) {
+                return { noSeleccionado: true };
+            }
+
+            return null;
         };
     }
 
