@@ -9,6 +9,7 @@ import { Store } from '@ngrx/store';
 import { debounceTime, distinctUntilChanged, map, startWith } from 'rxjs/operators';
 import { Validadores } from '../../../@core/data/validadores';
 import { OikosHelper } from '../../../helpers/oikos/oikosHelper';
+import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/catalogoElementosHelper';
 
 @Component({
   selector: 'ngx-form-inmueble',
@@ -23,6 +24,7 @@ export class FormInmuebleComponent implements OnInit {
   form: FormGroup;
   cuentas: any[];
   cuentasFiltradas: any[];
+  clases: any[];
   espacios: any[];
   button: string = 'crear';
 
@@ -33,7 +35,8 @@ export class FormInmuebleComponent implements OnInit {
     private listService: ListService,
     private store: Store<IAppState>,
     private inmueblesMid: ArkaMidInmuebles,
-    public oikosHelper: OikosHelper,
+    private catalogoHelper: CatalogoElementosHelper,
+    private oikosHelper: OikosHelper,
   ) { }
 
   ngOnInit() {
@@ -80,16 +83,17 @@ export class FormInmuebleComponent implements OnInit {
         const datosGenerales = {
           Id: res.Elemento.Id,
           Nombre: res.Elemento.Nombre,
+          SubgrupoId: { SubgrupoId: res.SubgrupoId },
           EspacioFisico: res.EspacioFisico,
-          TipoEspacioFisico: res.EspacioFisico.TipoEspacioFisicoId,
+          TipoEspacioFisico: res.EspacioFisico.TipoEspacioFisicoId ? res.EspacioFisico.TipoEspacioFisicoId.Nombre : '',
           Sede: res.Sede.Nombre,
         };
 
         const valores = {
-          ValorInicial: res.ElementoMovimiento.ValorTotal,
+          ValorTotal: res.ElementoMovimiento.ValorTotal,
           ValorResidual: res.ElementoMovimiento.ValorResidual,
           VidaUtil: res.ElementoMovimiento.VidaUtil,
-          FechaReferencia: res.ElementoMovimiento.MovimientoId.FechaCorte,
+          FechaCorte: res.ElementoMovimiento.MovimientoId.FechaCorte,
         };
 
         const cuentas = {
@@ -114,7 +118,6 @@ export class FormInmuebleComponent implements OnInit {
       cuentas: this.cuentasForm,
       // datosAdicionales: this.datosAdicionalesForm,
     });
-    // this.form.disable();
   }
 
   public confirmSubmit() {
@@ -131,31 +134,56 @@ export class FormInmuebleComponent implements OnInit {
   }
 
   private onSubmit() {
-    const valueElemento = Validadores.getValue(this.form, 'datosGenerales');
-    const valueValores = Validadores.getValue(this.form, 'valores');
+    const Elemento = Validadores.getValue(this.form, 'datosGenerales');
+
+    const ElementoMovimiento = {
+      ValorTotal: Validadores.getValue(this.form, 'valores.ValorTotal'),
+      ValorResidual: Validadores.getValue(this.form, 'valores.ValorResidual'),
+      MovimientoId: { FechaCorte: Validadores.getValue(this.form, 'valores.FechaCorte') },
+      VidaUtil: Validadores.getValue(this.form, 'valores.VidaUtil'),
+    };
 
     const CuentaDebitoId = Validadores.getValue(this.form, 'cuentas.CuentaDebitoId');
     const CuentaCreditoId = Validadores.getValue(this.form, 'cuentas.CuentaCreditoId');
-
     const Cuentas = {
-      CuentaCreditoId,
-      CuentaDebitoId,
+      CuentaCreditoId: { Id: CuentaCreditoId.Id },
+      CuentaDebitoId: { Id: CuentaDebitoId.Id },
     };
 
     const CuentaMedicionesDebitoId = Validadores.getValue(this.form, 'cuentas.CuentaMedicionesDebitoId');
     const CuentaMedicionesCreditoId = Validadores.getValue(this.form, 'cuentas.CuentaMedicionesCreditoId');
     const CuentasMediciones = {
-      CuentaCreditoId: CuentaMedicionesCreditoId,
-      CuentaDebitoId: CuentaMedicionesDebitoId,
+      CuentaCreditoId: { Id: CuentaMedicionesCreditoId.Id },
+      CuentaDebitoId: { Id: CuentaMedicionesDebitoId.Id },
     };
 
     const data = {
       Cuentas,
       CuentasMediciones,
-      Elemento: { Id: valueElemento.Id },
-      ElementoMovimiento: { valueValores },
-      EspacioFisico: { Id: valueElemento.EspacioFisico },
+      Elemento,
+      ElementoMovimiento,
+      EspacioFisico: Elemento.EspacioFisico,
+      SubgrupoId: Elemento.SubgrupoId.SubgrupoId,
     };
+
+
+    if (this.inmuebleId) {
+      this.inmueblesMid.putInmueble(data, this.inmuebleId).subscribe(res => {
+        if (res.Error) {
+          this.pUpManager.showErrorAlert(res.Error);
+        } else {
+          this.pUpManager.showAlertWithOptions(this.optionsSuccess);
+        }
+      });
+    } else {
+      this.inmueblesMid.postInmueble(data).subscribe(res => {
+        if (res.Error) {
+          this.pUpManager.showErrorAlert(res.Error);
+        } else {
+          this.pUpManager.showAlertWithOptions(this.optionsSuccess);
+        }
+      });
+    }
 
   }
 
@@ -187,9 +215,18 @@ export class FormInmuebleComponent implements OnInit {
           validators: [Validators.required],
         },
       ],
+      SubgrupoId: [
+        {
+          value: '',
+          disabled,
+        },
+        {
+          validators: [Validators.required, Validadores.validateObjectCompleter('SubgrupoId', 4)],
+        },
+      ],
       EspacioFisico: [
         {
-          value: {},
+          value: '',
           disabled,
         },
         {
@@ -210,6 +247,11 @@ export class FormInmuebleComponent implements OnInit {
       ],
     });
 
+    this.catalogoHelper.cambiosClase(form.get('SubgrupoId').valueChanges)
+      .subscribe((response: any) => {
+        this.clases = response.queryOptions;
+      });
+
     this.oikosHelper.cambiosEspacios(form.get('EspacioFisico').valueChanges)
       .subscribe((response: any) => {
         this.espacios = response.queryOptions;
@@ -222,7 +264,7 @@ export class FormInmuebleComponent implements OnInit {
     const disabled = this.modo !== 'create';
     const form = this.fb.group({
       Id: [0],
-      ValorInicial: [
+      ValorTotal: [
         {
           value: '',
           disabled,
@@ -242,14 +284,14 @@ export class FormInmuebleComponent implements OnInit {
       ],
       VidaUtil: [
         {
-          value: '',
+          value: 0,
           disabled,
         },
         {
           validators: [Validators.required],
         },
       ],
-      FechaReferencia: [
+      FechaCorte: [
         {
           value: '',
           disabled,
@@ -357,8 +399,8 @@ export class FormInmuebleComponent implements OnInit {
   get optionsSuccess() {
     return {
       type: 'success',
-      title: this.translate.instant('GLOBAL.traslados.' + this.modo + '.successTtl'),
-      text: this.translate.instant('GLOBAL.traslados.' + this.modo + '.successTxt'),
+      title: this.translate.instant('GLOBAL.inmuebles.' + this.modo + '.successTtl'),
+      text: this.translate.instant('GLOBAL.inmuebles.' + this.modo + '.successTxt'),
       showConfirmButton: true,
     };
   }
