@@ -35,8 +35,8 @@ export class FormInmuebleComponent implements OnInit {
     private listService: ListService,
     private store: Store<IAppState>,
     private inmueblesMid: ArkaMidInmuebles,
-    private catalogoHelper: CatalogoElementosHelper,
-    private oikosHelper: OikosHelper,
+    public catalogoHelper: CatalogoElementosHelper,
+    public oikosHelper: OikosHelper,
   ) { }
 
   ngOnInit() {
