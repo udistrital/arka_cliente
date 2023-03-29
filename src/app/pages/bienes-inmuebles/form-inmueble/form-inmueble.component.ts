@@ -23,6 +23,7 @@ export class FormInmuebleComponent implements OnInit {
   @Output() volver = new EventEmitter();
   form: FormGroup;
   cuentas: any[];
+  sedes: any;
   cuentasFiltradas: any[];
   clases: any[];
   espacios: any[];
@@ -61,13 +62,16 @@ export class FormInmuebleComponent implements OnInit {
 
     this.listService.findPlanCuentasDebito();
     this.listService.findPlanCuentasCredito();
+    this.listService.findSedes();
     this.store.select((stte) => stte).subscribe(
       (list) => {
         if (list.listPlanCuentasCredito.length && list.listPlanCuentasDebito.length &&
-          list.listPlanCuentasCredito[0].length && list.listPlanCuentasDebito[0].length) {
+          list.listPlanCuentasCredito[0].length && list.listPlanCuentasDebito[0].length &&
+          list.listSedes.length && list.listSedes[0]) {
           const credito = list.listPlanCuentasCredito[0];
           const debito = list.listPlanCuentasDebito[0];
           this.cuentas = debito.concat(credito);
+          this.sedes = list.listSedes[0];
         }
       },
     );
@@ -99,8 +103,6 @@ export class FormInmuebleComponent implements OnInit {
         const cuentas = {
           CuentaDebitoId: res.Cuentas.CuentaDebitoId,
           CuentaCreditoId: res.Cuentas.CuentaCreditoId,
-          CuentaMedicionesDebitoId: res.CuentasMediciones.CuentaDebitoId,
-          CuentaMedicionesCreditoId: res.CuentasMediciones.CuentaCreditoId,
         };
 
         this.form.patchValue({
@@ -108,6 +110,18 @@ export class FormInmuebleComponent implements OnInit {
           valores,
           cuentas,
         });
+
+        if (res.CuentasMediciones.CuentaDebitoId && res.CuentasMediciones.CuentaDebitoId.Id) {
+          const cuentasMediciones = {
+            CuentaMedicionesDebitoId: res.CuentasMediciones.CuentaDebitoId,
+            CuentaMedicionesCreditoId: res.CuentasMediciones.CuentaCreditoId,
+          };
+
+          this.form.patchValue({
+            cuentasMediciones,
+          });
+        }
+
       });
   }
 
@@ -200,6 +214,12 @@ export class FormInmuebleComponent implements OnInit {
 
     this.form.get('datosGenerales.TipoEspacioFisico').patchValue(ctrl.value.TipoEspacioFisicoId.Nombre);
 
+    const sede = this.oikosHelper.getSedeEspacioFisico(ctrl.value.CodigoAbreviacion, this.sedes);
+    if (!sede) {
+      return;
+    }
+
+    this.form.get('datosGenerales.Sede').patchValue(sede.Nombre);
   }
 
   get datosGeneralesForm(): FormGroup {

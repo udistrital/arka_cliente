@@ -1,43 +1,47 @@
 <mat-horizontal-stepper #stepper>
 
   <mat-step [stepControl]="form.get('datosGenerales')" label="{{'GLOBAL.informacionGeneral' | translate}}">
-    <form [formGroup]="form.get('datosGenerales')">
-      <mat-form-field appearance="outline">
-        <mat-label>{{'GLOBAL.Nombre' | translate}}</mat-label>
-        <input matInput type="text" formControlName="Nombre"
-          placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}">
-      </mat-form-field>
-      <mat-form-field appearance="outline">
-        <mat-label>{{'GLOBAL.subgrupo.clase.nombre' | translate}}</mat-label>
-        <input matInput type="text" formControlName="SubgrupoId" [matAutocomplete]="autoSubgrupo"
-          placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}">
-        <mat-autocomplete #autoSubgrupo="matAutocomplete" [displayWith]="catalogoHelper.muestraClase">
-          <mat-option *ngFor="let clase of clases" [value]="clase">
-            {{catalogoHelper.muestraClase(clase)}}
-          </mat-option>
-        </mat-autocomplete>
-      </mat-form-field>
-      <mat-form-field appearance="outline">
-        <mat-label>{{'GLOBAL.espacioFisico' | translate}}</mat-label>
-        <input matInput type="text" formControlName="EspacioFisico" [matAutocomplete]="autoEspacio"
-          placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}">
-        <mat-autocomplete #autoEspacio="matAutocomplete" [displayWith]="oikosHelper.muestraDependencia"
-          (optionSelected)="getDetalleEspacio()">
-          <mat-option *ngFor="let esp of espacios" [value]="esp">
-            {{oikosHelper.muestraDependencia(esp)}}
-          </mat-option>
-        </mat-autocomplete>
-      </mat-form-field>
-      <mat-form-field appearance="outline">
-        <mat-label>{{'GLOBAL.tipoEspacioFisico' | translate}}</mat-label>
-        <input matInput type="text" formControlName="TipoEspacioFisico"
-          placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}">
-      </mat-form-field>
-      <mat-form-field appearance="outline">
-        <mat-label>{{'GLOBAL.sede' | translate}}</mat-label>
-        <input matInput type="text" formControlName="Sede"
-          placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}">
-      </mat-form-field>
+    <form [formGroup]="form.get('datosGenerales')" class="cuentas">
+      <div>
+        <mat-form-field appearance="outline">
+          <mat-label>{{'GLOBAL.Nombre' | translate}}</mat-label>
+          <input matInput type="text" formControlName="Nombre"
+            placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}">
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>{{'GLOBAL.subgrupo.clase.nombre' | translate}}</mat-label>
+          <input matInput type="text" formControlName="SubgrupoId" [matAutocomplete]="autoSubgrupo"
+            placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}">
+          <mat-autocomplete #autoSubgrupo="matAutocomplete" [displayWith]="catalogoHelper.muestraClase">
+            <mat-option *ngFor="let clase of clases" [value]="clase">
+              {{catalogoHelper.muestraClase(clase)}}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+      </div>
+      <div>
+        <mat-form-field appearance="outline">
+          <mat-label>{{'GLOBAL.espacioFisico' | translate}}</mat-label>
+          <input matInput type="text" formControlName="EspacioFisico" [matAutocomplete]="autoEspacio"
+            placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}">
+          <mat-autocomplete #autoEspacio="matAutocomplete" [displayWith]="oikosHelper.muestraDependencia"
+            (optionSelected)="getDetalleEspacio()">
+            <mat-option *ngFor="let esp of espacios" [value]="esp">
+              {{esp.Nombre}}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>{{'GLOBAL.sede' | translate}}</mat-label>
+          <input matInput type="text" formControlName="Sede"
+            placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}">
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>{{'GLOBAL.tipoEspacioFisico' | translate}}</mat-label>
+          <input matInput type="text" formControlName="TipoEspacioFisico"
+            placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}">
+        </mat-form-field>
+      </div>
     </form>
   </mat-step>
 
