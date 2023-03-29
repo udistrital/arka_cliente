@@ -112,13 +112,13 @@ export class FormInmuebleComponent implements OnInit {
         });
 
         if (res.CuentasMediciones.CuentaDebitoId && res.CuentasMediciones.CuentaDebitoId.Id) {
-          const cuentasMediciones = {
-            CuentaMedicionesDebitoId: res.CuentasMediciones.CuentaDebitoId,
-            CuentaMedicionesCreditoId: res.CuentasMediciones.CuentaCreditoId,
-          };
 
-          this.form.patchValue({
-            cuentasMediciones,
+          const CuentaMedicionesDebitoId = res.CuentasMediciones.CuentaDebitoId;
+          const CuentaMedicionesCreditoId = res.CuentasMediciones.CuentaCreditoId;
+
+          this.form.get('cuentas').patchValue({
+            CuentaMedicionesDebitoId,
+            CuentaMedicionesCreditoId,
           });
         }
 
