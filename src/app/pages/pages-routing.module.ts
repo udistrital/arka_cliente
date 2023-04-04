@@ -70,6 +70,11 @@ const routes: Routes = [{
       canActivate: [AuthGuard],
     },
     {
+      path: 'avaluo',
+      loadChildren: () => import('./avaluo/avaluo.module').then(m => m.AvaluoModule),
+      canActivate: [AuthGuard],
+    },
+    {
       path: '',
       redirectTo: 'dashboard',
       pathMatch: 'full',
