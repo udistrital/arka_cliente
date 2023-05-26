@@ -18,8 +18,3 @@ const routes: Routes = [{
   exports: [RouterModule],
 })
 export class MiscellaneousRoutingModule { }
-
-export const routedComponents = [
-  MiscellaneousComponent,
-  NotFoundComponent,
-];

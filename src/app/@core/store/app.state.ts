@@ -9,8 +9,7 @@ import { Unidad } from '../data/models/acta_recibido/unidades';
 
 export interface IAppState {
   listProveedores: Proveedor[];
-  listPlanCuentasCredito: Cuenta[][];
-  listPlanCuentasDebito: Cuenta[][];
+  listPlanCuentas: Cuenta[][];
   listSedes: Ubicacion[];
   listUbicaciones: Ubicacion[];
   listEstadosActa: EstadoActa[];

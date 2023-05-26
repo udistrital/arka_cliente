@@ -411,7 +411,7 @@ export class ActaRecibidoHelper {
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
      */
     public getUnidades() {
-        const payload = 'limit=-1&fields=Id,Nombre&sortby=Nombre&order=asc&query=TipoParametroId__CodigoAbreviacion__in:L|M|T|C|S';
+        const payload = 'limit=-1&fields=Id,Nombre&sortby=Nombre&order=asc&query=Activo:true,TipoParametroId__CodigoAbreviacion__in:L|M|T|C|S';
         this.rqManager.setPath('PARAMETROS_SERVICE');
         return this.rqManager.get('parametro?' + payload).pipe(
             map(

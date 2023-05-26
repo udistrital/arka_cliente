@@ -17,38 +17,19 @@ export class ListService {
     private store: Store<IAppState>,
   ) { }
 
-  public findPlanCuentasCredito() {
+  public findPlanCuentas() {
 
-    this.store.select(<any>REDUCER_LIST.PlanCuentasCredito).subscribe(
+    this.store.select(<any>REDUCER_LIST.PlanCuentas).subscribe(
       (list: any) => {
         if (!list || list.length === 0) {
-          this.CatalogoElementos.getPlanCuentas('credito')
+          this.CatalogoElementos.getPlanCuentas('todas')
             .subscribe(
               (res: any[]) => {
 
-                this.addList(REDUCER_LIST.PlanCuentasCredito, res);
+                this.addList(REDUCER_LIST.PlanCuentas, res);
               },
               error => {
-                this.addList(REDUCER_LIST.PlanCuentasCredito, []);
-              },
-            );
-        }
-      },
-    );
-  }
-
-  public findPlanCuentasDebito() {
-
-    this.store.select(<any>REDUCER_LIST.PlanCuentasDebito).subscribe(
-      (list: any) => {
-        if (!list || list.length === 0) {
-          this.CatalogoElementos.getPlanCuentas('debito') // tema de base financiera desplegada debito
-            .subscribe(
-              (res: any[]) => {
-                this.addList(REDUCER_LIST.PlanCuentasDebito, res);
-              },
-              error => {
-                this.addList(REDUCER_LIST.PlanCuentasDebito, []);
+                this.addList(REDUCER_LIST.PlanCuentas, []);
               },
             );
         }

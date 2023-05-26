@@ -43,19 +43,15 @@ export class ComprobanteComponent implements OnInit {
   ngOnInit() {
     this.buildForm();
     if (this.modo !== 'get') {
-      this.listService.findPlanCuentasDebito();
-      this.listService.findPlanCuentasCredito();
+      this.listService.findPlanCuentas();
     }
   }
 
   public loadLists() {
     this.store.select((stte) => stte).subscribe(
       (list) => {
-        if (list.listPlanCuentasCredito.length && list.listPlanCuentasDebito.length &&
-          list.listPlanCuentasCredito[0].length && list.listPlanCuentasDebito[0].length) {
-          const credito = list.listPlanCuentasCredito[0];
-          const debito = list.listPlanCuentasDebito[0];
-          this.cuentas = debito.concat(credito);
+        if (list.listPlanCuentas.length && list.listPlanCuentas[0].length) {
+          this.cuentas = list.listPlanCuentas[0];
         }
       },
     );

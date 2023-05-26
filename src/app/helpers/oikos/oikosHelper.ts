@@ -72,22 +72,8 @@ export class OikosHelper {
     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
     */
     public getSedes() {
-        const query = 'espacio_fisico?limit=-1&sortby=Nombre&order=asc&query=TipoEspacioFisicoId__Nombre:SEDE';
-        this.rqManager.setPath('OIKOS_SERVICE');
-        return this.rqManager.get(query).pipe(
-            map(
-                (res) => {
-                    if (res === 'error') {
-                        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.error_dependencias'));
-                        return undefined;
-                    }
-                    if (!res.length || (res.length === 1 && !Object.keys(res[0]).length)) {
-                        res = [];
-                    }
-                    return res;
-                },
-            ),
-        );
+        const payload = 'limit=-1&sortby=Nombre&order=asc&query=TipoEspacioFisicoId__Nombre:SEDE';
+        return this.getAllEspacioFisico(payload);
     }
 
     /**
@@ -109,6 +95,36 @@ export class OikosHelper {
                 },
             ),
         );
+    }
+
+    public cambiosEspacios(valueChanges: Observable<any>) {
+        return valueChanges.pipe(
+            startWith(''),
+            debounceTime(250),
+            distinctUntilChanged(),
+            switchMap((val: any) => this.loadEspacios(val)),
+        );
+    }
+
+    private loadEspacios(text: string) {
+        const queryOptions$ = text.length > 3 ?
+            this.getAllEspacioFisico('limit=-1&sortby=Nombre&order=asc&query=Nombre__icontains:' + text) :
+            new Observable((obs) => { obs.next([]); });
+        return combineLatest([queryOptions$]).pipe(
+            map(([queryOptions_$]) => ({
+                queryOptions: queryOptions_$,
+            })),
+        );
+    }
+
+    public getSedeEspacioFisico(codigoEspacio: string, sedes: any[]) {
+        if (!codigoEspacio.length || !sedes.length) {
+            return;
+        }
+
+        const codigoSede = codigoEspacio.substring(0, 2) + codigoEspacio.substring(2).replace(/\d.*/g, '');
+        const sede = sedes.find(x => x && x.CodigoAbreviacion === codigoSede);
+        return sede;
     }
 
 }

@@ -1,0 +1,13 @@
+<mat-card [nbSpinner]="spinner" [nbSpinnerMessage]="spinner">
+  <mat-card-title>
+    {{ 'GLOBAL.inmuebles.consultaTtl' | translate }}
+  </mat-card-title>
+  <mat-card-content>
+    <ng2-smart-table *ngIf="!modo" [settings]="settings" [source]="source"
+      (create)="onCreate()" (delete)="onCustom($event)" (edit)="onEdit($event)">
+    </ng2-smart-table>
+    <ngx-form-inmueble *ngIf="modo" [inmuebleId]="bienSeleccionado" [modo]="modo"
+      (volver)="onVolver()">
+    </ngx-form-inmueble>
+  </mat-card-content>
+</mat-card>

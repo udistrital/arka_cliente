@@ -56,8 +56,7 @@ export class CrudCuentasComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.listService.findPlanCuentasDebito();
-    this.listService.findPlanCuentasCredito();
+    this.listService.findPlanCuentas();
     this.loadCatalogos();
     this.cargarTiposDeMovimientos();
     this.cargaPermisoEdicionCuentas();

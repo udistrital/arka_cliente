@@ -1,0 +1,139 @@
+<mat-horizontal-stepper #stepper>
+
+  <mat-step [stepControl]="form.get('datosGenerales')" label="{{'GLOBAL.informacionGeneral' | translate}}">
+    <form [formGroup]="form.get('datosGenerales')" class="cuentas">
+      <div>
+        <mat-form-field appearance="outline">
+          <mat-label>{{'GLOBAL.Nombre' | translate}}</mat-label>
+          <input matInput type="text" formControlName="Nombre"
+            placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}">
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>{{'GLOBAL.subgrupo.clase.nombre' | translate}}</mat-label>
+          <input matInput type="text" formControlName="SubgrupoId" [matAutocomplete]="autoSubgrupo"
+            placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}">
+          <mat-autocomplete #autoSubgrupo="matAutocomplete" [displayWith]="catalogoHelper.muestraClase">
+            <mat-option *ngFor="let clase of clases" [value]="clase">
+              {{catalogoHelper.muestraClase(clase)}}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+      </div>
+      <div>
+        <mat-form-field appearance="outline">
+          <mat-label>{{'GLOBAL.espacioFisico' | translate}}</mat-label>
+          <input matInput type="text" formControlName="EspacioFisico" [matAutocomplete]="autoEspacio"
+            placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}">
+          <mat-autocomplete #autoEspacio="matAutocomplete" [displayWith]="oikosHelper.muestraDependencia"
+            (optionSelected)="getDetalleEspacio()">
+            <mat-option *ngFor="let esp of espacios" [value]="esp">
+              {{esp.Nombre}}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>{{'GLOBAL.sede' | translate}}</mat-label>
+          <input matInput type="text" formControlName="Sede"
+            placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}">
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>{{'GLOBAL.tipoEspacioFisico' | translate}}</mat-label>
+          <input matInput type="text" formControlName="TipoEspacioFisico"
+            placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}">
+        </mat-form-field>
+      </div>
+    </form>
+  </mat-step>
+
+  <mat-step [stepControl]="form.get('valores')" label="{{'GLOBAL.valores' | translate}}">
+    <form [formGroup]="form.get('valores')">
+      <mat-form-field appearance="outline">
+        <mat-label>{{'GLOBAL.valorInicial' | translate}}</mat-label>
+        <input matInput type="text" formControlName="ValorTotal" currencyMask
+          placeholder="{{'GLOBAL.valorInicial' | translate : {NUM : 4} }}">
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>{{'GLOBAL.valorResidual' | translate}}</mat-label>
+        <input matInput type="text" formControlName="ValorResidual" currencyMask
+          placeholder="{{'GLOBAL.valorResidual' | translate : {NUM : 4} }}">
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>{{'GLOBAL.vidaUtilSug' | translate}}</mat-label>
+        <input matInput type="number" min="0" max="100" step="1" formControlName="VidaUtil"
+          placeholder="{{'GLOBAL.vidaUtilSug' | translate : {NUM : 4} }}">
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>{{'GLOBAL.fechaCorte' | translate}}</mat-label>
+        <input matInput [matDatepicker]="fecha" formControlName="FechaCorte"
+          placeholder="{{'GLOBAL.fechaCorte' | translate : {NUM : 4} }}">
+        <mat-datepicker-toggle matSuffix [for]="fecha"></mat-datepicker-toggle>
+        <mat-datepicker #fecha></mat-datepicker>
+      </mat-form-field>
+    </form>
+  </mat-step>
+
+  <mat-step [stepControl]="form.get('cuentas')" label="{{'GLOBAL.cuentasContables' | translate}}">
+    <form [formGroup]="form.get('cuentas')" class="cuentas">
+      <mat-label>Entrada</mat-label>
+      <div>
+        <mat-form-field appearance="outline">
+          <mat-label>{{'GLOBAL.inmuebles.cuentaDebito' | translate}}</mat-label>
+          <input matInput type="text" formControlName="CuentaDebitoId" [matAutocomplete]="autoDb"
+            placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}">
+          <mat-autocomplete #autoDb="matAutocomplete" [displayWith]="muestraCuenta">
+            <mat-option *ngFor="let cta of cuentasFiltradas" [value]="cta">
+              {{muestraCuenta(cta)}}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>{{'GLOBAL.inmuebles.cuentaCredito' | translate}}</mat-label>
+          <input matInput type="text" formControlName="CuentaCreditoId" [matAutocomplete]="autoCr"
+            placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}">
+          <mat-autocomplete #autoCr="matAutocomplete" [displayWith]="muestraCuenta">
+            <mat-option *ngFor="let cta of cuentasFiltradas" [value]="cta">
+              {{muestraCuenta(cta)}}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+      </div>
+      <mat-label>Mediciones</mat-label>
+      <div>
+        <mat-form-field appearance="outline">
+          <mat-label>{{'GLOBAL.inmuebles.cuentaDebitoMediciones' | translate}}</mat-label>
+          <input matInput type="text" formControlName="CuentaMedicionesDebitoId" [matAutocomplete]="autoDbM"
+            placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}">
+          <mat-autocomplete #autoDbM="matAutocomplete" [displayWith]="muestraCuenta">
+            <mat-option *ngFor="let cta of cuentasFiltradas" [value]="cta">
+              {{muestraCuenta(cta)}}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>{{'GLOBAL.inmuebles.cuentaCreditoMediciones' | translate}}</mat-label>
+          <input matInput type="text" formControlName="CuentaMedicionesCreditoId" [matAutocomplete]="autoCrM"
+            placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}">
+          <mat-autocomplete #autoCrM="matAutocomplete" [displayWith]="muestraCuenta">
+            <mat-option *ngFor="let cta of cuentasFiltradas" [value]="cta">
+              {{muestraCuenta(cta)}}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+      </div>
+    </form>
+  </mat-step>
+
+  <!-- <mat-step [stepControl]="form.get('datosAdicionales')" label="{{'GLOBAL.datosAdicionales' | translate}}">
+    <form [formGroup]="form.get('datosAdicionales')">
+    </form>
+  </mat-step> -->
+
+</mat-horizontal-stepper>
+
+<mat-card-actions>
+  <div class="botones-stepper-middle">
+    <button mat-flat-button color="primary" (click)="onVolver()">{{ 'GLOBAL.volver' | translate }}</button>
+    <button *ngIf="modo !== 'read'" mat-flat-button color="primary" (click)="confirmSubmit()" [disabled]="!form.valid">
+      {{ 'GLOBAL.' + button | translate }}</button>
+  </div>
+</mat-card-actions>

@@ -35,8 +35,7 @@ export class FormCuentasComponent implements OnInit, OnChanges {
   }
 
   ngOnInit() {
-    this.listService.findPlanCuentasDebito();
-    this.listService.findPlanCuentasCredito();
+    this.listService.findPlanCuentas();
   }
 
   ngOnChanges(changes) {
@@ -150,9 +149,8 @@ export class FormCuentasComponent implements OnInit, OnChanges {
     return new Promise<void>(async (resolve) => {
       this.store.select((state) => state).subscribe(
         list => {
-          if (list.listPlanCuentasCredito.length && list.listPlanCuentasDebito.length &&
-            list.listPlanCuentasCredito[0].length && list.listPlanCuentasDebito[0].length) {
-            this.ctas = list.listPlanCuentasCredito[0].concat(list.listPlanCuentasDebito[0]);
+          if (list.listPlanCuentas.length && list.listPlanCuentas[0].length) {
+            this.ctas = list.listPlanCuentas[0];
             resolve();
           }
         });

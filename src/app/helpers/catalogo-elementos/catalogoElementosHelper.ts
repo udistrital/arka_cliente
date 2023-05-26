@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { RequestManager } from '../../managers/requestManager';
 import { PopUpManager } from '../../managers/popUpManager';
-import { map } from 'rxjs/operators';
-import { TipoBien } from '../../@core/data/models/acta_recibido/tipo_bien';
+import { debounceTime, distinctUntilChanged, map, switchMap } from 'rxjs/operators';
+import { combineLatest, Observable } from 'rxjs';
 
 @Injectable({
     providedIn: 'root',
@@ -572,5 +572,29 @@ export class CatalogoElementosHelper {
         ),
     );
 }
+
+    public cambiosClase(valueChanges: Observable<any>) {
+        return valueChanges
+            .pipe(
+                debounceTime(250),
+                distinctUntilChanged(),
+                switchMap((val: any) => this.loadClases_(val)),
+            );
+    }
+
+    private loadClases_(text: string) {
+        const queryOptions$ = text.length > 3 ?
+            this.getAllDetalleSubgrupo('limit=-1&fields=Id,SubgrupoId,TipoBienId&compuesto=' + text) :
+            new Observable((obs) => { obs.next([]); });
+        return combineLatest([queryOptions$]).pipe(
+            map(([queryOptions_$]) => ({
+                queryOptions: queryOptions_$,
+            })),
+        );
+    }
+
+    public muestraClase(clase): string {
+        return clase && clase.SubgrupoId && clase.SubgrupoId.Id ? (clase.SubgrupoId.Codigo + ' - ' + clase.SubgrupoId.Nombre) : '';
+    }
 
 }
