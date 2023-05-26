@@ -60,18 +60,11 @@ export class FormInmuebleComponent implements OnInit {
       return;
     }
 
-    this.listService.findPlanCuentasDebito();
-    this.listService.findPlanCuentasCredito();
-    this.listService.findSedes();
+    this.listService.findPlanCuentas();
     this.store.select((stte) => stte).subscribe(
       (list) => {
-        if (list.listPlanCuentasCredito.length && list.listPlanCuentasDebito.length &&
-          list.listPlanCuentasCredito[0].length && list.listPlanCuentasDebito[0].length &&
-          list.listSedes.length && list.listSedes[0]) {
-          const credito = list.listPlanCuentasCredito[0];
-          const debito = list.listPlanCuentasDebito[0];
-          this.cuentas = debito.concat(credito);
-          this.sedes = list.listSedes[0];
+        if (list.listPlanCuentas.length && list.listPlanCuentas[0].length) {
+          this.cuentas = list.listPlanCuentas[0];
         }
       },
     );

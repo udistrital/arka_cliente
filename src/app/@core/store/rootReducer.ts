@@ -4,8 +4,7 @@ import { ListReducer } from './reducers/list.reducer';
 
 export const rootReducer: ActionReducerMap<IAppState> = {
   listProveedores: ListReducer.ListReducerProveedor,
-  listPlanCuentasDebito: ListReducer.ListReducerPlanCuentasDebito,
-  listPlanCuentasCredito: ListReducer.ListReducerPlanCuentasCredito,
+  listPlanCuentas: ListReducer.ListReducerPlanCuentas,
   listSedes: ListReducer.ListReducerSedes,
   listUbicaciones: ListReducer.ListReducerUbicaciones,
   listEstadosActa: ListReducer.ListReducerEstadosActa,

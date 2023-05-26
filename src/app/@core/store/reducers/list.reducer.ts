@@ -13,18 +13,9 @@ export class ListReducer {
     }
   }
 
-  static ListReducerPlanCuentasDebito(state: Array<any> = new Array, action) {
+  static ListReducerPlanCuentas(state: Array<any> = new Array, action) {
     switch (action.type) {
-      case REDUCER_LIST.PlanCuentasDebito:
-        return [...state, action.payload];
-      default:
-        return state;
-    }
-  }
-
-  static ListReducerPlanCuentasCredito(state: Array<any> = new Array, action) {
-    switch (action.type) {
-      case REDUCER_LIST.PlanCuentasCredito:
+      case REDUCER_LIST.PlanCuentas:
         return [...state, action.payload];
       default:
         return state;
