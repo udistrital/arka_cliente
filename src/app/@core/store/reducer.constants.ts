@@ -1,7 +1,6 @@
 export const REDUCER_LIST = {
     Proveedores: 'listProveedores',
-    PlanCuentasCredito: 'listPlanCuentasCredito',
-    PlanCuentasDebito: 'listPlanCuentasDebito',
+    PlanCuentas: 'listPlanCuentas',
     Sedes: 'listSedes',
     Ubicaciones: 'listUbicaciones',
     EstadosActa: 'listEstadosActa',

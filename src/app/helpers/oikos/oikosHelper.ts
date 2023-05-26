@@ -117,4 +117,14 @@ export class OikosHelper {
         );
     }
 
+    public getSedeEspacioFisico(codigoEspacio: string, sedes: any[]) {
+        if (!codigoEspacio.length || !sedes.length) {
+            return;
+        }
+
+        const codigoSede = codigoEspacio.substring(0, 2) + codigoEspacio.substring(2).replace(/\d.*/g, '');
+        const sede = sedes.find(x => x && x.CodigoAbreviacion === codigoSede);
+        return sede;
+    }
+
 }
