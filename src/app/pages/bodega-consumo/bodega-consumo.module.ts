@@ -46,5 +46,8 @@ import { NbDialogModule } from '@nebular/theme';
     TableModule,
     NbDialogModule.forRoot(),
   ],
+  entryComponents: [
+    AjustarCantidadComponent,
+  ],
 })
 export class BodegaConsumoModule { }
