@@ -3,7 +3,8 @@ import { RequestManager } from '../../managers/requestManager';
 import { PopUpManager } from '../../managers/popUpManager';
 import { debounceTime, distinctUntilChanged, map, startWith, switchMap } from 'rxjs/operators';
 import { TranslateService } from '@ngx-translate/core';
-import { combineLatest, Observable } from 'rxjs';
+import { of } from 'rxjs';
+import { EspacioFisico } from '../../@core/data/models/ubicacion/espacio_fisico';
 
 @Injectable({
     providedIn: 'root',
@@ -115,6 +116,36 @@ export class OikosHelper {
                 queryOptions: queryOptions_$,
             })),
         );
+    }
+
+    public getAllAsignacionEspacioFisicoDependencia(payload, mapDependencias: boolean = false) {
+        this.rqManager.setPath('OIKOS_SERVICE');
+        return this.rqManager.get('asignacion_espacio_fisico_dependencia?' + payload).pipe(
+            map(
+                (res) => {
+                    if (res === 'error') {
+                        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.error_dependencias'));
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
+
+    public getSedeDependencia(id) {
+        return this.getAllAsignacionEspacioFisicoDependencia('query=Id:' + id);
+    }
+
+
+    public getAsignacionesBySedeAndDependencia(codigoSede: string, dependenciaId: number) {
+        if (codigoSede && dependenciaId) {
+            const payload = 'limit=-1&fields=Id,EspacioFisicoId&query=DependenciaId__Id:' + dependenciaId +
+                ',EspacioFisicoId__CodigoAbreviacion__istartswith:' + codigoSede;
+            return this.getAllAsignacionEspacioFisicoDependencia(payload);
+        } else {
+            return of(new EspacioFisico()).pipe(map(o => []));
+        }
     }
 
     public getSedeEspacioFisico(codigoEspacio: string, sedes: any[]) {

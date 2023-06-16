@@ -455,39 +455,6 @@ export class ActaRecibidoHelper {
      * If the response is successs, it returns the object's data.
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
      */
-    public getSedeDependencia(id) {
-        return this.getAllAsignacionEspacioFisicoDependencia('query=Id:' + id);
-    }
-
-    public getAllAsignacionEspacioFisicoDependencia(payload) {
-        this.rqManager.setPath('OIKOS_SERVICE');
-        return this.rqManager.get('asignacion_espacio_fisico_dependencia?' + payload).pipe(
-            map(
-                (res) => {
-                    if (res['Type'] === 'error') {
-                        this.pUpManager.showErrorAlert('No se pudieron cargar los parametros generales');
-                        return undefined;
-                    }
-                    if (res.length && !res[0].Id) {
-                        res = [];
-                    }
-                    return res;
-                },
-            ),
-        );
-
-    }
-
-    public getAsignacionesBySedeAndDependencia(codigoSede: string, dependenciaId: number) {
-        if (codigoSede && dependenciaId) {
-            const payload = 'limit=-1&fields=Id,EspacioFisicoId&query=DependenciaId__Id:' + dependenciaId +
-                ',EspacioFisicoId__CodigoAbreviacion__istartswith:' + codigoSede;
-            return this.getAllAsignacionEspacioFisicoDependencia(payload);
-        } else {
-            return of(new EspacioFisico()).pipe(map(o => []));
-        }
-    }
-
     public getUnidadEjecutoraByID(id: string) {
         this.rqManager.setPath('PARAMETROS_SERVICE');
         return this.rqManager.get('parametro/' + id).pipe(

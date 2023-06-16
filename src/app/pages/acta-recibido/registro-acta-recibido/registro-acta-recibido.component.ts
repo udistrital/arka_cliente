@@ -237,7 +237,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
     }
     if (transaccion_.Formulario1.Sede, transaccion_.Formulario1.Dependencia) {
       const sede_ = this.Sedes.find((x) => x.Id === transaccion_.Formulario1.Sede);
-      this.Actas_Recibido.getAsignacionesBySedeAndDependencia(sede_.CodigoAbreviacion, transaccion_.Formulario1.Dependencia.Id)
+      this.oikosHelper.getAsignacionesBySedeAndDependencia(sede_.CodigoAbreviacion, transaccion_.Formulario1.Dependencia.Id)
         .subscribe((res: any) => {
           this.Ubicaciones = res;
           this.firstForm.setValue(transaccion_);
@@ -547,7 +547,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
     }
 
     const sede_ = this.Sedes.find((x) => x.Id === sede);
-    this.Actas_Recibido.getAsignacionesBySedeAndDependencia(sede_.CodigoAbreviacion, dependencia.Id).subscribe((res: any) => {
+    this.oikosHelper.getAsignacionesBySedeAndDependencia(sede_.CodigoAbreviacion, dependencia.Id).subscribe((res: any) => {
       this.Ubicaciones = res;
     });
   }

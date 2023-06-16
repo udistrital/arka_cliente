@@ -91,7 +91,7 @@ export class FormElementosSeleccionadosComponent implements OnInit {
     }
 
     const sede_ = this.Sedes.find((x) => x.Id === parseFloat(sede));
-    this.Actas_Recibido.getAsignacionesBySedeAndDependencia(sede_.CodigoAbreviacion, dependencia.Id).subscribe((res: any) => {
+    this.oikosHelper.getAsignacionesBySedeAndDependencia(sede_.CodigoAbreviacion, dependencia.Id).subscribe((res: any) => {
       this.Ubicaciones = res;
     });
 

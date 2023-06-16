@@ -92,7 +92,7 @@ export class FormTrasladoComponent implements OnInit {
       if (this.modo === 'put') {
         const sede = this.trasladoInfo.ubicacion.Sede;
         const dependencia = this.trasladoInfo.ubicacion.Dependencia;
-        this.Actas_Recibido.getAsignacionesBySedeAndDependencia(sede.CodigoAbreviacion, dependencia.Id).subscribe((res: any) => {
+        this.oikosHelper.getAsignacionesBySedeAndDependencia(sede.CodigoAbreviacion, dependencia.Id).subscribe((res: any) => {
           this.ubicacionesFiltradas = res;
           resolve();
         });
@@ -426,7 +426,7 @@ export class FormTrasladoComponent implements OnInit {
     }
 
     const sede_ = this.sedes.find((x) => x.Id === sede);
-    this.Actas_Recibido.getAsignacionesBySedeAndDependencia(sede_.CodigoAbreviacion, dependencia.Id).subscribe((res: any) => {
+    this.oikosHelper.getAsignacionesBySedeAndDependencia(sede_.CodigoAbreviacion, dependencia.Id).subscribe((res: any) => {
       this.ubicacionesFiltradas = res;
     });
   }
