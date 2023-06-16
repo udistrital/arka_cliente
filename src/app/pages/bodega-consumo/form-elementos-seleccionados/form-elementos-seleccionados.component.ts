@@ -60,10 +60,11 @@ export class FormElementosSeleccionadosComponent implements OnInit {
 
   ngOnInit() {
     this.form_salida = this.Formulario;
-    this.oikosHelper.cambiosDependencia_(this.form_salida.get('Dependencia').valueChanges).subscribe((response: any) => {
-      this.dependencias = response.queryOptions;
-      this.Traer_Relacion_Ubicaciones();
-    });
+    this.oikosHelper.cambiosDependencia(this.form_salida.get('Sede'), this.form_salida.get('Dependencia'))
+      .subscribe((response: any) => {
+        this.dependencias = response.queryOptions;
+        this.Traer_Relacion_Ubicaciones();
+      });
   }
   public loadLists() {
     this.store.select((state) => state).subscribe(

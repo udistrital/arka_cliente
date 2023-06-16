@@ -253,7 +253,7 @@ export class FormTrasladoComponent implements OnInit {
       ],
     });
     if (!disabled) {
-      this.cambiosDependencia(form.get('dependencia').valueChanges);
+      this.cambiosDependencia(form.get('Sede'), form.get('dependencia'));
     }
     return form;
   }
@@ -513,8 +513,8 @@ export class FormTrasladoComponent implements OnInit {
       );
   }
 
-  private cambiosDependencia(valueChanges: Observable<any>) {
-    this.oikosHelper.cambiosDependencia_(valueChanges).subscribe((response: any) => {
+  private cambiosDependencia(sedeCtrl, depCtrl) {
+    this.oikosHelper.cambiosDependencia(sedeCtrl, depCtrl).subscribe((response: any) => {
       if (this.load) {
         this.dependencias = response.queryOptions;
         this.getUbicaciones();

@@ -274,7 +274,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
   }
 
   private setFormEvents() {
-    this.oikosHelper.cambiosDependencia_(this.controlDependencia.valueChanges).subscribe((response: any) => {
+    this.oikosHelper.cambiosDependencia(this.controlSede, this.controlDependencia).subscribe((response: any) => {
       this.dependencias = response.queryOptions;
     });
 
