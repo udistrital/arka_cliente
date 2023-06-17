@@ -69,7 +69,7 @@ export class OikosHelper {
                 startWith(''),
                 debounceTime(250),
                 distinctUntilChanged(),
-                switchMap(() => this.loadDependencias(sedeCtrl.value, depCtrl.value)))
+                switchMap(() => this.loadDependencias(sedeCtrl.value, depCtrl.value)));
     }
 
     private loadDependencias(sede: any, dependencia: string) {

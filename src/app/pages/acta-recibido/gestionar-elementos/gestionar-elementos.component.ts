@@ -30,10 +30,10 @@ export class GestionarElementosComponent implements OnInit {
   form: FormGroup;
   Totales: DatosLocales;
 
-  @ViewChild('paginator', {static: true}) paginator: MatPaginator;
-  @ViewChild(MatSort, {static: true}) sort: MatSort;
-  @ViewChild(MatTable, {static: true}) table: MatTable<any>;
-  @ViewChild('fileInput', {static: true}) fileInput: ElementRef;
+  @ViewChild('paginator', { static: true }) paginator: MatPaginator;
+  @ViewChild(MatSort, { static: true }) sort: MatSort;
+  @ViewChild(MatTable, { static: true }) table: MatTable<any>;
+  @ViewChild('fileInput', { static: true }) fileInput: ElementRef;
   dataSource: MatTableDataSource<any>;
 
   @Input() ActaRecibidoId: number;
@@ -198,7 +198,7 @@ export class GestionarElementosComponent implements OnInit {
           disabled,
         },
         {
-          validators: [Validators.required],
+          validators: [Validators.min(1)],
         },
       ],
       ValorUnitario: [
@@ -986,14 +986,6 @@ export class GestionarElementosComponent implements OnInit {
       title: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.Tamaño_title'),
       text: this.translate.instant('GLOBAL.Acta_Recibido.CapturarElementos.Tamaño_placeholder'),
       type: 'warning',
-    };
-  }
-
-  private optionsErrPlantilla(mensaje) {
-    return {
-      type: 'success',
-      title: this.translate.instant('GLOBAL.error'),
-      text: this.translate.instant('GLOBAL.Errores.' + mensaje),
     };
   }
 
