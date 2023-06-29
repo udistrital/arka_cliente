@@ -30,7 +30,7 @@ export class FormSolicitudComponent implements OnInit {
   dataSource: MatTableDataSource<any>;
   tiposBaja: FormatoTipoMovimiento[];
   sizeSoporte: number;
-  @ViewChild('paginator', {static: true}) paginator: MatPaginator;
+  @ViewChild('paginator', { static: true }) paginator: MatPaginator;
   spinner: string = '';
   bajaId: number;
   trContable: any;
@@ -344,19 +344,19 @@ export class FormSolicitudComponent implements OnInit {
           ],
           sede: [
             {
-              value: element.Ubicacion.Sede.Nombre,
+              value: element.Ubicacion.Sede ? element.Ubicacion.Sede.Nombre : '',
               disabled: true,
             },
           ],
           dependencia: [
             {
-              value: element.Ubicacion.Dependencia.Nombre,
+              value: element.Ubicacion.Dependencia ? element.Ubicacion.Dependencia.Nombre : '',
               disabled: true,
             },
           ],
           ubicacion: [
             {
-              value: element.Ubicacion.Ubicacion.EspacioFisicoId.Nombre,
+              value: element.Ubicacion.Ubicacion ? element.Ubicacion.Ubicacion.EspacioFisicoId.Nombre : '',
               disabled: true,
             },
           ],

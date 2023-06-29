@@ -89,6 +89,10 @@ export class FormTrasladoComponent implements OnInit {
 
   private loadUbicaciones(): Promise<void> {
     return new Promise<void>(resolve => {
+      if (!this.trasladoInfo.ubicacion) {
+        resolve();
+      }
+
       if (this.modo === 'put') {
         const sede = this.trasladoInfo.ubicacion.Sede;
         const dependencia = this.trasladoInfo.ubicacion.Dependencia;
@@ -107,6 +111,10 @@ export class FormTrasladoComponent implements OnInit {
 
   private loadSedes(): Promise<void> {
     return new Promise<void>(resolve => {
+      if (!this.trasladoInfo.ubicacion) {
+        resolve();
+      }
+
       if (this.modo !== 'get') {
         this.oikosHelper.getSedes().subscribe((res: any) => {
           this.sedes = res;
@@ -340,18 +348,20 @@ export class FormTrasladoComponent implements OnInit {
     this.formTraslado.get('destino').patchValue({ email: emailD });
     this.formTraslado.get('destino').patchValue({ cargo: cargoD });
 
-    const sede = values.ubicacion.Sede.Id;
-    const dependencia = values.ubicacion.Dependencia;
-    const ubicacion = values.ubicacion.Ubicacion.Id;
+    if (values.ubicacion) {
+      const sede = values.ubicacion.Sede.Id;
+      const dependencia = values.ubicacion.Dependencia;
+      const ubicacion = values.ubicacion.Ubicacion.Id;
 
-    this.formTraslado.get('ubicacion').setValue(
-      {
-        sede,
-        dependencia,
-        ubicacion,
-      },
-      { emitEvent: false },
-    );
+      this.formTraslado.get('ubicacion').setValue(
+        {
+          sede,
+          dependencia,
+          ubicacion,
+        },
+        { emitEvent: false },
+      );
+    }
 
     values.elementos.forEach(element => {
       const formEl = this.fb.group({
