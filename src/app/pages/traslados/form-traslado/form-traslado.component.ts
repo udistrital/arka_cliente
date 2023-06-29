@@ -89,41 +89,43 @@ export class FormTrasladoComponent implements OnInit {
 
   private loadUbicaciones(): Promise<void> {
     return new Promise<void>(resolve => {
-      if (!this.trasladoInfo.ubicacion) {
-        resolve();
-      }
-
-      if (this.modo === 'put') {
-        const sede = this.trasladoInfo.ubicacion.Sede;
-        const dependencia = this.trasladoInfo.ubicacion.Dependencia;
-        this.oikosHelper.getAsignacionesBySedeAndDependencia(sede.CodigoAbreviacion, dependencia.Id).subscribe((res: any) => {
-          this.ubicacionesFiltradas = res;
-          resolve();
-        });
-      } else if (this.modo === 'get') {
-        this.ubicacionesFiltradas = [this.trasladoInfo.ubicacion.Ubicacion];
+      if (!this.trasladoInfo.ubicacion || !this.trasladoInfo.ubicacion.Ubicacion) {
         resolve();
       } else {
-        resolve();
+        if (this.modo === 'put') {
+          const sede = this.trasladoInfo.ubicacion.Sede;
+          const dependencia = this.trasladoInfo.ubicacion.Dependencia;
+          this.oikosHelper.getAsignacionesBySedeAndDependencia(sede.CodigoAbreviacion, dependencia.Id).subscribe((res: any) => {
+            this.ubicacionesFiltradas = res;
+            resolve();
+          });
+        } else if (this.modo === 'get') {
+          this.ubicacionesFiltradas = [this.trasladoInfo.ubicacion.Ubicacion];
+          resolve();
+        } else {
+          resolve();
+        }
       }
+
     });
   }
 
   private loadSedes(): Promise<void> {
     return new Promise<void>(resolve => {
-      if (!this.trasladoInfo.ubicacion) {
+      if (!this.trasladoInfo.ubicacion || !this.trasladoInfo.ubicacion.Sede) {
         resolve();
+      } else {
+        if (this.modo !== 'get') {
+          this.oikosHelper.getSedes().subscribe((res: any) => {
+            this.sedes = res;
+            resolve();
+          });
+        } else {
+          this.sedes = [this.trasladoInfo.ubicacion.Sede];
+          resolve();
+        }
       }
 
-      if (this.modo !== 'get') {
-        this.oikosHelper.getSedes().subscribe((res: any) => {
-          this.sedes = res;
-          resolve();
-        });
-      } else {
-        this.sedes = [this.trasladoInfo.ubicacion.Sede];
-        resolve();
-      }
     });
   }
 
@@ -348,7 +350,7 @@ export class FormTrasladoComponent implements OnInit {
     this.formTraslado.get('destino').patchValue({ email: emailD });
     this.formTraslado.get('destino').patchValue({ cargo: cargoD });
 
-    if (values.ubicacion) {
+    if (values.ubicacion && values.ubicacion.Sede) {
       const sede = values.ubicacion.Sede.Id;
       const dependencia = values.ubicacion.Dependencia;
       const ubicacion = values.ubicacion.Ubicacion.Id;
