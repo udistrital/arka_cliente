@@ -157,10 +157,16 @@ export class CommonElementos {
             historial.Elemento ? historial.Elemento.ValorTotal : '');
     }
 
+    private getVidaUtilActual(historial: any) {
+        return historial && (historial.Novedades && historial.Novedades.length ? historial.Novedades[0].VidaUtil :
+            historial.Elemento ? historial.Elemento.VidaUtil : 0);
+    }
+
     private fillDetalleElemento(historial: any): any {
         return {
             Id: historial.Elemento.Id,
             valorActual: this.getValorActual(historial),
+            vidaUtilRemanente: this.getVidaUtilActual(historial),
             entrada: this.getConsecutivoEntrada(historial),
             fechaEntrada: this.utils.formatDate(historial.Salida.MovimientoPadreId.FechaCreacion),
             salida: this.getConsecutivoSalida(historial),
@@ -234,6 +240,12 @@ export class CommonElementos {
                     validators: [Validators.min(0), Validators.max(100)],
                 },
             ],
+            vidaUtilRemanente: [
+                {
+                    value: 0,
+                    disabled: true,
+                },
+            ],
             valorResidual: [
                 {
                     value: 0,
@@ -302,11 +314,11 @@ export class CommonElementos {
     }
 
     get columnsElementos(): string[] {
-        return ['entrada', 'fechaEntrada', 'salida', 'fechaSalida', 'valor'];
+        return ['entrada', 'fechaEntrada', 'salida', 'fechaSalida'];
     }
 
     get columnsMejorados(): string[] {
-        return ['valorLibros', 'vidaUtil', 'valorResidual', 'valorActual'];
+        return ['valor', 'valorActual', 'valorLibros', 'vidaUtilRemanente', 'vidaUtil', 'valorResidual'];
     }
 
     get columnsAprovechados(): string[] {
