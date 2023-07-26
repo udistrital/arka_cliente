@@ -21,7 +21,7 @@
           </div>
           <div class="col">
             <p class="text-uppercase"><strong>{{'GLOBAL.fecha_creacion' | translate}}:</strong>
-              {{ salida.MovimientoPadreId.FechaCreacion | date }}
+              {{ salida.MovimientoPadreId?.FechaCreacion | date }}
             </p>
           </div>
         </div>
@@ -49,26 +49,26 @@
         <div class="row">
           <div class="col">
             <p class="text-uppercase"><strong>{{'GLOBAL.Acta_Recibido.RegistroActa.Sede' | translate}}:</strong>
-              {{ salida.Sede.Nombre }}</p>
+              {{ salida.Sede?.Nombre }}</p>
           </div>
           <div class="col">
             <p class="text-uppercase"><strong>{{'GLOBAL.Acta_Recibido.RegistroActa.Dependencia' | translate}}:</strong>
-              {{ salida.Dependencia.Nombre }}</p>
+              {{ salida.Dependencia?.Nombre }}</p>
           </div>
           <div class="col">
             <p class="text-uppercase"><strong>{{'GLOBAL.Acta_Recibido.RegistroActa.Ubicacion' | translate}}:</strong>
-              {{ salida.Ubicacion.EspacioFisicoId?.Nombre }}</p>
+              {{ salida.Ubicacion?.EspacioFisicoId?.Nombre }}</p>
           </div>
         </div>
 
       </mat-step>
       <mat-step label="{{'GLOBAL.elementos_salida' | translate}}">
-  
+
         <div class="scroll">
           <ng2-smart-table [settings]="settings" [source]="source">
           </ng2-smart-table>
         </div>
-  
+
       </mat-step>
       <mat-step label="{{'GLOBAL.Comprobante_Contable.Titulo' | translate}}" *ngIf="trContable">
         <ngx-comprobante [ajusteInfo]="trContable" [modo]="'get'" [concepto]="trContable.concepto"

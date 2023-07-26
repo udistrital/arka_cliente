@@ -89,33 +89,43 @@ export class FormTrasladoComponent implements OnInit {
 
   private loadUbicaciones(): Promise<void> {
     return new Promise<void>(resolve => {
-      if (this.modo === 'put') {
-        const sede = this.trasladoInfo.ubicacion.Sede;
-        const dependencia = this.trasladoInfo.ubicacion.Dependencia;
-        this.Actas_Recibido.getAsignacionesBySedeAndDependencia(sede.CodigoAbreviacion, dependencia.Id).subscribe((res: any) => {
-          this.ubicacionesFiltradas = res;
-          resolve();
-        });
-      } else if (this.modo === 'get') {
-        this.ubicacionesFiltradas = [this.trasladoInfo.ubicacion.Ubicacion];
+      if (!this.trasladoInfo.ubicacion || !this.trasladoInfo.ubicacion.Ubicacion) {
         resolve();
       } else {
-        resolve();
+        if (this.modo === 'put') {
+          const sede = this.trasladoInfo.ubicacion.Sede;
+          const dependencia = this.trasladoInfo.ubicacion.Dependencia;
+          this.oikosHelper.getAsignacionesBySedeAndDependencia(sede.CodigoAbreviacion, dependencia.Id).subscribe((res: any) => {
+            this.ubicacionesFiltradas = res;
+            resolve();
+          });
+        } else if (this.modo === 'get') {
+          this.ubicacionesFiltradas = [this.trasladoInfo.ubicacion.Ubicacion];
+          resolve();
+        } else {
+          resolve();
+        }
       }
+
     });
   }
 
   private loadSedes(): Promise<void> {
     return new Promise<void>(resolve => {
-      if (this.modo !== 'get') {
-        this.oikosHelper.getSedes().subscribe((res: any) => {
-          this.sedes = res;
-          resolve();
-        });
-      } else {
-        this.sedes = [this.trasladoInfo.ubicacion.Sede];
+      if (!this.trasladoInfo.ubicacion || !this.trasladoInfo.ubicacion.Sede) {
         resolve();
+      } else {
+        if (this.modo !== 'get') {
+          this.oikosHelper.getSedes().subscribe((res: any) => {
+            this.sedes = res;
+            resolve();
+          });
+        } else {
+          this.sedes = [this.trasladoInfo.ubicacion.Sede];
+          resolve();
+        }
       }
+
     });
   }
 
@@ -253,7 +263,7 @@ export class FormTrasladoComponent implements OnInit {
       ],
     });
     if (!disabled) {
-      this.cambiosDependencia(form.get('dependencia').valueChanges);
+      this.cambiosDependencia(form.get('Sede'), form.get('dependencia'));
     }
     return form;
   }
@@ -340,18 +350,20 @@ export class FormTrasladoComponent implements OnInit {
     this.formTraslado.get('destino').patchValue({ email: emailD });
     this.formTraslado.get('destino').patchValue({ cargo: cargoD });
 
-    const sede = values.ubicacion.Sede.Id;
-    const dependencia = values.ubicacion.Dependencia;
-    const ubicacion = values.ubicacion.Ubicacion.Id;
+    if (values.ubicacion && values.ubicacion.Sede) {
+      const sede = values.ubicacion.Sede.Id;
+      const dependencia = values.ubicacion.Dependencia;
+      const ubicacion = values.ubicacion.Ubicacion.Id;
 
-    this.formTraslado.get('ubicacion').setValue(
-      {
-        sede,
-        dependencia,
-        ubicacion,
-      },
-      { emitEvent: false },
-    );
+      this.formTraslado.get('ubicacion').setValue(
+        {
+          sede,
+          dependencia,
+          ubicacion,
+        },
+        { emitEvent: false },
+      );
+    }
 
     values.elementos.forEach(element => {
       const formEl = this.fb.group({
@@ -426,7 +438,7 @@ export class FormTrasladoComponent implements OnInit {
     }
 
     const sede_ = this.sedes.find((x) => x.Id === sede);
-    this.Actas_Recibido.getAsignacionesBySedeAndDependencia(sede_.CodigoAbreviacion, dependencia.Id).subscribe((res: any) => {
+    this.oikosHelper.getAsignacionesBySedeAndDependencia(sede_.CodigoAbreviacion, dependencia.Id).subscribe((res: any) => {
       this.ubicacionesFiltradas = res;
     });
   }
@@ -513,8 +525,8 @@ export class FormTrasladoComponent implements OnInit {
       );
   }
 
-  private cambiosDependencia(valueChanges: Observable<any>) {
-    this.oikosHelper.cambiosDependencia_(valueChanges).subscribe((response: any) => {
+  private cambiosDependencia(sedeCtrl, depCtrl) {
+    this.oikosHelper.cambiosDependencia(sedeCtrl, depCtrl).subscribe((response: any) => {
       if (this.load) {
         this.dependencias = response.queryOptions;
         this.getUbicaciones();

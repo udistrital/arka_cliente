@@ -65,7 +65,7 @@ export class FormElementosSeleccionadosComponent implements OnInit {
       Observaciones: [''],
     });
     this.funcionariosFiltrados = this.cambiosFuncionario(form.get('Funcionario'));
-    this.oikosHelper.cambiosDependencia_(form.get('Dependencia').valueChanges).subscribe((response: any) => {
+    this.oikosHelper.cambiosDependencia(form.get('Sede'), form.get('Dependencia')).subscribe((response: any) => {
       this.dependencias = response.queryOptions;
       this.getUbicaciones();
     });
@@ -83,7 +83,7 @@ export class FormElementosSeleccionadosComponent implements OnInit {
     }
 
     const sede_ = this.Sedes.find((x) => x.Id === sede);
-    this.Actas_Recibido.getAsignacionesBySedeAndDependencia(sede_.CodigoAbreviacion, dependencia.Id).subscribe((res: any) => {
+    this.oikosHelper.getAsignacionesBySedeAndDependencia(sede_.CodigoAbreviacion, dependencia.Id).subscribe((res: any) => {
       this.UbicacionesFiltradas = res;
     });
   }

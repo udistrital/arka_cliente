@@ -317,7 +317,7 @@
         "AgregarElemento":"Agregar Elemento",
         "EliminarElemento":"Eliminar Elemento",
         "ElementosCargadosTitleOK":"Elementos Cargados",
-        "ElementosCargadosTextOK":"Elementos Cargados Exitosamente",
+        "ElementosCargadosTextOK":"Elementos Cargados Exitosamente. Puede proceder a asignar la parametrización de los elementos.",
         "ElementosCargadosTitleNO":"Elementos No Cargados",
         "ElementosCargadosTextNO":"Los elementos no han podido ser cargados, intente más tarde",
         "EliminarElementosTitle":"¿Está seguro?",
@@ -325,7 +325,7 @@
         "EliminarVariosElementosTitle":"¿Eliminar {{cantidad}} elemento(s)?",
         "EliminarVariosElementosText":"Se eliminará(n) {{cantidad}} elemento(s). ¿Desea continuar?",
         "ValidacionCargaMasivaTitle": "Errores Leves en Carga",
-        "ValidacionCargaMasivaText": "Hay {{cantidad}} error(es) en carga masiva, verificar en tabla"
+        "ValidacionCargaMasivaText": "Se encontraron {{cantidad}} error(es) en la carga masiva, verifique en la siguiente tabla y proceda a asignar la parametrización de los elementos."
       },
       "ConsultaActas":{
         "NuevaActa":"Registrar Nueva Acta",
@@ -833,7 +833,8 @@
     "placeholder_parametro": "parametro",
     "valor": "Valor",
     "valorLibros": "Valor Libros",
-    "valorInicial": "Valor Inicial",
+    "valorMejorado": "Valor Mejorado",
+    "valorInicial": "Valor Entrada",
     "placeholder_valor": "valor",
     "notificacion_configuracion_perfil": "notificacion_configuracion_perfil",
     "placeholder_notificacion_configuracion_perfil": "notificacion_configuracion_perfil",
@@ -1177,6 +1178,8 @@
     "elementos": "Elementos",
     "documento": "Documento",
     "vidaUtil": "Vida Útil",
+    "vidaUtilRemanente": "Vida Útil Remanente",
+    "vidaUtilMejorada": "Vida Útil Mejorada",
     "vidaUtilSug": "Vida Útil (años)",
     "valorResidual": "Valor Residual",
     "valorResidualSug": "Valor Residual (%)",
