@@ -140,7 +140,7 @@ export class TercerosHelper {
         this.rqManager.setPath('TERCEROS_SERVICE');
         let payload = '';
         if (id > 0) {
-            payload += '/' + id;
+            payload += id;
         } else {
             if (query !== '') {
                 payload += '?query=' + query;

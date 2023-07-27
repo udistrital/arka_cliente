@@ -261,23 +261,27 @@ export class VerActaRecibidoComponent implements OnInit {
 
     return new Promise<void>(resolve => {
       this.oikosHelper.getSedeDependencia(ubicacionId).toPromise().then(res => {
-        if (res.length) {
-
-          const Dependencia = res[0].DependenciaId;
-          const sede_ = res[0].EspacioFisicoId.CodigoAbreviacion;
-          const codigoSede = sede_.substring(0, 2) + sede_.substring(2).replace(/\d.*/g, '');
-          const Sede = this.Sedes.find(x => x && x.CodigoAbreviacion === codigoSede);
-
-          if (codigoSede && Dependencia) {
-            this.oikosHelper.getAsignacionesBySedeAndDependencia(codigoSede, Dependencia.Id).subscribe((res_: any) => {
-              this.UbicacionesFiltradas = res_;
-              this.sedeDependencia = { sede: Sede.Id, dependencia: Dependencia.Nombre };
-              resolve();
-            });
-          }
-        } else {
+        if (!res.length) {
           resolve();
+          return;
         }
+
+        const dependencia = res[0].DependenciaId;
+        const sede_ = res[0].EspacioFisicoId.CodigoAbreviacion;
+        const codigoSede = sede_.substring(0, 2) + sede_.substring(2).replace(/\d.*/g, '');
+        const sede = this.Sedes.find(x => x && x.CodigoAbreviacion === codigoSede);
+
+        if (!sede || !dependencia) {
+          resolve();
+          return;
+        }
+
+        this.oikosHelper.getAsignacionesBySedeAndDependencia(codigoSede, dependencia.Id).subscribe((res_: any) => {
+          this.UbicacionesFiltradas = res_;
+          this.sedeDependencia = { sede: sede.Id, dependencia: dependencia.Nombre };
+          resolve();
+        });
+
       });
     });
   }
