@@ -213,21 +213,6 @@ export class SalidaHelper {
             );
     }
 
-    public getJefeOficina() {
-        this.rqManager.setPath('TERCEROS_SERVICE');
-        return this.rqManager.get('vinculacion?query=CargoId:312').pipe(
-            map(
-                (res) => {
-                    if (res === 'error') {
-                        this.pUpManager.showErrorAlert('No se pudo consultar el encargado del elemento');
-                        return undefined;
-                    }
-                    return res;
-                },
-            ),
-        );
-    }
-
     /**
      * Entradas Get
      * If the response has errors in the OAS API it should show a popup message with an error.

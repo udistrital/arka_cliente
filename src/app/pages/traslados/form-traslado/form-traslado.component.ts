@@ -89,7 +89,7 @@ export class FormTrasladoComponent implements OnInit {
 
   private loadUbicaciones(): Promise<void> {
     return new Promise<void>(resolve => {
-      if (!this.trasladoInfo.ubicacion || !this.trasladoInfo.ubicacion.Ubicacion) {
+      if (!this.trasladoInfo || !this.trasladoInfo.ubicacion || !this.trasladoInfo.ubicacion.Ubicacion) {
         resolve();
       } else {
         if (this.modo === 'put') {
@@ -112,7 +112,7 @@ export class FormTrasladoComponent implements OnInit {
 
   private loadSedes(): Promise<void> {
     return new Promise<void>(resolve => {
-      if (!this.trasladoInfo.ubicacion || !this.trasladoInfo.ubicacion.Sede) {
+      if (!this.trasladoInfo || !this.trasladoInfo.ubicacion || !this.trasladoInfo.ubicacion.Sede) {
         resolve();
       } else {
         if (this.modo !== 'get') {
@@ -263,7 +263,7 @@ export class FormTrasladoComponent implements OnInit {
       ],
     });
     if (!disabled) {
-      this.cambiosDependencia(form.get('Sede'), form.get('dependencia'));
+      this.cambiosDependencia(form.get('sede'), form.get('dependencia'));
     }
     return form;
   }

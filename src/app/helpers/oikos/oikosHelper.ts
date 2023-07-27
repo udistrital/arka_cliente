@@ -31,18 +31,20 @@ export class OikosHelper {
       * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
      */
     private getDependencias(text: string) {
-        const query = 'dependencia?limit=-1&sortby=Nombre&order=asc&query=Nombre__icontains:' + text;
+        const query = '?limit=-1&sortby=Nombre&order=asc&query=Nombre__icontains:' + text;
+        return this.getAllDependencias(query);
+    }
+
+    public getAllDependencias(payload: string) {
         this.rqManager.setPath('OIKOS_SERVICE');
-        return this.rqManager.get(query).pipe(
+        return this.rqManager.get('dependencia' + payload).pipe(
             map(
                 (res) => {
                     if (res === 'error') {
                         this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.error_dependencias'));
                         return undefined;
                     }
-                    if (!res.length || (res.length === 1 && !Object.keys(res[0]).length)) {
-                        res = [];
-                    }
+
                     return res;
                 },
             ),

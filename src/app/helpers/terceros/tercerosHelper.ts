@@ -247,4 +247,22 @@ export class TercerosHelper {
         );
     }
 
+    public getAllVinculacion(payload: string) {
+        const path = 'vinculacion';
+        this.rqManager.setPath('TERCEROS_SERVICE');
+        return this.rqManager.get(path + payload).pipe(
+            map(
+                (res) => {
+                    if (res === 'error') {
+                        this.pUpManager.showErrorAlert('No fue posible consultar las vinculaciones del tercero.');
+                        return undefined;
+                    } else if (!Array.isArray(res) || (res.length === 1 && !Object.keys(res[0]).length)) {
+                        res = [];
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
+
 }
