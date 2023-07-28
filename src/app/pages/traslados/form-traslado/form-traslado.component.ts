@@ -11,6 +11,9 @@ import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { TrasladosHelper } from '../../../helpers/movimientos/trasladosHelper';
 import { PopUpManager } from '../../../managers/popUpManager';
+import { Store } from '@ngrx/store';
+import { IAppState } from '../../../@core/store/app.state';
+import { ListService } from '../../../@core/store/services/list.service';
 
 @Component({
   selector: 'ngx-form-traslado',
@@ -28,7 +31,7 @@ export class FormTrasladoComponent implements OnInit {
   ubicacionesFiltradas: any = [];
   displayedColumns: string[] = ['acciones', 'placa', 'nombre', 'marca', 'serie', 'valor'];
   dataSource: MatTableDataSource<any>;
-  @ViewChild('paginator', {static: true}) paginator: MatPaginator;
+  @ViewChild('paginator', { static: true }) paginator: MatPaginator;
   load: boolean = false;
   trasladoId: number = 0;
   elementos = [];
@@ -42,14 +45,16 @@ export class FormTrasladoComponent implements OnInit {
   constructor(
     private translate: TranslateService,
     private fb: FormBuilder,
-    private Actas_Recibido: ActaRecibidoHelper,
     private tercerosHelper: TercerosHelper,
     public oikosHelper: OikosHelper,
     private trasladosHelper: TrasladosHelper,
     private pUpManager: PopUpManager,
+    private listService: ListService,
+    private store: Store<IAppState>,
   ) {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
     });
+    this.listService.findFuncionarios();
   }
 
   ngOnInit() {
@@ -551,10 +556,14 @@ export class FormTrasladoComponent implements OnInit {
 
   private loadFuncionarios(): Promise<void> {
     return new Promise<void>(resolve => {
-      this.tercerosHelper.getTercerosByCriterio('funcionarios').toPromise().then(res => {
-        this.funcionarios = res;
-        resolve();
-      });
+      this.store.select((state) => state).subscribe(
+        (list) => {
+          if (list.listFuncionarios && list.listFuncionarios.length && list.listFuncionarios[0]) {
+            this.funcionarios = list.listFuncionarios[0];
+            resolve();
+          }
+        },
+      );
     });
   }
 

@@ -1,12 +1,10 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { Observable } from 'rxjs';
 import { FormBuilder, FormGroup, Validators, ValidatorFn, AbstractControl, ValidationErrors } from '@angular/forms';
-import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { Store } from '@ngrx/store';
 import { IAppState } from '../../../@core/store/app.state';
 import { ListService } from '../../../@core/store/services/list.service';
-import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
 import { OikosHelper } from '../../../helpers/oikos/oikosHelper';
 import { TerceroCriterioContratista } from '../../../@core/data/models/terceros_criterio';
 import { map, startWith } from 'rxjs/operators';
@@ -30,28 +28,29 @@ export class FormElementosSeleccionadosComponent implements OnInit {
   constructor(
     private translate: TranslateService,
     private fb: FormBuilder,
-    private Actas_Recibido: ActaRecibidoHelper,
     private store: Store<IAppState>,
     private listService: ListService,
-    private tercerosHelper: TercerosHelper,
     public oikosHelper: OikosHelper,
   ) {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
     });
     this.listService.findSedes();
-    this.loadLists();
+    this.listService.findFuncionarios();
   }
 
   ngOnInit() {
     this.form_salida = this.Formulario;
-    this.loadLists;
-    this.loadFuncionarios();
+    this.loadLists();
   }
 
   public loadLists() {
     this.store.select((state) => state).subscribe(
       (list) => {
-        this.Sedes = list.listSedes[0];
+        if (list.listSedes.length && list.listSedes[0] &&
+          list.listFuncionarios && list.listFuncionarios.length && list.listFuncionarios[0]) {
+          this.Sedes = list.listSedes[0];
+          this.Funcionarios = list.listFuncionarios[0];
+        }
       },
     );
   }
@@ -122,15 +121,6 @@ export class FormElementosSeleccionadosComponent implements OnInit {
       const valorFiltrado = nombre.toLowerCase();
       return this.Funcionarios.filter(contr => this.muestraFuncionario(contr).toLowerCase().includes(valorFiltrado));
     } else return [];
-  }
-
-  private loadFuncionarios(): Promise<void> {
-    return new Promise<void>(resolve => {
-      this.tercerosHelper.getTercerosByCriterio('funcionarios').toPromise().then(res => {
-        this.Funcionarios = res;
-        resolve();
-      });
-    });
   }
 
   private validarTercero(): ValidatorFn {
