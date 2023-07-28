@@ -117,18 +117,14 @@ export class FormTrasladoComponent implements OnInit {
 
   private loadSedes(): Promise<void> {
     return new Promise<void>(resolve => {
-      if (!this.trasladoInfo || !this.trasladoInfo.ubicacion || !this.trasladoInfo.ubicacion.Sede) {
-        resolve();
-      } else {
-        if (this.modo !== 'get') {
-          this.oikosHelper.getSedes().subscribe((res: any) => {
-            this.sedes = res;
-            resolve();
-          });
-        } else {
-          this.sedes = [this.trasladoInfo.ubicacion.Sede];
+      if (this.modo !== 'get') {
+        this.oikosHelper.getSedes().subscribe((res: any) => {
+          this.sedes = res;
           resolve();
-        }
+        });
+      } else if (this.trasladoInfo && this.trasladoInfo.ubicacion && this.trasladoInfo.ubicacion.Sede) {
+        this.sedes = [this.trasladoInfo.ubicacion.Sede];
+        resolve();
       }
 
     });
@@ -554,17 +550,14 @@ export class FormTrasladoComponent implements OnInit {
     } else return [];
   }
 
-  private loadFuncionarios(): Promise<void> {
-    return new Promise<void>(resolve => {
-      this.store.select((state) => state).subscribe(
-        (list) => {
-          if (list.listFuncionarios && list.listFuncionarios.length && list.listFuncionarios[0]) {
-            this.funcionarios = list.listFuncionarios[0];
-            resolve();
-          }
-        },
-      );
-    });
+  private loadFuncionarios() {
+    this.store.select((state) => state).subscribe(
+      (list) => {
+        if (list.listFuncionarios && list.listFuncionarios.length && list.listFuncionarios[0]) {
+          this.funcionarios = list.listFuncionarios[0];
+        }
+      },
+    );
   }
 
   private validarTercero(): ValidatorFn {
