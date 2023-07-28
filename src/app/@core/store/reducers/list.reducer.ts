@@ -4,15 +4,6 @@ export class ListReducer {
   constructor() {
   }
 
-  static ListReducerProveedor(state: Array<any> = new Array, action) {
-    switch (action.type) {
-      case REDUCER_LIST.Proveedores:
-        return [...state, action.payload];
-      default:
-        return state;
-    }
-  }
-
   static ListReducerPlanCuentas(state: Array<any> = new Array, action) {
     switch (action.type) {
       case REDUCER_LIST.PlanCuentas:
@@ -34,15 +25,6 @@ export class ListReducer {
   static ListReducerUnidadesEjecutoras(state: Array<any> = new Array, action) {
     switch (action.type) {
       case REDUCER_LIST.UnidadesEjecutoras:
-        return [...state, action.payload];
-      default:
-        return state;
-    }
-  }
-
-  static ListReducerUbicaciones(state: Array<any> = new Array, action) {
-    switch (action.type) {
-      case REDUCER_LIST.Ubicaciones:
         return [...state, action.payload];
       default:
         return state;
@@ -115,6 +97,15 @@ export class ListReducer {
   static ListReducerFormatosMovimiento(state: Array<any> = new Array, action) {
     switch (action.type) {
       case REDUCER_LIST.FormatosMovimiento:
+        return [...state, action.payload];
+      default:
+        return state;
+    }
+  }
+
+  static ListReducerFuncionarios(state: Array<any> = new Array, action) {
+    switch (action.type) {
+      case REDUCER_LIST.Funcionarios:
         return [...state, action.payload];
       default:
         return state;

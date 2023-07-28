@@ -1,8 +1,6 @@
 export const REDUCER_LIST = {
-    Proveedores: 'listProveedores',
     PlanCuentas: 'listPlanCuentas',
     Sedes: 'listSedes',
-    Ubicaciones: 'listUbicaciones',
     EstadosActa: 'listEstadosActa',
     EstadosElemento: 'listEstadosElemento',
     TipoBien: 'listTipoBien',
@@ -12,4 +10,5 @@ export const REDUCER_LIST = {
     EstadosMovimiento: 'listEstadosMovimiento',
     FormatosMovimiento: 'listFormatosMovimiento',
     UnidadesEjecutoras: 'listUnidadesEjecutoras',
+    Funcionarios: 'listFuncionarios',
 };

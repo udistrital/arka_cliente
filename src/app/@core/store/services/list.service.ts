@@ -6,6 +6,7 @@ import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoH
 import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/catalogoElementosHelper';
 import { BodegaConsumoHelper } from '../../../helpers/bodega_consumo/bodegaConsumoHelper';
 import { OikosHelper } from '../../../helpers/oikos/oikosHelper';
+import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
 @Injectable()
 export class ListService {
 
@@ -14,6 +15,7 @@ export class ListService {
     private CatalogoElementos: CatalogoElementosHelper,
     private BodegaConsumo: BodegaConsumoHelper,
     private oikosHelper: OikosHelper,
+    private tercerosHelper: TercerosHelper,
     private store: Store<IAppState>,
   ) { }
 
@@ -69,6 +71,24 @@ export class ListService {
               },
               error => {
                 this.addList(REDUCER_LIST.UnidadesEjecutoras, []);
+              },
+            );
+        }
+      },
+    );
+  }
+
+  public findFuncionarios() {
+    this.store.select(<any>REDUCER_LIST.Funcionarios).subscribe(
+      (list: any) => {
+        if (!list || list.length === 0) {
+          this.tercerosHelper.getTercerosByCriterio('funcionarios')
+            .subscribe(
+              (res: any[]) => {
+                this.addList(REDUCER_LIST.Funcionarios, res);
+              },
+              error => {
+                this.addList(REDUCER_LIST.Funcionarios, []);
               },
             );
         }

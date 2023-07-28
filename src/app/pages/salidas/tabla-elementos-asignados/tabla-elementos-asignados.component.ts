@@ -11,6 +11,8 @@ import { SalidaHelper } from '../../../helpers/salidas/salidasHelper';
 import { MatCheckbox } from '@angular/material/checkbox';
 import { ElementoMovimientosArka, EstadoMovimiento, FormatoTipoMovimiento } from '../../../@core/data/models/entrada/entrada';
 import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
+import { OikosHelper } from '../../../helpers/oikos/oikosHelper';
+import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
 
 @Component({
   selector: 'ngx-tabla-elementos-asignados',
@@ -69,7 +71,10 @@ export class TablaElementosAsignadosComponent implements OnInit {
     private router: Router,
     private salidasHelper: SalidaHelper,
     private pUpManager: PopUpManager,
-    private entradasHelper: EntradaHelper) {
+    private entradasHelper: EntradaHelper,
+    private oikosHelper: OikosHelper,
+    private tercerosHelper: TercerosHelper,
+  ) {
   }
 
   ngOnInit() {
@@ -137,11 +142,18 @@ export class TablaElementosAsignadosComponent implements OnInit {
   }
 
   private getJefeAlmacen() {
-    this.salidasHelper.getJefeOficina().subscribe((res: any) => {
-      if (res) {
-        this.JefeOficinaId = res[0].TerceroPrincipalId.Id;
-      }
-    });
+    this.oikosHelper.getAllDependencias('?query=Nombre:ALMACEN GENERAL E INVENTARIOS')
+      .subscribe((res: any[]) => {
+        if (res && res.length) {
+          const payload = '?sortby=Id&order=desc&limit=1&query=Activo:true,CargoId:312,DependenciaId:' + res[0].Id;
+          this.tercerosHelper.getAllVinculacion(payload)
+            .subscribe((res_: any[]) => {
+            if (res_ && res_.length) {
+              this.JefeOficinaId = res_[0].TerceroPrincipalId.Id;
+            }
+          });
+        }
+      });
   }
 
   cambioCheckTodos(source, marcar: boolean) {
