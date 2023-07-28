@@ -120,6 +120,7 @@ export class EntradaKardexComponent implements OnInit {
     this.Movimiento.MovimientoPadreId = this.elemento_bodega.MovimientoId;
 
     this.elemento_bodega.ElementoCatalogoId = this.elemento_catalogo.Id;
+    this.elemento_bodega.ElementoActaId = null;
     this.elemento_bodega.MovimientoId = this.Movimiento;
 
     this.elemento_bodega.SaldoCantidad += ultimo_elemento.SaldoCantidad;

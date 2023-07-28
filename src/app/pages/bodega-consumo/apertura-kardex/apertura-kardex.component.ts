@@ -121,6 +121,7 @@ export class AperturaKardexComponent implements OnInit {
     // console.log(this.Movimiento);
 
     this.elemento_bodega.ElementoCatalogoId = this.elemento_catalogo.Id;
+    this.elemento_bodega.ElementoActaId = null;
     this.elemento_bodega.MovimientoId = this.Movimiento;
     this.ElementoMovimiento = this.elemento_bodega;
     // console.log(this.ElementoMovimiento);
