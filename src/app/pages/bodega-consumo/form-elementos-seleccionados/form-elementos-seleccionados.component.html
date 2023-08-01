@@ -10,9 +10,8 @@
           <div class="form-group col-sm">
             <label>{{'GLOBAL.cantidad' | translate}}</label>
             <div class="input-group">
-              <input currencyMask [options]="{allowNegative: false, prefix: '',align: 'left', precision: 0}" nbInput type="text"
-                placeholder="{{'GLOBAL.Acta_Recibido.CapturarElementos.CantidadHeader' | translate }}"
-                formControlName="Cantidad" class="form-control">
+              <input nbInput type="number" formControlName="Cantidad" class="form-control"
+              placeholder="{{'GLOBAL.Acta_Recibido.CapturarElementos.CantidadHeader' | translate }}">
             </div>
           </div>
           <div class="form-group col-sm">
