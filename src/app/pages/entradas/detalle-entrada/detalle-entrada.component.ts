@@ -275,7 +275,7 @@ export class DetalleEntradaComponent implements OnInit {
         },
         ValorTotal: {
           type: 'html',
-          title: this.translate.instant('GLOBAL.valor_total'),
+          title: this.translate.instant('GLOBAL.valorInicial'),
           width: '70px',
           valuePrepareFunction: this.tabla.prepareFunctionCurrency,
         },
@@ -287,12 +287,12 @@ export class DetalleEntradaComponent implements OnInit {
     const cols = {
       ValorLibros: {
         type: 'html',
-        title: this.translate.instant('GLOBAL.valorLibros'),
+        title: this.translate.instant('GLOBAL.valorMejorado'),
         width: '70px',
         valuePrepareFunction: this.tabla.prepareFunctionCurrency,
       },
       VidaUtil: {
-        title: this.translate.instant('GLOBAL.vidaUtilSug'),
+        title: this.translate.instant('GLOBAL.vidaUtilMejorada'),
       },
       ValorResidual: {
         title: this.translate.instant('GLOBAL.valorResidualSug'),

@@ -1,7 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
 import Swal from 'sweetalert2';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { Store } from '@ngrx/store';
@@ -41,7 +40,6 @@ export class FormElementosSeleccionadosComponent implements OnInit {
     private translate: TranslateService,
     private router: Router,
     private fb: FormBuilder,
-    private Actas_Recibido: ActaRecibidoHelper,
     private store: Store<IAppState>,
     private listService: ListService,
     private bodegaConsumoHelper: BodegaConsumoHelper,
@@ -75,7 +73,7 @@ export class FormElementosSeleccionadosComponent implements OnInit {
   }
   get Formulario(): FormGroup {
     return this.fb.group({
-      Cantidad: ['', Validators.required],
+      Cantidad: [0, Validators.min(1)],
       Sede: [0, Validators.min(1)],
       Dependencia: ['', Validators.required],
       Ubicacion: [0, Validators.min(1)],
@@ -102,7 +100,7 @@ export class FormElementosSeleccionadosComponent implements OnInit {
     const form = this.form_salida.value;
     // console.log(form);
     // console.log(this.Datos);
-    if ((form.Cantidad > this.Datos.SaldoCantidad) || (parseFloat(form.Cantidad) === 0.00)) {
+    if (!this.form_salida.valid || form.Cantidad > this.Datos.SaldoCantidad) {
       // console.log('valor excede limite')
       (Swal as any).fire({
         title: 'Cantidad No Valida',
@@ -118,7 +116,7 @@ export class FormElementosSeleccionadosComponent implements OnInit {
       elemento.Sede = this.Sedes.find(y => y.Id === parseFloat(form.Sede));
       elemento.Dependencia = form.Dependencia;
       elemento.Ubicacion = this.Ubicaciones.find(w => w.Id === parseFloat(form.Ubicacion));
-      elemento.Cantidad = form.Cantidad;
+      elemento.Cantidad = parseInt(form.Cantidad, 10);
       // this.DatosEnviados.emit(elemento);
       this.AgregarElementos(elemento);
     }

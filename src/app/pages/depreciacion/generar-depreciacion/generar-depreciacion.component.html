@@ -10,7 +10,7 @@
   <mat-card-content *ngIf="showForm">
     <mat-vertical-stepper #stepper>
       <mat-step label="{{'GLOBAL.razonRechazo' | translate}}"
-        *ngIf="formDepreciacion && formDepreciacion.get('razon').value !== ''">
+        *ngIf="formDepreciacion?.get('razon')?.value">
         <form [formGroup]="formDepreciacion">
           <div class="row">
             <div class="col">
