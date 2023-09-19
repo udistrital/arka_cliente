@@ -87,8 +87,8 @@ export class ConfiguracionService {
     return this.findRoute(this.configuraciones, accion);
   }
 
-  checkSegment(segments: string[]) {
-    return this.checkSegments(this.configuraciones, segments.join('/').replace(/\d+$/, ':id'));
+  checkSegment(path: string) {
+    return this.checkSegments(this.configuraciones, path);
   }
 
   findRoute(menu: Partial<Menu>[], option: string) {

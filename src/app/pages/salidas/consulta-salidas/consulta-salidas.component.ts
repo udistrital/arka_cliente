@@ -9,6 +9,7 @@ import { PopUpManager } from '../../../managers/popUpManager';
 import { ConfiguracionService } from '../../../@core/data/configuracion.service';
 import { SmartTableService } from '../../../@core/data/SmartTableService';
 import { HttpClient } from '@angular/common/http';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'ngx-consulta-salidas',
@@ -42,8 +43,8 @@ export class ConsultaSalidasComponent implements OnInit {
     private confService: ConfiguracionService,
     private tabla: SmartTableService,
     private http: HttpClient,
-  ) {
-  }
+    private location: Location,
+  ) { }
 
   ngOnInit() {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
@@ -67,6 +68,19 @@ export class ConsultaSalidasComponent implements OnInit {
         this.cargarSalida();
       } else {
         this.setSource();
+        if (params && params.get('filter')) {
+          const filtros = [];
+          params.get('filter').split('&').forEach(f => {
+            const filtro = f.split('=');
+            if (filtro.length === 2) {
+              filtros.push({
+                field: filtro[0],
+                search: filtro[1],
+              });
+            }
+          });
+          this.source.setFilter(filtros);
+        }
       }
     });
 
@@ -84,6 +98,17 @@ export class ConsultaSalidasComponent implements OnInit {
       totalKey: 'x-total-count',
     };
     this.source = new ServerDataSource(this.http, config);
+    this.source.onChanged().subscribe(s => {
+      if (s.action === 'filter') {
+        const filtro = [];
+        s.filter.filters.forEach(f => {
+          if (f.field && f.search) {
+            filtro.push(f.field + '=' + f.search);
+          }
+        });
+        this.router.navigate(['/pages/salidas/' + this.getUrlSegment() + '_salidas/q', filtro.join('&')]);
+      }
+    });
   }
 
   loadEstados() {
@@ -142,6 +167,10 @@ export class ConsultaSalidasComponent implements OnInit {
     });
   }
 
+  getUrlSegment() {
+    return this.modo === 'consulta' ? 'consulta' : this.modo === 'revision' ? 'aprobar' : '';
+  }
+
   onVolver() {
     this.editarSalida = false;
     this.salidaId = '';
@@ -149,8 +178,7 @@ export class ConsultaSalidasComponent implements OnInit {
     this.filaSeleccionada = undefined;
     this.trContable = undefined;
     this.submitted = false;
-    this.router.navigateByUrl('/pages/salidas/' +
-      (this.modo === 'consulta' ? 'consulta' : this.modo === 'revision' ? 'aprobar' : '') + '_salidas');
+    this.location.back();
   }
 
   private cargarSalida() {

@@ -9,22 +9,20 @@ import { ConfiguracionService } from '../data/configuracion.service';
 
 export class CanLoadChildren implements CanLoad {
 
-  constructor(private router: Router,
+  constructor(
+    private router: Router,
     private menu: ConfiguracionService,
-    private pUpManager: PopUpManager) { }
+    private pUpManager: PopUpManager,
+  ) { }
 
   canLoad(route: Route, segments: UrlSegment[]) {
-    if (segments.length && !!this.canLoadChildren(segments)) {
+    if (!!this.menu.checkSegment(route.path)) {
       return true;
     }
 
     this.pUpManager.showErrorAlert('No tiene permisos');
     return false;
 
-  }
-
-  canLoadChildren(segments: UrlSegment[]) {
-    return !!this.menu.checkSegment(segments.map(sg => sg.path));
   }
 
 }
