@@ -21,6 +21,12 @@ const routes: Routes = [{
       canActivate: [AuthGuard],
     },
     {
+      path: 'consulta_salidas/q/:filter',
+      component: ConsultaSalidasComponent,
+      data: { modo: 'consulta' },
+      canActivate: [AuthGuard],
+    },
+    {
       path: 'consulta_salidas/:id',
       component: ConsultaSalidasComponent,
       data: { modo: 'consulta' },
@@ -28,6 +34,12 @@ const routes: Routes = [{
     },
     {
       path: 'aprobar_salidas',
+      component: ConsultaSalidasComponent,
+      data: { modo: 'revision' },
+      canActivate: [AuthGuard],
+    },
+    {
+      path: 'aprobar_salidas/q/:filter',
       component: ConsultaSalidasComponent,
       data: { modo: 'revision' },
       canActivate: [AuthGuard],

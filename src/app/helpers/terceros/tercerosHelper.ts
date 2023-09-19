@@ -140,7 +140,7 @@ export class TercerosHelper {
         this.rqManager.setPath('TERCEROS_SERVICE');
         let payload = '';
         if (id > 0) {
-            payload += '/' + id;
+            payload += id;
         } else {
             if (query !== '') {
                 payload += '?query=' + query;
@@ -240,6 +240,24 @@ export class TercerosHelper {
                     if (res === 'error' || !Array.isArray(res)) {
                         this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.errorDatosIdentificacion'));
                         return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
+
+    public getAllVinculacion(payload: string) {
+        const path = 'vinculacion';
+        this.rqManager.setPath('TERCEROS_SERVICE');
+        return this.rqManager.get(path + payload).pipe(
+            map(
+                (res) => {
+                    if (res === 'error') {
+                        this.pUpManager.showErrorAlert('No fue posible consultar las vinculaciones del tercero.');
+                        return undefined;
+                    } else if (!Array.isArray(res) || (res.length === 1 && !Object.keys(res[0]).length)) {
+                        res = [];
                     }
                     return res;
                 },

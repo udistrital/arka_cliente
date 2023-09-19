@@ -101,7 +101,7 @@
     "codelyzer": "^6.0.2",
     "conventional-changelog-cli": "2.2.2",
     "husky": "0.13.3",
-    "jasmine-core": "2.6.4",
+    "jasmine-core": "^3.5.0",
     "jasmine-spec-reporter": "4.1.1",
     "karma": "^6.4.1",
     "karma-chrome-launcher": "3.1.0",

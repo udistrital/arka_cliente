@@ -3,10 +3,8 @@ import { ActionReducerMap } from '@ngrx/store';
 import { ListReducer } from './reducers/list.reducer';
 
 export const rootReducer: ActionReducerMap<IAppState> = {
-  listProveedores: ListReducer.ListReducerProveedor,
   listPlanCuentas: ListReducer.ListReducerPlanCuentas,
   listSedes: ListReducer.ListReducerSedes,
-  listUbicaciones: ListReducer.ListReducerUbicaciones,
   listEstadosActa: ListReducer.ListReducerEstadosActa,
   listEstadosElemento: ListReducer.ListReducerEstadosElemento,
   listTipoBien: ListReducer.ListReducerTipoBien,
@@ -16,4 +14,5 @@ export const rootReducer: ActionReducerMap<IAppState> = {
   listEstadosMovimiento: ListReducer.ListReducerEstadosMovimiento,
   listFormatosMovimiento: ListReducer.ListReducerFormatosMovimiento,
   listUnidadesEjecutoras: ListReducer.ListReducerUnidadesEjecutoras,
+  listFuncionarios: ListReducer.ListReducerFuncionarios,
 };

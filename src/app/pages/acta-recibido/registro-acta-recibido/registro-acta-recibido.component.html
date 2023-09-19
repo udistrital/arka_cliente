@@ -44,7 +44,7 @@
                       {{unidad.Nombre}}
                     </mat-option>
                   </mat-select>
-                  <p class="campo" *ngIf="controlUbicacion.invalid">
+                  <p class="campo" *ngIf="controlDatosBasicos?.get('UnidadEjecutora')?.invalid">
                     {{'GLOBAL.placeholder' | translate}}</p>
                 </div>
                 <div class="form-group col-sm">
@@ -82,7 +82,7 @@
                       {{unidad.Nombre}}
                     </mat-option>
                   </mat-select>
-                  <p class="campo" *ngIf="controlUbicacion.invalid">
+                  <p class="campo" *ngIf="controlDatosBasicos?.get('UnidadEjecutora')?.invalid">
                     {{'GLOBAL.placeholder' | translate}}</p>
                 </div>
                 <div class="form-group col-sm">

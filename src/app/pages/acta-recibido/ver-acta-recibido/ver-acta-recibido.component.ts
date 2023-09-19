@@ -21,6 +21,7 @@ import { UserService } from '../../../@core/data/users.service';
 import { Acta_t, TipoActa } from '../../../@core/data/models/acta_recibido/tipo_acta';
 import { CommonActas } from '../shared';
 import { GestorDocumentalService } from '../../../helpers/gestor_documental/gestorDocumentalHelper';
+import { OikosHelper } from '../../../helpers/oikos/oikosHelper';
 
 @Component({
   selector: 'ngx-ver-acta-recibido',
@@ -73,6 +74,7 @@ export class VerActaRecibidoComponent implements OnInit {
     private userService: UserService,
     private route: ActivatedRoute,
     private documento: GestorDocumentalService,
+    private oikosHelper: OikosHelper,
   ) {
     this.Contratistas = [];
     this.Proveedores = [];
@@ -258,24 +260,28 @@ export class VerActaRecibidoComponent implements OnInit {
   async getSedeDepencencia(ubicacionId: number): Promise<void> {
 
     return new Promise<void>(resolve => {
-      this.Actas_Recibido.getSedeDependencia(ubicacionId).toPromise().then(res => {
-        if (res.length) {
-
-          const Dependencia = res[0].DependenciaId;
-          const sede_ = res[0].EspacioFisicoId.CodigoAbreviacion;
-          const codigoSede = sede_.substring(0, 2) + sede_.substring(2).replace(/\d.*/g, '');
-          const Sede = this.Sedes.find(x => x && x.CodigoAbreviacion === codigoSede);
-
-          if (codigoSede && Dependencia) {
-            this.Actas_Recibido.getAsignacionesBySedeAndDependencia(codigoSede, Dependencia.Id).subscribe((res_: any) => {
-              this.UbicacionesFiltradas = res_;
-              this.sedeDependencia = { sede: Sede.Id, dependencia: Dependencia.Nombre };
-              resolve();
-            });
-          }
-        } else {
+      this.oikosHelper.getSedeDependencia(ubicacionId).toPromise().then(res => {
+        if (!res.length) {
           resolve();
+          return;
         }
+
+        const dependencia = res[0].DependenciaId;
+        const sede_ = res[0].EspacioFisicoId.CodigoAbreviacion;
+        const codigoSede = sede_.substring(0, 2) + sede_.substring(2).replace(/\d.*/g, '');
+        const sede = this.Sedes.find(x => x && x.CodigoAbreviacion === codigoSede);
+
+        if (!sede || !dependencia) {
+          resolve();
+          return;
+        }
+
+        this.oikosHelper.getAsignacionesBySedeAndDependencia(codigoSede, dependencia.Id).subscribe((res_: any) => {
+          this.UbicacionesFiltradas = res_;
+          this.sedeDependencia = { sede: sede.Id, dependencia: dependencia.Nombre };
+          resolve();
+        });
+
       });
     });
   }

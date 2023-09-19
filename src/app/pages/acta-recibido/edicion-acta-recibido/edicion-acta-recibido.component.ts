@@ -496,7 +496,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
 
   private async getSedeDepencencia(ubicacionId: number): Promise<void> {
     return new Promise<void>(resolve => {
-      this.Actas_Recibido.getSedeDependencia(ubicacionId).toPromise().then(res => {
+      this.oikosHelper.getSedeDependencia(ubicacionId).toPromise().then(res => {
         if (!res.length) {
           resolve();
           return;
@@ -513,7 +513,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
         }
 
         this.sedeDependencia = { sede: sede.Id, dependencia };
-        this.Actas_Recibido.getAsignacionesBySedeAndDependencia(sede.CodigoAbreviacion, dependencia.Id).subscribe((res_: any) => {
+        this.oikosHelper.getAsignacionesBySedeAndDependencia(sede.CodigoAbreviacion, dependencia.Id).subscribe((res_: any) => {
           this.Ubicaciones = res_;
           resolve();
         });
@@ -532,7 +532,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
     }
 
     const sede_ = this.Sedes.find((x) => x.Id === sede);
-    this.Actas_Recibido.getAsignacionesBySedeAndDependencia(sede_.CodigoAbreviacion, dependencia).subscribe((res: any) => {
+    this.oikosHelper.getAsignacionesBySedeAndDependencia(sede_.CodigoAbreviacion, dependencia).subscribe((res: any) => {
       this.Ubicaciones = res;
     });
   }
@@ -609,7 +609,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
   }
 
   private setFormEvents() {
-    this.oikosHelper.cambiosDependencia_(this.controlDependencia.valueChanges).subscribe((response: any) => {
+    this.oikosHelper.cambiosDependencia(this.controlSede, this.controlDependencia).subscribe((response: any) => {
       this.dependencias = response.queryOptions;
     });
 

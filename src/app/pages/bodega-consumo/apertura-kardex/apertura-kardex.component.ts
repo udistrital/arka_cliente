@@ -74,9 +74,9 @@ export class AperturaKardexComponent implements OnInit {
     this.listService.findEstadosMovimiento();
     this.loadLists();
     this.form_apertura = this.fb.group({
-      Metodo_Valoracion: ['', Validators.required],
-      Cantidad_Minima: ['', Validators.required],
-      Cantidad_Maxima: ['', Validators.required],
+      Metodo_Valoracion: [0, Validators.required],
+      Cantidad_Minima: [0, Validators.required],
+      Cantidad_Maxima: [0, Validators.required],
       Observaciones: [''],
     });
   }
@@ -107,9 +107,9 @@ export class AperturaKardexComponent implements OnInit {
   onSubmit() {
     const form = this.form_apertura.value;
     const detalle: any = {};
-    detalle.Metodo_Valoracion = parseFloat(form.Metodo_Valoracion);
-    detalle.Cantidad_Maxima = parseFloat(form.Cantidad_Maxima);
-    detalle.Cantidad_Minima = parseFloat(form.Cantidad_Minima);
+    detalle.Metodo_Valoracion = parseInt(form.Metodo_Valoracion, 10);
+    detalle.Cantidad_Maxima = parseInt(form.Cantidad_Maxima, 10);
+    detalle.Cantidad_Minima = parseInt(form.Cantidad_Minima, 10);
 
     this.Movimiento = {};
     this.Movimiento.Observacion = form.Observaciones;
@@ -121,6 +121,7 @@ export class AperturaKardexComponent implements OnInit {
     // console.log(this.Movimiento);
 
     this.elemento_bodega.ElementoCatalogoId = this.elemento_catalogo.Id;
+    this.elemento_bodega.ElementoActaId = null;
     this.elemento_bodega.MovimientoId = this.Movimiento;
     this.ElementoMovimiento = this.elemento_bodega;
     // console.log(this.ElementoMovimiento);

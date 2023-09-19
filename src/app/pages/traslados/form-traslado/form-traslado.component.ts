@@ -11,6 +11,9 @@ import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { TrasladosHelper } from '../../../helpers/movimientos/trasladosHelper';
 import { PopUpManager } from '../../../managers/popUpManager';
+import { Store } from '@ngrx/store';
+import { IAppState } from '../../../@core/store/app.state';
+import { ListService } from '../../../@core/store/services/list.service';
 
 @Component({
   selector: 'ngx-form-traslado',
@@ -28,7 +31,7 @@ export class FormTrasladoComponent implements OnInit {
   ubicacionesFiltradas: any = [];
   displayedColumns: string[] = ['acciones', 'placa', 'nombre', 'marca', 'serie', 'valor'];
   dataSource: MatTableDataSource<any>;
-  @ViewChild('paginator', {static: true}) paginator: MatPaginator;
+  @ViewChild('paginator', { static: true }) paginator: MatPaginator;
   load: boolean = false;
   trasladoId: number = 0;
   elementos = [];
@@ -42,14 +45,16 @@ export class FormTrasladoComponent implements OnInit {
   constructor(
     private translate: TranslateService,
     private fb: FormBuilder,
-    private Actas_Recibido: ActaRecibidoHelper,
     private tercerosHelper: TercerosHelper,
     public oikosHelper: OikosHelper,
     private trasladosHelper: TrasladosHelper,
     private pUpManager: PopUpManager,
+    private listService: ListService,
+    private store: Store<IAppState>,
   ) {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
     });
+    this.listService.findFuncionarios();
   }
 
   ngOnInit() {
@@ -89,19 +94,24 @@ export class FormTrasladoComponent implements OnInit {
 
   private loadUbicaciones(): Promise<void> {
     return new Promise<void>(resolve => {
-      if (this.modo === 'put') {
-        const sede = this.trasladoInfo.ubicacion.Sede;
-        const dependencia = this.trasladoInfo.ubicacion.Dependencia;
-        this.Actas_Recibido.getAsignacionesBySedeAndDependencia(sede.CodigoAbreviacion, dependencia.Id).subscribe((res: any) => {
-          this.ubicacionesFiltradas = res;
-          resolve();
-        });
-      } else if (this.modo === 'get') {
-        this.ubicacionesFiltradas = [this.trasladoInfo.ubicacion.Ubicacion];
+      if (!this.trasladoInfo || !this.trasladoInfo.ubicacion || !this.trasladoInfo.ubicacion.Ubicacion) {
         resolve();
       } else {
-        resolve();
+        if (this.modo === 'put') {
+          const sede = this.trasladoInfo.ubicacion.Sede;
+          const dependencia = this.trasladoInfo.ubicacion.Dependencia;
+          this.oikosHelper.getAsignacionesBySedeAndDependencia(sede.CodigoAbreviacion, dependencia.Id).subscribe((res: any) => {
+            this.ubicacionesFiltradas = res;
+            resolve();
+          });
+        } else if (this.modo === 'get') {
+          this.ubicacionesFiltradas = [this.trasladoInfo.ubicacion.Ubicacion];
+          resolve();
+        } else {
+          resolve();
+        }
       }
+
     });
   }
 
@@ -112,10 +122,11 @@ export class FormTrasladoComponent implements OnInit {
           this.sedes = res;
           resolve();
         });
-      } else {
+      } else if (this.trasladoInfo && this.trasladoInfo.ubicacion && this.trasladoInfo.ubicacion.Sede) {
         this.sedes = [this.trasladoInfo.ubicacion.Sede];
         resolve();
       }
+
     });
   }
 
@@ -253,7 +264,7 @@ export class FormTrasladoComponent implements OnInit {
       ],
     });
     if (!disabled) {
-      this.cambiosDependencia(form.get('dependencia').valueChanges);
+      this.cambiosDependencia(form.get('sede'), form.get('dependencia'));
     }
     return form;
   }
@@ -340,18 +351,20 @@ export class FormTrasladoComponent implements OnInit {
     this.formTraslado.get('destino').patchValue({ email: emailD });
     this.formTraslado.get('destino').patchValue({ cargo: cargoD });
 
-    const sede = values.ubicacion.Sede.Id;
-    const dependencia = values.ubicacion.Dependencia;
-    const ubicacion = values.ubicacion.Ubicacion.Id;
+    if (values.ubicacion && values.ubicacion.Sede) {
+      const sede = values.ubicacion.Sede.Id;
+      const dependencia = values.ubicacion.Dependencia;
+      const ubicacion = values.ubicacion.Ubicacion.Id;
 
-    this.formTraslado.get('ubicacion').setValue(
-      {
-        sede,
-        dependencia,
-        ubicacion,
-      },
-      { emitEvent: false },
-    );
+      this.formTraslado.get('ubicacion').setValue(
+        {
+          sede,
+          dependencia,
+          ubicacion,
+        },
+        { emitEvent: false },
+      );
+    }
 
     values.elementos.forEach(element => {
       const formEl = this.fb.group({
@@ -426,7 +439,7 @@ export class FormTrasladoComponent implements OnInit {
     }
 
     const sede_ = this.sedes.find((x) => x.Id === sede);
-    this.Actas_Recibido.getAsignacionesBySedeAndDependencia(sede_.CodigoAbreviacion, dependencia.Id).subscribe((res: any) => {
+    this.oikosHelper.getAsignacionesBySedeAndDependencia(sede_.CodigoAbreviacion, dependencia.Id).subscribe((res: any) => {
       this.ubicacionesFiltradas = res;
     });
   }
@@ -513,8 +526,8 @@ export class FormTrasladoComponent implements OnInit {
       );
   }
 
-  private cambiosDependencia(valueChanges: Observable<any>) {
-    this.oikosHelper.cambiosDependencia_(valueChanges).subscribe((response: any) => {
+  private cambiosDependencia(sedeCtrl, depCtrl) {
+    this.oikosHelper.cambiosDependencia(sedeCtrl, depCtrl).subscribe((response: any) => {
       if (this.load) {
         this.dependencias = response.queryOptions;
         this.getUbicaciones();
@@ -537,13 +550,14 @@ export class FormTrasladoComponent implements OnInit {
     } else return [];
   }
 
-  private loadFuncionarios(): Promise<void> {
-    return new Promise<void>(resolve => {
-      this.tercerosHelper.getTercerosByCriterio('funcionarios').toPromise().then(res => {
-        this.funcionarios = res;
-        resolve();
-      });
-    });
+  private loadFuncionarios() {
+    this.store.select((state) => state).subscribe(
+      (list) => {
+        if (list.listFuncionarios && list.listFuncionarios.length && list.listFuncionarios[0]) {
+          this.funcionarios = list.listFuncionarios[0];
+        }
+      },
+    );
   }
 
   private validarTercero(): ValidatorFn {
