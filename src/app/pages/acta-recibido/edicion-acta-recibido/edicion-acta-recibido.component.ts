@@ -893,7 +893,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
   }
 
   setElementosValidos(event: any): void {
-    this.validarElementos = event && !!this.DatosElementos.length;
+    this.validarElementos = event;
     !this.validarElementos && !this.actaRegistrada ? this.errores.set('clases', true) : this.errores.delete('clases');
   }
 

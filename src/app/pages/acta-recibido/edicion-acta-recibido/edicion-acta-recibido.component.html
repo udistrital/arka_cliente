@@ -287,7 +287,7 @@
                 <button nbButton matStepperPrevious>
                   {{'GLOBAL.Acta_Recibido.EdicionActa.AnteriorButton' | translate}}</button>
                 <button nbButton matStepperNext
-                  [disabled]="controlDatosBasicos.invalid || controlSoportes.invalid || !DatosElementos || DatosElementos.length === 0 || !validarElementos"
+                  [disabled]="controlDatosBasicos.invalid || controlSoportes.invalid || !DatosElementos?.length || !validarElementos"
                   class="float-right">{{'GLOBAL.Acta_Recibido.EdicionActa.SiguienteButton' | translate}}</button>
               </div>
             </mat-card-actions>
@@ -298,7 +298,7 @@
         <mat-step  label="{{'GLOBAL.Acta_Recibido.RegistroActa.DatosAdicionales' | translate}}" formGroupName="Formulario3">
           <mat-card>
             <mat-card-content>
-              <div class="form-group  col-lg-12" *ngIf="totales && DatosElementos && DatosElementos.length > 1">
+              <div class="form-group  col-lg-12" *ngIf="totales && DatosElementos?.length">
                 <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Consolidado' | translate}}</label>
                 <table class="consolidado">
                   <tr>
@@ -343,7 +343,7 @@
           </mat-card>
 
           <div *ngIf="accion.envContratistaHabilitado || accion.envHabilitado" class="botones">
-            <button mat-icon-button type="button" *ngIf="errores && (errores.size > 0)" [nbPopover]="erroresTemplate" nbPopoverTrigger="hover">
+            <button mat-icon-button type="button" *ngIf="errores?.size" [nbPopover]="erroresTemplate" nbPopoverTrigger="hover">
               <span class="fas fa-exclamation-triangle fa-2x"></span>
             </button>
             <button nbButton (click)="Revisar_Totales3(1)" *ngIf="accion.envHabilitado && controlProveedor.value" [disabled]="this.errores.size > 0">

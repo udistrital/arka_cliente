@@ -102,7 +102,7 @@ export class ConsultaActaRecibidoComponent implements OnInit {
       pager: {
         display: true,
       },
-      noDataMessage: 'No se encontraron elementos asociados.',
+      noDataMessage: 'No se encontraron actas.',
       actions: {
         columnTitle: this.translate.instant('GLOBAL.Acciones'),
         position: 'right',
@@ -143,18 +143,6 @@ export class ConsultaActaRecibidoComponent implements OnInit {
           width: '70px',
           ...this.tabla.getSettingsDate_(),
         },
-        PersonaAsignada: {
-          title: this.translate.instant('GLOBAL.Acta_Recibido.ContratistaAsignado'),
-        },
-        RevisorId: {
-          title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.ModificadaPor'),
-          valuePrepareFunction: (value: any) => {
-            return value;
-          },
-        },
-        AceptadaPor: {
-          title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.AceptadaPor'),
-        },
         EstadoActaId: {
           title: this.translate.instant('GLOBAL.estado'),
           valuePrepareFunction: (value) => {
@@ -172,11 +160,31 @@ export class ConsultaActaRecibidoComponent implements OnInit {
             },
           },
         },
-        DependenciaId: {
-          title: this.translate.instant('GLOBAL.dependencia'),
-        },
         Observaciones: {
           title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.ObservacionesHeader'),
+        },
+        PersonaAsignada: {
+          title: this.translate.instant('GLOBAL.Acta_Recibido.ContratistaAsignado'),
+          sort: false,
+          filter: false,
+        },
+        RevisorId: {
+          title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.ModificadaPor'),
+          valuePrepareFunction: (value: any) => {
+            return value;
+          },
+          sort: false,
+          filter: false,
+        },
+        AceptadaPor: {
+          title: this.translate.instant('GLOBAL.Acta_Recibido.ConsultaActas.AceptadaPor'),
+          sort: false,
+          filter: false,
+        },
+        DependenciaId: {
+          title: this.translate.instant('GLOBAL.dependencia'),
+          sort: false,
+          filter: false,
         },
       },
     };

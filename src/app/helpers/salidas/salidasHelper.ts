@@ -39,6 +39,12 @@ export class SalidaHelper {
             ),
         );
     }
+
+    public getEndpointAllSalidas(estado: string) {
+        const query = estado ? 'EstadoMovimientoId=' + estado : '';
+        return this.rqManager.getPath('ARKA_SERVICE') + 'salida?' + query;
+    }
+
     /**
      * Entradas Get
      * If the response has errors in the OAS API it should show a popup message with an error.

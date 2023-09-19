@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { LocalDataSource } from 'ng2-smart-table';
+import { ServerDataSource } from 'ng2-smart-table';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
 import { EstadoMovimiento, Movimiento } from '../../../@core/data/models/entrada/entrada';
@@ -8,6 +8,8 @@ import { SalidaHelper } from '../../../helpers/salidas/salidasHelper';
 import { PopUpManager } from '../../../managers/popUpManager';
 import { ConfiguracionService } from '../../../@core/data/configuracion.service';
 import { SmartTableService } from '../../../@core/data/SmartTableService';
+import { HttpClient } from '@angular/common/http';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'ngx-consulta-salidas',
@@ -15,7 +17,7 @@ import { SmartTableService } from '../../../@core/data/SmartTableService';
   styleUrls: ['./consulta-salidas.component.scss'],
 })
 export class ConsultaSalidasComponent implements OnInit {
-  source: LocalDataSource;
+  source: ServerDataSource;
   editarSalida: boolean;
   entradaParametro: string;
   settings: any;
@@ -39,19 +41,24 @@ export class ConsultaSalidasComponent implements OnInit {
     private route: ActivatedRoute,
     private entradasHelper: EntradaHelper,
     private confService: ConfiguracionService,
-    private tabla: SmartTableService) {
-    this.source = new LocalDataSource();
-  }
+    private tabla: SmartTableService,
+    private http: HttpClient,
+    private location: Location,
+  ) { }
 
   ngOnInit() {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
       this.loadTablaSettings();
     });
+
+    this.loadEstados();
+
     this.route.data.subscribe(data => {
       if (data && data.modo) {
         this.title = 'GLOBAL.movimientos.salidas.' + data.modo + 'Ttl';
         this.subtitle = 'GLOBAL.movimientos.salidas.' + data.modo + 'Stl';
         this.modo = data.modo;
+        this.loadTablaSettings();
       }
     });
 
@@ -59,33 +66,56 @@ export class ConsultaSalidasComponent implements OnInit {
       if (params && +params.get('id')) {
         this.salidaId = this.route.snapshot.paramMap.get('id');
         this.cargarSalida();
-        this.loadEstados(false);
       } else {
-        this.loadSalidas();
-        this.loadEstados(true);
-      }
-    });
-
-  }
-
-  loadEstados(lista: boolean) {
-    this.entradasHelper.getEstadosMovimiento().toPromise().then(res => {
-      if (res.length) {
-        this.estadosMovimiento = res;
-        if (lista) {
-          this.loadTablaSettings();
+        this.setSource();
+        if (params && params.get('filter')) {
+          const filtros = [];
+          params.get('filter').split('&').forEach(f => {
+            const filtro = f.split('=');
+            if (filtro.length === 2) {
+              filtros.push({
+                field: filtro[0],
+                search: filtro[1],
+              });
+            }
+          });
+          this.source.setFilter(filtros);
         }
       }
     });
+
   }
 
-  loadSalidas(): void {
-    this.spinner = 'Cargando Salidas';
-    this.salidasHelper.getSalidas(this.modo === 'revision').subscribe(res => {
-      if (res.length) {
-        this.source.load(res);
+  setSource() {
+    const estado = this.modo === 'revision' ? 'Salida En Trámite' : '';
+    const config = {
+      endPoint: this.salidasHelper.getEndpointAllSalidas(estado),
+      sortFieldKey: 'sortby',
+      sortDirKey: 'order',
+      filterFieldKey: '#field#',
+      pagerLimitKey: 'limit',
+      pagerPageKey: 'offset',
+      totalKey: 'x-total-count',
+    };
+    this.source = new ServerDataSource(this.http, config);
+    this.source.onChanged().subscribe(s => {
+      if (s.action === 'filter') {
+        const filtro = [];
+        s.filter.filters.forEach(f => {
+          if (f.field && f.search) {
+            filtro.push(f.field + '=' + f.search);
+          }
+        });
+        this.router.navigate(['/pages/salidas/' + this.getUrlSegment() + '_salidas/q', filtro.join('&')]);
       }
-      this.spinner = '';
+    });
+  }
+
+  loadEstados() {
+    this.entradasHelper.getEstadosMovimiento().toPromise().then(res => {
+      if (res.length) {
+        this.estadosMovimiento = res;
+      }
     });
   }
 
@@ -108,8 +138,7 @@ export class ConsultaSalidasComponent implements OnInit {
         }
       });
     } else {
-      const estado = this.estadosMovimiento.find(st => st.Nombre === 'Salida Rechazada').Id;
-      if (event.data.EstadoMovimientoId === estado) {
+      if (event.data.EstadoMovimientoId.Nombre === 'Salida Rechazada') {
         const query = 'Nombre__in:cierreEnCurso,Valor:true';
         this.confService.getAllParametro(query).subscribe(res => {
           if (res && res.length) {
@@ -138,6 +167,10 @@ export class ConsultaSalidasComponent implements OnInit {
     });
   }
 
+  getUrlSegment() {
+    return this.modo === 'consulta' ? 'consulta' : this.modo === 'revision' ? 'aprobar' : '';
+  }
+
   onVolver() {
     this.editarSalida = false;
     this.salidaId = '';
@@ -145,8 +178,7 @@ export class ConsultaSalidasComponent implements OnInit {
     this.filaSeleccionada = undefined;
     this.trContable = undefined;
     this.submitted = false;
-    this.router.navigateByUrl('/pages/salidas/' +
-      (this.modo === 'consulta' ? 'consulta' : this.modo === 'revision' ? 'aprobar' : '') + '_salidas');
+    this.location.back();
   }
 
   private cargarSalida() {
@@ -218,42 +250,14 @@ export class ConsultaSalidasComponent implements OnInit {
       edit: this.translate.instant('GLOBAL.' + (this.modo === 'consulta' ? 'salidas.titulo_editar' : 'movimientos.salidas.accionRevision')),
     };
     const estadoSelect = 'GLOBAL.movimientos.estado';
-    const columns = this.modo === 'consulta' ? {
-      EstadoMovimientoId: {
-        title: this.translate.instant('GLOBAL.estadoSalida'),
-        valuePrepareFunction: (value: any) => {
-          return this.estadosMovimiento.find(estado => estado.Id === value).Nombre;
-        },
-        width: '300px',
-        filter: {
-          type: 'list',
-          config: {
-            selectText: this.translate.instant('GLOBAL.seleccionar') + '...',
-            list: [
-              {
-                value: this.estadosMovimiento.find(status => status.Nombre === 'Salida En Trámite').Id,
-                title: this.translate.instant(estadoSelect + 'Tramite'),
-              },
-              {
-                value: this.estadosMovimiento.find(status => status.Nombre === 'Salida Aprobada').Id,
-                title: this.translate.instant(estadoSelect + 'Aprobado'),
-              },
-              {
-                value: this.estadosMovimiento.find(status => status.Nombre === 'Salida Rechazada').Id,
-                title: this.translate.instant(estadoSelect + 'Rechazo'),
-              },
-            ],
-          },
-        },
-      },
-    } : [];
+    const consulta = this.modo === 'consulta';
     this.settings = {
       hideSubHeader: false,
-      noDataMessage: this.translate.instant('GLOBAL.movimientos.salidas.' + (this.modo === 'consulta' ? 'noSalidasView' : 'noSalidasReview')),
+      noDataMessage: this.translate.instant('GLOBAL.movimientos.salidas.' + (consulta ? 'noSalidasView' : 'noSalidasReview')),
       actions: {
         columnTitle: this.translate.instant('GLOBAL.Acciones'),
         position: 'right',
-        delete: this.modo === 'consulta',
+        delete: consulta,
         edit: true,
         add: !!this.confService.getRoute('/pages/salidas/registro_salidas'),
       },
@@ -271,41 +275,70 @@ export class ConsultaSalidasComponent implements OnInit {
         Consecutivo: {
           title: this.translate.instant('GLOBAL.consecutivo'),
         },
-        Observacion: {
-          title: this.translate.instant('GLOBAL.observaciones'),
+        MovimientoPadreId: {
+          title: this.translate.instant('GLOBAL.entradaAsociada'),
+          ...this.tabla.getSettingsObject('Consecutivo'),
         },
         FechaCreacion: {
           title: this.translate.instant('GLOBAL.fecha_creacion'),
           width: '70px',
           ...this.tabla.getSettingsDate(),
         },
-        FechaModificacion: {
-          title: this.translate.instant('GLOBAL.ultimaModificacion'),
+        FechaCorte: {
+          title: this.translate.instant('GLOBAL.fechaAprobacion'),
           width: '70px',
           ...this.tabla.getSettingsDate(),
         },
-        MovimientoPadreId: {
-          title: this.translate.instant('GLOBAL.entradaAsociada'),
-          ...this.tabla.getSettingsObject('Consecutivo'),
+        EstadoMovimientoId: {
+          title: this.translate.instant('GLOBAL.estadoSalida'),
+          hide: !consulta,
+          width: '300px',
+          ...this.tabla.getSettingsObject('Nombre'),
+          filter: {
+            type: 'list',
+            config: {
+              selectText: this.translate.instant('GLOBAL.seleccionar') + '...',
+              list: [
+                {
+                  value: 'Salida En Trámite',
+                  title: this.translate.instant(estadoSelect + 'Tramite'),
+                },
+                {
+                  value: 'Salida Aprobada',
+                  title: this.translate.instant(estadoSelect + 'Aprobado'),
+                },
+                {
+                  value: 'Salida Rechazada',
+                  title: this.translate.instant(estadoSelect + 'Rechazo'),
+                },
+              ],
+            },
+          },
         },
         Funcionario: {
           title: this.translate.instant('GLOBAL.funcionario'),
           ...this.tabla.getSettingsObject('NombreCompleto'),
+          sort: false,
+          filter: false,
         },
         Sede: {
           title: this.translate.instant('GLOBAL.sede'),
           ...this.tabla.getSettingsObject('Nombre'),
-
+          sort: false,
+          filter: false,
         },
         Dependencia: {
           title: this.translate.instant('GLOBAL.dependencia'),
           ...this.tabla.getSettingsObject('Nombre'),
+          sort: false,
+          filter: false,
         },
         Ubicacion: {
           title: this.translate.instant('GLOBAL.ubicacion'),
           ...this.tabla.getSettingsObject_('EspacioFisicoId', 'Nombre'),
+          sort: false,
+          filter: false,
         },
-        ...columns,
       },
     };
   }
