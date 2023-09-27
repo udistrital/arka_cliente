@@ -35,7 +35,7 @@
         <mat-step label="{{'GLOBAL.elementos_entrada' | translate}}" *ngIf="actaRecibidoId">
           <ngx-gestionar-elementos [ActaRecibidoId]="actaRecibidoId" [Modo]="'ver'"></ngx-gestionar-elementos>
         </mat-step>
-        <mat-step label="{{'GLOBAL.Comprobante_Contable.Titulo' | translate}}" *ngIf="trContable?.movimientos">
+        <mat-step label="{{'GLOBAL.Comprobante_Contable.Titulo' | translate}}" *ngIf="trContable?.movimientos?.length">
           <ngx-comprobante *ngIf="trContable" [ajusteInfo]="trContable" [modo]="'get'"
             [consecutivo]="entradaEspecifica?.Consecutivo" [fecha]="trContable.fecha" [concepto]="trContable.concepto">
           </ngx-comprobante>

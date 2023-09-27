@@ -70,7 +70,7 @@
         </div>
 
       </mat-step>
-      <mat-step label="{{'GLOBAL.Comprobante_Contable.Titulo' | translate}}" *ngIf="trContable">
+      <mat-step label="{{'GLOBAL.Comprobante_Contable.Titulo' | translate}}" *ngIf="trContable?.movimientos?.length">
         <ngx-comprobante [ajusteInfo]="trContable" [modo]="'get'" [concepto]="trContable.concepto"
           [consecutivo]="salida.Consecutivo" [fecha]="trContable.fecha">
         </ngx-comprobante>
