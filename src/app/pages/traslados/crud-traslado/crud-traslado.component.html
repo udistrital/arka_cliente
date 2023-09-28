@@ -7,7 +7,7 @@
 <mat-card-content [nbSpinner]="loading">
   <ngx-form-traslado *ngIf="showForm" (valid)="setValidness($event)" [(trasladoInfo)]="trasladoData" [modo]="modoForm">
   </ngx-form-traslado>
-  <mat-vertical-stepper *ngIf="trContable">
+  <mat-vertical-stepper *ngIf="trContable?.movimientos?.length">
     <mat-step label="{{'GLOBAL.Comprobante_Contable.Titulo' | translate}}">
       <ngx-comprobante *ngIf="trContable" [ajusteInfo]="trContable" [modo]="'get'" [consecutivo]="consecutivo"
         [fecha]="trContable.Fecha" [concepto]="trContable.Concepto">

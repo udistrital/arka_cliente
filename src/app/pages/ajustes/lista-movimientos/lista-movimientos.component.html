@@ -39,7 +39,7 @@
             *ngIf="ajuste?.Elementos?.length">
           </ngx-gestionar-elementos>
         </mat-step>
-        <mat-step label="{{'GLOBAL.Comprobante_Contable.Titulo' | translate}}" *ngIf="ajuste?.TrContable?.movimientos">
+        <mat-step label="{{'GLOBAL.Comprobante_Contable.Titulo' | translate}}" *ngIf="ajuste?.TrContable?.movimientos?.length">
           <ngx-comprobante [ajusteInfo]="ajuste.TrContable" [modo]="'get'">
           </ngx-comprobante>
         </mat-step>
