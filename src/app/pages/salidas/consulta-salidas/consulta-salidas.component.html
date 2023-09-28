@@ -17,7 +17,7 @@
   </ngx-consulta-salida-especifica>
 
   <mat-vertical-stepper #stepper>
-    <mat-step label="{{'GLOBAL.Comprobante_Contable.Titulo' | translate}}" *ngIf="trContable">
+    <mat-step label="{{'GLOBAL.Comprobante_Contable.Titulo' | translate}}" *ngIf="trContable?.movimientos?.length">
       <ngx-comprobante *ngIf="trContable" [ajusteInfo]="trContable" [modo]="'get'" [consecutivo]="consecutivoSalida"
         [fecha]="trContable.fecha" [concepto]="trContable.concepto">
       </ngx-comprobante>
