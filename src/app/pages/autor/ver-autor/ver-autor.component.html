@@ -1,0 +1,31 @@
+<div>
+    <h3>Autor</h3>
+    <p>Nombre: {{nombre}}</p>
+    <p>Nacionalidad: {{nacionalidad}}</p>
+    <p>Edad: {{edad}}</p>
+
+    <mat-form-field appearance="outline">
+        <mat-label>Nombre</mat-label>
+        <input type="text" matInput [(ngModel)]="nombre">
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+        <mat-label>Nacionalidad</mat-label>
+        <input type="text" matInput [(ngModel)]="nacionalidad">
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+        <mat-label>Edad</mat-label>
+        <input type="number" matInput [(ngModel)]="edad">
+    </mat-form-field>
+
+    <br>
+    <button type="button" (click)="togglePublicaciones()"
+            mat-raised-button color="primary">VER PUBLICACIONES</button>
+
+    <div *ngIf="verPublicaciones">
+        <h4>Publicaciones</h4>
+        <div *ngFor="let publicacion of publicaciones">
+            <ver-publicacion [resumen]="publicacion.resumen" [titulo]="publicacion.titulo" [ISBN]="publicacion.ISBN" [year]="publicacion.year">
+            </ver-publicacion>
+        </div>
+    </div>
+</div>

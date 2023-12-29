@@ -70,6 +70,11 @@ const routes: Routes = [{
       canActivate: [AuthGuard],
     },
     {
+      path: 'autor',
+      loadChildren: () => import('./autor/autor.module').then(m => m.AutorModule),
+      // canActivate: [AuthGuard],
+    },
+    {
       path: '',
       redirectTo: 'dashboard',
       pathMatch: 'full',
