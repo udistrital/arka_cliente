@@ -1,5 +1,5 @@
-<div>
-    <h3>Autor</h3>
+<mat-card>
+    <!-- <h3>Autor</h3>
     <p>Nombre: {{nombre}}</p>
     <p>Nacionalidad: {{nacionalidad}}</p>
     <p>Edad: {{edad}}</p>
@@ -27,5 +27,59 @@
             <ver-publicacion [resumen]="publicacion.resumen" [titulo]="publicacion.titulo" [ISBN]="publicacion.ISBN" [year]="publicacion.year">
             </ver-publicacion>
         </div>
-    </div>
-</div>
+    </div> -->
+
+    <h4>Reactive Forms</h4>
+    <form [formGroup]="autorForm">
+        <mat-form-field appearance="outline">
+            <mat-label>Nombre</mat-label>
+            <input type="text" matInput formControlName="nombre">
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+            <mat-label>País de nacimiento</mat-label>
+            <input type="text" matInput formControlName="pais">
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+            <mat-label>Edad</mat-label>
+            <input type="number" matInput formControlName="edad">
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+            <mat-label>Correo</mat-label>
+            <input type="text" matInput formControlName="mail">
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+            <mat-label>Website</mat-label>
+            <input type="text" matInput formControlName="website">
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+            <mat-label>Fecha Nacimiento</mat-label>
+            <input type="date" matInput formControlName="fechaNacimiento">
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+            <mat-label>Fecha Deceso</mat-label>
+            <input type="date" matInput formControlName="fechaDeceso">
+            <mat-error>Error Fecha de deceso no puede ser anterior al nacimiento</mat-error>
+        </mat-form-field>
+        <div>
+            <mat-label>Docente</mat-label>
+            <mat-checkbox matInput formControlName="docente"></mat-checkbox>
+            <mat-form-field appearance="outline" *ngIf="autorForm?.value?.docente">
+                <mat-label>Materias</mat-label>
+                <input type="text" matInput formControlName="materias">
+            </mat-form-field>
+        </div>
+
+        <mat-form-field appearance="outline">
+            <mat-label>Tipos</mat-label>
+            <mat-select formControlName="padre" (selectionChange)="cargarHijos()">
+                <mat-option *ngFor="let padre of padres" [value]="padre.Id">{{padre.Nombre}}</mat-option>
+            </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+            <mat-select formControlName="hijo">
+                <mat-option *ngFor="let hijo of hijos" [value]="hijo.Id">{{hijo.Nombre}}</mat-option>
+            </mat-select>
+        </mat-form-field>
+    </form>
+
+</mat-card>

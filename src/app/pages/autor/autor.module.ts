@@ -13,6 +13,6 @@ import { ThemeModule } from '../../@theme/theme.module';
     CommonModule,
     AutorRoutingModule,
     ThemeModule,
-  ]
+  ],
 })
 export class AutorModule { }
