@@ -337,8 +337,8 @@
               <div class="form-group  col-lg-12">
                 <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Observaciones' | translate}}</label>
                 <div class="input-group">
-                  <textarea rows="5" placeholder="{{'GLOBAL.Acta_Recibido.RegistroActa.Observaciones2' | translate}}"
-                    class="form-control" formControlName="Datos_Adicionales">
+                  <textarea autoresize placeholder="Seleccionar" class="form-control"
+                    formControlName="Datos_Adicionales">
                   </textarea>
                 </div>
                 <p class="campo" *ngIf="controlDatosAdicionales.invalid">

@@ -13,6 +13,7 @@ import { GestionarElementosComponent } from './gestionar-elementos/gestionar-ele
 import { ListService } from '../../@core/store/services/list.service';
 import { VerActaRecibidoComponent } from './ver-acta-recibido/ver-acta-recibido.component';
 import { CommonActas } from './shared';
+import { AutoResizeDirective } from './resize';
 
 
 @NgModule({
@@ -23,6 +24,7 @@ import { CommonActas } from './shared';
     ConsultaActaRecibidoComponent,
     EdicionActaRecibidoComponent,
     GestionarElementosComponent,
+    AutoResizeDirective,
   ],
   imports: [
     CommonModule,
