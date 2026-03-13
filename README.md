@@ -1,5 +1,5 @@
 # arka_cliente
-Cliente del Sistema de Gestión Academica hecho con Angular 7
+Cliente del Sistema de Gestión Academica hecho con Angular 8
 
 ## Especificaciones Técnicas
 
