@@ -213,8 +213,15 @@ export class CrudCuentasComponent implements OnInit {
   }
 
   private cargarTiposDeMovimientos() {
-    this.entradasHelper.getTiposMovimientos().subscribe(res_ => {
-      this.tiposDeEMovimentos = res_;
+    this.entradasHelper.getTiposMovimientos().subscribe({
+      next: (res_) => {
+        this.tiposDeEMovimentos = Array.isArray(res_)
+          ? res_.filter(tipo => tipo.Activo)
+          : [];
+      },
+      error: (err) => {
+        this.tiposDeEMovimentos = [];
+      },
     });
   }
 
