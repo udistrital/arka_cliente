@@ -124,7 +124,7 @@ export class ActaRecibidoHelper {
 
     public getActasRecibidoUsuario(usuario: string, limit: number, offset: number) {
         this.rqManager.setPath('ARKA_SERVICE');
-        return this.rqManager.get('acta_recibido/get_all_actas?u=' + usuario + '&limit=' + limit + '&offset=' + offset).pipe(
+        return this.rqManager.get('acta_recibido/get_all_actas?limit=' + limit + '&offset=' + offset).pipe(
             map(
                 (res) => {
                     if (res === 'error') {
@@ -138,7 +138,7 @@ export class ActaRecibidoHelper {
     }
 
     public getEndpointAllActas(user: string) {
-        return this.rqManager.getPath('ARKA_SERVICE') + 'acta_recibido/get_all_actas?u=' + user;
+        return this.rqManager.getPath('ARKA_SERVICE') + 'acta_recibido/get_all_actas?';
     }
 
     public getAllActasRecibidoByEstado(estados: [string], limit: number, offset: number) {
