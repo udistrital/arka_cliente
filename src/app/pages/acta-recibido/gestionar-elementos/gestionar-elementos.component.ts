@@ -252,16 +252,13 @@ export class GestionarElementosComponent implements OnInit {
           disabled: disabled || !this.mostrarClase,
         },
         {
-          validators: [Validators.required, this.validarTipoBien('Id')],
+          validators: [Validators.required],
         },
       ],
       TipoBienId: [
         {
           value: el.TipoBienId ? el.TipoBienId : '',
           disabled,
-        },
-        {
-          validators: [this.validarTipoBien('Id')],
         },
       ],
       ValorResidual: [
@@ -328,10 +325,11 @@ export class GestionarElementosComponent implements OnInit {
 
   // Event emission
   private emit() {
-    this.ElementosValidos.emit(this.Modo === 'verificar' ? this.checkTodos : this.formElementos.get('elementos').valid);
-    this.DatosEnviados.emit(this.elementos_);
-    this.getTotales();
-  }
+  const elementos = this.formElementos.get('elementos') as FormArray;
+  this.ElementosValidos.emit(this.Modo === 'verificar' ? this.checkTodos : elementos.length > 0);
+  this.DatosEnviados.emit(this.elementos_);
+  this.getTotales();
+}
 
   private submitForm(statusChanges: Observable<any>) {
     statusChanges
