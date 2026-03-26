@@ -1,14 +1,14 @@
-import { Component, OnInit, Input, ViewChild, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, ViewChild, Output, EventEmitter } from '@angular/core';
 import { FormGroup, FormArray } from '@angular/forms';
+import { Observable } from 'rxjs';
+import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { PopUpManager } from '../../../managers/popUpManager';
-import { Contrato } from '../../../@core/data/models/entrada/contrato';
 import { TransaccionEntrada } from '../../../@core/data/models/entrada/entrada';
+import { Ordenador, Supervisor } from '../../../@core/data/models/terceros_criterio';
 import { TranslateService } from '@ngx-translate/core';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatStepper } from '@angular/material/stepper';
 import { MatPaginator } from '@angular/material/paginator';
-import { Observable } from 'rxjs';
-import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { CommonEntradas } from '../CommonEntradas';
 import { CommonContrato } from '../CommonContrato';
 import { CommonElementos } from '../CommonElementos';
@@ -19,7 +19,6 @@ import * as moment from 'moment';
   templateUrl: './adiciones-mejoras.component.html',
   styleUrls: ['./adiciones-mejoras.component.scss'],
 })
-
 export class AdicionesMejorasComponent implements OnInit {
 
   // Formularios
@@ -28,25 +27,22 @@ export class AdicionesMejorasComponent implements OnInit {
   observacionForm: FormGroup;
   ordenadorForm: FormGroup;
   supervisorForm: FormGroup;
-  // Contratos
-  vigencia: number;
-  tipos: Array<any>;
-  contratos: Contrato[];
-  // Contrato Seleccionado
-  contratoEspecifico: Contrato;
   // Elementos
   dataSource: MatTableDataSource<any>;
   displayedColumns: any;
   elementos: any[];
+  // Ordenador y Supervisor
+  ordenadoresFiltrados: Observable<Ordenador[]>;
+  supervisoresFiltrados: Observable<Supervisor[]>;
 
-  @ViewChild('stepper', {static: true}) stepper: MatStepper;
-  @ViewChild('paginator', {static: true}) paginator: MatPaginator;
+  @ViewChild('stepper', { static: true }) stepper: MatStepper;
+  @ViewChild('paginator', { static: true }) paginator: MatPaginator;
 
   @Output() data: EventEmitter<TransaccionEntrada> = new EventEmitter<TransaccionEntrada>();
 
   constructor(
     private common: CommonEntradas,
-    private commonContrato: CommonContrato,
+    public commonContrato: CommonContrato,
     private commonElementos: CommonElementos,
     private pUpManager: PopUpManager,
     private translate: TranslateService,
@@ -57,7 +53,6 @@ export class AdicionesMejorasComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.loadContratoInfo();
     this.elementosForm = this.commonElementos.formElementos;
     this.contratoForm = this.commonContrato.formContrato;
     this.ordenadorForm = this.commonContrato.ordenadorForm;
@@ -65,12 +60,8 @@ export class AdicionesMejorasComponent implements OnInit {
     this.observacionForm = this.common.formObservaciones;
     this.dataSource = new MatTableDataSource<any>();
     this.dataSource.paginator = this.paginator;
-  }
-
-  async loadContratoInfo() {
-    this.contratoEspecifico = new Contrato;
-    this.vigencia = this.commonContrato.currentVigencia;
-    this.tipos = await this.commonContrato.loadTipoContratos();
+    this.ordenadoresFiltrados = this.commonContrato.loadOrdenadores(this.ordenadorForm.get('ordenadorCtrl'));
+    this.supervisoresFiltrados = this.commonContrato.loadSupervisores(this.supervisorForm.get('supervisorCtrl'));
   }
 
   addElemento() {
@@ -90,21 +81,12 @@ export class AdicionesMejorasComponent implements OnInit {
     });
   }
 
-  async onContratoSubmit() {
-    const existe = this.commonContrato.checkContrato(this.contratos, this.contratoForm.value.contratoCtrl);
-    if (!existe) {
-      this.stepper.previous();
-      this.contratoEspecifico = new Contrato;
-      this.pUpManager.showErrorAlert('El contrato seleccionado no existe!');
-      return;
-    }
-
-    this.contratoEspecifico = await this.commonContrato.loadContrato(this.contratoForm.value.contratoCtrl, this.contratoForm.value.vigenciaCtrl);
+  onContratoSubmit() {
+    // contrato fijo en 000, no se valida ni se consulta
   }
 
-  async getContratos() {
-    this.contratos = await this.commonContrato.loadContratos(this.contratoForm.value.tipoCtrl, this.contratoForm.value.vigenciaCtrl);
-  }
+  muestraOrdenador = (ord: Ordenador): string => this.commonContrato.muestraOrdenador(ord);
+  muestraSupervisor = (sup: Supervisor): string => this.commonContrato.muestraSupervisor(sup);
 
   onObservacionSubmit() {
     this.pUpManager.showAlertWithOptions(this.common.optionsSubmit)
@@ -115,7 +97,6 @@ export class AdicionesMejorasComponent implements OnInit {
       });
   }
 
-  // Método para enviar registro
   onSubmit() {
     const detalle = {
       elementos: this.elementosForm.get('elementos').value.map(el => ({
@@ -125,12 +106,15 @@ export class AdicionesMejorasComponent implements OnInit {
         VidaUtil: el.vidaUtil,
       })),
       FechaCorte: moment().format('YYYY-MM-DD'),
-      contrato_id: +this.contratoEspecifico.NumeroContratoSuscrito,
-      vigencia_contrato: this.contratoForm.value.vigenciaCtrl,
+      contrato_id: 0,
+      vigencia_contrato: String(this.commonContrato.currentVigencia),
+      supervisor: this.supervisorForm.value.supervisorCtrl.Id,
+      ordenador_gasto_id: this.ordenadorForm.value.ordenadorCtrl.Id,
     };
 
-    const transaccion = this.common.crearTransaccionEntrada(this.observacionForm.value.observacionCtrl, detalle, 'ENT_AM', 0);
+    const transaccion = this.common.crearTransaccionEntrada(
+      this.observacionForm.value.observacionCtrl, detalle, 'ENT_AM', 0,
+    );
     this.data.emit(transaccion);
   }
-
 }
