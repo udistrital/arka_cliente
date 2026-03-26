@@ -52,7 +52,7 @@
           </div>
         </form>
       </mat-step>
-      <mat-step *ngIf="trContable?.movimientos" label="{{'GLOBAL.trContable' | translate}}">
+      <mat-step *ngIf="trContable?.movimientos?.length" label="{{'GLOBAL.trContable' | translate}}">
         <ngx-comprobante [ajusteInfo]="trContable" [modo]="'get'" [consecutivo]="consecutivo" [fecha]="trContable.fecha"
           [concepto]="trContable.concepto">
         </ngx-comprobante>

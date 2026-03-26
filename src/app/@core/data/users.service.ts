@@ -42,45 +42,20 @@ export class UserService {
       // this.roles.push(RolUsuario_t.Contratista);
       // this.roles.push(RolUsuario_t.Admin);
       // this.roles.push(RolUsuario_t.Revisor);
-      this.roles = (payload && payload.role && payload.role.length) ? payload.role : [] ;
+      this.roles = (payload && payload.role && payload.role.length) ? payload.role : [];
       // console.log({'Roles': this.roles});
-      // this.http.get(path + 'persona/?query=Usuario:' + payload.sub, httpOptions)
-      this.http.get(path + 'tercero/?query=UsuarioWSO2:' + payload.sub, httpOptions)
-        .subscribe(res => {
-          if (res && Object.keys(res[0]).length) {
-            this.user = res[0];
-            this.user$.next(this.user);
-            // window.localStorage.setItem('ente', res[0].Ente);
-            this.terceroId = parseInt(res[0].Id, 10); // window.localStorage.setItem('persona_id', res[0].Id);
-          } else {
-            const doc_ = window.localStorage.getItem('user');
-            const doc = doc_ ? JSON.parse(atob(doc_)).userService : '';
-            const tipo = doc ? ',TipoDocumentoId__CodigoAbreviacion:' + doc.documento_compuesto.replace(/[0-9]/g, '') : '';
-            if (doc) {
-              this.http.get(path + 'datos_identificacion/?query=Activo:true,Numero:' + doc.documento + tipo, httpOptions)
-                .subscribe((res_: any) => {
-                  if (res_ && res_.length && Object.keys(res_[0]).length) {
-                    this.user = res_[0];
-                    this.user$.next(this.user);
-                    if (res_[0].TerceroId) {
-                      this.terceroId = parseInt(res_[0].TerceroId.Id, 10);
-                    }
-                  } else {
-                    this.http.get(path + 'datos_identificacion/?query=Activo:true,Numero:' + doc.documento, httpOptions)
-                    .subscribe((res__: any) => {
-                      if (res__ && res__.length && Object.keys(res__[0]).length) {
-                        this.user = res__[0];
-                        this.user$.next(this.user);
-                        if (res__[0].TerceroId) {
-                          this.terceroId = parseInt(res__[0].TerceroId.Id, 10);
-                        }
-                      }
-                    });
-                  }
-                });
+      const doc_ = window.localStorage.getItem('user');
+      const doc = doc_ ? JSON.parse(atob(doc_)).userService : '';
+      if (doc) {
+        this.http.get(path + 'tercero/identificacion?documento=' + doc.documento, httpOptions)
+          .subscribe((res: any) => {
+            if (res && res.length && Object.keys(res[0]).length) {
+              this.user = res[0];
+              this.user$.next(this.user);
+              this.terceroId = parseInt(res[0].Tercero.Id, 10);
             }
-          }
-        });
+          });
+      }
     }
   }
 
