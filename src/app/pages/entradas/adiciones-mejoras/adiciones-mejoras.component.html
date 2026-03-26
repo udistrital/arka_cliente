@@ -1,189 +1,163 @@
 <mat-horizontal-stepper #stepper [linear]=true>
 
-    <!-- Elementos que se van a mejorar -->
-    <mat-step [stepControl]="elementosForm.get('elementos')" label="{{'GLOBAL.elementos' | translate}}">
-      <h5>{{'GLOBAL.movimientos.entradas.elementosMejoras' | translate}}</h5>
+  <!-- ELEMENTOS -->
+  <mat-step [stepControl]="elementosForm.get('elementos')" label="{{'GLOBAL.elementos' | translate}}">
+    <h5>{{'GLOBAL.movimientos.entradas.elementosMejoras' | translate}}</h5>
+    <form [formGroup]="elementosForm">
+      <mat-table #table [dataSource]="dataSource" formArrayName="elementos" matSort>
+        <ng-container matColumnDef="acciones">
+          <th id="col-acciones" mat-header-cell *matHeaderCellDef class="acciones">
+            <button mat-icon-button color="primary" [disabled]="modo === 'get'" (click)="addElemento()"
+              matTooltip="{{'GLOBAL.Acta_Recibido.CapturarElementos.AgregarElemento' | translate }}">
+              <mat-icon>add_box</mat-icon>
+            </button>
+          </th>
+          <td mat-cell *matCellDef="let element; let rowIndex = index" class="acciones">
+            <button mat-icon-button color="secondary" [disabled]="modo === 'get'"
+              (click)="commonElementos.removeElemento(rowIndex, elementosForm, dataSource, paginator)"
+              matTooltip="{{'GLOBAL.Acta_Recibido.CapturarElementos.EliminarElemento' | translate }}">
+              <mat-icon>delete_outline</mat-icon>
+            </button>
+          </td>
+        </ng-container>
 
-      <form [formGroup]="elementosForm">
-        <mat-table #table [dataSource]="dataSource" formArrayName="elementos" matSort>
-          <ng-container matColumnDef="acciones">
-            <th id="col-acciones" mat-header-cell *matHeaderCellDef class="acciones">
-              <button mat-icon-button color="primary" [disabled]="modo === 'get'" (click)="addElemento()"
-                matTooltip="{{'GLOBAL.Acta_Recibido.CapturarElementos.AgregarElemento' | translate }}">
-                <mat-icon>add_box</mat-icon>
-              </button>
-            </th>
-            <td mat-cell *matCellDef="let element; let rowIndex = index" class="acciones">
-              <button mat-icon-button color="secondary" [disabled]="modo === 'get'" (click)="commonElementos.removeElemento(rowIndex, elementosForm, dataSource, paginator)"
-                matTooltip="{{'GLOBAL.Acta_Recibido.CapturarElementos.EliminarElemento' | translate }}">
-                <mat-icon>delete_outline</mat-icon>
-              </button>
-            </td>
-          </ng-container>
+        <ng-container matColumnDef="placa">
+          <th id="placa" mat-header-cell *matHeaderCellDef mat-sort-header>
+            {{ 'GLOBAL.elementoMejorado' | translate }}
+          </th>
+          <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="commonElementos.getActualIndex(rowIndex, paginator)">
+            <input type="text" formControlName="Placa" class="form-control"
+              placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}" [matAutocomplete]="auto">
+            <mat-autocomplete #auto="matAutocomplete" [displayWith]="commonElementos.muestraPlaca"
+              (optionSelected)="commonElementos.getDetalleElemento(elementosForm, rowIndex, paginator, 'ENT_AM')">
+              <mat-option *ngFor="let item of elementos" [value]="item">
+                {{item.Placa}}
+              </mat-option>
+            </mat-autocomplete>
+          </td>
+        </ng-container>
 
-          <ng-container matColumnDef="placa">
-            <th id="placa" mat-header-cell *matHeaderCellDef mat-sort-header>
-              {{ 'GLOBAL.elementoMejorado' | translate }}
-            </th>
-            <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="commonElementos.getActualIndex(rowIndex, paginator)">
-              <input type="text" formControlName="Placa" class="form-control"
-                placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}" [matAutocomplete]="auto">
-              <mat-autocomplete #auto="matAutocomplete" [displayWith]="commonElementos.muestraPlaca"
-                (optionSelected)="commonElementos.getDetalleElemento(elementosForm, rowIndex, paginator, 'ENT_AM')">
-                <mat-option *ngFor="let item of elementos" [value]="item">
-                  {{item.Placa}}
-                </mat-option>
-              </mat-autocomplete>
-            </td>
-          </ng-container>
+        <ng-container matColumnDef="valorLibros">
+          <th id="libros" mat-header-cell *matHeaderCellDef mat-sort-header>
+            {{ 'GLOBAL.valorMejorado' | translate }}
+          </th>
+          <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="commonElementos.getActualIndex(rowIndex, paginator)">
+            <input type="text" formControlName="valorLibros" class="form-control" currencyMask
+              placeholder="{{'GLOBAL.valorMejorado' | translate : {NUM : 4} }}">
+          </td>
+        </ng-container>
 
-          <ng-container matColumnDef="valorLibros">
-            <th id="libros" mat-header-cell *matHeaderCellDef mat-sort-header>
-              {{ 'GLOBAL.valorMejorado' | translate }}
-            </th>
-            <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="commonElementos.getActualIndex(rowIndex, paginator)">
-              <input type="text" formControlName="valorLibros" class="form-control" currencyMask
-                placeholder="{{'GLOBAL.valorMejorado' | translate : {NUM : 4} }}">
-            </td>
-          </ng-container>
+        <ng-container matColumnDef="vidaUtil">
+          <th id="vidaUtil" mat-header-cell *matHeaderCellDef mat-sort-header>
+            {{ 'GLOBAL.vidaUtilMejorada' | translate }}
+          </th>
+          <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="commonElementos.getActualIndex(rowIndex, paginator)">
+            <input type="number" formControlName="vidaUtil" class="form-control"
+              placeholder="{{'GLOBAL.vidaUtilMejorada' | translate : {NUM : 4} }}">
+          </td>
+        </ng-container>
 
-          <ng-container matColumnDef="vidaUtil">
-            <th id="vidaUtil" mat-header-cell *matHeaderCellDef mat-sort-header>
-              {{ 'GLOBAL.vidaUtilMejorada' | translate }}
-            </th>
-            <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="commonElementos.getActualIndex(rowIndex, paginator)">
-              <input type="number" formControlName="vidaUtil" class="form-control"
-                placeholder="{{'GLOBAL.vidaUtilMejorada' | translate : {NUM : 4} }}">
-            </td>
-          </ng-container>
+        <ng-container matColumnDef="vidaUtilRemanente">
+          <th id="vidaUtilRemanente" mat-header-cell *matHeaderCellDef mat-sort-header>
+            {{ 'GLOBAL.vidaUtilRemanente' | translate }}
+          </th>
+          <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="commonElementos.getActualIndex(rowIndex, paginator)">
+            <input type="number" formControlName="vidaUtilRemanente" class="form-control"
+              placeholder="{{'GLOBAL.vidaUtilRemanente' | translate : {NUM : 4} }}">
+          </td>
+        </ng-container>
 
-          <ng-container matColumnDef="vidaUtilRemanente">
-            <th id="vidaUtilRemanente" mat-header-cell *matHeaderCellDef mat-sort-header>
-              {{ 'GLOBAL.vidaUtilRemanente' | translate }}
-            </th>
-            <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="commonElementos.getActualIndex(rowIndex, paginator)">
-              <input type="number" formControlName="vidaUtilRemanente" class="form-control"
-                placeholder="{{'GLOBAL.vidaUtilRemanente' | translate : {NUM : 4} }}">
-            </td>
-          </ng-container>
+        <ng-container matColumnDef="valorResidual">
+          <th id="valorResidual" mat-header-cell *matHeaderCellDef mat-sort-header>
+            {{ 'GLOBAL.valorResidualSug' | translate }}
+          </th>
+          <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="commonElementos.getActualIndex(rowIndex, paginator)">
+            <input type="number" formControlName="valorResidual" class="form-control"
+              placeholder="{{'GLOBAL.valorResidualSug' | translate : {NUM : 4} }}">
+          </td>
+        </ng-container>
 
-          <ng-container matColumnDef="valorResidual">
-            <th id="valorResidual" mat-header-cell *matHeaderCellDef mat-sort-header>
-              {{ 'GLOBAL.valorResidualSug' | translate }}
-            </th>
-            <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="commonElementos.getActualIndex(rowIndex, paginator)">
-              <input type="number" formControlName="valorResidual" class="form-control"
-                placeholder="{{'GLOBAL.valorResidualSug' | translate : {NUM : 4} }}">
-            </td>
-          </ng-container>
+        <ng-container matColumnDef="valorActual">
+          <th id="valorActual" mat-header-cell *matHeaderCellDef mat-sort-header>
+            {{ 'GLOBAL.valorLibros' | translate }}
+          </th>
+          <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="commonElementos.getActualIndex(rowIndex, paginator)">
+            <input type="text" formControlName="valorActual" class="form-control" currencyMask
+              placeholder="{{ 'GLOBAL.valorLibros' | translate }}">
+          </td>
+        </ng-container>
 
-          <ng-container matColumnDef="valorActual">
-            <th id="valorActual" mat-header-cell *matHeaderCellDef mat-sort-header>
-              {{ 'GLOBAL.valorLibros' | translate }}
-            </th>
-            <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="commonElementos.getActualIndex(rowIndex, paginator)">
-              <input type="text" formControlName="valorActual" class="form-control" currencyMask
-                placeholder="{{ 'GLOBAL.valorLibros' | translate }}">
-            </td>
-          </ng-container>
+        <ng-container matColumnDef="entrada">
+          <th id="entrada" mat-header-cell *matHeaderCellDef mat-sort-header>
+            {{ 'GLOBAL.Entrada' | translate }}
+          </th>
+          <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="commonElementos.getActualIndex(rowIndex, paginator)">
+            <input type="text" class="form-control" formControlName="entrada"
+              placeholder="{{'GLOBAL.Entrada' | translate }}">
+          </td>
+        </ng-container>
 
-          <ng-container matColumnDef="entrada">
-            <th id="entrada" mat-header-cell *matHeaderCellDef mat-sort-header>
-              {{ 'GLOBAL.Entrada' | translate }}
-            </th>
-            <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="commonElementos.getActualIndex(rowIndex, paginator)">
-              <input type="text" class="form-control" formControlName="entrada"
-                placeholder="{{'GLOBAL.Entrada' | translate }}">
-            </td>
-          </ng-container>
+        <ng-container matColumnDef="fechaEntrada">
+          <th id="fEntrada" mat-header-cell *matHeaderCellDef mat-sort-header>
+            {{ 'GLOBAL.fecha_entrada' | translate }}
+          </th>
+          <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="commonElementos.getActualIndex(rowIndex, paginator)">
+            <input type="text" class="form-control" formControlName="fechaEntrada"
+              placeholder="{{'GLOBAL.fecha_entrada' | translate }}">
+          </td>
+        </ng-container>
 
-          <ng-container matColumnDef="fechaEntrada">
-            <th id="fEntrada" mat-header-cell *matHeaderCellDef mat-sort-header>
-              {{ 'GLOBAL.fecha_entrada' | translate }}
-            </th>
-            <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="commonElementos.getActualIndex(rowIndex, paginator)">
-              <input type="text" class="form-control" formControlName="fechaEntrada"
-                placeholder="{{'GLOBAL.fecha_entrada' | translate }}">
-            </td>
-          </ng-container>
+        <ng-container matColumnDef="salida">
+          <th id="salida" mat-header-cell *matHeaderCellDef mat-sort-header>
+            {{ 'GLOBAL.Salida' | translate }}
+          </th>
+          <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="commonElementos.getActualIndex(rowIndex, paginator)">
+            <input type="text" class="form-control" formControlName="salida"
+              placeholder="{{'GLOBAL.Salida' | translate }}">
+          </td>
+        </ng-container>
 
-          <ng-container matColumnDef="salida">
-            <th id="salida" mat-header-cell *matHeaderCellDef mat-sort-header>
-              {{ 'GLOBAL.Salida' | translate }}
-            </th>
-            <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="commonElementos.getActualIndex(rowIndex, paginator)">
-              <input type="text" class="form-control" formControlName="salida"
-                placeholder="{{'GLOBAL.Salida' | translate }}">
-            </td>
-          </ng-container>
+        <ng-container matColumnDef="fechaSalida">
+          <th id="fSalida" mat-header-cell *matHeaderCellDef mat-sort-header>
+            {{ 'GLOBAL.fecha_salida' | translate }}
+          </th>
+          <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="commonElementos.getActualIndex(rowIndex, paginator)">
+            <input type="text" class="form-control" formControlName="fechaSalida"
+              placeholder="{{'GLOBAL.fecha_salida' | translate }}">
+          </td>
+        </ng-container>
 
-          <ng-container matColumnDef="fechaSalida">
-            <th id="fSalida" mat-header-cell *matHeaderCellDef mat-sort-header>
-              {{ 'GLOBAL.fecha_salida' | translate }}
-            </th>
-            <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="commonElementos.getActualIndex(rowIndex, paginator)">
-              <input type="text" class="form-control" formControlName="fechaSalida"
-                placeholder="{{'GLOBAL.fecha_salida' | translate }}">
-            </td>
-          </ng-container>
+        <ng-container matColumnDef="valor">
+          <th id="valor" mat-header-cell *matHeaderCellDef mat-sort-header>
+            {{ 'GLOBAL.valorInicial' | translate }}
+          </th>
+          <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="commonElementos.getActualIndex(rowIndex, paginator)">
+            <input type="text" class="form-control" formControlName="valor"
+              placeholder="{{'GLOBAL.valorInicial' | translate }}" currencyMask>
+          </td>
+        </ng-container>
 
-          <ng-container matColumnDef="valor">
-            <th id="valor" mat-header-cell *matHeaderCellDef mat-sort-header>
-              {{ 'GLOBAL.valorInicial' | translate }}
-            </th>
-            <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="commonElementos.getActualIndex(rowIndex, paginator)">
-              <input type="text" class="form-control" formControlName="valor"
-                placeholder="{{'GLOBAL.valorInicial' | translate }}" currencyMask>
-            </td>
-          </ng-container>
-
-          <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-        </mat-table>
-        <mat-paginator #paginator [pageSizeOptions]="[10, 25, 50]"></mat-paginator>
-
-        <div class="boton-stepper-initial">
-          <button mat-flat-button color="primary" matStepperNext [disabled]="!elementosForm.get('elementos').valid">
-            {{'GLOBAL.siguiente' | translate}}
-          </button>
-        </div>
-      </form>
-    </mat-step>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </mat-table>
+      <mat-paginator #paginator [pageSizeOptions]="[10, 25, 50]"></mat-paginator>
+      <div class="boton-stepper-initial">
+        <button mat-flat-button color="primary" matStepperNext [disabled]="!elementosForm.get('elementos').valid">
+          {{'GLOBAL.siguiente' | translate}}
+        </button>
+      </div>
+    </form>
+  </mat-step>
 
   <!-- DATOS DE CONTRATO -->
   <mat-step [stepControl]="contratoForm" label="{{'GLOBAL.contrato' | translate}}">
     <h5>{{'GLOBAL.datos_contrato' | translate}}</h5>
     <form [formGroup]="contratoForm" class="step-container">
-      <div class="row">
-        <div class="form-group col-sm">
-          <label>{{'GLOBAL.tipo_contrato' | translate}}</label>
-          <select class="form-control" (change)="getContratos()" formControlName="tipoCtrl">
-            <option value="">--{{ 'GLOBAL.seleccionar' | translate }}--</option>
-            <option *ngFor="let tipo of tipos" [(value)]="tipo.Id">{{tipo.TipoContrato}}</option>
-          </select>
-        </div>
-        <div class="form-group col-sm">
-          <label>{{'GLOBAL.vigencia' | translate}}</label>
-          <select class="form-control" (change)="getContratos()" formControlName="vigenciaCtrl">
-            <option value="">--{{ 'GLOBAL.seleccionar' | translate }}--</option>
-            <option value="{{ vigencia }}">{{ vigencia }}</option>
-            <option value="{{ vigencia-1 }}">{{ vigencia-1 }}</option>
-          </select>
-        </div>
-        <div class="form-group col-sm">
-          <label>{{'GLOBAL.numero_contrato' | translate}}</label>
-          <div class="input-group">
-            <input nbInput class="form-control" type="text" formControlName="contratoCtrl" list="contratosList"
-              placeholder="{{'GLOBAL.placeholder_contrato' | translate}}">
-          </div>
-          <datalist id="contratosList">
-            <option *ngFor="let item of contratos" value='{{ item.NumeroContratoSuscrito }}'></option>
-          </datalist>
-        </div>
-      </div>
       <div class="botones-stepper-middle">
         <button mat-flat-button color="primary" matStepperPrevious>{{'GLOBAL.anterior' | translate}}</button>
-        <button mat-flat-button color="primary" (click)="onContratoSubmit()" matStepperNext>{{'GLOBAL.siguiente' | translate}}</button>
+        <button mat-flat-button color="primary" (click)="onContratoSubmit()" matStepperNext>
+          {{'GLOBAL.siguiente' | translate}}
+        </button>
       </div>
     </form>
   </mat-step>
@@ -191,58 +165,47 @@
   <!-- ORDENADOR DE GASTO -->
   <mat-step [stepControl]="ordenadorForm" label="{{'GLOBAL.ordenador_gasto' | translate}}">
     <h5>{{'GLOBAL.ordenador_gasto' | translate}}</h5>
-    <div class="row">
-      <div class="form-group col-sm">
-        <label>{{'GLOBAL.nombres' | translate}}</label>
-        <div class="input-group">
-          <input nbInput type="text" shape="semi-round" placeholder="Nombre Completo" class="form-control"
-            value="{{ contratoEspecifico?.OrdenadorGasto?.NombreOrdenador }}" disabled>
+    <form [formGroup]="ordenadorForm" class="step-container">
+      <div class="row" [nbSpinner]="commonContrato.cargandoOrdenadores">
+        <div class="form-group col-sm">
+          <label>{{'GLOBAL.ordenador_gasto' | translate}}</label>
+          <input nbInput type="text" class="form-control" formControlName="ordenadorCtrl"
+            [matAutocomplete]="autoOrdenador" />
+          <mat-autocomplete #autoOrdenador="matAutocomplete" [displayWith]="muestraOrdenador">
+            <mat-option *ngFor="let ord of ordenadoresFiltrados | async" [value]="ord">
+              {{ord.NombreOrdenador}}
+            </mat-option>
+          </mat-autocomplete>
         </div>
       </div>
-      <div class="form-group col-sm">
-        <label>{{'GLOBAL.asignacion' | translate}}</label>
-        <div class="input-group">
-          <input nbInput type="text" shape="semi-round" placeholder="Rol" class="form-control"
-            value="{{ contratoEspecifico?.OrdenadorGasto?.RolOrdenadorGasto }}" disabled>
-        </div>
+      <div class="botones-stepper-middle">
+        <button mat-flat-button color="primary" matStepperPrevious>{{'GLOBAL.anterior' | translate}}</button>
+        <button mat-flat-button color="primary" matStepperNext>{{'GLOBAL.siguiente' | translate}}</button>
       </div>
-    </div>
-    <div class="botones-stepper-middle">
-      <button mat-flat-button color="primary" matStepperPrevious>{{'GLOBAL.anterior' | translate}}</button>
-      <button mat-flat-button color="primary" matStepperNext>{{'GLOBAL.siguiente' | translate}}</button>
-    </div>
+    </form>
   </mat-step>
 
   <!-- SUPERVISOR -->
   <mat-step [stepControl]="supervisorForm" label="{{'GLOBAL.supervisor' | translate}}">
     <h5>{{'GLOBAL.supervisor' | translate}}</h5>
-    <div class="row">
-      <div class="form-group col-sm">
-        <label>{{'GLOBAL.nombres' | translate}}</label>
-        <div class="input-group">
-          <input nbInput type="text" shape="semi-round" placeholder="Nombre Completo" class="form-control"
-            value="{{ contratoEspecifico?.Supervisor?.Nombre }}" disabled>
+    <form [formGroup]="supervisorForm" class="step-container">
+      <div class="row" [nbSpinner]="commonContrato.cargandoSupervisores">
+        <div class="form-group col-sm">
+          <label>{{'GLOBAL.supervisor' | translate}}</label>
+          <input nbInput type="text" class="form-control" formControlName="supervisorCtrl"
+            [matAutocomplete]="autoSupervisor" />
+          <mat-autocomplete #autoSupervisor="matAutocomplete" [displayWith]="muestraSupervisor">
+            <mat-option *ngFor="let sup of supervisoresFiltrados | async" [value]="sup">
+              {{sup.Nombre}}
+            </mat-option>
+          </mat-autocomplete>
         </div>
       </div>
-      <div class="form-group col-sm">
-        <label>{{'GLOBAL.sede' | translate}}</label>
-        <div class="input-group">
-          <input nbInput type="text" shape="semi-round" placeholder="Sede" class="form-control"
-            value="{{ contratoEspecifico?.Supervisor?.Sede }}" disabled>
-        </div>
+      <div class="botones-stepper-middle">
+        <button mat-flat-button color="primary" matStepperPrevious>{{'GLOBAL.anterior' | translate}}</button>
+        <button mat-flat-button color="primary" matStepperNext>{{'GLOBAL.siguiente' | translate}}</button>
       </div>
-      <div class="form-group col-sm">
-        <label>{{'GLOBAL.dependencia' | translate}}</label>
-        <div class="input-group">
-          <input nbInput type="text" shape="semi-round" placeholder="Dependencia" class="form-control"
-            value="{{ contratoEspecifico?.Supervisor?.Dependencia }}" disabled>
-        </div>
-      </div>
-    </div>
-    <div class="botones-stepper-middle">
-      <button mat-flat-button color="primary" matStepperPrevious>{{'GLOBAL.anterior' | translate}}</button>
-      <button mat-flat-button color="primary" matStepperNext>{{'GLOBAL.siguiente' | translate}}</button>
-    </div>
+    </form>
   </mat-step>
 
   <!-- OBSERVACIONES -->
@@ -250,7 +213,7 @@
     <form [formGroup]="observacionForm" class="step-container">
       <h5>{{'GLOBAL.observaciones' | translate}}</h5>
       <div class="row">
-        <div class="form-group  col-lg-12">
+        <div class="form-group col-lg-12">
           <div class="input-group">
             <textarea rows="5" shape="semi-round" placeholder="{{'GLOBAL.observaciones' | translate}}"
               class="form-control" formControlName="observacionCtrl"></textarea>
@@ -259,7 +222,9 @@
       </div>
       <div class="botones-stepper-middle">
         <button mat-flat-button color="primary" matStepperPrevious>{{'GLOBAL.anterior' | translate}}</button>
-        <button mat-flat-button color="primary" (click)="onObservacionSubmit()" matStepperNext>{{'GLOBAL.registrar_entrada' | translate}}</button>
+        <button mat-flat-button color="primary" (click)="onObservacionSubmit()" matStepperNext>
+          {{'GLOBAL.registrar_entrada' | translate}}
+        </button>
       </div>
     </form>
   </mat-step>
