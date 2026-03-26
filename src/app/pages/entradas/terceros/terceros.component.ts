@@ -1,9 +1,10 @@
 import { Component, OnInit, Input, ViewChild, EventEmitter, Output } from '@angular/core';
 import { FormGroup } from '@angular/forms';
+import { Observable } from 'rxjs';
 import { PopUpManager } from '../../../managers/popUpManager';
-import { Contrato } from '../../../@core/data/models/entrada/contrato';
 import { TransaccionEntrada } from '../../../@core/data/models/entrada/entrada';
 import { SoporteActa } from '../../../@core/data/models/acta_recibido/soporte_acta';
+import { Ordenador, Supervisor } from '../../../@core/data/models/terceros_criterio';
 import { TranslateService } from '@ngx-translate/core';
 import { CommonContrato } from '../CommonContrato';
 import { CommonEntradas } from '../CommonEntradas';
@@ -23,65 +24,51 @@ export class TercerosComponent implements OnInit {
   observacionForm: FormGroup;
   ordenadorForm: FormGroup;
   supervisorForm: FormGroup;
-  // Contratos
-  vigencia: number;
-  tipos: Array<any>;
-  contratos: Array<Contrato>;
-  contratoEspecifico: Contrato;
   // Soportes
   soportes: Array<SoporteActa>;
   fechaFactura: string;
+  // Ordenador y Supervisor
+  ordenadoresFiltrados: Observable<Ordenador[]>;
+  supervisoresFiltrados: Observable<Supervisor[]>;
 
-  @ViewChild('stepper', {static: true}) stepper: MatStepper;
+  @ViewChild('stepper', { static: true }) stepper: MatStepper;
 
   @Input() actaRecibidoId: number;
   @Output() data: EventEmitter<TransaccionEntrada> = new EventEmitter<TransaccionEntrada>();
 
   constructor(
     private common: CommonEntradas,
-    private commonContrato: CommonContrato,
+    public commonContrato: CommonContrato,
     private commonFactura: CommonFactura,
     private pUpManager: PopUpManager,
     private translate: TranslateService,
-  ) {
-    this.contratoEspecifico = new Contrato;
-  }
+  ) { }
 
   ngOnInit() {
-    this.loadContratoInfo();
     this.contratoForm = this.commonContrato.formContrato;
     this.ordenadorForm = this.commonContrato.ordenadorForm;
     this.supervisorForm = this.commonContrato.supervisorForm;
     this.facturaForm = this.commonFactura.formFactura;
     this.observacionForm = this.common.formObservaciones;
+    this.ordenadoresFiltrados = this.commonContrato.loadOrdenadores(this.ordenadorForm.get('ordenadorCtrl'));
+    this.supervisoresFiltrados = this.commonContrato.loadSupervisores(this.supervisorForm.get('supervisorCtrl'));
+    this.loadSoportes();
   }
 
-  async loadContratoInfo() {
-    this.contratoEspecifico = new Contrato;
-    this.vigencia = this.commonContrato.currentVigencia;
-    this.tipos = await this.commonContrato.loadTipoContratos();
+  async loadSoportes() {
     this.soportes = await this.commonFactura.loadSoportes(this.actaRecibidoId);
   }
 
-  async getContratos() {
-    this.contratos = await this.commonContrato.loadContratos(this.contratoForm.value.tipoCtrl, this.contratoForm.value.vigenciaCtrl);
-  }
-
-  async onContratoSubmit() {
-    const existe = this.commonContrato.checkContrato(this.contratos, this.contratoForm.value.contratoCtrl);
-    if (!existe) {
-      this.stepper.previous();
-      this.contratoEspecifico = new Contrato;
-      this.pUpManager.showErrorAlert('El contrato seleccionado no existe!');
-      return;
-    }
-
-    this.contratoEspecifico = await this.commonContrato.loadContrato(this.contratoForm.value.contratoCtrl, this.contratoForm.value.vigenciaCtrl);
+  onContratoSubmit() {
+    // contrato fijo en 000, no se valida ni se consulta
   }
 
   changeSelectSoporte() {
     this.fechaFactura = this.commonFactura.getFechaFactura(this.soportes, this.facturaForm.value.facturaCtrl);
   }
+
+  muestraOrdenador = (ord: Ordenador): string => this.commonContrato.muestraOrdenador(ord);
+  muestraSupervisor = (sup: Supervisor): string => this.commonContrato.muestraSupervisor(sup);
 
   onObservacionSubmit() {
     this.pUpManager.showAlertWithOptions(this.common.optionsSubmit)
@@ -92,17 +79,19 @@ export class TercerosComponent implements OnInit {
       });
   }
 
-  // Método para enviar registro
   onSubmit() {
     const detalle = {
       acta_recibido_id: +this.actaRecibidoId,
-      contrato_id: +this.contratoEspecifico.NumeroContratoSuscrito,
-      vigencia_contrato: this.contratoForm.value.vigenciaCtrl,
+      contrato_id: 0,
+      vigencia_contrato: String(this.commonContrato.currentVigencia),
       factura: +this.facturaForm.value.facturaCtrl,
+      supervisor: this.supervisorForm.value.supervisorCtrl.Id,
+      ordenador_gasto_id: this.ordenadorForm.value.ordenadorCtrl.Id,
     };
 
-    const transaccion = this.common.crearTransaccionEntrada(this.observacionForm.value.observacionCtrl, detalle, 'ENT_TR', 0);
+    const transaccion = this.common.crearTransaccionEntrada(
+      this.observacionForm.value.observacionCtrl, detalle, 'ENT_TR', 0,
+    );
     this.data.emit(transaccion);
   }
-
 }
