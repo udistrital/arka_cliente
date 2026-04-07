@@ -497,7 +497,7 @@ export class CatalogoElementosHelper {
 
     public getAllDetalleSubgrupo(payload: string) {
         this.rqManager.setPath('CATALOGO_ELEMENTOS_SERVICE');
-        return this.rqManager.get('detalle_subgrupo?' + payload).pipe(
+        return this.rqManager.get('detalle_subgrupo?Activo=true&' + payload).pipe(
             map(
                 (res) => {
                     if (res === 'error') {
