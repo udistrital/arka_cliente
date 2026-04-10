@@ -14,51 +14,51 @@ export class ActaRecibidoHelper {
         private pUpManager: PopUpManager) { }
 
 
-        public sendCorreo(elemento) {
-            this.rqManager.setPath('GOOGLE_SERVICE');
-            return this.rqManager.post('notificacion', elemento).pipe(
-                map(
-                    (res) => {
-                        if (res['Type'] === 'error') {
-                            this.pUpManager.showErrorAlert('No se pudo enviar correo');
-                            return undefined;
-                        }
-                        return res;
-                    },
-                ),
-            );
-        }
+    public sendCorreo(elemento) {
+        this.rqManager.setPath('GOOGLE_SERVICE');
+        return this.rqManager.post('notificacion', elemento).pipe(
+            map(
+                (res) => {
+                    if (res['Type'] === 'error') {
+                        this.pUpManager.showErrorAlert('No se pudo enviar correo');
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
 
 
-        public getEmailTercero(id: any) {
-            this.rqManager.setPath('TERCEROS_SERVICE');
-            return this.rqManager.get('info_complementaria_tercero/?query=TerceroId__Id:' + id + ',Activo:true,info_complementaria_id:53').pipe(
-                map(
-                    (res) => {
-                        if (res === 'error') {
-                            this.pUpManager.showErrorAlert('No se pudo consultar el email del tercero');
-                            return undefined;
-                        }
-                        return res;
-                    },
-                ),
-            );
-        }
+    public getEmailTercero(id: any) {
+        this.rqManager.setPath('TERCEROS_SERVICE');
+        return this.rqManager.get('info_complementaria_tercero/?query=TerceroId__Id:' + id + ',Activo:true,info_complementaria_id:53').pipe(
+            map(
+                (res) => {
+                    if (res === 'error') {
+                        this.pUpManager.showErrorAlert('No se pudo consultar el email del tercero');
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
 
-        public getIdDelTercero(documento: any) {
-            this.rqManager.setPath('TERCEROS_SERVICE');
-            return this.rqManager.get('datos_identificacion/?query=numero:' + documento + ',Activo:true').pipe(
-                map(
-                    (res) => {
-                        if (res === 'error') {
-                            this.pUpManager.showErrorAlert('No se pudo consultar el email del tercero');
-                            return undefined;
-                        }
-                        return res;
-                    },
-                ),
-            );
-        }
+    public getIdDelTercero(documento: any) {
+        this.rqManager.setPath('TERCEROS_SERVICE');
+        return this.rqManager.get('datos_identificacion/?query=numero:' + documento + ',Activo:true').pipe(
+            map(
+                (res) => {
+                    if (res === 'error') {
+                        this.pUpManager.showErrorAlert('No se pudo consultar el email del tercero');
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
 
 
 
@@ -84,12 +84,12 @@ export class ActaRecibidoHelper {
         );
     }
 
-/**
-     * Actas de Recibido Activas Get
-     * If the response has errors in the OAS API it should show a popup message with an error.
-     * If the response is successs, it returns the object's data.
-     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
-     */
+    /**
+         * Actas de Recibido Activas Get
+         * If the response has errors in the OAS API it should show a popup message with an error.
+         * If the response is successs, it returns the object's data.
+         * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
+         */
     public getActasRecibido2() {
         this.rqManager.setPath('ACTA_RECIBIDO_SERVICE');
         return this.rqManager.get('historico_acta?query=Activo:true&limit=-1').pipe(
@@ -185,7 +185,7 @@ export class ActaRecibidoHelper {
      * If the response is successs, it returns the object's data.
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
      */
-     public getElementosActaMov(actaId) {
+    public getElementosActaMov(actaId) {
         this.rqManager.setPath('ARKA_SERVICE');
         return this.rqManager.get(
             'ajustes/automatico/elementos/' + actaId).pipe(
@@ -404,12 +404,12 @@ export class ActaRecibidoHelper {
             ),
         );
     }
-/**
-     * Unidades Get
-     * If the response has errors in the OAS API it should show a popup message with an error.
-     * If the response is successs, it returns the object's data.
-     * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
-     */
+    /**
+         * Unidades Get
+         * If the response has errors in the OAS API it should show a popup message with an error.
+         * If the response is successs, it returns the object's data.
+         * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
+         */
     public getUnidades() {
         const payload = 'limit=-1&fields=Id,Nombre&sortby=Nombre&order=asc&query=Activo:true,TipoParametroId__CodigoAbreviacion__in:L|M|T|C|S';
         this.rqManager.setPath('PARAMETROS_SERVICE');
@@ -464,9 +464,9 @@ export class ActaRecibidoHelper {
                         this.pUpManager.showErrorAlert('No se pudieron cargar los parametros');
                         return undefined;
                     }
-                if (!res.Data || (res.Data && res.Data.length === 1 && !Object.keys(res.Data[0]).length)) {
-                    res.Data = [];
-                }
+                    if (!res.Data || (res.Data && res.Data.length === 1 && !Object.keys(res.Data[0]).length)) {
+                        res.Data = [];
+                    }
                     return res;
                 },
             ),
@@ -525,19 +525,33 @@ export class ActaRecibidoHelper {
      * If the response is successs, it returns the object's data.
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
     */
-public getElementosByPlaca(placa) {
-    this.rqManager.setPath('ACTA_RECIBIDO_SERVICE');
-    return this.rqManager.get('elemento/?query=Placa__contains:' + placa + ',Activo:true&fields=Placa&limit=-1').pipe(
-        map(
-            (res) => {
-                if (res === 'error') {
-                    this.pUpManager.showErrorAlert('No se pudo consultar los el elemento de esta placa');
-                    return undefined;
-                }
-                return res;
-            },
-        ),
-    );
-}
+    public getElementosByPlaca(placa) {
+        this.rqManager.setPath('ACTA_RECIBIDO_SERVICE');
+        return this.rqManager.get('elemento/?query=Placa__contains:' + placa + ',Activo:true&fields=Placa&limit=-1').pipe(
+            map(
+                (res) => {
+                    if (res === 'error') {
+                        this.pUpManager.showErrorAlert('No se pudo consultar los el elemento de esta placa');
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
+    public getPlantillaCargaMasiva() {
+        this.rqManager.setPath('ARKA_SERVICE');
+        return this.rqManager.get('acta_recibido/plantilla').pipe(
+            map(
+                (res) => {
+                    if (res === 'error' || res['Type'] === 'error') {
+                        this.pUpManager.showErrorAlert('No se pudo descargar la plantilla de carga masiva');
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
 
 }

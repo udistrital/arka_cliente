@@ -17,6 +17,7 @@ import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/cat
 import { ParametrosHelper } from '../../../helpers/parametros/parametrosHelper';
 import { PopUpManager } from '../../../managers/popUpManager';
 import { GestorDocumentalService } from '../../../helpers/gestor_documental/gestorDocumentalHelper';
+import { PlantillaArchivoResponse } from '../../../@core/data/models/acta_recibido/plantilla_archivo';
 
 const SIZE_SOPORTE = 1;
 
@@ -860,8 +861,36 @@ export class GestionarElementosComponent implements OnInit {
   }
 
   TraerPlantilla() {
-    const filesToGet = [{ Id: 147296 }];
-    this.documento.get_(filesToGet);
+    this.cargando = true;
+    this.actaRecibidoHelper.getPlantillaCargaMasiva().subscribe((res: PlantillaArchivoResponse) => {
+      this.cargando = false;
+      if (!res) {
+        return;
+      }
+      if (!res.file || !res.file.trim()) {
+        this.pUpManager.showErrorAlert('La plantilla recibida está vacía');
+        return;
+      }
+      const fileName = res.file_name || 'plantilla_carga_masiva_elementos.xlsx';
+      const mimeType = res.mime_type || 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+      try {
+        const byteCharacters = atob(res.file);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        const blob = new Blob([byteArray], { type: mimeType });
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = fileName;
+        link.click();
+        window.URL.revokeObjectURL(url);
+      } catch (e) {
+        this.pUpManager.showErrorAlert('El archivo recibido no es válido');
+      }
+    });
   }
 
   public onFileChange(event) {
