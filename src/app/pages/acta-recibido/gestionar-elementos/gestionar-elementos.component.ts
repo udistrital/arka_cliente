@@ -17,7 +17,6 @@ import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/cat
 import { ParametrosHelper } from '../../../helpers/parametros/parametrosHelper';
 import { PopUpManager } from '../../../managers/popUpManager';
 import { GestorDocumentalService } from '../../../helpers/gestor_documental/gestorDocumentalHelper';
-import { PlantillaArchivoResponse } from '../../../@core/data/models/acta_recibido/plantilla_archivo';
 
 const SIZE_SOPORTE = 1;
 
@@ -334,7 +333,7 @@ export class GestionarElementosComponent implements OnInit {
 
   private submitForm(statusChanges: Observable<any>) {
     statusChanges
-      .pipe(debounceTime(250))
+      .pipe(debounceTime(500))
       .subscribe(() => {
         this.emit();
       });
@@ -861,36 +860,8 @@ export class GestionarElementosComponent implements OnInit {
   }
 
   TraerPlantilla() {
-    this.cargando = true;
-    this.actaRecibidoHelper.getPlantillaCargaMasiva().subscribe((res: PlantillaArchivoResponse) => {
-      this.cargando = false;
-      if (!res) {
-        return;
-      }
-      if (!res.file || !res.file.trim()) {
-        this.pUpManager.showErrorAlert('La plantilla recibida está vacía');
-        return;
-      }
-      const fileName = res.file_name || 'plantilla_carga_masiva_elementos.xlsx';
-      const mimeType = res.mime_type || 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
-      try {
-        const byteCharacters = atob(res.file);
-        const byteNumbers = new Array(byteCharacters.length);
-        for (let i = 0; i < byteCharacters.length; i++) {
-          byteNumbers[i] = byteCharacters.charCodeAt(i);
-        }
-        const byteArray = new Uint8Array(byteNumbers);
-        const blob = new Blob([byteArray], { type: mimeType });
-        const url = window.URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = fileName;
-        link.click();
-        window.URL.revokeObjectURL(url);
-      } catch (e) {
-        this.pUpManager.showErrorAlert('El archivo recibido no es válido');
-      }
-    });
+    const filesToGet = [{ Id: 147296 }];
+    this.documento.get_(filesToGet);
   }
 
   public onFileChange(event) {
@@ -954,7 +925,6 @@ export class GestionarElementosComponent implements OnInit {
     let conteo = 0;
 
     for (const elemento of elementos) {
-      let errorfila = '';
       if (!this.Tarifas_Iva.some((tarifa) => +tarifa.Tarifa === elemento.PorcentajeIvaId)) {
         valido = false;
         conteo++;
@@ -962,12 +932,10 @@ export class GestionarElementosComponent implements OnInit {
       if (!this.unidades.some((unidad) => +unidad.Id === elemento.UnidadMedida)) {
         valido = false;
         conteo++;
-        errorfila = errorfila + 'UnidadMedida,';
       }
       if (!elemento.Nombre) {
         valido = false;
         conteo++;
-        errorfila = errorfila + 'Nombre,';
       }
       if (!elemento.Marca) {
         valido = false;
@@ -980,6 +948,29 @@ export class GestionarElementosComponent implements OnInit {
       if (!elemento.Cantidad) {
         valido = false;
         conteo++;
+      }
+
+      if (this.mostrarClase) {
+        if (!elemento.SubgrupoCatalogoId || !elemento.SubgrupoCatalogoId.SubgrupoId) {
+          valido = false;
+          conteo++;
+        } else if (elemento.SubgrupoCatalogoId.TipoBienId) {
+          const padreId = elemento.SubgrupoCatalogoId.TipoBienId.Id;
+          const tieneHijos = this.tiposBien.some(tb => tb.TipoBienPadreId && tb.TipoBienPadreId.Id === padreId);
+          if (!tieneHijos) {
+            valido = false;
+            conteo++;
+          }
+        }
+
+        if (elemento.TipoBienId && elemento.SubgrupoCatalogoId && elemento.SubgrupoCatalogoId.TipoBienId) {
+          const padreEsperado = elemento.SubgrupoCatalogoId.TipoBienId.Id;
+          const padreReal = elemento.TipoBienId.TipoBienPadreId ? elemento.TipoBienId.TipoBienPadreId.Id : null;
+          if (padreReal !== padreEsperado) {
+            valido = false;
+            conteo++;
+          }
+        }
       }
     }
     return { valid: valido, cont_err: conteo };
