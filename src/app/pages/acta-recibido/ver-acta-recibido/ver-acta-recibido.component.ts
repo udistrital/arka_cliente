@@ -409,7 +409,7 @@ export class VerActaRecibidoComponent implements OnInit {
 
       const elemento = new Elemento;
       const subgrupo = datos.SubgrupoCatalogoId ? datos.SubgrupoCatalogoId.SubgrupoId.Id : null;
-      const tipoBien = datos.TipoBienId ? datos.TipoBienId.Id : null;
+      const tipoBien = datos.TipoBienId ? (datos.TipoBienId.Id ? datos.TipoBienId.Id : parseInt(datos.TipoBienId, 10)) : null;
 
       elemento.Id = datos.Id;
       elemento.Nombre = datos.Nombre;

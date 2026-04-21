@@ -47,6 +47,7 @@ export class Impuesto {
 
 export class ElementoActa {
     Id: number;
+    SerialClaseId: number;
     Nombre: string;
     Cantidad: number;
     Marca: string;
