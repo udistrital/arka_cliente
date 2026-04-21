@@ -16,7 +16,7 @@ import { combineLatest, Observable } from 'rxjs';
 import { CatalogoElementosHelper } from '../../../helpers/catalogo-elementos/catalogoElementosHelper';
 import { ParametrosHelper } from '../../../helpers/parametros/parametrosHelper';
 import { PopUpManager } from '../../../managers/popUpManager';
-import { GestorDocumentalService } from '../../../helpers/gestor_documental/gestorDocumentalHelper';
+import { PlantillaArchivoResponse } from '../../../@core/data/models/acta_recibido/plantilla_archivo';
 
 const SIZE_SOPORTE = 1;
 
@@ -75,7 +75,6 @@ export class GestionarElementosComponent implements OnInit {
     private catalogoHelper: CatalogoElementosHelper,
     private parametrosHelper: ParametrosHelper,
     private pUpManager: PopUpManager,
-    private documento: GestorDocumentalService,
   ) {
     this.Totales = new DatosLocales();
     this.sizeSoporte = SIZE_SOPORTE;
@@ -144,9 +143,11 @@ export class GestionarElementosComponent implements OnInit {
   private fillElemento(el: ElementoActa) {
     const disabled = this.Modo === 'verificar' || this.Modo === 'ver';
     const min = el.Descuento > 0 && el.Descuento > el.ValorUnitario;
+    const tipoBienId = this.getTipoBienId(el.TipoBienId);
     const placa = !el.SubgrupoCatalogoId ? false :
       this.checkPlacaSubgrupoTipoBien(el.SubgrupoCatalogoId.TipoBienId.Id,
-        el.TipoBienId && el.TipoBienId.Id ? el.TipoBienId.Id : 0, el.ValorUnitario);
+        tipoBienId, el.ValorUnitario);
+    const valorResidual = el.ValorResidual && el.ValorTotal ? el.ValorResidual * 100 / el.ValorTotal : 0;
 
     const formEl = this.fb.group({
       Id: [el.Id],
@@ -257,13 +258,13 @@ export class GestionarElementosComponent implements OnInit {
       ],
       TipoBienId: [
         {
-          value: el.TipoBienId ? el.TipoBienId : '',
+          value: el.TipoBienId ? this.getTipoBien(el.TipoBienId) : '',
           disabled,
         },
       ],
       ValorResidual: [
         {
-          value: el.ValorResidual * 1000 / (el.ValorTotal * 10),
+          value: valorResidual,
           disabled: disabled ? disabled : el.SubgrupoCatalogoId ? !el.SubgrupoCatalogoId.Amortizacion && !el.SubgrupoCatalogoId.Depreciacion : true,
         },
         {
@@ -325,15 +326,15 @@ export class GestionarElementosComponent implements OnInit {
 
   // Event emission
   private emit() {
-  const elementos = this.formElementos.get('elementos') as FormArray;
-  this.ElementosValidos.emit(this.Modo === 'verificar' ? this.checkTodos : elementos.length > 0);
-  this.DatosEnviados.emit(this.elementos_);
-  this.getTotales();
-}
+    const elementos = this.formElementos.get('elementos') as FormArray;
+    this.ElementosValidos.emit(this.Modo === 'verificar' ? this.checkTodos : elementos.length > 0);
+    this.DatosEnviados.emit(this.elementos_);
+    this.getTotales();
+  }
 
   private submitForm(statusChanges: Observable<any>) {
     statusChanges
-      .pipe(debounceTime(500))
+      .pipe(debounceTime(250))
       .subscribe(() => {
         this.emit();
       });
@@ -449,7 +450,28 @@ export class GestionarElementosComponent implements OnInit {
   }
 
   public muestraTipoBien(tb): string {
-    return tb && tb.Id ? tb.Nombre : '';
+    const tipoBien = this.getTipoBien(tb);
+    return tipoBien && tipoBien.Id ? tipoBien.Nombre : '';
+  }
+
+  private getTipoBien(tipoBien: any) {
+    if (tipoBien && tipoBien.Id) {
+      return tipoBien;
+    }
+    if (typeof tipoBien === 'number') {
+      return this.tiposBien ? this.tiposBien.find(tb => tb.Id === tipoBien) || { Id: tipoBien } : { Id: tipoBien };
+    }
+    return tipoBien;
+  }
+
+  private getTipoBienId(tipoBien: any): number {
+    if (tipoBien && tipoBien.Id) {
+      return tipoBien.Id;
+    }
+    if (typeof tipoBien === 'number') {
+      return tipoBien;
+    }
+    return 0;
   }
 
   private cambiosClase(control: AbstractControl) {
@@ -517,7 +539,7 @@ export class GestionarElementosComponent implements OnInit {
         const tipoBien = control_.get('TipoBienId');
         if (clase.value && clase.value.TipoBienId && tipoBien.valid) {
           this.setCantidad(control.parent,
-            this.checkPlacaSubgrupoTipoBien(clase.value.TipoBienId.Id, tipoBien.value && tipoBien.value.Id ? tipoBien.value.Id : 0, unit));
+            this.checkPlacaSubgrupoTipoBien(clase.value.TipoBienId.Id, this.getTipoBienId(tipoBien.value), unit));
         }
 
       });
@@ -614,7 +636,9 @@ export class GestionarElementosComponent implements OnInit {
 
   private loadClases(text: string) {
     const queryOptions$ = text.length > 3 ?
-      this.catalogoHelper.getAllDetalleSubgrupo('limit=-1&fields=Id,SubgrupoId,TipoBienId&compuesto=' + text) :
+      this.catalogoHelper.getAllDetalleSubgrupo(
+        'limit=-1&fields=Id,SubgrupoId,TipoBienId,Depreciacion,Amortizacion,VidaUtil,ValorResidual&compuesto=' + text,
+      ) :
       new Observable((obs) => { obs.next([{}]); });
     return combineLatest([queryOptions$]).pipe(
       map(([queryOptions_$]) => ({
@@ -633,6 +657,73 @@ export class GestionarElementosComponent implements OnInit {
         }
       });
     });
+  }
+
+  private async normalizarElementosCargaMasiva(elementos: any[]): Promise<ElementoActa[]> {
+    const serialesClase = elementos
+      .map(elemento => +elemento.SerialClaseId)
+      .filter((serial, index, arr) => serial > 0 && arr.indexOf(serial) === index);
+
+    const tiposBienIds = elementos
+      .map(elemento => this.getTipoBienId(elemento.TipoBienId))
+      .filter((tipoBienId, index, arr) => tipoBienId > 0 && arr.indexOf(tipoBienId) === index);
+
+    const [clases, tiposBien] = await Promise.all([
+      this.loadClasesBySerialId(serialesClase),
+      this.loadTiposBienById(tiposBienIds),
+    ]);
+
+    const clasesMap = clases.reduce((acc, clase) => acc.set(+clase.Id, clase), new Map<number, any>());
+    const tiposBienMap = tiposBien.reduce((acc, tipoBien) => acc.set(+tipoBien.Id, tipoBien), new Map<number, any>());
+
+    return elementos.map((elemento: any) => ({
+      ...elemento,
+      TipoBienId: this.getTipoBien(elemento.TipoBienId) || tiposBienMap.get(this.getTipoBienId(elemento.TipoBienId)) || null,
+      SubgrupoCatalogoId: elemento.SubgrupoCatalogoId && elemento.SubgrupoCatalogoId.SubgrupoId ?
+        elemento.SubgrupoCatalogoId :
+        clasesMap.get(+elemento.SerialClaseId) || null,
+      ValorResidual: elemento.ValorResidual || 0,
+      VidaUtil: elemento.VidaUtil || 0,
+    }));
+  }
+
+  private loadClasesBySerialId(serialesClase: number[]): Promise<any[]> {
+    if (!serialesClase.length) {
+      return Promise.resolve([]);
+    }
+
+    const query = 'limit=-1&fields=Id,SubgrupoId,TipoBienId,Depreciacion,Amortizacion,VidaUtil,ValorResidual'
+      + '&query=Id__in:' + serialesClase.join('|');
+
+    return this.catalogoHelper.getAllDetalleSubgrupo(query).toPromise()
+      .then(res => res || []);
+  }
+
+  private loadTiposBienById(tiposBienIds: number[]): Promise<any[]> {
+    if (!tiposBienIds.length) {
+      return Promise.resolve(this.tiposBien || []);
+    }
+
+    const tiposBienCargados = this.tiposBien || [];
+    const tiposBienFaltantes = tiposBienIds.filter(tipoBienId => !tiposBienCargados.some(tb => tb.Id === tipoBienId));
+    if (!tiposBienFaltantes.length) {
+      return Promise.resolve(tiposBienCargados);
+    }
+
+    const query = 'limit=-1&fields=Id,Nombre,TipoBienPadreId,LimiteInferior,LimiteSuperior,NecesitaPlaca'
+      + '&query=Activo:true,Id__in:' + tiposBienFaltantes.join('|');
+
+    return this.catalogoHelper.getAllTiposBien(query).toPromise()
+      .then(res => {
+        const tiposBien = (res || []).reduce((acc, tipoBien) => {
+          if (!acc.some(tb => tb.Id === tipoBien.Id)) {
+            acc.push(tipoBien);
+          }
+          return acc;
+        }, [...tiposBienCargados]);
+        this.tiposBien = tiposBien;
+        return tiposBien;
+      });
   }
 
   // Acciones macro
@@ -860,8 +951,36 @@ export class GestionarElementosComponent implements OnInit {
   }
 
   TraerPlantilla() {
-    const filesToGet = [{ Id: 147296 }];
-    this.documento.get_(filesToGet);
+    this.cargando = true;
+    this.actaRecibidoHelper.getPlantillaCargaMasiva().subscribe((res: PlantillaArchivoResponse) => {
+      this.cargando = false;
+      if (!res) {
+        return;
+      }
+      if (!res.file || !res.file.trim()) {
+        this.pUpManager.showErrorAlert('La plantilla recibida está vacía');
+        return;
+      }
+      const fileName = res.file_name || 'plantilla_carga_masiva_elementos.xlsx';
+      const mimeType = res.mime_type || 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+      try {
+        const byteCharacters = atob(res.file);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        const byteArray = new Uint8Array(byteNumbers);
+        const blob = new Blob([byteArray], { type: mimeType });
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = fileName;
+        link.click();
+        window.URL.revokeObjectURL(url);
+      } catch (e) {
+        this.pUpManager.showErrorAlert('El archivo recibido no es válido');
+      }
+    });
   }
 
   public onFileChange(event) {
@@ -892,16 +1011,17 @@ export class GestionarElementosComponent implements OnInit {
     const formModel: FormData = this.prepareSave();
     (this.formElementos.get('elementos') as FormArray).controls = [];
     this.dataSource.data = [];
-    this.actaRecibidoHelper.postArchivo(formModel).subscribe((res: any) => {
+    this.actaRecibidoHelper.postArchivo(formModel).subscribe(async (res: any) => {
       if (res !== null) {
         if (res.Mensaje) {
           this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.Errores.' + res.Mensaje));
           this.clearFile();
         } else {
-          this.fillForm(res.Elementos);
+          const elementos = await this.normalizarElementosCargaMasiva(res.Elementos || []);
+          this.fillForm(elementos);
           this.formElementos.get('archivo').reset();
           this.submitted = true;
-          const validacion = this.validarCargaMasiva(res.Elementos);
+          const validacion = this.validarCargaMasiva(elementos);
           if (validacion.valid) {
             this.pUpManager.showAlertWithOptions(this.optionsCargaMasivaOk);
             this.ErroresCarga = validacion.cont_err.toString();
@@ -949,24 +1069,26 @@ export class GestionarElementosComponent implements OnInit {
         valido = false;
         conteo++;
       }
-
+      // --- Nuevas validaciones ---
       if (this.mostrarClase) {
         if (!elemento.SubgrupoCatalogoId || !elemento.SubgrupoCatalogoId.SubgrupoId) {
           valido = false;
           conteo++;
-        } else if (elemento.SubgrupoCatalogoId.TipoBienId) {
-          const padreId = elemento.SubgrupoCatalogoId.TipoBienId.Id;
-          const tieneHijos = this.tiposBien.some(tb => tb.TipoBienPadreId && tb.TipoBienPadreId.Id === padreId);
-          if (!tieneHijos) {
+        } else {
+          // Validar que la clase tenga TipoBienId padre válido
+          const claseValida = elemento.SubgrupoCatalogoId.TipoBienId &&
+            this.tiposBien.some(tb => tb.TipoBienPadreId &&
+              tb.TipoBienPadreId.Id === elemento.SubgrupoCatalogoId.TipoBienId.Id);
+          if (!claseValida) {
             valido = false;
             conteo++;
           }
         }
-
-        if (elemento.TipoBienId && elemento.SubgrupoCatalogoId && elemento.SubgrupoCatalogoId.TipoBienId) {
-          const padreEsperado = elemento.SubgrupoCatalogoId.TipoBienId.Id;
-          const padreReal = elemento.TipoBienId.TipoBienPadreId ? elemento.TipoBienId.TipoBienPadreId.Id : null;
-          if (padreReal !== padreEsperado) {
+        if (elemento.TipoBienId) {
+          // Validar coherencia tipo bien hijo con el padre de la clase
+          if (elemento.SubgrupoCatalogoId && elemento.SubgrupoCatalogoId.TipoBienId &&
+            elemento.TipoBienId.TipoBienPadreId &&
+            elemento.TipoBienId.TipoBienPadreId.Id !== elemento.SubgrupoCatalogoId.TipoBienId.Id) {
             valido = false;
             conteo++;
           }
