@@ -143,10 +143,9 @@ export class GestionarElementosComponent implements OnInit {
   private fillElemento(el: ElementoActa) {
     const disabled = this.Modo === 'verificar' || this.Modo === 'ver';
     const min = el.Descuento > 0 && el.Descuento > el.ValorUnitario;
-    const tipoBienId = this.getTipoBienId(el.TipoBienId);
     const placa = !el.SubgrupoCatalogoId ? false :
       this.checkPlacaSubgrupoTipoBien(el.SubgrupoCatalogoId.TipoBienId.Id,
-        tipoBienId, el.ValorUnitario);
+        el.TipoBienId && el.TipoBienId.Id ? el.TipoBienId.Id : 0, el.ValorUnitario);
     const valorResidual = el.ValorResidual && el.ValorTotal ? el.ValorResidual * 100 / el.ValorTotal : 0;
 
     const formEl = this.fb.group({
@@ -258,7 +257,7 @@ export class GestionarElementosComponent implements OnInit {
       ],
       TipoBienId: [
         {
-          value: el.TipoBienId ? this.getTipoBien(el.TipoBienId) : '',
+          value: el.TipoBienId ? el.TipoBienId : '',
           disabled,
         },
       ],
@@ -450,28 +449,7 @@ export class GestionarElementosComponent implements OnInit {
   }
 
   public muestraTipoBien(tb): string {
-    const tipoBien = this.getTipoBien(tb);
-    return tipoBien && tipoBien.Id ? tipoBien.Nombre : '';
-  }
-
-  private getTipoBien(tipoBien: any) {
-    if (tipoBien && tipoBien.Id) {
-      return tipoBien;
-    }
-    if (typeof tipoBien === 'number') {
-      return this.tiposBien ? this.tiposBien.find(tb => tb.Id === tipoBien) || { Id: tipoBien } : { Id: tipoBien };
-    }
-    return tipoBien;
-  }
-
-  private getTipoBienId(tipoBien: any): number {
-    if (tipoBien && tipoBien.Id) {
-      return tipoBien.Id;
-    }
-    if (typeof tipoBien === 'number') {
-      return tipoBien;
-    }
-    return 0;
+    return tb && tb.Id ? tb.Nombre : '';
   }
 
   private cambiosClase(control: AbstractControl) {
@@ -479,7 +457,8 @@ export class GestionarElementosComponent implements OnInit {
       .pipe(
         debounceTime(250),
         distinctUntilChanged(),
-        switchMap((val: any) => this.loadClases(val)),
+        map(val => typeof val === 'string' ? val : this.muestraClase(val)),
+        switchMap((val: string) => this.loadClases(val)),
       ).subscribe((response: any) => {
         this.clases = response.queryOptions.length && response.queryOptions[0].SubgrupoId ? response.queryOptions : [];
       });
@@ -539,7 +518,7 @@ export class GestionarElementosComponent implements OnInit {
         const tipoBien = control_.get('TipoBienId');
         if (clase.value && clase.value.TipoBienId && tipoBien.valid) {
           this.setCantidad(control.parent,
-            this.checkPlacaSubgrupoTipoBien(clase.value.TipoBienId.Id, this.getTipoBienId(tipoBien.value), unit));
+            this.checkPlacaSubgrupoTipoBien(clase.value.TipoBienId.Id, tipoBien.value && tipoBien.value.Id ? tipoBien.value.Id : 0, unit));
         }
 
       });
@@ -635,7 +614,7 @@ export class GestionarElementosComponent implements OnInit {
   }
 
   private loadClases(text: string) {
-    const queryOptions$ = text.length > 3 ?
+    const queryOptions$ = text && text.length > 3 ?
       this.catalogoHelper.getAllDetalleSubgrupo(
         'limit=-1&fields=Id,SubgrupoId,TipoBienId,Depreciacion,Amortizacion,VidaUtil,ValorResidual&compuesto=' + text,
       ) :
@@ -664,21 +643,12 @@ export class GestionarElementosComponent implements OnInit {
       .map(elemento => +elemento.SerialClaseId)
       .filter((serial, index, arr) => serial > 0 && arr.indexOf(serial) === index);
 
-    const tiposBienIds = elementos
-      .map(elemento => this.getTipoBienId(elemento.TipoBienId))
-      .filter((tipoBienId, index, arr) => tipoBienId > 0 && arr.indexOf(tipoBienId) === index);
-
-    const [clases, tiposBien] = await Promise.all([
-      this.loadClasesBySerialId(serialesClase),
-      this.loadTiposBienById(tiposBienIds),
-    ]);
-
+    const clases = await this.loadClasesBySerialId(serialesClase);
     const clasesMap = clases.reduce((acc, clase) => acc.set(+clase.Id, clase), new Map<number, any>());
-    const tiposBienMap = tiposBien.reduce((acc, tipoBien) => acc.set(+tipoBien.Id, tipoBien), new Map<number, any>());
 
     return elementos.map((elemento: any) => ({
       ...elemento,
-      TipoBienId: this.getTipoBien(elemento.TipoBienId) || tiposBienMap.get(this.getTipoBienId(elemento.TipoBienId)) || null,
+      TipoBienId: elemento.TipoBienId && elemento.TipoBienId.Id ? elemento.TipoBienId : '',
       SubgrupoCatalogoId: elemento.SubgrupoCatalogoId && elemento.SubgrupoCatalogoId.SubgrupoId ?
         elemento.SubgrupoCatalogoId :
         clasesMap.get(+elemento.SerialClaseId) || null,
@@ -697,33 +667,6 @@ export class GestionarElementosComponent implements OnInit {
 
     return this.catalogoHelper.getAllDetalleSubgrupo(query).toPromise()
       .then(res => res || []);
-  }
-
-  private loadTiposBienById(tiposBienIds: number[]): Promise<any[]> {
-    if (!tiposBienIds.length) {
-      return Promise.resolve(this.tiposBien || []);
-    }
-
-    const tiposBienCargados = this.tiposBien || [];
-    const tiposBienFaltantes = tiposBienIds.filter(tipoBienId => !tiposBienCargados.some(tb => tb.Id === tipoBienId));
-    if (!tiposBienFaltantes.length) {
-      return Promise.resolve(tiposBienCargados);
-    }
-
-    const query = 'limit=-1&fields=Id,Nombre,TipoBienPadreId,LimiteInferior,LimiteSuperior,NecesitaPlaca'
-      + '&query=Activo:true,Id__in:' + tiposBienFaltantes.join('|');
-
-    return this.catalogoHelper.getAllTiposBien(query).toPromise()
-      .then(res => {
-        const tiposBien = (res || []).reduce((acc, tipoBien) => {
-          if (!acc.some(tb => tb.Id === tipoBien.Id)) {
-            acc.push(tipoBien);
-          }
-          return acc;
-        }, [...tiposBienCargados]);
-        this.tiposBien = tiposBien;
-        return tiposBien;
-      });
   }
 
   // Acciones macro
