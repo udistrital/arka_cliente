@@ -206,6 +206,9 @@ export class ComprobanteComponent implements OnInit {
     const disabled = this.modo === 'get';
 
     this.ajusteInfo.movimientos.forEach(mov => {
+      const tercero = disabled ?
+        (mov.TerceroId && mov.TerceroId.NombreCompleto ? mov.TerceroId.NombreCompleto : '') :
+        (mov.TerceroId ? mov.TerceroId : '');
       const formEl = this.fb.group({
         cuenta: [
           {
@@ -218,7 +221,7 @@ export class ComprobanteComponent implements OnInit {
         ],
         tercero: [
           {
-            value: mov.TerceroId ? mov.TerceroId : '',
+            value: tercero,
             disabled: disabled || !mov.Cuenta.RequiereTercero,
           },
           {
@@ -267,6 +270,21 @@ export class ComprobanteComponent implements OnInit {
   }
 
   public muestraTercero(contr): string {
+    if (!contr) {
+      return '';
+    }
+
+    if (typeof contr === 'string') {
+      return contr;
+    }
+
+    if (this.modo === 'get') {
+      const nombreCompleto = contr.TerceroId && contr.TerceroId.NombreCompleto ?
+        contr.TerceroId.NombreCompleto :
+        contr.NombreCompleto ? contr.NombreCompleto : '';
+      return nombreCompleto || (contr.Numero ? contr.Numero : '');
+    }
+
     return contr.Numero ? contr.Numero : '';
   }
 
