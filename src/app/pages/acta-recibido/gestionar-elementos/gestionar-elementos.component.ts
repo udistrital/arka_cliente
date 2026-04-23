@@ -607,8 +607,9 @@ export class GestionarElementosComponent implements OnInit {
       const query = 'limit=-1&query=Activo:true,TipoBienPadreId__isnull:false,TipoBienPadreId__Activo:true'
         + '&fields=Id,Nombre,TipoBienPadreId,LimiteInferior,LimiteSuperior,NecesitaPlaca';
       this.catalogoHelper.getAllTiposBien(query).subscribe(res => {
+        this.tiposBien = res || [];
+        this.tiposBienFiltrados = this.tiposBien;
         resolve();
-        this.tiposBien = res;
       });
     });
   }
@@ -648,13 +649,36 @@ export class GestionarElementosComponent implements OnInit {
 
     return elementos.map((elemento: any) => ({
       ...elemento,
-      TipoBienId: elemento.TipoBienId && elemento.TipoBienId.Id ? elemento.TipoBienId : '',
+      TipoBienId: this.normalizarTipoBienCargaMasiva(elemento.TipoBienId),
       SubgrupoCatalogoId: elemento.SubgrupoCatalogoId && elemento.SubgrupoCatalogoId.SubgrupoId ?
         elemento.SubgrupoCatalogoId :
         clasesMap.get(+elemento.SerialClaseId) || null,
       ValorResidual: elemento.ValorResidual || 0,
       VidaUtil: elemento.VidaUtil || 0,
     }));
+  }
+
+  private normalizarTipoBienCargaMasiva(tipoBien: any): any {
+    const tipoBienId = this.obtenerTipoBienId(tipoBien);
+
+    if (!tipoBienId) {
+      return '';
+    }
+
+    return this.tiposBien.find(tb => +tb.Id === tipoBienId)
+      || (tipoBien && typeof tipoBien === 'object' && tipoBien.Id ? tipoBien : '');
+  }
+
+  private obtenerTipoBienId(tipoBien: any): number {
+    if (tipoBien === null || tipoBien === undefined || tipoBien === '' || +tipoBien === 0) {
+      return 0;
+    }
+
+    if (typeof tipoBien === 'object') {
+      return +(tipoBien.Id || 0);
+    }
+
+    return +tipoBien;
   }
 
   private loadClasesBySerialId(serialesClase: number[]): Promise<any[]> {
