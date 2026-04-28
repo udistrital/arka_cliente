@@ -205,9 +205,9 @@ export class ComprobanteComponent implements OnInit {
   private loadValues() {
     const disabled = this.modo === 'get';
 
-    this.ajusteInfo.movimientos.forEach(mov => {
+    this.ajusteInfo.movimientos.forEach((mov, index) => {
       const tercero = disabled ?
-        (mov.TerceroId && mov.TerceroId.NombreCompleto ? mov.TerceroId.NombreCompleto : '') :
+        this.formatearTerceroConsulta(this.obtenerTerceroConsulta(index)) :
         (mov.TerceroId ? mov.TerceroId : '');
       const formEl = this.fb.group({
         cuenta: [
@@ -263,6 +263,37 @@ export class ComprobanteComponent implements OnInit {
       (this.formComprobante.get('elementos') as FormArray).push(formEl);
     });
     this.calcular(this.formComprobante);
+  }
+
+  private obtenerTerceroConsulta(index: number): any {
+    const movimiento = this.ajusteInfo.movimientos[index];
+    if (movimiento && movimiento.TerceroId) {
+      return movimiento.TerceroId;
+    }
+
+    for (let i = index + 1; i < this.ajusteInfo.movimientos.length; i++) {
+      const siguienteMovimiento = this.ajusteInfo.movimientos[i];
+      if (siguienteMovimiento && siguienteMovimiento.TerceroId) {
+        return siguienteMovimiento.TerceroId;
+      }
+    }
+
+    return null;
+  }
+
+  private formatearTerceroConsulta(tercero: any): string {
+    if (!tercero) {
+      return '';
+    }
+
+    const numero = tercero.Numero ? `${tercero.Numero}`.trim() : '';
+    const nombre = tercero.NombreCompleto ? `${tercero.NombreCompleto}`.trim() : '';
+
+    if (numero && nombre) {
+      return `${numero} - ${nombre}`;
+    }
+
+    return nombre || numero;
   }
 
   public muestraCuenta(contr): string {
