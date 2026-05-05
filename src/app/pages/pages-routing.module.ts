@@ -65,6 +65,11 @@ const routes: Routes = [{
       canActivate: [AuthGuard],
     },
     {
+      path: 'reportes',
+      loadChildren: () => import('./reportes/reportes.module').then(m => m.ReportesModule),
+      canLoad: [CanLoadChildren],
+    },
+    {
       path: 'cierres',
       loadChildren: () => import('./depreciacion/depreciacion.module').then(m => m.DepreciacionModule),
       canActivate: [AuthGuard],
