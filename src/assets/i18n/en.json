@@ -85,6 +85,14 @@
           }
         }
       },
+      "reportes": {
+        "name": "Reports",
+        "children": {
+          "consultar": {
+            "name": "Generate Reports"
+          }
+        }
+      },
       "bodega": {
         "name": "Consumer Warehouse",
         "children": {
@@ -1332,7 +1340,28 @@
    }
   },
    "reportes": {
-     "entrada_titulo": "Entry Report"
+     "entrada_titulo": "Entry Report",
+     "error_generacion": "The report could not be generated.",
+     "tipos": {
+       "entradas": "Entries",
+       "salidas": "Outputs",
+       "consolidado_inventario": "Inventory summary"
+     },
+     "consulta": {
+       "title": "Generate reports",
+       "subtitle": "Select the report type and date range to generate and download the Excel file.",
+       "tipo_reporte": "Report type",
+       "fecha_fin": "End date",
+       "generar_excel": "Generate Excel",
+       "loading": "Generating report, please wait...",
+       "success": "The report was generated and the download started successfully.",
+       "error_sin_archivo": "The backend did not return a file to download.",
+       "error_base64_vacio": "The returned file is empty or incomplete.",
+       "error_descarga": "The Excel file could not be converted for download.",
+       "error_tipo_invalido": "The selected report type is not valid.",
+       "error_rango_fechas": "The start date cannot be later than the end date.",
+       "error_http": "There was an error while requesting the reports service."
+     }
    },
    "traslados": {
      "consulta": {
