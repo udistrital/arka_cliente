@@ -1348,8 +1348,8 @@
        "consolidado_inventario": "Inventory summary"
      },
      "consulta": {
-       "title": "Generate reports",
-       "subtitle": "Select the report type and date range to generate and download the Excel file.",
+       "title": "Generate elements report",
+       "subtitle": "Select the date range to generate and download the Excel file.",
        "tipo_reporte": "Report type",
        "fecha_fin": "End date",
        "generar_excel": "Generate Excel",

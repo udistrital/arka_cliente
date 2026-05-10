@@ -1,10 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
-import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
+import { TranslateService } from '@ngx-translate/core';
 import { PopUpManager } from '../../../managers/popUpManager';
-import { ArchivoReporte, ReportesHelper, TipoReporte } from '../../../helpers/reportes/reportesHelper';
-
-const TIPOS_REPORTE: TipoReporte[] = ['entradas', 'salidas', 'consolidado_inventario'];
+import { ArchivoReporte, ReportesHelper } from '../../../helpers/reportes/reportesHelper';
 
 @Component({
   selector: 'ngx-consulta-reportes',
@@ -17,16 +15,13 @@ export class ConsultaReportesComponent implements OnInit {
   loading: boolean = false;
   statusMessage: string = '';
   statusType: string = 'info';
-  tiposReporte = TIPOS_REPORTE;
 
   constructor(
     private fb: FormBuilder,
     private translate: TranslateService,
     private pUpManager: PopUpManager,
     private reportesHelper: ReportesHelper,
-  ) {
-    this.translate.onLangChange.subscribe((event: LangChangeEvent) => { });
-  }
+  ) { }
 
   ngOnInit() {
     this.buildForm();
@@ -42,9 +37,8 @@ export class ConsultaReportesComponent implements OnInit {
     }
 
     const payload = {
-      tipo_reporte: this.controlTipoReporte.value,
-      fecha_inicio: this.toApiDate(this.controlFechaInicio.value),
-      fecha_fin: this.toApiDate(this.controlFechaFin.value),
+      fecha_inicial: this.toApiDate(this.controlFechaInicio.value),
+      fecha_final: this.toApiDate(this.controlFechaFin.value),
     };
 
     this.loading = true;
@@ -72,7 +66,7 @@ export class ConsultaReportesComponent implements OnInit {
         try {
           this.reportesHelper.downloadBase64Excel(
             response.file,
-            this.getFileName(response.fileName, payload.tipo_reporte),
+            this.getFileName(response.fileName),
             response.mimeType,
           );
           this.setStatus('success', this.translate.instant('GLOBAL.reportes.consulta.success'));
@@ -90,10 +84,6 @@ export class ConsultaReportesComponent implements OnInit {
     });
   }
 
-  public get controlTipoReporte(): AbstractControl {
-    return this.formReportes.get('tipo_reporte');
-  }
-
   public get controlFechaInicio(): AbstractControl {
     return this.formReportes.get('fecha_inicio');
   }
@@ -104,22 +94,11 @@ export class ConsultaReportesComponent implements OnInit {
 
   private buildForm(): void {
     this.formReportes = this.fb.group({
-      tipo_reporte: ['', [Validators.required, this.validarTipoReporte()]],
       fecha_inicio: ['', Validators.required],
       fecha_fin: ['', Validators.required],
     }, {
       validators: [this.validarRangoFechas()],
     });
-  }
-
-  private validarTipoReporte(): ValidatorFn {
-    return (control: AbstractControl): ValidationErrors | null => {
-      const value = control.value;
-      if (!value) {
-        return null;
-      }
-      return this.tiposReporte.includes(value) ? null : { invalidReportType: true };
-    };
   }
 
   private validarRangoFechas(): ValidatorFn {
@@ -142,8 +121,8 @@ export class ConsultaReportesComponent implements OnInit {
     return `${value.getFullYear()}-${month}-${day}`;
   }
 
-  private getFileName(fileName: string, tipoReporte: TipoReporte): string {
-    const fallback = `reporte_${tipoReporte}.xlsx`;
+  private getFileName(fileName: string): string {
+    const fallback = 'reporte_elementos.xlsx';
     const value = fileName && fileName.trim().length ? fileName.trim() : fallback;
     return value.toLowerCase().endsWith('.xlsx') ? value : `${value}.xlsx`;
   }
