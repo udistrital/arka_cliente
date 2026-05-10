@@ -4,12 +4,9 @@ import { map } from 'rxjs/operators';
 import { PopUpManager } from '../../managers/popUpManager';
 import { RequestManager } from '../../managers/requestManager';
 
-export type TipoReporte = 'entradas' | 'salidas' | 'consolidado_inventario';
-
 export interface GenerarReportePayload {
-  tipo_reporte: TipoReporte;
-  fecha_inicio: string;
-  fecha_fin: string;
+  fecha_inicial: string;
+  fecha_final: string;
 }
 
 export interface ArchivoReporte {
@@ -34,7 +31,7 @@ export class ReportesHelper {
 
   public generarReporte(payload: GenerarReportePayload) {
     this.rqManager.setPath('ARKA_SERVICE');
-    return this.rqManager.post('reportes/generar', payload).pipe(
+    return this.rqManager.post('reportes/elementos', payload).pipe(
       map((res: any) => {
         const data = res && res.Body ? res.Body : res;
         if (!data || data.Type === 'error' || data.success === false || data.Success === false) {
