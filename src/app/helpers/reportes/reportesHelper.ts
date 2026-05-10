@@ -69,7 +69,15 @@ export class ReportesHelper {
     const file = this.obtenerBase64Archivo(source);
     return {
       fileName: this.obtenerValor(source, ['fileName', 'FileName', 'file_name', 'nombre_archivo', 'NombreArchivo']) || 'reporte.xlsx',
-      mimeType: this.obtenerValor(source, ['mimeType', 'MimeType', 'mime_type', 'tipo_mime', 'TipoMime', 'tipo_archivo', 'TipoArchivo']) || EXCEL_MIME_TYPE,
+      mimeType: this.obtenerValor(source, [
+        'mimeType',
+        'MimeType',
+        'mime_type',
+        'tipo_mime',
+        'TipoMime',
+        'tipo_archivo',
+        'TipoArchivo',
+      ]) || EXCEL_MIME_TYPE,
       file,
       version: this.obtenerValor(source, ['version', 'Version']) || '',
     };
