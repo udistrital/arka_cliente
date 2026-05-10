@@ -1348,8 +1348,8 @@
         "consolidado_inventario": "Consolidado inventario"
       },
       "consulta": {
-        "title": "Generar reportes",
-        "subtitle": "Seleccione el tipo de reporte y el rango de fechas para generar y descargar el archivo Excel.",
+        "title": "Generar reporte de elementos",
+        "subtitle": "Seleccione el rango de fechas para generar y descargar el archivo Excel.",
         "tipo_reporte": "Tipo de reporte",
         "fecha_fin": "Fecha final",
         "generar_excel": "Generar Excel",
