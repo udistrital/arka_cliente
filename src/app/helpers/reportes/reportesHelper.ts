@@ -65,12 +65,74 @@ export class ReportesHelper {
   }
 
   private normalizarArchivoReporte(response: any): ArchivoReporte {
-    const file = response.file || response.File || response.archivo || response.Archivo || '';
+    const source = this.obtenerFuenteArchivo(response);
+    const file = this.obtenerBase64Archivo(source);
     return {
-      fileName: response.fileName || response.FileName || response.file_name || 'reporte.xlsx',
-      mimeType: response.mimeType || response.MimeType || response.mime_type || EXCEL_MIME_TYPE,
-      file: typeof file === 'string' ? file.trim() : '',
-      version: response.version || response.Version || '',
+      fileName: this.obtenerValor(source, ['fileName', 'FileName', 'file_name', 'nombre_archivo', 'NombreArchivo']) || 'reporte.xlsx',
+      mimeType: this.obtenerValor(source, ['mimeType', 'MimeType', 'mime_type', 'tipo_mime', 'TipoMime', 'tipo_archivo', 'TipoArchivo']) || EXCEL_MIME_TYPE,
+      file,
+      version: this.obtenerValor(source, ['version', 'Version']) || '',
     };
+  }
+
+  private obtenerFuenteArchivo(response: any): any {
+    if (!response) {
+      return {};
+    }
+
+    if (typeof response === 'string') {
+      return { file: response };
+    }
+
+    if (response.data && typeof response.data === 'object') {
+      return response.data;
+    }
+
+    if (response.Data && typeof response.Data === 'object') {
+      return response.Data;
+    }
+
+    if (response.result && typeof response.result === 'object') {
+      return response.result;
+    }
+
+    if (response.Result && typeof response.Result === 'object') {
+      return response.Result;
+    }
+
+    return response;
+  }
+
+  private obtenerBase64Archivo(source: any): string {
+    const rawValue = this.obtenerValor(source, [
+      'file',
+      'File',
+      'archivo',
+      'Archivo',
+      'archivo_base64',
+      'ArchivoBase64',
+      'base64',
+      'Base64',
+      'contenido',
+      'Contenido',
+      'contenidoBase64',
+      'ContenidoBase64',
+    ]);
+
+    return typeof rawValue === 'string' ? rawValue.trim() : '';
+  }
+
+  private obtenerValor(source: any, keys: string[]): any {
+    if (!source || typeof source !== 'object') {
+      return undefined;
+    }
+
+    for (const key of keys) {
+      if (source[key] !== undefined && source[key] !== null) {
+        return source[key];
+      }
+    }
+
+    return undefined;
   }
 }
