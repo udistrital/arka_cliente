@@ -20,13 +20,48 @@ export class CommonFactura {
     }
 
     public getFechaFactura(soportes: SoporteActa[], factura: number): string {
-        return factura && soportes.length ? soportes.find(s => s.Id === +factura).FechaSoporte.toString() : '';
+        if (!factura || !soportes.length) {
+            return '';
+        }
+
+        const soporte = soportes.find(s => s.Id === +factura);
+        return soporte ? this.formatDateWithoutTimezone(soporte.FechaSoporte) : '';
     }
 
     get formFactura(): FormGroup {
         return this.fb.group({
             facturaCtrl: ['', Validators.required],
         });
+    }
+
+    private formatDateWithoutTimezone(value: string | Date): string {
+        if (!value) {
+            return '';
+        }
+
+        if (value instanceof Date) {
+            return this.buildDateString(
+                value.getUTCFullYear(),
+                value.getUTCMonth() + 1,
+                value.getUTCDate(),
+            );
+        }
+
+        const dateValue = value.toString().split('T')[0];
+        const [year, month, day] = dateValue.split('-').map(Number);
+
+        if (!year || !month || !day) {
+            return value.toString().replace(/Z$/, '');
+        }
+
+        return this.buildDateString(year, month, day);
+    }
+
+    private buildDateString(year: number, month: number, day: number): string {
+        const monthString = month < 10 ? '0' + month : month.toString();
+        const dayString = day < 10 ? '0' + day : day.toString();
+
+        return `${year}-${monthString}-${dayString}T00:00:00`;
     }
 
 }
