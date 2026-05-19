@@ -1,18 +1,18 @@
-import { Component, OnInit, Input, Output, EventEmitter, OnChanges } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, OnChanges, OnDestroy } from '@angular/core';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { Store } from '@ngrx/store';
 import { IAppState } from '../../../@core/store/app.state';
 import { ListService } from '../../../@core/store/services/list.service';
 import { AbstractControl, FormArray, FormBuilder, FormGroup, ValidationErrors, ValidatorFn } from '@angular/forms';
-import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
-import { Observable } from 'rxjs';
+import { debounceTime, distinctUntilChanged, filter, map, take } from 'rxjs/operators';
+import { Observable, Subscription } from 'rxjs';
 
 @Component({
   selector: 'ngx-form-cuentas',
   templateUrl: './form-cuentas.component.html',
   styleUrls: ['./form-cuentas.component.scss'],
 })
-export class FormCuentasComponent implements OnInit, OnChanges {
+export class FormCuentasComponent implements OnInit, OnChanges, OnDestroy {
 
   @Input() escritura: boolean;
   @Input() cuentasInfo: any[];
@@ -23,6 +23,7 @@ export class FormCuentasComponent implements OnInit, OnChanges {
   formCuentas: FormGroup;
   ctas: any[];
   ctasFiltradas: any[];
+  private formChangesSub: Subscription;
 
   constructor(
     private translate: TranslateService,
@@ -41,9 +42,9 @@ export class FormCuentasComponent implements OnInit, OnChanges {
   ngOnChanges(changes) {
     if (changes.cuentasInfo && changes.cuentasInfo.currentValue) {
       this.initForms();
-    } else if (changes.cuentasNuevas && changes.cuentasNuevas.currentValue) {
+    } else if (changes.cuentasNuevas && changes.cuentasNuevas.currentValue && this.formCuentas) {
       this.formCuentas.markAsPristine();
-    } else if (changes.escritura) {
+    } else if (changes.escritura && this.formCuentas) {
       if (changes.escritura.currentValue) {
         this.formCuentas.enable();
       } else {
@@ -52,8 +53,14 @@ export class FormCuentasComponent implements OnInit, OnChanges {
     }
   }
 
+  ngOnDestroy() {
+    if (this.formChangesSub) {
+      this.formChangesSub.unsubscribe();
+    }
+  }
+
   private async initForms() {
-    const form = this.builForm();
+    const form = this.buildForm();
     await form;
     const ctas = this.loadLists();
     await ctas;
@@ -61,55 +68,32 @@ export class FormCuentasComponent implements OnInit, OnChanges {
     this.valid.emit(this.formCuentas.valid);
   }
 
-  private builForm(): Promise<void> {
+  get movimientos(): FormArray {
+    return this.formCuentas.get('movimientos') as FormArray;
+  }
+
+  private buildForm(): Promise<void> {
     return new Promise<void>(resolve => {
-
-      const ent_ = this.cuentasInfo.filter(cf => (cf.SubtipoMovimientoId.CodigoAbreviacion.includes('ENT_')))
-        .reduce((acc, curr) => {
-          const { SubtipoMovimientoId } = curr;
-          acc[SubtipoMovimientoId.CodigoAbreviacion] =
-            acc[SubtipoMovimientoId.CodigoAbreviacion] ? acc[SubtipoMovimientoId.CodigoAbreviacion] : [];
-          acc[SubtipoMovimientoId.CodigoAbreviacion].push(curr);
-          return acc;
-        }, {});
-
-      const sal_ = this.cuentasInfo.filter(cf => (cf.TipoMovimientoId.CodigoAbreviacion.includes('ENT_')))
-        .reduce((acc, curr) => {
-          const { TipoMovimientoId } = curr;
-          acc[TipoMovimientoId.CodigoAbreviacion] =
-            acc[TipoMovimientoId.CodigoAbreviacion] ? acc[TipoMovimientoId.CodigoAbreviacion] : [];
-          acc[TipoMovimientoId.CodigoAbreviacion].push(curr);
-          return acc;
-        }, {});
-
-      const ent = Object.values(ent_).map(cf => (this.formArrayCuentasMovimiento(cf)));
-      const sal = Object.values(sal_).map(cf => (this.formArrayCuentasMovimiento(cf)));
-      const baja = this.formArrayCuentasMovimiento(this.cuentasInfo.filter(cf => (cf.SubtipoMovimientoId.CodigoAbreviacion === 'BJ_HT')));
-      const mediciones = this.formArrayCuentasMovimiento(this.cuentasInfo.filter(cf => (cf.SubtipoMovimientoId.CodigoAbreviacion === 'CRR')));
-
       this.formCuentas = this.fb.group({
-        entradas: this.fb.array(ent),
-        salidas: this.fb.array(sal),
-        baja,
-        mediciones,
+        movimientos: this.fb.array(
+          this.cuentasInfo.map(cta =>
+            this.formGroupCuentasTipoBienMovimiento(
+              cta.Id,
+              cta.TipoMovimientoId,
+              cta.SubtipoMovimientoId,
+              cta.CuentaDebitoId,
+              cta.CuentaCreditoId,
+              cta.TipoBienId,
+            )),
+        ),
       });
+
+      if (!this.escritura) {
+        this.formCuentas.disable({ emitEvent: false });
+      }
 
       resolve();
     });
-  }
-
-  private formArrayCuentasMovimiento(cuentas: any): FormGroup {
-    if (!cuentas.length) {
-      return;
-    }
-
-    const form = this.fb.group({
-      cuentaEspecifica: this.fb.array(
-        cuentas.map(cta =>
-          this.formGroupCuentasTipoBienMovimiento(cta.Id,
-            cta.TipoMovimientoId, cta.SubtipoMovimientoId, cta.CuentaDebitoId, cta.CuentaCreditoId, cta.TipoBienId))),
-    });
-    return form;
   }
 
   private formGroupCuentasTipoBienMovimiento(id: number, movId, sMovId: any, db: any, cr: any, tb: any): FormGroup {
@@ -146,74 +130,65 @@ export class FormCuentasComponent implements OnInit, OnChanges {
   }
 
   public loadLists(): Promise<void> {
-    return new Promise<void>(async (resolve) => {
-      this.store.select((state) => state).subscribe(
-        list => {
-          if (list.listPlanCuentas.length && list.listPlanCuentas[0].length) {
-            this.ctas = list.listPlanCuentas[0];
-            resolve();
-          }
-        });
+    return new Promise<void>((resolve) => {
+      this.store.select((state) => state).pipe(
+        map(list => list.listPlanCuentas),
+        filter(list => !!list.length && !!list[0] && !!list[0].length),
+        take(1),
+      ).subscribe((list) => {
+        this.ctas = list[0];
+        resolve();
+      });
     });
   }
 
   private submitForm(valueChanges: Observable<any>) {
-    valueChanges
+    if (this.formChangesSub) {
+      this.formChangesSub.unsubscribe();
+    }
+
+    this.formChangesSub = valueChanges
       .pipe(debounceTime(250))
       .subscribe(() => {
         this.cuentasPendientes.emit(this.generarTr());
+        this.valid.emit(this.formCuentas.valid);
       });
   }
 
-  public setGeneral(i: number, j: number, entrada: boolean) {
-    if (entrada) {
-      const global = ((this.formCuentas.get('entradas') as FormArray).at(i)
-        .get('cuentaEspecifica') as FormArray).at(j).value.CuentaDebitoId;
-      this.patchGeneral(global);
-    } else {
-      const global = ((this.formCuentas.get('salidas') as FormArray).at(i)
-        .get('cuentaEspecifica') as FormArray).at(j).value.CuentaCreditoId;
-      this.patchGeneral(global);
+  public getMovimientoNombre(control: AbstractControl): string {
+    const tipo = control.get('TipoMovimientoId').value;
+    const subtipo = control.get('SubtipoMovimientoId').value;
+    const tipoNombre = this.getTranslatedMovementName(tipo);
+    const subtipoNombre = this.getTranslatedMovementName(subtipo);
+    const entrada = this.translate.instant('GLOBAL.Entrada');
+    const salida = this.translate.instant('GLOBAL.Salida');
+
+    if (subtipo && subtipo.CodigoAbreviacion === 'SAL' && tipoNombre) {
+      return `${salida}: ${tipoNombre}`;
     }
 
-    return;
+    return `${entrada}: ${subtipoNombre || tipoNombre}`;
   }
 
-  private patchGeneral(value: any) {
-    (this.formCuentas.get('entradas') as FormArray).controls
-      .map((mov_: FormGroup) => (mov_.controls.cuentaEspecifica as FormArray).controls)
-      .reduce((acc, curr) => acc.concat(curr), [])
-      .forEach(ctr => {
-        ctr.patchValue({ CuentaDebitoId: value });
-        ctr.markAsDirty();
-      });
+  public onCuentaSelected(index: number, controlName: 'CuentaDebitoId' | 'CuentaCreditoId') {
+    const movimiento = this.movimientos.at(index) as FormGroup;
+    const value = movimiento.get(controlName).value;
 
-    (this.formCuentas.get('salidas') as FormArray).controls
-      .map((mov_: FormGroup) => (mov_.controls.cuentaEspecifica as FormArray).controls)
-      .reduce((acc, curr) => acc.concat(curr), [])
-      .forEach(ctr => {
-        ctr.patchValue({ CuentaCreditoId: value });
-        ctr.markAsDirty();
-      });
+    if (!value) {
+      return;
+    }
 
-    return;
+    if (controlName === 'CuentaDebitoId' && this.isEntradaRow(movimiento)) {
+      this.patchMatchingRows(controlName, value, (ctr) => this.isEntradaRow(ctr));
+    }
+
+    if (controlName === 'CuentaCreditoId' && this.isSalidaAsociadaRow(movimiento)) {
+      this.patchMatchingRows(controlName, value, (ctr) => this.isSalidaAsociadaRow(ctr));
+    }
   }
 
   private generarTr() {
-    const salidas = this.formToTransaction((this.formCuentas.get('salidas') as FormArray).controls
-      .filter(mov => !mov.pristine)
-      .map((mov_: FormGroup) => (mov_.controls.cuentaEspecifica as FormArray).controls)
-      .reduce((acc, curr) => acc.concat(curr), []));
-    const bajas = this.formCuentas.get('baja.cuentaEspecifica') ?
-      this.formToTransaction((this.formCuentas.get('baja.cuentaEspecifica') as FormArray).controls) : [];
-    const entradas = this.formToTransaction((this.formCuentas.get('entradas') as FormArray).controls
-      .filter(mov => !mov.pristine)
-      .map((mov_: FormGroup) => (mov_.controls.cuentaEspecifica as FormArray).controls)
-      .reduce((acc, curr) => acc.concat(curr), []));
-    const mediciones = this.formCuentas.get('mediciones.cuentaEspecifica') ?
-      this.formToTransaction((this.formCuentas.get('mediciones.cuentaEspecifica') as FormArray).controls) : [];
-
-    return entradas.concat(salidas).concat(bajas).concat(mediciones);
+    return this.formToTransaction(this.movimientos ? this.movimientos.controls : []);
   }
 
   private formToTransaction(form: any) {
@@ -228,6 +203,19 @@ export class FormCuentasComponent implements OnInit, OnChanges {
         SubtipoMovimientoId: cmtb.SubtipoMovimientoId.Id,
         TipoBienId: { Id: cmtb.TipoBienId.Id },
       }));
+  }
+
+  private patchMatchingRows(
+    controlName: 'CuentaDebitoId' | 'CuentaCreditoId',
+    value: any,
+    matcher: (control: AbstractControl) => boolean,
+  ) {
+    this.movimientos.controls
+      .filter(matcher)
+      .forEach((control: FormGroup) => {
+        control.patchValue({ [controlName]: value });
+        control.markAsDirty();
+      });
   }
 
   private cambiosCuenta(control: AbstractControl) {
@@ -246,11 +234,41 @@ export class FormCuentasComponent implements OnInit, OnChanges {
   }
 
   private filtroCuentas(nombre): any[] {
-    if (this.ctas && nombre.length > 3) {
+    if (this.ctas && typeof nombre === 'string' && nombre.length > 3) {
       return this.ctas.filter(contr => this.muestraCuenta(contr).toLowerCase().includes(nombre.toLowerCase()));
     } else {
       return [];
     }
+  }
+
+  private getTranslatedMovementName(movimiento: any): string {
+    if (!movimiento) {
+      return '';
+    }
+
+    const codigo = movimiento.CodigoAbreviacion;
+
+    if (!codigo) {
+      return movimiento.Nombre || '';
+    }
+
+    const key = 'GLOBAL.movimientos.tipo.' + codigo + '.nombre';
+    const translation = this.translate.instant(key);
+
+    return translation !== key ? translation : movimiento.Nombre || codigo;
+  }
+
+  private isEntradaRow(control: AbstractControl): boolean {
+    return this.getCodigoAbreviacion(control.get('SubtipoMovimientoId').value).startsWith('ENT_');
+  }
+
+  private isSalidaAsociadaRow(control: AbstractControl): boolean {
+    return this.getCodigoAbreviacion(control.get('SubtipoMovimientoId').value) === 'SAL'
+      && this.getCodigoAbreviacion(control.get('TipoMovimientoId').value).startsWith('ENT_');
+  }
+
+  private getCodigoAbreviacion(movimiento: any): string {
+    return movimiento && movimiento.CodigoAbreviacion ? movimiento.CodigoAbreviacion : '';
   }
 
   private validarCompleter(key: string): ValidatorFn {
