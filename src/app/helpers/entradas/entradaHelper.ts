@@ -185,8 +185,7 @@ export class EntradaHelper {
      * @returns  <Observable> data of the object registered at the DB. undefined if the request has errors
      */
     public getTiposMovimientos() {
-        const payload = '?sortby=Nombre&order=asc&limit=-1&query=CodigoAbreviacion__in:' +
-            'ENT_TR|ENT_RP|ENT_CM|ENT_PPA|ENT_EP|ENT_DN|ENT_SI|ENT_CE|ENT_BEP|ENT_IA|ENT_ID|ENT_AM|ENT_ADQ|CRR|BJ_HT';
+        const payload = '?sortby=Nombre&order=asc&limit=-1&query=Activo:true';
         this.rqManager.setPath('MOVIMIENTOS_ARKA_SERVICE');
         return this.rqManager.get('formato_tipo_movimiento' + payload).pipe(
             map(
