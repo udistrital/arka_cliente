@@ -880,6 +880,8 @@
     "consultar_entrada": "Consultar Entradas",
     "mensaje_consulta_entrada": "Lista de entradas realizadas. Para ver el detalle de la entrada presione el ícono de acciones ubicado al costado derecho de la tabla.",
     "consecutivo": "Consecutivo",
+    "concepto": "Concepto",
+    "fecha_transaccion": "Fecha Transacción",
     "fecha_entrada": "Fecha de Entrada",
     "fecha_salida": "Fecha de Salida",
     "tipo_entrada": "Tipo Entrada",

@@ -70,9 +70,22 @@
         </div>
 
       </mat-step>
-      <mat-step label="{{'GLOBAL.Comprobante_Contable.Titulo' | translate}}" *ngIf="trContable">
-        <ngx-comprobante [ajusteInfo]="trContable" [modo]="'get'" [concepto]="trContable.concepto"
-          [consecutivo]="salida.Consecutivo" [fecha]="trContable.fecha">
+      <mat-step label="{{'GLOBAL.Comprobante_Contable.Titulo' | translate}}" *ngIf="trContable || salida?.Consecutivo">
+        <div class="row" *ngIf="trContable">
+          <div class="col">
+            <p class="text-uppercase"><strong>{{'GLOBAL.consecutivo' | translate}}:</strong> {{ salida.Consecutivo }}</p>
+          </div>
+          <div class="col">
+            <p class="text-uppercase"><strong>{{'GLOBAL.fecha_transaccion' | translate}}:</strong> {{ trContable.fecha }}</p>
+          </div>
+        </div>
+        <div class="row" *ngIf="trContable?.concepto">
+          <div class="col">
+            <p class="text-uppercase"><strong>{{'GLOBAL.concepto' | translate}}:</strong> {{ trContable.concepto }}</p>
+          </div>
+        </div>
+        <ngx-comprobante *ngIf="trContableDetallePorElemento" [ajusteInfo]="trContableDetallePorElemento" [modo]="'get'"
+          [consecutivo]="salida.Consecutivo" [fecha]="trContable?.fecha" [concepto]="trContable?.concepto">
         </ngx-comprobante>
       </mat-step>
 
