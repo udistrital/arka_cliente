@@ -348,12 +348,12 @@ export class ComprobanteComponent implements OnInit {
         .replace(/\s/g, '')
         .replace(/\./g, '')
         .replace(',', '.');
-      const parsedValue = Number(normalizedValue);
-      return Number.isFinite(parsedValue) ? parsedValue : 0;
+      const parsedStringValue = Number(normalizedValue);
+      return Number.isFinite(parsedStringValue) ? parsedStringValue : 0;
     }
 
-    const parsedValue = Number(value);
-    return Number.isFinite(parsedValue) ? parsedValue : 0;
+    const parsedGenericValue = Number(value);
+    return Number.isFinite(parsedGenericValue) ? parsedGenericValue : 0;
   }
 
   formatCurrencyValue(index: number, control: string): string {
