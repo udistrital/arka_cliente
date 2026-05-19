@@ -102,19 +102,37 @@ export class ConsultaSalidaEspecificaComponent implements OnInit {
     this.reportesHelper.getDetalleCuentasSalida(consecutivo).subscribe((res: any[]) => {
       const rows = Array.isArray(res) ? res : [];
       this.sourceComprobante.load(rows);
-      this.totalDebitoComprobante = rows.reduce((acc, row) => acc + (row.Debito || 0), 0);
-      this.totalCreditoComprobante = rows.reduce((acc, row) => acc + (row.Credito || 0), 0);
+      this.totalDebitoComprobante = rows.reduce((acc, row) => acc + this.parseCurrencyValue(row.Debito), 0);
+      this.totalCreditoComprobante = rows.reduce((acc, row) => acc + this.parseCurrencyValue(row.Credito), 0);
       this.trContableDetallePorElemento = {
         rechazo: '',
         movimientos: rows.map((row) => ({
           Cuenta: this.parseCuentaLabel(row.Cuenta),
           TerceroId: this.parseTerceroLabel(row.Tercero),
           Descripcion: row.Descripcion,
-          Debito: row.Debito,
-          Credito: row.Credito,
+          Debito: this.parseCurrencyValue(row.Debito),
+          Credito: this.parseCurrencyValue(row.Credito),
         })),
       };
     });
+  }
+
+  private parseCurrencyValue(value: any): number {
+    if (typeof value === 'number') {
+      return Number.isFinite(value) ? value : 0;
+    }
+
+    if (typeof value === 'string') {
+      const normalizedValue = value
+        .replace(/\s/g, '')
+        .replace(/\./g, '')
+        .replace(',', '.');
+      const parsedValue = Number(normalizedValue);
+      return Number.isFinite(parsedValue) ? parsedValue : 0;
+    }
+
+    const parsedValue = Number(value);
+    return Number.isFinite(parsedValue) ? parsedValue : 0;
   }
 
   private parseCuentaLabel(value: string) {

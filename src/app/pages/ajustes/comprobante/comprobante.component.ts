@@ -331,6 +331,36 @@ export class ComprobanteComponent implements OnInit {
     return index + this.paginator.pageSize * this.paginator.pageIndex;
   }
 
+  getControlValue(index: number, control: string): any {
+    const elemento = (this.formComprobante.get('elementos') as FormArray).at(this.getActualIndex(index));
+    return elemento ? elemento.get(control).value : '';
+  }
+
+  getCurrencyValue(index: number, control: string): number {
+    const value = this.getControlValue(index, control);
+
+    if (typeof value === 'number') {
+      return Number.isFinite(value) ? value : 0;
+    }
+
+    if (typeof value === 'string') {
+      const normalizedValue = value
+        .replace(/\s/g, '')
+        .replace(/\./g, '')
+        .replace(',', '.');
+      const parsedValue = Number(normalizedValue);
+      return Number.isFinite(parsedValue) ? parsedValue : 0;
+    }
+
+    const parsedValue = Number(value);
+    return Number.isFinite(parsedValue) ? parsedValue : 0;
+  }
+
+  formatCurrencyValue(index: number, control: string): string {
+    return Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP' })
+      .format(this.getCurrencyValue(index, control));
+  }
+
   private validarMin(control_: string): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
       const dbt = control.parent ? (control.parent.controls as any).debito.value : null;
