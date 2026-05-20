@@ -10,6 +10,7 @@ import { ConfiguracionService } from '../../../@core/data/configuracion.service'
 import { SmartTableService } from '../../../@core/data/SmartTableService';
 import { HttpClient } from '@angular/common/http';
 import { Location } from '@angular/common';
+import { debounceTime, distinctUntilChanged, filter } from 'rxjs/operators';
 
 @Component({
   selector: 'ngx-consulta-salidas',
@@ -68,9 +69,11 @@ export class ConsultaSalidasComponent implements OnInit {
         this.cargarSalida();
       } else {
         this.setSource();
-        if (params && params.get('filter')) {
+        const filterString = params.get('filter');
+        const filterArray = filterString ? filterString.split('&') : [];
+        if (params && filterString && filterArray) {
           const filtros = [];
-          params.get('filter').split('&').forEach(f => {
+          filterArray.forEach(f => {
             const filtro = f.split('=');
             if (filtro.length === 2) {
               filtros.push({
@@ -79,7 +82,7 @@ export class ConsultaSalidasComponent implements OnInit {
               });
             }
           });
-          this.source.setFilter(filtros);
+          this.source.setFilter(filtros, true, false);
         }
       }
     });
@@ -94,12 +97,20 @@ export class ConsultaSalidasComponent implements OnInit {
       sortDirKey: 'order',
       filterFieldKey: '#field#',
       pagerLimitKey: 'limit',
-      pagerPageKey: 'offset',
+      pagerPageKey: 'page',
       totalKey: 'x-total-count',
     };
     this.source = new ServerDataSource(this.http, config);
-    this.source.onChanged().subscribe(s => {
-      if (s.action === 'filter') {
+    this.onChangesFilter();
+  }
+
+  onChangesFilter() {
+    this.source.onChanged()
+      .pipe(
+        filter(event => event.action === 'filter'),
+        distinctUntilChanged(),
+        debounceTime(200),
+      ).subscribe((s: any) => {
         const filtro = [];
         s.filter.filters.forEach(f => {
           if (f.field && f.search) {
@@ -107,8 +118,7 @@ export class ConsultaSalidasComponent implements OnInit {
           }
         });
         this.router.navigate(['/pages/salidas/' + this.getUrlSegment() + '_salidas/q', filtro.join('&')]);
-      }
-    });
+      });
   }
 
   loadEstados() {
