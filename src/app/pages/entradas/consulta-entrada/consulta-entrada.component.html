@@ -35,9 +35,22 @@
         <mat-step label="{{'GLOBAL.elementos_entrada' | translate}}" *ngIf="actaRecibidoId">
           <ngx-gestionar-elementos [ActaRecibidoId]="actaRecibidoId" [Modo]="'ver'"></ngx-gestionar-elementos>
         </mat-step>
-        <mat-step label="{{'GLOBAL.Comprobante_Contable.Titulo' | translate}}" *ngIf="trContable?.movimientos">
-          <ngx-comprobante *ngIf="trContable" [ajusteInfo]="trContable" [modo]="'get'"
-            [consecutivo]="entradaEspecifica?.Consecutivo" [fecha]="trContable.fecha" [concepto]="trContable.concepto">
+        <mat-step label="{{'GLOBAL.Comprobante_Contable.Titulo' | translate}}" *ngIf="trContable || entradaEspecifica?.Consecutivo">
+          <div class="row" *ngIf="trContable">
+            <div class="col">
+              <p class="text-uppercase"><strong>{{'GLOBAL.consecutivo' | translate}}:</strong> {{ entradaEspecifica?.Consecutivo }}</p>
+            </div>
+            <div class="col">
+              <p class="text-uppercase"><strong>{{'GLOBAL.fecha_transaccion' | translate}}:</strong> {{ trContable.fecha }}</p>
+            </div>
+          </div>
+          <div class="row" *ngIf="trContable?.concepto">
+            <div class="col">
+              <p class="text-uppercase"><strong>{{'GLOBAL.concepto' | translate}}:</strong> {{ trContable.concepto }}</p>
+            </div>
+          </div>
+          <ngx-comprobante *ngIf="trContableDetallePorElemento" [ajusteInfo]="trContableDetallePorElemento" [modo]="'get'"
+            [consecutivo]="entradaEspecifica?.Consecutivo" [fecha]="trContable?.fecha" [concepto]="trContable?.concepto">
           </ngx-comprobante>
         </mat-step>
       </mat-vertical-stepper>

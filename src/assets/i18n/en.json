@@ -879,6 +879,8 @@
     "consultar_entrada": "View Entries",
     "mensaje_consulta_entrada": "List of entries made. To see the detail of the entry press the action icon located on the right side of the table.",
     "consecutivo": "Consecutive",
+    "concepto": "Concept",
+    "fecha_transaccion": "Transaction Date",
     "fecha_entrada": "Entry Date",
     "fecha_salida": "Fecha de Salida",
     "tipo_entrada": "Entry Type",

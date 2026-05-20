@@ -16,6 +16,31 @@ export interface ArchivoReporte {
   version?: string;
 }
 
+export interface DetalleCuentasEntrada {
+  ElementoNombre: string;
+  ElementoValorFinal: number;
+  SalidaFuncionarioAsignado: string;
+  CuentaDebitoEntrada: string;
+  CuentaCreditoEntrada: string;
+}
+
+export interface DetalleCuentasSalida {
+  ElementoNombre: string;
+  ElementoValorFinal: number;
+  SalidaFuncionarioAsignado: string;
+  CuentaDebitoSalida: string;
+  CuentaCreditoSalida: string;
+}
+
+export interface DetalleCuentaSeparada {
+  Secuencia: number;
+  Cuenta: string;
+  Tercero: string;
+  Descripcion: string;
+  Debito: number;
+  Credito: number;
+}
+
 const EXCEL_MIME_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
 
 @Injectable({
@@ -41,6 +66,80 @@ export class ReportesHelper {
         return this.normalizarArchivoReporte(data);
       }),
     );
+  }
+
+  public getDetalleCuentasEntrada(entradaConsecutivo: string) {
+    this.rqManager.setPath('ARKA_SERVICE');
+    return this.rqManager.get('reportes/detalle_cuentas_entrada?EntradaConsecutivo=' + encodeURIComponent(entradaConsecutivo)).pipe(
+      map((res: any) => {
+        if (res === 'error' || res === undefined) {
+          this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.reportes.error_generacion'));
+          return [];
+        }
+        return this.separarFilasEntrada(Array.isArray(res) ? res : []);
+      }),
+    );
+  }
+
+  public getDetalleCuentasSalida(salidaConsecutivo: string) {
+    this.rqManager.setPath('ARKA_SERVICE');
+    return this.rqManager.get('reportes/detalle_cuentas_salida?SalidaConsecutivo=' + encodeURIComponent(salidaConsecutivo)).pipe(
+      map((res: any) => {
+        if (res === 'error' || res === undefined) {
+          this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.reportes.error_generacion'));
+          return [];
+        }
+        return this.separarFilasSalida(Array.isArray(res) ? res : []);
+      }),
+    );
+  }
+
+  private separarFilasEntrada(detalles: DetalleCuentasEntrada[]): DetalleCuentaSeparada[] {
+    const filas: DetalleCuentaSeparada[] = [];
+    let secuencia = 1;
+    detalles.forEach((detalle) => {
+      filas.push({
+        Secuencia: secuencia++,
+        Cuenta: detalle.CuentaDebitoEntrada,
+        Tercero: detalle.SalidaFuncionarioAsignado || '',
+        Descripcion: detalle.ElementoNombre,
+        Debito: detalle.ElementoValorFinal,
+        Credito: 0,
+      });
+      filas.push({
+        Secuencia: secuencia++,
+        Cuenta: detalle.CuentaCreditoEntrada,
+        Tercero: detalle.SalidaFuncionarioAsignado || '',
+        Descripcion: detalle.ElementoNombre,
+        Debito: 0,
+        Credito: detalle.ElementoValorFinal,
+      });
+    });
+    return filas;
+  }
+
+  private separarFilasSalida(detalles: DetalleCuentasSalida[]): DetalleCuentaSeparada[] {
+    const filas: DetalleCuentaSeparada[] = [];
+    let secuencia = 1;
+    detalles.forEach((detalle) => {
+      filas.push({
+        Secuencia: secuencia++,
+        Cuenta: detalle.CuentaDebitoSalida,
+        Tercero: detalle.SalidaFuncionarioAsignado || '',
+        Descripcion: detalle.ElementoNombre,
+        Debito: detalle.ElementoValorFinal,
+        Credito: 0,
+      });
+      filas.push({
+        Secuencia: secuencia++,
+        Cuenta: detalle.CuentaCreditoSalida,
+        Tercero: detalle.SalidaFuncionarioAsignado || '',
+        Descripcion: detalle.ElementoNombre,
+        Debito: 0,
+        Credito: detalle.ElementoValorFinal,
+      });
+    });
+    return filas;
   }
 
   public downloadBase64Excel(base64: string, fileName: string, mimeType: string = EXCEL_MIME_TYPE): void {
