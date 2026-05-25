@@ -93,26 +93,10 @@ steps:
     event:
     - push
 
-- name: run_sonar_scanner
-  image: aosapps/drone-sonar-plugin
-  settings:
-    sonar_host:
-      from_secret: SONAR_HOST
-    sonar_token:
-      from_secret: SONAR_TOKEN
-  exclusions: "**/node_modules/**,**/*.spec.ts,documentation/**"
-  when:
-    branch:
-    - develop
-    - feature/*
-    - release/*
-    event:
-    - push
-
 - name: nodejs_release
   image: node:14
   environment:
-    NODE_OPTIONS: --max_old_space_size=4096
+    NODE_OPTIONS: --max_old_space_size=3072
   commands:
   - npm run build:test
   when:
@@ -127,7 +111,7 @@ steps:
 - name: nodejs_master
   image: node:14
   environment:
-    NODE_OPTIONS: --max_old_space_size=4096
+    NODE_OPTIONS: --max_old_space_size=3072
   commands:
   - npm run build:prod
   when:

@@ -7,6 +7,7 @@ import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { PopUpManager } from '../../../managers/popUpManager';
 import { ConfiguracionService } from '../../../@core/data/configuracion.service';
 import { SmartTableService } from '../../../@core/data/SmartTableService';
+import { ReportesHelper } from '../../../helpers/reportes/reportesHelper';
 
 @Component({
   selector: 'ngx-consulta-entrada',
@@ -27,7 +28,12 @@ export class ConsultaEntradaComponent implements OnInit {
   filaSeleccionada: any;
   updateEntrada: boolean = false;
   trContable: any;
+  trContableDetallePorElemento: any;
   submitted: boolean;
+  sourceCuentasEntrada: LocalDataSource;
+  settingsCuentasEntrada: any;
+  totalDebitoCuentasEntrada: number = 0;
+  totalCreditoCuentasEntrada: number = 0;
 
   constructor(
     private pUpManager: PopUpManager,
@@ -36,15 +42,19 @@ export class ConsultaEntradaComponent implements OnInit {
     private translate: TranslateService,
     private route: ActivatedRoute,
     private confService: ConfiguracionService,
-    private tabla: SmartTableService) {
+    private tabla: SmartTableService,
+    private reportesHelper: ReportesHelper) {
     this.source = new LocalDataSource();
+    this.sourceCuentasEntrada = new LocalDataSource();
   }
 
   ngOnInit() {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
       this.loadTablaSettings();
+      this.loadTablaCuentasEntradaSettings();
     });
     this.loadEstados();
+    this.loadTablaCuentasEntradaSettings();
 
     this.route.data.subscribe(data => {
       if (data && data.modo) {
@@ -93,6 +103,7 @@ export class ConsultaEntradaComponent implements OnInit {
         if (res.TransaccionContable) {
           this.transaccionContable(res.TransaccionContable);
         }
+        this.cargarDetalleCuentasEntrada(this.entradaEspecifica.Consecutivo);
       }
       this.spinner = '';
     });
@@ -120,6 +131,71 @@ export class ConsultaEntradaComponent implements OnInit {
     };
   }
 
+  private cargarDetalleCuentasEntrada(consecutivo: string) {
+    if (!consecutivo) {
+      this.sourceCuentasEntrada.load([]);
+      return;
+    }
+
+    this.reportesHelper.getDetalleCuentasEntrada(consecutivo).subscribe((res: any[]) => {
+      const rows = Array.isArray(res) ? res : [];
+      this.sourceCuentasEntrada.load(rows);
+      this.totalDebitoCuentasEntrada = rows.reduce((acc, row) => acc + this.parseCurrencyValue(row.Debito), 0);
+      this.totalCreditoCuentasEntrada = rows.reduce((acc, row) => acc + this.parseCurrencyValue(row.Credito), 0);
+      this.trContableDetallePorElemento = {
+        rechazo: '',
+        movimientos: rows.map((row) => ({
+          Cuenta: this.parseCuentaLabel(row.Cuenta),
+          TerceroId: this.parseTerceroLabel(row.Tercero),
+          Descripcion: row.Descripcion,
+          Debito: this.parseCurrencyValue(row.Debito),
+          Credito: this.parseCurrencyValue(row.Credito),
+        })),
+      };
+    });
+  }
+
+  private parseCurrencyValue(value: any): number {
+    if (typeof value === 'number') {
+      return Number.isFinite(value) ? value : 0;
+    }
+
+    if (typeof value === 'string') {
+      const normalizedValue = value
+        .replace(/\s/g, '')
+        .replace(/\./g, '')
+        .replace(',', '.');
+      const parsedStringValue = Number(normalizedValue);
+      return Number.isFinite(parsedStringValue) ? parsedStringValue : 0;
+    }
+
+    const parsedGenericValue = Number(value);
+    return Number.isFinite(parsedGenericValue) ? parsedGenericValue : 0;
+  }
+
+  private parseCuentaLabel(value: string) {
+    if (!value) {
+      return { Codigo: '', Nombre: '', RequiereTercero: false };
+    }
+    const parts = value.split(' - ');
+    return {
+      Codigo: parts.shift() || '',
+      Nombre: parts.join(' - '),
+      RequiereTercero: !!value,
+    };
+  }
+
+  private parseTerceroLabel(value: string) {
+    if (!value) {
+      return null;
+    }
+    const parts = value.split(' - ');
+    return {
+      Numero: parts.shift() || '',
+      NombreCompleto: parts.join(' - '),
+    };
+  }
+
   private onSubmitRevision(aprobar: boolean) {
     this.submitted = true;
     if (aprobar) {
@@ -130,6 +206,7 @@ export class ConsultaEntradaComponent implements OnInit {
           if (res.TransaccionContable) {
             this.transaccionContable(res.TransaccionContable);
           }
+          this.cargarDetalleCuentasEntrada(this.movimiento.Consecutivo);
           this.alertSuccess(true);
           this.source.remove(this.filaSeleccionada);
         } else if (res && res.Error) {
@@ -214,6 +291,10 @@ export class ConsultaEntradaComponent implements OnInit {
     this.filaSeleccionada = undefined;
     this.entradaId = undefined;
     this.trContable = undefined;
+    this.trContableDetallePorElemento = undefined;
+    this.sourceCuentasEntrada.load([]);
+    this.totalDebitoCuentasEntrada = 0;
+    this.totalCreditoCuentasEntrada = 0;
     this.router.navigateByUrl('/pages/entradas/' +
       (this.modo === 'consulta' ? 'consulta' : this.modo === 'revision' ? 'aprobar' : '') + '_entrada');
   }
@@ -323,6 +404,49 @@ export class ConsultaEntradaComponent implements OnInit {
           },
         },
         ...columns,
+      },
+    };
+  }
+
+  loadTablaCuentasEntradaSettings() {
+    this.settingsCuentasEntrada = {
+      hideSubHeader: false,
+      noDataMessage: 'No se encontraron cuentas contables asociadas.',
+      actions: false,
+      pager: {
+        display: true,
+        perPage: 10,
+      },
+      columns: {
+        Secuencia: {
+          title: 'Secuencia',
+        },
+        Cuenta: {
+          title: 'Cuenta',
+        },
+        Tercero: {
+          title: 'Tercero',
+          valuePrepareFunction: (value: string) => value || '',
+        },
+        Descripcion: {
+          title: 'Descripción',
+        },
+        Debito: {
+          title: 'Débito',
+          type: 'html',
+          valuePrepareFunction: (value: number) => {
+            const formatted = value ? Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP' }).format(value) : '';
+            return '<p class="currency">' + formatted + '</p>';
+          },
+        },
+        Credito: {
+          title: 'Crédito',
+          type: 'html',
+          valuePrepareFunction: (value: number) => {
+            const formatted = value ? Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP' }).format(value) : '';
+            return '<p class="currency">' + formatted + '</p>';
+          },
+        },
       },
     };
   }

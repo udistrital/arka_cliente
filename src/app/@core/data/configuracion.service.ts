@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { RequestManager } from '../../managers/requestManager';
 import { UserService } from './users.service';
 import { Menu, Parametro, TipoOpcion } from './models/configuracion_crud';
-import { Observable, Subject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
 @Injectable()
@@ -12,14 +12,14 @@ export class ConfiguracionService {
   private app: string = 'arka_ii_main';
 
   private configuraciones: Partial<Menu>[];
-  private $conf: Subject<Partial<Menu>[]>;
+  private $conf: BehaviorSubject<Partial<Menu>[]>;
 
   constructor(
     private requestManager: RequestManager,
     private userService: UserService,
   ) {
     this.configuraciones = [];
-    this.$conf = new Subject<Partial<Menu>[]>();
+    this.$conf = new BehaviorSubject<Partial<Menu>[]>(this.configuraciones);
     /*
     // SOLO PARA PRUEBAS
     const parametro = 'modificandoCuentas';
@@ -77,6 +77,7 @@ export class ConfiguracionService {
 
   setAcciones(configuraciones: any) {
     this.configuraciones = configuraciones;
+    this.$conf.next(this.configuraciones);
   }
 
   getAccion(accion: string): Partial<Menu> {
@@ -97,12 +98,12 @@ export class ConfiguracionService {
   }
 
   findAccion(menu: Partial<Menu>[], option: string) {
-    return menu.find(opt => (opt.TipoOpcion === TipoOpcion.Accion && opt.Nombre === option) ||
+    return menu.find(opt => ((opt.TipoOpcion === TipoOpcion.Accion || opt.TipoOpcion === TipoOpcion.Boton) && opt.Nombre === option) ||
       (opt.Opciones && opt.Opciones.length && this.findAccion(opt.Opciones, option)));
   }
 
   checkSegments(menu: Partial<Menu>[], segment: string) {
-    return menu.some(opt => (opt.Url.includes(segment)) ||
+    return menu.some(opt => ((opt.Url && opt.Url.includes(segment))) ||
       (opt.Opciones && opt.Opciones.length && this.checkSegments(opt.Opciones, segment)));
   }
 

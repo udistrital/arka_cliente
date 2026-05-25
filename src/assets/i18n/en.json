@@ -879,6 +879,8 @@
     "consultar_entrada": "View Entries",
     "mensaje_consulta_entrada": "List of entries made. To see the detail of the entry press the action icon located on the right side of the table.",
     "consecutivo": "Consecutive",
+    "concepto": "Concept",
+    "fecha_transaccion": "Transaction Date",
     "fecha_entrada": "Entry Date",
     "fecha_salida": "Fecha de Salida",
     "tipo_entrada": "Entry Type",
@@ -1112,7 +1114,9 @@
       "terminar_edicion_boton": "Finish Account Edition",
       "terminar_edicion_titulo": "Finish Account Edition?",
       "terminar_edicion_texto": "Any kind of transaction will be Enabled. Continue?",
-      "terminar_edicion_aviso": "Any kind of transaction will be Enabled"
+      "terminar_edicion_aviso": "Any kind of transaction will be Enabled",
+      "error_cargar_estado": "The current account editing status could not be loaded.",
+      "error_actualizar_estado": "The account editing status could not be updated."
     },
 
     "salidas": {

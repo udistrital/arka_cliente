@@ -43,6 +43,10 @@
           {{ 'GLOBAL.Comprobante_Contable.Cuenta' | translate }}
         </th>
         <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="getActualIndex(rowIndex)">
+          <div *ngIf="modo === 'get'; else cuentaEditable" class="readonly-cell lg-col" [title]="muestraCuenta(getControlValue(rowIndex, 'cuenta'))">
+            {{ muestraCuenta(getControlValue(rowIndex, 'cuenta')) }}
+          </div>
+          <ng-template #cuentaEditable>
           <mat-form-field appearance="outline" class="lg-col">
             <input matInput type="text" formControlName="cuenta" [matAutocomplete]="autoElementos"
               placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}">
@@ -59,6 +63,7 @@
             <mat-error *ngIf="getErrors(getActualIndex(rowIndex),'cuenta', 'errSelected')">
               * {{'GLOBAL.Errores.ErrorCuenta' | translate}}</mat-error>
           </mat-form-field>
+          </ng-template>
         </td>
         <td mat-footer-cell *matFooterCellDef></td>
       </ng-container>
@@ -68,6 +73,10 @@
           {{ 'GLOBAL.Comprobante_Contable.Tercero' | translate }}
         </th>
         <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="getActualIndex(rowIndex)">
+          <div *ngIf="modo === 'get'; else terceroEditable" class="readonly-cell sm-col" [title]="getControlValue(rowIndex, 'tercero')">
+            {{ getControlValue(rowIndex, 'tercero') }}
+          </div>
+          <ng-template #terceroEditable>
           <mat-form-field appearance="outline" class="sm-col">
             <input matInput type="text" formControlName="tercero" [matAutocomplete]="autoTerceros"
               placeholder="{{ (modo ==='get' ? 'GLOBAL.NA' : 'GLOBAL.Errores.ErrorMinLength') | translate : {NUM : 4} }}">
@@ -83,6 +92,7 @@
             <mat-error *ngIf="getErrors(getActualIndex(rowIndex),'tercero', 'errSelected')">
               * {{'GLOBAL.Errores.ErrorTercero' | translate}}</mat-error>
           </mat-form-field>
+          </ng-template>
         </td>
         <td mat-footer-cell *matFooterCellDef></td>
       </ng-container>
@@ -92,9 +102,14 @@
           {{ 'GLOBAL.Comprobante_Contable.Descripcion' | translate }}
         </th>
         <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="getActualIndex(rowIndex)">
+          <div *ngIf="modo === 'get'; else descripcionEditable" class="readonly-cell md-col" [title]="getControlValue(rowIndex, 'descripcion')">
+            {{ getControlValue(rowIndex, 'descripcion') }}
+          </div>
+          <ng-template #descripcionEditable>
           <mat-form-field appearance="outline" class="md-col">
             <input matInput type="text" formControlName="descripcion">
           </mat-form-field>
+          </ng-template>
         </td>
         <td mat-footer-cell *matFooterCellDef></td>
       </ng-container>
@@ -104,6 +119,10 @@
           {{ 'GLOBAL.Comprobante_Contable.Debito' | translate }}
         </th>
         <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="getActualIndex(rowIndex)">
+          <div *ngIf="modo === 'get'; else debitoEditable" class="readonly-cell sm-col amount-cell">
+            {{ formatCurrencyValue(rowIndex, 'debito') }}
+          </div>
+          <ng-template #debitoEditable>
           <mat-form-field appearance="outline" class="sm-col">
             <input matInput currencyMask [options]="{allowNegative: false}" type="text" formControlName="debito">
             <mat-error *ngIf="getErrors(getActualIndex(rowIndex),'debito', 'errNone')">
@@ -111,6 +130,7 @@
             <mat-error *ngIf="getErrors(getActualIndex(rowIndex),'debito', 'errBoth')">
               * {{'GLOBAL.ajustes.errBoth' | translate}}</mat-error>
           </mat-form-field>
+          </ng-template>
         </td>
         <td mat-footer-cell style="text-align: right;" *matFooterCellDef>{{ totalDebitos | currency }}</td>
       </ng-container>
@@ -120,6 +140,10 @@
           {{ 'GLOBAL.Comprobante_Contable.Credito' | translate }}
         </th>
         <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="getActualIndex(rowIndex)">
+          <div *ngIf="modo === 'get'; else creditoEditable" class="readonly-cell sm-col amount-cell">
+            {{ formatCurrencyValue(rowIndex, 'credito') }}
+          </div>
+          <ng-template #creditoEditable>
           <mat-form-field appearance="outline" class="sm-col">
             <input matInput currencyMask [options]="{allowNegative: false}" type="text" formControlName="credito">
             <mat-error *ngIf="getErrors(getActualIndex(rowIndex),'credito', 'errNone')">
@@ -127,6 +151,7 @@
             <mat-error *ngIf="getErrors(getActualIndex(rowIndex),'credito', 'errBoth')">
               * {{'GLOBAL.ajustes.errBoth' | translate}}</mat-error>
           </mat-form-field>
+          </ng-template>
         </td>
         <td mat-footer-cell style="text-align: right;" *matFooterCellDef>{{ totalCreditos | currency }}</td>
       </ng-container>

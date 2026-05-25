@@ -11,6 +11,7 @@ tr.mat-footer-row {
 mat-table {
     padding: 1rem 0;
     overflow-x: scroll;
+    width: 100%;
 }
 
 .acciones {
@@ -22,13 +23,40 @@ button:focus {
 }
 
 .sm-col {
-    width: 150px;
+    width: 170px;
 }
 
 .md-col {
-    width: 350px;
+    width: 380px;
 }
 
 .lg-col {
-    width: 350px;
+    width: 420px;
+}
+
+.readonly-cell {
+    min-height: 42px;
+    padding: 8px 10px;
+    border: 1px solid #d9e2ec;
+    border-radius: 4px;
+    background: #fff;
+    white-space: normal;
+    word-break: break-word;
+    line-height: 1.35;
+    display: flex;
+    align-items: center;
+}
+
+.amount-cell {
+    justify-content: flex-end;
+}
+
+:host ::ng-deep .mat-form-field-appearance-outline .mat-form-field-wrapper {
+    margin: 0;
+}
+
+:host ::ng-deep td.mat-cell,
+:host ::ng-deep th.mat-header-cell,
+:host ::ng-deep td.mat-footer-cell {
+    vertical-align: top;
 }

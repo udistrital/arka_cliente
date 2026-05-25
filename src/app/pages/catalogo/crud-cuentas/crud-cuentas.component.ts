@@ -10,6 +10,8 @@ import { ConfiguracionService } from '../../../@core/data/configuracion.service'
 import { PopUpManager } from '../../../managers/popUpManager';
 import { ListService } from '../../../@core/store/services/list.service';
 import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
+import { FormatoTipoMovimiento } from '../../../@core/data/models/entrada/entrada';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'ngx-crud-cuentas',
@@ -27,7 +29,6 @@ export class CrudCuentasComponent implements OnInit {
   estado_cargado: boolean;
   actualizar: boolean = false;
   cuentasPendientes: any[];
-  puede_editar: boolean;
   texto_sesion_contable: string;
   texto_estado: string;
   modificando_cuentas: boolean;
@@ -47,7 +48,6 @@ export class CrudCuentasComponent implements OnInit {
   ) {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { });
     this.spinner = '';
-    this.puede_editar = false;
     this.modificando_cuentas = false;
     this.catalogos = new Array<Catalogo>();
     this.catalogoId = 0;
@@ -59,25 +59,26 @@ export class CrudCuentasComponent implements OnInit {
     this.listService.findPlanCuentas();
     this.loadCatalogos();
     this.cargarTiposDeMovimientos();
-    this.cargaPermisoEdicionCuentas();
     this.cargaEstadoSesionContable();
-  }
-
-  private cargaPermisoEdicionCuentas() {
-    this.puede_editar = !!this.confService.getAccion('puedeAsignarCuentas');
   }
 
   private cargaEstadoSesionContable() {
     if (this.estado_cargado === undefined) {
       this.estado_cargado = false;
-      this.confService.getParametro('modificandoCuentas').subscribe((p: Parametro) => {
-        this.refrescaEstadoSesionContable(p);
+      this.confService.getParametro('modificandoCuentas').subscribe({
+        next: (p: Parametro) => {
+          this.refrescaEstadoSesionContable(p);
+        },
+        error: () => {
+          this.refrescaEstadoSesionContable(undefined);
+        },
       });
     }
   }
+
   private refrescaEstadoSesionContable(p: Parametro) {
-    this.estadoAsignacionContable = p;
-    this.modificando_cuentas = p.Valor === 'true';
+    this.estadoAsignacionContable = p || <Parametro>{ Valor: 'false' };
+    this.modificando_cuentas = this.estadoAsignacionContable.Valor === 'true';
     this.texto_sesion_contable = this.translate.instant('GLOBAL.cuentas.' + (this.modificando_cuentas ? 'terminar' : 'iniciar') + '_edicion_boton');
     this.texto_estado = this.translate.instant('GLOBAL.cuentas.estado_' + (this.modificando_cuentas ? 'modificando' : 'lectura'));
     this.estado_cargado = true;
@@ -87,35 +88,64 @@ export class CrudCuentasComponent implements OnInit {
     const cambioModo = this.modificando_cuentas ? 'terminar' : 'iniciar';
     const title = this.translate.instant('GLOBAL.cuentas.' + cambioModo + '_edicion_titulo');
     const text = this.translate.instant('GLOBAL.cuentas.' + cambioModo + '_edicion_texto');
-    const type = 'warning';
-    (Swal as any).fire({ title, text, type, showCancelButton: true }).then(res => {
+    (Swal as any).fire({
+      title,
+      text,
+      type: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085D6',
+      cancelButtonColor: '#D33',
+      confirmButtonText: this.translate.instant('GLOBAL.si'),
+      cancelButtonText: this.translate.instant('GLOBAL.no'),
+    }).then(res => {
       if (res.value) {
         this.estado_cargado = false;
+        const valorAnterior = this.estadoAsignacionContable.Valor;
         if (this.modificando_cuentas) {
           this.estadoAsignacionContable.Valor = 'false';
         } else {
           this.estadoAsignacionContable.Valor = 'true';
         }
         const query = 'Nombre__in:cierreEnCurso,Valor:true';
-        this.confService.getAllParametro(query).subscribe(res_ => {
-          if (res_ && res_.length) {
-            this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.cierres.alertaEnCursoCuentas'));
-            this.estado_cargado = true;
-          } else {
-            this.confService.setParametro(this.estadoAsignacionContable).subscribe(res__ => {
-              this.refrescaEstadoSesionContable(<Parametro><any>res__);
+        this.confService.getAllParametro(query).subscribe({
+          next: (res_) => {
+            if (res_ && res_.length) {
+              this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.cierres.alertaEnCursoCuentas'));
               this.estado_cargado = true;
-              (Swal as any).fire({
-                title: this.translate.instant('GLOBAL.Actualizado'),
-                html: this.estadoAsignacionContable.Valor === 'true' ?
-                  this.translate.instant('GLOBAL.cuentas.iniciar_edicion_aviso') :
-                  this.translate.instant('GLOBAL.cuentas.terminar_edicion_aviso'),
-              }).then((result) => {
-                if (result.dismiss === Swal.DismissReason.timer) {
-                }
+            } else {
+              this.confService.setParametro(this.estadoAsignacionContable).subscribe({
+                next: (res__) => {
+                  this.refrescaEstadoSesionContable(<Parametro><any>res__);
+                  this.actualizar = false;
+                  this.cuentasPendientes = [];
+                  if (this.subgrupo && this.movimientoId) {
+                    this.loadCuentas();
+                  }
+                  this.estado_cargado = true;
+                  (Swal as any).fire({
+                    title: this.translate.instant('GLOBAL.Actualizado'),
+                    type: 'success',
+                    html: this.estadoAsignacionContable.Valor === 'true' ?
+                      this.translate.instant('GLOBAL.cuentas.iniciar_edicion_aviso') :
+                      this.translate.instant('GLOBAL.cuentas.terminar_edicion_aviso'),
+                    confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
+                  }).then((result) => {
+                    if (result.dismiss === Swal.DismissReason.timer) {
+                    }
+                  });
+                },
+                error: () => {
+                  this.estadoAsignacionContable.Valor = valorAnterior;
+                  this.refrescaEstadoSesionContable(this.estadoAsignacionContable);
+                  this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.cuentas.error_actualizar_estado'));
+                },
               });
-            });
-          }
+            }
+          },
+          error: () => {
+            this.estado_cargado = true;
+            this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.cuentas.error_cargar_estado'));
+          },
         });
       }
     });
@@ -149,19 +179,29 @@ export class CrudCuentasComponent implements OnInit {
 
   loadCuentas() {
     if (this.subgrupo && this.movimientoId) {
+      const movimientoSeleccionado = this.obtenerMovimientoSeleccionado();
       this.spinner = 'Cargando Cuentas Contables';
-      this.catalogoElementosService.getCuentasContables(this.subgrupo.Id, this.movimientoId).subscribe(res => {
+      forkJoin({
+        cuentas: this.catalogoElementosService.getCuentasContables(this.subgrupo.Id, this.movimientoId),
+        detalle: this.catalogoElementosService.getDetalleSubgrupo(this.subgrupo.Id),
+      }).subscribe(({ cuentas, detalle }) => {
         this.spinner = '';
-        if (res.length) {
-          this.infoCuentas = res;
-          this.cuentasPendientes = [];
-          this.claseOk = true;
-        } else {
-          this.claseOk = false;
-          this.movimientoId = 0;
-          this.subgrupo = undefined;
+
+        const detalleClase = Array.isArray(detalle) ? detalle.find(item => item && item.TipoBienId) : undefined;
+
+        if (!detalleClase || !detalleClase.TipoBienId) {
+          this.resetCuentaState();
           this.pUpManager.showAlertWithOptions(this.optionsNoPArametrizado);
+          return;
         }
+
+        this.infoCuentas = this.prepararCuentas(
+          Array.isArray(cuentas) ? cuentas : [],
+          detalleClase.TipoBienId,
+          movimientoSeleccionado,
+        );
+        this.cuentasPendientes = [];
+        this.claseOk = !!this.infoCuentas.length;
       });
     } else {
       this.cuentasPendientes = [];
@@ -196,6 +236,7 @@ export class CrudCuentasComponent implements OnInit {
               if (res) {
                 this.actualizar = true;
                 this.cuentasPendientes = [];
+                this.loadCuentas();
                 this.pUpManager.showAlertWithOptions(this.optionsActualizado);
               }
             });
@@ -210,6 +251,124 @@ export class CrudCuentasComponent implements OnInit {
   public setPendientes(event) {
     this.actualizar = false;
     this.cuentasPendientes = event;
+  }
+
+  private prepararCuentas(cuentas: any[], tipoBien: any, movimiento: FormatoTipoMovimiento): any[] {
+    const cuentasExistentes = Array.isArray(cuentas) ? cuentas : [];
+    const tipoBienId = tipoBien && tipoBien.Id ? tipoBien.Id : 0;
+    const cuentasTipoActual = cuentasExistentes.filter(cuenta => cuenta && cuenta.TipoBienId && cuenta.TipoBienId.Id === tipoBienId);
+    const cuentasEsperadas = this.buildCuentasTemplate(tipoBien, movimiento);
+
+    if (!cuentasEsperadas.length) {
+      return cuentasTipoActual;
+    }
+
+    const cuentasSincronizadas = cuentasEsperadas.map((cuentaEsperada) => {
+      const cuentaActual = cuentasTipoActual.find((cuenta) => this.isSameCuentaConfig(cuenta, cuentaEsperada));
+
+      if (cuentaActual) {
+        return cuentaActual;
+      }
+
+      const cuentaPrevia = cuentasExistentes.find((cuenta) =>
+        this.isSameCuentaConfig(cuenta, cuentaEsperada) && this.hasConfiguredAccounts(cuenta));
+
+      if (cuentaPrevia) {
+        return this.buildCuentaTemplate(
+          cuentaEsperada.TipoMovimientoId,
+          cuentaEsperada.SubtipoMovimientoId,
+          tipoBien,
+          cuentaPrevia.CuentaDebitoId,
+          cuentaPrevia.CuentaCreditoId,
+        );
+      }
+
+      return cuentaEsperada;
+    });
+
+    const extrasTipoActual = cuentasTipoActual.filter((cuentaActual) =>
+      !cuentasEsperadas.some((cuentaEsperada) => this.isSameCuentaConfig(cuentaActual, cuentaEsperada)));
+
+    return cuentasSincronizadas.concat(extrasTipoActual);
+  }
+
+  private buildCuentasTemplate(tipoBien: any, movimiento: FormatoTipoMovimiento): any[] {
+    if (!tipoBien || !tipoBien.Id || !movimiento || !movimiento.Id) {
+      return [];
+    }
+
+    const salidaAsociada = this.obtenerMovimientoSalidaAsociado(movimiento);
+
+    return [
+      this.buildCuentaTemplate(this.emptyTipoMovimiento(), movimiento, tipoBien),
+      this.buildCuentaTemplate(movimiento, salidaAsociada, tipoBien),
+    ];
+  }
+
+  private buildCuentaTemplate(
+    tipoMovimiento: FormatoTipoMovimiento,
+    subtipoMovimiento: FormatoTipoMovimiento,
+    tipoBien: any,
+    cuentaDebitoId: any = null,
+    cuentaCreditoId: any = null,
+  ) {
+    return {
+      Id: 0,
+      CuentaCreditoId: cuentaCreditoId,
+      CuentaDebitoId: cuentaDebitoId,
+      TipoMovimientoId: this.normalizeTipoMovimiento(tipoMovimiento),
+      SubtipoMovimientoId: this.normalizeTipoMovimiento(subtipoMovimiento),
+      TipoBienId: tipoBien,
+      SubgrupoId: this.subgrupo ? this.subgrupo.Id : null,
+    };
+  }
+
+  private normalizeTipoMovimiento(movimiento: Partial<FormatoTipoMovimiento>): FormatoTipoMovimiento {
+    return {
+      Id: movimiento && movimiento.Id ? movimiento.Id : 0,
+      Nombre: movimiento && movimiento.Nombre ? movimiento.Nombre : '',
+      Formato: movimiento && movimiento.Formato ? movimiento.Formato : '',
+      Descripcion: movimiento && movimiento.Descripcion ? movimiento.Descripcion : '',
+      CodigoAbreviacion: movimiento && movimiento.CodigoAbreviacion ? movimiento.CodigoAbreviacion : '',
+      NumeroOrden: movimiento && movimiento.NumeroOrden ? movimiento.NumeroOrden : 0,
+      Activo: !!(movimiento && movimiento.Activo),
+    };
+  }
+
+  private emptyTipoMovimiento(): FormatoTipoMovimiento {
+    return this.normalizeTipoMovimiento({});
+  }
+
+  private obtenerMovimientoSalidaAsociado(movimiento: FormatoTipoMovimiento): FormatoTipoMovimiento {
+    if (movimiento && movimiento.CodigoAbreviacion === 'SAL') {
+      return movimiento;
+    }
+
+    return this.tiposDeEMovimentos.find(tipo => tipo.CodigoAbreviacion === 'SAL') || movimiento;
+  }
+
+  private obtenerMovimientoSeleccionado(): FormatoTipoMovimiento {
+    return this.tiposDeEMovimentos.find(tipo => tipo.Id === this.movimientoId);
+  }
+
+  private isSameCuentaConfig(cuentaActual: any, cuentaEsperada: any): boolean {
+    const tipoMovimientoActual = cuentaActual && cuentaActual.TipoMovimientoId ? cuentaActual.TipoMovimientoId.Id : 0;
+    const tipoMovimientoEsperado = cuentaEsperada && cuentaEsperada.TipoMovimientoId ? cuentaEsperada.TipoMovimientoId.Id : 0;
+    const subtipoMovimientoActual = cuentaActual && cuentaActual.SubtipoMovimientoId ? cuentaActual.SubtipoMovimientoId.Id : 0;
+    const subtipoMovimientoEsperado = cuentaEsperada && cuentaEsperada.SubtipoMovimientoId ? cuentaEsperada.SubtipoMovimientoId.Id : 0;
+
+    return tipoMovimientoActual === tipoMovimientoEsperado
+      && subtipoMovimientoActual === subtipoMovimientoEsperado;
+  }
+
+  private hasConfiguredAccounts(cuenta: any): boolean {
+    return !!(cuenta && cuenta.CuentaDebitoId && cuenta.CuentaCreditoId);
+  }
+
+  private resetCuentaState() {
+    this.claseOk = false;
+    this.infoCuentas = undefined;
+    this.cuentasPendientes = [];
   }
 
   private cargarTiposDeMovimientos() {
