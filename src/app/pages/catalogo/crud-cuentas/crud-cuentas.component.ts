@@ -29,7 +29,6 @@ export class CrudCuentasComponent implements OnInit {
   estado_cargado: boolean;
   actualizar: boolean = false;
   cuentasPendientes: any[];
-  puede_editar: boolean;
   texto_sesion_contable: string;
   texto_estado: string;
   modificando_cuentas: boolean;
@@ -49,7 +48,6 @@ export class CrudCuentasComponent implements OnInit {
   ) {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { });
     this.spinner = '';
-    this.puede_editar = false;
     this.modificando_cuentas = false;
     this.catalogos = new Array<Catalogo>();
     this.catalogoId = 0;
@@ -61,25 +59,26 @@ export class CrudCuentasComponent implements OnInit {
     this.listService.findPlanCuentas();
     this.loadCatalogos();
     this.cargarTiposDeMovimientos();
-    this.cargaPermisoEdicionCuentas();
     this.cargaEstadoSesionContable();
-  }
-
-  private cargaPermisoEdicionCuentas() {
-    this.puede_editar = !!this.confService.getAccion('puedeAsignarCuentas');
   }
 
   private cargaEstadoSesionContable() {
     if (this.estado_cargado === undefined) {
       this.estado_cargado = false;
-      this.confService.getParametro('modificandoCuentas').subscribe((p: Parametro) => {
-        this.refrescaEstadoSesionContable(p);
+      this.confService.getParametro('modificandoCuentas').subscribe({
+        next: (p: Parametro) => {
+          this.refrescaEstadoSesionContable(p);
+        },
+        error: () => {
+          this.refrescaEstadoSesionContable(undefined);
+        },
       });
     }
   }
+
   private refrescaEstadoSesionContable(p: Parametro) {
-    this.estadoAsignacionContable = p;
-    this.modificando_cuentas = p.Valor === 'true';
+    this.estadoAsignacionContable = p || <Parametro>{ Valor: 'false' };
+    this.modificando_cuentas = this.estadoAsignacionContable.Valor === 'true';
     this.texto_sesion_contable = this.translate.instant('GLOBAL.cuentas.' + (this.modificando_cuentas ? 'terminar' : 'iniciar') + '_edicion_boton');
     this.texto_estado = this.translate.instant('GLOBAL.cuentas.estado_' + (this.modificando_cuentas ? 'modificando' : 'lectura'));
     this.estado_cargado = true;
@@ -89,35 +88,64 @@ export class CrudCuentasComponent implements OnInit {
     const cambioModo = this.modificando_cuentas ? 'terminar' : 'iniciar';
     const title = this.translate.instant('GLOBAL.cuentas.' + cambioModo + '_edicion_titulo');
     const text = this.translate.instant('GLOBAL.cuentas.' + cambioModo + '_edicion_texto');
-    const type = 'warning';
-    (Swal as any).fire({ title, text, type, showCancelButton: true }).then(res => {
+    (Swal as any).fire({
+      title,
+      text,
+      type: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085D6',
+      cancelButtonColor: '#D33',
+      confirmButtonText: this.translate.instant('GLOBAL.si'),
+      cancelButtonText: this.translate.instant('GLOBAL.no'),
+    }).then(res => {
       if (res.value) {
         this.estado_cargado = false;
+        const valorAnterior = this.estadoAsignacionContable.Valor;
         if (this.modificando_cuentas) {
           this.estadoAsignacionContable.Valor = 'false';
         } else {
           this.estadoAsignacionContable.Valor = 'true';
         }
         const query = 'Nombre__in:cierreEnCurso,Valor:true';
-        this.confService.getAllParametro(query).subscribe(res_ => {
-          if (res_ && res_.length) {
-            this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.cierres.alertaEnCursoCuentas'));
-            this.estado_cargado = true;
-          } else {
-            this.confService.setParametro(this.estadoAsignacionContable).subscribe(res__ => {
-              this.refrescaEstadoSesionContable(<Parametro><any>res__);
+        this.confService.getAllParametro(query).subscribe({
+          next: (res_) => {
+            if (res_ && res_.length) {
+              this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.cierres.alertaEnCursoCuentas'));
               this.estado_cargado = true;
-              (Swal as any).fire({
-                title: this.translate.instant('GLOBAL.Actualizado'),
-                html: this.estadoAsignacionContable.Valor === 'true' ?
-                  this.translate.instant('GLOBAL.cuentas.iniciar_edicion_aviso') :
-                  this.translate.instant('GLOBAL.cuentas.terminar_edicion_aviso'),
-              }).then((result) => {
-                if (result.dismiss === Swal.DismissReason.timer) {
-                }
+            } else {
+              this.confService.setParametro(this.estadoAsignacionContable).subscribe({
+                next: (res__) => {
+                  this.refrescaEstadoSesionContable(<Parametro><any>res__);
+                  this.actualizar = false;
+                  this.cuentasPendientes = [];
+                  if (this.subgrupo && this.movimientoId) {
+                    this.loadCuentas();
+                  }
+                  this.estado_cargado = true;
+                  (Swal as any).fire({
+                    title: this.translate.instant('GLOBAL.Actualizado'),
+                    type: 'success',
+                    html: this.estadoAsignacionContable.Valor === 'true' ?
+                      this.translate.instant('GLOBAL.cuentas.iniciar_edicion_aviso') :
+                      this.translate.instant('GLOBAL.cuentas.terminar_edicion_aviso'),
+                    confirmButtonText: this.translate.instant('GLOBAL.aceptar'),
+                  }).then((result) => {
+                    if (result.dismiss === Swal.DismissReason.timer) {
+                    }
+                  });
+                },
+                error: () => {
+                  this.estadoAsignacionContable.Valor = valorAnterior;
+                  this.refrescaEstadoSesionContable(this.estadoAsignacionContable);
+                  this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.cuentas.error_actualizar_estado'));
+                },
               });
-            });
-          }
+            }
+          },
+          error: () => {
+            this.estado_cargado = true;
+            this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.cuentas.error_cargar_estado'));
+          },
         });
       }
     });

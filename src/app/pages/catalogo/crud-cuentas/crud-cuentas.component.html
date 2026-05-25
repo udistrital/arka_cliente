@@ -5,14 +5,21 @@
       {{'GLOBAL.catalogo.cuentas' | translate}}
     </mat-card-title>
     <mat-card-content>
-      <header [nbSpinner]="!this.estado_cargado">
-        <strong>{{'GLOBAL.estado' | translate}}:</strong>
-        {{ texto_estado }}
-        <button type="button" mat-stroked-button class="float-right" *ngIf="puede_editar"
-          [disabled]="!this.estado_cargado" (click)="preguntaSesionAsignacionContable()">
+      <header class="session-header" [nbSpinner]="!this.estado_cargado">
+        <div class="session-header__status">
+          <strong>{{'GLOBAL.estado' | translate}}:</strong>
+          {{ texto_estado }}
+        </div>
+        <button
+          type="button"
+          mat-stroked-button
+          color="primary"
+          class="session-header__button"
+          [disabled]="!this.estado_cargado"
+          (click)="preguntaSesionAsignacionContable()">
           {{ texto_sesion_contable }}
         </button>
-        <p *ngIf="modificando_cuentas && puede_editar"><em>{{'GLOBAL.instr_asig_cuentas' | translate}}</em></p>
+        <p *ngIf="modificando_cuentas"><em>{{'GLOBAL.instr_asig_cuentas' | translate}}</em></p>
       </header>
       <mat-select class="form-control mb-4" style="height: auto;" [(ngModel)]="catalogoId">
         <mat-option [value]="0">--{{ 'GLOBAL.seleccionar' | translate }}--</mat-option>
@@ -42,12 +49,12 @@
           </mat-select>
         </div>
 
-        <ngx-form-cuentas *ngIf="claseOk && movimientoId" [escritura]="modificando_cuentas && puede_editar"
+        <ngx-form-cuentas *ngIf="claseOk && movimientoId" [escritura]="modificando_cuentas"
           [cuentasInfo]="infoCuentas" [cuentasNuevas]="actualizar" (cuentasPendientes)="setPendientes($event)"></ngx-form-cuentas>
       </mat-card-content>
       <mat-card-actions>
         <button mat-flat-button color="primary" class="float-right text-uppercase" (click)="onSubmit()"
-          [disabled]="!cuentasPendientes?.length" *ngIf="modificando_cuentas && puede_editar">
+          [disabled]="!cuentasPendientes?.length" *ngIf="modificando_cuentas">
           {{'GLOBAL.Acta_Recibido.RegistroActa.GuardarCambiosButton' | translate}}
         </button>
       </mat-card-actions>
