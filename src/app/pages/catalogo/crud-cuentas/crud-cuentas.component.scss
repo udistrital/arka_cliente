@@ -1,0 +1,20 @@
+.session-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+}
+
+.session-header__status {
+  flex: 1 1 auto;
+  min-width: 240px;
+}
+
+.session-header__button {
+  flex: 0 0 auto;
+}
+
+.session-header p {
+  flex-basis: 100%;
+  margin: 0;
+}
