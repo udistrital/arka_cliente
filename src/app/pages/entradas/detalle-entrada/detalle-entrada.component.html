@@ -11,6 +11,13 @@
     </div>
   </div>
 
+  <div class="row" *ngIf="estadoMovimientoNombre">
+    <div class="col">
+      <p class="text-uppercase"><strong>{{'GLOBAL.estado_entrada' | translate }}:</strong>
+        {{ estadoMovimientoNombre }}</p>
+    </div>
+  </div>
+
   <!-- ACTA RECIBIDO -->
   <div class="row" *ngIf="entradaEspecifica?.ActaRecibidoId">
     <div class="col">
