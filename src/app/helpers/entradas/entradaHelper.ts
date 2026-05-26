@@ -242,6 +242,21 @@ export class EntradaHelper {
         );
     }
 
+    public anularEntrada(entradaId: number, observacion: string) {
+        this.rqManager.setPath('ARKA_SERVICE');
+        return this.rqManager.put2('entrada', { Observacion: observacion }, entradaId + '/anular').pipe(
+            map(
+                (res) => {
+                    if (res && res['Type'] === 'error') {
+                        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.entradas.errorAnulacionEntrada'));
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
+
     /**
      * Entradas Get
      * If the response has errors in the OAS API it should show a popup message with an error.

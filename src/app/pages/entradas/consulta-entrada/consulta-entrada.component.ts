@@ -8,6 +8,9 @@ import { PopUpManager } from '../../../managers/popUpManager';
 import { ConfiguracionService } from '../../../@core/data/configuracion.service';
 import { SmartTableService } from '../../../@core/data/SmartTableService';
 import { ReportesHelper } from '../../../helpers/reportes/reportesHelper';
+import { UserService } from '../../../@core/data/users.service';
+import { RolUsuario_t } from '../../../@core/data/models/roles/rol_usuario';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'ngx-consulta-entrada',
@@ -34,6 +37,7 @@ export class ConsultaEntradaComponent implements OnInit {
   settingsCuentasEntrada: any;
   totalDebitoCuentasEntrada: number = 0;
   totalCreditoCuentasEntrada: number = 0;
+  puedeAnularEntrada: boolean = false;
 
   constructor(
     private pUpManager: PopUpManager,
@@ -43,7 +47,8 @@ export class ConsultaEntradaComponent implements OnInit {
     private route: ActivatedRoute,
     private confService: ConfiguracionService,
     private tabla: SmartTableService,
-    private reportesHelper: ReportesHelper) {
+    private reportesHelper: ReportesHelper,
+    private userService: UserService) {
     this.source = new LocalDataSource();
     this.sourceCuentasEntrada = new LocalDataSource();
   }
@@ -104,6 +109,7 @@ export class ConsultaEntradaComponent implements OnInit {
           this.transaccionContable(res.TransaccionContable);
         }
         this.cargarDetalleCuentasEntrada(this.entradaEspecifica.Consecutivo);
+        this.updateAnularAvailability();
       }
       this.spinner = '';
     });
@@ -226,6 +232,33 @@ export class ConsultaEntradaComponent implements OnInit {
     }
   }
 
+  confirmAnular() {
+    if (!this.puedeAnularEntrada || this.submitted) {
+      return;
+    }
+
+    this.pUpManager.showAlertWithOptions(this.getOptionsAnulacionConfirm())
+      .then((result) => {
+        if (result.value) {
+          (Swal as any).mixin({
+            input: 'text',
+            confirmButtonText: this.translate.instant('GLOBAL.movimientos.entradas.anularBtn'),
+            showCancelButton: true,
+            progressSteps: ['1'],
+          }).queue([
+            {
+              title: this.translate.instant('GLOBAL.movimientos.entradas.anulacionObsTtl'),
+              text: this.translate.instant('GLOBAL.movimientos.entradas.anulacionObsTxt'),
+            },
+          ]).then((result2) => {
+            if (result2.value) {
+              this.onAnularEntrada(result2.value[0]);
+            }
+          });
+        }
+      });
+  }
+
 
   private alertSuccess(aprobar: boolean) {
     this.pUpManager.showAlertWithOptions(this.getOptionsSubmit(aprobar, this.movimiento.Consecutivo));
@@ -295,6 +328,7 @@ export class ConsultaEntradaComponent implements OnInit {
     this.sourceCuentasEntrada.load([]);
     this.totalDebitoCuentasEntrada = 0;
     this.totalCreditoCuentasEntrada = 0;
+    this.puedeAnularEntrada = false;
     this.router.navigateByUrl('/pages/entradas/' +
       (this.modo === 'consulta' ? 'consulta' : this.modo === 'revision' ? 'aprobar' : '') + '_entrada');
   }
@@ -333,6 +367,7 @@ export class ConsultaEntradaComponent implements OnInit {
               { value: 'Entrada Rechazada', title: 'Rechazada' },
               { value: 'Entrada Aprobada', title: 'Aprobada' },
               { value: 'Entrada Con Salida', title: 'Con Salida' },
+              { value: 'Entrada Anulada', title: 'Anulada' },
             ],
           },
         },
@@ -405,6 +440,53 @@ export class ConsultaEntradaComponent implements OnInit {
         },
         ...columns,
       },
+    };
+  }
+
+  private updateAnularAvailability() {
+    this.puedeAnularEntrada = this.modo === 'consulta' &&
+      this.userService.tieneAlgunRol([RolUsuario_t.Admin]) &&
+      this.movimiento &&
+      this.movimiento.EstadoMovimientoId &&
+      this.movimiento.EstadoMovimientoId.Nombre === 'Entrada Aprobada';
+  }
+
+  private onAnularEntrada(observacion: string) {
+    this.submitted = true;
+    this.spinner = 'Anulando entrada y generando transacción contable';
+    this.entradasHelper.anularEntrada(this.entradaId, observacion).toPromise().then((res: any) => {
+      this.spinner = '';
+      this.submitted = false;
+      if (res && !res.Error) {
+        if (res.TransaccionContable) {
+          this.transaccionContable(res.TransaccionContable);
+        }
+        this.pUpManager.showAlertWithOptions(this.getOptionsAnulacionSuccess(this.movimiento.Consecutivo));
+        this.loadEntradaEspecifica();
+      } else if (res && res.Error) {
+        this.pUpManager.showErrorAlert(res.Error);
+      }
+    });
+  }
+
+  private getOptionsAnulacionConfirm() {
+    return {
+      title: this.translate.instant('GLOBAL.movimientos.entradas.anulacionConfrmTtl'),
+      text: this.translate.instant('GLOBAL.movimientos.entradas.anulacionConfrmTxt'),
+      type: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: this.translate.instant('GLOBAL.si'),
+      cancelButtonText: this.translate.instant('GLOBAL.no'),
+    };
+  }
+
+  private getOptionsAnulacionSuccess(consecutivo: string) {
+    return {
+      type: 'success',
+      title: this.translate.instant('GLOBAL.movimientos.entradas.anulacionTtlOk'),
+      text: this.translate.instant('GLOBAL.movimientos.entradas.anulacionTxtOk', { CONSECUTIVO: consecutivo }),
     };
   }
 
