@@ -18,6 +18,7 @@ import { GestorDocumentalService } from '../../../helpers/gestor_documental/gest
 export class DetalleEntradaComponent implements OnInit {
 
   entradaEspecifica: Entrada;
+  estadoMovimientoNombre: string;
   linkActa: string;
   Proveedor: any;
   factura: SoporteActa;
@@ -57,6 +58,8 @@ export class DetalleEntradaComponent implements OnInit {
     this.entradaEspecifica.TipoEntradaId.Nombre = this.detalleEntrada.movimiento.FormatoTipoMovimientoId.Nombre;
     this.entradaEspecifica.ActaRecibidoId = detalle.acta_recibido_id;
     this.entradaEspecifica.Consecutivo = this.detalleEntrada.movimiento.Consecutivo;
+    this.estadoMovimientoNombre = this.detalleEntrada.movimiento.EstadoMovimientoId &&
+      this.detalleEntrada.movimiento.EstadoMovimientoId.Nombre;
     this.entradaEspecifica.UnidadEjecutora = this.detalleEntrada.unidadEjecutora;
     this.loadContrato(this.detalleEntrada.contrato, this.detalleEntrada.tipo_contrato_id);
 

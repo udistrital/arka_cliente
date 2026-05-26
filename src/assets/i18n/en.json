@@ -965,13 +965,21 @@
         "aprobacionConfrmTxt": "Are you sure to approve this entry?",
         "aprobacionTtlOk": "Entry Approved",
         "aprobacionTxtOk": "The entry {{CONSECUTIVO}} was successfully approved",
+        "anularBtn": "Cancel Entry",
+        "anulacionConfrmTtl": "Confirm entry cancellation",
+        "anulacionConfrmTxt": "Are you sure you want to cancel this entry?",
+        "anulacionTtlOk": "Entry Cancelled",
+        "anulacionTxtOk": "The entry {{CONSECUTIVO}} was successfully cancelled",
+        "anulacionObsTtl": "Observations",
+        "anulacionObsTxt": "Enter the cancellation observation",
         "rechazoConfrmTtl": "Confirm entry rejection",
         "rechazoConfrmTxt": "Are you sure to reject this entry?",
         "rechazoTtlOk": "Entry Rejected",
         "rechazoTxtOk": "The entry {{CONSECUTIVO}} was successfully rejected",
         "editar": "Editar Entrada",
         "editarTtl": "Editar Entrada",
-        "errorEditar": "No se puede editar esta entrada."
+        "errorEditar": "No se puede editar esta entrada.",
+        "errorAnulacionEntrada": "The entry could not be cancelled"
       },
       "salidas": {
         "nuevaSalida": "Register a new issue",

@@ -59,6 +59,11 @@
   </mat-card-content>
 
   <mat-card-actions *ngIf="entradaEspecifica">
+    <div *ngIf="puedeAnularEntrada" style="padding-bottom: 1rem;">
+      <button mat-flat-button color="primary" class="float-right text-uppercase" (click)="confirmAnular()" [disabled]="submitted">
+        {{'GLOBAL.movimientos.entradas.anularBtn' | translate}}
+      </button>
+    </div>
     <div *ngIf="movimiento?.EstadoMovimientoId?.Nombre === 'Entrada En Trámite' && modo === 'revision'"
       style="padding-bottom: 3rem;">
       <button mat-flat-button color="primary" class="float-left text-uppercase" (click)="confirmSubmit(false)" [disabled]="submitted">
