@@ -37,6 +37,7 @@ export class ConsultaSalidasComponent implements OnInit {
   puedeAnularSalida: boolean = false;
   detalleRefreshVersion: number = 0;
   entradaEstadoOverride: string;
+  entradaIdConfirmada: number = 0;
 
   constructor(
     private pUpManager: PopUpManager,
@@ -189,6 +190,7 @@ export class ConsultaSalidasComponent implements OnInit {
     this.editarSalida = false;
     this.salidaId = '';
     this.entradaParametro = '';
+    this.entradaIdConfirmada = 0;
     this.entradaEstadoOverride = '';
     this.filaSeleccionada = undefined;
     this.trContable = undefined;
@@ -198,10 +200,18 @@ export class ConsultaSalidasComponent implements OnInit {
   }
 
   private cargarSalida() {
-    this.entradasHelper.getMovimiento(this.salidaId).toPromise().then((res: any) => {
-      this.entradaParametro = res[0].MovimientoPadreId.Id;
-      this.movimiento = res[0];
-      this.updateAnularAvailability();
+    this.salidasHelper.getSalida(+this.salidaId).subscribe((res: any) => {
+      if (res && res.Salida) {
+        this.movimiento = res.Salida;
+        const entradaId = this.resolveEntradaId(res);
+        if (entradaId) {
+          this.entradaParametro = `${entradaId}`;
+          if (this.movimiento.MovimientoPadreId) {
+            this.movimiento.MovimientoPadreId.Id = entradaId;
+          }
+        }
+        this.updateAnularAvailability();
+      }
     });
   }
 
@@ -430,6 +440,10 @@ export class ConsultaSalidasComponent implements OnInit {
           };
         }
         this.consecutivoSalida = res.Salida && res.Salida.Consecutivo ? res.Salida.Consecutivo : this.movimiento.Consecutivo;
+        this.entradaIdConfirmada = this.resolveEntradaId(res);
+        if (this.entradaIdConfirmada) {
+          this.entradaParametro = `${this.entradaIdConfirmada}`;
+        }
         this.entradaEstadoOverride = this.resolveEstadoMovimientoNombre(res && res.Entrada && res.Entrada.EstadoMovimientoId);
         if (this.movimiento && this.movimiento.MovimientoPadreId && this.entradaEstadoOverride) {
           this.movimiento.MovimientoPadreId.EstadoMovimientoId = <EstadoMovimiento>{ Nombre: this.entradaEstadoOverride };
@@ -480,6 +494,17 @@ export class ConsultaSalidasComponent implements OnInit {
     }
 
     return '';
+  }
+
+  private resolveEntradaId(response: any): number {
+    const entradaId = response && response.Entrada && response.Entrada.Id ? +response.Entrada.Id : 0;
+    const entradaConfirmada = this.entradaIdConfirmada ? +this.entradaIdConfirmada : 0;
+    const movimientoPadreId = response && response.Salida &&
+      response.Salida.MovimientoPadreId && response.Salida.MovimientoPadreId.Id
+      ? +response.Salida.MovimientoPadreId.Id
+      : 0;
+
+    return entradaId || entradaConfirmada || movimientoPadreId;
   }
 
   private getOptionsAnulacionConfirm(): any {
