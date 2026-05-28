@@ -86,9 +86,13 @@ export class ConsultaSalidaEspecificaComponent implements OnInit {
   CargarSalida() {
     this.salidasHelper.getSalida(this.salida_id).subscribe((res: any) => {
       if (res.Salida) {
+        const entradaId = this.resolveEntradaId(res);
+        if (entradaId && res.Salida.MovimientoPadreId) {
+          res.Salida.MovimientoPadreId.Id = entradaId;
+        }
 
         res.Salida.MovimientoPadreId.Detalle = JSON.parse(res.Salida.MovimientoPadreId.Detalle);
-        this.linkEntrada = '#/pages/entradas/consulta_entrada/' + res.Salida.MovimientoPadreId.Id;
+        this.linkEntrada = '#/pages/entradas/consulta_entrada/' + (entradaId || res.Salida.MovimientoPadreId.Id);
 
         this.salida = res.Salida;
         this.estadoMovimientoNombre = res.Salida.EstadoMovimientoId && res.Salida.EstadoMovimientoId.Nombre;
@@ -111,6 +115,16 @@ export class ConsultaSalidaEspecificaComponent implements OnInit {
         this.cargarDetalleCuentasSalida(this.salida.Consecutivo);
       }
     });
+  }
+
+  private resolveEntradaId(response: any): number {
+    const entradaId = response && response.Entrada && response.Entrada.Id ? +response.Entrada.Id : 0;
+    const movimientoPadreId = response && response.Salida &&
+      response.Salida.MovimientoPadreId && response.Salida.MovimientoPadreId.Id
+      ? +response.Salida.MovimientoPadreId.Id
+      : 0;
+
+    return entradaId || movimientoPadreId;
   }
 
   private aplicarEstadoEntradaOverride() {
