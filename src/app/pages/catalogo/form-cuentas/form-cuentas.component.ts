@@ -64,6 +64,7 @@ export class FormCuentasComponent implements OnInit, OnChanges, OnDestroy {
     await form;
     const ctas = this.loadLists();
     await ctas;
+    this.hydrateConfiguredAccounts();
     this.submitForm(this.formCuentas.valueChanges);
     this.valid.emit(this.formCuentas.valid);
   }
@@ -140,6 +141,28 @@ export class FormCuentasComponent implements OnInit, OnChanges, OnDestroy {
         resolve();
       });
     });
+  }
+
+  private hydrateConfiguredAccounts() {
+    if (!this.formCuentas || !this.movimientos || !this.ctas || !this.ctas.length) {
+      return;
+    }
+
+    this.movimientos.controls.forEach((control: FormGroup) => {
+      const cuentaDebito = this.findCuentaInPlan(control.get('CuentaDebitoId').value);
+      const cuentaCredito = this.findCuentaInPlan(control.get('CuentaCreditoId').value);
+
+      control.patchValue({
+        CuentaDebitoId: cuentaDebito,
+        CuentaCreditoId: cuentaCredito,
+      }, { emitEvent: false });
+
+      control.markAsPristine();
+      control.markAsUntouched();
+    });
+
+    this.formCuentas.markAsPristine();
+    this.cuentasPendientes.emit([]);
   }
 
   private submitForm(valueChanges: Observable<any>) {
@@ -231,6 +254,21 @@ export class FormCuentasComponent implements OnInit, OnChanges, OnDestroy {
 
   public muestraCuenta(contr): string {
     return contr && contr.Codigo ? contr.Codigo + ' - ' + contr.Nombre : '';
+  }
+
+  private findCuentaInPlan(cuenta: any): any {
+    if (!cuenta || !this.ctas || !this.ctas.length) {
+      return cuenta;
+    }
+
+    if (cuenta.Codigo && cuenta.Nombre) {
+      return cuenta;
+    }
+
+    const cuentaId = cuenta.Id || cuenta;
+    return this.ctas.find(cta => cta && cta.Id === cuentaId)
+      || this.ctas.find(cta => cta && cuenta.Codigo && cta.Codigo === cuenta.Codigo)
+      || cuenta;
   }
 
   private filtroCuentas(nombre): any[] {

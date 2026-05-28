@@ -11,6 +11,7 @@ import { SmartTableService } from '../../../@core/data/SmartTableService';
 import { HttpClient } from '@angular/common/http';
 import { Location } from '@angular/common';
 import { debounceTime, distinctUntilChanged, filter } from 'rxjs/operators';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'ngx-consulta-salidas',
@@ -33,6 +34,8 @@ export class ConsultaSalidasComponent implements OnInit {
   submitted: boolean;
   title: string;
   subtitle: string;
+  puedeAnularSalida: boolean = false;
+  detalleRefreshVersion: number = 0;
 
   constructor(
     private pUpManager: PopUpManager,
@@ -188,6 +191,7 @@ export class ConsultaSalidasComponent implements OnInit {
     this.filaSeleccionada = undefined;
     this.trContable = undefined;
     this.submitted = false;
+    this.puedeAnularSalida = false;
     this.location.back();
   }
 
@@ -195,6 +199,7 @@ export class ConsultaSalidasComponent implements OnInit {
     this.entradasHelper.getMovimiento(this.salidaId).toPromise().then((res: any) => {
       this.entradaParametro = res[0].MovimientoPadreId.Id;
       this.movimiento = res[0];
+      this.updateAnularAvailability();
     });
   }
 
@@ -321,6 +326,10 @@ export class ConsultaSalidasComponent implements OnInit {
                   value: 'Salida Rechazada',
                   title: this.translate.instant(estadoSelect + 'Rechazo'),
                 },
+                {
+                  value: 'Salida Anulada',
+                  title: this.translate.instant(estadoSelect + 'Anulado'),
+                },
               ],
             },
           },
@@ -372,6 +381,102 @@ export class ConsultaSalidasComponent implements OnInit {
       title: this.translate.instant('GLOBAL.movimientos.salidas.' + (aprobar ? 'aprobacion' : 'rechazo') + 'TtlOk'),
       text: this.translate.instant('GLOBAL.movimientos.salidas.' + (aprobar ? 'aprobacion' : 'rechazo') + 'TxtOk',
         { CONSECUTIVO: consecutivo }),
+    };
+  }
+
+  confirmAnular() {
+    if (!this.puedeAnularSalida || this.submitted) {
+      return;
+    }
+
+    this.pUpManager.showAlertWithOptions(this.getOptionsAnulacionConfirm())
+      .then((result) => {
+        if (result.value) {
+          (Swal as any).mixin({
+            input: 'text',
+            confirmButtonText: this.translate.instant('GLOBAL.movimientos.salidas.anularBtn'),
+            showCancelButton: true,
+            progressSteps: ['1'],
+          }).queue([
+            {
+              title: this.translate.instant('GLOBAL.movimientos.salidas.anulacionObsTtl'),
+              text: this.translate.instant('GLOBAL.movimientos.salidas.anulacionObsTxt'),
+            },
+          ]).then((result2) => {
+            if (result2.value) {
+              this.onAnularSalida(result2.value[0]);
+            }
+          });
+        }
+      });
+  }
+
+  private onAnularSalida(observacion: string) {
+    this.submitted = true;
+    this.spinner = 'Anulando salida y generando transacción contable';
+    this.salidasHelper.anularSalida(+this.salidaId, observacion).subscribe((res: any) => {
+      this.spinner = '';
+      this.submitted = false;
+      if (res && !res.Error) {
+        if (res.TransaccionContable) {
+          const fecha = new Date(res.TransaccionContable.Fecha).toLocaleString();
+          this.trContable = {
+            rechazo: '',
+            movimientos: res.TransaccionContable.movimientos,
+            concepto: res.TransaccionContable.Concepto,
+            fecha,
+          };
+        }
+        this.consecutivoSalida = res.Salida && res.Salida.Consecutivo ? res.Salida.Consecutivo : this.movimiento.Consecutivo;
+        this.pUpManager.showAlertWithOptions(this.getOptionsAnulacionSuccess(this.consecutivoSalida));
+        this.cargarSalida();
+        this.detalleRefreshVersion += 1;
+      } else if (res && res.Error) {
+        this.pUpManager.showErrorAlert(res.Error);
+      }
+    }, (error: any) => {
+      this.spinner = '';
+      this.submitted = false;
+      this.pUpManager.showErrorAlert(this.parseAnulacionError(error));
+    });
+  }
+
+  private updateAnularAvailability() {
+    this.puedeAnularSalida = this.modo === 'consulta' &&
+      !this.editarSalida &&
+      this.movimiento &&
+      this.movimiento.EstadoMovimientoId &&
+      this.movimiento.EstadoMovimientoId.Nombre === 'Salida Aprobada';
+  }
+
+  private parseAnulacionError(error: any): string {
+    if (error && typeof error.Data === 'string' && error.Data.length) {
+      return error.Data;
+    }
+    if (error && typeof error.Message === 'string' && error.Message.length) {
+      return error.Message;
+    }
+    return this.translate.instant('GLOBAL.movimientos.salidas.errorAnulacionSalida');
+  }
+
+  private getOptionsAnulacionConfirm(): any {
+    return {
+      title: this.translate.instant('GLOBAL.movimientos.salidas.anulacionConfrmTtl'),
+      text: this.translate.instant('GLOBAL.movimientos.salidas.anulacionConfrmTxt'),
+      type: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: this.translate.instant('GLOBAL.si'),
+      cancelButtonText: this.translate.instant('GLOBAL.no'),
+    };
+  }
+
+  private getOptionsAnulacionSuccess(consecutivo: string): any {
+    return {
+      type: 'success',
+      title: this.translate.instant('GLOBAL.movimientos.salidas.anulacionTtlOk'),
+      text: this.translate.instant('GLOBAL.movimientos.salidas.anulacionTxtOk', { CONSECUTIVO: consecutivo }),
     };
   }
 
