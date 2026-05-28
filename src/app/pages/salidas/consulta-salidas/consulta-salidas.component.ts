@@ -36,6 +36,7 @@ export class ConsultaSalidasComponent implements OnInit {
   subtitle: string;
   puedeAnularSalida: boolean = false;
   detalleRefreshVersion: number = 0;
+  entradaEstadoOverride: string;
 
   constructor(
     private pUpManager: PopUpManager,
@@ -188,6 +189,7 @@ export class ConsultaSalidasComponent implements OnInit {
     this.editarSalida = false;
     this.salidaId = '';
     this.entradaParametro = '';
+    this.entradaEstadoOverride = '';
     this.filaSeleccionada = undefined;
     this.trContable = undefined;
     this.submitted = false;
@@ -428,6 +430,10 @@ export class ConsultaSalidasComponent implements OnInit {
           };
         }
         this.consecutivoSalida = res.Salida && res.Salida.Consecutivo ? res.Salida.Consecutivo : this.movimiento.Consecutivo;
+        this.entradaEstadoOverride = this.resolveEstadoMovimientoNombre(res && res.Entrada && res.Entrada.EstadoMovimientoId);
+        if (this.movimiento && this.movimiento.MovimientoPadreId && this.entradaEstadoOverride) {
+          this.movimiento.MovimientoPadreId.EstadoMovimientoId = <EstadoMovimiento>{ Nombre: this.entradaEstadoOverride };
+        }
         this.pUpManager.showAlertWithOptions(this.getOptionsAnulacionSuccess(this.consecutivoSalida));
         this.cargarSalida();
         this.detalleRefreshVersion += 1;
@@ -457,6 +463,23 @@ export class ConsultaSalidasComponent implements OnInit {
       return error.Message;
     }
     return this.translate.instant('GLOBAL.movimientos.salidas.errorAnulacionSalida');
+  }
+
+  private resolveEstadoMovimientoNombre(estadoMovimiento: any): string {
+    if (!estadoMovimiento) {
+      return '';
+    }
+
+    if (estadoMovimiento.Nombre) {
+      return estadoMovimiento.Nombre;
+    }
+
+    if (estadoMovimiento.Id && Array.isArray(this.estadosMovimiento)) {
+      const estadoEncontrado = this.estadosMovimiento.find((estado) => estado.Id === estadoMovimiento.Id);
+      return estadoEncontrado ? estadoEncontrado.Nombre : '';
+    }
+
+    return '';
   }
 
   private getOptionsAnulacionConfirm(): any {

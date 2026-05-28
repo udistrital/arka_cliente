@@ -13,7 +13,8 @@
     </ng2-smart-table>
   </div>
 
-  <ngx-consulta-salida-especifica [salida_id]="salidaId" [refresh_version]="detalleRefreshVersion" *ngIf="salidaId && !editarSalida">
+  <ngx-consulta-salida-especifica [salida_id]="salidaId" [refresh_version]="detalleRefreshVersion"
+    [entrada_estado_override]="entradaEstadoOverride" *ngIf="salidaId && !editarSalida">
   </ngx-consulta-salida-especifica>
 
   <mat-vertical-stepper #stepper>
