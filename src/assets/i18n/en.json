@@ -936,6 +936,7 @@
       "estadoTramite": "Awaiting review",
       "estadoPendiente": "Pendiente",
       "estadoAprobado": "Approved",
+      "estadoAnulado": "Cancelled",
       "estadoRechazo": "Rejected",
       "entradas": {
         "errores": {
@@ -1002,12 +1003,20 @@
         "aprobacionConfrmTxt":"Are you sure to approve this issue?",
         "aprobacionTtlOk": "Issue approved",
         "aprobacionTxtOk": "The issue {{CONSECUTIVO}} was successfully approved",
+        "anularBtn": "Cancel Issue",
+        "anulacionConfrmTtl":"Confirm issue cancellation",
+        "anulacionConfrmTxt":"Are you sure you want to cancel this issue?",
+        "anulacionTtlOk": "Issue Cancelled",
+        "anulacionTxtOk": "The issue {{CONSECUTIVO}} was successfully cancelled",
+        "anulacionObsTtl": "Observations",
+        "anulacionObsTxt": "Enter the cancellation observation",
         "rechazoConfrmTtl":"Confirm issue rejection",
         "rechazoConfrmTxt":"Are you sure to reject this issue?",
         "rechazoTtlOk": "Issue Rejected",
         "rechazoTxtOk": "The issue {{CONSECUTIVO}} was successfully rejected",
         "errorFuncionario": "The civil servant is not properly registered",
-        "errorElementos": "The entry has no elements to issue"
+        "errorElementos": "The entry has no elements to issue",
+        "errorAnulacionSalida": "The issue could not be cancelled"
       },
       "tipo": {
         "ENT_ADQ": {
@@ -1124,7 +1133,9 @@
       "terminar_edicion_texto": "Any kind of transaction will be Enabled. Continue?",
       "terminar_edicion_aviso": "Any kind of transaction will be Enabled",
       "error_cargar_estado": "The current account editing status could not be loaded.",
-      "error_actualizar_estado": "The account editing status could not be updated."
+      "error_actualizar_estado": "The account editing status could not be updated.",
+      "error_guardado": "The accounting accounts could not be saved.",
+      "error_validacion_guardado": "It was not possible to validate that the accounting accounts were saved correctly."
     },
 
     "salidas": {
