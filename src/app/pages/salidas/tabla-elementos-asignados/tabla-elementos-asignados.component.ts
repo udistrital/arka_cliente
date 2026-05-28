@@ -327,7 +327,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
     });
   }
 
-  private salidaBodega() {
+  private salidaBodega(movimientoPadreId: number) {
 
     const elementosBodega = this.sourceConsumo.data.filter((el) =>
       el.Ubicacion.EspacioFisicoId.Nombre === 'SECCION ALMACEN GENERAL E INVENTARIOS' &&
@@ -341,7 +341,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
           Detalle: this.createDetalle(this.JefeOficinaId, elementosBodega[0].Ubicacion.Id),
           Activo: true,
           MovimientoPadreId: {
-            Id: +this.entradaId,
+            Id: movimientoPadreId,
           },
           FormatoTipoMovimientoId: {
             Id: this.formatoMovimientoBodega.Id,
@@ -361,7 +361,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
     }
   }
 
-  private salidaFuncionario() {
+  private salidaFuncionario(movimientoPadreId: number) {
     const dev_ = this.sourceDevolutivo.data.concat(
       this.sourceConsumo.data.filter(el =>
         el.Ubicacion.EspacioFisicoId.Nombre !== 'SECCION ALMACEN GENERAL E INVENTARIOS' ||
@@ -378,7 +378,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
             Detalle: this.createDetalle(currentValue.Funcionario.Id, currentValue.Ubicacion.Id),
             Activo: true,
             MovimientoPadreId: {
-              Id: +this.entradaId,
+              Id: movimientoPadreId,
             },
             FormatoTipoMovimientoId: {
               Id: this.formatoMovimientoFuncionario.Id,
@@ -398,9 +398,14 @@ export class TablaElementosAsignadosComponent implements OnInit {
     }
   }
 
-  onSubmit() {
-    const salidaBodega = this.salidaBodega();
-    const salidaFuncionariosD = this.salidaFuncionario();
+  async onSubmit() {
+    const movimientoPadreId = await this.resolveMovimientoPadreId();
+    if (!movimientoPadreId) {
+      return;
+    }
+
+    const salidaBodega = this.salidaBodega(movimientoPadreId);
+    const salidaFuncionariosD = this.salidaFuncionario(movimientoPadreId);
 
     const Salidas = {
       Salidas: [],
@@ -482,6 +487,54 @@ export class TablaElementosAsignadosComponent implements OnInit {
 
   private getObservacion(min: string, custom: string) {
     return custom ? (min + ' // ' + custom) : min;
+  }
+
+  private async resolveMovimientoPadreId(): Promise<number> {
+    let movimientoPadreId = +this.entradaId;
+
+    if (this.salida_id) {
+      try {
+        const salidaResponse: any = await this.salidasHelper.getSalida(this.salida_id).toPromise();
+        movimientoPadreId = this.getEntradaPadreId(salidaResponse) || movimientoPadreId;
+      } catch (error) {
+        this.pUpManager.showErrorAlert('No fue posible consultar la salida origen para reconstruir la entrada padre.');
+        return 0;
+      }
+    }
+
+    if (!movimientoPadreId) {
+      this.pUpManager.showErrorAlert('No se encontró una entrada padre válida para registrar la salida.');
+      return 0;
+    }
+
+    try {
+      const movimientoResponse: any = await this.entradasHelper.getMovimiento(movimientoPadreId).toPromise();
+      const movimientoPadre = Array.isArray(movimientoResponse) && movimientoResponse.length ? movimientoResponse[0] : undefined;
+      const codigoAbreviacion = movimientoPadre && movimientoPadre.FormatoTipoMovimientoId
+        ? movimientoPadre.FormatoTipoMovimientoId.CodigoAbreviacion
+        : '';
+
+      if (!movimientoPadre || !codigoAbreviacion || !codigoAbreviacion.startsWith('ENT_')) {
+        this.pUpManager.showErrorAlert('La entrada padre asociada a la salida no existe o no es válida. Recargue la entrada e intente nuevamente.');
+        return 0;
+      }
+
+      this.entradaId = `${movimientoPadre.Id}`;
+      return +movimientoPadre.Id;
+    } catch (error) {
+      this.pUpManager.showErrorAlert('La entrada padre asociada a la salida no existe o no es válida. Recargue la entrada e intente nuevamente.');
+      return 0;
+    }
+  }
+
+  private getEntradaPadreId(response: any): number {
+    const entradaId = response && response.Entrada && response.Entrada.Id ? +response.Entrada.Id : 0;
+    const movimientoPadreId = response && response.Salida &&
+      response.Salida.MovimientoPadreId && response.Salida.MovimientoPadreId.Id
+      ? +response.Salida.MovimientoPadreId.Id
+      : 0;
+
+    return entradaId || movimientoPadreId;
   }
 
 }
