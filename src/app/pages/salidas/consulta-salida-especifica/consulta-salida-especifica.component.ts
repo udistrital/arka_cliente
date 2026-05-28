@@ -13,13 +13,23 @@ import { ReportesHelper } from '../../../helpers/reportes/reportesHelper';
 })
 export class ConsultaSalidaEspecificaComponent implements OnInit {
   salida_id: number;
+  refresh_version: number;
   salida: any;
+  estadoMovimientoNombre: string;
   mode: string = 'determinate';
 
   @Input('salida_id')
   set name(salida_id: number) {
     this.salida_id = salida_id;
     if (this.salida_id !== undefined) {
+      this.CargarSalida();
+    }
+  }
+
+  @Input('refresh_version')
+  set refreshVersion(refresh_version: number) {
+    this.refresh_version = refresh_version;
+    if (this.salida_id !== undefined && this.refresh_version !== undefined) {
       this.CargarSalida();
     }
   }
@@ -73,6 +83,7 @@ export class ConsultaSalidaEspecificaComponent implements OnInit {
         this.linkEntrada = '#/pages/entradas/consulta_entrada/' + res.Salida.MovimientoPadreId.Id;
 
         this.salida = res.Salida;
+        this.estadoMovimientoNombre = res.Salida.EstadoMovimientoId && res.Salida.EstadoMovimientoId.Nombre;
 
         if (res.Elementos.length) {
           this.source.load(res.Elementos);

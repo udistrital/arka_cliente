@@ -40,6 +40,10 @@
             <p class="text-uppercase"><strong>{{'GLOBAL.fecha_creacion' | translate}}:</strong>
               {{ salida.FechaCreacion | date }}</p>
           </div>
+          <div class="col" *ngIf="estadoMovimientoNombre">
+            <p class="text-uppercase"><strong>{{'GLOBAL.estadoSalida' | translate}}:</strong>
+              {{ estadoMovimientoNombre }}</p>
+          </div>
           <div class="col" *ngIf="salida.Funcionario">
             <p class="text-uppercase"><strong>{{'GLOBAL.funcionario' | translate}}:</strong>
               {{ salida.Funcionario.NombreCompleto}}</p>

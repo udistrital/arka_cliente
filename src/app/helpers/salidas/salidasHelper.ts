@@ -4,6 +4,9 @@ import { map } from 'rxjs/operators';
 import { PopUpManager } from '../../managers/popUpManager';
 import { TranslateService } from '@ngx-translate/core';
 import { DisponibilidadMovimientosService } from '../../@core/data/disponibilidad-movimientos.service';
+import { HttpClient } from '@angular/common/http';
+import { throwError } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 @Injectable({
     providedIn: 'root',
@@ -15,6 +18,7 @@ export class SalidaHelper {
         private pUpManager: PopUpManager,
         private dispMvtos: DisponibilidadMovimientosService,
         private translate: TranslateService,
+        private http: HttpClient,
     ) {
     }
 
@@ -110,6 +114,24 @@ export class SalidaHelper {
                     return res;
                 },
             ),
+        );
+    }
+
+    public anularSalida(salidaId: number, observacion?: string) {
+        this.rqManager.setPath('ARKA_SERVICE');
+        const endpoint = this.rqManager.getPath('ARKA_SERVICE') + 'salida/' + salidaId + '/anular';
+        const body = observacion && observacion.trim() ? { Observacion: observacion.trim() } : {};
+        return this.http.put<any>(endpoint, body, this.rqManager.httpOptions).pipe(
+            map(
+                (res) => {
+                    if (res && res['Type'] === 'error') {
+                        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.movimientos.salidas.errorAnulacionSalida'));
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+            catchError((error) => throwError(error.error || error)),
         );
     }
 
