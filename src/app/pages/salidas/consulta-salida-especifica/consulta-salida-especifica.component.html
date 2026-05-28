@@ -24,6 +24,10 @@
               {{ salida.MovimientoPadreId?.FechaCreacion | date }}
             </p>
           </div>
+          <div class="col" *ngIf="estadoEntradaNombre">
+            <p class="text-uppercase"><strong>{{'GLOBAL.estadoEntrada' | translate}}:</strong>
+              {{ estadoEntradaNombre }}</p>
+          </div>
         </div>
 
         <mat-card-subtitle>

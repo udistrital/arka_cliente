@@ -197,7 +197,7 @@ export class CrudCuentasComponent implements OnInit {
 
         this.infoCuentas = this.prepararCuentas(
           Array.isArray(cuentas) ? cuentas : [],
-          detalleClase.TipoBienId,
+          detalleClase,
           movimientoSeleccionado,
         );
         this.cuentasPendientes = [];
@@ -254,11 +254,12 @@ export class CrudCuentasComponent implements OnInit {
     this.cuentasPendientes = event;
   }
 
-  private prepararCuentas(cuentas: any[], tipoBien: any, movimiento: FormatoTipoMovimiento): any[] {
+  private prepararCuentas(cuentas: any[], detalleClase: any, movimiento: FormatoTipoMovimiento): any[] {
+    const tipoBien = detalleClase && detalleClase.TipoBienId ? detalleClase.TipoBienId : undefined;
     const cuentasExistentes = Array.isArray(cuentas) ? cuentas : [];
     const tipoBienId = tipoBien && tipoBien.Id ? tipoBien.Id : 0;
     const cuentasTipoActual = cuentasExistentes.filter(cuenta => cuenta && cuenta.TipoBienId && cuenta.TipoBienId.Id === tipoBienId);
-    const cuentasEsperadas = this.buildCuentasTemplate(tipoBien, movimiento);
+    const cuentasEsperadas = this.buildCuentasTemplate(detalleClase, movimiento);
 
     if (!cuentasEsperadas.length) {
       return cuentasTipoActual;
@@ -293,17 +294,28 @@ export class CrudCuentasComponent implements OnInit {
     return cuentasSincronizadas.concat(extrasTipoActual);
   }
 
-  private buildCuentasTemplate(tipoBien: any, movimiento: FormatoTipoMovimiento): any[] {
+  private buildCuentasTemplate(detalleClase: any, movimiento: FormatoTipoMovimiento): any[] {
+    const tipoBien = detalleClase && detalleClase.TipoBienId ? detalleClase.TipoBienId : undefined;
+
     if (!tipoBien || !tipoBien.Id || !movimiento || !movimiento.Id) {
       return [];
     }
 
     const salidaAsociada = this.obtenerMovimientoSalidaAsociado(movimiento);
-
-    return [
+    const cuentas = [
       this.buildCuentaTemplate(this.emptyTipoMovimiento(), movimiento, tipoBien),
       this.buildCuentaTemplate(movimiento, salidaAsociada, tipoBien),
     ];
+
+    if (this.debeCrearCuentaDepreciacion(detalleClase, movimiento)) {
+      cuentas.push(this.buildCuentaTemplate(
+        movimiento,
+        this.obtenerMovimientoDepreciacion(),
+        tipoBien,
+      ));
+    }
+
+    return cuentas;
   }
 
   private buildCuentaTemplate(
@@ -348,8 +360,22 @@ export class CrudCuentasComponent implements OnInit {
     return this.tiposDeEMovimentos.find(tipo => tipo.CodigoAbreviacion === 'SAL') || movimiento;
   }
 
+  private obtenerMovimientoDepreciacion(): FormatoTipoMovimiento {
+    return this.tiposDeEMovimentos.find(tipo => tipo.CodigoAbreviacion === 'CRR') || this.emptyTipoMovimiento();
+  }
+
   private obtenerMovimientoSeleccionado(): FormatoTipoMovimiento {
     return this.tiposDeEMovimentos.find(tipo => tipo.Id === this.movimientoId);
+  }
+
+  private debeCrearCuentaDepreciacion(detalleClase: any, movimiento: FormatoTipoMovimiento): boolean {
+    const movimientoDepreciacion = this.obtenerMovimientoDepreciacion();
+    const codigoMovimiento = this.getCodigoAbreviacion(movimiento);
+
+    return !!(detalleClase && detalleClase.Depreciacion
+      && movimientoDepreciacion && movimientoDepreciacion.Id
+      && codigoMovimiento !== 'SAL'
+      && codigoMovimiento !== 'CRR');
   }
 
   private isSameCuentaConfig(cuentaActual: any, cuentaEsperada: any): boolean {
@@ -391,7 +417,7 @@ export class CrudCuentasComponent implements OnInit {
 
       this.infoCuentas = this.prepararCuentas(
         Array.isArray(cuentas) ? cuentas : [],
-        detalleClase.TipoBienId,
+        detalleClase,
         movimientoSeleccionado,
       );
       this.actualizar = true;
@@ -431,6 +457,10 @@ export class CrudCuentasComponent implements OnInit {
 
   private getTipoBienId(tipoBien: any): number {
     return tipoBien && tipoBien.Id ? tipoBien.Id : tipoBien ? +tipoBien : 0;
+  }
+
+  private getCodigoAbreviacion(movimiento: any): string {
+    return movimiento && movimiento.CodigoAbreviacion ? movimiento.CodigoAbreviacion : '';
   }
 
   private cargarTiposDeMovimientos() {
