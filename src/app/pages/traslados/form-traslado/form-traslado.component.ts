@@ -133,26 +133,33 @@ export class FormTrasladoComponent implements OnInit {
   private loadInventario(): Promise<void> {
     return new Promise<void>(resolve => {
       if (this.modo !== 'get') {
-        this.trasladosHelper.getInventarioTercero().subscribe((res: any) => {
-          if (res.Elementos.length) {
-            this.elementos = res.Elementos;
-            if (this.modo === 'create') {
-              const tercero_ = res.Tercero;
-              const tercero = tercero_.Tercero && tercero_.Tercero.length ? tercero_.Tercero[0] : null;
-              const emailO = tercero_.Correo.length && tercero_.Correo[0].Dato ?
-                JSON.parse(tercero_.Correo[0].Dato).value : this.translate.instant('GLOBAL.traslados.noEmail');
-              const cargoO = tercero_.Cargo.length ?
-                tercero_.Cargo[0].Nombre : this.translate.instant('GLOBAL.traslados.noCargo');
+        this.trasladosHelper.getInventarioTercero().subscribe({
+          next: (res: any) => {
+            if (res && res.Elementos && res.Elementos.length) {
+              this.elementos = res.Elementos;
+              if (this.modo === 'create') {
+                const tercero_ = res.Tercero;
+                const tercero = tercero_.Tercero && tercero_.Tercero.length ? tercero_.Tercero[0] : null;
+                const emailO = tercero_.Correo.length && tercero_.Correo[0].Dato ?
+                  JSON.parse(tercero_.Correo[0].Dato).value : this.translate.instant('GLOBAL.traslados.noEmail');
+                const cargoO = tercero_.Cargo.length ?
+                  tercero_.Cargo[0].Nombre : this.translate.instant('GLOBAL.traslados.noCargo');
 
-              this.formTraslado.get('origen').patchValue({ tercero: tercero });
-              this.formTraslado.get('origen').patchValue({ email: emailO });
-              this.formTraslado.get('origen').patchValue({ cargo: cargoO });
+                this.formTraslado.get('origen').patchValue({ tercero: tercero });
+                this.formTraslado.get('origen').patchValue({ email: emailO });
+                this.formTraslado.get('origen').patchValue({ cargo: cargoO });
+              }
+            } else if (this.modo === 'create') {
+              this.formTraslado.disable();
+              this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.traslados.registrar.noElementos'));
             }
-          } else if (this.modo === 'create') {
+            resolve();
+          },
+          error: () => {
             this.formTraslado.disable();
-            this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.traslados.registrar.noElementos'));
-          }
-          resolve();
+            this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.traslados.consulta.errorElementos'));
+            resolve();
+          },
         });
       } else {
         resolve();
