@@ -130,6 +130,8 @@ export class ConsultaSalidasComponent implements OnInit {
     this.entradasHelper.getEstadosMovimiento().toPromise().then(res => {
       if (res.length) {
         this.estadosMovimiento = res;
+        this.syncMovimientoEstadoNombre();
+        this.updateAnularAvailability();
       }
     });
   }
@@ -203,6 +205,7 @@ export class ConsultaSalidasComponent implements OnInit {
     this.salidasHelper.getSalida(+this.salidaId).subscribe((res: any) => {
       if (res && res.Salida) {
         this.movimiento = res.Salida;
+        this.syncMovimientoEstadoNombre();
         const entradaId = this.resolveEntradaId(res);
         if (entradaId) {
           this.entradaParametro = `${entradaId}`;
@@ -213,6 +216,16 @@ export class ConsultaSalidasComponent implements OnInit {
         this.updateAnularAvailability();
       }
     });
+  }
+
+  private syncMovimientoEstadoNombre() {
+    const estadoNombre = this.resolveEstadoMovimientoNombre(this.movimiento && this.movimiento.EstadoMovimientoId);
+    if (this.movimiento && estadoNombre) {
+      this.movimiento.EstadoMovimientoId = <EstadoMovimiento>{
+        ...(this.movimiento.EstadoMovimientoId || {}),
+        Nombre: estadoNombre,
+      };
+    }
   }
 
   confirmSubmit(aprobar: boolean) {
@@ -462,11 +475,11 @@ export class ConsultaSalidasComponent implements OnInit {
   }
 
   private updateAnularAvailability() {
+    const estadoSalida = this.resolveEstadoMovimientoNombre(this.movimiento && this.movimiento.EstadoMovimientoId);
     this.puedeAnularSalida = this.modo === 'consulta' &&
       !this.editarSalida &&
       this.movimiento &&
-      this.movimiento.EstadoMovimientoId &&
-      this.movimiento.EstadoMovimientoId.Nombre === 'Salida Aprobada';
+      estadoSalida === 'Salida Aprobada';
   }
 
   private parseAnulacionError(error: any): string {
@@ -482,6 +495,10 @@ export class ConsultaSalidasComponent implements OnInit {
   private resolveEstadoMovimientoNombre(estadoMovimiento: any): string {
     if (!estadoMovimiento) {
       return '';
+    }
+
+    if (typeof estadoMovimiento === 'string') {
+      return estadoMovimiento;
     }
 
     if (estadoMovimiento.Nombre) {
