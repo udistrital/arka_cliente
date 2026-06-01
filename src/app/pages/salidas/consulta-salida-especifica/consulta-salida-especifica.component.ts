@@ -13,7 +13,11 @@ import { ReportesHelper } from '../../../helpers/reportes/reportesHelper';
 })
 export class ConsultaSalidaEspecificaComponent implements OnInit {
   salida_id: number;
+  refresh_version: number;
+  entrada_estado_override: string;
   salida: any;
+  estadoMovimientoNombre: string;
+  estadoEntradaNombre: string;
   mode: string = 'determinate';
 
   @Input('salida_id')
@@ -22,6 +26,20 @@ export class ConsultaSalidaEspecificaComponent implements OnInit {
     if (this.salida_id !== undefined) {
       this.CargarSalida();
     }
+  }
+
+  @Input('refresh_version')
+  set refreshVersion(refresh_version: number) {
+    this.refresh_version = refresh_version;
+    if (this.salida_id !== undefined && this.refresh_version !== undefined) {
+      this.CargarSalida();
+    }
+  }
+
+  @Input('entrada_estado_override')
+  set entradaEstadoOverride(entrada_estado_override: string) {
+    this.entrada_estado_override = entrada_estado_override;
+    this.aplicarEstadoEntradaOverride();
   }
 
   source: LocalDataSource;
@@ -68,11 +86,17 @@ export class ConsultaSalidaEspecificaComponent implements OnInit {
   CargarSalida() {
     this.salidasHelper.getSalida(this.salida_id).subscribe((res: any) => {
       if (res.Salida) {
+        const entradaId = this.resolveEntradaId(res);
+        if (entradaId && res.Salida.MovimientoPadreId) {
+          res.Salida.MovimientoPadreId.Id = entradaId;
+        }
 
         res.Salida.MovimientoPadreId.Detalle = JSON.parse(res.Salida.MovimientoPadreId.Detalle);
-        this.linkEntrada = '#/pages/entradas/consulta_entrada/' + res.Salida.MovimientoPadreId.Id;
+        this.linkEntrada = '#/pages/entradas/consulta_entrada/' + (entradaId || res.Salida.MovimientoPadreId.Id);
 
         this.salida = res.Salida;
+        this.estadoMovimientoNombre = res.Salida.EstadoMovimientoId && res.Salida.EstadoMovimientoId.Nombre;
+        this.aplicarEstadoEntradaOverride();
 
         if (res.Elementos.length) {
           this.source.load(res.Elementos);
@@ -91,6 +115,39 @@ export class ConsultaSalidaEspecificaComponent implements OnInit {
         this.cargarDetalleCuentasSalida(this.salida.Consecutivo);
       }
     });
+  }
+
+  private resolveEntradaId(response: any): number {
+    const entradaId = response && response.Entrada && response.Entrada.Id ? +response.Entrada.Id : 0;
+    const movimientoPadreId = response && response.Salida &&
+      response.Salida.MovimientoPadreId && response.Salida.MovimientoPadreId.Id
+      ? +response.Salida.MovimientoPadreId.Id
+      : 0;
+
+    return entradaId || movimientoPadreId;
+  }
+
+  private aplicarEstadoEntradaOverride() {
+    if (this.salida && this.salida.MovimientoPadreId && this.entrada_estado_override) {
+      this.salida.MovimientoPadreId.EstadoMovimientoId = {
+        ...(this.salida.MovimientoPadreId.EstadoMovimientoId || {}),
+        Nombre: this.entrada_estado_override,
+      };
+    }
+
+    this.estadoEntradaNombre = this.getEstadoEntradaNombre();
+  }
+
+  private getEstadoEntradaNombre(): string {
+    if (this.entrada_estado_override) {
+      return this.entrada_estado_override;
+    }
+
+    return this.salida && this.salida.MovimientoPadreId &&
+      this.salida.MovimientoPadreId.EstadoMovimientoId &&
+      this.salida.MovimientoPadreId.EstadoMovimientoId.Nombre
+      ? this.salida.MovimientoPadreId.EstadoMovimientoId.Nombre
+      : '';
   }
 
   cargarDetalleCuentasSalida(consecutivo: string) {

@@ -13,7 +13,8 @@
     </ng2-smart-table>
   </div>
 
-  <ngx-consulta-salida-especifica [salida_id]="salidaId" *ngIf="salidaId && !editarSalida">
+  <ngx-consulta-salida-especifica [salida_id]="salidaId" [refresh_version]="detalleRefreshVersion"
+    [entrada_estado_override]="entradaEstadoOverride" *ngIf="salidaId && !editarSalida">
   </ngx-consulta-salida-especifica>
 
   <mat-vertical-stepper #stepper>
@@ -29,6 +30,11 @@
   </ngx-tabla-entrada-aprobada>
 
   <mat-card-actions *ngIf="salidaId">
+    <div *ngIf="puedeAnularSalida" style="padding-bottom: 1rem;">
+      <button mat-raised-button color="primary" (click)="confirmAnular()" class="float-right text-uppercase"
+        [disabled]="submitted">
+        {{'GLOBAL.movimientos.salidas.anularBtn' | translate}}</button>
+    </div>
     <div *ngIf="modo === 'revision' && !trContable" class="justify-content-center" style="padding-bottom: 3rem;">
       <button mat-raised-button color="primary" (click)="confirmSubmit(false)" class="float-left text-uppercase"
         [disabled]="movimiento?.EstadoMovimientoId?.Nombre !== 'Salida En Trámite' || submitted">

@@ -24,6 +24,10 @@
               {{ salida.MovimientoPadreId?.FechaCreacion | date }}
             </p>
           </div>
+          <div class="col" *ngIf="estadoEntradaNombre">
+            <p class="text-uppercase"><strong>{{'GLOBAL.estadoEntrada' | translate}}:</strong>
+              {{ estadoEntradaNombre }}</p>
+          </div>
         </div>
 
         <mat-card-subtitle>
@@ -39,6 +43,10 @@
           <div class="col">
             <p class="text-uppercase"><strong>{{'GLOBAL.fecha_creacion' | translate}}:</strong>
               {{ salida.FechaCreacion | date }}</p>
+          </div>
+          <div class="col" *ngIf="estadoMovimientoNombre">
+            <p class="text-uppercase"><strong>{{'GLOBAL.estadoSalida' | translate}}:</strong>
+              {{ estadoMovimientoNombre }}</p>
           </div>
           <div class="col" *ngIf="salida.Funcionario">
             <p class="text-uppercase"><strong>{{'GLOBAL.funcionario' | translate}}:</strong>
