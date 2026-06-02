@@ -81,14 +81,19 @@ export class ListaMovimientosComponent implements OnInit {
       this.spinner = 'Cargando ajustes';
     }
     this.salidasHelper.getAjustes().subscribe(res => {
-      if (res.length) {
+      if (res && res.length) {
+        res = res.filter((ajuste: any) => {
+          //El filtro descarta cualquier movimiento cuyo Detalle.Elementos sea null o undefined antes de iterar, evitando el TypeError sin depender del estado de la BD
+          const detalle = JSON.parse(ajuste.Detalle);
+          return detalle.Elementos !== null && detalle.Elementos !== undefined;
+        });
         res.forEach(ajuste => {
           const detalle = JSON.parse(ajuste.Detalle);
           ajuste.Numero = detalle.Elementos.length;
           ajuste.TrContable = detalle.TrContable;
         });
       }
-      this.ajustes.load(res);
+      this.ajustes.load(res || []);
       this.spinner = '';
     });
   }
