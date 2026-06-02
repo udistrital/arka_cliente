@@ -82,7 +82,7 @@ export class ListaMovimientosComponent implements OnInit {
     }
     this.salidasHelper.getAjustes().subscribe(res => {
       if (res && res.length) {
-        res = res.filter((ajuste: any) => { 
+        res = res.filter((ajuste: any) => {
           const detalle = JSON.parse(ajuste.Detalle);
           return detalle.Elementos !== null && detalle.Elementos !== undefined;
         });
