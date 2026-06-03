@@ -166,7 +166,7 @@ export class ListaMovimientosComponent implements OnInit {
 
         this.pUpManager.showAlertWithOptions(alert);
         return of(null);
-      }),
+      })
     ).subscribe((res: any) => {
       if (res && res.Elementos !== null) {
         const alert = this.alerta;
