@@ -1663,7 +1663,11 @@
       "alerta-success-inv-txt": "Los elementos fueron actualizados correctamente sin afectaciones contables.",
       "alerta-success-cont-txt": "Los elementos fueron actualizados correctamente y se generaron transacciones contables.",
       "numeroElementos": "Número de Elementos",
-      "afectacionContable": "Afectación Contable"
+      "afectacionContable": "Afectación Contable",
+      "error-ttl": "Error al calcular ajuste",
+      "error-404-txt": "No se encontró el acta o el movimiento seleccionado. Verifique que exista y esté disponible.",
+      "error-400-txt": "Los datos de los elementos no son válidos. Verifique que todos los campos requeridos estén completos.",
+      "error-generico-txt": "Error al calcular el ajuste. Por favor, intente de nuevo más tarde."
     },
     "inmuebles": {
       "consultaTtl": "Consulta de bienes inmuebles",

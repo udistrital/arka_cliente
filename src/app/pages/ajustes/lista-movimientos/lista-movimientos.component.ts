@@ -1,6 +1,8 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { LocalDataSource } from 'ng2-smart-table';
 import { LangChangeEvent, TranslateService } from '@ngx-translate/core';
+import { finalize, catchError } from 'rxjs/operators';
+import { of } from 'rxjs';
 import { SalidaHelper } from '../../../helpers/salidas/salidasHelper';
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
 import { ActaRecibido } from '../../../@core/data/models/acta_recibido/acta_recibido';
@@ -145,9 +147,28 @@ export class ListaMovimientosComponent implements OnInit {
       el.ActaRecibidoId = <ActaRecibido>{ Id: +this.actaSeleccionada };
       el.EstadoElementoId = <ActaRecibido>{ Id: 2 };
     });
-    this.actaRecibidoHelper.postAjusteAutomatico(this.DatosElementos).subscribe((res: any) => {
-      this.spinner = '';
-      if (res.Elementos !== null) {
+    this.actaRecibidoHelper.postAjusteAutomatico(this.DatosElementos).pipe(
+      finalize(() => this.spinner = ''),
+      catchError((error: any) => {
+        const alert = this.alerta;
+        alert.type = 'error';
+        alert.showCancelButton = false;
+        alert.title = this.translate.instant('GLOBAL.ajuste-auto.error-ttl');
+        alert.confirmButtonText = this.translate.instant('GLOBAL.aceptar');
+
+        if (error.status === 404) {
+          alert.text = this.translate.instant('GLOBAL.ajuste-auto.error-404-txt');
+        } else if (error.status === 400) {
+          alert.text = this.translate.instant('GLOBAL.ajuste-auto.error-400-txt');
+        } else {
+          alert.text = this.translate.instant('GLOBAL.ajuste-auto.error-generico-txt');
+        }
+
+        this.pUpManager.showAlertWithOptions(alert);
+        return of(null);
+      }),
+    ).subscribe((res: any) => {
+      if (res && res.Elementos !== null) {
         const alert = this.alerta;
         alert.type = 'success';
         alert.showCancelButton = false;
@@ -170,7 +191,7 @@ export class ListaMovimientosComponent implements OnInit {
           { CONSECUTIVO: res.Movimiento.Consecutivo });
         this.subtitle = this.translate.instant('GLOBAL.ajuste-auto.sbtttlInfo');
         this.loadAjustes(false);
-      } else {
+      } else if (res) {
         this.valid = false;
         const alert = this.alerta;
         alert.title = this.translate.instant('GLOBAL.ajuste-auto.no-necesario-ttl');
