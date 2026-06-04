@@ -27,10 +27,10 @@ import { Acta_t, TipoActa } from '../../../@core/data/models/acta_recibido/tipo_
 import { EstadoElemento } from '../../../@core/data/models/acta_recibido/estado_elemento';
 import { ActaValidators } from '../validators';
 import { CommonActas } from '../shared';
-import { merge, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { ImplicitAutenticationService } from '../../../@core/utils/implicit_autentication.service';
 import { GestorDocumentalService } from '../../../helpers/gestor_documental/gestorDocumentalHelper';
-import { OikosHelper } from '../../../helpers/oikos/oikosHelper';
+import { CentroCostosHelper } from '../../../helpers/movimientos/centroCostosHelper';
 
 const FECHA_MINIMA = new Date('1945');
 
@@ -88,6 +88,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
   maxDate: Date;
   minDate: Date;
   Ubicaciones: any[] = [];
+  ubicacionesFiltradas: any[] = [];
   Sedes: any;
   dependencias: any[];
   DatosTotales: any;
@@ -137,7 +138,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
     private common: CommonActas,
     private autenticationService: ImplicitAutenticationService,
     private documento: GestorDocumentalService,
-    private oikosHelper: OikosHelper,
+    public centroCostosHelper: CentroCostosHelper,
   ) {
     this.errores = new Map<string, boolean>();
     this.maxDate = new Date();
@@ -154,14 +155,13 @@ export class EdicionActaRecibidoComponent implements OnInit {
   ngOnInit() {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
     });
-    this.listService.findSedes();
     this.listService.findListsActa();
     this.listService.findUnidadesEjecutoras();
     this.initForms();
   }
 
   private async initForms() {
-    await Promise.all([this.loadLists(), this.cargaActa()]);
+    await Promise.all([this.loadLists(), this.loadCentroCostos(), this.cargaActa()]);
     this.cargaPermisos();
     this.defineSiHayQueValidarElementosParaEnviar();
     this.estadoLocalizado = this.translate
@@ -320,9 +320,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
       this.store.select((state) => state).subscribe(list => {
         if (list.listEstadosActa.length && list.listEstadosActa[0] &&
           list.listEstadosElemento.length && list.listEstadosElemento[0] &&
-          list.listSedes.length && list.listSedes[0] &&
           list.listUnidadesEjecutoras.length && list.listUnidadesEjecutoras[0]) {
-          this.Sedes = list.listSedes[0];
           this.Estados_Acta = list.listEstadosActa[0];
           this.Estados_Elemento = list.listEstadosElemento[0];
           this.unidadesEjecutoras = list.listUnidadesEjecutoras[0];
@@ -330,6 +328,16 @@ export class EdicionActaRecibidoComponent implements OnInit {
 
           resolve();
         }
+      });
+    });
+  }
+
+  private loadCentroCostos(): Promise<void> {
+    return new Promise<void>(resolve => {
+      this.centroCostosHelper.getAllCentroCostos().subscribe((res: any) => {
+        this.Ubicaciones = res || [];
+        this.ubicacionesFiltradas = this.Ubicaciones;
+        resolve();
       });
     });
   }
@@ -379,9 +387,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
     // console.debug({transaccion_});
 
     const promises = [];
-    if (transaccion_.UltimoEstado.UbicacionId) {
-      promises.push(this.getSedeDepencencia(transaccion_.UltimoEstado.UbicacionId));
-    }
     if (this.trActa.UltimoEstado.ProveedorId) {
       promises.push(this.loadProveedores('', this.trActa.UltimoEstado.ProveedorId));
     }
@@ -392,7 +397,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
     // console.debug({
     //   Proveedores: this.Proveedores,
     //   Contratistas: this.Contratistas,
-    //   sedeDependencia: this.sedeDependencia,
     // });
 
     const ar = this.actaRegular;
@@ -430,14 +434,15 @@ export class EdicionActaRecibidoComponent implements OnInit {
     });
 
     const validators__ = this.actaRegistrada ? [] : [Validators.min(1)];
+    const validatorsUbicacion = this.actaRegistrada ? [] : [Validators.required];
     const Formulario1 = this.fb.group({
       Id: [transaccion_.ActaRecibido.Id],
       Sede: [
         {
-          value: this.sedeDependencia ? this.sedeDependencia.sede : 0,
+          value: 0,
           disabled,
         },
-        { validators: validators__ },
+        { validators: [] },
       ],
       UnidadEjecutora: [
         {
@@ -448,17 +453,20 @@ export class EdicionActaRecibidoComponent implements OnInit {
       ],
       Dependencia: [
         {
-          value: this.sedeDependencia ? this.sedeDependencia.dependencia : '',
+          value: '',
           disabled,
         },
-        { validators },
+        { validators: [] },
       ],
       Ubicacion: [
         {
-          value: transaccion_.UltimoEstado.UbicacionId,
+          value: this.centroCostosHelper.findCentroCostoById(
+            this.Ubicaciones,
+            this.centroCostosHelper.getCentroCostoId(transaccion_.UltimoEstado.UbicacionId),
+          ) || '',
           disabled,
         },
-        { validators: validators__ },
+        { validators: validatorsUbicacion },
       ],
       Contratista: [
         {
@@ -494,47 +502,8 @@ export class EdicionActaRecibidoComponent implements OnInit {
     this.carga_agregada = true;
   }
 
-  private async getSedeDepencencia(ubicacionId: number): Promise<void> {
-    return new Promise<void>(resolve => {
-      this.oikosHelper.getSedeDependencia(ubicacionId).toPromise().then(res => {
-        if (!res.length) {
-          resolve();
-          return;
-        }
-
-        const dependencia = res[0].DependenciaId;
-        const sede_ = res[0].EspacioFisicoId.CodigoAbreviacion;
-        const codigoSede = sede_.substring(0, 2) + sede_.substring(2).replace(/\d.*/g, '');
-        const sede = this.Sedes.find(x => x && x.CodigoAbreviacion === codigoSede);
-
-        if (!sede || !dependencia) {
-          resolve();
-          return;
-        }
-
-        this.sedeDependencia = { sede: sede.Id, dependencia };
-        this.oikosHelper.getAsignacionesBySedeAndDependencia(sede.CodigoAbreviacion, dependencia.Id).subscribe((res_: any) => {
-          this.Ubicaciones = res_;
-          resolve();
-        });
-
-      });
-    });
-  }
-
-  private Traer_Relacion_Ubicaciones(
-    sede: number = this.controlSede.value,
-    dependencia: number = this.controlDependencia.value.Id) {
-    if (!sede || !dependencia) {
-      this.Ubicaciones = [];
-      this.controlUbicacion.patchValue(0);
-      return;
-    }
-
-    const sede_ = this.Sedes.find((x) => x.Id === sede);
-    this.oikosHelper.getAsignacionesBySedeAndDependencia(sede_.CodigoAbreviacion, dependencia).subscribe((res: any) => {
-      this.Ubicaciones = res;
-    });
+  private Traer_Relacion_Ubicaciones() {
+    this.loadCentroCostos();
   }
 
   private download(index) {
@@ -609,10 +578,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
   }
 
   private setFormEvents() {
-    this.oikosHelper.cambiosDependencia(this.controlSede, this.controlDependencia).subscribe((response: any) => {
-      this.dependencias = response.queryOptions;
-    });
-
     this.controlContratista.valueChanges
       .pipe(
         debounceTime(200),
@@ -635,15 +600,6 @@ export class EdicionActaRecibidoComponent implements OnInit {
         this.cargandoProveedores = false;
       });
 
-    merge(
-      this.controlSede.valueChanges,
-      this.controlDependencia.valueChanges,
-    ).pipe(
-      debounceTime(200),
-      distinctUntilChanged())
-      .subscribe(() => {
-        this.Traer_Relacion_Ubicaciones();
-      });
   }
 
   tab() {
@@ -798,7 +754,7 @@ export class EdicionActaRecibidoComponent implements OnInit {
 
     historico.Id = null;
     historico.ProveedorId = proveedor ? proveedor.Tercero.Id : null;
-    historico.UbicacionId = ubicacionId ? ubicacionId : null;
+    historico.UbicacionId = this.centroCostosHelper.getCentroCostoId(ubicacionId) || null;
     historico.RevisorId = this.userService.getPersonaId();
     historico.PersonaAsignadaId = ae ? this.userService.getPersonaId() : contratista ? contratista.Tercero.Id : null;
     historico.Observaciones = observaciones;
@@ -973,6 +929,8 @@ export class EdicionActaRecibidoComponent implements OnInit {
   get controlUbicacion() {
     return this.controlDatosBasicos.get('Ubicacion');
   }
+
+  muestraCentroCosto = (centroCosto: any): string => this.centroCostosHelper.muestraCentroCosto(centroCosto);
 
   get controlSoportes() {
     return this.firstForm.get('Formulario2') as FormArray;

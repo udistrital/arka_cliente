@@ -10,7 +10,7 @@ import { PopUpManager } from '../../../managers/popUpManager';
 import { LocalDataSource } from 'ng2-smart-table';
 import { BodegaConsumoHelper } from '../../../helpers/bodega_consumo/bodegaConsumoHelper';
 import { UserService } from '../../../@core/data/users.service';
-import { OikosHelper } from '../../../helpers/oikos/oikosHelper';
+import { CentroCostosHelper } from '../../../helpers/movimientos/centroCostosHelper';
 
 @Component({
   selector: 'ngx-form-elementos-seleccionados',
@@ -20,9 +20,8 @@ import { OikosHelper } from '../../../helpers/oikos/oikosHelper';
 
 export class FormElementosSeleccionadosComponent implements OnInit {
 
-  dependencias: any;
   Ubicaciones: any;
-  Sedes: any;
+  ubicacionesFiltradas: any[] = [];
   form_salida: FormGroup;
   Datos: any;
   settings2: any;
@@ -45,55 +44,32 @@ export class FormElementosSeleccionadosComponent implements OnInit {
     private bodegaConsumoHelper: BodegaConsumoHelper,
     private userService: UserService,
     private pUpManager: PopUpManager,
-    public oikosHelper: OikosHelper,
+    public centroCostosHelper: CentroCostosHelper,
   ) {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
     });
     this.source2 = new LocalDataSource();
-    this.listService.findSedes();
     this.loadTablaSettings();
-    this.loadLists();
 
   }
 
   ngOnInit() {
     this.form_salida = this.Formulario;
-    this.oikosHelper.cambiosDependencia(this.form_salida.get('Sede'), this.form_salida.get('Dependencia'))
-      .subscribe((response: any) => {
-        this.dependencias = response.queryOptions;
-        this.Traer_Relacion_Ubicaciones();
-      });
-  }
-  public loadLists() {
-    this.store.select((state) => state).subscribe(
-      (list) => {
-        this.Sedes = list.listSedes[0];
-      },
-    );
+    this.Traer_Relacion_Ubicaciones();
   }
   get Formulario(): FormGroup {
     return this.fb.group({
       Cantidad: [0, Validators.min(1)],
-      Sede: [0, Validators.min(1)],
-      Dependencia: ['', Validators.required],
-      Ubicacion: [0, Validators.min(1)],
+      Sede: [''],
+      Dependencia: [''],
+      Ubicacion: ['', Validators.required],
     });
   }
   Traer_Relacion_Ubicaciones() {
-    const sede = this.form_salida.get('Sede').value;
-    const dependencia = this.form_salida.get('Dependencia').value;
-
-    if (!sede || !dependencia.Id) {
-      this.form_salida.get('Ubicacion').patchValue(0);
-      this.Ubicaciones = [];
-      return;
-    }
-
-    const sede_ = this.Sedes.find((x) => x.Id === parseFloat(sede));
-    this.oikosHelper.getAsignacionesBySedeAndDependencia(sede_.CodigoAbreviacion, dependencia.Id).subscribe((res: any) => {
-      this.Ubicaciones = res;
+    this.centroCostosHelper.getAllCentroCostos().subscribe((res: any) => {
+      this.Ubicaciones = res || [];
+      this.ubicacionesFiltradas = this.Ubicaciones;
     });
-
   }
 
   onSeleccionarElemento() {
@@ -111,17 +87,23 @@ export class FormElementosSeleccionadosComponent implements OnInit {
 
       // console.log(this.Datos)
       const elemento = this.Datos;
+      const ubicacion = this.centroCostosHelper.findCentroCostoById(
+        this.Ubicaciones,
+        this.centroCostosHelper.getCentroCostoId(form.Ubicacion),
+      ) || form.Ubicacion;
 
       // elemento.Funcionario = this.Proveedores.find(z => z.compuesto === form.Proveedor);
-      elemento.Sede = this.Sedes.find(y => y.Id === parseFloat(form.Sede));
-      elemento.Dependencia = form.Dependencia;
-      elemento.Ubicacion = this.Ubicaciones.find(w => w.Id === parseFloat(form.Ubicacion));
+      elemento.Sede = { Nombre: ubicacion && ubicacion.Sede ? ubicacion.Sede : '' };
+      elemento.Dependencia = { Nombre: ubicacion && ubicacion.Dependencia ? ubicacion.Dependencia : '' };
+      elemento.Ubicacion = ubicacion;
       elemento.Cantidad = parseInt(form.Cantidad, 10);
       // this.DatosEnviados.emit(elemento);
       this.AgregarElementos(elemento);
     }
 
   }
+
+  muestraCentroCosto = (centroCosto: any): string => this.centroCostosHelper.muestraCentroCosto(centroCosto);
 
   onSubmit() {
     if (!this.checkTercero()) {
@@ -242,16 +224,14 @@ export class FormElementosSeleccionadosComponent implements OnInit {
           title: this.translate.instant('GLOBAL.ubicacion'),
           valuePrepareFunction: (value: any) => {
             if (value !== null) {
-              return value.EspacioFisicoId.Nombre;
+              return this.centroCostosHelper.muestraCentroCosto(value);
             } else {
               return '';
             }
           },
           filterFunction: (cell?: any, search?: string): boolean => {
-            // console.log(cell);
-            // console.log(search);
             if (Object.keys(cell).length !== 0) {
-              if (cell.EspacioFisicoId.Nombre.indexOf(search) > -1) {
+              if (this.centroCostosHelper.muestraCentroCosto(cell).indexOf(search) > -1) {
                 return true;
               } else {
                 return false;

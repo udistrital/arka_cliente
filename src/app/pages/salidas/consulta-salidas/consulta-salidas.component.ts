@@ -12,6 +12,7 @@ import { HttpClient } from '@angular/common/http';
 import { Location } from '@angular/common';
 import { debounceTime, distinctUntilChanged, filter } from 'rxjs/operators';
 import Swal from 'sweetalert2';
+import { CentroCostosHelper } from '../../../helpers/movimientos/centroCostosHelper';
 
 @Component({
   selector: 'ngx-consulta-salidas',
@@ -38,6 +39,7 @@ export class ConsultaSalidasComponent implements OnInit {
   detalleRefreshVersion: number = 0;
   entradaEstadoOverride: string;
   entradaIdConfirmada: number = 0;
+  centrosCosto: any[] = [];
 
   constructor(
     private pUpManager: PopUpManager,
@@ -50,6 +52,7 @@ export class ConsultaSalidasComponent implements OnInit {
     private tabla: SmartTableService,
     private http: HttpClient,
     private location: Location,
+    private centroCostosHelper: CentroCostosHelper,
   ) { }
 
   ngOnInit() {
@@ -58,6 +61,7 @@ export class ConsultaSalidasComponent implements OnInit {
     });
 
     this.loadEstados();
+    this.loadCentroCostos();
 
     this.route.data.subscribe(data => {
       if (data && data.modo) {
@@ -92,6 +96,20 @@ export class ConsultaSalidasComponent implements OnInit {
       }
     });
 
+  }
+
+  private loadCentroCostos() {
+    this.centroCostosHelper.getAllCentroCostos().subscribe((res: any) => {
+      this.centrosCosto = res || [];
+      this.loadTablaSettings();
+    });
+  }
+
+  private resolveCentroCosto(value: any) {
+    const centroCostoId = this.centroCostosHelper.getCentroCostoId(value);
+    return this.centroCostosHelper.findCentroCostoById(this.centrosCosto, centroCostoId) ||
+      this.centroCostosHelper.normalizarCentroCosto(value) ||
+      value;
   }
 
   setSource() {
@@ -365,21 +383,9 @@ export class ConsultaSalidasComponent implements OnInit {
           sort: false,
           filter: false,
         },
-        Sede: {
-          title: this.translate.instant('GLOBAL.sede'),
-          ...this.tabla.getSettingsObject('Nombre'),
-          sort: false,
-          filter: false,
-        },
-        Dependencia: {
-          title: this.translate.instant('GLOBAL.dependencia'),
-          ...this.tabla.getSettingsObject('Nombre'),
-          sort: false,
-          filter: false,
-        },
         Ubicacion: {
           title: this.translate.instant('GLOBAL.ubicacion'),
-          ...this.tabla.getSettingsObject_('EspacioFisicoId', 'Nombre'),
+          valuePrepareFunction: (value: any) => this.centroCostosHelper.muestraCentroCosto(this.resolveCentroCosto(value)),
           sort: false,
           filter: false,
         },

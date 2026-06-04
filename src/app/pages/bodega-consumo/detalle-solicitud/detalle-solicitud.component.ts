@@ -10,6 +10,7 @@ import { ListService } from '../../../@core/store/services/list.service';
 import { IAppState } from '../../../@core/store/app.state';
 import { FormBuilder, Validators, FormGroup } from '@angular/forms';
 import { SmartTableService } from '../../../@core/data/SmartTableService';
+import { CentroCostosHelper } from '../../../helpers/movimientos/centroCostosHelper';
 
 @Component({
   selector: 'ngx-detalle-solicitud',
@@ -58,6 +59,7 @@ export class DetalleSolicitudComponent implements OnInit {
     private listService: ListService,
     private pUpManager: PopUpManager,
     private tabla: SmartTableService,
+    private centroCostosHelper: CentroCostosHelper,
   ) {
     this.source = new LocalDataSource();
     if (this.Editar === undefined) {
@@ -130,7 +132,7 @@ export class DetalleSolicitudComponent implements OnInit {
         },
         Ubicacion: {
           title: this.translate.instant('GLOBAL.ubicacion'),
-          ...this.tabla.getSettingsObject('Nombre'),
+          valuePrepareFunction: (value: any) => this.centroCostosHelper.muestraCentroCosto(value),
         },
         Cantidad: {
           title: this.translate.instant('GLOBAL.Solicitudes.CantSolicitada'),

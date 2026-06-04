@@ -59,20 +59,10 @@
                   {{'GLOBAL.placeholder' | translate}}</p>
               </div>
               <div class="form-group col-sm">
-                <label>{{'GLOBAL.Acta_Recibido.EdicionActa.Sede' | translate}}</label>
-                <mat-select type="text" class="form-control" formControlName="Sede">
-                  <mat-option *ngFor="let sede of Sedes" [(value)]="sede.Id">{{sede.Nombre}}</mat-option>
-                </mat-select>
-              </div>
-              <div class="form-group col-sm">
-                <label>{{'GLOBAL.Acta_Recibido.EdicionActa.Dependencia' | translate}}</label>
-                <input matInput type="text" formControlName="Dependencia" class="form-control" style="height: auto;"
-                  placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}" [matAutocomplete]="auto">
-              </div>
-              <div class="form-group col-sm">
                 <label>{{'GLOBAL.Acta_Recibido.EdicionActa.Ubicacion' | translate}}</label>
                 <mat-select type="text" class="form-control" formControlName="Ubicacion">
-                  <mat-option *ngFor="let ubicacion of UbicacionesFiltradas" [(value)]="ubicacion.Id">{{ubicacion.EspacioFisicoId.Nombre}}
+                  <mat-option *ngFor="let ubicacion of UbicacionesFiltradas" [value]="ubicacion">
+                    {{centroCostosHelper.muestraCentroCosto(ubicacion)}}
                   </mat-option>
                 </mat-select>
               </div>

@@ -14,6 +14,7 @@ import { UserService } from '../../../@core/data/users.service';
 import { TrasladosHelper } from '../../../helpers/movimientos/trasladosHelper';
 import { isObject } from 'util';
 import { GestorDocumentalService } from '../../../helpers/gestor_documental/gestorDocumentalHelper';
+import { CentroCostosHelper } from '../../../helpers/movimientos/centroCostosHelper';
 
 const SIZE_SOPORTE = 5;
 
@@ -50,6 +51,7 @@ export class FormSolicitudComponent implements OnInit {
     private userService: UserService,
     private trasladosHelper: TrasladosHelper,
     private documento: GestorDocumentalService,
+    private centroCostosHelper: CentroCostosHelper,
   ) {
     this.bajaId = 0;
     this.sizeSoporte = SIZE_SOPORTE;
@@ -356,7 +358,7 @@ export class FormSolicitudComponent implements OnInit {
           ],
           ubicacion: [
             {
-              value: element.Ubicacion.Ubicacion ? element.Ubicacion.Ubicacion.EspacioFisicoId.Nombre : '',
+              value: element.Ubicacion.Ubicacion ? this.centroCostosHelper.muestraCentroCosto(element.Ubicacion.Ubicacion) : '',
               disabled: true,
             },
           ],
@@ -440,7 +442,7 @@ export class FormSolicitudComponent implements OnInit {
           tipoBien: res.SubgrupoCatalogoId.TipoBienId.Nombre,
           sede: res.Ubicacion.Sede.Nombre,
           dependencia: res.Ubicacion.Dependencia.Nombre,
-          ubicacion: res.Ubicacion.Ubicacion.EspacioFisicoId.Nombre,
+          ubicacion: this.centroCostosHelper.muestraCentroCosto(res.Ubicacion.Ubicacion),
           funcionario: this.getCompuesto(res.Funcionario),
           entrada: consEntrada,
           salida: consSalida,
