@@ -943,7 +943,10 @@ export class EdicionActaRecibidoComponent implements OnInit {
     }
 
     this.errores.set('clases', true);
-    this.pUpManager.showErrorAlert('Debe existir al menos un elemento y cada uno debe tener completos todos los campos obligatorios. El descuento es opcional y el valor total debe ser mayor a cero.');
+    this.pUpManager.showErrorAlert(
+      'Debe existir al menos un elemento y cada uno debe tener completos todos los campos obligatorios. '
+      + 'El descuento es opcional y el valor total debe ser mayor a cero.',
+    );
     return false;
   }
 
