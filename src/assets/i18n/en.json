@@ -1663,7 +1663,11 @@
       "alerta-success-inv-txt": "Los elementos fueron actualizados correctamente sin afectaciones contables.",
       "alerta-success-cont-txt": "Los elementos fueron actualizados correctamente y se generaron transacciones contables.",
       "numeroElementos": "Cantidad de elementos modificados",
-      "afectacionContable": "Afectación Contable"
+      "afectacionContable": "Afectación Contable",
+      "error-ttl": "Error calculating adjustment",
+      "error-404-txt": "The receipt record or movement was not found. Verify that it exists and is available.",
+      "error-400-txt": "The element data is invalid. Verify that all required fields are complete.",
+      "error-generico-txt": "Error calculating the adjustment. Please try again later."
     },
     "inmuebles": {
       "consultaTtl": "Consulta de bienes inmuebles",

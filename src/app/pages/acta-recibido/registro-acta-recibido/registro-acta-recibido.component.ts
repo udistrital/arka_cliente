@@ -379,6 +379,9 @@ export class RegistroActaRecibidoComponent implements OnInit {
   }
 
   async onFirstSubmit() {
+    if (!this.validarElementosAntesDeEnviar()) {
+      return;
+    }
     this.Registrando = true;
     const start = async () => {
       await CommonActas.asyncForEach(this.fileDocumento, async (file) => {
@@ -504,6 +507,9 @@ export class RegistroActaRecibidoComponent implements OnInit {
     if (!this.userService.TerceroValido()) {
       return;
     }
+    if (!this.validarElementosAntesDeEnviar()) {
+      return;
+    }
     (Swal as any).fire({
       title: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.DatosVeridicosTitle'),
       text: this.translate.instant('GLOBAL.Acta_Recibido.RegistroActa.DatosVeridicos'),
@@ -518,6 +524,24 @@ export class RegistroActaRecibidoComponent implements OnInit {
         this.onFirstSubmit();
       }
     });
+  }
+
+  private validarElementosAntesDeEnviar(): boolean {
+    if (!this.ae) {
+      return true;
+    }
+
+    const elementosCompletos = !!this.DatosElementos && this.DatosElementos.length > 0 && this.validarElementos;
+    if (elementosCompletos) {
+      return true;
+    }
+
+    this.errores.set('clases', true);
+    this.pUpManager.showErrorAlert(
+      'Debe existir al menos un elemento y cada uno debe tener completos todos los campos obligatorios. '
+      + 'El descuento es opcional y el valor total debe ser mayor a cero.',
+    );
+    return false;
   }
 
   actualizarStorage() { // PUT-POST
