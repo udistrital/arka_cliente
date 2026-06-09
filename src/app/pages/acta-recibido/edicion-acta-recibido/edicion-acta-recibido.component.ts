@@ -691,6 +691,9 @@ export class EdicionActaRecibidoComponent implements OnInit {
 
   // Envío (a (proveedor y/o contratista)/revisor) o guardado
   private async onFirstSubmit(siguienteEtapa: boolean = false, enviara: number = 0) {
+    if (!this.validarElementosAntesDeEnviar()) {
+      return;
+    }
     this.guardando = true;
     const start = async () => {
       await CommonActas.asyncForEach(this.fileDocumento, async (file, index) => {
@@ -876,6 +879,9 @@ export class EdicionActaRecibidoComponent implements OnInit {
     if (!this.userService.TerceroValido()) {
       return;
     }
+    if (!this.validarElementosAntesDeEnviar()) {
+      return;
+    }
     (Swal as any).fire({
       title: this.translate.instant('GLOBAL.Acta_Recibido.EdicionActa.DatosVeridicosTitle'),
       text: this.translate.instant('GLOBAL.Acta_Recibido.EdicionActa.DatosVeridicos'),
@@ -899,6 +905,9 @@ export class EdicionActaRecibidoComponent implements OnInit {
 
   // Enviar a revisor/proveedor?
   Revisar_Totales3(enviara: number) {
+    if (!this.validarElementosAntesDeEnviar()) {
+      return;
+    }
     const L10n_base = 'GLOBAL.Acta_Recibido.EdicionActa.';
     const codigoL10n_titulo = L10n_base + 'DatosVeridicosTitle';
     let codigoL10n_desc = '';
@@ -921,6 +930,24 @@ export class EdicionActaRecibidoComponent implements OnInit {
         this.onFirstSubmit(true, enviara);
       }
     });
+  }
+
+  private validarElementosAntesDeEnviar(): boolean {
+    if (!this.actaEspecial || this.actaRegistrada) {
+      return true;
+    }
+
+    const elementosCompletos = !!this.DatosElementos && this.DatosElementos.length > 0 && this.validarElementos;
+    if (elementosCompletos) {
+      return true;
+    }
+
+    this.errores.set('clases', true);
+    this.pUpManager.showErrorAlert(
+      'Debe existir al menos un elemento y cada uno debe tener completos todos los campos obligatorios. '
+      + 'El descuento es opcional y el valor total debe ser mayor a cero.',
+    );
+    return false;
   }
 
   eventoTotales(event) {
