@@ -40,6 +40,21 @@ export class TrasladosHelper {
         );
     }
 
+    public postTrasladoInterno(movimiento: Movimiento) {
+        this.rqManager.setPath('ARKA_SERVICE');
+        return this.rqManager.post('traslados/interno', movimiento).pipe(
+            map(
+                (res) => {
+                    if (res['Type'] === 'error') {
+                        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.traslados.registrarInterno.errTxt'));
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
+
     /**
      * Trae los traslados, según se solicite, en cualquier estado o en trámite
      * If the response has errors in the OAS API it should show a popup message with an error.
@@ -98,6 +113,21 @@ export class TrasladosHelper {
         const usuario = this.userService.getPersonaId();
         this.rqManager.setPath('ARKA_SERVICE');
         return this.rqManager.get('traslados/funcionario/' + usuario).pipe(
+            map(
+                (res) => {
+                    if (res['Type'] === 'error') {
+                        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.traslados.consulta.errorElementos'));
+                        return undefined;
+                    }
+                    return res;
+                },
+            ),
+        );
+    }
+
+    public getInventarioTerceroById(terceroId: number) {
+        this.rqManager.setPath('ARKA_SERVICE');
+        return this.rqManager.get('traslados/funcionario/' + terceroId).pipe(
             map(
                 (res) => {
                     if (res['Type'] === 'error') {
