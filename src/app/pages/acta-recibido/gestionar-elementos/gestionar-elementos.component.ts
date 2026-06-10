@@ -186,7 +186,7 @@ export class GestionarElementosComponent implements OnInit {
           disabled,
         },
         {
-          validators: [Validators.required],
+          validators: [Validators.required, Validators.maxLength(50)],
         },
       ],
       Serie: [
@@ -195,7 +195,7 @@ export class GestionarElementosComponent implements OnInit {
           disabled,
         },
         {
-          validators: [Validators.required],
+          validators: [Validators.required, Validators.maxLength(100)],
         },
       ],
       UnidadMedida: [
@@ -337,12 +337,22 @@ export class GestionarElementosComponent implements OnInit {
   // Event emission
   private emit() {
     const elementos = this.formElementos.get('elementos') as FormArray;
-    this.ElementosValidos.emit(this.Modo === 'verificar' ? this.checkTodos : this.validarElementosCompletos(elementos));
-    this.DatosEnviados.emit(this.elementos_);
+    const valid = this.Modo === 'verificar' ? this.checkTodos : this.validarElementosCompletos(elementos);
+    const editados = this.elementos_;
+
+    this.ElementosValidos.emit(valid);
+    this.DatosEnviados.emit(editados);
     this.getTotales();
   }
 
   private validarElementosCompletos(elementos: FormArray): boolean {
+    if (this.Modo === 'ajustar') {
+      const seleccionadosEditados = elementos.controls.filter(ctrl => {
+        const s = ctrl.get('Seleccionado');
+        return !!(s && s.value) && ctrl.dirty;
+      });
+      return seleccionadosEditados.length > 0 && seleccionadosEditados.every(control => this.elementoCompleto(control as FormGroup));
+    }
     return elementos.length > 0 && elementos.controls.every(control => this.elementoCompleto(control as FormGroup));
   }
 
@@ -363,7 +373,10 @@ export class GestionarElementosComponent implements OnInit {
     ];
 
     if (this.mostrarClase) {
-      camposRequeridos.push('SubgrupoCatalogoId', 'TipoBienId');
+      camposRequeridos.push('SubgrupoCatalogoId');
+      if (this.Modo !== 'ajustar') {
+        camposRequeridos.push('TipoBienId');
+      }
     }
 
     const camposAjuste = ['ValorResidual', 'VidaUtil'];
@@ -437,7 +450,7 @@ export class GestionarElementosComponent implements OnInit {
   get elementosF_() {
     if (this.Modo === 'ajustar') {
       return (this.formElementos.get('elementos') as FormArray).controls
-        .filter(el_ => el_.dirty);
+        .filter(el_ => { const s = el_.get('Seleccionado'); return !!(s && s.value) && el_.dirty; });
     } else {
       return (this.formElementos.get('elementos') as FormArray).controls;
     }

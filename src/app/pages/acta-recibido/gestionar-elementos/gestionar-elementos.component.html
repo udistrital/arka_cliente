@@ -199,7 +199,7 @@
         </th>
         <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="getActualIndex(rowIndex)">
           <mat-form-field appearance="outline" class="md-col">
-            <input matInput type="text" formControlName="Marca">
+            <input matInput type="text" formControlName="Marca" maxlength="50">
           </mat-form-field>
         </td>
         <td mat-footer-cell *matFooterCellDef></td>
@@ -212,7 +212,7 @@
         </th>
         <td mat-cell *matCellDef="let element; let rowIndex = index" [formGroupName]="getActualIndex(rowIndex)">
           <mat-form-field appearance="outline" class="md-col">
-            <input matInput type="text" formControlName="Serie">
+            <input matInput type="text" formControlName="Serie" maxlength="100">
           </mat-form-field>
         </td>
         <td mat-footer-cell *matFooterCellDef></td>
