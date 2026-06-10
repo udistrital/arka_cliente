@@ -38,7 +38,7 @@ export class FormTrasladoComponent implements OnInit {
   elementosFiltrados: any[];
   trContable: any;
   @Output() valid = new EventEmitter<boolean>();
-  @Input() modo: string; // 'create' || 'get' || 'put'
+  @Input() modo: string; // 'create' || 'create_internal' || 'get' || 'put'
   @Input() trasladoInfo: any;
   @Output() trasladoInfoChange: EventEmitter<any> = new EventEmitter<any>();
 
@@ -65,12 +65,15 @@ export class FormTrasladoComponent implements OnInit {
   }
 
   private async initForms() {
-    const data = [this.buildForm(), this.loadUbicaciones(), this.loadSedes(), this.loadInventario()];
-    await Promise.all(data);
-    if (this.modo !== 'create') {
-      this.loadValues(this.trasladoInfo);
+    try {
+      const data = [this.buildForm(), this.loadUbicaciones(), this.loadSedes(), this.loadInventario()];
+      await Promise.all(data);
+      if (this.modo !== 'create' && this.modo !== 'create_internal') {
+        this.loadValues(this.trasladoInfo);
+      }
+    } finally {
+      this.load = true;
     }
-    this.load = true;
   }
 
   private buildForm(): Promise<void> {
@@ -118,12 +121,17 @@ export class FormTrasladoComponent implements OnInit {
   private loadSedes(): Promise<void> {
     return new Promise<void>(resolve => {
       if (this.modo !== 'get') {
-        this.oikosHelper.getSedes().subscribe((res: any) => {
-          this.sedes = res;
-          resolve();
+        this.oikosHelper.getSedes().subscribe({
+          next: (res: any) => {
+            this.sedes = res;
+            resolve();
+          },
+          error: () => resolve(),
         });
       } else if (this.trasladoInfo && this.trasladoInfo.ubicacion && this.trasladoInfo.ubicacion.Sede) {
         this.sedes = [this.trasladoInfo.ubicacion.Sede];
+        resolve();
+      } else {
         resolve();
       }
 
@@ -132,7 +140,9 @@ export class FormTrasladoComponent implements OnInit {
 
   private loadInventario(): Promise<void> {
     return new Promise<void>(resolve => {
-      if (this.modo !== 'get') {
+      if (this.modo === 'create_internal') {
+        resolve();
+      } else if (this.modo !== 'get') {
         this.trasladosHelper.getInventarioTercero().subscribe({
           next: (res: any) => {
             if (res && res.Elementos && res.Elementos.length) {
@@ -180,7 +190,7 @@ export class FormTrasladoComponent implements OnInit {
   }
 
   get terceroOrigen(): FormGroup {
-    const disabled = true;
+    const disabled = this.modo !== 'create_internal';
     const form = this.fb.group({
       tercero: [
         {
@@ -204,6 +214,9 @@ export class FormTrasladoComponent implements OnInit {
         },
       ],
     });
+    if (!disabled) {
+      this.funcionariosFiltrados = this.cambiosFuncionario(form.get('tercero'), 'origen');
+    }
 
     return form;
   }
@@ -234,7 +247,7 @@ export class FormTrasladoComponent implements OnInit {
       ],
     });
     if (!disabled) {
-      this.tercerosDestino = this.cambiosFuncionario(form.get('tercero'));
+      this.tercerosDestino = this.cambiosFuncionario(form.get('tercero'), 'destino');
     }
     return form;
   }
@@ -454,7 +467,54 @@ export class FormTrasladoComponent implements OnInit {
   public getInfoTercero(controlName: string) {
     const terceroId = this.formTraslado.get(controlName + '.tercero').value.Tercero.Id;
     this.loadCargo(terceroId, controlName);
-    this.loadEmail(terceroId, controlName);
+    if (!this.isInternalMode) {
+      this.loadEmail(terceroId, controlName);
+    }
+    if (controlName === 'origen' && this.modo === 'create_internal') {
+      this.clearDestinoIfSameAsOrigen(terceroId);
+      this.loadInventarioByTercero(terceroId);
+    }
+  }
+
+  private clearDestinoIfSameAsOrigen(origenId: number) {
+    const destino = this.formTraslado.get('destino.tercero').value;
+    if (destino && destino.Tercero && destino.Tercero.Id === origenId) {
+      this.formTraslado.get('destino').patchValue({
+        tercero: '',
+        cargo: '',
+        email: '',
+      });
+    }
+  }
+
+  private loadInventarioByTercero(terceroId: number) {
+    this.trasladosHelper.getInventarioTerceroById(terceroId).subscribe({
+      next: (res: any) => {
+        this.resetElementosSeleccionados();
+        if (res && res.Elementos && res.Elementos.length) {
+          this.elementos = res.Elementos;
+          this.elementosFiltrados = res.Elementos;
+        } else {
+          this.elementos = [];
+          this.elementosFiltrados = [];
+          this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.traslados.registrarInterno.noElementos'));
+        }
+      },
+      error: () => {
+        this.resetElementosSeleccionados();
+        this.elementos = [];
+        this.elementosFiltrados = [];
+        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.traslados.consulta.errorElementos'));
+      },
+    });
+  }
+
+  private resetElementosSeleccionados() {
+    const elementos = this.formTraslado.get('elementos') as FormArray;
+    while (elementos.length > 0) {
+      elementos.removeAt(0);
+    }
+    this.dataSource.data = [];
   }
 
   private loadCargo(terceroId: number, controlName: string) {
@@ -522,14 +582,14 @@ export class FormTrasladoComponent implements OnInit {
     });
   }
 
-  private cambiosFuncionario(control: AbstractControl): Observable<Partial<TerceroCriterioContratista>[]> {
+  private cambiosFuncionario(control: AbstractControl, controlName: 'origen' | 'destino'): Observable<Partial<TerceroCriterioContratista>[]> {
     return control.valueChanges
       .pipe(
         startWith(''),
         debounceTime(250),
         distinctUntilChanged(),
         map((val: any) => typeof val === 'string' ? val : this.muestraFuncionario(val)),
-        map((nombre: string) => this.filtroFuncionarios(nombre)),
+        map((nombre: string) => this.filtroFuncionarios(nombre, controlName)),
       );
   }
 
@@ -550,11 +610,21 @@ export class FormTrasladoComponent implements OnInit {
     }
   }
 
-  private filtroFuncionarios(nombre: string): TerceroCriterioContratista[] {
+  private filtroFuncionarios(nombre: string, controlName: 'origen' | 'destino'): TerceroCriterioContratista[] {
     if (nombre.length >= 4 && Array.isArray(this.funcionarios)) {
       const valorFiltrado = nombre.toLowerCase();
-      return this.funcionarios.filter(contr => this.muestraFuncionario(contr).toLowerCase().includes(valorFiltrado));
+      const origen = this.formTraslado && this.formTraslado.get('origen.tercero').value;
+      const origenId = origen && origen.Tercero ? origen.Tercero.Id : null;
+      return this.funcionarios.filter(contr => {
+        const matches = this.muestraFuncionario(contr).toLowerCase().includes(valorFiltrado);
+        const excluded = this.isInternalMode && controlName === 'destino' && origenId && contr.Tercero && contr.Tercero.Id === origenId;
+        return matches && !excluded;
+      });
     } else return [];
+  }
+
+  get isInternalMode(): boolean {
+    return this.modo === 'create_internal';
   }
 
   private loadFuncionarios() {
@@ -579,8 +649,11 @@ export class FormTrasladoComponent implements OnInit {
   }
 
   private checkValidness: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
-    const errors = control.get('origen.tercero').value !== '' &&
-      control.get('origen.tercero').value === control.get('destino.tercero').value;
+    const origen = control.get('origen.tercero').value;
+    const destino = control.get('destino.tercero').value;
+    const origenId = origen && origen.Tercero ? origen.Tercero.Id : null;
+    const destinoId = destino && destino.Tercero ? destino.Tercero.Id : null;
+    const errors = origenId && destinoId && origenId === destinoId;
     errors && this.formTraslado ? control.get('destino.tercero').setErrors({ 'mismoTercero': true }) : null;
     return null;
   }
