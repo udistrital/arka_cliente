@@ -1,3 +1,8 @@
+.reportes-grid {
+  display: grid;
+  gap: 1.5rem;
+}
+
 .full-width {
   width: 100%;
 }
@@ -8,4 +13,79 @@
 
 .loading-message {
   margin-top: 0.5rem;
+}
+
+.checkbox-wrapper {
+  display: flex;
+  align-items: center;
+  min-height: 56px;
+}
+
+.button-inline {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-height: 56px;
+}
+
+.button-inline-end {
+  justify-content: flex-end;
+}
+
+.button-clear-modern {
+  min-height: 40px;
+  padding: 0 0.85rem;
+  border-radius: 999px;
+  background: rgba(36, 71, 124, 0.08);
+  color: #31517d;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.button-clear-modern:hover:not([disabled]) {
+  background: rgba(36, 71, 124, 0.14);
+  color: #243e63;
+}
+
+.button-clear-modern .button-icon {
+  margin-right: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.resultado-paz-y-salvo {
+  margin-top: 1rem;
+}
+
+.resultado-resumen p {
+  margin-bottom: 0.35rem;
+}
+
+.tabla-wrapper {
+  margin-top: 1rem;
+  overflow-x: auto;
+}
+
+.tabla-wrapper h4 {
+  margin-bottom: 0.75rem;
+}
+
+.tabla-wrapper table {
+  width: 100%;
+  table-layout: fixed;
+}
+
+.tabla-wrapper th,
+.tabla-wrapper td {
+  white-space: normal;
+  word-break: break-word;
+  vertical-align: top;
+}
+
+@media (max-width: 991.98px) {
+  .button-inline {
+    margin-top: 0.25rem;
+    justify-content: flex-start;
+  }
 }

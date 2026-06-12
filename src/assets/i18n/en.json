@@ -86,10 +86,13 @@
         }
       },
       "reportes": {
-        "name": "Reports",
+        "name": "Documents",
         "children": {
           "consultar": {
             "name": "Generate Reports"
+          },
+          "pazysalvo": {
+            "name": "Paz y Salvos"
           }
         }
       },
@@ -726,7 +729,7 @@
       "elementosInfo2": "Edit element: Select an Element row",
       "desactivar": "Disable Catalogue",
       "validacion_desactivar": "¿Are you sure you want to disable the catalog? ",
-      "desactivar_success": "Catalogo deshabilidado.", 
+      "desactivar_success": "Catalogo deshabilidado.",
       "noCuenta": "Si la cuenta ingresada no existe, verifique que esté activa en el sistema kronos",
       "lista": "Catalogue List"
     },
@@ -1387,6 +1390,35 @@
        "error_tipo_invalido": "The selected report type is not valid.",
        "error_rango_fechas": "The start date cannot be later than the end date.",
        "error_http": "There was an error while requesting the reports service."
+     },
+     "paz_y_salvo": {
+       "title": "Generate clearance certificate",
+       "subtitle": "Type the employee name or document number to generate and download the PDF.",
+       "numero_documento": "Document number",
+       "funcionario": "Employee",
+       "firmar": "Sign electronically",
+       "generar_pdf": "Generate PDF",
+       "loading": "Generating clearance certificate, please wait...",
+       "success": "The clearance certificate was generated and the download started successfully.",
+       "with_elements": "The clearance certificate cannot be generated because the employee has assigned items.",
+       "warning_title": "Clearance certificate unavailable",
+       "error_documento": "The document number must contain digits only.",
+       "error_descarga_pdf": "The PDF file could not be converted for download.",
+       "estado": "Status",
+       "estado_ok": "Clearance generated",
+       "estado_bloqueado": "Clearance blocked",
+       "funcionario": "Employee",
+       "documento": "Document",
+       "cargo": "Position",
+       "firma_estado": "Electronic signature",
+       "firma_ok": "Signed document",
+       "elementos_title": "Assigned items",
+       "columnas": {
+         "placa": "Tag",
+         "descripcion": "Description",
+         "marca": "Brand",
+         "serie": "Serial"
+       }
      }
    },
    "traslados": {
