@@ -86,10 +86,13 @@
         }
       },
       "reportes": {
-        "name": "Reportes",
+        "name": "Documentos",
         "children": {
           "consultar": {
             "name": "Generar Reportes"
+          },
+          "pazysalvo": {
+            "name": "Paz y Salvos"
           }
         }
       },
@@ -725,7 +728,7 @@
       "elementosInfo2": "Editar elemento: Seleccione un elemento",
       "desactivar": "Desactivar Catálogo",
       "validacion_desactivar" :"¿Está seguro que desea desactivar el catálogo?",
-      "desactivar_success": "Catalogo deshabilidado.", 
+      "desactivar_success": "Catalogo deshabilidado.",
       "lista": "Lista de Catálogos",
       "errorDetalleTtl": "Clase sin parametrizar",
       "noCuenta": "Si la cuenta ingresada no existe, verifique que exista y esté activa en el sistema kronos",
@@ -1387,6 +1390,36 @@
         "error_tipo_invalido": "El tipo de reporte seleccionado no es válido.",
         "error_rango_fechas": "La fecha inicial no puede ser mayor que la fecha final.",
         "error_http": "Ocurrió un error al consultar el servicio de reportes."
+      },
+      "paz_y_salvo": {
+        "title": "Generar paz y salvo",
+        "subtitle": "Digite el nombre o documento del funcionario para generar y descargar el PDF.",
+        "limpiar": "Limpiar formulario",
+        "numero_documento": "Número de documento",
+        "funcionario": "Funcionario",
+        "firmar": "Firmar electrónicamente",
+        "generar_pdf": "Generar PDF",
+        "loading": "Generando paz y salvo, espere por favor...",
+        "success": "El paz y salvo se generó y la descarga inició correctamente.",
+        "with_elements": "No es posible generar el paz y salvo porque el funcionario tiene elementos a cargo.",
+        "warning_title": "Paz y salvo no disponible",
+        "error_documento": "El número de documento debe contener solo números.",
+        "error_descarga_pdf": "No fue posible convertir el archivo PDF para su descarga.",
+        "estado": "Estado",
+        "estado_ok": "Paz y salvo generado",
+        "estado_bloqueado": "No genera paz y salvo",
+        "funcionario": "Funcionario",
+        "documento": "Documento",
+        "cargo": "Cargo",
+        "firma_estado": "Firma electrónica",
+        "firma_ok": "Documento firmado",
+        "elementos_title": "Elementos bajo responsabilidad",
+        "columnas": {
+          "placa": "Placa",
+          "descripcion": "Descripción",
+          "marca": "Marca",
+          "serie": "Serie"
+        }
       }
     },
     "traslados": {

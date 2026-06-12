@@ -1,57 +1,164 @@
-<mat-card [nbSpinner]="loading">
-  <mat-card-title>
-    {{ 'GLOBAL.reportes.consulta.title' | translate }}
-  </mat-card-title>
+<div class="reportes-grid">
+  <mat-card *ngIf="viewMode === 'consultar'" [nbSpinner]="loading">
+    <mat-card-title>
+      {{ 'GLOBAL.reportes.consulta.title' | translate }}
+    </mat-card-title>
 
-  <mat-card-subtitle>
-    <p><span class="fas fa-info-circle"></span>&nbsp;<em>{{ 'GLOBAL.reportes.consulta.subtitle' | translate }}</em></p>
-  </mat-card-subtitle>
+    <mat-card-subtitle>
+      <p><span class="fas fa-info-circle"></span>&nbsp;<em>{{ 'GLOBAL.reportes.consulta.subtitle' | translate }}</em></p>
+    </mat-card-subtitle>
 
-  <mat-card-content>
-    <nb-alert *ngIf="statusMessage" [status]="statusType" class="status-message">
-      {{ statusMessage }}
-    </nb-alert>
+    <mat-card-content>
+      <nb-alert *ngIf="statusMessage" [status]="statusType" class="status-message">
+        {{ statusMessage }}
+      </nb-alert>
 
-    <form [formGroup]="formReportes" class="row">
-      <div class="col-lg-6 col-md-6">
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>{{ 'GLOBAL.fecha_inicio' | translate }}</mat-label>
-          <input matInput [matDatepicker]="pickerInicio" formControlName="fecha_inicio"
-            placeholder="{{ 'GLOBAL.fecha_inicio' | translate }}">
-          <mat-datepicker-toggle matSuffix [for]="pickerInicio"></mat-datepicker-toggle>
-          <mat-datepicker #pickerInicio></mat-datepicker>
-          <mat-error *ngIf="controlFechaInicio.hasError('required')">
-            * {{ 'GLOBAL.Errores.ErrorRequerido' | translate }}
-          </mat-error>
-        </mat-form-field>
+      <form [formGroup]="formReportes" class="row">
+        <div class="col-lg-6 col-md-6">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{ 'GLOBAL.fecha_inicio' | translate }}</mat-label>
+            <input matInput [matDatepicker]="pickerInicio" formControlName="fecha_inicio"
+              placeholder="{{ 'GLOBAL.fecha_inicio' | translate }}">
+            <mat-datepicker-toggle matSuffix [for]="pickerInicio"></mat-datepicker-toggle>
+            <mat-datepicker #pickerInicio></mat-datepicker>
+            <mat-error *ngIf="controlFechaInicio.hasError('required')">
+              * {{ 'GLOBAL.Errores.ErrorRequerido' | translate }}
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="col-lg-6 col-md-6">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{ 'GLOBAL.reportes.consulta.fecha_fin' | translate }}</mat-label>
+            <input matInput [matDatepicker]="pickerFin" formControlName="fecha_fin"
+              placeholder="{{ 'GLOBAL.reportes.consulta.fecha_fin' | translate }}">
+            <mat-datepicker-toggle matSuffix [for]="pickerFin"></mat-datepicker-toggle>
+            <mat-datepicker #pickerFin></mat-datepicker>
+            <mat-error *ngIf="controlFechaFin.hasError('required')">
+              * {{ 'GLOBAL.Errores.ErrorRequerido' | translate }}
+            </mat-error>
+            <mat-error *ngIf="formReportes.hasError('invalidDateRange') && (controlFechaInicio.touched || controlFechaFin.touched)">
+              * {{ 'GLOBAL.reportes.consulta.error_rango_fechas' | translate }}
+            </mat-error>
+          </mat-form-field>
+        </div>
+      </form>
+
+      <p *ngIf="loading" class="loading-message">
+        <em>{{ 'GLOBAL.reportes.consulta.loading' | translate }}</em>
+      </p>
+    </mat-card-content>
+
+    <mat-card-actions>
+      <button mat-raised-button color="primary" class="float-right text-uppercase"
+        [disabled]="formReportes.invalid || loading" (click)="generarReporte()">
+        {{ 'GLOBAL.reportes.consulta.generar_excel' | translate }}
+      </button>
+    </mat-card-actions>
+  </mat-card>
+
+  <mat-card *ngIf="viewMode === 'pazysalvo'" [nbSpinner]="loadingPazYSalvo">
+    <mat-card-title>
+      {{ 'GLOBAL.reportes.paz_y_salvo.title' | translate }}
+    </mat-card-title>
+
+    <mat-card-subtitle>
+      <p><span class="fas fa-file-pdf"></span>&nbsp;<em>{{ 'GLOBAL.reportes.paz_y_salvo.subtitle' | translate }}</em></p>
+    </mat-card-subtitle>
+
+    <mat-card-content>
+      <nb-alert *ngIf="statusMessagePazYSalvo" [status]="statusTypePazYSalvo" class="status-message">
+        {{ statusMessagePazYSalvo }}
+      </nb-alert>
+
+      <form [formGroup]="formPazYSalvo" class="row">
+        <div class="col-lg-9 col-md-8">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{ 'GLOBAL.reportes.paz_y_salvo.funcionario' | translate }}</mat-label>
+            <input matInput formControlName="funcionario" [matAutocomplete]="autoFuncionario"
+              placeholder="{{ 'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}">
+            <mat-autocomplete #autoFuncionario="matAutocomplete" [displayWith]="muestraFuncionario">
+              <mat-option *ngFor="let funcionario of funcionariosFiltrados | async" [value]="funcionario">
+                {{ muestraFuncionario(funcionario) }}
+              </mat-option>
+            </mat-autocomplete>
+            <mat-error *ngIf="controlFuncionario.hasError('required')">
+              * {{ 'GLOBAL.Errores.ErrorRequerido' | translate }}
+            </mat-error>
+            <mat-error *ngIf="controlFuncionario.hasError('errorLongitudMinima')">
+              * {{ 'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}
+            </mat-error>
+            <mat-error *ngIf="controlFuncionario.hasError('funcionarioNoValido')">
+              * {{ 'GLOBAL.Errores.ErrorTercero' | translate }}
+            </mat-error>
+          </mat-form-field>
+        </div>
+        <div class="col-lg-3 col-md-4">
+          <div class="button-inline button-inline-end">
+            <button mat-button type="button" class="text-uppercase button-clear-modern"
+              [disabled]="loadingPazYSalvo" (click)="limpiarPazYSalvo()">
+              <span class="fas fa-eraser button-icon" aria-hidden="true"></span>
+              {{ 'GLOBAL.reportes.paz_y_salvo.limpiar' | translate }}
+            </button>
+          </div>
+        </div>
+      </form>
+
+      <p *ngIf="loadingPazYSalvo" class="loading-message">
+        <em>{{ 'GLOBAL.reportes.paz_y_salvo.loading' | translate }}</em>
+      </p>
+
+      <div *ngIf="pazYSalvoGenerado" class="resultado-paz-y-salvo">
+        <div class="resultado-resumen">
+          <p>
+            <strong>{{ 'GLOBAL.reportes.paz_y_salvo.estado' | translate }}:</strong>
+            {{ pazYSalvoGenerado.puede_generar_paz_y_salvo
+              ? ('GLOBAL.reportes.paz_y_salvo.estado_ok' | translate)
+              : ('GLOBAL.reportes.paz_y_salvo.estado_bloqueado' | translate) }}
+          </p>
+          <p *ngIf="pazYSalvoGenerado.tercero">
+            <strong>{{ 'GLOBAL.reportes.paz_y_salvo.funcionario' | translate }}:</strong>
+            {{ pazYSalvoGenerado.tercero.nombre_completo }}
+          </p>
+          <p *ngIf="pazYSalvoGenerado.tercero">
+            <strong>{{ 'GLOBAL.reportes.paz_y_salvo.documento' | translate }}:</strong>
+            {{ pazYSalvoGenerado.tercero.tipo_documento }} {{ pazYSalvoGenerado.tercero.numero_documento }}
+          </p>
+          <p *ngIf="pazYSalvoGenerado.tercero?.cargo">
+            <strong>{{ 'GLOBAL.reportes.paz_y_salvo.cargo' | translate }}:</strong>
+            {{ pazYSalvoGenerado.tercero.cargo }}
+          </p>
+        </div>
+
+        <div *ngIf="pazYSalvoGenerado.elementos?.length" class="tabla-wrapper">
+          <h4>{{ 'GLOBAL.reportes.paz_y_salvo.elementos_title' | translate }}</h4>
+          <table class="table table-striped table-bordered table-sm">
+            <thead>
+              <tr>
+                <th>{{ 'GLOBAL.reportes.paz_y_salvo.columnas.placa' | translate }}</th>
+                <th>{{ 'GLOBAL.reportes.paz_y_salvo.columnas.descripcion' | translate }}</th>
+                <th>{{ 'GLOBAL.reportes.paz_y_salvo.columnas.marca' | translate }}</th>
+                <th>{{ 'GLOBAL.reportes.paz_y_salvo.columnas.serie' | translate }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let elemento of pazYSalvoGenerado.elementos">
+                <td>{{ elemento.Placa }}</td>
+                <td>{{ elemento.Nombre }}</td>
+                <td>{{ elemento.Marca }}</td>
+                <td>{{ elemento.Serie }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
+    </mat-card-content>
 
-      <div class="col-lg-6 col-md-6">
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>{{ 'GLOBAL.reportes.consulta.fecha_fin' | translate }}</mat-label>
-          <input matInput [matDatepicker]="pickerFin" formControlName="fecha_fin"
-            placeholder="{{ 'GLOBAL.reportes.consulta.fecha_fin' | translate }}">
-          <mat-datepicker-toggle matSuffix [for]="pickerFin"></mat-datepicker-toggle>
-          <mat-datepicker #pickerFin></mat-datepicker>
-          <mat-error *ngIf="controlFechaFin.hasError('required')">
-            * {{ 'GLOBAL.Errores.ErrorRequerido' | translate }}
-          </mat-error>
-          <mat-error *ngIf="formReportes.hasError('invalidDateRange') && (controlFechaInicio.touched || controlFechaFin.touched)">
-            * {{ 'GLOBAL.reportes.consulta.error_rango_fechas' | translate }}
-          </mat-error>
-        </mat-form-field>
-      </div>
-    </form>
-
-    <p *ngIf="loading" class="loading-message">
-      <em>{{ 'GLOBAL.reportes.consulta.loading' | translate }}</em>
-    </p>
-  </mat-card-content>
-
-  <mat-card-actions>
-    <button mat-raised-button color="primary" class="float-right text-uppercase"
-      [disabled]="formReportes.invalid || loading" (click)="generarReporte()">
-      {{ 'GLOBAL.reportes.consulta.generar_excel' | translate }}
-    </button>
-  </mat-card-actions>
-</mat-card>
+    <mat-card-actions>
+      <button mat-raised-button color="accent" class="float-right text-uppercase"
+        [disabled]="formPazYSalvo.invalid || loadingPazYSalvo" (click)="generarPazYSalvo()">
+        {{ 'GLOBAL.reportes.paz_y_salvo.generar_pdf' | translate }}
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</div>
