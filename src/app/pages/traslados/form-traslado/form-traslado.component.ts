@@ -65,7 +65,7 @@ export class FormTrasladoComponent implements OnInit {
   private async initForms() {
     const data = [this.buildForm(), this.loadUbicaciones(), this.loadInventario()];
     await Promise.all(data);
-    if (this.modo !== 'create') {
+    if (this.trasladoInfo && (this.modo === 'get' || this.modo === 'put')) {
       this.loadValues(this.trasladoInfo);
     }
     this.load = true;
@@ -301,6 +301,10 @@ export class FormTrasladoComponent implements OnInit {
   }
 
   private loadValues(values: any) {
+    if (!values) {
+      return;
+    }
+
     if (values.trContable) {
       this.trContable = values.trContable;
     }
