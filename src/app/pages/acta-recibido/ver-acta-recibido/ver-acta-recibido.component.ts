@@ -7,7 +7,7 @@ import { ActaRecibido } from '../../../@core/data/models/acta_recibido/acta_reci
 import { TerceroCriterioContratista, TerceroCriterioProveedor } from '../../../@core/data/models/terceros_criterio';
 import { Elemento } from '../../../@core/data/models/acta_recibido/elemento';
 import { SoporteActa } from '../../../@core/data/models/acta_recibido/soporte_acta';
-import { EstadoActa_t } from '../../../@core/data/models/acta_recibido/estado_acta';
+import { EstadoActa, EstadoActa_t } from '../../../@core/data/models/acta_recibido/estado_acta';
 import { EstadoElemento, EstadoElemento_t } from '../../../@core/data/models/acta_recibido/estado_elemento';
 import { HistoricoActa } from '../../../@core/data/models/acta_recibido/historico_acta';
 import { TransaccionActaRecibido } from '../../../@core/data/models/acta_recibido/transaccion_acta_recibido';
@@ -352,13 +352,13 @@ export class VerActaRecibidoComponent implements OnInit {
 
     historico.Id = null;
     historico.ProveedorId = proveedor ? proveedor.Tercero.Id : null;
-    historico.UbicacionId = ubicacionId ? ubicacionId : null;
+    historico.UbicacionId = this.centroCostosHelper.getCentroCostoId(ubicacionId) || null;
     historico.PersonaAsignadaId = contratista ? contratista.Tercero.Id : null;
     historico.RevisorId = this.userService.getPersonaId();
     historico.Observaciones = observaciones;
     historico.FechaVistoBueno = aceptar ? new Date() : null;
     historico.ActaRecibidoId = <ActaRecibido>{ Id: +this._ActaId };
-    historico.EstadoActaId = this.Estados_Acta.find(estado => estado.Id === Estado);
+    historico.EstadoActaId = <EstadoActa>{ Id: Estado };
     historico.Activo = true;
 
     return historico;

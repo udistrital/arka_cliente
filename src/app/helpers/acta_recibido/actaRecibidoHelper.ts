@@ -350,7 +350,7 @@ export class ActaRecibidoHelper {
      */
     public postTransaccionActa(Transaccion) {
         this.rqManager.setPath('ACTA_RECIBIDO_SERVICE');
-        return this.rqManager.post('transaccion_acta_recibido', Transaccion).pipe(
+        return this.rqManager.post('transaccion_acta_recibido', this.normalizarTransaccionActa(Transaccion)).pipe(
             map(
                 (res) => {
                     if (res['Type'] === 'error') {
@@ -371,7 +371,7 @@ export class ActaRecibidoHelper {
      */
     public putTransaccionActa(Transaccion, Id) {
         this.rqManager.setPath('ACTA_RECIBIDO_SERVICE');
-        return this.rqManager.put2('transaccion_acta_recibido', Transaccion, Id).pipe(
+        return this.rqManager.put2('transaccion_acta_recibido', this.normalizarTransaccionActa(Transaccion), Id).pipe(
             map(
                 (res) => {
                     if (res['Type'] === 'error') {
@@ -382,6 +382,44 @@ export class ActaRecibidoHelper {
                 },
             ),
         );
+    }
+
+    private normalizarTransaccionActa(transaccion: any) {
+        if (!transaccion || !transaccion.UltimoEstado) {
+            return transaccion;
+        }
+
+        const ultimoEstado = {
+            ...transaccion.UltimoEstado,
+            UbicacionId: this.getIdPlano(transaccion.UltimoEstado.UbicacionId),
+            EstadoActaId: this.getIdRelacion(transaccion.UltimoEstado.EstadoActaId),
+        };
+
+        return {
+            ...transaccion,
+            UltimoEstado: ultimoEstado,
+        };
+    }
+
+    private getIdPlano(value: any): number {
+        if (!value) {
+            return null;
+        }
+
+        if (typeof value === 'number') {
+            return value;
+        }
+
+        if (value.Ubicacion) {
+            return this.getIdPlano(value.Ubicacion);
+        }
+
+        return value.Id || null;
+    }
+
+    private getIdRelacion(value: any): any {
+        const id = this.getIdPlano(value);
+        return id ? { Id: id } : value;
     }
 
     /**
