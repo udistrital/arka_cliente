@@ -50,7 +50,7 @@
           <input matInput type="text" class="form-control" formControlName="cargo"
             placeholder="{{'GLOBAL.Cargo' | translate}}">
         </div>
-        <div class="form-group col-sm">
+        <div class="form-group col-sm" *ngIf="!isInternalMode">
           <label>{{'GLOBAL.Correo' | translate}}</label>
           <input matInput type="text" class="form-control" formControlName="email"
             placeholder="{{'GLOBAL.Correo' | translate}}">
@@ -101,7 +101,7 @@
           <input matInput type="text" class="form-control" formControlName="cargo"
             placeholder="{{'GLOBAL.Cargo' | translate : {NUM : 4} }}">
         </div>
-        <div class="form-group col-sm">
+        <div class="form-group col-sm" *ngIf="!isInternalMode">
           <label>{{'GLOBAL.Correo' | translate}}</label>
           <input matInput type="text" class="form-control" formControlName="email"
             placeholder="{{'GLOBAL.Correo' | translate : {NUM : 4} }}">

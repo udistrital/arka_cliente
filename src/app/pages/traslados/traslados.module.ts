@@ -9,6 +9,7 @@ import { ConsultaTrasladosComponent } from './consulta-traslados/consulta-trasla
 import { Ng2SmartTableModule } from 'ng2-smart-table';
 import { CrudTrasladoComponent } from './crud-traslado/crud-traslado.component';
 import { AjustesModule } from '../ajustes/ajustes.module';
+import { RegistrarTrasladoComponent } from './registrar-traslado/registrar-traslado.component';
 
 
 @NgModule({
@@ -17,6 +18,7 @@ import { AjustesModule } from '../ajustes/ajustes.module';
     FormTrasladoComponent,
     ConsultaTrasladosComponent,
     CrudTrasladoComponent,
+    RegistrarTrasladoComponent,
   ],
   imports: [
     CommonModule,

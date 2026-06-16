@@ -185,11 +185,17 @@ export class GestionarElementosComponent implements OnInit {
           value: el.Marca,
           disabled,
         },
+        {
+          validators: [Validators.required, Validators.maxLength(50)],
+        },
       ],
       Serie: [
         {
           value: el.Serie,
           disabled,
+        },
+        {
+          validators: [Validators.required, Validators.maxLength(100)],
         },
       ],
       UnidadMedida: [
@@ -198,7 +204,7 @@ export class GestionarElementosComponent implements OnInit {
           disabled,
         },
         {
-          validators: [Validators.min(1)],
+          validators: [Validators.required, Validators.min(1)],
         },
       ],
       ValorUnitario: [
@@ -260,6 +266,9 @@ export class GestionarElementosComponent implements OnInit {
           value: el.TipoBienId ? el.TipoBienId : '',
           disabled,
         },
+        {
+          validators: this.mostrarClase ? [Validators.required, this.validarTipoBien('Id')] : [],
+        },
       ],
       ValorResidual: [
         {
@@ -301,6 +310,8 @@ export class GestionarElementosComponent implements OnInit {
     form.get('TipoBienId').markAsTouched();
     form.get('Nombre').markAsTouched();
     form.get('Cantidad').markAsTouched();
+    form.get('Marca').markAsTouched();
+    form.get('Serie').markAsTouched();
     form.get('UnidadMedida').markAsTouched();
     form.get('ValorUnitario').markAsTouched();
     form.get('Descuento').markAsTouched();
@@ -326,9 +337,83 @@ export class GestionarElementosComponent implements OnInit {
   // Event emission
   private emit() {
     const elementos = this.formElementos.get('elementos') as FormArray;
-    this.ElementosValidos.emit(this.Modo === 'verificar' ? this.checkTodos : elementos.length > 0);
-    this.DatosEnviados.emit(this.elementos_);
+    const valid = this.Modo === 'verificar' ? this.checkTodos : this.validarElementosCompletos(elementos);
+    const editados = this.elementos_;
+
+    this.ElementosValidos.emit(valid);
+    this.DatosEnviados.emit(editados);
     this.getTotales();
+  }
+
+  private validarElementosCompletos(elementos: FormArray): boolean {
+    if (this.Modo === 'ajustar') {
+      const seleccionadosEditados = elementos.controls.filter(ctrl => {
+        const s = ctrl.get('Seleccionado');
+        return !!(s && s.value) && ctrl.dirty;
+      });
+      return seleccionadosEditados.length > 0 && seleccionadosEditados.every(control => this.elementoCompleto(control as FormGroup));
+    }
+    return elementos.length > 0 && elementos.controls.every(control => this.elementoCompleto(control as FormGroup));
+  }
+
+  private elementoCompleto(control: FormGroup): boolean {
+    if (control.disabled) {
+      return true;
+    }
+
+    const camposRequeridos = [
+      'Nombre',
+      'Cantidad',
+      'Marca',
+      'Serie',
+      'UnidadMedida',
+      'ValorUnitario',
+      'PorcentajeIvaId',
+      'ValorTotal',
+    ];
+
+    if (this.mostrarClase) {
+      camposRequeridos.push('SubgrupoCatalogoId');
+      if (this.Modo !== 'ajustar') {
+        camposRequeridos.push('TipoBienId');
+      }
+    }
+
+    const camposAjuste = ['ValorResidual', 'VidaUtil'];
+    const campos = this.Modo === 'ajustar' || this.ajustes ?
+      camposRequeridos.concat(camposAjuste) :
+      camposRequeridos;
+
+    return campos.every(campo => this.controlCompleto(control.get(campo), campo === 'ValorTotal'));
+  }
+
+  private controlCompleto(control: AbstractControl, debeSerMayorACero: boolean = false): boolean {
+    if (!control || control.disabled) {
+      return true;
+    }
+
+    if (control.invalid) {
+      return false;
+    }
+
+    const valor = control.value;
+    if (valor === null || valor === undefined) {
+      return false;
+    }
+
+    if (typeof valor === 'string') {
+      return valor.trim().length > 0;
+    }
+
+    if (typeof valor === 'number') {
+      return !Number.isNaN(valor) && (debeSerMayorACero ? valor > 0 : true);
+    }
+
+    if (typeof valor === 'object') {
+      return !!valor.Id;
+    }
+
+    return !!valor;
   }
 
   private submitForm(statusChanges: Observable<any>) {
@@ -365,7 +450,7 @@ export class GestionarElementosComponent implements OnInit {
   get elementosF_() {
     if (this.Modo === 'ajustar') {
       return (this.formElementos.get('elementos') as FormArray).controls
-        .filter(el_ => el_.dirty);
+        .filter(el_ => { const s = el_.get('Seleccionado'); return !!(s && s.value) && el_.dirty; });
     } else {
       return (this.formElementos.get('elementos') as FormArray).controls;
     }

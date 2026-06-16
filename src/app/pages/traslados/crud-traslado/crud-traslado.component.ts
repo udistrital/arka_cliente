@@ -31,7 +31,7 @@ export class CrudTrasladoComponent implements OnInit {
   rechazo: string = '';
   trContable: any;
   movimiento: Movimiento;
-  @Input() modoCrud: string = 'registrar' || 'ver' || 'editar' || 'confirmar' || 'revisar';
+  @Input() modoCrud: string = 'registrar' || 'registrarInterno' || 'ver' || 'editar' || 'confirmar' || 'revisar';
   @Input() trasladoId: number = 0;
   @Output() accion: EventEmitter<boolean> = new EventEmitter<boolean>();
 
@@ -52,6 +52,9 @@ export class CrudTrasladoComponent implements OnInit {
     if (this.modoCrud === 'registrar') {
       this.modoForm = 'create';
       this.showForm = true;
+    } else if (this.modoCrud === 'registrarInterno') {
+      this.modoForm = 'create_internal';
+      this.showForm = true;
     } else if (this.modoCrud !== 'editar' && this.trasladoId) {
       this.getTraslado(this.trasladoId);
       this.modoForm = 'get';
@@ -60,10 +63,10 @@ export class CrudTrasladoComponent implements OnInit {
       this.getTraslado(this.trasladoId);
       this.modoForm = 'put';
     }
-    this.title = this.translate.instant('GLOBAL.traslados.' + this.modoCrud + '.title');
-    this.subtitle = this.translate.instant('GLOBAL.traslados.' + this.modoCrud + '.subtitle');
-    this.boton = this.translate.instant('GLOBAL.traslados.' + this.modoCrud + '.accion');
-    this.botonR = this.translate.instant('GLOBAL.traslados.' + this.modoCrud + '.accionR');
+    this.title = this.translate.instant('GLOBAL.traslados.' + this.modoCrudI18n + '.title');
+    this.subtitle = this.translate.instant('GLOBAL.traslados.' + this.modoCrudI18n + '.subtitle');
+    this.boton = this.translate.instant('GLOBAL.traslados.' + this.modoCrudI18n + '.accion');
+    this.botonR = this.translate.instant('GLOBAL.traslados.' + this.modoCrudI18n + '.accionR');
   }
 
   getTraslado(trasladoId: number) {
@@ -158,7 +161,8 @@ export class CrudTrasladoComponent implements OnInit {
       const Ubicacion = val.controls.ubicacion.value.ubicacion ? val.controls.ubicacion.value.ubicacion.Id : 0;
       const Observacion = val.controls.observaciones.value.observaciones;
       const estadoId =
-        (this.modoCrud === 'registrar' || (this.modoCrud === 'editar' && !rechazar)) ? 'Traslado Por Confirmar' :
+        (this.modoCrud === 'registrarInterno') ? 'Traslado Confirmado' :
+          (this.modoCrud === 'registrar' || (this.modoCrud === 'editar' && !rechazar)) ? 'Traslado Por Confirmar' :
           (this.modoCrud === 'editar' && rechazar) ? 'Traslado Anulado' :
             (rechazar) ? 'Traslado Rechazado' :
               (this.modoCrud === 'confirmar') ? 'Traslado Confirmado' :
@@ -190,6 +194,8 @@ export class CrudTrasladoComponent implements OnInit {
       };
       if (this.modoCrud === 'registrar') {
         this.postTraslado(movimiento);
+      } else if (this.modoCrud === 'registrarInterno') {
+        this.postTrasladoInterno(movimiento);
       } else if (this.modoCrud !== 'revisar' || rechazar) {
         this.updateTraslado(movimiento, rechazar);
       } else {
@@ -208,6 +214,14 @@ export class CrudTrasladoComponent implements OnInit {
   private postTraslado(movimiento) {
     this.trasladosHelper.postTraslado(movimiento).subscribe((res: any) => {
       this.alertSuccess(false, res.Consecutivo);
+    });
+  }
+
+  private postTrasladoInterno(movimiento) {
+    this.trasladosHelper.postTrasladoInterno(movimiento).subscribe((res: any) => {
+      if (res) {
+        this.alertSuccess(false, res.Consecutivo);
+      }
     });
   }
 
@@ -233,8 +247,8 @@ export class CrudTrasladoComponent implements OnInit {
 
   private alertSuccess(rechazar: boolean, consecutivo: string) {
     const sfx = (this.modoCrud !== 'editar' && this.modoCrud !== 'confirmar' && this.modoCrud !== 'revisar') ? '' : rechazar ? 'R' : 'A';
-    const title = this.translate.instant('GLOBAL.traslados.' + this.modoCrud + '.successTtl' + sfx);
-    const text = this.translate.instant('GLOBAL.traslados.' + this.modoCrud + '.successTxt' + sfx, { CONSECUTIVO: consecutivo });
+    const title = this.translate.instant('GLOBAL.traslados.' + this.modoCrudI18n + '.successTtl' + sfx);
+    const text = this.translate.instant('GLOBAL.traslados.' + this.modoCrudI18n + '.successTxt' + sfx, { CONSECUTIVO: consecutivo });
     const options = {
       type: 'success',
       title,
@@ -256,8 +270,8 @@ export class CrudTrasladoComponent implements OnInit {
 
   private optionsConfirm(rechazar: boolean) {
     const sfx = (this.modoCrud !== 'editar' && this.modoCrud !== 'confirmar' && this.modoCrud !== 'revisar') ? '' : rechazar ? 'R' : 'A';
-    const title = this.translate.instant('GLOBAL.traslados.' + this.modoCrud + '.confrmTtl' + sfx);
-    const text = this.translate.instant('GLOBAL.traslados.' + this.modoCrud + '.confrmTxt' + sfx);
+    const title = this.translate.instant('GLOBAL.traslados.' + this.modoCrudI18n + '.confrmTtl' + sfx);
+    const text = this.translate.instant('GLOBAL.traslados.' + this.modoCrudI18n + '.confrmTxt' + sfx);
     return {
       title,
       text,
@@ -272,8 +286,8 @@ export class CrudTrasladoComponent implements OnInit {
 
   get optionsRechazo() {
     return {
-      title: this.translate.instant('GLOBAL.traslados.' + this.modoCrud + '.confrmTtlR'),
-      text: this.translate.instant('GLOBAL.traslados.' + this.modoCrud + '.confrmTxtR'),
+      title: this.translate.instant('GLOBAL.traslados.' + this.modoCrudI18n + '.confrmTtlR'),
+      text: this.translate.instant('GLOBAL.traslados.' + this.modoCrudI18n + '.confrmTxtR'),
       type: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
@@ -281,6 +295,10 @@ export class CrudTrasladoComponent implements OnInit {
       confirmButtonText: this.translate.instant('GLOBAL.si'),
       cancelButtonText: this.translate.instant('GLOBAL.no'),
     };
+  }
+
+  get modoCrudI18n(): string {
+    return this.modoCrud === 'registrarInterno' ? 'registrarInterno' : this.modoCrud;
   }
 
 }

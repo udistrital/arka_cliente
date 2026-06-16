@@ -101,8 +101,11 @@ export class ListaMovimientosComponent implements OnInit {
 
   public loadAjuste(event) {
     this.spinner = 'Cargando ajuste';
-    this.salidasHelper.getDetalleAjuste(event.data.Id).subscribe(res => {
-      if (res.Elementos) {
+    this.salidasHelper.getDetalleAjuste(event.data.Id).pipe(
+      finalize(() => this.spinner = ''),
+      catchError(() => of(null)),
+    ).subscribe(res => {
+      if (res && res.Elementos) {
         this.ajuste = res;
         this.ajuste.TrContable = {
           movimientos: res.TrContable,
@@ -113,7 +116,6 @@ export class ListaMovimientosComponent implements OnInit {
           { CONSECUTIVO: res.Movimiento.Consecutivo });
         this.subtitle = this.translate.instant('GLOBAL.ajuste-auto.sbtttlInfo');
       }
-      this.spinner = '';
     });
   }
 
