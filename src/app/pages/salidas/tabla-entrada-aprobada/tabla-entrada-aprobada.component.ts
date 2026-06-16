@@ -5,6 +5,7 @@ import { Entrada } from '../../../@core/data/models/entrada/entrada';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { SalidaHelper } from '../../../helpers/salidas/salidasHelper';
 import { SmartTableService } from '../../../@core/data/SmartTableService';
+import { CentroCostosHelper } from '../../../helpers/movimientos/centroCostosHelper';
 
 @Component({
   selector: 'ngx-tabla-entrada-aprobada',
@@ -25,12 +26,14 @@ export class TablaEntradaAprobadaComponent implements OnInit {
   settings: any;
   mode: string = 'determinate';
   salida: any;
+  centrosCosto: any[] = [];
 
   constructor(
     private entradasHelper: EntradaHelper,
     private salidasHelper: SalidaHelper,
     private translate: TranslateService,
-    private tabla: SmartTableService) {
+    private tabla: SmartTableService,
+    public centroCostosHelper: CentroCostosHelper) {
     this.source = new LocalDataSource();
   }
 
@@ -128,7 +131,26 @@ export class TablaEntradaAprobadaComponent implements OnInit {
   loadSalida(): void {
     this.salidasHelper.getSalida(this.salida_id).subscribe(res => {
       this.salida = res.Salida;
+      if (this.salida) {
+        this.salida.Ubicacion = this.resolveCentroCosto(this.salida.Ubicacion);
+      }
     });
+  }
+
+  private loadCentroCostos(): void {
+    this.centroCostosHelper.getAllCentroCostos().subscribe((res: any) => {
+      this.centrosCosto = res || [];
+      if (this.salida) {
+        this.salida.Ubicacion = this.resolveCentroCosto(this.salida.Ubicacion);
+      }
+    });
+  }
+
+  private resolveCentroCosto(value: any) {
+    const centroCostoId = this.centroCostosHelper.getCentroCostoId(value);
+    return this.centroCostosHelper.findCentroCostoById(this.centrosCosto, centroCostoId) ||
+      this.centroCostosHelper.normalizarCentroCosto(value) ||
+      value;
   }
 
   onCustom(event) {
@@ -147,6 +169,7 @@ export class TablaEntradaAprobadaComponent implements OnInit {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => {
       this.loadTablaSettings();
     });
+    this.loadCentroCostos();
 
     if (!this.edicion) {
       this.loadTablaSettings();

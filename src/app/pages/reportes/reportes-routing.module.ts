@@ -14,6 +14,11 @@ const routes: Routes = [{
       canActivate: [AuthGuard],
     },
     {
+      path: 'pazysalvo',
+      component: ConsultaReportesComponent,
+      canActivate: [AuthGuard],
+    },
+    {
       path: '',
       redirectTo: 'consultar',
       pathMatch: 'full',

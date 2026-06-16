@@ -4,7 +4,6 @@ import { FormBuilder, FormGroup, Validators, ValidatorFn, AbstractControl, Valid
 import { ActaRecibidoHelper } from '../../../helpers/acta_recibido/actaRecibidoHelper';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
-import { OikosHelper } from '../../../helpers/oikos/oikosHelper';
 import { TerceroCriterioContratista } from '../../../@core/data/models/terceros_criterio';
 import { debounceTime, distinctUntilChanged, map, startWith } from 'rxjs/operators';
 import { MatTableDataSource } from '@angular/material/table';
@@ -14,6 +13,7 @@ import { PopUpManager } from '../../../managers/popUpManager';
 import { Store } from '@ngrx/store';
 import { IAppState } from '../../../@core/store/app.state';
 import { ListService } from '../../../@core/store/services/list.service';
+import { CentroCostosHelper } from '../../../helpers/movimientos/centroCostosHelper';
 
 @Component({
   selector: 'ngx-form-traslado',
@@ -25,8 +25,6 @@ export class FormTrasladoComponent implements OnInit {
   private funcionarios: TerceroCriterioContratista[];
   funcionariosFiltrados: Observable<Partial<TerceroCriterioContratista>[]>;
   tercerosDestino: Observable<Partial<TerceroCriterioContratista>[]>;
-  dependencias: any;
-  sedes: any;
   formTraslado: FormGroup;
   ubicacionesFiltradas: any = [];
   displayedColumns: string[] = ['acciones', 'placa', 'nombre', 'marca', 'serie', 'valor'];
@@ -38,7 +36,7 @@ export class FormTrasladoComponent implements OnInit {
   elementosFiltrados: any[];
   trContable: any;
   @Output() valid = new EventEmitter<boolean>();
-  @Input() modo: string; // 'create' || 'get' || 'put'
+  @Input() modo: string; // 'create' || 'create_internal' || 'get' || 'put'
   @Input() trasladoInfo: any;
   @Output() trasladoInfoChange: EventEmitter<any> = new EventEmitter<any>();
 
@@ -46,7 +44,7 @@ export class FormTrasladoComponent implements OnInit {
     private translate: TranslateService,
     private fb: FormBuilder,
     private tercerosHelper: TercerosHelper,
-    public oikosHelper: OikosHelper,
+    public centroCostosHelper: CentroCostosHelper,
     private trasladosHelper: TrasladosHelper,
     private pUpManager: PopUpManager,
     private listService: ListService,
@@ -65,7 +63,7 @@ export class FormTrasladoComponent implements OnInit {
   }
 
   private async initForms() {
-    const data = [this.buildForm(), this.loadUbicaciones(), this.loadSedes(), this.loadInventario()];
+    const data = [this.buildForm(), this.loadUbicaciones(), this.loadInventario()];
     await Promise.all(data);
     if (this.modo !== 'create') {
       this.loadValues(this.trasladoInfo);
@@ -94,45 +92,18 @@ export class FormTrasladoComponent implements OnInit {
 
   private loadUbicaciones(): Promise<void> {
     return new Promise<void>(resolve => {
-      if (!this.trasladoInfo || !this.trasladoInfo.ubicacion || !this.trasladoInfo.ubicacion.Ubicacion) {
+      this.centroCostosHelper.getAllCentroCostos().subscribe((res: any) => {
+        this.ubicacionesFiltradas = res || [];
         resolve();
-      } else {
-        if (this.modo === 'put') {
-          const sede = this.trasladoInfo.ubicacion.Sede;
-          const dependencia = this.trasladoInfo.ubicacion.Dependencia;
-          this.oikosHelper.getAsignacionesBySedeAndDependencia(sede.CodigoAbreviacion, dependencia.Id).subscribe((res: any) => {
-            this.ubicacionesFiltradas = res;
-            resolve();
-          });
-        } else if (this.modo === 'get') {
-          this.ubicacionesFiltradas = [this.trasladoInfo.ubicacion.Ubicacion];
-          resolve();
-        } else {
-          resolve();
-        }
-      }
-
-    });
-  }
-
-  private loadSedes(): Promise<void> {
-    return new Promise<void>(resolve => {
-      if (this.modo !== 'get') {
-        this.oikosHelper.getSedes().subscribe((res: any) => {
-          this.sedes = res;
-          resolve();
-        });
-      } else if (this.trasladoInfo && this.trasladoInfo.ubicacion && this.trasladoInfo.ubicacion.Sede) {
-        this.sedes = [this.trasladoInfo.ubicacion.Sede];
-        resolve();
-      }
-
+      });
     });
   }
 
   private loadInventario(): Promise<void> {
     return new Promise<void>(resolve => {
-      if (this.modo !== 'get') {
+      if (this.modo === 'create_internal') {
+        resolve();
+      } else if (this.modo !== 'get') {
         this.trasladosHelper.getInventarioTercero().subscribe({
           next: (res: any) => {
             if (res && res.Elementos && res.Elementos.length) {
@@ -180,7 +151,7 @@ export class FormTrasladoComponent implements OnInit {
   }
 
   get terceroOrigen(): FormGroup {
-    const disabled = true;
+    const disabled = this.modo !== 'create_internal';
     const form = this.fb.group({
       tercero: [
         {
@@ -204,6 +175,9 @@ export class FormTrasladoComponent implements OnInit {
         },
       ],
     });
+    if (!disabled) {
+      this.funcionariosFiltrados = this.cambiosFuncionario(form.get('tercero'), 'origen');
+    }
 
     return form;
   }
@@ -234,7 +208,7 @@ export class FormTrasladoComponent implements OnInit {
       ],
     });
     if (!disabled) {
-      this.tercerosDestino = this.cambiosFuncionario(form.get('tercero'));
+      this.tercerosDestino = this.cambiosFuncionario(form.get('tercero'), 'destino');
     }
     return form;
   }
@@ -247,18 +221,14 @@ export class FormTrasladoComponent implements OnInit {
           value: '',
           disabled,
         },
-        {
-          validators: [Validators.required],
-        },
+        {},
       ],
       dependencia: [
         {
           value: '',
           disabled,
         },
-        {
-          validators: [Validators.required, this.validateObjectCompleter()],
-        },
+        {},
       ],
       ubicacion: [
         {
@@ -270,9 +240,6 @@ export class FormTrasladoComponent implements OnInit {
         },
       ],
     });
-    if (!disabled) {
-      this.cambiosDependencia(form.get('sede'), form.get('dependencia'));
-    }
     return form;
   }
 
@@ -358,15 +325,18 @@ export class FormTrasladoComponent implements OnInit {
     this.formTraslado.get('destino').patchValue({ email: emailD });
     this.formTraslado.get('destino').patchValue({ cargo: cargoD });
 
-    if (values.ubicacion && values.ubicacion.Sede) {
-      const sede = values.ubicacion.Sede.Id;
-      const dependencia = values.ubicacion.Dependencia;
-      const ubicacion = values.ubicacion.Ubicacion.Id;
+    const ubicacionValue = values.ubicacion && values.ubicacion.Ubicacion ?
+      values.ubicacion.Ubicacion : values.ubicacion;
+    if (ubicacionValue) {
+      const ubicacion = this.centroCostosHelper.findCentroCostoById(
+        this.ubicacionesFiltradas,
+        this.centroCostosHelper.getCentroCostoId(ubicacionValue),
+      ) || this.centroCostosHelper.normalizarCentroCosto(ubicacionValue) || ubicacionValue;
 
       this.formTraslado.get('ubicacion').setValue(
         {
-          sede,
-          dependencia,
+          sede: '',
+          dependencia: '',
           ubicacion,
         },
         { emitEvent: false },
@@ -436,25 +406,60 @@ export class FormTrasladoComponent implements OnInit {
   }
 
   public getUbicaciones() {
-    const sede = this.formTraslado.get('ubicacion.sede').value;
-    const dependencia = this.formTraslado.get('ubicacion.dependencia').value;
-
-    if (!sede || !dependencia.Id) {
-      this.formTraslado.get('ubicacion').patchValue({ ubicacion: '' });
-      this.ubicacionesFiltradas = [];
-      return;
-    }
-
-    const sede_ = this.sedes.find((x) => x.Id === sede);
-    this.oikosHelper.getAsignacionesBySedeAndDependencia(sede_.CodigoAbreviacion, dependencia.Id).subscribe((res: any) => {
-      this.ubicacionesFiltradas = res;
-    });
+    this.loadUbicaciones();
   }
 
   public getInfoTercero(controlName: string) {
     const terceroId = this.formTraslado.get(controlName + '.tercero').value.Tercero.Id;
     this.loadCargo(terceroId, controlName);
-    this.loadEmail(terceroId, controlName);
+    if (!this.isInternalMode) {
+      this.loadEmail(terceroId, controlName);
+    }
+    if (controlName === 'origen' && this.modo === 'create_internal') {
+      this.clearDestinoIfSameAsOrigen(terceroId);
+      this.loadInventarioByTercero(terceroId);
+    }
+  }
+
+  private clearDestinoIfSameAsOrigen(origenId: number) {
+    const destino = this.formTraslado.get('destino.tercero').value;
+    if (destino && destino.Tercero && destino.Tercero.Id === origenId) {
+      this.formTraslado.get('destino').patchValue({
+        tercero: '',
+        cargo: '',
+        email: '',
+      });
+    }
+  }
+
+  private loadInventarioByTercero(terceroId: number) {
+    this.trasladosHelper.getInventarioTerceroById(terceroId).subscribe({
+      next: (res: any) => {
+        this.resetElementosSeleccionados();
+        if (res && res.Elementos && res.Elementos.length) {
+          this.elementos = res.Elementos;
+          this.elementosFiltrados = res.Elementos;
+        } else {
+          this.elementos = [];
+          this.elementosFiltrados = [];
+          this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.traslados.registrarInterno.noElementos'));
+        }
+      },
+      error: () => {
+        this.resetElementosSeleccionados();
+        this.elementos = [];
+        this.elementosFiltrados = [];
+        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.traslados.consulta.errorElementos'));
+      },
+    });
+  }
+
+  private resetElementosSeleccionados() {
+    const elementos = this.formTraslado.get('elementos') as FormArray;
+    while (elementos.length > 0) {
+      elementos.removeAt(0);
+    }
+    this.dataSource.data = [];
   }
 
   private loadCargo(terceroId: number, controlName: string) {
@@ -511,6 +516,8 @@ export class FormTrasladoComponent implements OnInit {
     }
   }
 
+  muestraCentroCosto = (centroCosto: any): string => this.centroCostosHelper.muestraCentroCosto(centroCosto);
+
   private cambiosPlaca(valueChanges: Observable<any>) {
     valueChanges.pipe(
       startWith(''),
@@ -522,24 +529,15 @@ export class FormTrasladoComponent implements OnInit {
     });
   }
 
-  private cambiosFuncionario(control: AbstractControl): Observable<Partial<TerceroCriterioContratista>[]> {
+  private cambiosFuncionario(control: AbstractControl, controlName: 'origen' | 'destino'): Observable<Partial<TerceroCriterioContratista>[]> {
     return control.valueChanges
       .pipe(
         startWith(''),
         debounceTime(250),
         distinctUntilChanged(),
         map((val: any) => typeof val === 'string' ? val : this.muestraFuncionario(val)),
-        map((nombre: string) => this.filtroFuncionarios(nombre)),
+        map((nombre: string) => this.filtroFuncionarios(nombre, controlName)),
       );
-  }
-
-  private cambiosDependencia(sedeCtrl, depCtrl) {
-    this.oikosHelper.cambiosDependencia(sedeCtrl, depCtrl).subscribe((response: any) => {
-      if (this.load) {
-        this.dependencias = response.queryOptions;
-        this.getUbicaciones();
-      }
-    });
   }
 
   private filtroPlaca(nombre: string): any[] {
@@ -550,11 +548,21 @@ export class FormTrasladoComponent implements OnInit {
     }
   }
 
-  private filtroFuncionarios(nombre: string): TerceroCriterioContratista[] {
+  private filtroFuncionarios(nombre: string, controlName: 'origen' | 'destino'): TerceroCriterioContratista[] {
     if (nombre.length >= 4 && Array.isArray(this.funcionarios)) {
       const valorFiltrado = nombre.toLowerCase();
-      return this.funcionarios.filter(contr => this.muestraFuncionario(contr).toLowerCase().includes(valorFiltrado));
+      const origen = this.formTraslado && this.formTraslado.get('origen.tercero').value;
+      const origenId = origen && origen.Tercero ? origen.Tercero.Id : null;
+      return this.funcionarios.filter(contr => {
+        const matches = this.muestraFuncionario(contr).toLowerCase().includes(valorFiltrado);
+        const excluded = this.isInternalMode && controlName === 'destino' && origenId && contr.Tercero && contr.Tercero.Id === origenId;
+        return matches && !excluded;
+      });
     } else return [];
+  }
+
+  get isInternalMode(): boolean {
+    return this.modo === 'create_internal';
   }
 
   private loadFuncionarios() {
@@ -579,8 +587,11 @@ export class FormTrasladoComponent implements OnInit {
   }
 
   private checkValidness: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
-    const errors = control.get('origen.tercero').value !== '' &&
-      control.get('origen.tercero').value === control.get('destino.tercero').value;
+    const origen = control.get('origen.tercero').value;
+    const destino = control.get('destino.tercero').value;
+    const origenId = origen && origen.Tercero ? origen.Tercero.Id : null;
+    const destinoId = destino && destino.Tercero ? destino.Tercero.Id : null;
+    const errors = origenId && destinoId && origenId === destinoId;
     errors && this.formTraslado ? control.get('destino.tercero').setErrors({ 'mismoTercero': true }) : null;
     return null;
   }

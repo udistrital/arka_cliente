@@ -5,6 +5,7 @@ import { Contrato } from '../../../@core/data/models/entrada/contrato';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
 import { SalidaHelper } from '../../../helpers/salidas/salidasHelper';
 import { ReportesHelper } from '../../../helpers/reportes/reportesHelper';
+import { CentroCostosHelper } from '../../../helpers/movimientos/centroCostosHelper';
 
 @Component({
   selector: 'ngx-consulta-salida-especifica',
@@ -60,11 +61,13 @@ export class ConsultaSalidaEspecificaComponent implements OnInit {
   trContableDetallePorElemento: any;
   totalDebitoComprobante: number = 0;
   totalCreditoComprobante: number = 0;
+  centrosCosto: any[] = [];
 
   constructor(
     private salidasHelper: SalidaHelper,
     private translate: TranslateService,
     private reportesHelper: ReportesHelper,
+    public centroCostosHelper: CentroCostosHelper,
 
   ) {
     this.source = new LocalDataSource();
@@ -77,11 +80,27 @@ export class ConsultaSalidaEspecificaComponent implements OnInit {
       this.cargarCampos();
       this.cargarCamposComprobante();
     });
+    this.loadCentroCostos();
     this.cargarCampos();
     this.cargarCamposComprobante();
 
   }
 
+  private loadCentroCostos() {
+    this.centroCostosHelper.getAllCentroCostos().subscribe((res: any) => {
+      this.centrosCosto = res || [];
+      if (this.salida && this.salida.Ubicacion) {
+        this.salida.Ubicacion = this.resolveCentroCosto(this.salida.Ubicacion);
+      }
+    });
+  }
+
+  private resolveCentroCosto(value: any) {
+    const centroCostoId = this.centroCostosHelper.getCentroCostoId(value);
+    return this.centroCostosHelper.findCentroCostoById(this.centrosCosto, centroCostoId) ||
+      this.centroCostosHelper.normalizarCentroCosto(value) ||
+      value;
+  }
 
   CargarSalida() {
     this.salidasHelper.getSalida(this.salida_id).subscribe((res: any) => {
@@ -95,6 +114,7 @@ export class ConsultaSalidaEspecificaComponent implements OnInit {
         this.linkEntrada = '#/pages/entradas/consulta_entrada/' + (entradaId || res.Salida.MovimientoPadreId.Id);
 
         this.salida = res.Salida;
+        this.salida.Ubicacion = this.resolveCentroCosto(this.salida.Ubicacion);
         this.estadoMovimientoNombre = res.Salida.EstadoMovimientoId && res.Salida.EstadoMovimientoId.Nombre;
         this.aplicarEstadoEntradaOverride();
 

@@ -16,6 +16,37 @@ export interface ArchivoReporte {
   version?: string;
 }
 
+export interface PazYSalvoPayload {
+  usuario: string;
+  elaboro_tercero_id: number;
+  numero_documento: string;
+}
+
+export interface PazYSalvoTercero {
+  id: number;
+  nombre_completo: string;
+  numero_documento: string;
+  tipo_documento: string;
+  cargo: string;
+}
+
+export interface PazYSalvoElemento {
+  Id?: number;
+  ElementoActaId?: number;
+  Placa: string;
+  Nombre: string;
+  Marca: string;
+  Serie: string;
+  Valor?: number;
+}
+
+export interface PazYSalvoResponse extends ArchivoReporte {
+  mensaje: string;
+  puede_generar_paz_y_salvo: boolean;
+  tercero?: PazYSalvoTercero;
+  elementos: PazYSalvoElemento[];
+}
+
 export interface DetalleCuentasEntrada {
   ElementoNombre: string;
   ElementoValorFinal: number;
@@ -42,6 +73,7 @@ export interface DetalleCuentaSeparada {
 }
 
 const EXCEL_MIME_TYPE = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+const PDF_MIME_TYPE = 'application/pdf';
 
 @Injectable({
   providedIn: 'root',
@@ -90,6 +122,20 @@ export class ReportesHelper {
           return [];
         }
         return this.separarFilasSalida(Array.isArray(res) ? res : []);
+      }),
+    );
+  }
+
+  public generarPazYSalvo(payload: PazYSalvoPayload) {
+    this.rqManager.setPath('ARKA_SERVICE');
+    return this.rqManager.post('reportes/pazysalvo', payload).pipe(
+      map((res: any) => {
+        const data = res && res.Body ? res.Body : res;
+        if (!data || data.Type === 'error' || data.success === false || data.Success === false) {
+          this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.reportes.error_generacion'));
+          return undefined;
+        }
+        return this.normalizarPazYSalvo(data);
       }),
     );
   }
@@ -143,6 +189,14 @@ export class ReportesHelper {
   }
 
   public downloadBase64Excel(base64: string, fileName: string, mimeType: string = EXCEL_MIME_TYPE): void {
+    this.downloadBase64File(base64, fileName, mimeType || EXCEL_MIME_TYPE);
+  }
+
+  public downloadBase64Pdf(base64: string, fileName: string, mimeType: string = PDF_MIME_TYPE): void {
+    this.downloadBase64File(base64, fileName, mimeType || PDF_MIME_TYPE);
+  }
+
+  public downloadBase64File(base64: string, fileName: string, mimeType: string): void {
     const byteCharacters = atob(base64);
     const byteNumbers = new Array(byteCharacters.length);
 
@@ -156,7 +210,7 @@ export class ReportesHelper {
     const link = document.createElement('a');
 
     link.href = url;
-    link.download = fileName || 'reporte.xlsx';
+    link.download = fileName || 'archivo';
     link.click();
 
     window.URL.revokeObjectURL(url);
@@ -179,6 +233,28 @@ export class ReportesHelper {
       ]) || EXCEL_MIME_TYPE,
       file,
       version: this.obtenerValor(source, ['version', 'Version']) || '',
+    };
+  }
+
+  private normalizarPazYSalvo(response: any): PazYSalvoResponse {
+    const source = this.obtenerFuenteArchivo(response);
+    return {
+      fileName: this.obtenerValor(source, ['fileName', 'FileName', 'file_name', 'nombre_archivo', 'NombreArchivo']) || 'paz_y_salvo.pdf',
+      mimeType: this.obtenerValor(source, [
+        'mimeType',
+        'MimeType',
+        'mime_type',
+        'tipo_mime',
+        'TipoMime',
+        'tipo_archivo',
+        'TipoArchivo',
+      ]) || PDF_MIME_TYPE,
+      file: this.obtenerBase64Archivo(source),
+      version: this.obtenerValor(source, ['version', 'Version']) || '',
+      mensaje: this.obtenerValor(source, ['mensaje', 'Mensaje']) || '',
+      puede_generar_paz_y_salvo: !!this.obtenerValor(source, ['puede_generar_paz_y_salvo', 'PuedeGenerarPazYSalvo']),
+      tercero: this.obtenerValor(source, ['tercero', 'Tercero']) || undefined,
+      elementos: this.obtenerValor(source, ['elementos', 'Elementos']) || [],
     };
   }
 
