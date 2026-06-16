@@ -92,7 +92,8 @@ export class CentroCostosHelper {
             return centroCosto;
         }
 
-        return centroCosto.Id || 0;
+        const normalizado = this.normalizarCentroCosto(centroCosto);
+        return normalizado && normalizado.Id ? normalizado.Id : 0;
     }
 
     public findCentroCostoById(centrosCosto: any[], id: number) {
@@ -108,8 +109,18 @@ export class CentroCostosHelper {
             return centroCosto;
         }
 
+        if (centroCosto.Ubicacion) {
+            return this.normalizarCentroCosto(centroCosto.Ubicacion);
+        }
+
         if (centroCosto.Codigo || centroCosto.Nombre || centroCosto.Dependencia || centroCosto.Sede) {
-            return centroCosto;
+            return {
+                ...centroCosto,
+                Dependencia: centroCosto.Dependencia && typeof centroCosto.Dependencia === 'object' ?
+                    centroCosto.Dependencia.Nombre || '' : centroCosto.Dependencia || '',
+                Sede: centroCosto.Sede && typeof centroCosto.Sede === 'object' ?
+                    centroCosto.Sede.Nombre || '' : centroCosto.Sede || '',
+            };
         }
 
         if (centroCosto.EspacioFisicoId) {

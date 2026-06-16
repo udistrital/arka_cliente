@@ -346,19 +346,19 @@ export class FormSolicitudComponent implements OnInit {
           ],
           sede: [
             {
-              value: element.Ubicacion.Sede ? element.Ubicacion.Sede.Nombre : '',
+              value: this.getNombreCampoUbicacion(element.Ubicacion, 'Sede'),
               disabled: true,
             },
           ],
           dependencia: [
             {
-              value: element.Ubicacion.Dependencia ? element.Ubicacion.Dependencia.Nombre : '',
+              value: this.getNombreCampoUbicacion(element.Ubicacion, 'Dependencia'),
               disabled: true,
             },
           ],
           ubicacion: [
             {
-              value: element.Ubicacion.Ubicacion ? this.centroCostosHelper.muestraCentroCosto(element.Ubicacion.Ubicacion) : '',
+              value: this.centroCostosHelper.muestraCentroCosto(element.Ubicacion),
               disabled: true,
             },
           ],
@@ -440,9 +440,9 @@ export class FormSolicitudComponent implements OnInit {
           marca: res.Marca,
           subgrupo: res.SubgrupoCatalogoId.SubgrupoId.Codigo + ' - ' + res.SubgrupoCatalogoId.SubgrupoId.Nombre,
           tipoBien: res.SubgrupoCatalogoId.TipoBienId.Nombre,
-          sede: res.Ubicacion.Sede.Nombre,
-          dependencia: res.Ubicacion.Dependencia.Nombre,
-          ubicacion: this.centroCostosHelper.muestraCentroCosto(res.Ubicacion.Ubicacion),
+          sede: this.getNombreCampoUbicacion(res.Ubicacion, 'Sede'),
+          dependencia: this.getNombreCampoUbicacion(res.Ubicacion, 'Dependencia'),
+          ubicacion: this.centroCostosHelper.muestraCentroCosto(res.Ubicacion),
           funcionario: this.getCompuesto(res.Funcionario),
           entrada: consEntrada,
           salida: consSalida,
@@ -461,6 +461,24 @@ export class FormSolicitudComponent implements OnInit {
     const terceroCompuesto = (tercero.Identificacion ?
       (tercero.Identificacion.Numero + ' - ') : '') + tercero.Tercero.NombreCompleto;
     return terceroCompuesto;
+  }
+
+  private getNombreCampoUbicacion(ubicacion: any, campo: 'Sede' | 'Dependencia'): string {
+    if (!ubicacion) {
+      return '';
+    }
+
+    const valor = ubicacion[campo];
+    if (valor && typeof valor === 'object') {
+      return valor.Nombre || '';
+    }
+
+    if (typeof valor === 'string') {
+      return valor;
+    }
+
+    const normalizado = this.centroCostosHelper.normalizarCentroCosto(ubicacion);
+    return normalizado && normalizado[campo] ? normalizado[campo] : '';
   }
 
   private submitForm(statusChanges: Observable<any>) {

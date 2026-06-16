@@ -325,11 +325,13 @@ export class FormTrasladoComponent implements OnInit {
     this.formTraslado.get('destino').patchValue({ email: emailD });
     this.formTraslado.get('destino').patchValue({ cargo: cargoD });
 
-    if (values.ubicacion && values.ubicacion.Ubicacion) {
+    const ubicacionValue = values.ubicacion && values.ubicacion.Ubicacion ?
+      values.ubicacion.Ubicacion : values.ubicacion;
+    if (ubicacionValue) {
       const ubicacion = this.centroCostosHelper.findCentroCostoById(
         this.ubicacionesFiltradas,
-        values.ubicacion.Ubicacion.Id,
-      ) || values.ubicacion.Ubicacion;
+        this.centroCostosHelper.getCentroCostoId(ubicacionValue),
+      ) || this.centroCostosHelper.normalizarCentroCosto(ubicacionValue) || ubicacionValue;
 
       this.formTraslado.get('ubicacion').setValue(
         {
