@@ -9,6 +9,7 @@ import { UserService } from '../../../@core/data/users.service';
 import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
 import { TrasladosHelper } from '../../../helpers/movimientos/trasladosHelper';
 import { PopUpManager } from '../../../managers/popUpManager';
+import { CentroCostosHelper } from '../../../helpers/movimientos/centroCostosHelper';
 
 @Component({
   selector: 'ngx-consulta-traslados',
@@ -37,7 +38,8 @@ export class ConsultaTrasladosComponent implements OnInit {
     private pUpManager: PopUpManager,
     private confService: ConfiguracionService,
     private userService: UserService,
-    private tabla: SmartTableService) { }
+    private tabla: SmartTableService,
+    private centroCostosHelper: CentroCostosHelper) { }
 
   ngOnInit() {
     this.route.data.subscribe(data => {
@@ -240,6 +242,7 @@ export class ConsultaTrasladosComponent implements OnInit {
         },
         Ubicacion: {
           title: this.translate.instant('GLOBAL.ubicacion'),
+          valuePrepareFunction: (value: any) => this.centroCostosHelper.muestraCentroCosto(value),
         },
         ...columns,
       },

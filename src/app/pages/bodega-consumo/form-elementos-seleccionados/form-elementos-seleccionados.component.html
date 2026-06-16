@@ -14,28 +14,14 @@
               placeholder="{{'GLOBAL.Acta_Recibido.CapturarElementos.CantidadHeader' | translate }}">
             </div>
           </div>
-          <div class="form-group col-sm">
-            <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Sede' | translate}}</label>
-            <select nbInput type="text" class="form-control" formControlName="Sede" (change)="Traer_Relacion_Ubicaciones()">
-              <option *ngFor="let sede of Sedes" [(value)]="sede.Id">{{sede.Nombre}}</option>
-            </select>
-          </div>
         </div>
         <div class="row">
           <div class="form-group col-sm">
-            <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Dependencia' | translate}}</label>
-            <input matInput type="text" formControlName="Dependencia" class="form-control" style="height: auto;"
-            placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}" [matAutocomplete]="auto">
-            <mat-autocomplete #auto="matAutocomplete" [displayWith]="oikosHelper.muestraDependencia">
-              <mat-option *ngFor="let item of dependencias" [value]="item">{{item.Nombre}}</mat-option>
-            </mat-autocomplete>
-          </div>
-          <div class="form-group col-sm">
             <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Ubicacion' | translate}}</label>
-            <select nbInput type="text" class="form-control" formControlName="Ubicacion">
-              <option *ngFor="let ubicacion of Ubicaciones" [value]="ubicacion.Id">{{ubicacion.EspacioFisicoId.Nombre}}
-              </option>
-            </select>
+            <mat-select class="form-control" formControlName="Ubicacion">
+              <mat-option *ngFor="let ubicacion of ubicacionesFiltradas" [value]="ubicacion">{{centroCostosHelper.muestraCentroCosto(ubicacion)}}
+              </mat-option>
+            </mat-select>
           </div>
         </div>
     </mat-card-content>

@@ -13,6 +13,7 @@ import { ElementoMovimientosArka, EstadoMovimiento, FormatoTipoMovimiento } from
 import { EntradaHelper } from '../../../helpers/entradas/entradaHelper';
 import { OikosHelper } from '../../../helpers/oikos/oikosHelper';
 import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
+import { CentroCostosHelper } from '../../../helpers/movimientos/centroCostosHelper';
 
 @Component({
   selector: 'ngx-tabla-elementos-asignados',
@@ -54,6 +55,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
   consumoSeleccionados: boolean;
   submitted: boolean;
   @ViewChild('checkTodoInput', { static: true }) checkDummy: MatCheckbox;
+  centrosCosto: any[] = [];
 
   @HostListener('window:keydown', ['$event'])
   handleKeyDown(event: KeyboardEvent) {
@@ -74,20 +76,35 @@ export class TablaElementosAsignadosComponent implements OnInit {
     private entradasHelper: EntradaHelper,
     private oikosHelper: OikosHelper,
     private tercerosHelper: TercerosHelper,
+    public centroCostosHelper: CentroCostosHelper,
   ) {
   }
 
   ngOnInit() {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { });
-    if (this.entradaId || this.salida_id) {
-      this.loadSalida();
-    }
+    this.loadCentroCostos();
 
     this.getJefeAlmacen();
     this.setColumnas();
     this.getFormatoBodega();
     this.getFormatoFuncionario();
 
+  }
+
+  private loadCentroCostos() {
+    this.centroCostosHelper.getAllCentroCostos().subscribe((res: any) => {
+      this.centrosCosto = res || [];
+      if (this.entradaId || this.salida_id) {
+        this.loadSalida();
+      }
+    });
+  }
+
+  private resolveCentroCosto(value: any) {
+    const centroCostoId = this.centroCostosHelper.getCentroCostoId(value);
+    return this.centroCostosHelper.findCentroCostoById(this.centrosCosto, centroCostoId) ||
+      this.centroCostosHelper.normalizarCentroCosto(value) ||
+      value;
   }
 
   private loadSalida() {
@@ -97,9 +114,9 @@ export class TablaElementosAsignadosComponent implements OnInit {
         this.mostrar = true;
       } else if (res && ((res.Consumo && res.Consumo.length) || (res.Devolutivo && res.Devolutivo.length))) {
         const salida = res.Salida;
+        const ubicacion = salida ? this.resolveCentroCosto(salida.Ubicacion) : '';
         this.loadTablas(res.Consumo, res.Devolutivo,
-          salida ? salida.Sede : '', salida ? salida.Dependencia : '',
-          salida ? salida.Ubicacion : '',
+          ubicacion,
           salida ? salida.Funcionario : '');
       } else {
         this.pUpManager.showErrorAlert(this.translate.instant(this.baseI18n + 'salidas.errorElementos'));
@@ -107,14 +124,14 @@ export class TablaElementosAsignadosComponent implements OnInit {
     });
   }
 
-  private loadTablas(consumo: any[], devolutivos: any[], sede: any, dependencia: any, ubicacion: any, funcionario: any) {
+  private loadTablas(consumo: any[], devolutivos: any[], ubicacion: any, funcionario: any) {
 
     consumo.forEach(el => {
-      this.fillElemento(el, funcionario, sede, dependencia, ubicacion, true);
+      this.fillElemento(el, funcionario, ubicacion, true);
     });
 
     devolutivos.forEach(el => {
-      this.fillElemento(el, funcionario, sede, dependencia, ubicacion, false);
+      this.fillElemento(el, funcionario, ubicacion, false);
     });
 
     this.sourceDevolutivo = new MatTableDataSource<ElementoActa>(devolutivos);
@@ -127,13 +144,11 @@ export class TablaElementosAsignadosComponent implements OnInit {
 
   }
 
-  private fillElemento(el, funcionario, sede, dependencia, ubicacion, consumo) {
+  private fillElemento(el, funcionario, ubicacion, consumo) {
     if (!this.salida_id) {
       el.ElementoActaId = el.Id;
     }
     el.Funcionario = funcionario;
-    el.Sede = sede;
-    el.Dependencia = dependencia;
     el.Ubicacion = ubicacion;
     el.ValorResidual = consumo || (!el.SubgrupoCatalogoId.Depreciacion && !el.SubgrupoCatalogoId.Amortizacion) ? 0 :
       this.salida_id ? el.ValorResidual : el.SubgrupoCatalogoId.ValorResidual * 100;
@@ -216,8 +231,6 @@ export class TablaElementosAsignadosComponent implements OnInit {
       'Marca',
       'Serie',
       'Funcionario',
-      'Sede',
-      'Dependencia',
       'Ubicacion',
       'ValorTotal',
     ];
@@ -250,8 +263,6 @@ export class TablaElementosAsignadosComponent implements OnInit {
 
   private setAsignacion(source, item, index) {
     source.data[index].Funcionario = item.Funcionario;
-    source.data[index].Sede = item.Sede;
-    source.data[index].Dependencia = item.Dependencia;
     source.data[index].Ubicacion = item.Ubicacion;
     source.data[index].Observaciones = item.Observaciones;
     source.data[index].seleccionado = false;
@@ -311,6 +322,20 @@ export class TablaElementosAsignadosComponent implements OnInit {
     return JSON.stringify(detalle);
   }
 
+  public muestraUbicacion(ubicacion: any): string {
+    if (!ubicacion) {
+      return '';
+    }
+
+    return this.centroCostosHelper.muestraCentroCosto(this.resolveCentroCosto(ubicacion));
+  }
+
+  private esUbicacionBodega(ubicacion: any): boolean {
+    const centroCosto = this.resolveCentroCosto(ubicacion);
+    const nombre = centroCosto && centroCosto.Nombre ? centroCosto.Nombre : '';
+    return nombre === 'SECCION ALMACEN GENERAL E INVENTARIOS';
+  }
+
   private getFormatoBodega() {
     this.entradasHelper.getFormatoEntradaByName('Salida de Consumo').subscribe(res => {
       if (res && res.length) {
@@ -330,7 +355,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
   private salidaBodega(movimientoPadreId: number) {
 
     const elementosBodega = this.sourceConsumo.data.filter((el) =>
-      el.Ubicacion.EspacioFisicoId.Nombre === 'SECCION ALMACEN GENERAL E INVENTARIOS' &&
+      this.esUbicacionBodega(el.Ubicacion) &&
       el.Funcionario.Id === this.JefeOficinaId,
     );
 
@@ -364,7 +389,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
   private salidaFuncionario(movimientoPadreId: number) {
     const dev_ = this.sourceDevolutivo.data.concat(
       this.sourceConsumo.data.filter(el =>
-        el.Ubicacion.EspacioFisicoId.Nombre !== 'SECCION ALMACEN GENERAL E INVENTARIOS' ||
+        !this.esUbicacionBodega(el.Ubicacion) ||
         el.Funcionario.Id !== this.JefeOficinaId,
       ));
 
