@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChildren, QueryList } from '@angular/core';
-import { scheduled, asyncScheduler, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators, FormArray, ValidatorFn, ValidationErrors, AbstractControl } from '@angular/forms';
 import { MatTable } from '@angular/material/table';
@@ -22,11 +22,11 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { UserService } from '../../../@core/data/users.service';
 import { TipoActa } from '../../../@core/data/models/acta_recibido/tipo_acta';
 import { EstadoElemento } from '../../../@core/data/models/acta_recibido/estado_elemento';
-import { debounceTime, distinctUntilChanged, filter, mergeAll, switchMap } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, filter, switchMap } from 'rxjs/operators';
 import { ActaValidators } from '../validators';
 import { CommonActas } from '../shared';
 import { GestorDocumentalService } from '../../../helpers/gestor_documental/gestorDocumentalHelper';
-import { OikosHelper } from '../../../helpers/oikos/oikosHelper';
+import { CentroCostosHelper } from '../../../helpers/movimientos/centroCostosHelper';
 
 @Component({
   selector: 'ngx-registro-acta-recibido',
@@ -57,6 +57,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
 
   // Modelos
   Ubicaciones: any[] = [];
+  ubicacionesFiltradas: any[] = [];
   Sedes: any = [];
   dependencias: any[] = [];
   Totales: Array<any>;
@@ -88,7 +89,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
     private documento: GestorDocumentalService,
     private userService: UserService,
     private route: ActivatedRoute,
-    private oikosHelper: OikosHelper,
+    public centroCostosHelper: CentroCostosHelper,
   ) {
     this.maxDate = new Date();
     this.minDate = new Date(-1);
@@ -99,7 +100,6 @@ export class RegistroActaRecibidoComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.listService.findSedes();
     this.listService.findEstadosActa();
     this.listService.findUnidadesEjecutoras();
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
@@ -116,13 +116,13 @@ export class RegistroActaRecibidoComponent implements OnInit {
   }
 
   private async initForms() {
-    await Promise.all([this.loadLists()]);
+    await Promise.all([this.loadLists(), this.loadCentroCostos()]);
     const values = this.formValuesFromStorage;
     if (values) {
       if (await this.retomarValores()) {
         this.llenarFormularios(values);
       } else {
-        this.limpiarStorage();
+      this.limpiarStorage();
       }
     }
     this.setFormValidators();
@@ -159,13 +159,21 @@ export class RegistroActaRecibidoComponent implements OnInit {
     return new Promise<void>(async (resolve) => {
       this.store.select((state) => state).subscribe(list => {
         if (list.listEstadosActa.length && list.listEstadosActa[0] &&
-          list.listSedes.length && list.listSedes[0] &&
           list.listUnidadesEjecutoras.length && list.listUnidadesEjecutoras[0]) {
-          this.Sedes = list.listSedes[0];
           this.Estados_Acta = list.listEstadosActa[0];
           this.unidadesEjecutoras = list.listUnidadesEjecutoras[0];
           resolve();
         }
+      });
+    });
+  }
+
+  private loadCentroCostos(): Promise<void> {
+    return new Promise<void>(resolve => {
+      this.centroCostosHelper.getAllCentroCostos().subscribe((res: any) => {
+        this.Ubicaciones = res || [];
+        this.ubicacionesFiltradas = this.Ubicaciones;
+        resolve();
       });
     });
   }
@@ -235,16 +243,9 @@ export class RegistroActaRecibidoComponent implements OnInit {
         this.controlSoportes.push(this.newSoporte);
       }
     }
-    if (transaccion_.Formulario1.Sede, transaccion_.Formulario1.Dependencia) {
-      const sede_ = this.Sedes.find((x) => x.Id === transaccion_.Formulario1.Sede);
-      this.oikosHelper.getAsignacionesBySedeAndDependencia(sede_.CodigoAbreviacion, transaccion_.Formulario1.Dependencia.Id)
-        .subscribe((res: any) => {
-          this.Ubicaciones = res;
-          this.firstForm.setValue(transaccion_);
-        });
-    } else {
-      this.firstForm.setValue(transaccion_);
-    }
+    const ubicacionId = this.centroCostosHelper.getCentroCostoId(transaccion_.Formulario1.Ubicacion);
+    transaccion_.Formulario1.Ubicacion = this.centroCostosHelper.findCentroCostoById(this.Ubicaciones, ubicacionId) || '';
+    this.firstForm.setValue(transaccion_);
   }
 
   private get baseForm() {
@@ -255,7 +256,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
         Proveedor: ['', [ActaValidators.validarTercero]],
         Sede: [0],
         Dependencia: [''],
-        Ubicacion: [0],
+        Ubicacion: [''],
       }),
       Formulario2: this.fb.array([this.newSoporte]),
       Formulario3: this.fb.group({
@@ -267,17 +268,11 @@ export class RegistroActaRecibidoComponent implements OnInit {
   }
 
   private setFormValidators() {
-    this.controlSede.setValidators(this.ae ? [Validators.min(1)] : []);
-    this.controlDependencia.setValidators(this.ae ? [Validators.required] : []);
-    this.controlUbicacion.setValidators(this.ae ? [Validators.min(1)] : []);
+    this.controlUbicacion.setValidators(this.ae ? [Validators.required] : []);
     this.controlContratista.setValidators(this.ae ? [] : [Validators.required, ActaValidators.validarTercero]);
   }
 
   private setFormEvents() {
-    this.oikosHelper.cambiosDependencia(this.controlSede, this.controlDependencia).subscribe((response: any) => {
-      this.dependencias = response.queryOptions;
-    });
-
     this.firstForm.valueChanges
     .pipe(debounceTime(200))
     .subscribe((form: any) => {
@@ -307,14 +302,6 @@ export class RegistroActaRecibidoComponent implements OnInit {
       this.cargandoProveedores = false;
     });
 
-    scheduled([ // Porque merge está deprecado
-      this.controlSede.valueChanges,
-      this.controlDependencia.valueChanges,
-    ], asyncScheduler)
-    .pipe(mergeAll(), debounceTime(200), distinctUntilChanged())
-    .subscribe(() => {
-      this.Traer_Relacion_Ubicaciones();
-    });
   }
 
   get newSoporte(): FormGroup {
@@ -441,7 +428,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
 
     historico.Id = null;
     historico.ProveedorId = Datos.Formulario1.Proveedor ? Datos.Formulario1.Proveedor.Tercero.Id : null;
-    historico.UbicacionId = Datos.Formulario1.Ubicacion ? Datos.Formulario1.Ubicacion : null;
+    historico.UbicacionId = this.centroCostosHelper.getCentroCostoId(Datos.Formulario1.Ubicacion) || null;
     historico.RevisorId = this.userService.getPersonaId();
     historico.PersonaAsignadaId = this.ae ? this.userService.getPersonaId() : Datos.Formulario1.Contratista.Tercero.Id;
     historico.Observaciones = null;
@@ -560,20 +547,8 @@ export class RegistroActaRecibidoComponent implements OnInit {
     return this.ae ? 'Formulario_Acta_Especial' : 'Formulario_Registro';
   }
 
-  Traer_Relacion_Ubicaciones(
-    sede = this.controlSede.value,
-    dependencia = this.controlDependencia.value) {
-
-    if (!sede || !dependencia) {
-      this.Ubicaciones = [];
-      this.controlUbicacion.patchValue(0);
-      return;
-    }
-
-    const sede_ = this.Sedes.find((x) => x.Id === sede);
-    this.oikosHelper.getAsignacionesBySedeAndDependencia(sede_.CodigoAbreviacion, dependencia.Id).subscribe((res: any) => {
-      this.Ubicaciones = res;
-    });
+  Traer_Relacion_Ubicaciones() {
+    this.loadCentroCostos();
   }
 
   private checkValidness: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
@@ -607,6 +582,8 @@ export class RegistroActaRecibidoComponent implements OnInit {
   get controlUbicacion() {
     return this.controlDatosBasicos.get('Ubicacion');
   }
+
+  muestraCentroCosto = (centroCosto: any): string => this.centroCostosHelper.muestraCentroCosto(centroCosto);
 
   get controlSoportes() {
     return this.firstForm.get('Formulario2') as FormArray;

@@ -22,38 +22,9 @@
       </div>
       <div class="row">
         <div class="form-group col-sm">
-          <label class="label">{{'GLOBAL.Acta_Recibido.RegistroActa.Sede' | translate}}</label>
-          <mat-select type="text" class="form-control" formControlName="Sede" style="margin-right: 10%; height: auto;"
-            (selectionChange)="getUbicaciones();">
-            <mat-option value="">--{{ 'GLOBAL.seleccionar' | translate }}--</mat-option>
-            <mat-option *ngFor="let sede of Sedes" [(value)]="sede.Id">{{sede.Nombre}}</mat-option>
-          </mat-select>
-          <p class="error-field" *ngIf="form_salida.get('Sede').invalid">
-            {{'GLOBAL.Errores.ErrorRequerido' | translate}}</p>
-        </div>
-
-        <div class="form-group col-sm">
-          <label class="label">{{'GLOBAL.Acta_Recibido.RegistroActa.Dependencia' | translate}}</label>
-          <input matInput type="text" formControlName="Dependencia" class="form-control" style="height: auto;"
-            placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}" [matAutocomplete]="auto">
-          <mat-autocomplete #auto="matAutocomplete" [displayWith]="oikosHelper.muestraDependencia">
-            <mat-option *ngFor="let item of dependencias" [value]="item">
-              {{item.Nombre}}
-            </mat-option>
-          </mat-autocomplete>
-            <p class="error-field" *ngIf="form_salida.get('Dependencia').errors && form_salida.get('Dependencia').errors.required">
-              {{'GLOBAL.placeholder' | translate}}</p>
-            <p class="error-field" *ngIf="form_salida.get('Dependencia').errors && form_salida.get('Dependencia').errors.errorLongitudMinima">
-              {{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}</p>
-            <p class="error-field" *ngIf="form_salida.get('Dependencia').errors && form_salida.get('Dependencia').errors.dependenciaNoValido">
-              {{'GLOBAL.Errores.ErrorDependencia' | translate}}</p>
-        </div>
-
-        <div class="form-group col-sm">
           <label class="ubicacion">{{'GLOBAL.Acta_Recibido.RegistroActa.Ubicacion' | translate}}</label>
           <mat-select type="text" style="height: auto;" class="form-control ubicacion" formControlName="Ubicacion">
-            <mat-option value="">--{{ 'GLOBAL.seleccionar' | translate }}--</mat-option>
-            <mat-option *ngFor="let ubicacion of UbicacionesFiltradas" [(value)]="ubicacion.Id">{{ubicacion.EspacioFisicoId.Nombre}}</mat-option>
+            <mat-option *ngFor="let ubicacion of UbicacionesFiltradas" [value]="ubicacion">{{centroCostosHelper.muestraCentroCosto(ubicacion)}}</mat-option>
           </mat-select>
           <p class="error-field ubicacion" *ngIf="!form_salida.get('Ubicacion').valid">
             {{'GLOBAL.Errores.ErrorRequerido' | translate}}</p>

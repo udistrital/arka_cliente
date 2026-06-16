@@ -117,28 +117,6 @@
             </td>
           </ng-container>
 
-          <!-- Sede -->
-          <ng-container matColumnDef="Sede">
-            <th id="col-sede" mat-header-cell *matHeaderCellDef mat-sort-header>
-              {{'GLOBAL.sede' | translate }}
-            </th>
-            <td mat-cell *matCellDef="let element; let rowIndex = index">
-              <input nbInput disabled type="text" fieldSize="tiny" class="cell"
-                placeholder="{{'GLOBAL.sede' | translate }}" [ngModel]="element.Sede.Nombre">
-            </td>
-          </ng-container>
-
-          <!-- Dependencia -->
-          <ng-container matColumnDef="Dependencia">
-            <th id="col-dependencia" mat-header-cell *matHeaderCellDef mat-sort-header>
-              {{'GLOBAL.dependencia' | translate }}
-            </th>
-            <td mat-cell *matCellDef="let element; let rowIndex = index">
-              <input nbInput disabled type="text" fieldSize="tiny" class="cell"
-                placeholder="{{'GLOBAL.dependencia' | translate }}" [ngModel]="element.Dependencia.Nombre">
-            </td>
-          </ng-container>
-
           <!-- Ubicacion -->
           <ng-container matColumnDef="Ubicacion">
             <th id="col-ubicacion" mat-header-cell *matHeaderCellDef mat-sort-header>
@@ -146,7 +124,7 @@
             </th>
             <td mat-cell *matCellDef="let element; let rowIndex = index">
               <input nbInput disabled type="text" fieldSize="tiny" class="cell"
-                placeholder="{{'GLOBAL.ubicacion' | translate }}" [ngModel]="element.Ubicacion.EspacioFisicoId?.Nombre">
+                placeholder="{{'GLOBAL.ubicacion' | translate }}" [ngModel]="muestraUbicacion(element.Ubicacion)">
             </td>
           </ng-container>
 
@@ -313,30 +291,6 @@
             </td>
           </ng-container>
 
-          <!-- Sede -->
-          <ng-container matColumnDef="Sede">
-            <th id="col-sede" mat-header-cell *matHeaderCellDef mat-sort-header>
-              {{'GLOBAL.sede' | translate }}
-            </th>
-            <td mat-cell *matCellDef="let element; let rowIndex = index">
-              <input nbInput disabled type="text" fieldSize="tiny" class="cell"
-                placeholder="{{'GLOBAL.sede' | translate }}"
-                [ngModel]="element.Sede.Nombre">
-            </td>
-          </ng-container>
-
-          <!-- Dependencia -->
-          <ng-container matColumnDef="Dependencia">
-            <th id="col-dependencia" mat-header-cell *matHeaderCellDef mat-sort-header>
-              {{'GLOBAL.dependencia' | translate }}
-            </th>
-            <td mat-cell *matCellDef="let element; let rowIndex = index">
-              <input nbInput disabled type="text" fieldSize="tiny" class="cell"
-                placeholder="{{'GLOBAL.dependencia' | translate }}"
-                [ngModel]="element.Dependencia.Nombre">
-            </td>
-          </ng-container>
-
           <!-- Ubicacion -->
           <ng-container matColumnDef="Ubicacion">
             <th id="col-ubicacion" mat-header-cell *matHeaderCellDef mat-sort-header>
@@ -345,7 +299,7 @@
             <td mat-cell *matCellDef="let element; let rowIndex = index">
               <input nbInput disabled type="text" fieldSize="tiny" class="cell"
                 placeholder="{{'GLOBAL.ubicacion' | translate }}"
-                [ngModel]="element.Ubicacion?.EspacioFisicoId?.Nombre">
+                [ngModel]="muestraUbicacion(element.Ubicacion)">
             </td>
           </ng-container>
 

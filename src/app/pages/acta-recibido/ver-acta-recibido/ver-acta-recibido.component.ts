@@ -21,7 +21,7 @@ import { UserService } from '../../../@core/data/users.service';
 import { Acta_t, TipoActa } from '../../../@core/data/models/acta_recibido/tipo_acta';
 import { CommonActas } from '../shared';
 import { GestorDocumentalService } from '../../../helpers/gestor_documental/gestorDocumentalHelper';
-import { OikosHelper } from '../../../helpers/oikos/oikosHelper';
+import { CentroCostosHelper } from '../../../helpers/movimientos/centroCostosHelper';
 
 @Component({
   selector: 'ngx-ver-acta-recibido',
@@ -74,7 +74,7 @@ export class VerActaRecibidoComponent implements OnInit {
     private userService: UserService,
     private route: ActivatedRoute,
     private documento: GestorDocumentalService,
-    private oikosHelper: OikosHelper,
+    public centroCostosHelper: CentroCostosHelper,
   ) {
     this.Contratistas = [];
     this.Proveedores = [];
@@ -84,14 +84,13 @@ export class VerActaRecibidoComponent implements OnInit {
   ngOnInit() {
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
     });
-    this.listService.findSedes();
     this.listService.findListsActa();
     this.listService.findUnidadesEjecutoras();
     this.loadDependencias();
   }
 
   async loadDependencias() {
-    await Promise.all([this.loadLists(), this.loadActa()]);
+    await Promise.all([this.loadLists(), this.loadCentroCostos(), this.loadActa()]);
     this.Cargar_Formularios(this.Acta);
   }
 
@@ -100,14 +99,21 @@ export class VerActaRecibidoComponent implements OnInit {
       this.store.select((state) => state).subscribe((list) => {
         if (list.listEstadosActa.length && list.listEstadosActa[0] &&
           list.listEstadosElemento.length && list.listEstadosElemento[0] &&
-          list.listSedes.length && list.listSedes[0] &&
           list.listUnidadesEjecutoras.length && list.listUnidadesEjecutoras[0]) {
           this.Estados_Acta = list.listEstadosActa[0];
           this.Estados_Elemento = list.listEstadosElemento[0];
-          this.Sedes = list.listSedes[0];
           this.unidadesEjecutoras = list.listUnidadesEjecutoras[0];
           resolve();
         }
+      });
+    });
+  }
+
+  private loadCentroCostos(): Promise<void> {
+    return new Promise<void>(resolve => {
+      this.centroCostosHelper.getAllCentroCostos().subscribe((res: any) => {
+        this.UbicacionesFiltradas = res || [];
+        resolve();
       });
     });
   }
@@ -186,11 +192,6 @@ export class VerActaRecibidoComponent implements OnInit {
   }
 
   async Cargar_Formularios(transaccion_: TransaccionActaRecibido) {
-
-    if (transaccion_.UltimoEstado.UbicacionId) {
-      await this.getSedeDepencencia(transaccion_.UltimoEstado.UbicacionId);
-    }
-
     this.Acta = transaccion_;
     const Form2 = this.fb.array([]);
 
@@ -215,7 +216,7 @@ export class VerActaRecibidoComponent implements OnInit {
       Formulario1: this.fb.group({
         Id: [transaccion_.ActaRecibido.Id],
         Sede: [{
-          value: this.sedeDependencia ? this.sedeDependencia.sede : '',
+          value: '',
           disabled: true,
         }],
         UnidadEjecutora: [{
@@ -223,11 +224,15 @@ export class VerActaRecibidoComponent implements OnInit {
           disabled: true,
         }],
         Dependencia: [{
-          value: this.sedeDependencia ? this.sedeDependencia.dependencia : '',
+          value: '',
           disabled: true,
         }],
         Ubicacion: [{
-          value: transaccion_.UltimoEstado.UbicacionId,
+          value: this.centroCostosHelper.findCentroCostoById(
+            this.UbicacionesFiltradas,
+            this.centroCostosHelper.getCentroCostoId(transaccion_.UltimoEstado.UbicacionId),
+          ) ||
+            this.centroCostosHelper.normalizarCentroCosto(transaccion_.UltimoEstado.UbicacionId) || '',
           disabled: true,
         }],
         Proveedor: [{
@@ -257,34 +262,7 @@ export class VerActaRecibidoComponent implements OnInit {
     this.carga_agregada = true;
   }
 
-  async getSedeDepencencia(ubicacionId: number): Promise<void> {
-
-    return new Promise<void>(resolve => {
-      this.oikosHelper.getSedeDependencia(ubicacionId).toPromise().then(res => {
-        if (!res.length) {
-          resolve();
-          return;
-        }
-
-        const dependencia = res[0].DependenciaId;
-        const sede_ = res[0].EspacioFisicoId.CodigoAbreviacion;
-        const codigoSede = sede_.substring(0, 2) + sede_.substring(2).replace(/\d.*/g, '');
-        const sede = this.Sedes.find(x => x && x.CodigoAbreviacion === codigoSede);
-
-        if (!sede || !dependencia) {
-          resolve();
-          return;
-        }
-
-        this.oikosHelper.getAsignacionesBySedeAndDependencia(codigoSede, dependencia.Id).subscribe((res_: any) => {
-          this.UbicacionesFiltradas = res_;
-          this.sedeDependencia = { sede: sede.Id, dependencia: dependencia.Nombre };
-          resolve();
-        });
-
-      });
-    });
-  }
+  muestraCentroCosto = (centroCosto: any): string => this.centroCostosHelper.muestraCentroCosto(centroCosto);
 
   public downloadFile(index: number) {
     Swal({

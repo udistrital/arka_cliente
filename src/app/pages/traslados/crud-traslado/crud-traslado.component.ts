@@ -158,7 +158,7 @@ export class CrudTrasladoComponent implements OnInit {
       const Elementos = val.controls.elementos.value.map(element => element.id);
       const FuncionarioOrigen = val.controls.origen.value.tercero.Tercero.Id;
       const FuncionarioDestino = val.controls.destino.value.tercero.Tercero.Id;
-      const Ubicacion = val.controls.ubicacion.value.ubicacion;
+      const Ubicacion = val.controls.ubicacion.value.ubicacion ? val.controls.ubicacion.value.ubicacion.Id : 0;
       const Observacion = val.controls.observaciones.value.observaciones;
       const estadoId =
         (this.modoCrud === 'registrarInterno') ? 'Traslado Confirmado' :
