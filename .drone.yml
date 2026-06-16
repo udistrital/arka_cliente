@@ -96,7 +96,7 @@ steps:
 - name: nodejs_release
   image: node:14
   environment:
-    NODE_OPTIONS: --max_old_space_size=3072
+    NODE_OPTIONS: --max_old_space_size=1536
   commands:
   - npm run build:test
   when:
@@ -111,7 +111,7 @@ steps:
 - name: nodejs_master
   image: node:14
   environment:
-    NODE_OPTIONS: --max_old_space_size=3072
+    NODE_OPTIONS: --max_old_space_size=1536
   commands:
   - npm run build:prod
   when:

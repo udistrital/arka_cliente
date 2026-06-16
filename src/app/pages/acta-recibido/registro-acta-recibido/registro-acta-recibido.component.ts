@@ -8,7 +8,7 @@ import { TercerosHelper } from '../../../helpers/terceros/tercerosHelper';
 import { ActaRecibido } from '../../../@core/data/models/acta_recibido/acta_recibido';
 import { Elemento } from '../../../@core/data/models/acta_recibido/elemento';
 import { SoporteActa } from '../../../@core/data/models/acta_recibido/soporte_acta';
-import { EstadoActa_t } from '../../../@core/data/models/acta_recibido/estado_acta';
+import { EstadoActa, EstadoActa_t } from '../../../@core/data/models/acta_recibido/estado_acta';
 import { TerceroCriterioContratista, TerceroCriterioProveedor } from '../../../@core/data/models/terceros_criterio';
 import { HistoricoActa } from '../../../@core/data/models/acta_recibido/historico_acta';
 import { TransaccionActaRecibido } from '../../../@core/data/models/acta_recibido/transaccion_acta_recibido';
@@ -434,7 +434,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
     historico.Observaciones = null;
     historico.FechaVistoBueno = null;
     historico.ActaRecibidoId = new ActaRecibido;
-    historico.EstadoActaId = this.Estados_Acta.find(estado => estado.Id === Estado);
+    historico.EstadoActaId = <EstadoActa>{ Id: Estado };
     historico.Activo = true;
 
     return historico;
