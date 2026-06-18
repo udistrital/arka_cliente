@@ -24,12 +24,16 @@ import {
 export class ConsultaReportesComponent implements OnInit {
 
   private funcionarios: TerceroCriterioContratista[] = [];
-  formReportes: FormGroup;
+  formReportesElementos: FormGroup;
+  formReporteContable: FormGroup;
   formPazYSalvo: FormGroup;
-  loading: boolean = false;
+  loadingReportesElementos: boolean = false;
+  loadingReporteContable: boolean = false;
   loadingPazYSalvo: boolean = false;
-  statusMessage: string = '';
-  statusType: string = 'info';
+  statusMessageReportesElementos: string = '';
+  statusTypeReportesElementos: string = 'info';
+  statusMessageReporteContable: string = '';
+  statusTypeReporteContable: string = 'info';
   statusMessagePazYSalvo: string = '';
   statusTypePazYSalvo: string = 'info';
   pazYSalvoGenerado: PazYSalvoResponse = undefined;
@@ -50,12 +54,15 @@ export class ConsultaReportesComponent implements OnInit {
 
   ngOnInit() {
     this.determineViewMode();
-    this.buildForm();
+    this.buildReportesForms();
     this.buildPazYSalvoForm();
     this.listService.findFuncionarios();
     this.loadFuncionarios();
-    this.formReportes.valueChanges.subscribe(() => {
-      this.statusMessage = '';
+    this.formReportesElementos.valueChanges.subscribe(() => {
+      this.statusMessageReportesElementos = '';
+    });
+    this.formReporteContable.valueChanges.subscribe(() => {
+      this.statusMessageReporteContable = '';
     });
     this.formPazYSalvo.valueChanges.subscribe(() => {
       this.statusMessagePazYSalvo = '';
@@ -75,66 +82,142 @@ export class ConsultaReportesComponent implements OnInit {
     });
   }
 
-  public generarReporte(): void {
-    if (this.formReportes.invalid) {
-      this.formReportes.markAllAsTouched();
+  public generarReporteElementos(): void {
+    if (this.formReportesElementos.invalid) {
+      this.formReportesElementos.markAllAsTouched();
       return;
     }
 
-    const payload = {
-      fecha_inicial: this.toApiDate(this.controlFechaInicio.value),
-      fecha_final: this.toApiDate(this.controlFechaFin.value),
-    };
+    const fechaInicial = this.toApiDate(this.controlFechaInicioElementos.value);
+    const fechaFinal = this.toApiDate(this.controlFechaFinElementos.value);
 
-    this.loading = true;
-    this.setStatus('info', this.translate.instant('GLOBAL.reportes.consulta.loading'));
+    if (!fechaInicial || !fechaFinal) {
+      this.formReportesElementos.markAllAsTouched();
+      this.setStatusElementos('danger', this.translate.instant('GLOBAL.reportes.consulta.error_formato_fecha'));
+      return;
+    }
+
+    this.loadingReportesElementos = true;
+    this.setStatusElementos('info', this.translate.instant('GLOBAL.reportes.consulta.loading_elementos'));
+
+    const payload = {
+      fecha_inicial: fechaInicial,
+      fecha_final: fechaFinal,
+    };
 
     this.reportesHelper.generarReporte(payload).subscribe({
       next: (response: ArchivoReporte) => {
-        this.loading = false;
+        this.loadingReportesElementos = false;
 
         if (!response) {
-          this.setStatus('danger', this.translate.instant('GLOBAL.reportes.error_generacion'));
+          this.setStatusElementos('danger', this.translate.instant('GLOBAL.reportes.error_generacion'));
           return;
         }
 
         if (response.file === undefined || response.file === null) {
-          this.setStatus('danger', this.translate.instant('GLOBAL.reportes.consulta.error_sin_archivo'));
+          this.setStatusElementos('danger', this.translate.instant('GLOBAL.reportes.consulta.error_sin_archivo'));
           return;
         }
 
         if (!response.file.trim().length) {
-          this.setStatus('danger', this.translate.instant('GLOBAL.reportes.consulta.error_base64_vacio'));
+          this.setStatusElementos('danger', this.translate.instant('GLOBAL.reportes.consulta.error_base64_vacio'));
           return;
         }
 
         try {
           this.reportesHelper.downloadBase64Excel(
             response.file,
-            this.getFileName(response.fileName),
+            this.getExcelFileName(response.fileName, `reporte_elementos_${fechaInicial}_${fechaFinal}.xlsx`),
             response.mimeType,
           );
-          this.setStatus('success', this.translate.instant('GLOBAL.reportes.consulta.success'));
+          this.setStatusElementos('success', this.translate.instant('GLOBAL.reportes.consulta.success'));
           this.pUpManager.showSuccessAlert(this.translate.instant('GLOBAL.reportes.consulta.success'));
         } catch (error) {
-          this.setStatus('danger', this.translate.instant('GLOBAL.reportes.consulta.error_descarga'));
+          this.setStatusElementos('danger', this.translate.instant('GLOBAL.reportes.consulta.error_descarga'));
           this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.reportes.consulta.error_descarga'));
         }
       },
       error: () => {
-        this.loading = false;
-        this.setStatus('danger', this.translate.instant('GLOBAL.reportes.consulta.error_http'));
+        this.loadingReportesElementos = false;
+        this.setStatusElementos('danger', this.translate.instant('GLOBAL.reportes.consulta.error_http'));
         this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.reportes.consulta.error_http'));
       },
     });
   }
 
-  public get controlFechaInicio(): AbstractControl {
-    return this.formReportes.get('fecha_inicio');
+  public generarReporteContable(): void {
+    if (this.formReporteContable.invalid) {
+      this.formReporteContable.markAllAsTouched();
+      return;
+    }
+
+    const fechaInicial = this.toApiDate(this.controlFechaInicioContable.value);
+    const fechaFinal = this.toApiDate(this.controlFechaFinContable.value);
+
+    if (!fechaInicial || !fechaFinal) {
+      this.formReporteContable.markAllAsTouched();
+      this.setStatusContable('danger', this.translate.instant('GLOBAL.reportes.consulta.error_formato_fecha'));
+      return;
+    }
+
+    this.loadingReporteContable = true;
+    this.setStatusContable('info', this.translate.instant('GLOBAL.reportes.consulta.loading_contable'));
+
+    this.reportesHelper.generarReporteContabilizacion(fechaInicial, fechaFinal).subscribe({
+      next: (response: ArchivoReporte) => {
+        this.loadingReporteContable = false;
+
+        if (!response) {
+          this.setStatusContable('danger', this.translate.instant('GLOBAL.reportes.error_generacion'));
+          return;
+        }
+
+        if (response.file === undefined || response.file === null) {
+          this.setStatusContable('danger', this.translate.instant('GLOBAL.reportes.consulta.error_sin_archivo'));
+          return;
+        }
+
+        if (!response.file.trim().length) {
+          this.setStatusContable('danger', this.translate.instant('GLOBAL.reportes.consulta.error_base64_vacio'));
+          return;
+        }
+
+        try {
+          this.reportesHelper.downloadBase64Excel(
+            response.file,
+            this.getExcelFileName(response.fileName, `reporte_contabilizacion_${fechaInicial}_${fechaFinal}.xlsx`),
+            response.mimeType,
+          );
+          this.setStatusContable('success', this.translate.instant('GLOBAL.reportes.consulta.success'));
+          this.pUpManager.showSuccessAlert(this.translate.instant('GLOBAL.reportes.consulta.success'));
+        } catch (error) {
+          this.setStatusContable('danger', this.translate.instant('GLOBAL.reportes.consulta.error_descarga'));
+          this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.reportes.consulta.error_descarga'));
+        }
+      },
+      error: (error: any) => {
+        this.loadingReporteContable = false;
+        const message = error && error.message ? error.message : this.translate.instant('GLOBAL.reportes.consulta.error_http');
+        this.setStatusContable('danger', message);
+        this.pUpManager.showErrorAlert(message);
+      },
+    });
   }
 
-  public get controlFechaFin(): AbstractControl {
-    return this.formReportes.get('fecha_fin');
+  public get controlFechaInicioElementos(): AbstractControl {
+    return this.formReportesElementos.get('fecha_inicio');
+  }
+
+  public get controlFechaFinElementos(): AbstractControl {
+    return this.formReportesElementos.get('fecha_fin');
+  }
+
+  public get controlFechaInicioContable(): AbstractControl {
+    return this.formReporteContable.get('fecha_inicio');
+  }
+
+  public get controlFechaFinContable(): AbstractControl {
+    return this.formReporteContable.get('fecha_fin');
   }
 
   public get controlFuncionario(): AbstractControl {
@@ -218,10 +301,15 @@ export class ConsultaReportesComponent implements OnInit {
     return documento ? `${documento} - ${nombre}` : nombre;
   }
 
-  private buildForm(): void {
-    this.formReportes = this.fb.group({
-      fecha_inicio: ['', Validators.required],
-      fecha_fin: ['', Validators.required],
+  private buildReportesForms(): void {
+    this.formReportesElementos = this.buildDateRangeForm();
+    this.formReporteContable = this.buildDateRangeForm();
+  }
+
+  private buildDateRangeForm(): FormGroup {
+    return this.fb.group({
+      fecha_inicio: ['', [Validators.required, this.validarFecha()]],
+      fecha_fin: ['', [Validators.required, this.validarFecha()]],
     }, {
       validators: [this.validarRangoFechas()],
     });
@@ -243,19 +331,38 @@ export class ConsultaReportesComponent implements OnInit {
         return null;
       }
 
-      return this.toApiDate(fechaInicio) > this.toApiDate(fechaFin) ? { invalidDateRange: true } : null;
+      const fechaInicioFormateada = this.toApiDate(fechaInicio);
+      const fechaFinFormateada = this.toApiDate(fechaFin);
+
+      if (!fechaInicioFormateada || !fechaFinFormateada) {
+        return null;
+      }
+
+      return fechaInicioFormateada > fechaFinFormateada ? { invalidDateRange: true } : null;
     };
   }
 
-  private toApiDate(date: Date): string {
+  private validarFecha(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      if (!control.value) {
+        return null;
+      }
+
+      return this.toApiDate(control.value) ? null : { invalidDateFormat: true };
+    };
+  }
+
+  private toApiDate(date: Date | string): string {
     const value = new Date(date);
+    if (Number.isNaN(value.getTime())) {
+      return '';
+    }
     const month = `${value.getMonth() + 1}`.padStart(2, '0');
     const day = `${value.getDate()}`.padStart(2, '0');
     return `${value.getFullYear()}-${month}-${day}`;
   }
 
-  private getFileName(fileName: string): string {
-    const fallback = 'reporte_elementos.xlsx';
+  private getExcelFileName(fileName: string, fallback: string): string {
     const value = fileName && fileName.trim().length ? fileName.trim() : fallback;
     return value.toLowerCase().endsWith('.xlsx') ? value : `${value}.xlsx`;
   }
@@ -266,9 +373,14 @@ export class ConsultaReportesComponent implements OnInit {
     return value.toLowerCase().endsWith('.pdf') ? value : `${value}.pdf`;
   }
 
-  private setStatus(type: string, message: string): void {
-    this.statusType = type;
-    this.statusMessage = message;
+  private setStatusElementos(type: string, message: string): void {
+    this.statusTypeReportesElementos = type;
+    this.statusMessageReportesElementos = message;
+  }
+
+  private setStatusContable(type: string, message: string): void {
+    this.statusTypeReporteContable = type;
+    this.statusMessageReporteContable = message;
   }
 
   private setStatusPazYSalvo(type: string, message: string): void {
