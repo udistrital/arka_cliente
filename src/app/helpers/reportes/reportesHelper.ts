@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { TranslateService } from '@ngx-translate/core';
-import { map } from 'rxjs/operators';
+import { Observable, throwError } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import { PopUpManager } from '../../managers/popUpManager';
 import { RequestManager } from '../../managers/requestManager';
 
@@ -14,6 +16,11 @@ export interface ArchivoReporte {
   mimeType: string;
   file: string;
   version?: string;
+}
+
+export interface ReporteContabilizacionPayload {
+  FechaInicial: string;
+  FechaFinal: string;
 }
 
 export interface PazYSalvoPayload {
@@ -81,10 +88,35 @@ const PDF_MIME_TYPE = 'application/pdf';
 export class ReportesHelper {
 
   constructor(
+    private http: HttpClient,
     private rqManager: RequestManager,
     private translate: TranslateService,
     private pUpManager: PopUpManager,
   ) { }
+
+  public generarReporteContabilizacion(fechaInicial: string, fechaFinal: string): Observable<ArchivoReporte> {
+    const payload: ReporteContabilizacionPayload = {
+      FechaInicial: fechaInicial,
+      FechaFinal: fechaFinal,
+    };
+    const endpoint = this.rqManager.getPath('ARKA_SERVICE') + 'reportes/contabilizacion';
+
+    return this.http.post<any>(endpoint, payload, this.rqManager.httpOptions).pipe(
+      map((res: any) => {
+        const data = res && res.Body ? res.Body : res;
+        if (!data || data.Type === 'error' || data.success === false || data.Success === false) {
+          throw new Error(this.obtenerMensajeError(data) || this.translate.instant('GLOBAL.reportes.error_generacion'));
+        }
+        return this.normalizarArchivoReporte(data);
+      }),
+      catchError((error: HttpErrorResponse | any) => {
+        const message = this.obtenerMensajeError(error && error.error ? error.error : error)
+          || this.obtenerMensajeError(error)
+          || this.translate.instant('GLOBAL.reportes.error_generacion');
+        return throwError({ message });
+      }),
+    );
+  }
 
   public generarReporte(payload: GenerarReportePayload) {
     this.rqManager.setPath('ARKA_SERVICE');
@@ -221,7 +253,7 @@ export class ReportesHelper {
     const source = this.obtenerFuenteArchivo(response);
     const file = this.obtenerBase64Archivo(source);
     return {
-      fileName: this.obtenerValor(source, ['fileName', 'FileName', 'file_name', 'nombre_archivo', 'NombreArchivo']) || 'reporte.xlsx',
+      fileName: this.obtenerValor(source, ['fileName', 'FileName', 'file_name', 'nombre_archivo', 'NombreArchivo', 'Nombre']) || 'reporte.xlsx',
       mimeType: this.obtenerValor(source, [
         'mimeType',
         'MimeType',
@@ -230,6 +262,7 @@ export class ReportesHelper {
         'TipoMime',
         'tipo_archivo',
         'TipoArchivo',
+        'Type',
       ]) || EXCEL_MIME_TYPE,
       file,
       version: this.obtenerValor(source, ['version', 'Version']) || '',
@@ -317,5 +350,20 @@ export class ReportesHelper {
     }
 
     return undefined;
+  }
+
+  private obtenerMensajeError(source: any): string {
+    const rawValue = this.obtenerValor(source, [
+      'Message',
+      'message',
+      'Mensaje',
+      'mensaje',
+      'Error',
+      'error',
+      'detail',
+      'Detail',
+    ]);
+
+    return typeof rawValue === 'string' && rawValue.trim().length ? rawValue.trim() : '';
   }
 }
