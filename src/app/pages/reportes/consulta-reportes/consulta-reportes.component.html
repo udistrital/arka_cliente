@@ -1,61 +1,135 @@
 <div class="reportes-grid">
-  <mat-card *ngIf="viewMode === 'consultar'" [nbSpinner]="loading">
-    <mat-card-title>
-      {{ 'GLOBAL.reportes.consulta.title' | translate }}
-    </mat-card-title>
+  <ng-container *ngIf="viewMode === 'consultar'">
+    <mat-card [nbSpinner]="loadingReportesElementos">
+      <mat-card-title>
+        {{ 'GLOBAL.reportes.consulta.title_elementos' | translate }}
+      </mat-card-title>
 
-    <mat-card-subtitle>
-      <p><span class="fas fa-info-circle"></span>&nbsp;<em>{{ 'GLOBAL.reportes.consulta.subtitle' | translate }}</em></p>
-    </mat-card-subtitle>
+      <mat-card-subtitle>
+        <p><span class="fas fa-info-circle"></span>&nbsp;<em>{{ 'GLOBAL.reportes.consulta.subtitle_elementos' | translate }}</em></p>
+      </mat-card-subtitle>
 
-    <mat-card-content>
-      <nb-alert *ngIf="statusMessage" [status]="statusType" class="status-message">
-        {{ statusMessage }}
-      </nb-alert>
+      <mat-card-content>
+        <nb-alert *ngIf="statusMessageReportesElementos" [status]="statusTypeReportesElementos" class="status-message">
+          {{ statusMessageReportesElementos }}
+        </nb-alert>
 
-      <form [formGroup]="formReportes" class="row">
-        <div class="col-lg-6 col-md-6">
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>{{ 'GLOBAL.fecha_inicio' | translate }}</mat-label>
-            <input matInput [matDatepicker]="pickerInicio" formControlName="fecha_inicio"
-              placeholder="{{ 'GLOBAL.fecha_inicio' | translate }}">
-            <mat-datepicker-toggle matSuffix [for]="pickerInicio"></mat-datepicker-toggle>
-            <mat-datepicker #pickerInicio></mat-datepicker>
-            <mat-error *ngIf="controlFechaInicio.hasError('required')">
-              * {{ 'GLOBAL.Errores.ErrorRequerido' | translate }}
-            </mat-error>
-          </mat-form-field>
-        </div>
+        <form [formGroup]="formReportesElementos" class="row">
+          <div class="col-lg-6 col-md-6">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>{{ 'GLOBAL.fecha_inicio' | translate }}</mat-label>
+              <input matInput [matDatepicker]="pickerInicioElementos" formControlName="fecha_inicio"
+                placeholder="{{ 'GLOBAL.fecha_inicio' | translate }}">
+              <mat-datepicker-toggle matSuffix [for]="pickerInicioElementos"></mat-datepicker-toggle>
+              <mat-datepicker #pickerInicioElementos></mat-datepicker>
+              <mat-error *ngIf="controlFechaInicioElementos.hasError('required')">
+                * {{ 'GLOBAL.Errores.ErrorRequerido' | translate }}
+              </mat-error>
+              <mat-error *ngIf="controlFechaInicioElementos.hasError('invalidDateFormat')">
+                * {{ 'GLOBAL.reportes.consulta.error_formato_fecha' | translate }}
+              </mat-error>
+            </mat-form-field>
+          </div>
 
-        <div class="col-lg-6 col-md-6">
-          <mat-form-field appearance="outline" class="full-width">
-            <mat-label>{{ 'GLOBAL.reportes.consulta.fecha_fin' | translate }}</mat-label>
-            <input matInput [matDatepicker]="pickerFin" formControlName="fecha_fin"
-              placeholder="{{ 'GLOBAL.reportes.consulta.fecha_fin' | translate }}">
-            <mat-datepicker-toggle matSuffix [for]="pickerFin"></mat-datepicker-toggle>
-            <mat-datepicker #pickerFin></mat-datepicker>
-            <mat-error *ngIf="controlFechaFin.hasError('required')">
-              * {{ 'GLOBAL.Errores.ErrorRequerido' | translate }}
-            </mat-error>
-            <mat-error *ngIf="formReportes.hasError('invalidDateRange') && (controlFechaInicio.touched || controlFechaFin.touched)">
-              * {{ 'GLOBAL.reportes.consulta.error_rango_fechas' | translate }}
-            </mat-error>
-          </mat-form-field>
-        </div>
-      </form>
+          <div class="col-lg-6 col-md-6">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>{{ 'GLOBAL.reportes.consulta.fecha_fin' | translate }}</mat-label>
+              <input matInput [matDatepicker]="pickerFinElementos" formControlName="fecha_fin"
+                placeholder="{{ 'GLOBAL.reportes.consulta.fecha_fin' | translate }}">
+              <mat-datepicker-toggle matSuffix [for]="pickerFinElementos"></mat-datepicker-toggle>
+              <mat-datepicker #pickerFinElementos></mat-datepicker>
+              <mat-error *ngIf="controlFechaFinElementos.hasError('required')">
+                * {{ 'GLOBAL.Errores.ErrorRequerido' | translate }}
+              </mat-error>
+              <mat-error *ngIf="controlFechaFinElementos.hasError('invalidDateFormat')">
+                * {{ 'GLOBAL.reportes.consulta.error_formato_fecha' | translate }}
+              </mat-error>
+              <mat-error *ngIf="formReportesElementos.hasError('invalidDateRange')
+                && (controlFechaInicioElementos.touched || controlFechaFinElementos.touched)">
+                * {{ 'GLOBAL.reportes.consulta.error_rango_fechas' | translate }}
+              </mat-error>
+            </mat-form-field>
+          </div>
+        </form>
 
-      <p *ngIf="loading" class="loading-message">
-        <em>{{ 'GLOBAL.reportes.consulta.loading' | translate }}</em>
-      </p>
-    </mat-card-content>
+        <p *ngIf="loadingReportesElementos" class="loading-message">
+          <em>{{ 'GLOBAL.reportes.consulta.loading_elementos' | translate }}</em>
+        </p>
+      </mat-card-content>
 
-    <mat-card-actions>
-      <button mat-raised-button color="primary" class="float-right text-uppercase"
-        [disabled]="formReportes.invalid || loading" (click)="generarReporte()">
-        {{ 'GLOBAL.reportes.consulta.generar_excel' | translate }}
-      </button>
-    </mat-card-actions>
-  </mat-card>
+      <mat-card-actions>
+        <button mat-raised-button color="primary" class="float-right text-uppercase"
+          [disabled]="formReportesElementos.invalid || loadingReportesElementos" (click)="generarReporteElementos()">
+          {{ 'GLOBAL.reportes.consulta.generar_excel' | translate }}
+        </button>
+      </mat-card-actions>
+    </mat-card>
+
+    <mat-card [nbSpinner]="loadingReporteContable">
+      <mat-card-title>
+        {{ 'GLOBAL.reportes.consulta.title_contable' | translate }}
+      </mat-card-title>
+
+      <mat-card-subtitle>
+        <p><span class="fas fa-info-circle"></span>&nbsp;<em>{{ 'GLOBAL.reportes.consulta.subtitle_contable' | translate }}</em></p>
+      </mat-card-subtitle>
+
+      <mat-card-content>
+        <nb-alert *ngIf="statusMessageReporteContable" [status]="statusTypeReporteContable" class="status-message">
+          {{ statusMessageReporteContable }}
+        </nb-alert>
+
+        <form [formGroup]="formReporteContable" class="row">
+          <div class="col-lg-6 col-md-6">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>{{ 'GLOBAL.fecha_inicio' | translate }}</mat-label>
+              <input matInput [matDatepicker]="pickerInicioContable" formControlName="fecha_inicio"
+                placeholder="{{ 'GLOBAL.fecha_inicio' | translate }}">
+              <mat-datepicker-toggle matSuffix [for]="pickerInicioContable"></mat-datepicker-toggle>
+              <mat-datepicker #pickerInicioContable></mat-datepicker>
+              <mat-error *ngIf="controlFechaInicioContable.hasError('required')">
+                * {{ 'GLOBAL.Errores.ErrorRequerido' | translate }}
+              </mat-error>
+              <mat-error *ngIf="controlFechaInicioContable.hasError('invalidDateFormat')">
+                * {{ 'GLOBAL.reportes.consulta.error_formato_fecha' | translate }}
+              </mat-error>
+            </mat-form-field>
+          </div>
+
+          <div class="col-lg-6 col-md-6">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>{{ 'GLOBAL.reportes.consulta.fecha_fin' | translate }}</mat-label>
+              <input matInput [matDatepicker]="pickerFinContable" formControlName="fecha_fin"
+                placeholder="{{ 'GLOBAL.reportes.consulta.fecha_fin' | translate }}">
+              <mat-datepicker-toggle matSuffix [for]="pickerFinContable"></mat-datepicker-toggle>
+              <mat-datepicker #pickerFinContable></mat-datepicker>
+              <mat-error *ngIf="controlFechaFinContable.hasError('required')">
+                * {{ 'GLOBAL.Errores.ErrorRequerido' | translate }}
+              </mat-error>
+              <mat-error *ngIf="controlFechaFinContable.hasError('invalidDateFormat')">
+                * {{ 'GLOBAL.reportes.consulta.error_formato_fecha' | translate }}
+              </mat-error>
+              <mat-error *ngIf="formReporteContable.hasError('invalidDateRange')
+                && (controlFechaInicioContable.touched || controlFechaFinContable.touched)">
+                * {{ 'GLOBAL.reportes.consulta.error_rango_fechas' | translate }}
+              </mat-error>
+            </mat-form-field>
+          </div>
+        </form>
+
+        <p *ngIf="loadingReporteContable" class="loading-message">
+          <em>{{ 'GLOBAL.reportes.consulta.loading_contable' | translate }}</em>
+        </p>
+      </mat-card-content>
+
+      <mat-card-actions>
+        <button mat-raised-button color="primary" class="float-right text-uppercase"
+          [disabled]="formReporteContable.invalid || loadingReporteContable" (click)="generarReporteContable()">
+          {{ 'GLOBAL.reportes.consulta.descargar_reporte_contable' | translate }}
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </ng-container>
 
   <mat-card *ngIf="viewMode === 'pazysalvo'" [nbSpinner]="loadingPazYSalvo">
     <mat-card-title>
