@@ -19,8 +19,8 @@ export interface ArchivoReporte {
 }
 
 export interface ReporteContabilizacionPayload {
-  FechaInicial: string;
-  FechaFinal: string;
+  fecha_inicial: string;
+  fecha_final: string;
 }
 
 export interface PazYSalvoPayload {
@@ -96,8 +96,8 @@ export class ReportesHelper {
 
   public generarReporteContabilizacion(fechaInicial: string, fechaFinal: string): Observable<ArchivoReporte> {
     const payload: ReporteContabilizacionPayload = {
-      FechaInicial: fechaInicial,
-      FechaFinal: fechaFinal,
+      fecha_inicial: fechaInicial,
+      fecha_final: fechaFinal,
     };
     const endpoint = this.rqManager.getPath('ARKA_SERVICE') + 'reportes/contabilizacion';
 
