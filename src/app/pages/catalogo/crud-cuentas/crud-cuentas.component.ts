@@ -269,7 +269,11 @@ export class CrudCuentasComponent implements OnInit {
       const cuentaActual = cuentasTipoActual.find((cuenta) => this.isSameCuentaConfig(cuenta, cuentaEsperada));
 
       if (cuentaActual) {
-        return cuentaActual;
+        return {
+          ...cuentaActual,
+          Depreciacion: !!cuentaEsperada.Depreciacion,
+          Amortizacion: !!cuentaEsperada.Amortizacion,
+        };
       }
 
       const cuentaPrevia = cuentasExistentes.find((cuenta) =>
@@ -282,6 +286,7 @@ export class CrudCuentasComponent implements OnInit {
           tipoBien,
           cuentaPrevia.CuentaDebitoId,
           cuentaPrevia.CuentaCreditoId,
+          detalleClase,
         );
       }
 
@@ -307,11 +312,14 @@ export class CrudCuentasComponent implements OnInit {
       this.buildCuentaTemplate(movimiento, salidaAsociada, tipoBien),
     ];
 
-    if (this.debeCrearCuentaDepreciacion(detalleClase, movimiento)) {
+    if (this.debeCrearCuentaAjusteValor(detalleClase, movimiento)) {
       cuentas.push(this.buildCuentaTemplate(
         movimiento,
         this.obtenerMovimientoDepreciacion(),
         tipoBien,
+        null,
+        null,
+        detalleClase,
       ));
     }
 
@@ -324,6 +332,7 @@ export class CrudCuentasComponent implements OnInit {
     tipoBien: any,
     cuentaDebitoId: any = null,
     cuentaCreditoId: any = null,
+    detalleClase: any = null,
   ) {
     return {
       Id: 0,
@@ -333,6 +342,8 @@ export class CrudCuentasComponent implements OnInit {
       SubtipoMovimientoId: this.normalizeTipoMovimiento(subtipoMovimiento),
       TipoBienId: tipoBien,
       SubgrupoId: this.subgrupo ? this.subgrupo.Id : null,
+      Depreciacion: !!(detalleClase && detalleClase.Depreciacion),
+      Amortizacion: !!(detalleClase && detalleClase.Amortizacion),
     };
   }
 
@@ -368,11 +379,11 @@ export class CrudCuentasComponent implements OnInit {
     return this.tiposDeEMovimentos.find(tipo => tipo.Id === this.movimientoId);
   }
 
-  private debeCrearCuentaDepreciacion(detalleClase: any, movimiento: FormatoTipoMovimiento): boolean {
+  private debeCrearCuentaAjusteValor(detalleClase: any, movimiento: FormatoTipoMovimiento): boolean {
     const movimientoDepreciacion = this.obtenerMovimientoDepreciacion();
     const codigoMovimiento = this.getCodigoAbreviacion(movimiento);
 
-    return !!(detalleClase && detalleClase.Depreciacion
+    return !!(detalleClase && (detalleClase.Depreciacion || detalleClase.Amortizacion)
       && movimientoDepreciacion && movimientoDepreciacion.Id
       && codigoMovimiento !== 'SAL'
       && codigoMovimiento !== 'CRR');

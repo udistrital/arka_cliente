@@ -85,6 +85,8 @@ export class FormCuentasComponent implements OnInit, OnChanges, OnDestroy {
               cta.CuentaDebitoId,
               cta.CuentaCreditoId,
               cta.TipoBienId,
+              cta.Depreciacion,
+              cta.Amortizacion,
             )),
         ),
       });
@@ -97,13 +99,16 @@ export class FormCuentasComponent implements OnInit, OnChanges, OnDestroy {
     });
   }
 
-  private formGroupCuentasTipoBienMovimiento(id: number, movId, sMovId: any, db: any, cr: any, tb: any): FormGroup {
+  private formGroupCuentasTipoBienMovimiento(id: number, movId, sMovId: any, db: any, cr: any, tb: any, depreciacion?: boolean,
+    amortizacion?: boolean): FormGroup {
     const disabled = !this.escritura;
     const form = this.fb.group({
       Id: [id],
       TipoMovimientoId: [movId],
       SubtipoMovimientoId: [sMovId],
       TipoBienId: [tb],
+      Depreciacion: [!!depreciacion],
+      Amortizacion: [!!amortizacion],
       CuentaDebitoId: [
         {
           value: db,
@@ -186,6 +191,7 @@ export class FormCuentasComponent implements OnInit, OnChanges, OnDestroy {
     const entrada = this.translate.instant('GLOBAL.Entrada');
     const salida = this.translate.instant('GLOBAL.Salida');
     const depreciacion = this.translate.instant('GLOBAL.Depreciacion');
+    const amortizacion = this.translate.instant('GLOBAL.Amortizacion');
     const subtipoCodigo = this.getCodigoAbreviacion(subtipo);
 
     if (subtipoCodigo === 'SAL' && tipoNombre) {
@@ -193,7 +199,8 @@ export class FormCuentasComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     if (subtipoCodigo === 'CRR') {
-      return `${depreciacion}: ${tipoNombre || subtipoNombre}`;
+      const esAmortizacion = !!control.get('Amortizacion').value && !control.get('Depreciacion').value;
+      return `${esAmortizacion ? amortizacion : depreciacion}: ${tipoNombre || subtipoNombre}`;
     }
 
     return `${entrada}: ${subtipoNombre || tipoNombre}`;
