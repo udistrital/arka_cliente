@@ -154,7 +154,12 @@ export class CrudBajasComponent implements OnInit {
     const detalle_ = this.movimiento ? <DetalleBaja>JSON.parse(this.movimiento.Detalle) : new (DetalleBaja);
     const ConsecutivoId = this.movimiento ? this.movimiento.ConsecutivoId : 0;
     const Consecutivo = this.movimiento ? this.movimiento.Consecutivo : '';
-    const Funcionario = this.bajaData.controls.info.controls.funcionario.value.id;
+    const funcionarioSeleccionado = this.bajaData.controls.funcionario ?
+      this.bajaData.controls.funcionario.controls.tercero.value :
+      this.bajaData.controls.info.controls.funcionario.value;
+    const Funcionario = funcionarioSeleccionado && funcionarioSeleccionado.Tercero ?
+      funcionarioSeleccionado.Tercero.Id :
+      funcionarioSeleccionado && funcionarioSeleccionado.id ? funcionarioSeleccionado.id : 0;
     const Elementos = this.bajaData.controls.elementos.controls.map(control => control.value.id);
     const tipoBaja = this.bajaData.controls.info.controls.tipoBaja.value;
     const FechaRevisionA = this.modoCrud === 'revisar' ? new Date() : detalle_ ? detalle_.FechaRevisionA : '';
