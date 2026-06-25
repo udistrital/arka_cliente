@@ -2,7 +2,7 @@ import { Component, OnInit, Output, EventEmitter, ViewChild, Input } from '@angu
 import { Observable } from 'rxjs';
 import { FormBuilder, FormGroup, Validators, ValidatorFn, AbstractControl, ValidationErrors, FormArray } from '@angular/forms';
 import { TranslateService, LangChangeEvent } from '@ngx-translate/core';
-import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, map, startWith } from 'rxjs/operators';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { BajasHelper } from '../../../helpers/bajas/bajasHelper';
@@ -10,11 +10,14 @@ import { MovimientosHelper } from '../../../helpers/movimientos/movimientosHelpe
 import { FormatoTipoMovimiento } from '../../../@core/data/models/entrada/entrada';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { PopUpManager } from '../../../managers/popUpManager';
-import { UserService } from '../../../@core/data/users.service';
 import { TrasladosHelper } from '../../../helpers/movimientos/trasladosHelper';
 import { isObject } from 'util';
 import { GestorDocumentalService } from '../../../helpers/gestor_documental/gestorDocumentalHelper';
 import { CentroCostosHelper } from '../../../helpers/movimientos/centroCostosHelper';
+import { Store } from '@ngrx/store';
+import { IAppState } from '../../../@core/store/app.state';
+import { ListService } from '../../../@core/store/services/list.service';
+import { TerceroCriterioContratista } from '../../../@core/data/models/terceros_criterio';
 
 const SIZE_SOPORTE = 5;
 
@@ -26,11 +29,13 @@ const SIZE_SOPORTE = 5;
 export class FormSolicitudComponent implements OnInit {
   elementos = [];
   elementosFiltrados: any[];
+  funcionariosFiltrados: Observable<Partial<TerceroCriterioContratista>[]>;
   formBaja: FormGroup;
   ubicacionesFiltradas: any = [];
   dataSource: MatTableDataSource<any>;
   tiposBaja: FormatoTipoMovimiento[];
   sizeSoporte: number;
+  private funcionarios: TerceroCriterioContratista[];
   @ViewChild('paginator', { static: true }) paginator: MatPaginator;
   spinner: string = '';
   bajaId: number;
@@ -48,10 +53,11 @@ export class FormSolicitudComponent implements OnInit {
     private movimientosHelper: MovimientosHelper,
     private sanitization: DomSanitizer,
     private pUpManager: PopUpManager,
-    private userService: UserService,
     private trasladosHelper: TrasladosHelper,
     private documento: GestorDocumentalService,
     private centroCostosHelper: CentroCostosHelper,
+    private store: Store<IAppState>,
+    private listService: ListService,
   ) {
     this.bajaId = 0;
     this.sizeSoporte = SIZE_SOPORTE;
@@ -63,26 +69,18 @@ export class FormSolicitudComponent implements OnInit {
 
   ngOnInit() {
     this.buildForm();
+    this.loadFuncionarios();
     this.init();
-    this.getSolicitante();
   }
 
   private async init() {
-    this.spinner = 'Cargando Inventario';
-    const data = [this.loadInventario(), this.getTiposBaja()];
+    this.spinner = 'Cargando formulario';
+    const data = [this.getTiposBaja()];
     await Promise.all(data);
     if (this.modo !== 'create') {
       this.loadValues(this.bajaInfo);
-    } else {
-      this.spinner = '';
     }
-  }
-
-  private getSolicitante() {
-    if (this.modo === 'create') {
-      const id = this.userService.getPersonaId();
-      this.formBaja.get('info.funcionario').patchValue({ id });
-    }
+    this.spinner = '';
   }
 
   get rechazo(): FormGroup {
@@ -172,18 +170,30 @@ export class FormSolicitudComponent implements OnInit {
     return form;
   }
 
+  get funcionario(): FormGroup {
+    const disabled = this.modo === 'get';
+    const form = this.fb.group({
+      tercero: [
+        {
+          value: '',
+          disabled,
+        },
+        {
+          validators: [Validators.required, this.validarTercero()],
+        },
+      ],
+    });
+
+    if (!disabled) {
+      this.funcionariosFiltrados = this.cambiosFuncionario(form.get('tercero'));
+    }
+
+    return form;
+  }
+
   get info(): FormGroup {
     const disabled = this.modo === 'get';
     const form = this.fb.group({
-      funcionario: this.fb.group({
-        info: [
-          {
-            value: '',
-            disabled,
-          },
-        ],
-        id: [0],
-      }),
       revisor: this.fb.group({
         info: [
           {
@@ -257,6 +267,7 @@ export class FormSolicitudComponent implements OnInit {
   private buildForm(): void {
     this.formBaja = this.fb.group({
       rechazo: this.rechazo,
+      funcionario: this.funcionario,
       info: this.info,
       elementos: this.fb.array([], { validators: this.validateElementos() }),
       observaciones: this.observaciones,
@@ -285,14 +296,11 @@ export class FormSolicitudComponent implements OnInit {
       id: values.revisor ? values.revisor.Tercero.Id : 0,
       info: values.revisor ? this.getCompuesto(values.revisor) : '',
     };
-    const funcionario = {
-      id: values.funcionario ? values.funcionario.Tercero.Id : 0,
-      info: values.funcionario ? this.getCompuesto(values.funcionario) : '',
-    };
+    const funcionario = values.funcionario ? values.funcionario : '';
+    this.formBaja.get('funcionario').patchValue({ tercero: funcionario });
     this.formBaja.get('info').patchValue({
       soporte,
       tipoBaja: values.tipoBaja.Id,
-      funcionario,
       revisor,
     });
 
@@ -384,6 +392,13 @@ export class FormSolicitudComponent implements OnInit {
     const observaciones = values.observaciones;
     this.formBaja.get('observaciones').patchValue({ observaciones });
     this.spinner = '';
+
+    if (this.modo !== 'get') {
+      const funcionarioId = this.getFuncionarioId();
+      if (funcionarioId) {
+        this.loadInventarioByFuncionario(funcionarioId, false, false);
+      }
+    }
   }
 
   addElemento() {
@@ -457,10 +472,26 @@ export class FormSolicitudComponent implements OnInit {
     });
   }
 
+  public onFuncionarioSeleccionado() {
+    const funcionarioId = this.getFuncionarioId();
+    if (funcionarioId) {
+      this.loadInventarioByFuncionario(funcionarioId);
+    }
+  }
+
   private getCompuesto(tercero: any): string {
     const terceroCompuesto = (tercero.Identificacion ?
       (tercero.Identificacion.Numero + ' - ') : '') + tercero.Tercero.NombreCompleto;
     return terceroCompuesto;
+  }
+
+  public muestraFuncionario(contr: TerceroCriterioContratista): string {
+    if (contr && contr.Identificacion && contr.Tercero) {
+      return contr.Identificacion.Numero + ' - ' + contr.Tercero.NombreCompleto;
+    } else if (contr && contr.Tercero) {
+      return contr.Tercero.NombreCompleto;
+    }
+    return '';
   }
 
   private getNombreCampoUbicacion(ubicacion: any, campo: 'Sede' | 'Dependencia'): string {
@@ -492,6 +523,15 @@ export class FormSolicitudComponent implements OnInit {
       });
   }
 
+  private loadFuncionarios() {
+    this.listService.findFuncionarios();
+    this.store.select((state) => state).subscribe((list) => {
+      if (list.listFuncionarios && list.listFuncionarios.length && list.listFuncionarios[0]) {
+        this.funcionarios = list.listFuncionarios[0];
+      }
+    });
+  }
+
   private getTiposBaja() {
     return new Promise<void>(resolve => {
       const query = 'limit=-1&query=CodigoAbreviacion__istartswith:BJ_';
@@ -502,22 +542,52 @@ export class FormSolicitudComponent implements OnInit {
     });
   }
 
-  private loadInventario(): Promise<void> {
-    return new Promise<void>(resolve => {
-      if (this.modo !== 'get') {
-        this.trasladosHelper.getInventarioTercero().subscribe((res: any) => {
-          if (res.Elementos.length) {
-            this.elementos = res.Elementos;
-            this.elementosFiltrados = res.Elementos;
-          } else if (this.modo === 'create') {
+  private getFuncionarioId(): number {
+    const funcionario = this.formBaja.get('funcionario.tercero').value;
+    if (funcionario && funcionario.Tercero && funcionario.Tercero.Id) {
+      return funcionario.Tercero.Id;
+    }
+    return 0;
+  }
+
+  private loadInventarioByFuncionario(terceroId: number, resetSeleccion: boolean = true, showNoElementosError: boolean = true) {
+    this.spinner = 'Consultando inventario del funcionario';
+    this.trasladosHelper.getInventarioTerceroById(terceroId).subscribe({
+      next: (res: any) => {
+        this.spinner = '';
+        if (resetSeleccion) {
+          this.resetElementosSeleccionados();
+        }
+
+        if (res && res.Elementos && res.Elementos.length) {
+          this.elementos = res.Elementos;
+          this.elementosFiltrados = res.Elementos;
+        } else {
+          this.elementos = [];
+          this.elementosFiltrados = [];
+          if (showNoElementosError) {
             this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.traslados.registrar.noElementos'));
           }
-          resolve();
-        });
-      } else {
-        resolve();
-      }
+        }
+      },
+      error: () => {
+        this.spinner = '';
+        if (resetSeleccion) {
+          this.resetElementosSeleccionados();
+        }
+        this.elementos = [];
+        this.elementosFiltrados = [];
+        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.traslados.consulta.errorElementos'));
+      },
     });
+  }
+
+  private resetElementosSeleccionados() {
+    const elementos = this.formBaja.get('elementos') as FormArray;
+    while (elementos.length > 0) {
+      elementos.removeAt(0);
+    }
+    this.dataSource.data = [];
   }
 
   public muestraPlaca(field): string {
@@ -560,6 +630,25 @@ export class FormSolicitudComponent implements OnInit {
     });
   }
 
+  private cambiosFuncionario(control: AbstractControl): Observable<Partial<TerceroCriterioContratista>[]> {
+    return control.valueChanges
+      .pipe(
+        startWith(''),
+        debounceTime(250),
+        distinctUntilChanged(),
+        map((val: any) => typeof val === 'string' ? val : this.muestraFuncionario(val)),
+        map((nombre: string) => this.filtroFuncionarios(nombre)),
+      );
+  }
+
+  private filtroFuncionarios(nombre: string): TerceroCriterioContratista[] {
+    if (nombre.length >= 4 && Array.isArray(this.funcionarios)) {
+      const valorFiltrado = nombre.toLowerCase();
+      return this.funcionarios.filter((contr) => this.muestraFuncionario(contr).toLowerCase().includes(valorFiltrado));
+    }
+    return [];
+  }
+
   cleanURL(oldURL: string): SafeResourceUrl {
     return this.sanitization.bypassSecurityTrustUrl(oldURL);
   }
@@ -591,6 +680,17 @@ export class FormSolicitudComponent implements OnInit {
         });
 
       return (noFilas || noSeleccionado) ? { errorNoElementos: true } : duplicados ? { errorDuplicados: true } : null;
+    };
+  }
+
+  private validarTercero(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const valor = control.value;
+      const checkStringLength = typeof (valor) === 'string' && valor.length < 4 && valor !== '';
+      const checkInvalidString = typeof (valor) === 'string' && valor !== '';
+      const checkInvalidTercero = typeof (valor) === 'object' && valor && !valor.Tercero;
+      return checkStringLength ? { errorLongitudMinima: true } :
+        ((checkInvalidString || checkInvalidTercero) ? { terceroNoValido: true } : null);
     };
   }
 

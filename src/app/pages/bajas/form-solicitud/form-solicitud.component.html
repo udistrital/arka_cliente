@@ -21,15 +21,51 @@
       </div>
     </form>
   </mat-step>
+  <mat-step [stepControl]="formBaja.get('funcionario')" label="{{'GLOBAL.funcionario' | translate}}">
+    <form [formGroup]="formBaja.get('funcionario')">
+      <div class="row" style="padding-bottom: 1rem;">
+        <div class="col-sm">
+          <label class="label">{{'GLOBAL.funcionario' | translate}}</label>
+          <input matInput type="text" class="form-control" formControlName="tercero"
+            [matAutocomplete]="autoFuncionario" placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}">
+          <mat-autocomplete #autoFuncionario="matAutocomplete" [displayWith]="muestraFuncionario"
+            (optionSelected)="onFuncionarioSeleccionado()">
+            <mat-option *ngFor="let func of funcionariosFiltrados | async" [value]="func">
+              {{muestraFuncionario(func)}}
+            </mat-option>
+          </mat-autocomplete>
+          <p class="error-field"
+            *ngIf="formBaja.get('funcionario.tercero').errors && formBaja.get('funcionario.tercero').errors.required">
+            {{'GLOBAL.Errores.ErrorRequerido' | translate}}
+          </p>
+          <p class="error-field"
+            *ngIf="formBaja.get('funcionario.tercero').errors && formBaja.get('funcionario.tercero').errors.errorLongitudMinima">
+            {{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}
+          </p>
+          <p class="error-field"
+            *ngIf="formBaja.get('funcionario.tercero').errors && formBaja.get('funcionario.tercero').errors.terceroNoValido">
+            {{'GLOBAL.Errores.ErrorTercero' | translate}}
+          </p>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm">
+          <button mat-flat-button color="primary" *ngIf="formBaja && formBaja.get('rechazo.razon').value !== ''"
+            matStepperPrevious class="float-left text-uppercase">
+            {{'GLOBAL.anterior' | translate}}
+          </button>
+          <button mat-flat-button color="primary" matStepperNext class="float-right text-uppercase"
+            [disabled]="formBaja.get('funcionario').invalid">
+            {{'GLOBAL.siguiente' | translate}}
+          </button>
+        </div>
+      </div>
+    </form>
+  </mat-step>
   <mat-step [stepControl]="formBaja.get('info')" label="{{'GLOBAL.bajas.informacion' | translate}}">
     <form [formGroup]="formBaja.get('info')">
 
       <div class="row" style="padding-bottom: 1rem;" *ngIf="modo !== 'create'">
-        <div class="col-sm" [formGroup]="formBaja.get('info.funcionario')">
-          <label class="label">{{'GLOBAL.solicitante' | translate}}</label>
-          <input type="text" class="form-control" formControlName="info" style="width: 100%;"
-            placeholder="{{'GLOBAL.solicitante' | translate }}">
-        </div>
         <div class="col-sm" [formGroup]="formBaja.get('info.revisor')">
           <label class="label">{{'GLOBAL.bajas.consulta.revisor' | translate}}</label>
           <input type="text" class="form-control" formControlName="info" style="width: 100%;"
@@ -82,8 +118,7 @@
 
       <div class="row">
         <div class="col-sm">
-          <button mat-flat-button color="primary" *ngIf="formBaja && formBaja.get('rechazo.razon').value !== ''"
-            matStepperPrevious class="float-left text-uppercase">
+          <button mat-flat-button color="primary" matStepperPrevious class="float-left text-uppercase">
             {{'GLOBAL.anterior' | translate}}
           </button>
           <button mat-flat-button color="primary" matStepperNext class="float-right text-uppercase"
