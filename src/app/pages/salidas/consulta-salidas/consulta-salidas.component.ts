@@ -485,7 +485,28 @@ export class ConsultaSalidasComponent implements OnInit {
     this.puedeAnularSalida = this.modo === 'consulta' &&
       !this.editarSalida &&
       this.movimiento &&
-      estadoSalida === 'Salida Aprobada';
+      estadoSalida === 'Salida Aprobada' &&
+      this.fueCreadaEnMesActual();
+  }
+
+  private fueCreadaEnMesActual(): boolean {
+    const movimiento = this.movimiento as any;
+    return this.esFechaDelMesActual(movimiento && movimiento.FechaCreacion);
+  }
+
+  private esFechaDelMesActual(fecha: string | Date): boolean {
+    if (!fecha) {
+      return false;
+    }
+
+    const fechaCreacion = new Date(fecha);
+    if (isNaN(fechaCreacion.getTime())) {
+      return false;
+    }
+
+    const hoy = new Date();
+    return fechaCreacion.getFullYear() === hoy.getFullYear() &&
+      fechaCreacion.getMonth() === hoy.getMonth();
   }
 
   private parseAnulacionError(error: any): string {
