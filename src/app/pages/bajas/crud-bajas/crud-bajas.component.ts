@@ -71,8 +71,8 @@ export class CrudBajasComponent implements OnInit {
         this.movimiento = res.Movimiento;
         this.bajaData = {};
         this.bajaData.elementos = res.Elementos;
-        this.bajaData.soporte = res.Soporte;
-        this.bajaData.tipoBaja = res.TipoBaja;
+        this.bajaData.soporte = this.resolveSoporteSolicitud(res);
+        this.bajaData.tipoBaja = this.resolveTipoBajaSolicitud(res);
         this.bajaData.elementos = res.Elementos;
         this.bajaData.observaciones = res.Observaciones;
         this.bajaData.funcionario = res.Funcionario;
@@ -88,6 +88,42 @@ export class CrudBajasComponent implements OnInit {
         this.showForm = true;
       }
     });
+  }
+
+  private resolveTipoBajaSolicitud(res: any) {
+    if (!res) {
+      return null;
+    }
+
+    if (res.TipoBaja) {
+      return res.TipoBaja;
+    }
+
+    if (res.Movimiento && res.Movimiento.FormatoTipoMovimientoId) {
+      return res.Movimiento.FormatoTipoMovimientoId;
+    }
+
+    return null;
+  }
+
+  private resolveSoporteSolicitud(res: any) {
+    if (!res) {
+      return null;
+    }
+
+    if (Array.isArray(res.Soporte)) {
+      return res.Soporte.length ? res.Soporte[0] : null;
+    }
+
+    if (res.Soporte) {
+      return res.Soporte;
+    }
+
+    if (res.Movimiento && (res.Movimiento as any).SoporteMovimientoId) {
+      return (res.Movimiento as any).SoporteMovimientoId;
+    }
+
+    return null;
   }
 
   private checkEditor(funcionario: any) {

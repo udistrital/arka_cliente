@@ -1,18 +1,16 @@
-mat-table {
-    overflow-x: scroll;
-}
-
+input,
 mat-select {
     height: auto;
 }
 
-mat-paginator {
-    display: flex;
-    justify-content: center;
-}
-
 label {
     color: black;
+}
+
+.cell {
+    height: 50px;
+    width: 150px;
+    text-align: left;
 }
 
 .acciones {
@@ -21,10 +19,13 @@ label {
 }
 
 th,
-td,
-input {
+td {
+  width: 150px;
+}
+
+.placa {
+    width: 200px;
     height: 50px;
-    width: 160px;
 }
 
 .botones {
@@ -36,6 +37,11 @@ button:focus {
     outline: none;
 }
 
+mat-paginator {
+    display: flex;
+    justify-content: center;
+}
+
 .soporte {
     display: flex;
     justify-content: space-around;
@@ -45,4 +51,8 @@ button:focus {
     display: flex;
     flex-direction: column;
     align-items: center;
+}
+
+.seccion-formulario {
+    margin-bottom: 2rem;
 }
