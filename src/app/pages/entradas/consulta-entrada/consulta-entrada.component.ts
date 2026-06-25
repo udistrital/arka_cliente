@@ -448,7 +448,30 @@ export class ConsultaEntradaComponent implements OnInit {
       this.userService.tieneAlgunRol([RolUsuario_t.Admin]) &&
       this.movimiento &&
       this.movimiento.EstadoMovimientoId &&
-      this.movimiento.EstadoMovimientoId.Nombre === 'Entrada Aprobada';
+      this.movimiento.EstadoMovimientoId.Nombre === 'Entrada Aprobada' &&
+      this.fueCreadaEnMesActual();
+  }
+
+  private fueCreadaEnMesActual(): boolean {
+    const movimiento = this.movimiento as any;
+    const fechaCreacion = (movimiento && movimiento.FechaCreacion) ||
+      (this.entradaEspecifica && this.entradaEspecifica.FechaCreacion);
+    return this.esFechaDelMesActual(fechaCreacion);
+  }
+
+  private esFechaDelMesActual(fecha: string | Date): boolean {
+    if (!fecha) {
+      return false;
+    }
+
+    const fechaCreacion = new Date(fecha);
+    if (isNaN(fechaCreacion.getTime())) {
+      return false;
+    }
+
+    const hoy = new Date();
+    return fechaCreacion.getFullYear() === hoy.getFullYear() &&
+      fechaCreacion.getMonth() === hoy.getMonth();
   }
 
   private onAnularEntrada(observacion: string) {
