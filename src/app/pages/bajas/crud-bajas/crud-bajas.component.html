@@ -5,7 +5,8 @@
   {{ subtitle }}
 </mat-card-subtitle>
 <mat-card-content [nbSpinner]="loading">
-  <ngx-form-solicitud *ngIf="showForm" (valid)="setValidness($event)" [(bajaInfo)]="bajaData" [modo]="modoForm">
+  <ngx-form-solicitud *ngIf="showForm" (valid)="setValidness($event)" [(bajaInfo)]="bajaData" [modo]="modoForm"
+    [modoCrud]="modoCrud">
   </ngx-form-solicitud>
 </mat-card-content>
 <mat-card-actions *ngIf="modoCrud !== 'ver'">
