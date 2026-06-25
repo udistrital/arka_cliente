@@ -14,6 +14,7 @@ import { TrasladosHelper } from '../../../helpers/movimientos/trasladosHelper';
 import { isObject } from 'util';
 import { GestorDocumentalService } from '../../../helpers/gestor_documental/gestorDocumentalHelper';
 import { CentroCostosHelper } from '../../../helpers/movimientos/centroCostosHelper';
+import { UserService } from '../../../@core/data/users.service';
 import { Store } from '@ngrx/store';
 import { IAppState } from '../../../@core/store/app.state';
 import { ListService } from '../../../@core/store/services/list.service';
@@ -42,9 +43,12 @@ export class FormSolicitudComponent implements OnInit {
   trContable: any;
   @Output() valid = new EventEmitter<boolean>();
   @Input() modo: string = 'create' || 'get' || 'update';
+  @Input() modoCrud: string = '';
   @Input() bajaInfo: any;
   @Output() bajaInfoChange: EventEmitter<any> = new EventEmitter<any>();
   displayedColumns: string[];
+  displayedColumnsRevision: string[];
+  displayedColumnsSeleccion: string[];
 
   constructor(
     private translate: TranslateService,
@@ -56,6 +60,7 @@ export class FormSolicitudComponent implements OnInit {
     private trasladosHelper: TrasladosHelper,
     private documento: GestorDocumentalService,
     private centroCostosHelper: CentroCostosHelper,
+    private userService: UserService,
     private store: Store<IAppState>,
     private listService: ListService,
   ) {
@@ -63,6 +68,9 @@ export class FormSolicitudComponent implements OnInit {
     this.sizeSoporte = SIZE_SOPORTE;
     this.displayedColumns = ['acciones', 'placa', 'nombre', 'subgrupo', 'tipoBien', 'entrada', 'salida',
       'funcionario', 'marca', 'sede', 'dependencia', 'ubicacion'];
+    this.displayedColumnsRevision = ['placa', 'nombre', 'subgrupo', 'tipoBien', 'entrada', 'salida',
+      'funcionario', 'marca', 'sede', 'dependencia', 'ubicacion'];
+    this.displayedColumnsSeleccion = ['seleccion', 'placa', 'nombre', 'marca', 'serie', 'valor'];
     this.translate.onLangChange.subscribe((event: LangChangeEvent) => { // Live reload
     });
   }
@@ -70,6 +78,7 @@ export class FormSolicitudComponent implements OnInit {
   ngOnInit() {
     this.buildForm();
     this.loadFuncionarios();
+    this.syncRevisorLogueado();
     this.init();
   }
 
@@ -96,91 +105,35 @@ export class FormSolicitudComponent implements OnInit {
   }
 
   get elemento(): FormGroup {
-    const disabled = this.modo === 'get';
     const form = this.fb.group({
       id: [0],
-      placa: [
-        {
-          value: '',
-          disabled,
-        },
-      ],
-      nombre: [
-        {
-          value: '',
-          disabled: true,
-        },
-      ],
-      subgrupo: [
-        {
-          value: '',
-          disabled: true,
-        },
-      ],
-      tipoBien: [
-        {
-          value: '',
-          disabled: true,
-        },
-      ],
-      entrada: [
-        {
-          value: '',
-          disabled: true,
-        },
-      ],
-      salida: [
-        {
-          value: '',
-          disabled: true,
-        },
-      ],
-      funcionario: [
-        {
-          value: '',
-          disabled: true,
-        },
-      ],
-      marca: [
-        {
-          value: '',
-          disabled: true,
-        },
-      ],
-      sede: [
-        {
-          value: '',
-          disabled: true,
-        },
-      ],
-      dependencia: [
-        {
-          value: '',
-          disabled: true,
-        },
-      ],
-      ubicacion: [
-        {
-          value: '',
-          disabled: true,
-        },
-      ],
+      placa: [''],
+      nombre: [''],
+      subgrupo: [''],
+      tipoBien: [''],
+      entrada: [''],
+      salida: [''],
+      funcionario: [''],
+      marca: [''],
+      sede: [''],
+      dependencia: [''],
+      ubicacion: [''],
+      serie: [''],
+      valor: [''],
     });
-    this.cambiosPlaca(form.get('placa').valueChanges);
     return form;
   }
 
   get funcionario(): FormGroup {
-    const disabled = this.modo === 'get';
+    const disabled = this.modo !== 'create';
+    const validators = disabled ? [] : [Validators.required, this.validarTercero()];
     const form = this.fb.group({
       tercero: [
         {
           value: '',
           disabled,
         },
-        {
-          validators: [Validators.required, this.validarTercero()],
-        },
+        validators,
       ],
     });
 
@@ -291,102 +244,28 @@ export class FormSolicitudComponent implements OnInit {
     this.formBaja.get('resolucion').patchValue({ numero });
     this.formBaja.get('resolucion').patchValue({ dependencia });
     this.formBaja.get('resolucion').patchValue({ fecha });
-    const soporte = { Id: values.soporte };
+    const soporte = this.buildSoporteControlValue(values.soporte);
+    const revisorActual = this.getUsuarioLogueado();
+    const revisorFuente = this.modo === 'get' && revisorActual ? revisorActual : values.revisor;
     const revisor = {
-      id: values.revisor ? values.revisor.Tercero.Id : 0,
-      info: values.revisor ? this.getCompuesto(values.revisor) : '',
+      id: revisorFuente ? revisorFuente.Tercero.Id : 0,
+      info: revisorFuente ? this.getCompuesto(revisorFuente) : '',
     };
     const funcionario = values.funcionario ? values.funcionario : '';
     this.formBaja.get('funcionario').patchValue({ tercero: funcionario });
     this.formBaja.get('info').patchValue({
       soporte,
-      tipoBaja: values.tipoBaja.Id,
+      tipoBaja: this.getTipoBajaId(values.tipoBaja),
       revisor,
     });
 
     if (values.elementos && values.elementos.length) {
       values.elementos.forEach(element => {
-        const consSalida = element.Historial.Salida.Consecutivo;
-        const consEntrada = element.Historial.Salida.MovimientoPadreId.Consecutivo;
-        const formEl = this.fb.group({
-          id: [element.Id],
-          placa: [
-            {
-              value: element,
-              disabled,
-            },
-          ],
-          nombre: [
-            {
-              value: element.Nombre,
-              disabled: true,
-            },
-          ],
-          subgrupo: [
-            {
-              value: element.SubgrupoCatalogoId.SubgrupoId.Codigo + ' - ' + element.SubgrupoCatalogoId.SubgrupoId.Nombre,
-              disabled: true,
-            },
-          ],
-          tipoBien: [
-            {
-              value: element.SubgrupoCatalogoId.TipoBienId.Nombre,
-              disabled: true,
-            },
-          ],
-          entrada: [
-            {
-              value: consEntrada,
-              disabled: true,
-            },
-          ],
-          salida: [
-            {
-              value: consSalida,
-              disabled: true,
-            },
-          ],
-          funcionario: [
-            {
-              value: this.getCompuesto(element.Funcionario),
-              disabled: true,
-            },
-          ],
-          sede: [
-            {
-              value: this.getNombreCampoUbicacion(element.Ubicacion, 'Sede'),
-              disabled: true,
-            },
-          ],
-          dependencia: [
-            {
-              value: this.getNombreCampoUbicacion(element.Ubicacion, 'Dependencia'),
-              disabled: true,
-            },
-          ],
-          ubicacion: [
-            {
-              value: this.centroCostosHelper.muestraCentroCosto(element.Ubicacion),
-              disabled: true,
-            },
-          ],
-          marca: [
-            {
-              value: element.Marca,
-              disabled: true,
-            },
-          ],
-          serie: [
-            {
-              value: element.Serie,
-              disabled: true,
-            },
-          ],
-        });
-        this.cambiosPlaca(formEl.get('placa').valueChanges);
-        (this.formBaja.get('elementos') as FormArray).push(formEl);
-        this.dataSource.data = this.dataSource.data.concat(formEl.value);
+        (this.formBaja.get('elementos') as FormArray).push(this.createElementoForm(element));
       });
+      if (this.modo === 'get') {
+        this.syncElementosDataSource();
+      }
     }
 
     const observaciones = values.observaciones;
@@ -401,75 +280,8 @@ export class FormSolicitudComponent implements OnInit {
     }
   }
 
-  addElemento() {
-    (this.formBaja.get('elementos') as FormArray).push(this.elemento);
-    this.dataSource.data = this.dataSource.data.concat(this.elemento.value);
-  }
-
   getActualIndex(index: number) {
     return index + this.paginator.pageSize * this.paginator.pageIndex;
-  }
-
-  removeElemento(index: number) {
-    index = this.paginator.pageIndex > 0 ? index + (this.paginator.pageIndex * this.paginator.pageSize) : index;
-    (this.formBaja.get('elementos') as FormArray).removeAt(index);
-    const data = this.dataSource.data;
-    data.splice(index, 1);
-    this.dataSource.data = data;
-  }
-
-  private cambiosPlaca(valueChanges: Observable<any>) {
-    valueChanges.pipe(
-      debounceTime(250),
-      distinctUntilChanged(),
-      map(val => typeof val === 'string' ? val : this.muestraPlaca(val)),
-    ).subscribe((response: any) => {
-      this.elementosFiltrados = this.filtroPlaca(response);
-    });
-  }
-
-  private filtroPlaca(nombre: string): any[] {
-    if (this.elementos.length && nombre.length > 0) {
-      return this.elementos.filter(el => el.Placa.includes(nombre));
-    } else {
-      return this.elementos;
-    }
-  }
-
-  public getDetalleElemento(index: number) {
-    const value = this.formBaja.controls.elementos.value[index].placa.Id;
-    this.spinner = 'Consultando detalle del elemento';
-    this.bajasHelper.getDetalleElemento(value).subscribe(res => {
-      this.spinner = '';
-      const salidaOk = res.Historial && res.Historial.Salida.EstadoMovimientoId.Nombre === 'Salida Aprobada';
-      const noTraslado = res.Historial &&
-        (!res.Historial.Traslados || res.Historial.Traslados[0].EstadoMovimientoId.Nombre === 'Traslado Aprobado');
-      const noBaja = res.Historial && !res.Historial.Baja;
-      const assignable = res.Id && salidaOk && noTraslado && noBaja;
-      if (assignable) {
-        const consSalida = res.Historial.Salida.Consecutivo;
-        const consEntrada = res.Historial.Salida.MovimientoPadreId.Consecutivo;
-        (this.formBaja.get('elementos') as FormArray).at(index).patchValue({
-          id: res.Id,
-          nombre: res.Nombre,
-          marca: res.Marca,
-          subgrupo: res.SubgrupoCatalogoId.SubgrupoId.Codigo + ' - ' + res.SubgrupoCatalogoId.SubgrupoId.Nombre,
-          tipoBien: res.SubgrupoCatalogoId.TipoBienId.Nombre,
-          sede: this.getNombreCampoUbicacion(res.Ubicacion, 'Sede'),
-          dependencia: this.getNombreCampoUbicacion(res.Ubicacion, 'Dependencia'),
-          ubicacion: this.centroCostosHelper.muestraCentroCosto(res.Ubicacion),
-          funcionario: this.getCompuesto(res.Funcionario),
-          entrada: consEntrada,
-          salida: consSalida,
-        });
-      } else if (!res.Id || !salidaOk) {
-        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.bajas.errorPlaca'));
-      } else if (!noTraslado) {
-        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.bajas.errorTr'));
-      } else if (!noBaja) {
-        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.bajas.errorBj'));
-      }
-    });
   }
 
   public onFuncionarioSeleccionado() {
@@ -477,6 +289,31 @@ export class FormSolicitudComponent implements OnInit {
     if (funcionarioId) {
       this.loadInventarioByFuncionario(funcionarioId);
     }
+  }
+
+  private createElementoForm(element: any): FormGroup {
+    const salida = element && element.Historial && element.Historial.Salida ? element.Historial.Salida : null;
+    const movimientoPadre = salida && salida.MovimientoPadreId ? salida.MovimientoPadreId : null;
+    const subgrupo = element && element.SubgrupoCatalogoId && element.SubgrupoCatalogoId.SubgrupoId ?
+      element.SubgrupoCatalogoId.SubgrupoId : null;
+    const tipoBien = element && element.SubgrupoCatalogoId && element.SubgrupoCatalogoId.TipoBienId ?
+      element.SubgrupoCatalogoId.TipoBienId : null;
+    return this.fb.group({
+      id: element ? element.Id : 0,
+      placa: element || '',
+      nombre: element ? element.Nombre : '',
+      marca: element ? element.Marca : '',
+      subgrupo: subgrupo ? subgrupo.Codigo + ' - ' + subgrupo.Nombre : '',
+      tipoBien: tipoBien ? tipoBien.Nombre : '',
+      sede: this.getNombreCampoUbicacion(element ? element.Ubicacion : null, 'Sede'),
+      dependencia: this.getNombreCampoUbicacion(element ? element.Ubicacion : null, 'Dependencia'),
+      ubicacion: this.centroCostosHelper.muestraCentroCosto(element ? element.Ubicacion : null),
+      funcionario: element && element.Funcionario ? this.getCompuesto(element.Funcionario) : '',
+      entrada: movimientoPadre ? movimientoPadre.Consecutivo : '',
+      salida: salida ? salida.Consecutivo : '',
+      serie: element ? element.Serie || '' : '',
+      valor: element ? element.Valor || '' : '',
+    });
   }
 
   private getCompuesto(tercero: any): string {
@@ -523,6 +360,17 @@ export class FormSolicitudComponent implements OnInit {
       });
   }
 
+  private syncRevisorLogueado() {
+    this.userService.getUser().subscribe((user: any) => {
+      if (this.modo === 'get' && user && user.Tercero && this.formBaja) {
+        this.formBaja.get('info.revisor').patchValue({
+          id: user.Tercero.Id,
+          info: this.getCompuesto(user),
+        });
+      }
+    });
+  }
+
   private loadFuncionarios() {
     this.listService.findFuncionarios();
     this.store.select((state) => state).subscribe((list) => {
@@ -555,16 +403,15 @@ export class FormSolicitudComponent implements OnInit {
     this.trasladosHelper.getInventarioTerceroById(terceroId).subscribe({
       next: (res: any) => {
         this.spinner = '';
-        if (resetSeleccion) {
-          this.resetElementosSeleccionados();
-        }
-
         if (res && res.Elementos && res.Elementos.length) {
-          this.elementos = res.Elementos;
-          this.elementosFiltrados = res.Elementos;
+          this.elementos = this.mergeSelectedIntoInventario(res.Elementos);
+          this.dataSource.data = this.elementos;
         } else {
           this.elementos = [];
-          this.elementosFiltrados = [];
+          this.dataSource.data = [];
+          if (resetSeleccion) {
+            this.resetElementosSeleccionados();
+          }
           if (showNoElementosError) {
             this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.traslados.registrar.noElementos'));
           }
@@ -572,11 +419,11 @@ export class FormSolicitudComponent implements OnInit {
       },
       error: () => {
         this.spinner = '';
+        this.elementos = [];
+        this.dataSource.data = [];
         if (resetSeleccion) {
           this.resetElementosSeleccionados();
         }
-        this.elementos = [];
-        this.elementosFiltrados = [];
         this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.traslados.consulta.errorElementos'));
       },
     });
@@ -588,6 +435,15 @@ export class FormSolicitudComponent implements OnInit {
       elementos.removeAt(0);
     }
     this.dataSource.data = [];
+  }
+
+  private syncElementosDataSource() {
+    if (this.modo === 'get') {
+      const elementos = this.formBaja.get('elementos') as FormArray;
+      this.dataSource.data = elementos.controls.map((control: FormGroup) => control.getRawValue());
+    } else {
+      this.dataSource.data = this.elementos;
+    }
   }
 
   public muestraPlaca(field): string {
@@ -649,6 +505,86 @@ export class FormSolicitudComponent implements OnInit {
     return [];
   }
 
+  private getUsuarioLogueado(): any {
+    return this.userService.user || null;
+  }
+
+  private getTipoBajaId(tipoBaja: any): any {
+    if (!tipoBaja) {
+      return '';
+    }
+
+    if (typeof tipoBaja === 'number') {
+      return tipoBaja;
+    }
+
+    if (typeof tipoBaja === 'string') {
+      const tipoEncontrado = Array.isArray(this.tiposBaja) ?
+        this.tiposBaja.find((tipo) => tipo.Nombre === tipoBaja) : null;
+      return tipoEncontrado ? tipoEncontrado.Id : '';
+    }
+
+    if (tipoBaja.Id) {
+      return tipoBaja.Id;
+    }
+
+    if (tipoBaja.Nombre && Array.isArray(this.tiposBaja)) {
+      const tipoEncontrado = this.tiposBaja.find((tipo) => tipo.Nombre === tipoBaja.Nombre);
+      return tipoEncontrado ? tipoEncontrado.Id : '';
+    }
+
+    return '';
+  }
+
+  private getSoporteId(soporte: any): number {
+    if (!soporte) {
+      return 0;
+    }
+
+    if (Array.isArray(soporte)) {
+      return soporte.length ? this.getSoporteId(soporte[0]) : 0;
+    }
+
+    if (typeof soporte === 'number') {
+      return soporte;
+    }
+
+    if (typeof soporte === 'string') {
+      const parsed = Number(soporte);
+      return Number.isFinite(parsed) ? parsed : 0;
+    }
+
+    if (soporte.SoporteMovimientoId) {
+      return this.getSoporteId(soporte.SoporteMovimientoId);
+    }
+
+    if (soporte.DocumentoId) {
+      return soporte.DocumentoId;
+    }
+
+    return soporte.Id || 0;
+  }
+
+  private buildSoporteControlValue(soporte: any): any {
+    if (Array.isArray(soporte)) {
+      return this.buildSoporteControlValue(soporte.length ? soporte[0] : null);
+    }
+
+    const soporteId = this.getSoporteId(soporte);
+    if (!soporteId) {
+      return '';
+    }
+
+    if (typeof soporte === 'object') {
+      return {
+        ...soporte,
+        Id: soporteId,
+      };
+    }
+
+    return { Id: soporteId };
+  }
+
   cleanURL(oldURL: string): SafeResourceUrl {
     return this.sanitization.bypassSecurityTrustUrl(oldURL);
   }
@@ -673,14 +609,66 @@ export class FormSolicitudComponent implements OnInit {
   private validateElementos(): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
       const noFilas = !control.value.length;
-      const noSeleccionado = !noFilas && !control.value.every(el => el.placa ? isObject(el.placa) : el.id);
-      const duplicados = !noSeleccionado && control.value.map(el => el.id)
+      const duplicados = !noFilas && control.value.map(el => el.id)
         .some((element, index) => {
           return control.value.map(el => el.id).indexOf(element) !== index;
         });
 
-      return (noFilas || noSeleccionado) ? { errorNoElementos: true } : duplicados ? { errorDuplicados: true } : null;
+      return noFilas ? { errorNoElementos: true } : duplicados ? { errorDuplicados: true } : null;
     };
+  }
+
+  public isElementoSeleccionado(element: any): boolean {
+    const elementos = this.formBaja.get('elementos') as FormArray;
+    return elementos.controls.some((control: FormGroup) => control.get('id').value === element.Id);
+  }
+
+  public toggleElemento(element: any, checked: boolean) {
+    const elementos = this.formBaja.get('elementos') as FormArray;
+    const index = elementos.controls.findIndex((control: FormGroup) => control.get('id').value === element.Id);
+
+    if (checked && index < 0) {
+      elementos.push(this.createElementoForm(element));
+    }
+
+    if (!checked && index >= 0) {
+      elementos.removeAt(index);
+    }
+
+    this.valid.emit(this.formBaja.valid);
+    this.bajaInfoChange.emit(this.formBaja);
+  }
+
+  public toggleElementosPagina(checked: boolean) {
+    this.getElementosPaginaActual().forEach((element) => this.toggleElemento(element, checked));
+  }
+
+  public todosSeleccionadosPagina(): boolean {
+    const pagina = this.getElementosPaginaActual();
+    return pagina.length > 0 && pagina.every((element) => this.isElementoSeleccionado(element));
+  }
+
+  public seleccionParcialPagina(): boolean {
+    const pagina = this.getElementosPaginaActual();
+    return pagina.some((element) => this.isElementoSeleccionado(element)) && !this.todosSeleccionadosPagina();
+  }
+
+  private getElementosPaginaActual(): any[] {
+    if (!this.paginator) {
+      return this.dataSource.data || [];
+    }
+
+    const data = this.dataSource.data || [];
+    const start = this.paginator.pageIndex * this.paginator.pageSize;
+    return data.slice(start, start + this.paginator.pageSize);
+  }
+
+  private mergeSelectedIntoInventario(inventario: any[]): any[] {
+    const seleccionados = (this.formBaja.get('elementos') as FormArray).controls
+      .map((control: FormGroup) => control.getRawValue().placa)
+      .filter((element) => element && element.Id);
+    const faltantes = seleccionados.filter((element) => !inventario.some((item) => item.Id === element.Id));
+    return faltantes.length ? inventario.concat(faltantes) : inventario;
   }
 
   private validarTercero(): ValidatorFn {
@@ -692,6 +680,37 @@ export class FormSolicitudComponent implements OnInit {
       return checkStringLength ? { errorLongitudMinima: true } :
         ((checkInvalidString || checkInvalidTercero) ? { terceroNoValido: true } : null);
     };
+  }
+
+  get ocultarSoporteEnRevisionAlmacen(): boolean {
+    return this.modoCrud === 'revisar';
+  }
+
+  get mostrarTipoBajaComoTexto(): boolean {
+    return this.modoCrud === 'revisar';
+  }
+
+  get tipoBajaLabel(): string {
+    const tipoBaja = this.bajaInfo && this.bajaInfo.tipoBaja;
+    if (tipoBaja && tipoBaja.Nombre) {
+      return tipoBaja.Nombre;
+    }
+
+    const tipoBajaId = this.formBaja && this.formBaja.get('info.tipoBaja').value;
+    if (!tipoBajaId || !Array.isArray(this.tiposBaja)) {
+      return '';
+    }
+
+    const encontrado = this.tiposBaja.find((tipo) => tipo.Id === tipoBajaId);
+    return encontrado ? encontrado.Nombre : '';
+  }
+
+  get puedeContinuarInfo(): boolean {
+    return this.modoCrud === 'revisar' || !this.formBaja.get('info').invalid;
+  }
+
+  get esRevisionSinStepper(): boolean {
+    return this.modoCrud === 'revisar';
   }
 
 }
