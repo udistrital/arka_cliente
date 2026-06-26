@@ -70,7 +70,12 @@ export class ListaMovimientosComponent implements OnInit {
         this.title = this.translate.instant('GLOBAL.ajustes.registrar.accion');
         this.subtitle = this.translate.instant('GLOBAL.ajuste-auto.sugActa');
         this.actaRecibidoHelper.getAllActasRecibidoByEstado(['AsociadoEntrada'], -1, 0).subscribe(res_ => {
-          this.actas.load(res_);
+          const now = new Date();
+          const filtered = (res_ as any[]).filter(acta => {
+            const fecha = new Date(acta.FechaCreacion);
+            return fecha.getFullYear() === now.getFullYear() && fecha.getMonth() === now.getMonth();
+          });
+          this.actas.load(filtered);
           this.spinner = '';
           this.crear = true;
         });
