@@ -1122,6 +1122,7 @@
       "alerta_consumo": "Unassgined elements",
       "alerta_controlado": "Unassgined elements",
       "alerta_ambos": "Unassgined elements",
+      "alertaServicio": "Items whose possession/service type id is 19 (Service) cannot be included in an output.",
       "alertaResidual": "The residual value should be in between 0 and 100 %",
       "alertaVida": "Enter a valid product lifetime"
     },
