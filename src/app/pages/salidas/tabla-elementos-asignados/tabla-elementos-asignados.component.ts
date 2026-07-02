@@ -22,6 +22,7 @@ import { CentroCostosHelper } from '../../../helpers/movimientos/centroCostosHel
 })
 
 export class TablaElementosAsignadosComponent implements OnInit {
+  private readonly TIPO_BIEN_SERVICIO_ID = 19;
 
   mode: string = 'determinate';
   baseI18n: string = 'GLOBAL.movimientos.';
@@ -113,15 +114,32 @@ export class TablaElementosAsignadosComponent implements OnInit {
         this.pUpManager.showErrorAlert(res.Error);
         this.mostrar = true;
       } else if (res && ((res.Consumo && res.Consumo.length) || (res.Devolutivo && res.Devolutivo.length))) {
+        const consumo = (res.Consumo || []).filter((el) => !this.esTipoServicio(el));
+        const devolutivo = (res.Devolutivo || []).filter((el) => !this.esTipoServicio(el));
+        const hayServicios = consumo.length !== (res.Consumo || []).length || devolutivo.length !== (res.Devolutivo || []).length;
+        if (hayServicios) {
+          this.pUpManager.showErrorAlert(this.translate.instant(this.baseI18n + 'salidas.alertaServicio'));
+        }
         const salida = res.Salida;
         const ubicacion = salida ? this.resolveCentroCosto(salida.Ubicacion) : '';
-        this.loadTablas(res.Consumo, res.Devolutivo,
+        if (consumo.length || devolutivo.length) {
+          this.loadTablas(consumo, devolutivo,
           ubicacion,
           salida ? salida.Funcionario : '');
+        } else {
+          this.mostrar = true;
+        }
       } else {
         this.pUpManager.showErrorAlert(this.translate.instant(this.baseI18n + 'salidas.errorElementos'));
       }
     });
+  }
+
+  private esTipoServicio(elemento: any): boolean {
+    const tipoBienId = elemento && elemento.TipoBienId && elemento.TipoBienId.Id ? elemento.TipoBienId.Id :
+      elemento && elemento.SubgrupoCatalogoId && elemento.SubgrupoCatalogoId.TipoBienId &&
+      elemento.SubgrupoCatalogoId.TipoBienId.Id ? elemento.SubgrupoCatalogoId.TipoBienId.Id : 0;
+    return tipoBienId === this.TIPO_BIEN_SERVICIO_ID;
   }
 
   private loadTablas(consumo: any[], devolutivos: any[], ubicacion: any, funcionario: any) {
@@ -424,6 +442,13 @@ export class TablaElementosAsignadosComponent implements OnInit {
   }
 
   async onSubmit() {
+    const contieneServicios = this.sourceConsumo && this.sourceConsumo.data && this.sourceConsumo.data.some((el) => this.esTipoServicio(el)) ||
+      this.sourceDevolutivo && this.sourceDevolutivo.data && this.sourceDevolutivo.data.some((el) => this.esTipoServicio(el));
+    if (contieneServicios) {
+      this.pUpManager.showErrorAlert(this.translate.instant(this.baseI18n + 'salidas.alertaServicio'));
+      return;
+    }
+
     const movimientoPadreId = await this.resolveMovimientoPadreId();
     if (!movimientoPadreId) {
       return;

@@ -1122,6 +1122,7 @@
       "alerta_consumo": "Elementos de consumo sin asignar",
       "alerta_controlado": "Elementos devolutivos sin asignar",
       "alerta_ambos": "Elementos de consumo y devolutivos sin asignar",
+      "alertaServicio": "Los elementos de tipo de bien o servicio con Id 19 (Servicio) no pueden incluirse en una salida.",
       "alertaResidual": "El valor residual debe estar entre 0 y 100 %",
       "alertaVida": "Ingrese una vida útil válida"
     },
