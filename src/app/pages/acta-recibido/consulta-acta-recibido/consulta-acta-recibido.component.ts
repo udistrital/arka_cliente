@@ -14,6 +14,7 @@ import { SmartTableService } from '../../../@core/data/SmartTableService';
 import { ListService } from '../../../@core/store/services/list.service';
 import { HttpClient } from '@angular/common/http';
 import { PopUpManager } from '../../../managers/popUpManager';
+import { CentroCostosHelper } from '../../../helpers/movimientos/centroCostosHelper';
 
 const ORDEN_ESTADOS: EstadoActa_t[] = [
   EstadoActa_t.Registrada,
@@ -61,6 +62,7 @@ export class ConsultaActaRecibidoComponent implements OnInit {
     private listService: ListService,
     private pUpManager: PopUpManager,
     private http: HttpClient,
+    private centroCostosHelper: CentroCostosHelper,
   ) {
     this.listService.findSedes();
     this.listService.findListsActa();
@@ -182,7 +184,8 @@ export class ConsultaActaRecibidoComponent implements OnInit {
           filter: false,
         },
         DependenciaId: {
-          title: this.translate.instant('GLOBAL.dependencia'),
+          title: 'Centro de costo',
+          valuePrepareFunction: (value: any) => this.centroCostosHelper.muestraCentroCosto(value),
           sort: false,
           filter: false,
         },
