@@ -71,8 +71,8 @@ export class CrudBajasComponent implements OnInit {
         this.movimiento = res.Movimiento;
         this.bajaData = {};
         this.bajaData.elementos = res.Elementos;
-        this.bajaData.soporte = res.Soporte;
-        this.bajaData.tipoBaja = res.TipoBaja;
+        this.bajaData.soporte = this.resolveSoporteSolicitud(res);
+        this.bajaData.tipoBaja = this.resolveTipoBajaSolicitud(res);
         this.bajaData.elementos = res.Elementos;
         this.bajaData.observaciones = res.Observaciones;
         this.bajaData.funcionario = res.Funcionario;
@@ -88,6 +88,42 @@ export class CrudBajasComponent implements OnInit {
         this.showForm = true;
       }
     });
+  }
+
+  private resolveTipoBajaSolicitud(res: any) {
+    if (!res) {
+      return null;
+    }
+
+    if (res.TipoBaja) {
+      return res.TipoBaja;
+    }
+
+    if (res.Movimiento && res.Movimiento.FormatoTipoMovimientoId) {
+      return res.Movimiento.FormatoTipoMovimientoId;
+    }
+
+    return null;
+  }
+
+  private resolveSoporteSolicitud(res: any) {
+    if (!res) {
+      return null;
+    }
+
+    if (Array.isArray(res.Soporte)) {
+      return res.Soporte.length ? res.Soporte[0] : null;
+    }
+
+    if (res.Soporte) {
+      return res.Soporte;
+    }
+
+    if (res.Movimiento && (res.Movimiento as any).SoporteMovimientoId) {
+      return (res.Movimiento as any).SoporteMovimientoId;
+    }
+
+    return null;
   }
 
   private checkEditor(funcionario: any) {
@@ -154,7 +190,12 @@ export class CrudBajasComponent implements OnInit {
     const detalle_ = this.movimiento ? <DetalleBaja>JSON.parse(this.movimiento.Detalle) : new (DetalleBaja);
     const ConsecutivoId = this.movimiento ? this.movimiento.ConsecutivoId : 0;
     const Consecutivo = this.movimiento ? this.movimiento.Consecutivo : '';
-    const Funcionario = this.bajaData.controls.info.controls.funcionario.value.id;
+    const funcionarioSeleccionado = this.bajaData.controls.funcionario ?
+      this.bajaData.controls.funcionario.controls.tercero.value :
+      this.bajaData.controls.info.controls.funcionario.value;
+    const Funcionario = funcionarioSeleccionado && funcionarioSeleccionado.Tercero ?
+      funcionarioSeleccionado.Tercero.Id :
+      funcionarioSeleccionado && funcionarioSeleccionado.id ? funcionarioSeleccionado.id : 0;
     const Elementos = this.bajaData.controls.elementos.controls.map(control => control.value.id);
     const tipoBaja = this.bajaData.controls.info.controls.tipoBaja.value;
     const FechaRevisionA = this.modoCrud === 'revisar' ? new Date() : detalle_ ? detalle_.FechaRevisionA : '';

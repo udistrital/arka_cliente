@@ -56,7 +56,11 @@ export class ConsultaAjusteComponent implements OnInit {
       if (res.length) {
         res.forEach(mov => {
           mov.EstadoMovimientoId = mov.EstadoMovimientoId.Nombre;
-          mov.FechaAprobacion = mov.EstadoMovimientoId === 'Ajuste Aprobado' ?
+          mov.FechaAprobacion = [
+            'Ajuste Aprobado',
+            'Ajuste Aprobado por Almacén',
+            'Ajuste Aprobado por Contabilidad',
+          ].includes(mov.EstadoMovimientoId) ?
             mov.FechaModificacion : '';
         });
       }

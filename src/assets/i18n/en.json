@@ -1122,6 +1122,7 @@
       "alerta_consumo": "Unassgined elements",
       "alerta_controlado": "Unassgined elements",
       "alerta_ambos": "Unassgined elements",
+      "alertaServicio": "Items whose possession/service type id is 19 (Service) cannot be included in an output.",
       "alertaResidual": "The residual value should be in between 0 and 100 %",
       "alertaVida": "Enter a valid product lifetime"
     },
@@ -1706,7 +1707,7 @@
       "consultaSbttl": "A continuación se listan los ajustes generados, seleccione un ajuste para ver el detalle.",
       "registroTtlS": "Resultado Ajuste {{CONSECUTIVO}}",
       "sbtttlInfo": "A continuación se muestran los elementos ajustados y la respectiva transacción contable correspondiente a este ajuste (si aplica)",
-      "sugActa": "Seleccione el acta a la que corresponden los elementos que deben ser ajustados",
+      "sugActa": "A continuación se ven las actas que unicamente pertenecen al periodo en curso, seleccione la que corresponde a los elementos que deben ser ajustados.",
       "subttlActa1": "Haga click sobre un campo para editarlo.",
       "subttlActa2": "El ajuste se realizará con base en los elementos modificados.",
       "alerta-pre-txt": "¿Generar Ajuste?",

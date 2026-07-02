@@ -399,12 +399,19 @@ export class ComprobanteComponent implements OnInit {
 
   private sumasIguales(): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
-      this.totalDebitos = (control as FormArray).controls
+      const elementos = (control as FormArray).controls;
+      this.totalDebitos = elementos
         .map((elem) => (elem = elem.get('debito').value))
         .reduce((acc, value) => (acc + value), 0);
-      this.totalCreditos = (control as FormArray).controls
+      this.totalCreditos = elementos
         .map((elem) => (elem = elem.get('credito').value))
         .reduce((acc, value) => (acc + value), 0);
+      if (!elementos.length) {
+        return { sinElementos: true };
+      }
+      if (this.totalDebitos === 0 && this.totalCreditos === 0) {
+        return { totalCero: true };
+      }
       return this.totalCreditos !== this.totalDebitos ? { errorCantidad: true } : null;
     };
   }
