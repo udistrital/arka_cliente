@@ -448,8 +448,9 @@ export class ConsultaEntradaComponent implements OnInit {
       this.userService.tieneAlgunRol([RolUsuario_t.Admin]) &&
       this.movimiento &&
       this.movimiento.EstadoMovimientoId &&
-      this.movimiento.EstadoMovimientoId.Nombre === 'Entrada Aprobada' &&
-      this.fueCreadaEnMesActual();
+      this.movimiento.EstadoMovimientoId.Nombre === 'Entrada Aprobada';
+      // Ventana de mantenimiento: se desactiva temporalmente la validación por fecha de creación.
+      // && this.fueCreadaEnMesActual();
   }
 
   private fueCreadaEnMesActual(): boolean {
