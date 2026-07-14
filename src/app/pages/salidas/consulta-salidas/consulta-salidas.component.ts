@@ -485,9 +485,8 @@ export class ConsultaSalidasComponent implements OnInit {
     this.puedeAnularSalida = this.modo === 'consulta' &&
       !this.editarSalida &&
       this.movimiento &&
-      estadoSalida === 'Salida Aprobada';
-      // Ventana de mantenimiento: se desactiva temporalmente la validación por fecha de creación.
-      // && this.fueCreadaEnMesActual();
+      estadoSalida === 'Salida Aprobada' &&
+      this.fueCreadaEnMesActual();
   }
 
   private fueCreadaEnMesActual(): boolean {
