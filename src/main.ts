@@ -15,7 +15,5 @@
 
  // autenticacion.clearUrl();
 
- if (!(window as any).__ARKA_MAINTENANCE_BLOCKED__) {
-   platformBrowserDynamic().bootstrapModule(AppModule)
-     .catch(err => console.error(err));
- }
+ platformBrowserDynamic().bootstrapModule(AppModule)
+   .catch(err => console.error(err));
