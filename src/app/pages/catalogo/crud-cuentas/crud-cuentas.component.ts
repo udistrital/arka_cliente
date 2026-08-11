@@ -422,7 +422,6 @@ export class CrudCuentasComponent implements OnInit {
       const detalleClase = Array.isArray(detalle) ? detalle.find(item => item && item.TipoBienId) : undefined;
 
       if (!detalleClase || !detalleClase.TipoBienId) {
-        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.cuentas.error_validacion_guardado'));
         return;
       }
 
@@ -437,12 +436,9 @@ export class CrudCuentasComponent implements OnInit {
 
       if (this.verificarCuentasGuardadas(cuentasEnviadas, this.infoCuentas)) {
         this.pUpManager.showAlertWithOptions(this.optionsActualizado);
-      } else {
-        this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.cuentas.error_validacion_guardado'));
       }
     }, () => {
       this.spinner = '';
-      this.pUpManager.showErrorAlert(this.translate.instant('GLOBAL.cuentas.error_validacion_guardado'));
     });
   }
 

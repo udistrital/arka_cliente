@@ -1141,8 +1141,7 @@
       "terminar_edicion_aviso": "Any kind of transaction will be Enabled",
       "error_cargar_estado": "The current account editing status could not be loaded.",
       "error_actualizar_estado": "The account editing status could not be updated.",
-      "error_guardado": "The accounting accounts could not be saved.",
-      "error_validacion_guardado": "It was not possible to validate that the accounting accounts were saved correctly."
+      "error_guardado": "The accounting accounts could not be saved."
     },
 
     "salidas": {

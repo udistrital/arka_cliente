@@ -1141,8 +1141,7 @@
       "terminar_edicion_aviso": "La edición de cuentas contables fue finalizada y las transacciones quedaron habilitadas.",
       "error_cargar_estado": "No se pudo consultar el estado actual de la edición de cuentas contables.",
       "error_actualizar_estado": "No se pudo actualizar el estado de la edición de cuentas contables.",
-      "error_guardado": "No fue posible guardar las cuentas contables.",
-      "error_validacion_guardado": "No fue posible validar que las cuentas contables hayan quedado guardadas correctamente."
+      "error_guardado": "No fue posible guardar las cuentas contables."
     },
 
     "salidas": {
