@@ -277,17 +277,11 @@ export class EdicionActaRecibidoComponent implements OnInit {
     });
   }
 
-  private queryContratistas(
-    query: string = '',
-    id: number = 0
-  ) {
+  private queryContratistas(query: string = '',id: number = 0) {
     this.cargandoContratistas = true;
-
-    return this.tercerosHelper.getAllTercero_(
-      query,
-      id
-    );
+    return this.tercerosHelper.getAllTercero_(query, id);
   }
+  
   private loadContratistas(query: string = '', id: number = 0): Promise<void> {
     return new Promise<void>(resolve => {
       if (id || (query.length && query.length >= this.minLength)) {
