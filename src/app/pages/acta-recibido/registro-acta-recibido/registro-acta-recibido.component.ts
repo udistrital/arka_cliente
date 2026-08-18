@@ -180,13 +180,13 @@ export class RegistroActaRecibidoComponent implements OnInit {
 
   private queryContratistas(
     query: string = '',
-    id: number = 0
+    id: number = 0,
   ) {
     this.cargandoContratistas = true;
 
     return this.tercerosHelper.getAllTercero_(
       query,
-      id
+      id,
     );
   }
   muestraContratista = CommonActas.muestraContratista;
