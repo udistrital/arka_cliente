@@ -122,7 +122,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
       if (await this.retomarValores()) {
         this.llenarFormularios(values);
       } else {
-      this.limpiarStorage();
+        this.limpiarStorage();
       }
     }
     this.setFormValidators();
@@ -178,9 +178,16 @@ export class RegistroActaRecibidoComponent implements OnInit {
     });
   }
 
-  private queryContratistas(query: string = '') {
+  private queryContratistas(
+    query: string = '',
+    id: number = 0
+  ) {
     this.cargandoContratistas = true;
-    return this.tercerosHelper.getTercerosByCriterio('contratista', 0, query);
+
+    return this.tercerosHelper.getAllTercero_(
+      query,
+      id
+    );
   }
   muestraContratista = CommonActas.muestraContratista;
 
@@ -274,33 +281,33 @@ export class RegistroActaRecibidoComponent implements OnInit {
 
   private setFormEvents() {
     this.firstForm.valueChanges
-    .pipe(debounceTime(200))
-    .subscribe((form: any) => {
-      // console.debug({form});
-      this.actualizarStorage();
-    });
+      .pipe(debounceTime(200))
+      .subscribe((form: any) => {
+        // console.debug({form});
+        this.actualizarStorage();
+      });
 
     this.controlContratista.valueChanges
-    .pipe(
-      debounceTime(200), distinctUntilChanged(),
-      filter((query: any) => query.length && query.length >= this.minLength),
-      switchMap((d: string) => this.queryContratistas(d)),
-    )
-    .subscribe(data => {
-      this.Contratistas = data;
-      this.cargandoContratistas = false;
-    });
+      .pipe(
+        debounceTime(200), distinctUntilChanged(),
+        filter((query: any) => query.length && query.length >= this.minLength),
+        switchMap((d: string) => this.queryContratistas(d)),
+      )
+      .subscribe(data => {
+        this.Contratistas = data;
+        this.cargandoContratistas = false;
+      });
 
     this.controlProveedor.valueChanges
-    .pipe(
-      debounceTime(200), distinctUntilChanged(),
-      filter((query: any) => query.length && query.length >= this.minLength),
-      switchMap((d: string) => this.queryProveedores(d)),
-    )
-    .subscribe(data => {
-      this.Proveedores = data;
-      this.cargandoProveedores = false;
-    });
+      .pipe(
+        debounceTime(200), distinctUntilChanged(),
+        filter((query: any) => query.length && query.length >= this.minLength),
+        switchMap((d: string) => this.queryProveedores(d)),
+      )
+      .subscribe(data => {
+        this.Proveedores = data;
+        this.cargandoProveedores = false;
+      });
 
   }
 
@@ -416,7 +423,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
     const actaRecibido = new ActaRecibido;
     actaRecibido.Id = null;
     actaRecibido.Activo = true;
-    actaRecibido.TipoActaId = <TipoActa>{Id: ta};
+    actaRecibido.TipoActaId = <TipoActa>{ Id: ta };
     actaRecibido.UnidadEjecutoraId = Datos.Formulario1.UnidadEjecutora;
 
     return actaRecibido;
@@ -481,7 +488,7 @@ export class RegistroActaRecibidoComponent implements OnInit {
         elemento.ValorFinal = parseFloat(datos.ValorTotal);
         elemento.SubgrupoCatalogoId = subgrupo ? subgrupo : null;
         elemento.TipoBienId = tipoBien ? tipoBien : null;
-        elemento.EstadoElementoId = <EstadoElemento>{Id: ee};
+        elemento.EstadoElementoId = <EstadoElemento>{ Id: ee };
         elemento.ActaRecibidoId = new ActaRecibido;
         elemento.Activo = true;
         elementosActa.push(elemento);
