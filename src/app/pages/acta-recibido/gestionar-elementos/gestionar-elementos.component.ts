@@ -621,14 +621,6 @@ export class GestionarElementosComponent implements OnInit {
           return { errMinLength: true };
         } else if (checkInvalidObject) {
           return { errSelected: true };
-        } else {
-          const tb = control.parent.get('TipoBienId');
-          const sg = control.parent.get('SubgrupoCatalogoId');
-          if ((sg.value && sg.value.TipoBienId &&
-            !this.tiposBien.find(tb_ => (tb_.TipoBienPadreId.Id === sg.value.TipoBienId.Id && tb_.LimiteInferior))) ||
-            (tb.valid && tb.value && sg.value && sg.value.TipoBienId.Id !== tb.value.TipoBienPadreId.Id)) {
-            return { errorTipoBien: true };
-          }
         }
       }
     };
@@ -1126,24 +1118,6 @@ export class GestionarElementosComponent implements OnInit {
         if (!elemento.SubgrupoCatalogoId || !elemento.SubgrupoCatalogoId.SubgrupoId) {
           valido = false;
           conteo++;
-        } else {
-          // Validar que la clase tenga TipoBienId padre válido
-          const claseValida = elemento.SubgrupoCatalogoId.TipoBienId &&
-            this.tiposBien.some(tb => tb.TipoBienPadreId &&
-              tb.TipoBienPadreId.Id === elemento.SubgrupoCatalogoId.TipoBienId.Id);
-          if (!claseValida) {
-            valido = false;
-            conteo++;
-          }
-        }
-        if (elemento.TipoBienId) {
-          // Validar coherencia tipo bien hijo con el padre de la clase
-          if (elemento.SubgrupoCatalogoId && elemento.SubgrupoCatalogoId.TipoBienId &&
-            elemento.TipoBienId.TipoBienPadreId &&
-            elemento.TipoBienId.TipoBienPadreId.Id !== elemento.SubgrupoCatalogoId.TipoBienId.Id) {
-            valido = false;
-            conteo++;
-          }
         }
       }
     }
