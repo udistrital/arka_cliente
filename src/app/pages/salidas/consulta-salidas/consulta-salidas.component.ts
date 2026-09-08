@@ -482,11 +482,12 @@ export class ConsultaSalidasComponent implements OnInit {
 
   private updateAnularAvailability() {
     const estadoSalida = this.resolveEstadoMovimientoNombre(this.movimiento && this.movimiento.EstadoMovimientoId);
+    // Restricción temporal deshabilitada para permitir anular salidas de meses anteriores.
+    // Para reactivarla, agregar al final de la validación: && this.fueCreadaEnMesActual()
     this.puedeAnularSalida = this.modo === 'consulta' &&
       !this.editarSalida &&
       this.movimiento &&
-      estadoSalida === 'Salida Aprobada' &&
-      this.fueCreadaEnMesActual();
+      estadoSalida === 'Salida Aprobada';
   }
 
   private fueCreadaEnMesActual(): boolean {

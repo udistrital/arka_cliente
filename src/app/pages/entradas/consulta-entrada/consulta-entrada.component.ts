@@ -444,12 +444,13 @@ export class ConsultaEntradaComponent implements OnInit {
   }
 
   private updateAnularAvailability() {
+    // Restricción temporal deshabilitada para permitir anular entradas de meses anteriores.
+    // Para reactivarla, agregar al final de la validación: && this.fueCreadaEnMesActual()
     this.puedeAnularEntrada = this.modo === 'consulta' &&
       this.userService.tieneAlgunRol([RolUsuario_t.Admin]) &&
       this.movimiento &&
       this.movimiento.EstadoMovimientoId &&
-      this.movimiento.EstadoMovimientoId.Nombre === 'Entrada Aprobada' &&
-      this.fueCreadaEnMesActual();
+      this.movimiento.EstadoMovimientoId.Nombre === 'Entrada Aprobada';
   }
 
   private fueCreadaEnMesActual(): boolean {
