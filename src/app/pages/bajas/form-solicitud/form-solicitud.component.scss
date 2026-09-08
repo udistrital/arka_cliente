@@ -34,6 +34,23 @@ td {
     height: auto;
 }
 
+.tabla-elementos-lectura {
+    overflow-x: auto;
+}
+
+.tabla-elementos-lectura mat-table {
+    min-width: 1100px;
+}
+
+.tabla-elementos-lectura .cell {
+    width: auto;
+    min-width: 110px;
+    max-width: 260px;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
 .botones {
     display: flex;
     justify-content: space-between;
