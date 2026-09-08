@@ -20,6 +20,9 @@ export const environment = {
   // MOVIMIENTOS_ARKA_SERVICE: 'http://localhost:8080/v1/',
 
   ASSETS_SERVICE: 'https://pruebasassets.portaloas.udistrital.edu.co/',
+  AUDITORIA_MF: {
+    MAIN_JS: 'http://localhost:4205/main.js'
+  },
   TOKEN: {
     AUTORIZATION_URL: 'https://autenticacion.portaloas.udistrital.edu.co/oauth2/authorize',
     CLIENTE_ID: 'e36v1MPQk2jbz9KM4SmKhk8Cyw0a',

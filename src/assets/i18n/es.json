@@ -239,6 +239,9 @@
             "name": "Aprobar Cierres"
           }
         }
+      },
+      "auditoria": {
+        "name": "Auditoría"
       }
     },
     "aplicaciones": "Aplicaciones",

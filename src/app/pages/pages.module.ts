@@ -6,9 +6,11 @@ import { PagesRoutingModule } from './pages-routing.module';
 import { ThemeModule } from '../@theme/theme.module';
 import { MiscellaneousModule } from './miscellaneous/miscellaneous.module';
 import { TranslateModule } from '@ngx-translate/core';
+import { AuditoriaHostComponent } from './auditoria/auditoria-host.component';
 
 const PAGES_COMPONENTS = [
   PagesComponent,
+  AuditoriaHostComponent,
 ];
 
 @NgModule({

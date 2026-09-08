@@ -5,6 +5,7 @@ import { PagesComponent } from './pages.component';
 import { NotFoundComponent } from './miscellaneous/not-found/not-found.component';
 import { AuthGuard } from '../@core/_guards/auth.guard';
 import { CanLoadChildren } from '../@core/_guards/children.guard';
+import { AuditoriaHostComponent } from './auditoria/auditoria-host.component';
 
 const routes: Routes = [{
   path: '',
@@ -72,6 +73,11 @@ const routes: Routes = [{
     {
       path: 'cierres',
       loadChildren: () => import('./depreciacion/depreciacion.module').then(m => m.DepreciacionModule),
+      canActivate: [AuthGuard],
+    },
+    {
+      path: 'auditoria',
+      component: AuditoriaHostComponent,
       canActivate: [AuthGuard],
     },
     {

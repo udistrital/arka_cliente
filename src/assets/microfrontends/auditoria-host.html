@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+
+  <title>Auditoría</title>
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1">
+
+  <style>
+    html,
+    body {
+      width: 100%;
+      min-height: 100%;
+      margin: 0;
+      padding: 0;
+      background: transparent;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    #auditoria-mf-container {
+      width: 100%;
+      min-height: 600px;
+    }
+
+    #auditoria-mf-loading {
+      padding: 32px;
+      text-align: center;
+      font-family: Arial, sans-serif;
+    }
+
+    #auditoria-mf-error {
+      display: none;
+      margin: 16px;
+      padding: 16px;
+
+      border: 1px solid #b71c1c;
+      border-radius: 4px;
+
+      font-family: Arial, sans-serif;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="auditoria-mf-loading">
+    Cargando Auditoría...
+  </div>
+
+  <div id="auditoria-mf-error"></div>
+
+  <div id="auditoria-mf-container"></div>
+
+  <!--
+    Auditoría utiliza Angular 16 y necesita su propia versión
+    de Zone.js. Esta copia vive únicamente dentro del iframe.
+  -->
+  <script src="./runtime/zone.umd.min.js"></script>
+
+  <script>
+    (function () {
+
+      'use strict';
+
+      var APP_NAME = '@udistrital/auditoria-mf';
+
+      var initialized = false;
+      var mounted = false;
+      var lifecycleProps = null;
+
+      var clienteId = null;
+
+      var allowedHosts = [
+        'localhost:4205',
+        'pruebasauditoria.portaloas.udistrital.edu.co',
+        'auditoria.portaloas.udistrital.edu.co'
+      ];
+
+      function showError(message, error) {
+
+        console.error(
+          '[ARKA][AuditoriaHost]',
+          message,
+          error || ''
+        );
+
+        var loading =
+          document.getElementById('auditoria-mf-loading');
+
+        var errorContainer =
+          document.getElementById('auditoria-mf-error');
+
+        loading.style.display = 'none';
+
+        errorContainer.style.display = 'block';
+        errorContainer.textContent = message;
+
+        notifyParent(
+          'AUDITORIA_MF_ERROR',
+          {
+            message: message
+          }
+        );
+      }
+
+      function notifyParent(type, payload) {
+
+        window.parent.postMessage(
+          {
+            source: 'ARKA_AUDITORIA_HOST',
+            type: type,
+            payload: payload || {}
+          },
+          window.location.origin
+        );
+      }
+
+      function isAllowedMicrofrontendUrl(url) {
+
+        try {
+
+          var parsedUrl =
+            new URL(url);
+
+          var validProtocol =
+            parsedUrl.protocol === 'http:' ||
+            parsedUrl.protocol === 'https:';
+
+          var validHost =
+            allowedHosts.indexOf(parsedUrl.host) !== -1;
+
+          var validFile =
+            parsedUrl.pathname.endsWith('/main.js');
+
+          return (
+            validProtocol &&
+            validHost &&
+            validFile
+          );
+
+        } catch (error) {
+
+          return false;
+        }
+      }
+
+      function loadScript(url) {
+
+        return new Promise(function (
+          resolve,
+          reject
+        ) {
+
+          var script =
+            document.createElement('script');
+
+          script.src = url;
+          script.type = 'text/javascript';
+          script.async = true;
+
+          script.onload = function () {
+            resolve();
+          };
+
+          script.onerror = function () {
+            reject(
+              new Error(
+                'No fue posible descargar ' + url
+              )
+            );
+          };
+
+          document.head.appendChild(script);
+        });
+      }
+
+      /*
+       * Contrato que ya utiliza auditoria_mf.
+       *
+       * No modificamos auditoria_mf:
+       * solamente respondemos el evento que ya espera.
+       */
+      window.addEventListener(
+        'clienteAuditoria',
+        function (event) {
+
+          if (
+            !event.detail ||
+            event.detail.appName !== APP_NAME
+          ) {
+            return;
+          }
+
+          if (!clienteId) {
+
+            showError(
+              'No se recibió el CLIENTE_ID de ARKA.'
+            );
+
+            return;
+          }
+
+          window.dispatchEvent(
+            new CustomEvent(
+              'infoRoot',
+              {
+                detail: {
+                  clienteId: clienteId,
+                  appName: APP_NAME
+                }
+              }
+            )
+          );
+        }
+      );
+
+      async function initialize(config) {
+
+        if (initialized) {
+          return;
+        }
+
+        if (!config) {
+          showError(
+            'No se recibió la configuración de Auditoría.'
+          );
+          return;
+        }
+
+        if (
+          !isAllowedMicrofrontendUrl(
+            config.mainJsUrl
+          )
+        ) {
+
+          showError(
+            'La URL configurada para Auditoría no está autorizada.'
+          );
+
+          return;
+        }
+
+        if (
+          !config.clienteId ||
+          typeof config.clienteId !== 'string'
+        ) {
+
+          showError(
+            'No se recibió un CLIENTE_ID válido.'
+          );
+
+          return;
+        }
+
+        initialized = true;
+        clienteId = config.clienteId;
+
+        try {
+
+          /*
+           * main.js ya expone:
+           *
+           * window.auditoriaMf.bootstrap
+           * window.auditoriaMf.mount
+           * window.auditoriaMf.unmount
+           */
+          await loadScript(
+            config.mainJsUrl
+          );
+
+          if (
+            !window.auditoriaMf ||
+            typeof window.auditoriaMf.bootstrap !== 'function' ||
+            typeof window.auditoriaMf.mount !== 'function'
+          ) {
+
+            throw new Error(
+              'auditoria_mf no expuso los ciclos de vida esperados.'
+            );
+          }
+
+          lifecycleProps = {
+            name: APP_NAME,
+            appName: APP_NAME,
+
+            domElement:
+              document.getElementById(
+                'auditoria-mf-container'
+              )
+          };
+
+          await window.auditoriaMf.bootstrap(
+            lifecycleProps
+          );
+
+          await window.auditoriaMf.mount(
+            lifecycleProps
+          );
+
+          mounted = true;
+
+          document
+            .getElementById(
+              'auditoria-mf-loading'
+            )
+            .style.display = 'none';
+
+          notifyParent(
+            'AUDITORIA_MF_READY'
+          );
+
+        } catch (error) {
+
+          initialized = false;
+
+          showError(
+            'No fue posible inicializar el módulo de Auditoría.',
+            error
+          );
+        }
+      }
+
+      /*
+       * ARKA envía la configuración después
+       * de que el iframe termina de cargar.
+       *
+       * No enviamos access_token:
+       * el iframe pertenece al mismo origen de ARKA
+       * y comparte su localStorage.
+       */
+      window.addEventListener(
+        'message',
+        function (event) {
+
+          if (
+            event.origin !== window.location.origin
+          ) {
+            return;
+          }
+
+          if (
+            !event.data ||
+            event.data.source !== 'ARKA_CLIENTE' ||
+            event.data.type !== 'AUDITORIA_MF_INIT'
+          ) {
+            return;
+          }
+
+          initialize(
+            event.data.payload
+          );
+        }
+      );
+
+      /*
+       * Intentamos respetar el ciclo de vida
+       * cuando el iframe sea destruido.
+       */
+      window.addEventListener(
+        'pagehide',
+        function () {
+
+          if (
+            mounted &&
+            window.auditoriaMf &&
+            typeof window.auditoriaMf.unmount === 'function' &&
+            lifecycleProps
+          ) {
+
+            window.auditoriaMf.unmount(
+              lifecycleProps
+            );
+
+            mounted = false;
+          }
+        }
+      );
+
+      notifyParent(
+        'AUDITORIA_HOST_READY'
+      );
+
+    })();
+  </script>
+
+</body>
+</html>

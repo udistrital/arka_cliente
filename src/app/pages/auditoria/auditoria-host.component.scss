@@ -1,0 +1,46 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.auditoria-wrapper {
+  position: relative;
+
+  width: 100%;
+  min-height: 700px;
+
+  background: #ffffff;
+}
+
+.auditoria-frame {
+  display: block;
+
+  width: 100%;
+  height: calc(100vh - 160px);
+  min-height: 700px;
+
+  border: 0;
+  background: #ffffff;
+}
+
+.loading-message {
+  position: absolute;
+  top: 20px;
+  left: 0;
+
+  z-index: 10;
+
+  width: 100%;
+
+  padding: 20px;
+
+  text-align: center;
+}
+
+.error-message {
+  margin: 16px;
+  padding: 16px;
+
+  border: 1px solid #b71c1c;
+  border-radius: 4px;
+}

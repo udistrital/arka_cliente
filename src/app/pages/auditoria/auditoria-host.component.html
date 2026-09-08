@@ -1,0 +1,27 @@
+<div class="auditoria-wrapper">
+
+  <div
+    *ngIf="loading"
+    class="loading-message">
+
+    Cargando módulo de Auditoría...
+
+  </div>
+
+  <div
+    *ngIf="errorMessage"
+    class="error-message">
+
+    {{ errorMessage }}
+
+  </div>
+
+  <iframe
+    #auditoriaFrame
+    class="auditoria-frame"
+    src="/assets/microfrontends/auditoria-host.html"
+    title="Módulo de Auditoría"
+    frameborder="0">
+  </iframe>
+
+</div>
