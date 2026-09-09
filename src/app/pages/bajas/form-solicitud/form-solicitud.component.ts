@@ -281,7 +281,7 @@ export class FormSolicitudComponent implements OnInit {
   }
 
   getActualIndex(index: number) {
-    return index + this.paginator.pageSize * this.paginator.pageIndex;
+    return this.paginator ? index + this.paginator.pageSize * this.paginator.pageIndex : index;
   }
 
   public onFuncionarioSeleccionado() {
@@ -300,7 +300,7 @@ export class FormSolicitudComponent implements OnInit {
       element.SubgrupoCatalogoId.TipoBienId : null;
     return this.fb.group({
       id: element ? element.Id : 0,
-      placa: element || '',
+      placa: element ? element.Placa : '',
       nombre: element ? element.Nombre : '',
       marca: element ? element.Marca : '',
       subgrupo: subgrupo ? subgrupo.Codigo + ' - ' + subgrupo.Nombre : '',
@@ -481,7 +481,10 @@ export class FormSolicitudComponent implements OnInit {
 
     this.documento.get(filesToGet).subscribe((data: any) => {
       if (data && data.length && data[0].url) {
-        window.open(data[0].url);
+        const link = document.createElement('a');
+        link.href = data[0].url;
+        link.download = 'Soporte.pdf';
+        link.click();
       }
     });
   }
@@ -687,7 +690,7 @@ export class FormSolicitudComponent implements OnInit {
   }
 
   get mostrarTipoBajaComoTexto(): boolean {
-    return this.modoCrud === 'revisar';
+    return this.modo === 'get' || this.modoCrud === 'revisar';
   }
 
   get tipoBajaLabel(): string {
