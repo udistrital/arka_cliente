@@ -1381,8 +1381,6 @@
        "subtitle": "Select the date range to generate and download the Excel file.",
        "title_elementos": "Generate elements report",
        "subtitle_elementos": "Select the date range to generate and download the elements report Excel file.",
-       "title_knowage": "Report access",
-       "consulta_reportes_knowage": "The elements and accounting reports must be accessed through Knowage.",
        "title_contable": "Generate accounting report",
        "subtitle_contable": "Select the date range to generate and download the accounting Excel file.",
        "tipo_reporte": "Report type",
