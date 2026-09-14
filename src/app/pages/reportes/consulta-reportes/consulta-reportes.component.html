@@ -1,5 +1,6 @@
 <div class="reportes-grid">
   <ng-container *ngIf="viewMode === 'consultar'">
+    <!-- Reporte por elementos oculto temporalmente. Para reactivarlo, retirar este comentario.
     <mat-card [nbSpinner]="loadingReportesElementos">
       <mat-card-title>
         {{ 'GLOBAL.reportes.consulta.title_elementos' | translate }}
@@ -64,7 +65,22 @@
         </button>
       </mat-card-actions>
     </mat-card>
+    -->
 
+    <mat-card>
+      <mat-card-title>
+        {{ 'GLOBAL.reportes.consulta.title_knowage' | translate }}
+      </mat-card-title>
+
+      <mat-card-content>
+        <nb-alert status="info" class="status-message">
+          <span class="fas fa-info-circle"></span>&nbsp;
+          {{ 'GLOBAL.reportes.consulta.consulta_reportes_knowage' | translate }}
+        </nb-alert>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Reporte contable oculto temporalmente. Para reactivarlo, retirar este comentario.
     <mat-card [nbSpinner]="loadingReporteContable">
       <mat-card-title>
         {{ 'GLOBAL.reportes.consulta.title_contable' | translate }}
@@ -129,6 +145,7 @@
         </button>
       </mat-card-actions>
     </mat-card>
+    -->
   </ng-container>
 
   <mat-card *ngIf="viewMode === 'pazysalvo'" [nbSpinner]="loadingPazYSalvo">
