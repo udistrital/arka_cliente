@@ -385,7 +385,7 @@ export class ConsultaSalidasComponent implements OnInit {
         },
         Ubicacion: {
           title: this.translate.instant('GLOBAL.ubicacion'),
-          valuePrepareFunction: (value: any) => this.centroCostosHelper.muestraCentroCosto(this.resolveCentroCosto(value)),
+          valuePrepareFunction: (value: any) => this.centroCostosHelper.muestraCentroCostoSalida(this.resolveCentroCosto(value)),
           sort: false,
           filter: false,
         },

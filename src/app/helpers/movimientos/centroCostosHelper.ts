@@ -83,6 +83,23 @@ export class CentroCostosHelper {
         return nombre || codigo || normalizado.Id || '';
     }
 
+    public muestraCentroCostoSalida(centroCosto: any): string {
+        if (!centroCosto || typeof centroCosto !== 'object') {
+            return this.muestraCentroCosto(centroCosto);
+        }
+
+        const normalizado = this.normalizarCentroCosto(centroCosto);
+        const codigoOriginal = normalizado && normalizado.Codigo ? String(normalizado.Codigo).trim() : '';
+        const codigo = codigoOriginal && !codigoOriginal.toUpperCase().startsWith('A') ? `A${codigoOriginal}` : codigoOriginal;
+        const nombre = normalizado && normalizado.Nombre ? normalizado.Nombre : '';
+
+        if (codigo && nombre) {
+            return `${codigo} - ${nombre}`;
+        }
+
+        return nombre || codigo || (normalizado && normalizado.Id) || '';
+    }
+
     public getCentroCostoId(centroCosto: any): number {
         if (!centroCosto) {
             return 0;

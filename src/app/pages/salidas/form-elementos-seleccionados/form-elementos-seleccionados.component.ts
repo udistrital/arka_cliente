@@ -78,7 +78,7 @@ export class FormElementosSeleccionadosComponent implements OnInit {
     this.DatosEnviados.emit(form);
   }
 
-  muestraCentroCosto = (centroCosto: any): string => this.centroCostosHelper.muestraCentroCosto(centroCosto);
+  muestraCentroCosto = (centroCosto: any): string => this.centroCostosHelper.muestraCentroCostoSalida(centroCosto);
 
   public muestraFuncionario(contr: TerceroCriterioContratista): string {
     if (contr && contr.Identificacion && contr.Tercero) {
