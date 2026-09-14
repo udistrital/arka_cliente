@@ -166,10 +166,10 @@
   <mat-step [stepControl]="ordenadorForm" label="{{'GLOBAL.ordenador_gasto' | translate}}">
     <h5>{{'GLOBAL.ordenador_gasto' | translate}}</h5>
     <form [formGroup]="ordenadorForm" class="step-container">
-      <div class="row" [nbSpinner]="commonContrato.cargandoOrdenadores">
-        <div class="form-group col-sm">
+      <div class="row ordenador-gasto-input" [nbSpinner]="commonContrato.cargandoOrdenadores">
+        <div class="form-group col-sm supervisor-input">
           <label>{{'GLOBAL.ordenador_gasto' | translate}}</label>
-          <input nbInput type="text" class="form-control" formControlName="ordenadorCtrl"
+          <input nbInput type="text" class="form-control ordenador-gasto-input" formControlName="ordenadorCtrl"
             [matAutocomplete]="autoOrdenador" />
           <mat-autocomplete #autoOrdenador="matAutocomplete" [displayWith]="muestraOrdenador">
             <mat-option *ngFor="let ord of ordenadoresFiltrados | async" [value]="ord">
@@ -189,10 +189,10 @@
   <mat-step [stepControl]="supervisorForm" label="{{'GLOBAL.supervisor' | translate}}">
     <h5>{{'GLOBAL.supervisor' | translate}}</h5>
     <form [formGroup]="supervisorForm" class="step-container">
-      <div class="row" [nbSpinner]="commonContrato.cargandoSupervisores">
-        <div class="form-group col-sm">
+      <div class="row supervisor-input" [nbSpinner]="commonContrato.cargandoSupervisores">
+        <div class="form-group col-sm supervisor-input">
           <label>{{'GLOBAL.supervisor' | translate}}</label>
-          <input nbInput type="text" class="form-control" formControlName="supervisorCtrl"
+          <input nbInput type="text" class="form-control supervisor-input" formControlName="supervisorCtrl"
             [matAutocomplete]="autoSupervisor" />
           <mat-autocomplete #autoSupervisor="matAutocomplete" [displayWith]="muestraSupervisor">
             <mat-option *ngFor="let sup of supervisoresFiltrados | async" [value]="sup">
