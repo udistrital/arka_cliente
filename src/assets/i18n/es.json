@@ -1381,6 +1381,8 @@
         "subtitle": "Seleccione el rango de fechas para generar y descargar el archivo Excel.",
         "title_elementos": "Generar reporte por elementos",
         "subtitle_elementos": "Seleccione el rango de fechas para generar y descargar el archivo Excel del reporte por elementos.",
+        "title_knowage": "Consulta de reportes",
+        "consulta_reportes_knowage": "Los reportes por elementos y contable deben consultarse a través de Knowage.",
         "title_contable": "Generar reporte contable",
         "subtitle_contable": "Seleccione el rango de fechas para generar y descargar el archivo Excel contable.",
         "tipo_reporte": "Tipo de reporte",

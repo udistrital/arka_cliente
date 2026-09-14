@@ -345,7 +345,7 @@ export class TablaElementosAsignadosComponent implements OnInit {
       return '';
     }
 
-    return this.centroCostosHelper.muestraCentroCosto(this.resolveCentroCosto(ubicacion));
+    return this.centroCostosHelper.muestraCentroCostoSalida(this.resolveCentroCosto(ubicacion));
   }
 
   private esUbicacionBodega(ubicacion: any): boolean {
