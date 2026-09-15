@@ -80,7 +80,9 @@
           <mat-form-field appearance="outline" class="sm-col">
             <input matInput type="text" formControlName="tercero" [matAutocomplete]="autoTerceros"
               placeholder="{{ (modo ==='get' ? 'GLOBAL.NA' : 'GLOBAL.Errores.ErrorMinLength') | translate : {NUM : 4} }}">
-            <mat-autocomplete #autoTerceros="matAutocomplete" [displayWith]="muestraTercero">
+            <mat-autocomplete #autoTerceros="matAutocomplete" [displayWith]="muestraTercero"
+              ngxConfirmSelection="tercero" [confirmSelectionControl]="getControl(rowIndex, 'tercero')"
+              [confirmSelectionDisplay]="muestraTercero">
               <mat-option *ngFor="let tro of terceros" [value]="tro">
                 {{muestraTercero(tro)}}
               </mat-option>

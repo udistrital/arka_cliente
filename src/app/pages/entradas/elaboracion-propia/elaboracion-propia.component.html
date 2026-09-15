@@ -11,7 +11,8 @@
             <input matInput type="text" class="form-control" placeholder="Nombre Completo"
             formControlName="ordenadorCtrl" [matAutocomplete]="autoOrdenador">
             <mat-autocomplete #autoOrdenador="matAutocomplete" [displayWith]="muestraOrdenador"
-              (optionSelected)="changeOrdenador()">
+              ngxConfirmSelection="ordenador del gasto" [confirmSelectionControl]="ordenadorForm.get('ordenadorCtrl')"
+              [confirmSelectionDisplay]="muestraOrdenador" (selectionConfirmed)="changeOrdenador()">
               <mat-option *ngFor="let orde of ordenadoresFiltrados | async" [value]="orde">
                 {{orde.NombreOrdenador}}
               </mat-option>
@@ -42,7 +43,9 @@
         <div class="input-group">
           <input matInput type="text" class="form-control" placeholder="Nombre Completo"
           formControlName="supervisorCtrl" [matAutocomplete]="autoSupervisor"/>
-          <mat-autocomplete #autoSupervisor="matAutocomplete" [displayWith]="muestraSupervisor">
+          <mat-autocomplete #autoSupervisor="matAutocomplete" [displayWith]="muestraSupervisor"
+            ngxConfirmSelection="supervisor" [confirmSelectionControl]="supervisorForm.get('supervisorCtrl')"
+            [confirmSelectionDisplay]="muestraSupervisor">
             <mat-option *ngFor="let super of supervisoresFiltrados | async" [value]="super">
               {{super.Nombre}}
             </mat-option>

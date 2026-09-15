@@ -18,7 +18,9 @@
         <div class="row">
           <div class="form-group col-sm">
             <label>{{'GLOBAL.Acta_Recibido.RegistroActa.Ubicacion' | translate}}</label>
-            <mat-select class="form-control" formControlName="Ubicacion">
+            <mat-select class="form-control" formControlName="Ubicacion"
+              ngxConfirmSelection="centro de costo" [confirmSelectionControl]="form_salida.get('Ubicacion')"
+              [confirmSelectionDisplay]="muestraCentroCosto">
               <mat-option *ngFor="let ubicacion of ubicacionesFiltradas" [value]="ubicacion">{{centroCostosHelper.muestraCentroCosto(ubicacion)}}
               </mat-option>
             </mat-select>

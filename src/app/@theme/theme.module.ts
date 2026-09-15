@@ -124,6 +124,7 @@ import { CORPORATE_THEME } from './styles/theme.corporate';
 import { UD_THEME } from './styles/theme.ud';
 import { TranslateModule } from '@ngx-translate/core';
 import { SelectDirective } from './directives/mouse-over-tree';
+import { ConfirmSelectionDirective } from './directives/confirm-selection.directive';
 import { ARKAII_THEME } from './styles/theme.arka2';
 import { CurrencyMaskConfig, CURRENCY_MASK_CONFIG, NgxCurrencyModule } from 'ngx-currency';
 
@@ -189,6 +190,7 @@ const COMPONENTS = [
   ThreeColumnsLayoutComponent,
   TwoColumnsLayoutComponent,
   SelectDirective,
+  ConfirmSelectionDirective,
 ];
 
 const ENTRY_COMPONENTS = [
