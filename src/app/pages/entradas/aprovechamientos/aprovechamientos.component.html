@@ -176,7 +176,9 @@
         <div class="input-group">
           <input matInput type="text" class="form-control" placeholder="Nombre Completo"
           formControlName="supervisorCtrl" [matAutocomplete]="autoSupervisor"/>
-          <mat-autocomplete #autoSupervisor="matAutocomplete" [displayWith]="muestraSupervisor">
+          <mat-autocomplete #autoSupervisor="matAutocomplete" [displayWith]="muestraSupervisor"
+            ngxConfirmSelection="supervisor" [confirmSelectionControl]="supervisorForm.get('supervisorCtrl')"
+            [confirmSelectionDisplay]="muestraSupervisor">
             <mat-option *ngFor="let super of supervisoresFiltrados | async" [value]="super">
               {{super.Nombre}}
             </mat-option>

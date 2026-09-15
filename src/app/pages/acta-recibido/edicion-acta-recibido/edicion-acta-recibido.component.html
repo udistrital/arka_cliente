@@ -21,7 +21,9 @@
                   <input matInput type="text" class="form-control"
                     placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : minLength} }}"
                     formControlName="Contratista" [matAutocomplete]="autoContratista">
-                  <mat-autocomplete #autoContratista="matAutocomplete" [displayWith]="muestraContratista">
+                  <mat-autocomplete #autoContratista="matAutocomplete" [displayWith]="muestraContratista"
+                    ngxConfirmSelection="contratista" [confirmSelectionControl]="controlContratista"
+                    [confirmSelectionDisplay]="muestraContratista">
                     <mat-option *ngFor="let contr of Contratistas " [value]="contr">
                       {{muestraContratista(contr)}}
                     </mat-option>
@@ -54,7 +56,9 @@
                   <input matInput type="text" class="form-control"
                     placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : minLength} }}"
                     formControlName="Proveedor" [matAutocomplete]="autoProveedor">
-                  <mat-autocomplete #autoProveedor="matAutocomplete" [displayWith]="muestraProveedor">
+                  <mat-autocomplete #autoProveedor="matAutocomplete" [displayWith]="muestraProveedor"
+                    ngxConfirmSelection="proveedor" [confirmSelectionControl]="controlProveedor"
+                    [confirmSelectionDisplay]="muestraProveedor">
                     <mat-option *ngFor="let prov of Proveedores" [value]="prov">
                       {{muestraProveedor(prov)}}
                     </mat-option>
@@ -74,7 +78,9 @@
               <div class="row">
                 <div class="form-group col-sm">
                   <label>{{'GLOBAL.Acta_Recibido.EdicionActa.Ubicacion' | translate}}</label>
-                  <mat-select type="text" class="form-control" formControlName="Ubicacion">
+                  <mat-select type="text" class="form-control" formControlName="Ubicacion"
+                    ngxConfirmSelection="centro de costo" [confirmSelectionControl]="controlUbicacion"
+                    [confirmSelectionDisplay]="muestraCentroCosto">
                     <mat-option *ngFor="let ubicacion of ubicacionesFiltradas" [value]="ubicacion">{{centroCostosHelper.muestraCentroCosto(ubicacion)}}
                     </mat-option>
                   </mat-select>

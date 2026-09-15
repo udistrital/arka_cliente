@@ -7,7 +7,9 @@
           <label>{{'GLOBAL.funcionario' | translate}}</label>
           <input matInput type="text" class="form-control" [matAutocomplete]="autoFuncionario" style="height: auto;"
             placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}" formControlName="Funcionario">
-          <mat-autocomplete #autoFuncionario="matAutocomplete" [displayWith]="muestraFuncionario">
+          <mat-autocomplete #autoFuncionario="matAutocomplete" [displayWith]="muestraFuncionario"
+            ngxConfirmSelection="funcionario" [confirmSelectionControl]="form_salida.get('Funcionario')"
+            [confirmSelectionDisplay]="muestraFuncionario">
             <mat-option *ngFor="let func of funcionariosFiltrados | async" [value]="func">
               {{muestraFuncionario(func)}}
             </mat-option>
@@ -23,7 +25,9 @@
       <div class="row">
         <div class="form-group col-sm">
           <label class="ubicacion">{{'GLOBAL.Acta_Recibido.RegistroActa.Ubicacion' | translate}}</label>
-          <mat-select type="text" style="height: auto;" class="form-control ubicacion" formControlName="Ubicacion">
+          <mat-select type="text" style="height: auto;" class="form-control ubicacion" formControlName="Ubicacion"
+            ngxConfirmSelection="centro de costo" [confirmSelectionControl]="form_salida.get('Ubicacion')"
+            [confirmSelectionDisplay]="muestraCentroCosto">
             <mat-option *ngFor="let ubicacion of UbicacionesFiltradas" [value]="ubicacion">{{centroCostosHelper.muestraCentroCostoSalida(ubicacion)}}</mat-option>
           </mat-select>
           <p class="error-field ubicacion" *ngIf="!form_salida.get('Ubicacion').valid">
