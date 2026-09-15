@@ -171,7 +171,9 @@
           <label>{{'GLOBAL.ordenador_gasto' | translate}}</label>
           <input nbInput type="text" class="form-control ordenador-gasto-input" formControlName="ordenadorCtrl"
             [matAutocomplete]="autoOrdenador" />
-          <mat-autocomplete #autoOrdenador="matAutocomplete" [displayWith]="muestraOrdenador">
+          <mat-autocomplete #autoOrdenador="matAutocomplete" [displayWith]="muestraOrdenador"
+            ngxConfirmSelection="ordenador del gasto" [confirmSelectionControl]="ordenadorForm.get('ordenadorCtrl')"
+            [confirmSelectionDisplay]="muestraOrdenador">
             <mat-option *ngFor="let ord of ordenadoresFiltrados | async" [value]="ord">
               {{ord.NombreOrdenador}}
             </mat-option>
@@ -194,7 +196,9 @@
           <label>{{'GLOBAL.supervisor' | translate}}</label>
           <input nbInput type="text" class="form-control supervisor-input" formControlName="supervisorCtrl"
             [matAutocomplete]="autoSupervisor" />
-          <mat-autocomplete #autoSupervisor="matAutocomplete" [displayWith]="muestraSupervisor">
+          <mat-autocomplete #autoSupervisor="matAutocomplete" [displayWith]="muestraSupervisor"
+            ngxConfirmSelection="supervisor" [confirmSelectionControl]="supervisorForm.get('supervisorCtrl')"
+            [confirmSelectionDisplay]="muestraSupervisor">
             <mat-option *ngFor="let sup of supervisoresFiltrados | async" [value]="sup">
               {{sup.Nombre}}
             </mat-option>

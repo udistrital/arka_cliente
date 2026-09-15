@@ -199,7 +199,8 @@
           <input matInput type="text" class="form-control" formControlName="tercero"
             [matAutocomplete]="autoFuncionario" placeholder="{{'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}">
           <mat-autocomplete #autoFuncionario="matAutocomplete" [displayWith]="muestraFuncionario"
-            (optionSelected)="onFuncionarioSeleccionado()">
+            ngxConfirmSelection="funcionario" [confirmSelectionControl]="formBaja.get('funcionario.tercero')"
+            [confirmSelectionDisplay]="muestraFuncionario" (selectionConfirmed)="onFuncionarioSeleccionado()">
             <mat-option *ngFor="let func of funcionariosFiltrados | async" [value]="func">
               {{muestraFuncionario(func)}}
             </mat-option>

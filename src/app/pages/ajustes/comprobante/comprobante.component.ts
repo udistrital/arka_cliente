@@ -336,6 +336,11 @@ export class ComprobanteComponent implements OnInit {
     return elemento ? elemento.get(control).value : '';
   }
 
+  getControl(index: number, control: string): AbstractControl {
+    const elemento = (this.formComprobante.get('elementos') as FormArray).at(this.getActualIndex(index));
+    return elemento ? elemento.get(control) : null;
+  }
+
   getCurrencyValue(index: number, control: string): number {
     const value = this.getControlValue(index, control);
 

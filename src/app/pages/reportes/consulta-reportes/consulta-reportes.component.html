@@ -168,7 +168,9 @@
             <mat-label>{{ 'GLOBAL.reportes.paz_y_salvo.funcionario' | translate }}</mat-label>
             <input matInput formControlName="funcionario" [matAutocomplete]="autoFuncionario"
               placeholder="{{ 'GLOBAL.Errores.ErrorMinLength' | translate : {NUM : 4} }}">
-            <mat-autocomplete #autoFuncionario="matAutocomplete" [displayWith]="muestraFuncionario">
+            <mat-autocomplete #autoFuncionario="matAutocomplete" [displayWith]="muestraFuncionario"
+              ngxConfirmSelection="funcionario" [confirmSelectionControl]="controlFuncionario"
+              [confirmSelectionDisplay]="muestraFuncionario">
               <mat-option *ngFor="let funcionario of funcionariosFiltrados | async" [value]="funcionario">
                 {{ muestraFuncionario(funcionario) }}
               </mat-option>
