@@ -194,11 +194,10 @@ export class RegistroComponent implements OnInit {
 
     this.step = 'acta';
     this.spinner = 'Cargando actas aceptadas';
+    this.source.load([]);
     this.actaRecibidoHelper.getAllActasRecibido_('Aceptada', this.opcionEntrada.NumeroOrden, unidadEjecutora, -1, 0).subscribe(res => {
       this.spinner = '';
-      if (res && res.length) {
-        this.source.load(res);
-      }
+      this.source.load(res || []);
     });
   }
 
