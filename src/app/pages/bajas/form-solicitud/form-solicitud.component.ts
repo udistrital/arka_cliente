@@ -447,6 +447,9 @@ export class FormSolicitudComponent implements OnInit {
   }
 
   public muestraPlaca(field): string {
+    if (typeof field === 'string') {
+      return field;
+    }
     return field && field.Placa ? field.Placa : '';
   }
 
