@@ -192,7 +192,12 @@ export class FormCuentasComponent implements OnInit, OnChanges, OnDestroy {
     const salida = this.translate.instant('GLOBAL.Salida');
     const depreciacion = this.translate.instant('GLOBAL.Depreciacion');
     const amortizacion = this.translate.instant('GLOBAL.Amortizacion');
+    const baja = this.translate.instant('GLOBAL.Baja');
     const subtipoCodigo = this.getCodigoAbreviacion(subtipo);
+
+    if (subtipoCodigo.startsWith('BJ')) {
+      return baja + ': ' + (subtipoNombre || tipoNombre);
+    }
 
     if (subtipoCodigo === 'SAL' && tipoNombre) {
       return `${salida}: ${tipoNombre}`;
