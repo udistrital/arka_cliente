@@ -43,7 +43,7 @@
           <mat-label>{{'GLOBAL.tipo_movimiento' | translate}}</mat-label>
           <mat-select class="form-control mb-4" style="height: auto;" [(ngModel)]="movimientoId" (ngModelChange)="loadCuentas()">
             <mat-option value="">--{{ 'GLOBAL.seleccionar' | translate }}--</mat-option>
-            <mat-option *ngFor="let entrada of tiposDeEMovimentos" [value]="entrada.Id">
+            <mat-option *ngFor="let entrada of tiposMovimientosSeleccionables" [value]="entrada.Id">
               {{ 'GLOBAL.movimientos.tipo.'+entrada?.CodigoAbreviacion+'.nombre' | translate }}
             </mat-option>
           </mat-select>
