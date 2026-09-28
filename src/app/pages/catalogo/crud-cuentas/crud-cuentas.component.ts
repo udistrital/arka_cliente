@@ -34,6 +34,7 @@ export class CrudCuentasComponent implements OnInit {
   modificando_cuentas: boolean;
   claseOk: boolean;
   tiposDeEMovimentos: any[];
+  tiposMovimientosSeleccionables: any[];
   movimientoId: number = 0;
 
   private estadoAsignacionContable: Parametro;
@@ -50,6 +51,8 @@ export class CrudCuentasComponent implements OnInit {
     this.spinner = '';
     this.modificando_cuentas = false;
     this.catalogos = new Array<Catalogo>();
+    this.tiposDeEMovimentos = [];
+    this.tiposMovimientosSeleccionables = [];
     this.catalogoId = 0;
     this.texto_sesion_contable = '';
     this.texto_estado = '';
@@ -260,6 +263,7 @@ export class CrudCuentasComponent implements OnInit {
     const tipoBienId = tipoBien && tipoBien.Id ? tipoBien.Id : 0;
     const cuentasTipoActual = cuentasExistentes.filter(cuenta => cuenta && cuenta.TipoBienId && cuenta.TipoBienId.Id === tipoBienId);
     const cuentasEsperadas = this.buildCuentasTemplate(detalleClase, movimiento);
+    const esMovimientoBaja = this.getCodigoAbreviacion(movimiento).startsWith('BJ');
 
     if (!cuentasEsperadas.length) {
       return cuentasTipoActual;
@@ -293,6 +297,10 @@ export class CrudCuentasComponent implements OnInit {
       return cuentaEsperada;
     });
 
+    if (esMovimientoBaja) {
+      return cuentasSincronizadas;
+    }
+
     const extrasTipoActual = cuentasTipoActual.filter((cuentaActual) =>
       !cuentasEsperadas.some((cuentaEsperada) => this.isSameCuentaConfig(cuentaActual, cuentaEsperada)));
 
@@ -304,6 +312,10 @@ export class CrudCuentasComponent implements OnInit {
 
     if (!tipoBien || !tipoBien.Id || !movimiento || !movimiento.Id) {
       return [];
+    }
+
+    if (this.getCodigoAbreviacion(movimiento).startsWith('BJ')) {
+      return [this.buildCuentaTemplate(this.emptyTipoMovimiento(), movimiento, tipoBien)];
     }
 
     const salidaAsociada = this.obtenerMovimientoSalidaAsociado(movimiento);
@@ -385,8 +397,7 @@ export class CrudCuentasComponent implements OnInit {
 
     return !!(detalleClase && (detalleClase.Depreciacion || detalleClase.Amortizacion)
       && movimientoDepreciacion && movimientoDepreciacion.Id
-      && codigoMovimiento !== 'SAL'
-      && codigoMovimiento !== 'CRR');
+      && codigoMovimiento.startsWith('ENT'));
   }
 
   private isSameCuentaConfig(cuentaActual: any, cuentaEsperada: any): boolean {
@@ -476,9 +487,13 @@ export class CrudCuentasComponent implements OnInit {
         this.tiposDeEMovimentos = Array.isArray(res_)
           ? res_.filter(tipo => tipo.Activo)
           : [];
+        this.tiposMovimientosSeleccionables = this.tiposDeEMovimentos.filter(tipo =>
+          ['ENT', 'BJ'].some(prefijo => this.getCodigoAbreviacion(tipo).startsWith(prefijo)),
+        );
       },
       error: (err) => {
         this.tiposDeEMovimentos = [];
+        this.tiposMovimientosSeleccionables = [];
       },
     });
   }
